@@ -96,8 +96,8 @@
                 case "Kplayer":
                     _this.initKPlayer();
                     break;
-                case "splayer":
-                    _this.initSender();
+                case "Silverlight":
+                    _this.initSPlayer();
                     break;
             }
             this.updatePosterHTML();
@@ -170,6 +170,8 @@
         },
 
         initSPlayer: function(){
+            //currently not supported
+            /*
             var _this = this;
             var fv = {
                 autoplay:false,
@@ -189,6 +191,7 @@
 
             this.$el = $("#vidSibling_obj");
             this.$el.get(0).supportsPlaybackrate =  false;
+            */
         },
 
         applyIntrinsicAspect: function () {
@@ -297,6 +300,10 @@
         },
         isABR: function () {
           return this.ABR;
+        },
+
+        destroy: function ( ) {
+            this.getComponent().remove();
         }
     });
 })( window.mw, window.jQuery );

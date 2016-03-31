@@ -65,7 +65,9 @@
 				this.addBindings();
 			},
 			isSafeEnviornment: function () {
-                //TODO: block spalyer
+                if ( mw.isIE7() || mw.isIE8() ) {
+                    return false;
+                }
                 var _this = this;
                 var deferred = $.Deferred();
                 this.initSecondPlayer().then(function(){
@@ -93,6 +95,11 @@
 				var _this = this;
                 this.bind( 'playerReady', function (  ) {
                     mw.log('DualScreen - playerReady');
+                    //block DualScreen for spalyer
+                    if ( _this.getPlayer().instanceOf === 'Silverlight' ) {
+                        _this.destroy();
+                    }
+
                     _this.playerReadyFlag = true;
                     if( _this.resetSecondPlayer ){
                         mw.log('DualScreen - playerReady :: reset second player');
@@ -208,10 +215,7 @@
 							_this.fsm.consumeEvent('switchView');
 						}
 						//Reset the control bar
-						if ( _this.controlBar ) {
-							_this.controlBar.destroy();
-							_this.controlBar = null;
-						}
+						_this.destroyControlBar();
 					}
                     //channel play list
                     if( _this.isPlaylistPersistent() ) {
@@ -799,7 +803,11 @@
                 var _this = this;
                 this.bind( 'playerReady.dsPlayerReady', function (  ) {
                     _this.unbind('playerReady.dsPlayerReady');
-                    _this.loadSecondScreenVideoAndResolve(deferred);
+                    if ( _this.getPlayer().instanceOf !== 'Silverlight' ) {
+                        _this.loadSecondScreenVideoAndResolve(deferred);
+                    } else {
+                        deferred.reject();
+                    }
                 });
             },
 
@@ -821,8 +829,6 @@
             loadStreamSelector: function(){
                 var _this = this;
                 var deferred = $.Deferred();
-                //TODO: add IE8/IE7 limitation!
-
                 if( !this.streamSelector && !this.streamSelectorLoaded ) {
                     this.streamSelector = new mw.streamSelectorUtils.selector(this.getPlayer(), function () {
                         this.getStreams();
@@ -842,7 +848,29 @@
             destroyStreamSelector: function(){
                 if( this.streamSelector ){
                     this.streamSelector.destroy();
+                    this.streamSelector = null;
                 }
+            },
+
+            destroyControlBar: function ( ) {
+                if ( this.controlBar ) {
+                    this.controlBar.destroy();
+                    this.controlBar = null;
+                }
+            },
+
+            destroySecondScreen: function ( ) {
+              if ( this.secondPlayer ) {
+                  this.secondPlayer.destroy();
+                  this.secondPlayer = null;
+              }
+            },
+
+            destroy: function ( ) {
+                this.destroySecondScreen();
+                this.destroyStreamSelector();
+                this.destroyControlBar();
+                this.getComponent().remove();
             },
 
             loadSecondScreenVideo: function(){
