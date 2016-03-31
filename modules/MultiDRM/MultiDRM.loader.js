@@ -33,15 +33,29 @@
 					var clDashPlayerUrl = embedPlayer.getKalturaConfig( "multiDrm", "clDashPlayerUrl" ) || mw.getMwEmbedPath() + "node_modules/mwEmbed-Dash-Everywhere/video.js";
 					var dashJsUrl = embedPlayer.getKalturaConfig( "multiDrm", "dashJsUrl" ) || mw.getMwEmbedPath() + "node_modules/mwEmbed-Dash-Everywhere/cldasheverywhere.min.js";
 					if (clDashPlayerUrl && dashJsUrl) {
-						$.getScript( clDashPlayerUrl)
-							.then(function(){return $.getScript( dashJsUrl)})
+						$.ajax( {
+							url: clDashPlayerUrl,
+							cache: true,
+							dataType: "script"
+						})
+							.then(
+								function(){
+									return $.ajax( {
+										url: dashJsUrl,
+										cache: true,
+										dataType: "script"
+									});
+								}
+							)
 							.done(function(){
 								mw.log("DASH player loaded");
 								//Set reference for DASH playback engine
 								mw.dash = {
 									player: videojs
 								};
-								callback();
+								setTimeout(function(){
+									callback();
+								}, 0);
 							})
 							.fail(function( ) {
 								mw.log("Error::Playback engine couldn't be found");

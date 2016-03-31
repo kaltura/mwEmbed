@@ -599,7 +599,6 @@
 		 */
 		onPause: function () {
 			this.updatePlayhead();
-			$( this ).trigger( "onpause" );
 		} ,
 
 		/**

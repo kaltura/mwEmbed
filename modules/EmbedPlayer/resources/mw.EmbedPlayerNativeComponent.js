@@ -134,7 +134,9 @@
 			this.bindHelper("onEndedDone", function () {
 				_this.playbackDone = true;
 			});
-
+			if (this.startTime && !this.supportsURLTimeEncoding()) {
+				this.setStartTimeAttribute(this.startTime);
+			}
 			this.resolveSrcURL(this.getSrc()).then(
 				function (resolvedSrc) {
 					mw.log("EmbedPlayerNativeComponent::resolveSrcURL get succeeded");
@@ -184,9 +186,18 @@
 			}
 		},
 
+		addStartTimeCheck: function () {
+			//nothing here, just override embedPlayer.js function
+		},
+
 		setSrcAttribute: function( source ) {
 			this.getPlayerElement().attr('src', source);
 			this.playingSource =  source;
+			this.pushLicenseUri();
+		},
+
+		setStartTimeAttribute : function(startTime){
+			this.getPlayerElement().attr('startTime', startTime);
 			this.pushLicenseUri();
 		},
 
