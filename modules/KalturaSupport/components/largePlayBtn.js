@@ -110,7 +110,7 @@
 		getComponent: function() {
 			var _this = this;
 			var eventName = 'click';
-			if ( mw.isAndroid() ){
+			if ( mw.isAndroid() && !mw.isNativeApp()){
 				eventName += ' touchstart';
 			}
 			if( !this.$el ) {
