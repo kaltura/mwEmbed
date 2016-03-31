@@ -4,6 +4,7 @@
 
         mw.dualScreen.displays = mw.KBasePlugin.extend({
             display: {},
+            isFlashMode: false,
 
             setup: function(){
             },
@@ -87,10 +88,10 @@
                 this.aux = curMain;
             },
             hideDisplay: function ( ) {
-                this.getAuxDisplay().hide();
+                this.getAuxDisplay().hide(this.isFlashMode);
             },
             showDisplay: function ( ) {
-                this.getAuxDisplay().show();
+                this.getAuxDisplay().show(this.isFlashMode);
             },
 
             //Screen interaction handlers(drag/resize)
@@ -109,8 +110,11 @@
             disableTransitions: function () {
                 this.getMainDisplay().disableTransition();
                 this.getAuxDisplay().disableTransition();
-            }
+            },
 
+            setFlashMode: function (val) {
+                this.isFlashMode = val;
+            }
         });
     }
 )( window.mw, window.jQuery );

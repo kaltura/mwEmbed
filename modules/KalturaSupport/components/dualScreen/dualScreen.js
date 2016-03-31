@@ -34,7 +34,7 @@
 				"menuFadeout": 5000,
 				"resizeHandlesFadeout": 5000,
 				"mainViewDisplay": 2, // 1 - Main stream, 2 - Presentation
-				"fullScreenDisplayOnly": false,
+                "fullScreenDisplayOnly": false,
 				"minDisplayWidth": 0,
 				"minDisplayHeight": 0,
 				"enableKeyboardShortcuts": true,
@@ -57,6 +57,7 @@
 
 			setup: function ( ) {
                 mw.setConfig("preferedBitrate", 50); //ABR - load kplayer video with the lowest fixed bitrate in order to give dual screen full control on ABR (right now supported for HLS kplayer only). Will be ignored in Native player
+                mw.setConfig("EmbedPlayer.SpinnerTarget", "videoHolder"); //set SpinnerTarget to videoHolder
 				this.initConfig();
 				this.initDisplays();
 				this.initFSM();
@@ -147,7 +148,7 @@
 
 				//Consume view state events
 				this.bind( 'dualScreenStateChange', function(e, state){
-					_this.fsm.consumeEvent( state );
+                    _this.fsm.consumeEvent( state );
 				});
 
                 this.bind( 'dualScreenDisplaysSwitched sourcesReplaced', function(e){
@@ -381,7 +382,7 @@
 						draggable: _this.getConfig( 'draggable' )
 					});
 					this.initDisplays();
-				}, "dualScreenDisplays");
+                }, "dualScreenDisplays");
 			},
 			initControlBar: function(){
 				if ( !this.controlBar && !this.getPlayer().isAudio()) {
@@ -994,6 +995,9 @@
 					at: location[0]+location[1],
 					of: $( this.getPlayer().getInterface() )
 				});
+                if ( this.secondPlayer ) {
+                    this.displays.setFlashMode(this.secondPlayer.isABR());
+                }
 			}
 		} )
 	);

@@ -13,6 +13,12 @@
 		dragging: false,
 		resizing: false,
 		setup: function(){
+            var _this = this;
+            this.bind( 'playerReady', function () {
+                //save coordinates for the right bottom corner in order to place there hidden secondary screen (10X10 px), so we'll be able to  seek fast through HLS-OSMF (flash player moves to the low performance once hidden and this is why seek worked very slow in single view mode - FEC-5138)
+                _this.playerRight = _this.getPlayer().getWidth() - 22;
+                _this.playerBottom = _this.getPlayer().getHeight() - _this.getPlayer().getControlBarContainer().height() - 4;
+            });
 		},
 		attachView: function(el){
 			this.obj = el;
@@ -164,6 +170,7 @@
 		},
 		disableSideBySideView: function () {
 			this.obj.removeClass( 'sideBySideRight sideBySideLeft' );
+            this.hiddenProp = this.prop;
 		},
         disableMain: function () {
             this.obj.removeClass('firstScreen').addClass('secondScreen');
@@ -176,11 +183,38 @@
         toggleHiddenToMain: function () {
             this.obj.removeClass('hiddenScreen' ).addClass('firstScreen' );
         },
-		hide: function () {
-			this.obj.addClass( 'hiddenScreen' );
+		hide: function (isFlashMode) {
+            this.obj.addClass( 'hiddenScreen' );
+            //take care of flash obj (seek through hidden flash player will be very slow, so we need to bring at least several pixels inside the visible area of the player frame)
+            if ( isFlashMode ) {
+                var _this = this;
+                this.obj.addClass('componentOff');
+                setTimeout(function () {
+                    if (!_this.hiddenProp) {
+                        _this.hiddenProp = _this.obj.css(['top', 'left', 'width', 'height']);
+                    }
+                    _this.obj.css('top', _this.playerBottom);
+                    _this.obj.css('left', _this.playerRight);
+                    _this.obj.removeClass('componentOff').addClass('hidden10pxScreen componentOn');
+                }, 300); //screenTransition (css) length is 0.3 sec
+            }
 		},
-		show: function () {
-			this.obj.removeClass( 'hiddenScreen' );
+		show: function (isFlashMode) {
+            if ( !isFlashMode ) {
+                this.obj.removeClass('hiddenScreen');
+            } else {
+                //FlashMode only - take care of flash obj (seek through hidden flash player will be very slow, so we need to bring at least several pixels inside the visible area of the player frame)
+                var _this = this;
+                this.disableTransition();
+                this.obj.removeClass('hidden10pxScreen');
+                this.obj.css(this.hiddenProp);
+                this.hiddenProp = null;
+                this.obj.removeClass('componentOff').addClass('componentOn');
+                this.enableTransition();
+                setTimeout(function () {
+                    _this.obj.removeClass('hiddenScreen');
+                }, 500); //it takes time to update width/height/top/left css properties and this is the reason for half second delly.
+            }
 		},
         bringToFront: function ( ) {
             this.obj.css('z-index',2);
