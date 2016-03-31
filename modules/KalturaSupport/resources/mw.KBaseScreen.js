@@ -46,6 +46,7 @@
 
 			this.bind('playerReady', $.proxy(function (e, size) {
 				_this.error = false;
+				_this.getScreen();
 			}, this));
 
 			this.bind('playerSizeClassUpdate', $.proxy(function (e, size) {
