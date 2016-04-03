@@ -7,6 +7,7 @@
         var $player = $(player);
         var nextPendingCuePointIndex = null;
         var lastHandledServerTime = null;
+        var isEnabled = false;
 
         function log(context, message) {
             mw.log(name + "." + context + ":" + message);
@@ -78,10 +79,21 @@
             }
         }
 
+        function enable()
+        {
+            isEnabled = true;
+        }
+
+        function disable()
+        {
+            isEnabled = false;
+        }
+
         function initialize() {
             nextPendingCuePointIndex = getNextCuePointIndex(0);
 
             $player.bind('onChangeMedia', function () {
+                disable();
                 // reset internal state to be ready for new media
                 nextPendingCuePointIndex = null;
                 lastHandledServerTime = null;
@@ -91,6 +103,11 @@
                 "monitorEvent" + bindPostfix +
                 " onplay" + bindPostfix,
                 function (e) {
+                    if (!isEnabled)
+                    {
+                        return;
+                    }
+
                     var currentTime = player.getPlayerElementTime() * 1000;
 
                     if ($.isNumeric(lastHandledServerTime) && lastHandledServerTime > currentTime)
@@ -207,6 +224,10 @@
 
             return result;
         }
+
+        this.enable = enable;
+        this.disable = disable;
+
 
         initialize();
     }
