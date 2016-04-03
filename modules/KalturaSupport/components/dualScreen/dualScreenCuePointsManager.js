@@ -52,7 +52,8 @@
         }
 
         function getCodeCuePoints() {
-            return player.kCuePoints.getCodeCuePoints();
+
+            return player.kCuePoints ? player.kCuePoints.getCodeCuePoints() : [];
         }
 
         /**
@@ -82,7 +83,7 @@
 
             $player.bind('onChangeMedia', function () {
                 // reset internal state to be ready for new media
-                nextPendingCuePointIndex = getNextCuePointIndex(0);
+                nextPendingCuePointIndex = null;
                 lastHandledServerTime = null;
             });
 
