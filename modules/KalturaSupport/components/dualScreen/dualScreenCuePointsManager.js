@@ -90,8 +90,6 @@
         }
 
         function initialize() {
-            nextPendingCuePointIndex = getNextCuePointIndex(0);
-
             $player.bind('onChangeMedia', function () {
                 disable();
                 // reset internal state to be ready for new media
@@ -106,6 +104,11 @@
                     if (!isEnabled)
                     {
                         return;
+                    }
+
+                    if (!$.isNumeric(nextPendingCuePointIndex))
+                    {
+                        nextPendingCuePointIndex = 0;
                     }
 
                     var currentTime = player.getPlayerElementTime() * 1000;
