@@ -969,9 +969,23 @@
 			}
 
 			if ( $.isFunction( _this.setup) ) {
+                var failCallback = function(){
+                    _this.removePoster();
+                    _this.layoutBuilder.displayAlert( {
+                        title: _this.getKalturaMsg( 'ks-PLUGIN-BLOCKED-TITLE' ),
+                        message: _this.getKalturaMsg( 'ks-PLUGIN-BLOCKED' ),
+                        keepOverlay: true,
+                        noButtons : true,
+                        props: {
+                            customAlertTitleCssClass: "AlertTitleTransparent",
+                            customAlertMessageCssClass: "AlertMessageTransparent",
+                            customAlertContainerCssClass: "AlertContainerTransparent flashBlockAlertContainer"
+                        }
+                    });
+                };
 				_this.setup(function(){
 					_this.runPlayerStartupMethods( callback );
-				});
+				}, failCallback);
 				return ;
 			}
 			// run player startup directly ( without setup call if not defined )
