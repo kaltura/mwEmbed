@@ -5,7 +5,7 @@
     mw.dualScreen.CuePointsManager = function(name, bindPostfix, player, onCuePointsReached) {
 
         var $player = $(player);
-        var nextPendingCuePointIndex = null;
+        var nextPendingCuePointIndex = 0;
         var lastHandledServerTime = null;
         var isEnabled = false;
 
@@ -93,7 +93,7 @@
             $player.bind('onChangeMedia', function () {
                 disable();
                 // reset internal state to be ready for new media
-                nextPendingCuePointIndex = null;
+                nextPendingCuePointIndex = 0;
                 lastHandledServerTime = null;
             });
 
@@ -104,11 +104,6 @@
                     if (!isEnabled)
                     {
                         return;
-                    }
-
-                    if (!$.isNumeric(nextPendingCuePointIndex))
-                    {
-                        nextPendingCuePointIndex = 0;
                     }
 
                     var currentTime = player.getPlayerElementTime() * 1000;
