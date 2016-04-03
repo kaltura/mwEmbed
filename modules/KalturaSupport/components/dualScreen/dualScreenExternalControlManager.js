@@ -5,19 +5,33 @@
         mw.dualScreen.externalControlManager = mw.KBasePlugin.extend({
             setup : function()
             {
+            },
+            initialize:function()
+            {
                 var _this = this;
 
-                this.bind( 'playerReady', function() {
-                    _this.cuePointsManager = new mw.dualScreen.CuePointsManager('dualScreenExternalControlManager', '', _this.getPlayer(), function (args) {
+                if (_this.isInitialized)
+                {
+                    return;
+                }
 
-                        var relevantCuePoints = args.filter({tag: 'player-view-mode', sortDesc: true});
-                        var mostUpdatedCuePointToHandle = relevantCuePoints.length > 0 ? relevantCuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
+                _this.isInitialized = true;
 
-                        if (mostUpdatedCuePointToHandle) {
-                            _this.handleCuePoint(mostUpdatedCuePointToHandle);
-                        }
-                    });
-                });
+                if (_this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") || _this.getPlayer().kCuePoints) {
+                    // handle cue points only if either live or we have cue points loaded from the server
+                    setTimeout(function()
+                    {
+                        // this logic should wait once - make sure it is invoked in a separated event loop
+                        _this.cuePointsManager = new mw.dualScreen.CuePointsManager('dualScreenExternalControlManager', '', _this.getPlayer(), function (args) {
+                            var relevantCuePoints = args.filter({tag: 'player-view-mode', sortDesc: true});
+                            var mostUpdatedCuePointToHandle = relevantCuePoints.length > 0 ? relevantCuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
+
+                            if (mostUpdatedCuePointToHandle) {
+                                _this.handleCuePoint(mostUpdatedCuePointToHandle);
+                            }
+                        });
+                    },1000);
+                }
             },
             setViewById : function(viewId)
             {
