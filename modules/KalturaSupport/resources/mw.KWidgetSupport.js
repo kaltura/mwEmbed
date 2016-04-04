@@ -478,7 +478,7 @@ mw.KWidgetSupport.prototype = {
 			if (flavorPartnerData.url != "") {
 				var flavorAssetObj = {
 					"data-assetid": flavorAsset.id,
-					src: flavorPartnerData.url,
+					src: _this.addSessionIdToSrc(flavorPartnerData.url),
 					type: flavorPartnerData.type,
 					"data-width": flavorAsset.width,
 					"data-height": flavorAsset.height,
@@ -504,6 +504,15 @@ mw.KWidgetSupport.prototype = {
 
 		//Set proxyData response data
 		embedPlayer.setKalturaConfig( 'proxyData', playerData.meta.partnerData);
+	},
+
+	addSessionIdToSrc: function(srcURL){
+		if (srcURL && srcURL.toLowerCase().indexOf("playmanifest") === -1){
+			return srcURL;
+		}
+
+		var qp = ( srcURL.indexOf('?') === -1) ? '?' : '&';
+		return srcURL + qp + 'playSessionId=' + this.getGUID();
 	},
 	updateVodPlayerData: function(embedPlayer, playerData){
 		embedPlayer.setLive( false );
