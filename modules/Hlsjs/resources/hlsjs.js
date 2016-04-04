@@ -48,8 +48,6 @@
 			 */
 			setup: function () {
 				this.addBindings();
-				//Init the HLS playback engine
-				this.hls = new Hls(this.getConfig("options"));
 			},
 			/**
 			 *
@@ -78,18 +76,24 @@
 			 * Clean method
 			 */
 			clean: function () {
+				this.log("Clean");
 				this.LoadHLS = false;
 				this.loaded = false;
 				this.unRegisterHlsEvents();
 				this.restorePlayerMethods();
 				this.hls.detachMedia();
 				this.hls.destroy();
+				this.hls = null;
 			},
 			/**
 			 * Register the playback events and attach the playback engine to the video element
 			 */
 			initHls: function () {
 				if (this.LoadHLS && !this.loaded) {
+					this.log("Init");
+					//Init the HLS playback engine
+					this.hls = new Hls(this.getConfig("options"));
+
 					this.loaded = true;
 					//Reset the error recovery counter
 					this.mediaErrorRecoveryCounter = 0;
@@ -142,6 +146,7 @@
 			 * Load source after media is attached
 			 */
 			onMediaAttached: function () {
+				this.log("Media attached");
 				//Once media is attached load the manifest
 				this.hls.loadSource(this.getPlayer().getSrc());
 			},
@@ -220,7 +225,7 @@
 								this.log("Try flash fallback");
 								this.fallbackToFlash();
 							} else {
-								mw.log("EmbedPlayerKPlayer::MediaError error code: " + error);
+								mw.log("MediaError error code: " + error);
 								this.triggerHelper('embedPlayerError', [ data ]);
 							}
 							break;
@@ -277,8 +282,10 @@
 			overridePlayerMethods: function () {
 				this.orig_backToLive = this.getPlayer().backToLive;
 				this.orig_switchSrc = this.getPlayer().switchSrc;
+				this.orig_changeMediaCallback = this.getPlayer().changeMediaCallback;
 				this.getPlayer().backToLive = this.backToLive.bind(this);
 				this.getPlayer().switchSrc = this.switchSrc.bind(this);
+				this.getPlayer().changeMediaCallback = null;
 			},
 			/**
 			 * Disable override player methods for HLS playback
@@ -286,6 +293,7 @@
 			restorePlayerMethods: function () {
 				this.getPlayer().backToLive = this.orig_backToLive;
 				this.getPlayer().switchSrc = this.orig_switchSrc;
+				this.getPlayer().changeMediaCallback = this.orig_changeMediaCallback;
 				mw.supportsFlash = orig_supportsFlash;
 			},
 			//Overidable player methods, "this" is bound to HLS plugin instance!

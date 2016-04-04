@@ -5,19 +5,39 @@
         mw.dualScreen.externalControlManager = mw.KBasePlugin.extend({
             setup : function()
             {
+
+            },
+            initialize:function()
+            {
                 var _this = this;
 
-                this.bind( 'playerReady', function() {
-                    _this.cuePointsManager = new mw.dualScreen.CuePointsManager('dualScreenExternalControlManager', '', _this.getPlayer(), function (args) {
+                if (_this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") || _this.getPlayer().kCuePoints) {
+                    // handle cue points only if either live or we have cue points loaded from the server
+                    setTimeout(function()
+                    {
+                        if (!_this.cuePointsManager) {
+                            // we need to initialize the instance
+                            _this.cuePointsManager = new mw.dualScreen.CuePointsManager('dualScreenExternalControlManager', '', _this.getPlayer(), function (args) {
+                                var relevantCuePoints = args.filter({tag: 'player-view-mode', sortDesc: true});
+                                var mostUpdatedCuePointToHandle = relevantCuePoints.length > 0 ? relevantCuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
 
-                        var relevantCuePoints = args.filter({tag: 'player-view-mode', sortDesc: true});
-                        var mostUpdatedCuePointToHandle = relevantCuePoints.length > 0 ? relevantCuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
-
-                        if (mostUpdatedCuePointToHandle) {
-                            _this.handleCuePoint(mostUpdatedCuePointToHandle);
+                                if (mostUpdatedCuePointToHandle) {
+                                    _this.handleCuePoint(mostUpdatedCuePointToHandle);
+                                }
+                            });
                         }
-                    });
-                });
+
+                        // enable cue points manager
+                        _this.cuePointsManager.enable();
+                    },1000);
+                }else
+                {
+                    // no need for cue points manager
+                    if (_this.cuePointsManager) {
+                        _this.cuePointsManager.disable();
+                    }
+
+                }
             },
             setViewById : function(viewId)
             {
