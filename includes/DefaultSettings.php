@@ -18,7 +18,7 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '2.42-Dual-Screen.rc4';
+$wgMwEmbedVersion = '2.42-Dual-Screen.rc5';
 
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {
