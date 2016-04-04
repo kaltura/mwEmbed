@@ -99,13 +99,18 @@
 
             $player.bind('temporary-diagnostic',function()
             {
+                var currentTime = player.getPlayerElementTime() * 1000;
+
                 console.table(getCodeCuePoints(),['id','createdAt', 'startTime','tags','code']);
                 console.log('isEnabled: ' + (isEnabled ? 'true' : 'false'))
-                console.log('serverTime: ' + new Date(player.getPlayerElementTime() * 1000));
+                console.log('serverTime: ' + new Date(currentTime));
                 console.log('last handled serverTime: ' + (lastHandledServerTime ? new Date(lastHandledServerTime) : ''));
                 console.log('last index handled: ' + nextPendingCuePointIndex);
-
-
+                var nextCuePoint = getCuePointByIndex(nextPendingCuePointIndex);
+                if (nextCuePoint && currentTime) {
+                    var seconds = Math.round((nextCuePoint.startTime - currentTime ) / 1000);
+                    console.log('next cue point with id ' + nextCuePoint.id + ' should be handled in ' + seconds + ' seconds at ' + new Date(nextCuePoint.startTime) );
+                }
             });
 
             $player.bind(
