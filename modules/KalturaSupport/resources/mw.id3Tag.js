@@ -9,29 +9,41 @@
         updatedTime: 0,
         intervalCounter: 4, //default interval counter will be 4 (updateTimeInterval = 1 second / this.embedPlayer.monitorRate = 250 milliseconds)
         counter: 0,
+        bindPostfix: '.id3Tag',
 
         isSafeEnviornment: function () {
-            if( this.getPlayer().isLive() && !this.getPlayer().isDVR() ){
-                return true;
-            }
-            return false;
+            return true;
         },
 
 		setup: function() {
+            var _this = this;
             this.timeIntervalSec = this.getConfig('updateTimeIntervalSec');
             this.intervalCounter = this.timeIntervalSec / (this.embedPlayer.monitorRate/1000);
-            this.addBinding();
+
+            this.bind( 'playerReady', function() {
+                 if( _this.getPlayer().isLive() && !_this.getPlayer().isDVR() ) {
+                    _this.addBinding();
+                 }
+            });
+            this.bind( 'onChangeMedia', function() {
+                _this.removeBindings();
+            });
         },
+
+        removeBindings: function(){
+            this.unbind(  this.bindPostfix );
+        },
+
         addBinding: function () {
 			var _this = this;
 
-            this.bind('monitorEvent', function() {
+            this.bind('monitorEvent' + _this.bindPostfix, function() {
                 if( _this.updatedTime > 0 ){
                     _this.updateTime();
                 }
             });
 
-			this.bind('onId3Tag', function(e, tag){
+			this.bind('onId3Tag' + _this.bindPostfix, function(e, tag){
                 _this.parseTag(tag);
 			});
 		},

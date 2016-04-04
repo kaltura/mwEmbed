@@ -1,0 +1,10 @@
+{
+    "Hlsjs": {
+        "scripts": [
+            "resources/hls.min.js" ,
+          "resources/hlsjs.js"
+        ],
+        "dependencies": "mw.KBasePlugin",
+        "kalturaPluginName": "hlsjs"
+    }
+}
