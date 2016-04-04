@@ -75,7 +75,7 @@
         "ks-FLASH-BLOCKED-TITLE": "Flash is not active",
         "ks-FLASH-BLOCKED": "Flash does not appear to be installed or active.<br>Please <a href='http:\/\/get.adobe.com\/flashplayer\/' target='_blank'>install<\/a> or <a href='http:\/\/knowledge.kaltura.com\/faq\/how-activate-flash-safari-desktop' target='_blank'>activate<\/a> flash",
         "ks-PLUGIN-BLOCKED-TITLE": "Microsoft Silverlight is not active",
-        "ks-PLUGIN-BLOCKED": "Microsoft Silverlight does not appear to be installed or active.<br>Please <a href='https:\/\/www.microsoft.com\/getsilverlight\/Get-Started\/Install\/Defaut.aspx' target='_blank'>install<\/a> or <a href='http:\/\/knowledge.kaltura.com\/faq\/how-activate-silverlight-safari-desktop' target='_blank'>activate<\/a> Microsoft Silverlight",
+        "ks-PLUGIN-BLOCKED": "Silverlight plug-in does not appear to be active.<br>Please <a href='http:\/\/knowledge.kaltura.com\/faq\/how-activate-silverlight-safari-desktop' target='_blank'>activate<\/a> Microsoft Silverlight",
         "ks-DUAL-SCREEN-SBS": "Side By Side",
         "ks-DUAL-SCREEN-HIDE": "Single View",
         "ks-DUAL-SCREEN-PIP": "Picture In Picture",
