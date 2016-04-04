@@ -87,6 +87,8 @@
 		dashContextUpdated: false,
 		isSeekable: false,
 
+        detectPluginIntervalLoops: 3,
+
 		// Native player supported feature set
 		supports: {
 			'playHead': true,
@@ -97,11 +99,28 @@
 			'volumeControl': true,
 			'overlays': true
 		},
-		setup: function (readyCallback){
+		setup: function (readyCallback, failCallback){
 			this._propagateEvents = true;
 			mw.log('EmbedPlayerMultiDRM:: Setup');
 			this.initDashPlayer(readyCallback);
+
+            var _this = this;
+            this.detectPluginInterval = setInterval(function () {
+                _this.detectPlugin(failCallback);
+            }, 500);
 		},
+
+        detectPlugin: function (failCallback) {
+            mw.log("EmbedPlayerMultiDRM::detectPlugin::detect loop " + this.detectPluginIntervalLoops);
+
+            if(!this.pluginDetected && this.detectPluginIntervalLoops === 0 ){
+                mw.log("EmbedPlayerMultiDRM::detectPlugin::failed to detecting Silverlight plugin");
+                clearInterval(this.detectPluginInterval); // stop trying to detect plugin
+                failCallback(); //trigger fail callback -> goes to the EmbedPlayer in order to displayAlert with ks-PLUGIN-BLOCKED message
+            }
+            this.detectPluginIntervalLoops--;
+        },
+
 		/**
 		 * Updates the supported features given the "type of player"
 		 */
@@ -209,6 +228,9 @@
 					},
 					techOrder: ['dasheverywhere']
 				}, function(){
+                    _this.pluginDetected = true; // used in order to clear detectPlugin interval
+                    clearInterval(_this.detectPluginInterval); // stop trying to detect plugin
+
 					_this.playerElement = this;
 					var el = $(_this.playerElement.el() );
 					//Hide native player UI
