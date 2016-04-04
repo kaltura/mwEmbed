@@ -1030,8 +1030,10 @@
 					at: location[0]+location[1],
 					of: $( this.getPlayer().getInterface() )
 				});
-                if ( this.secondPlayer ) {
-                    this.displays.setFlashMode(this.secondPlayer.isABR());
+
+                //take care of flash obj (seek through hidden flash player will be very slow, so we need to bring at least several pixels inside the visible area of the player frame)
+                if ( this.getPlayer().instanceOf === 'Kplayer' ) {
+                    this.displays.setFlashMode(true);
                 }
 			}
 		} )
