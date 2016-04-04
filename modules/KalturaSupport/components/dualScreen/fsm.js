@@ -47,7 +47,7 @@
 
 				if ( this.currentState.events[targetEvent] ) {
 					var nextStateName = this.currentState.events[targetEvent].name;
-					mw.log('fsm.consumeEvent(): transition from state ' + this.currentState.name + ' to state ' + nextStateName + ' with event name ' + targetEvent);
+					console.log('fsm.consumeEvent(): transition from state ' + this.currentState.name + ' to state ' + nextStateName + ' with event name ' + targetEvent);
 					this.fsmTransitionHandlers(this.currentState.name, targetEvent);
 					this.currentState.events[targetEvent].action.call(this.context);
 					this.currentState = this.states[this.indexes[nextStateName]];

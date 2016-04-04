@@ -10,7 +10,7 @@
         var isEnabled = false;
 
         function log(context, message) {
-            mw.log(name + "." + context + ":" + message);
+            console.log(name + "." + context + ":" + message);
         }
 
         /**
@@ -97,6 +97,17 @@
                 lastHandledServerTime = null;
             });
 
+            $player.bind('temporary-diagnostic',function()
+            {
+                console.table(getCodeCuePoints(),['id','createdAt', 'startTime','tags','code']);
+                console.log('isEnabled: ' + (isEnabled ? 'true' : 'false'))
+                console.log('serverTime: ' + new Date(player.getPlayerElementTime() * 1000));
+                console.log('last handled serverTime: ' + (lastHandledServerTime ? new Date(lastHandledServerTime) : ''));
+                console.log('last index handled: ' + nextPendingCuePointIndex);
+
+
+            });
+
             $player.bind(
                 "monitorEvent" + bindPostfix +
                 " onplay" + bindPostfix,
@@ -133,7 +144,7 @@
                             for (var i = 0; i < cuePointsReachedToHandle.cuePoints.length; i++) {
 
                                 var reachedCuePoint = cuePointsReachedToHandle.cuePoints[i];
-                                mw.log('initialize.bind(' + e.type + ')','trigger event for cuePoint ' + reachedCuePoint.id + ' with start time ' + new Date(reachedCuePoint.startTime));
+                                console.log('initialize.bind(' + e.type + ')','trigger event for cuePoint ' + reachedCuePoint.id + ' with start time ' + new Date(reachedCuePoint.startTime));
                                 // Make a copy of the cue point to be triggered.
                                 // Sometimes the trigger can result in monitorEvent being called and an
                                 // infinite loop ( ie ad network error, no ad received, and restore player calling monitor() )
