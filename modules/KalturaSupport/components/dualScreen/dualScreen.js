@@ -275,10 +275,9 @@
 			initExternalControlManager : function()
 			{
 				var _this = this;
-				if (this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") || this.getPlayer().kCuePoints) {
-					this.externalControlManager = new mw.dualScreen.externalControlManager(this.getPlayer(), function () {
-					}, "dualScreenExternalControlManager");
-				}
+
+				this.externalControlManager = new mw.dualScreen.externalControlManager(this.getPlayer(), function () {
+				}, "dualScreenExternalControlManager");
 			},
 			initDisplays: function () {
 				var _this = this;
@@ -395,18 +394,27 @@
 						break;
 				}
 
-				if (defaultDualScreenViewId)
-				{
-					setTimeout( function () {
-                        if ( _this.externalControlManager ) {
-                            _this.externalControlManager.setViewById(defaultDualScreenViewId);
-                        }
+				// the following code is warpped with timeout to make sure it happens in a separated event loop cycle.
+				// otherwise autoplay might not work.
+				setTimeout( function () {
+
+					if (defaultDualScreenViewId)
+					{
+						if ( _this.externalControlManager ) {
+							_this.externalControlManager.setViewById(defaultDualScreenViewId);
+							_this.externalControlManager.initialize();
+						}
+
 						//if (_this.getPlayer().isAudio()){
 						//	// The product removed explicit handling for such a scenario
 						//}
-					}, 1000 );
-
-				}
+					}else
+					{
+						if ( _this.externalControlManager ) {
+							_this.externalControlManager.initialize();
+						}
+					}
+				}, 1000 );
 			},
 
 			//Manage display helpers
