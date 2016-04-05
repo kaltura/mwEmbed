@@ -49,6 +49,8 @@
 
 		playingSource: undefined,
 
+		lastPlayPauseTime: 0,
+
 		// All the native events per:
 		// http://www.w3.org/TR/html5/video.html#mediaevents
 		nativeEvents: [
@@ -134,7 +136,9 @@
 			this.bindHelper("onEndedDone", function () {
 				_this.playbackDone = true;
 			});
-
+			if (this.startTime && !this.supportsURLTimeEncoding()) {
+				this.setStartTimeAttribute(this.startTime);
+			}
 			this.resolveSrcURL(this.getSrc()).then(
 				function (resolvedSrc) {
 					mw.log("EmbedPlayerNativeComponent::resolveSrcURL get succeeded");
@@ -184,9 +188,18 @@
 			}
 		},
 
+		addStartTimeCheck: function () {
+			//nothing here, just override embedPlayer.js function
+		},
+
 		setSrcAttribute: function( source ) {
 			this.getPlayerElement().attr('src', source);
 			this.playingSource =  source;
+			this.pushLicenseUri();
+		},
+
+		setStartTimeAttribute : function(startTime){
+			this.getPlayerElement().attr('startTime', startTime);
 			this.pushLicenseUri();
 		},
 
@@ -346,6 +359,10 @@
 		play: function () {
 			var _this = this;
 			mw.log("EmbedPlayerNativeComponent:: play::");
+			if (!this.checkPlayPauseTime()){
+				mw.log("EmbedPlayerNativeComponent:: received play right after pause: aborting play command");
+				return;
+			}
 			this.playbackDone = false;
 
 			this.unbindHelper('replayEvent').bindHelper('replayEvent',function(){
@@ -373,10 +390,27 @@
 		 */
 		pause: function () {
 			mw.log("EmbedPlayerNativeComponent:: pause::");
+			if (!this.checkPlayPauseTime()){
+				mw.log("EmbedPlayerNativeComponent:: received pause right after play: aborting pause command");
+				return;
+			}
 			this.parent_pause(); // update interface
 			if (this.getPlayerElement()) { // update player
 				this.getPlayerElement().pause();
 			}
+		},
+
+		// verify that we didn't get play right after pause or vise versa when user multiple clicks the device
+		checkPlayPauseTime: function(){
+
+			var d = new Date();
+			var t = d.getTime();
+			var executeCommand = false;
+			if (this.lastPlayPauseTime === 0 || (t - this.lastPlayPauseTime) > 1000){
+				executeCommand = true;
+			}
+			this.lastPlayPauseTime = t;
+			return executeCommand;
 		},
 
 		doSeek: function (seekTime) {

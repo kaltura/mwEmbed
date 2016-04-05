@@ -4,7 +4,8 @@
 	var tvpapiAnalytics = mw.tvpapiRequest.extend({
 
 		defaultConfig: {
-			mediaHitInterval: 30
+			mediaHitInterval: 30,
+			startTime:null
 		},
 
 		isPlaying: false,
@@ -14,6 +15,10 @@
 		mediaHitInterval: null,
 
 		setup: function() {
+			if (this.getConfig("startTime")){
+				this.continueTime = this.getConfig("startTime");
+				this.playFromContinue = true;
+			}
 			this.bindEvents();
 			this.bindContinueToTime();
 		},
@@ -136,7 +141,7 @@
 					this.doRequest(url, data).then(
 							function (data) {
 								_this.log('response for ' + service + ': ' + data);
-								if (data == '"Concurrent"') {
+								if (data == 'Concurrent') {
 									_this.concurrentFlag = true;
 									_this.getPlayer().triggerHelper('tvpapiShowConcurrent');
 								}

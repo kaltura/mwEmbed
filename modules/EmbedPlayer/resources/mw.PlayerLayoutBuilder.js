@@ -795,15 +795,10 @@ mw.PlayerLayoutBuilder.prototype = {
 							}
 							event.preventDefault();
 							_this.removeMouseMoveHandler();
-							//without setTimeout event still propagates
-							setTimeout( function() {
-								_this.mouseMovedFlag = true;
-								_this.showPlayerControls();
-								if ( !mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
-									_this.addMouseMoveHandler();
-								}
-								_this.getInterface().find( '#touchOverlay' ).remove();
-							}, 500);
+							_this.mouseMovedFlag = true;
+							_this.showPlayerControls();
+							_this.addMouseMoveHandler();
+							_this.getInterface().find( '#touchOverlay' ).remove();
 
 						})
 				);

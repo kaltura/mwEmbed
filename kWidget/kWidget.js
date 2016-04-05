@@ -377,11 +377,6 @@
 				targetId = settings.targetId;
 			}
 
-			// Check if we have flashvars object
-			if (!settings.flashvars) {
-				settings.flashvars = {};
-			}
-
 			// set player load check at start embed method call
 			this.startTime[targetId] = new Date().getTime();
 
@@ -663,7 +658,7 @@
 					kdp.kBind('mediaReady', function () {
 						setTimeout(function () {
 							kdp.sendNotification('doPlay');
-						}, 0);
+						}, 100);
 					});
 					if (typeof orgEmbedCallback == 'function') {
 						orgEmbedCallback(playerId);

@@ -45,7 +45,7 @@
 			}, this));
 
 			this.bind('playerReady', $.proxy(function (e, size) {
-				this.error = false;
+				_this.error = false;
 			}, this));
 
 			this.bind('playerSizeClassUpdate', $.proxy(function (e, size) {

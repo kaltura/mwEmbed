@@ -5,8 +5,9 @@
     mw.dualScreen.CuePointsManager = function(name, bindPostfix, player, onCuePointsReached) {
 
         var $player = $(player);
-        var nextPendingCuePointIndex = null;
+        var nextPendingCuePointIndex = 0;
         var lastHandledServerTime = null;
+        var isEnabled = false;
 
         function log(context, message) {
             mw.log(name + "." + context + ":" + message);
@@ -52,7 +53,8 @@
         }
 
         function getCodeCuePoints() {
-            return player.kCuePoints.getCodeCuePoints();
+
+            return player.kCuePoints ? player.kCuePoints.getCodeCuePoints() : [];
         }
 
         /**
@@ -77,12 +79,21 @@
             }
         }
 
-        function initialize() {
-            nextPendingCuePointIndex = getNextCuePointIndex(0);
+        function enable()
+        {
+            isEnabled = true;
+        }
 
+        function disable()
+        {
+            isEnabled = false;
+        }
+
+        function initialize() {
             $player.bind('onChangeMedia', function () {
+                disable();
                 // reset internal state to be ready for new media
-                nextPendingCuePointIndex = getNextCuePointIndex(0);
+                nextPendingCuePointIndex = 0;
                 lastHandledServerTime = null;
             });
 
@@ -90,6 +101,11 @@
                 "monitorEvent" + bindPostfix +
                 " onplay" + bindPostfix,
                 function (e) {
+                    if (!isEnabled)
+                    {
+                        return;
+                    }
+
                     var currentTime = player.getPlayerElementTime() * 1000;
 
                     if ($.isNumeric(lastHandledServerTime) && lastHandledServerTime > currentTime)
@@ -206,6 +222,10 @@
 
             return result;
         }
+
+        this.enable = enable;
+        this.disable = disable;
+
 
         initialize();
     }

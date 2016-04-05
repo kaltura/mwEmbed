@@ -362,7 +362,7 @@
 		 */
 		loadIma:function( successCB, failureCB ){
 			var _this = this;
-			var timeoutVal = _this.getConfig("adsManagerLoadedTimeout") || 5000;
+			var timeoutVal = _this.getConfig("adsManagerLoadedTimeout") || 15000;
 			mw.log( "DoubleClick::loadIma: start timer for adsManager loading check: " + timeoutVal + "ms");
 			var imaLoaderTimeoutID = setTimeout(function(){
 				mw.log( "DoubleClick::loadIma: adsManager failed loading after " + timeoutVal + "ms");
@@ -846,7 +846,7 @@
 				return;
 			}
 
-			var timeoutVal = this.getConfig("adsManagerLoadedTimeout") || 5000;
+			var timeoutVal = this.getConfig("adsManagerLoadedTimeout") || 15000;
 			mw.log( "DoubleClick::requestAds: start timer for adsManager loading check: " + timeoutVal + "ms");
 			this.adsManagerLoadedTimeoutId = setTimeout(function(){
 				if ( !_this.adManagerLoaded ){

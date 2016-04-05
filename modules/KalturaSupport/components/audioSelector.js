@@ -11,7 +11,7 @@
 			"iconClass": "icon-audio",
 			"showTooltip": true,
 			"labelWidthPercentage": 33,
-			"defaultStream": 0,
+			"defaultStream": -1, // -1 is auto
 			"maxNumOfStream": 4,
 			"enableKeyboardShortcuts": true,
 			"keyboardShortcutsMap": {
@@ -28,9 +28,12 @@
 
 		setup: function () {
 			this.addBindings();
-			this.getPlayer().audioTrack = {
-				defaultTrack: this.getConfig('defaultStream')
-			};
+			var defaultTrack = this.getConfig('defaultStream');
+			if (defaultTrack > -1) {
+				this.getPlayer().audioTrack = {
+					defaultTrack: this.getConfig('defaultStream')
+				};
+			}
 		},
 		destroy: function () {
 			this._super();
