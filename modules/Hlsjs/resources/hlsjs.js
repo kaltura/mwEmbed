@@ -3,6 +3,7 @@
 	if (Hls.isSupported() && mw.getConfig("LeadWithHLSOnJs")) {
 		// Add HLS Logic player:
 		//Force HLS streamer type
+		mw.setConfig("streamerType", "hls");
 		var config = mw.config.get("KalturaSupport.PlayerConfig");
 		config.vars.streamerType = "hls";
 		mw.config.set("KalturaSupport.PlayerConfig", config);
@@ -91,6 +92,8 @@
 			initHls: function () {
 				if (this.LoadHLS && !this.loaded) {
 					this.log("Init");
+					//Set streamerType to hls
+					this.embedPlayer.streamerType = 'hls';
 					//Init the HLS playback engine
 					this.hls = new Hls(this.getConfig("options"));
 
