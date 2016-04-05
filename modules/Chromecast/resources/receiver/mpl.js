@@ -438,10 +438,10 @@ function setMediaManagerEvents() {
 				mediaHost.licenseUrl = licenseUrl;
 			}
 
-			if (customData) {
-				mediaHost.licenseCustomData = customData;
-				console.log('### customData: ' + customData);
-			}
+//			if (customData) {
+//				mediaHost.licenseCustomData = customData;
+//				console.log('### customData: ' + customData);
+//			}
 
 			if ((videoQualityIndex != -1 && streamVideoBitrates &&
 				videoQualityIndex < streamVideoBitrates.length) ||
