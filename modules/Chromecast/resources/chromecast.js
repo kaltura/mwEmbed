@@ -380,7 +380,9 @@
 			var _this = this;
 			this.currentMediaSession.getStatus(null,null,
 				function(){
-					_this.stopApp();
+					if (this.getCurrentTime() > 0){
+						_this.stopApp(); // stop app if chromecast is not connected (user used the browser icon to disconnect)
+					}
 				});
 			this.embedPlayer.updatePlayhead( this.getCurrentTime(), this.mediaDuration );
 		},
