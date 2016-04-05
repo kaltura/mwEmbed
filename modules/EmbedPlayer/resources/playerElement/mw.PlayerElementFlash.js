@@ -136,11 +136,12 @@
 
         },
         detectFlash: function(failCallback){
+            var _this = this;
             mw.log("PlayerElementFlash::detectFlash::detect loop " + this.detectFlashIntervalLoops);
 
-            if(!this.flashDetected && this.detectFlashIntervalLoops==0 ){
+            if(!this.flashDetected && this.detectFlashIntervalLoops === 0 ){
                 mw.log("PlayerElementFlash::detectFlash::failed to detecting Flash Player");
-                clearInterval(this.detectFlashInterval); // stop trying to detect flash
+                clearInterval(_this.detectFlashInterval); // stop trying to detect flash
                 failCallback(); //trigger fail callback -> goes to the EmbeadPlayerKplayer in order to displayAlert with ks-FLASH-BLOCKED message
             }
             this.detectFlashIntervalLoops--;
