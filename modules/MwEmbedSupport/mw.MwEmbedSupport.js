@@ -222,6 +222,9 @@ Date.now = Date.now || function(){ return +new Date; };
 		if( typeof clientVersion == 'undefined' ){
 			clientVersion = window.MWEMBED_VERSION;
 		}
+		// strip all non-numeric values from both strings: 
+		minVersion = minVersion.replace(/[^\d.-]/g, '');
+		clientVersion = clientVersion.replace(/[^\d.-]/g, '');
 		var minVersionParts = minVersion.split('.');
 		var clientVersionParts = clientVersion.split('.');
 		for( var i =0; i < minVersionParts.length; i++ ) {
