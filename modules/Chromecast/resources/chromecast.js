@@ -265,6 +265,8 @@
 			if (this.session.media.length !== 0) {
 				this.log('Found ' + this.session.media.length + ' existing media sessions.');
 				this.onMediaDiscovered('onRequestSessionSuccess_', this.session.media[0]);
+			}else{
+				this.onRequestSessionSuccess(e);
 			}
 			this.session.addMediaListener(
 				this.onMediaDiscovered.bind(this, 'addMediaListener'));
@@ -375,6 +377,11 @@
 		},
 
 		monitor: function(){
+			var _this = this;
+			this.currentMediaSession.getStatus(null,null,
+				function(){
+					_this.stopApp();
+				});
 			this.embedPlayer.updatePlayhead( this.getCurrentTime(), this.mediaDuration );
 		},
 
@@ -432,6 +439,9 @@
 			var message = isAlive ? 'Session Updated' : 'Session Removed';
 			message += ': ' + this.session.sessionId;
 			this.log(message);
+			if (!isAlive ){
+				this.stopApp();
+			}
 		},
 
 		onMediaStatusUpdate: function(isAlive) {
