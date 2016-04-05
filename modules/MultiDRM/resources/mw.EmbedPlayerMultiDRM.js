@@ -111,7 +111,6 @@
 		},
 
         detectPlugin: function (failCallback) {
-            var _this = this;
             mw.log("EmbedPlayerMultiDRM::detectPlugin::detect loop " + this.detectPluginIntervalLoops);
 
             if( this.detectPluginIntervalLoops === 0 ){
@@ -119,7 +118,7 @@
                     mw.log("EmbedPlayerMultiDRM::detectPlugin::failed to detecting Silverlight plugin");
                     failCallback(); //trigger fail callback -> goes to the EmbedPlayer in order to displayAlert with ks-PLUGIN-BLOCKED message
                 }
-                _this.cleanInterval(_this.detectPluginInterval); // stop trying to detect plugin
+                this.cleanInterval(this.detectPluginInterval); // stop trying to detect plugin
             }
             this.detectPluginIntervalLoops--;
         },
@@ -182,6 +181,11 @@
 		disablePlayer: function () {
 			$(this.getPlayerElement()).css('position', 'static');
 		},
+        clean: function ( ) {
+            if ( this.detectPluginInterval ) {
+                this.cleanInterval(this.detectPluginInterval);
+            }
+        },
 		/**
 		 * Return the embed code
 		 */
