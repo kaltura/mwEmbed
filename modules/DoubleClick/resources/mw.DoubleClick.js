@@ -60,8 +60,6 @@
 		// Flag to enable/ disable timeout for iOS5/ iOS6 when ad is clicked
 		isAdClickTimeoutEnabled: false,
 
-		adsManagerLoadedTimeoutId: null,
-
 		//indicates we should save the time for the media switch (mobile)
 		saveTimeWhenSwitchMedia:false,
 
@@ -189,12 +187,6 @@
 				_this.adTagUrl = _this.getConfig( 'prerollUrlJS' );
 			}
 
-			_this.embedPlayer.bindHelper( 'playerReady' + this.bindPostfix, function(event){
-				// Request ads
-				mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
-				_this.requestAds();
-			});
-
 			// Load double click ima per doc:
 			this.loadIma( function(){
 				// Determine if we are in managed or kaltura point based mode.
@@ -224,6 +216,13 @@
 					// No defined ad pattern always use managed bindings
 					_this.addManagedBinding();
 				}
+
+				_this.embedPlayer.bindHelper( 'playerReady' + _this.bindPostfix, function(event){
+					// Request ads
+					mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
+					_this.requestAds();
+				});
+
 				// Issue the callback to continue player build out:
 				callback();
 			}, function( errorCode ){
@@ -231,9 +230,10 @@
 				// Don't add any bindings directly issue callback:
 				callback();
 			});
+
 			var restoreOnInit = function(){
 				_this.destroy();
-			}
+			};
 			$( _this.embedPlayer ).data( 'doubleClickRestore',restoreOnInit );
 
 		},
@@ -362,7 +362,7 @@
 		 */
 		loadIma:function( successCB, failureCB ){
 			var _this = this;
-			var timeoutVal = _this.getConfig("adsManagerLoadedTimeout") || 15000;
+			var timeoutVal = _this.getConfig("adsManagerLoadedTimeout") || 5000;
 			mw.log( "DoubleClick::loadIma: start timer for adsManager loading check: " + timeoutVal + "ms");
 			var imaLoaderTimeoutID = setTimeout(function(){
 				mw.log( "DoubleClick::loadIma: adsManager failed loading after " + timeoutVal + "ms");
@@ -381,14 +381,12 @@
 			})
 			.success(function (data) {
 				successCB();
+				clearTimeout(imaLoaderTimeoutID);
 			})
 			.error(function( jqxhr, textStatus, errorCode ) {
 				failureCB( errorCode );
-			})
-			.always(function() {
 				clearTimeout(imaLoaderTimeoutID);
 			})
-
 		},
 		startAdsManager: function(){
 			// Initialize the ads manager. In case of ad playlist with a preroll, the preroll will start playing immediately.
@@ -846,15 +844,6 @@
 				return;
 			}
 
-			var timeoutVal = this.getConfig("adsManagerLoadedTimeout") || 15000;
-			mw.log( "DoubleClick::requestAds: start timer for adsManager loading check: " + timeoutVal + "ms");
-			this.adsManagerLoadedTimeoutId = setTimeout(function(){
-				if ( !_this.adManagerLoaded ){
-					mw.log( "DoubleClick::requestAds: adsManager failed loading after " + timeoutVal + "ms");
-					_this.onAdError("adsManager failed loading!");
-				}
-			}, timeoutVal);
-
 			// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
 			this.getAdDisplayContainer();
 			this.hideAdContainer(false);
@@ -887,12 +876,6 @@
 		// event is issued and error handler is invoked.
 		onAdsManagerLoaded: function( loadedEvent ) {
 			mw.log( 'DoubleClick:: onAdsManagerLoaded' );
-
-			if (this.adsManagerLoadedTimeoutId){
-				mw.log( "DoubleClick::requestAds: clear timer for adsManager loading check");
-				clearTimeout(this.adsManagerLoadedTimeoutId);
-				this.adsManagerLoadedTimeoutId = null;
-			}
 
 			var adsRenderingSettings = new google.ima.AdsRenderingSettings();
 			if (!this.getConfig("adTagUrl")){
@@ -1552,10 +1535,6 @@
 				this.restorePlayer(this.contentDoneFlag);
 				this.embedPlayer.play();
 			}else{
-				if (this.adsManagerLoadedTimeoutId){
-					clearTimeout(this.adsManagerLoadedTimeoutId);
-					this.adsManagerLoadedTimeoutId = null;
-				}
 				this.destroy();
 			}
 		},
