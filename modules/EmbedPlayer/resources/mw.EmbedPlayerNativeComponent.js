@@ -739,8 +739,15 @@
 		switchSrc: function (source) {
 			var sourceIndex = (source === -1) ? -1 : source.assetid;
 			this.getPlayerElement().switchFlavor(sourceIndex);
-		}
+		},
 
+		checkClipDoneCondition: function() {
+			mw.log( 'EmbedPlayer:nativeComponent: checkClipDoneCondition:' );
+
+			if ( mw.isAndroid() ) {
+				this.parent_checkClipDoneCondition();
+			}
+		}
 	};
 })(mediaWiki, jQuery);
 
