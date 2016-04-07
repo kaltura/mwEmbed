@@ -363,7 +363,7 @@
 		loadIma:function( successCB, failureCB ){
 			var _this = this;
 			var isLoaded = false;
-			var timeoutVal = _this.getConfig("adsManagerLoadedTimeout") || 15000;
+			var timeoutVal = _this.getConfig("adsManagerLoadedTimeout") || 5000;
 			mw.log( "DoubleClick::loadIma: start timer for adsManager loading check: " + timeoutVal + "ms");
 			setTimeout(function(){
 				if ( !isLoaded ){
