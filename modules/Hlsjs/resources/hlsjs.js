@@ -135,12 +135,12 @@
 				this.onMediaAttachedHandler = null;
 				this.hls.off(Hls.Events.MANIFEST_PARSED, this.onManifestParsedHandler);
 				this.onManifestParsedHandler = null;
-				this.hls.off(Hls.Events.LEVEL_SWITCH, this.onFragParsingMetadataHandler);
+				this.hls.off(Hls.Events.FRAG_PARSING_METADATA, this.onFragParsingMetadataHandler);
 				this.onFragParsingMetadataHandler = null;
 				this.hls.off(Hls.Events.LEVEL_SWITCH, this.onLevelSwitchHandler);
 				this.onLevelSwitchHandler = null;
 				this.hls.off(Hls.Events.FRAG_CHANGED, this.onFragChangedHandler);
-				this.onFragChangedHandler = null
+				this.onFragChangedHandler = null;
 				this.hls.off(Hls.Events.ERROR, this.onErrorHandler);
 				this.onErrorHandler = null;
 			},
