@@ -332,6 +332,14 @@
 				        .on( pointerEvents, function ( e ) {
 							//Verify that second screen is not in the middle of user interaction before delegating events
 							if(!_this.displays.getSecondary().isUserInteracting()){
+
+								if (e.type === 'click')
+								{
+									_this.getPlayer().triggerHelper('temporary-diagnostic', "report");
+									e.stopPropagation();
+									e.preventDefault();
+								}
+
 								_this.embedPlayer.triggerHelper( e );
 							}
 						} );

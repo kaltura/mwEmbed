@@ -71,7 +71,7 @@
                         var timestamp = tag.match(/timestamp\"\:([0-9|\.|A-F]+)/);
                         time = parseFloat(timestamp[1]) / 1000;
                     }catch(e){
-                        mw.log("id3Tag plugin :: ERROR parsing tag : " + tag);
+                        console.log("id3Tag plugin :: ERROR parsing tag : " + tag);
                     }
                     break;
             }
@@ -90,7 +90,7 @@
             }else{
                 traceString = traceString + "updated monitor time = ";
             }
-            mw.log(traceString + time);
+            console.log(traceString + time);
             // Send the id3Tag info to the trackEventMonitor
             if( this.getConfig( 'trackEventMonitor' ) ) {
                 try {

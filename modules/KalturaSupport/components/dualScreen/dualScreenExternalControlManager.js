@@ -77,7 +77,7 @@
                     }
 
                     if (action) {
-                        mw.log("dualscreenExternalControlManager.handleCuePoint(): Changing player view to '" + action + "' with main display '" + mainDisplayType + "' (provided id '" + viewId + "')");
+                        console.log("dualscreenExternalControlManager.handleCuePoint(): Changing player view to '" + action + "' with main display '" + mainDisplayType + "' (provided id '" + viewId + "')");
 
                         this.getPlayer().triggerHelper('dualScreenStateChange', { action : action, mainDisplayType : mainDisplayType});
                     }
