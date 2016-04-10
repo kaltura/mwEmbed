@@ -424,7 +424,7 @@
 			}
 
 			var captionsSrc;
-			if( ((mw.isNativeApp() && !mw.isAndroid()) || mw.isIphone()) && !mw.getConfig('disableTrackElement') && !this.getConfig('forceLoadLanguage') ) {
+			if( mw.isIphone() && !mw.getConfig('disableTrackElement') && !this.getConfig('forceLoadLanguage') ) {
 				// getting generated vtt file from dfxp/srt
 				captionsSrc = mw.getConfig('Kaltura.ServiceUrl') +
 							"/api_v3/index.php/service/caption_captionasset/action/serveWebVTT/captionAssetId/" +
