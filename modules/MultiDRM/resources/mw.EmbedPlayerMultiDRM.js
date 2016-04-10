@@ -52,8 +52,6 @@
 		// Disable switch source callback
 		disableSwitchSourceCallback: false,
 
-		updateInterval: null,
-
 		// Flag specifying if a mobile device already played. If true - mobile device can autoPlay
 		mobilePlayed: false,
 		// All the native events per:
@@ -89,7 +87,7 @@
 		dashContextUpdated: false,
 		isSeekable: false,
 
-        detectPluginIntervalLoops: 3,
+		detectPluginIntervalLoops: 3,
 
 		// Native player supported feature set
 		supports: {
@@ -106,29 +104,29 @@
 			mw.log('EmbedPlayerMultiDRM:: Setup');
 			this.initDashPlayer(readyCallback);
 
-            var _this = this;
-            this.detectPluginInterval = setInterval(function () {
-                _this.detectPlugin(failCallback);
-            }, 500);
+			var _this = this;
+			this.detectPluginInterval = setInterval(function () {
+				_this.detectPlugin(failCallback);
+			}, 500);
 		},
 
-        detectPlugin: function (failCallback) {
-            mw.log("EmbedPlayerMultiDRM::detectPlugin::detect loop " + this.detectPluginIntervalLoops);
+		detectPlugin: function (failCallback) {
+			mw.log("EmbedPlayerMultiDRM::detectPlugin::detect loop " + this.detectPluginIntervalLoops);
 
-            if( this.detectPluginIntervalLoops === 0 ){
-                if ( !this.pluginDetected ) {
-                    mw.log("EmbedPlayerMultiDRM::detectPlugin::failed to detecting Silverlight plugin");
-                    failCallback(); //trigger fail callback -> goes to the EmbedPlayer in order to displayAlert with ks-PLUGIN-BLOCKED message
-                }
-                this.cleanInterval(this.detectPluginInterval); // stop trying to detect plugin
-            }
-            this.detectPluginIntervalLoops--;
-        },
+			if( this.detectPluginIntervalLoops === 0 ){
+				if ( !this.pluginDetected ) {
+					mw.log("EmbedPlayerMultiDRM::detectPlugin::failed to detecting Silverlight plugin");
+					failCallback(); //trigger fail callback -> goes to the EmbedPlayer in order to displayAlert with ks-PLUGIN-BLOCKED message
+				}
+				this.cleanInterval(this.detectPluginInterval); // stop trying to detect plugin
+			}
+			this.detectPluginIntervalLoops--;
+		},
 
-        cleanInterval: function (interval) {
-            clearInterval(interval);
-            interval = null;
-        },
+		cleanInterval: function (interval) {
+			clearInterval(interval);
+			interval = null;
+		},
 
 		/**
 		 * Updates the supported features given the "type of player"
@@ -183,11 +181,11 @@
 		disablePlayer: function () {
 			$(this.getPlayerElement()).css('position', 'static');
 		},
-        clean: function ( ) {
-            if ( this.detectPluginInterval ) {
-                this.cleanInterval(this.detectPluginInterval);
-            }
-        },
+		clean: function ( ) {
+			if ( this.detectPluginInterval ) {
+				this.cleanInterval(this.detectPluginInterval);
+			}
+		},
 		/**
 		 * Return the embed code
 		 */
@@ -242,8 +240,8 @@
 					},
 					techOrder: ['dasheverywhere']
 				}, function(){
-                    _this.pluginDetected = true; // used in order to clear detectPlugin interval
-                    _this.cleanInterval(_this.detectPluginInterval); // stop trying to detect plugin
+					_this.pluginDetected = true; // used in order to clear detectPlugin interval
+					_this.cleanInterval(_this.detectPluginInterval); // stop trying to detect plugin
 
 					_this.playerElement = this;
 					var el = $(_this.playerElement.el() );
@@ -933,7 +931,7 @@
 			var duration = parseInt(this.duration, 10).toFixed(2);
 			var curTime = parseInt(this.getPlayerElementTime(), 10).toFixed(2);
 			return (( this.currentState === "end" ) ||
-			( this.currentState === "pause" && duration === curTime && this.getPlayerElementTime() > 0 ));
+				( this.currentState === "pause" && duration === curTime && this.getPlayerElementTime() > 0 ));
 		},
 
 		/**
@@ -962,7 +960,7 @@
 			this.playing = false;
 			var timeSincePlay = Math.abs(this.absoluteStartPlayTime - new Date().getTime());
 			this.log(" OnPaused:: propagate:" + this._propagateEvents +
-			' time since play: ' + timeSincePlay + ' duringSeek:' + this.seeking);
+				' time since play: ' + timeSincePlay + ' duringSeek:' + this.seeking);
 
 		},
 
@@ -1037,7 +1035,7 @@
 				//Run initial update to get active video/audio/caption tracks
 				update();
 				//Validate status every 5 sec
-				this.updateInterval = setInterval(function () {
+				setInterval(function () {
 					update();
 				}, 5000);
 			}
@@ -1066,7 +1064,7 @@
 				&& !isNaN(duration)
 				&&
 				isFinite(duration)
-			) {
+				) {
 				this.log('onloadedmetadata metadata ready Update duration:' + duration + ' old dur: ' + this.getDuration());
 				this.setDuration(this.playerElement.duration());
 			}
@@ -1258,8 +1256,8 @@
 			// don't handle seek event on Android native browser
 			var nua = navigator.userAgent;
 			var is_native_android_browser = ((nua.indexOf('Mozilla/5.0') > -1 &&
-			nua.indexOf('Android ') > -1 &&
-			nua.indexOf('AppleWebKit') > -1) && !(nua.indexOf('Chrome') > -1));
+				nua.indexOf('Android ') > -1 &&
+				nua.indexOf('AppleWebKit') > -1) && !(nua.indexOf('Chrome') > -1));
 
 			if (is_native_android_browser) {
 				return;
@@ -1267,7 +1265,7 @@
 			this.log("onSeeking " + this.seeking + ' new time: ' + this.getPlayerElement().currentTime());
 			if (this.seeking && Math.round(this.getPlayerElement().currentTime - this.currentSeekTargetTime) > 2) {
 				this.log("Error: Seek time mismatch: target:" + this.getPlayerElement().currentTime +
-				' actual ' + this.currentSeekTargetTime + ', note apple HLS can only seek to 10 second targets');
+					' actual ' + this.currentSeekTargetTime + ', note apple HLS can only seek to 10 second targets');
 			}
 			// Trigger the html5 seeking event
 			//( if not already set from interface )
@@ -1316,10 +1314,10 @@
 			// we don't want to trigger the seek event for these "fake" onseeked triggers
 			if ((this.mediaElement.selectedSource.getMIMEType() === 'application/vnd.apple.mpegurl') &&
 				( ( Math.abs(this.currentSeekTargetTime - this.getPlayerElement().currentTime) > 2) ||
-				( this.currentSeekTargetTime > 0.01 && ( mw.isIpad() && !mw.isIOS8_9() ) ) ) ) {
+					( this.currentSeekTargetTime > 0.01 && ( mw.isIpad() && !mw.isIOS8_9() ) ) ) ) {
 
 				this.log( "Error: seeked triggred with time mismatch: target:" +
-				this.currentSeekTargetTime + ' actual:' + this.getPlayerElement().currentTime );
+					this.currentSeekTargetTime + ' actual:' + this.getPlayerElement().currentTime );
 
 				if( !callbackCount ){
 					callbackCount = 0;
@@ -1357,12 +1355,6 @@
 			} else {
 				this.log("seek target verified");
 				return waitForSeekTargetDeferred.resolve();
-			}
-		},
-		clean: function(){
-			if (this.updateInterval){
-				clearInterval(this.updateInterval);
-				this.updateInterval = null;
 			}
 		},
 		/**
