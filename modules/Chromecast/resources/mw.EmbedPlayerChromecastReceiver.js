@@ -141,14 +141,12 @@
 				$( this ).trigger( 'externalTimeUpdate', [vid.currentTime]);
 			}
 			$(this).trigger( 'monitorEvent' );
-			this.parent_monitor();
 		},
 
 		setPlayerElement: function (mediaElement) {
 			this.playerElement = mediaElement;
 		},
 		getPlayerElement: function () {
-			//this.playerElement = $('#' + this.pid).get(0);
 			return this.playerElement;
 		},
 

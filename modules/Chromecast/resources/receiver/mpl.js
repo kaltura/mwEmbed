@@ -122,10 +122,6 @@ onload = function () {
 			mw.setConfig("chromecastReceiver", true);
 			mw.setConfig("Kaltura.ExcludedModules", "chromecast");
 			var fv = {
-				'controlBarContainer': {
-					'plugin': true,
-					"hover": true
-				},
 				"multiDrm": {
 					'plugin': false
 				},
