@@ -199,7 +199,7 @@
 				}
 			});
 
-			this.embedPlayer.bindHelper('prePlayAction' + _this.bindPostfix, function( e, prePlay ){
+			this.embedPlayer.bindHelper('prePlayAction' + this.bindPostfix, function( e, prePlay ){
 				//This code executed only if prePlayAction triggered before imaLoaded (since imaLoaded does unbinding for 'prePlayAction'),
 				//So we should block the player until the ima will loaded.
 				prePlay.allowPlayback = false;
