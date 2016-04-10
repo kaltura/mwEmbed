@@ -394,7 +394,7 @@
 				}
 			}, timeoutVal);
 
-			var imaURL =  '//s0.2mdn.net/instream/html5/ima31.js';
+			var imaURL =  '//s0.2mdn.net/instream/html5/ima3.js';
 			if ( this.getConfig( 'debugMode' ) === true ){
 				imaURL =  '//s0.2mdn.net/instream/html5/ima3_debug.js';
 			}
