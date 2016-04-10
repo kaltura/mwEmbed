@@ -187,8 +187,27 @@
 				_this.adTagUrl = _this.getConfig( 'prerollUrlJS' );
 			}
 
+			this.embedPlayer.bindHelper( 'playerReady' + this.bindPostfix, function(event){
+				if(_this.imaLoaded){
+					mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
+					_this.requestAds();
+				} else {
+					_this.playerIsReady = true;
+				}
+			});
+
+			this.embedPlayer.bindHelper('prePlayAction' + _this.bindPostfix, function( e, prePlay ){
+				//This code executed only if prePlayAction triggered before imaLoaded (since imaLoaded does unbinding for 'prePlayAction'),
+				//So we should block the player until the ima will loaded.
+				prePlay.allowPlayback = false;
+				_this.embedPlayer.addPlayerSpinner();
+				_this.prePlayActionTriggered = true;
+			});
+
 			// Load double click ima per doc:
 			this.loadIma( function(){
+				_this.imaLoaded = true;
+				_this.embedPlayer.unbindHelper('prePlayAction' + _this.bindPostfix);
 				// Determine if we are in managed or kaltura point based mode.
 				if ( _this.localizationCode ){
 					google.ima.settings.setLocale(_this.localizationCode);
@@ -217,25 +236,25 @@
 					_this.addManagedBinding();
 				}
 
-				_this.embedPlayer.bindHelper( 'playerReady' + _this.bindPostfix, function(event){
-					// Request ads
-					mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
+				if(_this.playerIsReady) {
 					_this.requestAds();
-				});
-
-				// Issue the callback to continue player build out:
-				callback();
+					if(_this.prePlayActionTriggered){
+						_this.embedPlayer.play();
+					}
+				}
 			}, function( errorCode ){
 				mw.log( "Error::DoubleClick Loading Error: " + errorCode );
-				// Don't add any bindings directly issue callback:
-				callback();
+				_this.embedPlayer.unbindHelper('prePlayAction' + _this.bindPostfix);
+				if(_this.prePlayActionTriggered){
+					_this.embedPlayer.play();
+				}
 			});
 
 			var restoreOnInit = function(){
 				_this.destroy();
 			};
 			$( _this.embedPlayer ).data( 'doubleClickRestore',restoreOnInit );
-
+			callback();
 		},
 		handleCuePoints: function(){
 			var _this = this;
