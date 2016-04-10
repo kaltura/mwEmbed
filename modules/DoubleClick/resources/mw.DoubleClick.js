@@ -60,6 +60,10 @@
 		// Flag to enable/ disable timeout for iOS5/ iOS6 when ad is clicked
 		isAdClickTimeoutEnabled: false,
 
+		playerIsReady: false,
+		imaLoaded: false,
+		prePlayActionTriggered: false,
+
 		//indicates we should save the time for the media switch (mobile)
 		saveTimeWhenSwitchMedia:false,
 
@@ -188,11 +192,10 @@
 			}
 
 			this.embedPlayer.bindHelper( 'playerReady' + this.bindPostfix, function(event){
-				if(_this.imaLoaded){
+				_this.playerIsReady = true;
+				if ( _this.imaLoaded ){
 					mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
 					_this.requestAds();
-				} else {
-					_this.playerIsReady = true;
 				}
 			});
 
@@ -236,16 +239,16 @@
 					_this.addManagedBinding();
 				}
 
-				if(_this.playerIsReady) {
+				if ( _this.playerIsReady ) {
 					_this.requestAds();
-					if(_this.prePlayActionTriggered){
+					if ( _this.prePlayActionTriggered ){
 						_this.embedPlayer.play();
 					}
 				}
 			}, function( errorCode ){
 				mw.log( "Error::DoubleClick Loading Error: " + errorCode );
 				_this.embedPlayer.unbindHelper('prePlayAction' + _this.bindPostfix);
-				if(_this.prePlayActionTriggered){
+				if ( _this.prePlayActionTriggered ){
 					_this.embedPlayer.play();
 				}
 			});
@@ -391,7 +394,7 @@
 				}
 			}, timeoutVal);
 
-			var imaURL =  '//s0.2mdn.net/instream/html5/ima3.js';
+			var imaURL =  '//s0.2mdn.net/instream/html5/ima31.js';
 			if ( this.getConfig( 'debugMode' ) === true ){
 				imaURL =  '//s0.2mdn.net/instream/html5/ima3_debug.js';
 			}
