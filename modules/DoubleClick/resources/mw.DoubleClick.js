@@ -381,31 +381,28 @@
 		 */
 		loadIma:function( successCB, failureCB ){
 			var _this = this;
+			var isLoaded = false;
 			var timeoutVal = _this.getConfig("adsManagerLoadedTimeout") || 5000;
 			mw.log( "DoubleClick::loadIma: start timer for adsManager loading check: " + timeoutVal + "ms");
-			var imaLoaderTimeoutID = setTimeout(function(){
-				mw.log( "DoubleClick::loadIma: adsManager failed loading after " + timeoutVal + "ms");
-				failureCB();
+			setTimeout(function(){
+				if ( !isLoaded ){
+					mw.log( "DoubleClick::loadIma: adsManager failed loading after " + timeoutVal + "ms");
+					failureCB();
+				}
 			}, timeoutVal);
 
 			var imaURL =  '//s0.2mdn.net/instream/html5/ima3.js';
 			if ( this.getConfig( 'debugMode' ) === true ){
 				imaURL =  '//s0.2mdn.net/instream/html5/ima3_debug.js';
 			}
-
-			$.ajax({
-				url: imaURL,
-				dataType: "script",
-				cache: true
-			})
-			.success(function (data) {
+			$.getScript( imaURL , function() {
+				isLoaded = true;
 				successCB();
-				clearTimeout(imaLoaderTimeoutID);
-			})
-			.error(function( jqxhr, textStatus, errorCode ) {
-				failureCB( errorCode );
-				clearTimeout(imaLoaderTimeoutID);
-			})
+			} )
+				.fail( function( jqxhr, settings, errorCode ) {
+					isLoaded = true;
+					failureCB( errorCode );
+				} );
 		},
 		startAdsManager: function(){
 			// Initialize the ads manager. In case of ad playlist with a preroll, the preroll will start playing immediately.

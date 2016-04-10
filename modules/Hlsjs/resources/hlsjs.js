@@ -3,6 +3,7 @@
 	if (Hls.isSupported() && mw.getConfig("LeadWithHLSOnJs")) {
 		// Add HLS Logic player:
 		//Force HLS streamer type
+		mw.setConfig("streamerType", "hls");
 		var config = mw.config.get("KalturaSupport.PlayerConfig");
 		config.vars.streamerType = "hls";
 		mw.config.set("KalturaSupport.PlayerConfig", config);
@@ -91,6 +92,8 @@
 			initHls: function () {
 				if (this.LoadHLS && !this.loaded) {
 					this.log("Init");
+					//Set streamerType to hls
+					this.embedPlayer.streamerType = 'hls';
 					//Init the HLS playback engine
 					this.hls = new Hls(this.getConfig("options"));
 
@@ -132,12 +135,12 @@
 				this.onMediaAttachedHandler = null;
 				this.hls.off(Hls.Events.MANIFEST_PARSED, this.onManifestParsedHandler);
 				this.onManifestParsedHandler = null;
-				this.hls.off(Hls.Events.LEVEL_SWITCH, this.onFragParsingMetadataHandler);
+				this.hls.off(Hls.Events.FRAG_PARSING_METADATA, this.onFragParsingMetadataHandler);
 				this.onFragParsingMetadataHandler = null;
 				this.hls.off(Hls.Events.LEVEL_SWITCH, this.onLevelSwitchHandler);
 				this.onLevelSwitchHandler = null;
 				this.hls.off(Hls.Events.FRAG_CHANGED, this.onFragChangedHandler);
-				this.onFragChangedHandler = null
+				this.onFragChangedHandler = null;
 				this.hls.off(Hls.Events.ERROR, this.onErrorHandler);
 				this.onErrorHandler = null;
 			},
