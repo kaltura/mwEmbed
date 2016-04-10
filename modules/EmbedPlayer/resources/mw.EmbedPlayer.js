@@ -154,7 +154,10 @@
 		"streamerType": 'http',
 
 		"shouldEndClip": true,
-		"buffering": false
+		"buffering": false,
+
+		// indicates the the player is currently casting to Chromecast
+		"casting": false
 	});
 
 	/**
@@ -727,6 +730,10 @@
 
 		getPlayerByStreamerType: function (source) {
 			var targetPlayer;
+			// if currently casting - always return the Chromecast player
+			if ( this.casting ){
+				return mw.EmbedTypes.getMediaPlayers().getPlayerById('chromecast');
+			}
 			//currently only kplayer can handle other streamerTypes
 			if (!mw.getConfig('EmbedPlayer.IgnoreStreamerType')
 				&& !this.isImageSource()   //not an image entry
@@ -3082,7 +3089,7 @@
 		},
 
 		isDrmRequired: function () {
-			return this.drmRequired;
+			return this.drmRequired && !this.getRawKalturaConfig("embedPlayerChromecastReceiver","plugin") === true;
 		},
 
 		isDVR: function () {
