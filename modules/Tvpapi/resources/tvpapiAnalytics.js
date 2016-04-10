@@ -82,6 +82,7 @@
 			this.mediaHitInterval = setInterval(function(){
 				if( _this.isPlaying ) {
 					_this.sendMediaHit();
+					_this.playFromContinue = false;
 				}
 			}, this.getConfig('mediaHitInterval') * 1000 );
 		},
