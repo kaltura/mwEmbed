@@ -364,6 +364,7 @@
 			if( data && data.entryId ){
 				this.setConfig('selectedEntryId', data.entryId );
 			}
+			this.updateViewedEntries(data.entryId);
 			//look for the entry in case this is a click
 			if(this.getConfig('clickUrl')){
 				if(this.templateData.nextItem.id && this.templateData.nextItem.id == data.entryId ){
@@ -384,7 +385,6 @@
 			this.getPlayer().sendNotification('relatedVideoSelect', data);
 
 			if(this.getConfig('clickUrl')){
-				this.updateViewedEntries(data.id);
 				try {
 					window.parent.location.href = this.getConfig('clickUrl');
 					return;
@@ -396,7 +396,6 @@
 
 			this.getPlayer().sendNotification('changeMedia', data);
 			this.bind('onChangeMediaDone', function(){
-				_this.updateViewedEntries(data.entryId);
 				if (_this.getPlayer().canAutoPlay()) {
 					_this.getPlayer().play();
 				}
