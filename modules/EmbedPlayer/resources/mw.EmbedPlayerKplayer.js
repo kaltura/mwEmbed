@@ -855,7 +855,7 @@
                 //if( this.isLive() &&  mw.getConfig('isLiveKalturaHLS') ) {
                 //    originalSrc = originalSrc + "&playerType=flash";
                 //}
-
+                this.streamerType = 'hls';
 				this.resolveSrcURL(originalSrc)
 					.then(function (srcToPlay) {
                         _this.unresolvedSrcURL = false;
