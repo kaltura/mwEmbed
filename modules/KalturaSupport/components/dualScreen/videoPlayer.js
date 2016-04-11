@@ -17,6 +17,7 @@
         syncEnabled: true,
         url:"",
         ABR: false, //adaptive bitrate video
+        seeking :false, //seeking indicator is used by videoSync class and used for Flash-HLS only
 
         setup: function () {
             this.addBinding();
@@ -148,6 +149,7 @@
 
             var vidSibling = new mw.PlayerElementFlash( "secondScreen", "vidSibling_obj", fv, _this, function () {
                 var bindEventMap = {
+                    'playerSeekEnd': 'onPlayerSeekEnd',
                     'switchingChangeComplete': 'onSwitchingChangeComplete',
                     'flavorsListChanged': 'onFlavorsListChanged',
                     'mediaLoaded': 'onMediaLoaded',
@@ -161,7 +163,13 @@
                 _this.sync();
                 this.playerElement.play = this.play;
                 this.playerElement.pause = this.pause;
-                this.playerElement.setCurrentTime = this.seek;
+                this.playerElement.setCurrentTime = function(val){
+                    _this.seek(val);
+                };
+                this.playerElement.isFlashHLS = _this.isABR();
+                this.playerElement.isSeeking = function(){
+                    return _this.seeking;
+                };
                 this.load();
             }, null, "secondElementJsReadyFunc" );
 
@@ -208,6 +216,11 @@
         },
 
         //kplayer events and functions
+        seek: function ( val ) {
+            this.seeking = true;
+            this.playerObject.sendNotification( 'doSeek', val );
+        },
+
         onMediaLoaded: function () {
             mw.log("DualScreen :: second screen :: videoPlayer :: onMediaLoaded");
         },
@@ -225,6 +238,11 @@
              }
              mw.log("--- DualScreen :: second screen :: videoPlayer :: onDebugInfoReceived | " + msg);
              */
+        },
+
+        onPlayerSeekEnd: function ( ) {
+            this.seeking = false;
+            //mw.log("DualScreen :: second screen :: videoPlayer :: onPlayerSeekEnd currentTime = "+this.playerObject.getCurrentTime());
         },
 
         onFlavorsListChanged: function ( data ) {
