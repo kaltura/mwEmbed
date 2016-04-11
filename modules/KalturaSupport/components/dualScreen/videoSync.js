@@ -16,7 +16,7 @@
         addBinding: function(){
             var _this = this;
             this.bind('playerReady', function(){
-                _this.setMediaGroups();
+                //_this.setMediaGroups();
             });
         },
         setMediaGroups: function(groups){

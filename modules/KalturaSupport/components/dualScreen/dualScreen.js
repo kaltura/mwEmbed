@@ -222,7 +222,9 @@
                         mw.log('DualScreen - onChangeMedia :: play list case - reset flag on');
                         _this.playerReadyFlag = false;
                         _this.secondScreen = null;
+                        _this.streamSelector = null;
                         _this.resetSecondPlayer = true;
+                        _this.streamSelectorLoaded = false;
                     }
 				});
 				this.bind("onChangeStream", function(){
