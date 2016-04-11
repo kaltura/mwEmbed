@@ -863,6 +863,14 @@
 
 		onSwitchingChangeComplete: function ( data , id ) {
 			var value = JSON.parse( data );
+
+			var sources = this.getSources();
+			if (sources && (sources.length >= value.newIndex)){
+				var source = sources[value.newIndex];
+				this.triggerHelper('bitrateChange', source.getBitrate());
+				this.currentBitrate = source.getBitrate();
+			}
+
 			//fix a bug that old switching process finished before the user switching request and the UI was misleading
 			if ( this.requestedSrcIndex !== null && value.newIndex !== this.requestedSrcIndex ) {
 				return;
@@ -967,14 +975,17 @@
 			return sourceIndex;
 		} ,
 		switchSrc: function ( source ) {
-			if ( this.playerObject && this.mediaElement.getPlayableSources().length > 1 ) {
+			if ( this.playerObject && this.getSources().length > 1 ) {
 				var trackIndex = -1;
 				if ( source !== -1 ) {
 					trackIndex = this.getSourceIndex( source );
 					mw.log("EmbedPlayerSPlayer:: switch to track index: " + trackIndex);
+					var bitrate = source.getBitrate();
 					$(this).trigger('sourceSwitchingStarted', [
-						{currentBitrate: source.getBitrate()}
+						{currentBitrate: bitrate}
 					]);
+					this.currentBitrate = bitrate;
+					this.triggerHelper('bitrateChange', bitrate);
 				}
 				this.requestedSrcIndex = trackIndex;
 				this.playerObject.selectTrack( trackIndex );
