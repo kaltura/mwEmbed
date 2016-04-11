@@ -2,7 +2,7 @@
 ( function( mw, $ ) { "use strict";
 	// Add chromecast player:
 	$( mw ).bind('EmbedPlayerUpdateMediaPlayers', function( event, mediaPlayers ){
-		var chromecastSupportedProtocols = ['video/h264', 'video/mp4'];
+		var chromecastSupportedProtocols = ['video/h264', 'video/mp4', 'application/vnd.apple.mpegurl'];
 		var chromecastReceiverPlayer = new mw.MediaPlayer('chromecastReceiver', chromecastSupportedProtocols, 'ChromecastReceiver');
 		mediaPlayers.addPlayer(chromecastReceiverPlayer);
 	});
@@ -25,7 +25,6 @@
 		duration: 0,
 		userSlide: false,
 		volume: 1,
-		vid: null,
 		monitorInterval: null,
 		receiverName: '',
 		nativeEvents: [
@@ -54,16 +53,23 @@
 		],
 
 		setup: function( readyCallback ) {
-			this.vid = this.getPlayerElement();
+			$(this).bind('layoutBuildDone', function(){
+				this.getVideoHolder().find('video').remove();
+			});
+
+			this.setPlayerElement(parent.document.getElementById('receiverVideoElement'));
 			this.applyMediaElementBindings();
 			mw.log('EmbedPlayerChromecastReceiver:: Setup. Video element: '+this.getPlayerElement().toString());
-			$(this).trigger("chromecastReceiverLoaded",[this.getPlayerElement()]);
+			this.getPlayerElement().src = '';
+			$(this).trigger("chromecastReceiverLoaded");
+
 			var _this = this;
 			this._propagateEvents = true;
 			$(this.getPlayerElement()).css('position', 'absolute');
 			if (this.monitorInterval !== null){
 				clearInterval(this.monitorInterval);
 			}
+			this.stopped = false;
 			this.monitorInterval = setInterval(function(){_this.monitor();},1000);
 			readyCallback();
 		},
@@ -100,37 +106,47 @@
 		 * Handle the native paused event
 		 */
 		_onpause: function () {
-			this.paused = true;
+			this.pause();
 			this.layoutBuilder.showPlayerControls();
 			$(this).trigger('onPlayerStateChange', [ "pause", "play" ]);
-			this.parent_pause();
+
 		},
 
 		/**
 		 * Handle the native play event
 		 */
 		_onplay: function () {
-			this.paused = false;
-			this.stopped = false;
+			this.play();
+			this.restoreEventPropagation();
 			this.layoutBuilder.hidePlayerControls();
 			$(this).trigger('onPlayerStateChange', [ "play", "pause" ]);
-			this.parent_play();
+
 		},
 		// override these functions so embedPlayer won't try to sync time
-		syncCurrentTime: function(){},
+		syncCurrentTime: function(){
+			this.currentTime = this.getPlayerElementTime();
+		},
 
 		isInSequence: function(){return false;},
-
+		_ondurationchange: function (event, data) {
+			if ( this.playerElement && !isNaN(this.playerElement.duration) && isFinite(this.playerElement.duration) ) {
+				this.setDuration(this.getPlayerElement().duration);
+				return;
+			}
+		},
 		monitor: function(){
-			if ( this.vid && this.vid.currentTime !== null && this.vid.duration !== null) {
-				$(this).trigger("updatePlayHeadPercent",[ this.vid.currentTime / this.vid.duration ]);
-				$( this ).trigger( 'externalTimeUpdate', [this.vid.currentTime]);
+			var vid = this.getPlayerElement();
+			if ( vid && vid.currentTime !== null && vid.duration !== null) {
+				$(this).trigger("updatePlayHeadPercent",[ vid.currentTime / vid.duration ]);
+				$( this ).trigger( 'externalTimeUpdate', [vid.currentTime]);
 			}
 			$(this).trigger( 'monitorEvent' );
 		},
 
+		setPlayerElement: function (mediaElement) {
+			this.playerElement = mediaElement;
+		},
 		getPlayerElement: function () {
-			this.playerElement = $('#' + this.pid).get(0);
 			return this.playerElement;
 		},
 

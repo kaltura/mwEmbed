@@ -60,7 +60,9 @@
 		// Flag to enable/ disable timeout for iOS5/ iOS6 when ad is clicked
 		isAdClickTimeoutEnabled: false,
 
-		adsManagerLoadedTimeoutId: null,
+		playerIsReady: false,
+		imaLoaded: false,
+		prePlayActionTriggered: false,
 
 		//indicates we should save the time for the media switch (mobile)
 		saveTimeWhenSwitchMedia:false,
@@ -189,14 +191,26 @@
 				_this.adTagUrl = _this.getConfig( 'prerollUrlJS' );
 			}
 
-			_this.embedPlayer.bindHelper( 'playerReady' + this.bindPostfix, function(event){
-				// Request ads
-				mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
-				_this.requestAds();
+			this.embedPlayer.bindHelper( 'playerReady' + this.bindPostfix, function(event){
+				_this.playerIsReady = true;
+				if ( _this.imaLoaded ){
+					mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
+					_this.requestAds();
+				}
+			});
+
+			this.embedPlayer.bindHelper('prePlayAction' + this.bindPostfix, function( e, prePlay ){
+				//This code executed only if prePlayAction triggered before imaLoaded (since imaLoaded does unbinding for 'prePlayAction'),
+				//So we should block the player until the ima will loaded.
+				prePlay.allowPlayback = false;
+				_this.embedPlayer.addPlayerSpinner();
+				_this.prePlayActionTriggered = true;
 			});
 
 			// Load double click ima per doc:
 			this.loadIma( function(){
+				_this.imaLoaded = true;
+				_this.embedPlayer.unbindHelper('prePlayAction' + _this.bindPostfix);
 				// Determine if we are in managed or kaltura point based mode.
 				if ( _this.localizationCode ){
 					google.ima.settings.setLocale(_this.localizationCode);
@@ -224,18 +238,26 @@
 					// No defined ad pattern always use managed bindings
 					_this.addManagedBinding();
 				}
-				// Issue the callback to continue player build out:
-				callback();
+
+				if ( _this.playerIsReady ) {
+					_this.requestAds();
+					if ( _this.prePlayActionTriggered ){
+						_this.embedPlayer.play();
+					}
+				}
 			}, function( errorCode ){
 				mw.log( "Error::DoubleClick Loading Error: " + errorCode );
-				// Don't add any bindings directly issue callback:
-				callback();
+				_this.embedPlayer.unbindHelper('prePlayAction' + _this.bindPostfix);
+				if ( _this.prePlayActionTriggered ){
+					_this.embedPlayer.play();
+				}
 			});
+
 			var restoreOnInit = function(){
 				_this.destroy();
-			}
+			};
 			$( _this.embedPlayer ).data( 'doubleClickRestore',restoreOnInit );
-
+			callback();
 		},
 		handleCuePoints: function(){
 			var _this = this;
@@ -841,15 +863,6 @@
 				return;
 			}
 
-			var timeoutVal = this.getConfig("adsManagerLoadedTimeout") || 15000;
-			mw.log( "DoubleClick::requestAds: start timer for adsManager loading check: " + timeoutVal + "ms");
-			this.adsManagerLoadedTimeoutId = setTimeout(function(){
-				if ( !_this.adManagerLoaded ){
-					mw.log( "DoubleClick::requestAds: adsManager failed loading after " + timeoutVal + "ms");
-					_this.onAdError("adsManager failed loading!");
-				}
-			}, timeoutVal);
-
 			// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
 			this.getAdDisplayContainer();
 			this.hideAdContainer(false);
@@ -882,12 +895,6 @@
 		// event is issued and error handler is invoked.
 		onAdsManagerLoaded: function( loadedEvent ) {
 			mw.log( 'DoubleClick:: onAdsManagerLoaded' );
-
-			if (this.adsManagerLoadedTimeoutId){
-				mw.log( "DoubleClick::requestAds: clear timer for adsManager loading check");
-				clearTimeout(this.adsManagerLoadedTimeoutId);
-				this.adsManagerLoadedTimeoutId = null;
-			}
 
 			var adsRenderingSettings = new google.ima.AdsRenderingSettings();
 			if (!this.getConfig("adTagUrl")){
@@ -1547,10 +1554,6 @@
 				this.restorePlayer(this.contentDoneFlag);
 				this.embedPlayer.play();
 			}else{
-				if (this.adsManagerLoadedTimeoutId){
-					clearTimeout(this.adsManagerLoadedTimeoutId);
-					this.adsManagerLoadedTimeoutId = null;
-				}
 				this.destroy();
 			}
 		},

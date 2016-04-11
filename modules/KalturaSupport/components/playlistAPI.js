@@ -151,6 +151,9 @@
 					case 'playlistPlayPrevious':
 						_this.playPrevious();
 						break;
+					case 'playlistPlayMediaById':
+						_this.playMediaById(notificationData);
+						break;
 				}
 			});
 
@@ -409,6 +412,16 @@
 				item.durationDisplay = kWidget.seconds2npt(item.duration);
 				item.chapterNumber = this.getItemNumber(i);
 				this.mediaList.push(item);
+			}
+		},
+
+		playMediaById: function(id){
+			var items = this.playlistSet[this.currentPlaylistIndex].items;
+			for ( var i = 0; i < items.length; i++ ) {
+				if ( items[i].id === id ) {
+					this.playMedia( i, false, true );
+					break;
+				}
 			}
 		},
 

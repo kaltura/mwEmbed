@@ -188,7 +188,6 @@ return array(
 			"moderation" => "",
 			"playbackRateSelector" => "",
 			"restrictUserAgent" => "",
-			"widevine" => "",
 			"multiDrm" => "",
 			"sourceSelector" => "",
 			"download" => "",
