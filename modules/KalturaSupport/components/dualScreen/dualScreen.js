@@ -587,7 +587,9 @@
 						this.controlBar.hide();
 						this.controlBar.disable();
 					}
-					this.minimizeSecondDisplay();
+                    if ( screenName === 'disabledScreen' ) {
+                        this.minimizeSecondDisplay();
+                    }
 				}
 			},
 			restoreView: function(screenName){
