@@ -232,7 +232,7 @@
 		updateTemplateData: function( data ){
 			this.numOfEntries = data.length;
 			// make sure entries that were already viewed are the last in the data array
-			if ( this.viewedEntries.length <= data.length ){
+			if ( this.viewedEntries.length < data.length ){
 				for (var i = 0; i < this.viewedEntries.length; i++){
 					for (var j = 0; j < data.length; j++){
 						if (data[j].id === this.viewedEntries[i]){ // entry was already viewed - move it to the last place in the data array
