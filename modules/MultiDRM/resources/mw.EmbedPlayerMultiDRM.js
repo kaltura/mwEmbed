@@ -1021,8 +1021,13 @@
 					//Get Playback statistics
 					var stats = player.getPlaybackStatistics();
 
-					var videoData = stats.video.activeTrack;
+					var videoData = stats.video;
 					if (videoData) {
+						var updatedBitrate = (videoData.bandwidth / 1024);
+						if (_this.currentBitrate !== updatedBitrate){
+							_this.currentBitrate = updatedBitrate;
+							_this.triggerHelper('bitrateChange', _this.currentBitrate);
+						}
 					}
 					var audioData = stats.audio.activeTrack;
 					if (audioData) {
@@ -1137,6 +1142,8 @@
 				var sourceIndex = this.getSourceIndex(source);
 				if (sourceIndex != null) {
 					this.getPlayerElement().mediaPlayer.setQualityFor( "video", sourceIndex );
+					this.currentBitrate = source.getBitrate();
+					this.triggerHelper('bitrateChange', source.getBitrate());
 				}
 			} else {
 				this.getPlayerElement().mediaPlayer.setAutoSwitchQuality(true);
