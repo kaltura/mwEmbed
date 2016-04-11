@@ -252,12 +252,6 @@
 				);
 		},
         handleAdaptiveBitrateAndContinue: function (){
-            //Silverlight smoothStream
-            if( ( this.getPlayer().streamerType === "smoothStream" ) ){
-                this.addAutoToMenu();
-                return true;
-            }
-
             //HLS, HDS
             if (mw.isNativeApp()) {
             	this.sourcesList = [];
@@ -266,7 +260,8 @@
             }
 
             if ( this.getPlayer().streamerType != "http" && !this.getPlayer().isPlaying() ){
-                if(this.getPlayer().streamerType !== "hls" && !mw.EmbedTypes.getMediaPlayers().isSupportedPlayer('kplayer')){ //If flash disabled, player fallback to http progressive, but the streamerType might still be hdnetwork
+                if((this.getPlayer().streamerType !== "hls" && !mw.EmbedTypes.getMediaPlayers().isSupportedPlayer('kplayer')) &&//If flash disabled, player fallback to http progressive, but the streamerType might still be hdnetwork
+					(this.getPlayer().streamerType !== "smoothStream" && !mw.EmbedTypes.getMediaPlayers().isSupportedPlayer('splayer'))){
                     return true;
                 }
                 this.addAutoToMenu();
