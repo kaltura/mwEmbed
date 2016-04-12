@@ -18,7 +18,6 @@
 			'showTooltip': true,
 			'tooltip': gM('mwe-chromecast-chromecast'),
 			'title': gM('mwe-chromecast-chromecast'),
-			'receiverMode': false,
 			'debugReceiver': false,
 			'receiverLogo': false,
 			'useKalturaPlayer': false,
@@ -26,20 +25,18 @@
 		},
 		isDisabled: false,
 
-		progressFlag: 1,
 		currentMediaSession: null,
 		mediaCurrentTime: 0,
 		mediaDuration: null,
 		casting: false,
 		session: null,
 		request: null,
-		updateInterval: null,
 		autoPlay: true,
 
 		monitorInterval: null,
 
 		savedPlayer: null, // save player before cast
-		savedVolume: 0,	// save player volume before cast
+		savedVolume: 0,	   // save player volume before cast
 		savedPosition: 0,  // save video position before cast
 
 		startCastTitle: gM( 'mwe-chromecast-startcast' ),
@@ -49,16 +46,14 @@
 		drmConfig: null,
 		MESSAGE_NAMESPACE: 'urn:x-cast:com.kaltura.cast.player',
 
-		setup: function( embedPlayer ) {
-			if ( this.getConfig("receiverMode") === true ){
-				return; // don't initialize Chroemcast when running on the custom receiver
-			}
+		isNativeSDK: false, //flag for using native mobile IMA SDK
 
+		setup: function( embedPlayer ) {
 			var _this = this;
 			this.addBindings();
 			var ticks = 0;
-			 var intervalID = setInterval(function(){
-				 ticks++;
+			var intervalID = setInterval(function(){
+				ticks++;
 				if( typeof chrome !== "undefined" && typeof chrome.cast !== "undefined" && typeof chrome.cast.SessionRequest !== "undefined" ){
 					_this.initializeCastApi();
 					clearInterval(intervalID);
@@ -98,12 +93,13 @@
 				_this.drmConfig = drmConfig;
 			});
 
-			$( this.embedPlayer).bind('onChangeMedia', function(e, drmConfig){
+			$( this.embedPlayer).bind('onChangeMedia', function(e){
 				_this.savedPosition = 0;
 			});
 
 			$(this.embedPlayer).bind('playerReady', function() {
 				if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
+					_this.isNativeSDK = true;
 					// send application ID to native app
 					_this.embedPlayer.getPlayerElement().attr( 'chromecastAppId', _this.getConfig( 'applicationID' ));
 				}
@@ -135,8 +131,8 @@
 		},
 
 		showConnectingMessage: function(){
-			this.embedPlayer.showErrorMsg(
-				{'title':'Chromecast Player',
+			this.embedPlayer.showErrorMsg({
+					'title':'Chromecast Player',
 					'message': gM('mwe-chromecast-connecting'),
 					'props':{
 						'customAlertContainerCssClass': 'connectingMsg',
@@ -537,10 +533,15 @@
 					_this.embedPlayer.play();
 				},1000);
 			}else{
-				setTimeout(function(){
-					_this.embedPlayer.seek(seekTime, false);
-				},1000);
-
+				if ( this.embedPlayer.selectedPlayer.library == "Kplayer" ){
+					setTimeout(function(){
+						_this.embedPlayer.seek(seekTime, false);
+					},1000);
+				}else{
+					this.embedPlayer.canSeek().then(function () {
+						_this.embedPlayer.seek(seekTime, false);
+					});
+				}
 			}
 		},
 
