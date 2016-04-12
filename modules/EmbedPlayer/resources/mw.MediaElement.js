@@ -47,9 +47,19 @@ mw.MediaElement.prototype = {
 
 		// Process the videoElement as a source element:
 		if( videoElement ){
-			if ( $( videoElement ).attr( "src" ) ) {
-				_this.tryAddSource( videoElement );
+			var blackSrc = $(videoElement).attr("src"); // holds the string of one the BlackVideoSources
+			var indexFlavorId = blackSrc.lastIndexOf("1_"); // the index of the flavorID
+			switch (indexFlavorId) {
+				case blackSrc.indexOf("1_6wf0o9n7"):
+					break;
+				case blackSrc.indexOf("1_oiyfyphl"):
+					break;
+				case blackSrc.indexOf("1_6yqa4nmd"):
+					break;
+				default:
+					_this.tryAddSource(videoElement); // if the video element is not one of the BlackVideoSources add its source
 			}
+			
 			// Process elements source children
 			$( videoElement ).find( 'source,track' ).each( function( ) {
 				_this.tryAddSource( this );
