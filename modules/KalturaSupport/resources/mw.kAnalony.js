@@ -378,8 +378,8 @@
 			}
 
 			var eventRequest = {'service' : 'analytics', 'action' : 'trackEvent'};
-			$.each(statsEvent , function (index , value) {
-				eventRequest[ 'event:' + index] = value;
+			$.each(statsEvent , function (event , value) {
+				eventRequest[event] = value;
 			});
 			this.eventIndex += 1;
 			this.embedPlayer.triggerHelper( 'analyticsEvent' , statsEvent);
