@@ -153,8 +153,8 @@
 					if (widthOffset > 0) {
 						$img.css("margin-left", widthOffset * (-1) + 'px');
 					} else {
-						$img.height($img.height() * divWidth / $img.width());
 						$img.width(divWidth);
+						$img.height($img.height() * divWidth / $img.width());
 						heightOffset = ($img.height() - divHeight) / 2;
 						$img.css("margin-top", heightOffset * (-1) + 'px');
 					}
