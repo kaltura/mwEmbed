@@ -119,6 +119,17 @@
                     if (mw.getConfig("hlsMaxBufferTime")) {
                         hlsPluginConfiguration["maxBufferTime"] = mw.getConfig("hlsMaxBufferTime");
                     }
+                    var preferedBitRate = _this.evaluate( '{mediaProxy.preferedFlavorBR}' );
+                    if( preferedBitRate ) {
+                        hlsPluginConfiguration["prefBitrate"] = preferedBitRate;
+                        flashvars.disableAutoDynamicStreamSwitch = true; // disable autoDynamicStreamSwitch logic inside KDP (while playing + if player.isDynamicStream turn autoSwitch on)
+                    }
+                    if( mw.getConfig("maxBitrate") ) {
+                        hlsPluginConfiguration["maxBitrate"] = mw.getConfig("maxBitrate");
+                    }
+                    if( mw.getConfig("minBitrate") ) {
+                        hlsPluginConfiguration["minBitrate"] = mw.getConfig("minBitrate");
+                    }
                     if (mw.getConfig("hlsLogs")) {
                         hlsPluginConfiguration["sendLogs"] = mw.getConfig("hlsLogs");
                         var func = ["onManifest", "onNextRequest", "onDownload", "onCurrentTime", "onTag"];
@@ -393,10 +404,12 @@
 			this.playerObject.setKDPAttribute('mediaProxy', 'isMp4', this.isMp4Src());
 			this.playerObject.setKDPAttribute('mediaProxy', 'entryDuration', this.getDuration()); //TODO - to support inteliseek - set the correct duration using seekFrom and clipTo
 			this.getEntryUrl().then(function (srcToPlay) {
-				_this.bindHelper("onChangeMediaDone", function(){
-					_this.unbindHelper("onChangeMediaDone");
-					_this.play();
-				});
+				if (!_this.playlist || _this.autoplay){
+					_this.bindHelper("onChangeMediaDone", function(){
+						_this.unbindHelper("onChangeMediaDone");
+						_this.play();
+					});
+				}
 				_this.playerObject.sendNotification('changeMedia', {
 					entryUrl: srcToPlay
 				});
@@ -843,7 +856,7 @@
                 //if( this.isLive() &&  mw.getConfig('isLiveKalturaHLS') ) {
                 //    originalSrc = originalSrc + "&playerType=flash";
                 //}
-
+                this.streamerType = 'hls';
 				this.resolveSrcURL(originalSrc)
 					.then(function (srcToPlay) {
                         _this.unresolvedSrcURL = false;
@@ -927,23 +940,6 @@
 				argString = "/" + argName + "/" + argVal;
 			}
 			return argString;
-		},
-		/*
-		 * get the source index for a given source
-		 */
-		getSourceIndex: function (source) {
-			var sourceIndex = null;
-			$.each( this.getSources(), function( currentIndex, currentSource ) {
-				if (source.getAssetId() == currentSource.getAssetId()) {
-					sourceIndex = currentIndex;
-					return false;
-				}
-			});
-			// check for null, a zero index would evaluate false
-			if( sourceIndex == null ){
-				mw.log("EmbedPlayerKplayer:: Error could not find source: " + source.getSrc());
-			}
-			return sourceIndex;
 		},
 		switchSrc: function (source) {
 			var _this = this;

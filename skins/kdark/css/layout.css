@@ -810,9 +810,8 @@ body {
 
 .mobileSkin .timers{
     font-family: 'Lato', Helvetica, Arial;
-    position: absolute;
-    margin-top: 14px;
     font-weight: bold;
+    font-size: 1em;
     text-shadow: 0px 0px 2.4px rgba(0, 0, 0, 0.12);
 }
 .currentTimeLabel {
@@ -830,13 +829,6 @@ body {
     color: #b1aeab;
 }
 
-.mobileSkin .durationLabel {
-    margin-left: -2.1em;
-    width: 0px;
-    text-align: right;
-    padding-left: 0;
-    color: #ffffff;
-}
 .overlay {
 	position: absolute;
 	top: 0;
@@ -1505,7 +1497,7 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 	height: 100%;
 	top: 0;
 	left: 0;
-	/* z-index: 3;*/
+	z-index: 3;
 	box-sizing: border-box;
 	padding-top: 2.3em;
 	background-color:#000;
