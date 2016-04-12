@@ -1440,9 +1440,10 @@
             this.getPlayerElement().audioTracks[audioTrackIndex].enabled = true;
         },
         getCurrentBufferLength: function(){
-            if (this.playerElement.onprogress) {
+            if ( this.playerElement.buffered.length > 0 ) {
                 return parseInt(this.playerElement.buffered.end(0) - this.playerElement.currentTime); //return buffer length in seconds
             }
+            return 0;
         }
 	};
 })(mediaWiki, jQuery);
