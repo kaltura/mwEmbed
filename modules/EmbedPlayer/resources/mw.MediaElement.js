@@ -51,11 +51,14 @@ mw.MediaElement.prototype = {
 			var found = false;
 			if (src){
 				$.each( mw.getConfig( 'Kaltura.BlackVideoSources' ), function(inx, sourceAttr ) {
-					if (src.indexOf(sourceAttr) !== -1){
+					if (src.indexOf(sourceAttr.src) !== -1){
 						found = true;
 						return false;
 					}
 				});
+				if (!found) {
+					_this.tryAddSource( videoElement );
+				}
 			}
 			// Process elements source children
 			$( videoElement ).find( 'source,track' ).each( function( ) {
