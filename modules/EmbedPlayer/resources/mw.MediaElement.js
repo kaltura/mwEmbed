@@ -224,7 +224,7 @@ mw.MediaElement.prototype = {
 		}
 
 		// Set via module driven preference:
-		$( this ).trigger( 'onSelectSource', playableSources );
+		$( '#' + this.parentEmbedId ).trigger( 'onSelectSource', [playableSources] );
 
 		if( _this.selectedSource ){
 			mw.log('MediaElement::autoSelectSource: Set via trigger::' + _this.selectedSource.getTitle() );
@@ -274,7 +274,7 @@ mw.MediaElement.prototype = {
 			});
 			// NOTE: We really should not have two VDN sources the point of vdn is to be a set of adaptive streams.
 			// This work around is a result of Kaltura HLS stream tagging
-			if( ( mw.isIphone() || mw.isAndroid4andUp() ) && mobileVdn ){
+			if( ( mw.isNativeApp() || mw.isIphone() || mw.isAndroid4andUp() ) && mobileVdn ){
 				_this.setSource( mobileVdn );
 			} else if( desktopVdn ){
 				_this.setSource( desktopVdn );

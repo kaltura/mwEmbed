@@ -220,9 +220,10 @@ DAL for Q&A Module
             this.embedPlayer = embedPlayer;
             this.qnaPlugin = qnaPlugin;
 
-            this.requestCuePoints();
+
 
             if (embedPlayer.isLive()) {
+                this.requestCuePoints();
                 this.registerItemNotification();
             }
 
@@ -242,8 +243,8 @@ DAL for Q&A Module
                 "filter:systemNameEqual": this.QandA_MetadataProfileSystemName
             };
 
-            this.getKClient().doRequest([listMetadataProfileRequest], function (result) {
-                _this.metadataProfile = result[0].objects[0];
+            this.getKClient().doRequest(listMetadataProfileRequest, function (result) {
+                _this.metadataProfile = result.objects[0];
                 _this.userId=_this.qnaPlugin.getUserID();
                 deferred.resolve();
             });
@@ -588,6 +589,7 @@ DAL for Q&A Module
                     'service': 'cuepoint_cuepoint',
                     'action': 'list',
                     'filter:entryIdEqual': entryId,
+                    'filter:tagsLike':'WEBCASTSTATETAG',
                     'filter:cuePointTypeEqual': 'codeCuePoint.Code',
                     'filter:orderBy': '-createdAt',
                     'pager:pageSize': 1,

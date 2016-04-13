@@ -39,6 +39,10 @@
 		ignoreEnableGui: false,
 		flashActivationRequired: false,
         unresolvedSrcURL: false,
+        kPreload: {
+            'preLoading':false,
+            'playPending':false
+        },
 
 		// Create our player element
 		setup: function (readyCallback) {
@@ -114,6 +118,17 @@
                     }
                     if (mw.getConfig("hlsMaxBufferTime")) {
                         hlsPluginConfiguration["maxBufferTime"] = mw.getConfig("hlsMaxBufferTime");
+                    }
+                    var preferedBitRate = _this.evaluate( '{mediaProxy.preferedFlavorBR}' );
+                    if( preferedBitRate ) {
+                        hlsPluginConfiguration["prefBitrate"] = preferedBitRate;
+                        flashvars.disableAutoDynamicStreamSwitch = true; // disable autoDynamicStreamSwitch logic inside KDP (while playing + if player.isDynamicStream turn autoSwitch on)
+                    }
+                    if( mw.getConfig("maxBitrate") ) {
+                        hlsPluginConfiguration["maxBitrate"] = mw.getConfig("maxBitrate");
+                    }
+                    if( mw.getConfig("minBitrate") ) {
+                        hlsPluginConfiguration["minBitrate"] = mw.getConfig("minBitrate");
                     }
                     if (mw.getConfig("hlsLogs")) {
                         hlsPluginConfiguration["sendLogs"] = mw.getConfig("hlsLogs");
@@ -191,6 +206,7 @@
 						'bitrateChange': 'onBitrateChange',
                         'textTracksReceived': 'onTextTracksReceived',
                         'debugInfoReceived': 'onDebugInfoReceived',
+						'readyToPlay': 'onReadyToPlay',
                         'id3tag': 'onId3tag'
 					};
 				_this.playerObject = this.getElement();
@@ -202,7 +218,7 @@
 					}
 					readyCallback();
 
-					if (mw.getConfig('autoMute')) {
+                    if (mw.getConfig('autoMute')) {
 						_this.triggerHelper("volumeChanged", 0);
 					}
 
@@ -234,6 +250,15 @@
 			});
 
 		},
+
+        load: function(){
+            //block preload if live or autoplay, unless autoplay was activated on a player with preroll
+            if( !this.isLive() && (!this.autoplay || ( this.autoplay && this.isInSequence() ) ) ) {
+                //activate preload workaround: start downloading segments and pause the stream
+                this.kPreload.preLoading = true;
+                this.playerObject.play();
+            }
+        },
 
         reset: function(){
             this.restarting = true;
@@ -379,6 +404,12 @@
 			this.playerObject.setKDPAttribute('mediaProxy', 'isMp4', this.isMp4Src());
 			this.playerObject.setKDPAttribute('mediaProxy', 'entryDuration', this.getDuration()); //TODO - to support inteliseek - set the correct duration using seekFrom and clipTo
 			this.getEntryUrl().then(function (srcToPlay) {
+				if (!_this.playlist || _this.autoplay){
+					_this.bindHelper("onChangeMediaDone", function(){
+						_this.unbindHelper("onChangeMediaDone");
+						_this.play();
+					});
+				}
 				_this.playerObject.sendNotification('changeMedia', {
 					entryUrl: srcToPlay
 				});
@@ -406,6 +437,14 @@
 		 * update the interface
 		 */
 		onPause: function () {
+            if(this.kPreload.preLoading){
+                this.kPreload.preLoading = false;
+                if(this.kPreload.playPending){
+                    this.kPreload.playPending = false;
+                    this.play();
+                }
+                return;
+            }
 			$(this).trigger("pause");
 		},
 
@@ -414,6 +453,10 @@
 		 * parent_play
 		 */
 		onPlay: function () {
+            if(this.kPreload.preLoading){
+                this.playerObject.pause();
+                return;
+            }
 			if ( mw.isChrome() && !this.flashActivationRequired && mw.getConfig("EmbedPlayer.EnableFlashActivation") !== false ){
 				this.flashActivationRequired = true;
 				$(this).hide();
@@ -501,6 +544,10 @@
 		 * play method calls parent_play to update the interface
 		 */
 		play: function () {
+            if(this.kPreload.preLoading){
+                this.kPreload.playPending = true;
+                return;
+            }
             if(this.restarting){
                 return;
             }
@@ -763,6 +810,10 @@
             mw.log("EmbedPlayerKplayer:: onDebugInfoReceived | " + msg);
         },
 
+		onReadyToPlay: function (){
+            this.triggerHelper('readyToPlay');
+        },
+
         onId3tag: function (data) {
 			var id3Tag = base64_decode(data.data);
 			///todo  this is a temp fix until we remove the ID3 header from the content in the flash code
@@ -805,7 +856,7 @@
                 //if( this.isLive() &&  mw.getConfig('isLiveKalturaHLS') ) {
                 //    originalSrc = originalSrc + "&playerType=flash";
                 //}
-
+                this.streamerType = 'hls';
 				this.resolveSrcURL(originalSrc)
 					.then(function (srcToPlay) {
                         _this.unresolvedSrcURL = false;
@@ -890,23 +941,6 @@
 			}
 			return argString;
 		},
-		/*
-		 * get the source index for a given source
-		 */
-		getSourceIndex: function (source) {
-			var sourceIndex = null;
-			$.each( this.getSources(), function( currentIndex, currentSource ) {
-				if (source.getAssetId() == currentSource.getAssetId()) {
-					sourceIndex = currentIndex;
-					return false;
-				}
-			});
-			// check for null, a zero index would evaluate false
-			if( sourceIndex == null ){
-				mw.log("EmbedPlayerKplayer:: Error could not find source: " + source.getSrc());
-			}
-			return sourceIndex;
-		},
 		switchSrc: function (source) {
 			var _this = this;
 			//http requires source switching, all other switch will be handled by OSMF in KDP
@@ -930,18 +964,26 @@
 		},
 		backToLive: function () {
 			this.triggerHelper('movingBackToLive');
-            this.playerObject.sendNotification('goLive');
-
-            if(this.buffering){
-                var _this = this;
-                this.bindHelper('bufferEndEvent', function () {
-                    _this.unbindHelper('bufferEndEvent');
-                    _this.playerObject.seek(_this.getDuration());
-                    //Unfreeze scrubber
-                    _this.syncMonitor();
+            var _this = this;
+            var evChannel = ".kBackToLive"; //event channel name ".backToLive" already exists in liveCore class
+            if(this.isDVR()){
+                this.playerObject.sendNotification('goLive');
+                if (this.buffering) {
+                    this.bindHelper('bufferEndEvent'+evChannel, function () {
+                        _this.unbindHelper('bufferEndEvent'+evChannel);
+                        _this.playerObject.seek(_this.getDuration());
+                        //Unfreeze scrubber
+                        _this.syncMonitor();
+                    });
+                }
+            }else{
+                this.bindHelper('playing'+evChannel, function () {
+                    _this.unbindHelper('playing'+evChannel);
+                    _this.playerObject.sendNotification('goLive');
                 });
             }
 		},
+
 		setKPlayerAttribute: function (host, prop, val) {
 			this.playerObject.setKDPAttribute(host, prop, val);
 		},

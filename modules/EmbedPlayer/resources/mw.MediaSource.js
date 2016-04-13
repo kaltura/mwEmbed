@@ -76,7 +76,8 @@
 		'custom_data',
 		'signature',
 		'contentId',
-		'flavors'
+		'flavors',
+        'fpsCertificate'
 
 	]);
 

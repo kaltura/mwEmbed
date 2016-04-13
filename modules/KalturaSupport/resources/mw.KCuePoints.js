@@ -24,6 +24,7 @@
 		// The bind postfix:
 		bindPostfix: '.kCuePoints',
 		midCuePointsArray: [],
+		codeCuePointsArray : [],
 		liveCuePointsIntervalId: null,
 		supportedCuePoints: [
 			mw.KCuePoints.TYPE.CODE,
@@ -68,19 +69,24 @@
 			});
 			// Create new array with midrolls only
 			var newCuePointsArray = [];
+			var newCodeCuePointsArray = [];
 			$.each(cuePoints, function (idx, cuePoint) {
 				if ((_this.getVideoAdType(cuePoint) == 'pre' || _this.getVideoAdType(cuePoint) == 'post') &&
 					cuePoint.cuePointType == 'adCuePoint.Ad') {
 					_this.triggerCuePoint(cuePoint);
 				} else {
 					// Midroll or non-ad cuepoint
-					if (cuePoint.cuePointType != "eventCuePoint.Event") {
+					if (cuePoint.cuePointType === 'codeCuePoint.Code')
+					{
+						newCodeCuePointsArray.push(cuePoint);
+					}else if (cuePoint.cuePointType != "eventCuePoint.Event") {
 						newCuePointsArray.push(cuePoint);
 					}
 				}
 			});
 
 			this.midCuePointsArray = newCuePointsArray;
+			this.codeCuePointsArray = newCodeCuePointsArray;
 		},
 		initSupportedCuepointTypes: function(){
 			//Initial flashvars configuration arrives in form of comma-separated string,
@@ -154,6 +160,7 @@
 			var cuePoints = this.getCuePoints();
 
 			this.fixLiveCuePointArray(this.midCuePointsArray);
+			this.fixLiveCuePointArray(this.codeCuePointsArray);
 			this.fixLiveCuePointArray(cuePoints);
 
 			this.associativeCuePoints = {};
@@ -198,7 +205,7 @@
 				'filter:entryIdEqual': entryId,
 				'filter:objectType': 'KalturaCuePointFilter',
 				'filter:statusIn': '1,3', //1=READY, 3=HANDLED  (3 is after copying to VOD)
-				'filter:cuePointTypeEqual': 'thumbCuePoint.Thumb',
+				'filter:cuePointTypeIn': 'thumbCuePoint.Thumb,codeCuePoint.Code',
 				'filter:orderBy': "+createdAt" //let backend sorting them
 			};
 			var lastCreationTime = _this.getLastCreationTime() + 1;
@@ -224,25 +231,37 @@
 			if (rawCuePoints.length > 0) {
 				var _this = this;
 
-				var updatedCuePoints = [];
+				var thumbNewCuePoints = [];
+				var codeNewCuePoints = [];
 				//Only add new cuepoints
 				$.each(rawCuePoints, function (id, rawCuePoint) {
 					if (!_this.associativeCuePoints[rawCuePoint.id]) {
 						_this.associativeCuePoints[rawCuePoint.id] = rawCuePoint;
-						updatedCuePoints.push(rawCuePoint);
+
+						if (rawCuePoint.cuePointType === 'codeCuePoint.Code')
+						{
+							codeNewCuePoints.push(rawCuePoint);
+						}else {
+							thumbNewCuePoints.push(rawCuePoint);
+						}
 					}
 				});
 
-				if (updatedCuePoints.length > 0) {
+				if (thumbNewCuePoints.length > 0) {
 					var cuePoints = this.getCuePoints();
 					//update cuepoints
-					$.merge(cuePoints, updatedCuePoints);
+					$.merge(cuePoints, thumbNewCuePoints);
 					//update midpoint cuepoints
-					$.merge(this.midCuePointsArray, updatedCuePoints);
+					$.merge(this.midCuePointsArray, thumbNewCuePoints);
 					//Request thumb asset only for new cuepoints
-					this.requestThumbAsset(updatedCuePoints, function () {
-						_this.embedPlayer.triggerHelper('KalturaSupport_ThumbCuePointsUpdated', [updatedCuePoints]);
+					this.requestThumbAsset(thumbNewCuePoints, function () {
+						_this.embedPlayer.triggerHelper('KalturaSupport_ThumbCuePointsUpdated', [thumbNewCuePoints]);
 					});
+				}
+
+				if (codeNewCuePoints.length > 0) {
+					// update code cue points
+					$.merge(this.codeCuePointsArray, codeNewCuePoints);
 				}
 			}
 		},
@@ -336,6 +355,10 @@
 				this.embedPlayer.rawCuePoints = [];
 			}
 			return this.embedPlayer.rawCuePoints;
+		},
+		getCodeCuePoints : function()
+		{
+			return this.codeCuePointsArray || [];
 		},
 		getCuePointsByType: function (type, subType) {
 			var filteredCuePoints = this.getCuePoints();
@@ -436,7 +459,7 @@
 			} else {
 				return;
 			}
-			mw.log('mw.KCuePoints :: Trigger event: ' + eventName + ' - ' + rawCuePoint.cuePointType + ' at: ' + rawCuePoint.startTime);
+			mw.log('mw.KCuePoints :: Trigger event: ' + eventName + ' - ' + rawCuePoint.cuePointType + ' at: ' + rawCuePoint.startTime );
 			$(this.embedPlayer).trigger(eventName, cuePointWrapper);
 			// TOOD "midSequenceComplete"
 		},

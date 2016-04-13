@@ -78,7 +78,7 @@ kWidget.api.prototype = {
 	/**
 	 * Do an api request and get data in callback
 	 */
-	doRequest: function ( requestObject, callback,skipKS, errorCallback  ){
+	doRequest: function ( requestObject, callback,skipKS, errorCallback, withProxyData){
 		var _this = this;
 		var param = {};
 		var globalCBName = null;
@@ -125,7 +125,8 @@ kWidget.api.prototype = {
 			clearTimeout(timeoutError);
 			// check if the base param was a session
             data = data || [];
-            if( data.length > 1 && param[ '1:service' ] == 'session' ){
+            if( data.length > 1 && param[ '1:service' ] == 'session' && !withProxyData){ // in case of proxyData (OTT) we request a session but KS doesn't exist
+																						 // so the response doesn't contain it so don't handle
 				//Set the returned ks
 	            _this.setKs(data[0].ks);
 	            // if original request was not a multirequest then directly return the data object
@@ -197,9 +198,7 @@ kWidget.api.prototype = {
 		var response = data;
 		try {
 			response = JSON.parse( data );
-		}catch(e){
-			console.log("Error parsing JSON");
-		}
+		}catch(e){}
 		return response;
 	},
 	xhrGet: function( url, param, callback ){
@@ -299,6 +298,9 @@ kWidget.api.prototype = {
 		}
 		if( serviceType && serviceType == 'liveStats' &&  mw.getConfig( 'Kaltura.LiveStatsServiceUrl' ) ) {
 			serviceUrl = mw.getConfig( 'Kaltura.LiveStatsServiceUrl' );
+		}
+		if( serviceType && serviceType == 'analytics' &&  mw.getConfig( 'Kaltura.AnalyticsUrl' ) ) {
+			serviceUrl = mw.getConfig( 'Kaltura.AnalyticsUrl' );
 		}
 		return serviceUrl + mw.getConfig( 'Kaltura.ServiceBase' ) + serviceType;
 	},

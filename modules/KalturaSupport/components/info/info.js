@@ -26,11 +26,15 @@ mw.PluginManager.add( 'infoScreen', mw.KBaseScreen.extend({
 	addBindings: function () {
 		var _this = this;
 		var embedPlayer = this.getPlayer();
+		this.bind('playerReady', function () {
+			_this.getScreen();
+		});
 		this.bind('preShowScreen', function (event, screenName) {
 			if ( screenName === "infoScreen" ){
 				_this.getScreen().then(function(screen){
 					screen.addClass('semiTransparentBkg');
 					embedPlayer.disablePlayControls();
+					embedPlayer.triggerHelper("infoScreenOpen");
 				});
 			}
 		});

@@ -11,7 +11,7 @@
 			"iconClass": "icon-audio",
 			"showTooltip": true,
 			"labelWidthPercentage": 33,
-			"defaultStream": 1,
+			"defaultStream": -1, // -1 is auto
 			"maxNumOfStream": 4,
 			"enableKeyboardShortcuts": true,
 			"keyboardShortcutsMap": {
@@ -28,6 +28,12 @@
 
 		setup: function () {
 			this.addBindings();
+			var defaultTrack = this.getConfig('defaultStream');
+			if (defaultTrack > -1) {
+				this.getPlayer().audioTrack = {
+					defaultTrack: this.getConfig('defaultStream')
+				};
+			}
 		},
 		destroy: function () {
 			this._super();
@@ -103,7 +109,7 @@
 			return this.streams[this.getCurrentStreamIndex()];
 		},
 		getDefaultStream: function () {
-			return this.streams[(this.getConfig('defaultStream') - 1)];
+			return this.streams[(this.getConfig('defaultStream'))];
 		},
 		getCurrentStreamIndex: function () {
 			var _this = this;
@@ -160,7 +166,7 @@
 			this.getMenu().$el.find("a").addClass("truncateText");
 		},
 		externalSetStream: function (id) {
-			var stream = this.streams[id];
+			var stream = this.streams[id.index];
 			if (stream) {
 				this.setStream(stream);
 			} else {
@@ -168,8 +174,10 @@
 			}
 		},
 		setStream: function (stream) {
-			this.currentStream = stream;
-			this.embedPlayer.triggerHelper('switchAudioTrack', {index: stream.index });
+			if (this.currentStream !== stream ) {
+				this.currentStream = stream;
+				this.embedPlayer.triggerHelper('switchAudioTrack', {index: stream.index});
+			}
 		},
 		toggleMenu: function () {
 			if (this.isDisabled) {

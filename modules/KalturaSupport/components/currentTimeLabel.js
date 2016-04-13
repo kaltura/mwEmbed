@@ -6,21 +6,28 @@
 		defaultConfig: {
 			"parent": "controlsContainer",
 			"order": 21,
-			"displayImportance": "high"
+			"displayImportance": "high",
+			"countDownMode": false
 		},
 
 		updateEnabled: true,
+		labelWidth: null,
 
 		setup: function () {
 			var _this = this;
 			if ( this.embedPlayer.isMobileSkin() ){
-				this.getComponent().data("width",0.1);
+				this.setConfig("order", 26);
+				this.setConfig("countDownMode", true);
 			}
 			this.bindTimeUpdate();
 			this.bind('externalTimeUpdate', function (e, newTime) {
 				if (newTime != undefined) {
 					_this.updateUI(newTime);
 				}
+			});
+			// zero the current time when changing media
+			this.bind('onChangeMediaDone', function () {
+				_this.updateUI(0);
 			});
 			//will stop listening to native timeupdate events
 			this.bind('detachTimeUpdate', function () {
@@ -60,7 +67,16 @@
 		},
 		updateUI: function (time) {
 			if (this.updateEnabled) {
+				if (this.getConfig("countDownMode")){
+					time = this.embedPlayer.getDuration() - time;
+				}
 				this.getComponent().text(mw.seconds2npt(time));
+				// check if the time change caused the label width to change (got to 10 minutes or 1 hour) and recalculate components position if needed
+				var currentWidth = this.$el.width();
+				if ( currentWidth !== this.labelWidth ){
+					this.embedPlayer.layoutBuilder.updateComponentsVisibility();
+					this.labelWidth = currentWidth;
+				}
 			}
 		},
 		getCurrentTime: function () {
@@ -76,6 +92,10 @@
 					.addClass("timers" + this.getCssClass())
 					.text('0:00');
 			}
+			if (this.getConfig("countDownMode")){
+				this.$el.text(mw.seconds2npt(this.embedPlayer.getDuration()));
+			}
+			this.labelWidth = this.$el.width();
 			return this.$el;
 		},
 		show: function () {

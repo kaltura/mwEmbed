@@ -187,7 +187,7 @@
 				_this.maskChangeStreamEvents = true;
 			});
 			this.bind('onChangeStreamDone', function () {
-				_this.maskChangeStreamEvents = true;
+				_this.maskChangeStreamEvents = false;
 			});
 
 			this.bind('onChangeMedia', function () {

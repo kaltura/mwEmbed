@@ -200,6 +200,36 @@
 					}
 				}
 			}
+
+            if (mw.getConfig( 'EmbedPlayer.ForceNativeComponent')) {
+                // set up window.kNativeSdk
+                window.kNativeSdk = window.kNativeSdk || {};
+
+                var typeMap = function(names) {
+                    if (typeof names !== 'string') {
+                        return [];
+                    }
+                    names = names.split(",");
+                    var mimeTypes = [];
+                    var map = {
+                        "dash": "application/dash+xml",
+                        "mp4":  "video/mp4",
+                        "wvm":  "video/wvm",
+                        "hls":  "application/vnd.apple.mpegurl"
+                    };
+                    for (var i = 0; i < names.length; i++) {
+                        mimeTypes.push(map[names[i]]);
+                    }
+                    return mimeTypes;
+                };
+                
+                // The Native SDK provides two lists of supported formats, after the hash sign.
+                // Example: #nativeSdkDrmFormats=dash,wvm&nativeSdkAllFormats=dash,mp4,hls,wvm
+                var drmFormats = kWidget.getHashParam("nativeSdkDrmFormats") || "wvm";
+                var allFormats = kWidget.getHashParam("nativeSdkAllFormats") || "wvm,mp4,hls";
+                window.kNativeSdk.drmFormats = typeMap(drmFormats);
+                window.kNativeSdk.allFormats = typeMap(allFormats);
+			}
 		},
 
 		/**
@@ -345,11 +375,6 @@
 					this.log('Error: Missing target element Id');
 				}
 				targetId = settings.targetId;
-			}
-
-			// Check if we have flashvars object
-			if (!settings.flashvars) {
-				settings.flashvars = {};
 			}
 
 			// set player load check at start embed method call
@@ -543,6 +568,7 @@
 					'cursor:pointer;' +
 					'height: 53px;' +
 					'width: 70px;' +
+					'border-style: none;' +
 					'top: 50%; left: 50%; margin-top: -26.5px; margin-left: -35px; ' +
 					'background: url(\'' + imagePath + 'player_big_play_button.png\') ;' +
 					'z-index: 1;' +
@@ -632,7 +658,7 @@
 					kdp.kBind('mediaReady', function () {
 						setTimeout(function () {
 							kdp.sendNotification('doPlay');
-						}, 0);
+						}, 100);
 					});
 					if (typeof orgEmbedCallback == 'function') {
 						orgEmbedCallback(playerId);
@@ -987,7 +1013,12 @@
 			// Do a normal async content inject:
 			window[ cbName ] = function ( iframeData ) {
 				var newDoc = iframe.contentWindow.document;
-				newDoc.open();
+				if(_this.isFirefox()){
+					// in FF we have to pass the "replace" parameter to inherit the current history
+					newDoc.open("text/html", "replace");
+				} else {
+					newDoc.open();
+				}
 				newDoc.write(iframeData.content);
 				// TODO are we sure this needs to be on this side of the iframe?
 				if ( mw.getConfig("EmbedPlayer.DisableContextMenu") ){
@@ -1774,6 +1805,9 @@
 			return ( (navigator.userAgent.indexOf('iPhone') != -1) ||
 				(navigator.userAgent.indexOf('iPod') != -1) ||
 				(navigator.userAgent.indexOf('iPad') != -1) );
+		},
+		isFirefox: function(){
+			return navigator.userAgent.indexOf('Firefox') != -1;
 		},
 		isIE: function () {
 			return /\bMSIE\b/.test(navigator.userAgent);
