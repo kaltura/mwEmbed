@@ -402,7 +402,9 @@
 
 		// verify that we didn't get play right after pause or vise versa when user multiple clicks the device
 		checkPlayPauseTime: function(){
-
+			if(mw.getConfig('disableKalturaControls') === true) {
+				return true;
+			}
 			var d = new Date();
 			var t = d.getTime();
 			var executeCommand = false;
