@@ -71,6 +71,7 @@
 			'enterfullscreen',
 			'exitfullscreen',
 			'chromecastDeviceConnected',
+			'hideConnectingMessage',
 			'chromecastDeviceDisConnected',
 			'textTracksReceived',
 			'loadEmbeddedCaptions',
@@ -132,6 +133,10 @@
 			this.bindHelper("showChromecastDeviceList", function () {
 				mw.log("EmbedPlayerNativeComponent:: showChromecastDeviceList::");
 				_this.getPlayerElement().showChromecastDeviceList();
+			});
+			this.bindHelper("sendCCRecieverMessage", function (e,msg) {
+				mw.log("EmbedPlayerNativeComponent:: sendCCRecieverMessage::");
+				_this.getPlayerElement().sendCCRecieverMessage(msg);
 			});
 			this.bindHelper("onEndedDone", function () {
 				_this.playbackDone = true;
