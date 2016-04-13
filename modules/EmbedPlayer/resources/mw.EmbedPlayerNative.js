@@ -140,7 +140,7 @@
 				this.supports.volumeControl = false;
 			}
 			// Check if we already have a selected source and a player in the page,
-			if (this.getPlayerElement() && this.getSrc() && !mw.isIE()) {
+			if (this.getPlayerElement() && this.getSrc() && !mw.isIE() && !mw.isEdge()) {
 				$(this.getPlayerElement()).attr('src', this.getSrc());
 			}
 			// Check if we already have a video element an apply bindings ( for native interfaces )
@@ -279,7 +279,7 @@
 			}
 			// Update the player source ( if needed )
 			if (!this.skipUpdateSource) {
-				if ( $( vid ).attr( 'src' ) != this.getSrc( this.currentTime ) && !mw.isIE() ) {
+				if ( $( vid ).attr( 'src' ) != this.getSrc( this.currentTime ) && !mw.isIE() && !mw.isEdge() ) {
 					$( vid ).attr( 'src' , this.getSrc( this.currentTime ) );
 				}
 			}

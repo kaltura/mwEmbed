@@ -89,6 +89,7 @@
 
 		adCuePoints: [],
 		skipTimeoutId: null,
+		chromelessAdManagerLoadedId: null,
 
 		init: function( embedPlayer, callback, pluginName ){
 			var _this = this;
@@ -854,6 +855,12 @@
 				adsRequest.adTagUrl = encodeURIComponent(adsRequest.adTagUrl);
 				this.embedPlayer.getPlayerElement().sendNotification( 'requestAds', adsRequest );
 				mw.log( "DoubleClick::requestAds: Chromeless player request ad from KDP plugin");
+				var timeout = this.getConfig("adsManagerLoadedTimeout") || 5000;
+				this.chromelessAdManagerLoadedId = setTimeout(function(){
+					mw.log( "DoubleClick::Error: AdsManager failed to load by Flash plugin after " + timeout + " seconds.");
+					_this.restorePlayer(true);
+					_this.embedPlayer.play();
+				}, timeout);
 				return;
 			}
 
@@ -1210,6 +1217,7 @@
 					_this.embedPlayer.hideSpinner();
 					mw.log("DoubleClick:: adLoadedEvent");
 					_this.adManagerLoaded = true;
+					clearTimeout(_this.chromelessAdManagerLoadedId);
 				}, 'adLoadedEvent');
 
 				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
