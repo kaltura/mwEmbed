@@ -83,7 +83,9 @@
 				_this.onRequestSessionSuccess();
 			});
 			$( this.embedPlayer).bind('chromecastDeviceDisConnected', function(){
-				_this.stopApp();
+				_this.getComponent().css("color","white");
+				_this.embedPlayer.disablePlayer();
+				_this.embedPlayer.updatePlaybackInterface()
 			});
 
 			$( this.embedPlayer).bind('hideConnectingMessage', function(){
@@ -515,16 +517,13 @@
 			clearInterval(this.monitorInterval);
 			var _this = this;
 			var seekTime = this.getCurrentTime();
+			// stop casting
+			this.session.stop(this.onStopAppSuccess, this.onError);
 			this.getComponent().css("color","white");
 			this.updateTooltip(this.startCastTitle);
 			this.casting = false;
 			this.embedPlayer.casting = false;
 			this.embedPlayer.getInterface().find(".chromecastScreen").remove();
-			if (this.isNativeSDK){
-				return;
-			}
-			// stop casting
-			this.session.stop(this.onStopAppSuccess, this.onError);
 			// restore native player
 			this.embedPlayer.selectPlayer(this.savedPlayer);
 			this.savedPlayer = null;
