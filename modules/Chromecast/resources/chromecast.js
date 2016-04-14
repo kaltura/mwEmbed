@@ -177,6 +177,13 @@
 			this.updateTooltip(this.stopCastTitle);
 			this.casting = true;
 			this.embedPlayer.casting = true;
+			if (this.isNativeSDK){
+				return;
+			}
+
+			this.log( "Session success: " + e.sessionId);
+			this.session = e;
+
 			// set receiver debug if needed
 			if ( this.getConfig("debugReceiver") ){
 				this.sendMessage({'type': 'show', 'target': 'debug'});
@@ -208,12 +215,7 @@
 				this.loadMedia();
 			}
 
-			if (this.isNativeSDK){
-				return;
-			}
 			var _this = this;
-			this.log( "Session success: " + e.sessionId);
-			this.session = e;
 			this.session.addMessageListener(this.MESSAGE_NAMESPACE, function(namespace, message){
 				_this.log("Got Message From Receiver: "+message);
 				if (message == "readyForMedia"){
@@ -223,13 +225,31 @@
 		},
 		getFlashVars: function(){
 			var _this = this;
-			var plugins = ['doubleClick', 'youbora', 'kAnalony', 'related', 'comScoreStreamingTag', 'watermark', 'heartbeat'];
+			var plugins = ['doubleClick', 'youbora', 'kAnalony', 'related', 'comScoreStreamingTag', 'watermark', 'heartbeat', 'proxyData'];
+
 			var fv = {};
 			plugins.forEach(function(plugin){
 				if (!$.isEmptyObject(_this.embedPlayer.getKalturaConfig(plugin))){
 					fv[plugin] = _this.embedPlayer.getKalturaConfig(plugin);
 				}
 			});
+			// add support for custom proxyData for OTT app developers
+			var proxyData = this.getConfig('proxyData');
+			if ( proxyData ){
+				var recursiveIteration = function(object) {
+					for (var property in object) {
+						if (object.hasOwnProperty(property)) {
+							if (typeof object[property] == "object"){
+								recursiveIteration(object[property]);
+							}else{
+								object[property] = _this.embedPlayer.evaluate( object[property] );
+							}
+						}
+					}
+				}
+				recursiveIteration(proxyData);
+				fv['proxyData'] = proxyData;
+			}
 			return fv;
 		},
 
