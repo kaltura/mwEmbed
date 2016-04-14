@@ -225,13 +225,22 @@
 		},
 		getFlashVars: function(){
 			var _this = this;
-			var plugins = ['doubleClick', 'youbora', 'kAnalony', 'related', 'comScoreStreamingTag', 'watermark', 'heartbeat'];
+			var plugins = ['doubleClick', 'youbora', 'kAnalony', 'related', 'comScoreStreamingTag', 'watermark', 'heartbeat', 'proxyData'];
+
 			var fv = {};
 			plugins.forEach(function(plugin){
 				if (!$.isEmptyObject(_this.embedPlayer.getKalturaConfig(plugin))){
 					fv[plugin] = _this.embedPlayer.getKalturaConfig(plugin);
 				}
 			});
+			// add support for custom proxyData for OTT app developers
+			var proxyData = this.getConfig('proxyData');
+			if ( proxyData ){
+				$.each( proxyData, function(k,v){
+					proxyData[k] = _this.embedPlayer.evaluate( v );
+				});
+				fv['proxyData'] = proxyData;
+			}
 			return fv;
 		},
 
