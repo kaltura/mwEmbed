@@ -177,6 +177,13 @@
 			this.updateTooltip(this.stopCastTitle);
 			this.casting = true;
 			this.embedPlayer.casting = true;
+			if (this.isNativeSDK){
+				return;
+			}
+
+			this.log( "Session success: " + e.sessionId);
+			this.session = e;
+
 			// set receiver debug if needed
 			if ( this.getConfig("debugReceiver") ){
 				this.sendMessage({'type': 'show', 'target': 'debug'});
@@ -208,12 +215,7 @@
 				this.loadMedia();
 			}
 
-			if (this.isNativeSDK){
-				return;
-			}
 			var _this = this;
-			this.log( "Session success: " + e.sessionId);
-			this.session = e;
 			this.session.addMessageListener(this.MESSAGE_NAMESPACE, function(namespace, message){
 				_this.log("Got Message From Receiver: "+message);
 				if (message == "readyForMedia"){
