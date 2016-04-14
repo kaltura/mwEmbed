@@ -172,6 +172,10 @@
 		},
 
 		onRequestSessionSuccess: function(e) {
+			if (!this.isNativeSDK){
+				this.log( "Session success: " + e.sessionId);
+				this.session = e;
+			}
 			this.embedPlayer.layoutBuilder.closeAlert();
 			this.getComponent().css("color","#35BCDA");
 			this.updateTooltip(this.stopCastTitle);
@@ -211,9 +215,6 @@
 			if (this.isNativeSDK){
 				return;
 			}
-
-			this.log( "Session success: " + e.sessionId);
-			this.session = e;
 
 			var _this = this;
 			this.session.addMessageListener(this.MESSAGE_NAMESPACE, function(namespace, message){
