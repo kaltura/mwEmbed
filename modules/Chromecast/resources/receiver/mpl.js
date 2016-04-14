@@ -107,6 +107,8 @@ onload = function () {
 			setDebugMessage('customData', customData);
 		} else if (payload['type'] === 'load') {
 			setMediaManagerEvents();
+		} else if (payload['type'] === 'setLogo') {
+			document.getElementById('logo').style.backgroundImage = "url(" + payload['logo'] + ")";
 		} else if (payload['type'] === 'embed' && !playerInitialized) {
 			var publisherID = payload['publisherID'];
 			var uiconfID = payload['uiconfID'];

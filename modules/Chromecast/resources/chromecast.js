@@ -20,6 +20,7 @@
 			'title': gM('mwe-chromecast-chromecast'),
 			'debugReceiver': false,
 			'receiverLogo': false,
+			'logoUrl': null,
 			'useKalturaPlayer': false,
 			'debugKalturaPlayer': false
 		},
@@ -187,6 +188,9 @@
 				this.sendMessage({'type': 'show', 'target': 'debug'});
 			}
 			// set kaltura logo if needed
+			if ( this.getConfig("logoUrl") && this.getConfig("receiverLogo") ){
+				this.sendMessage({'type': 'setLogo', 'logo': this.getConfig("logoUrl")});
+			}
 			if ( this.getConfig("receiverLogo") ){
 				this.sendMessage({'type': 'show', 'target': 'logo'});
 			}
