@@ -177,12 +177,6 @@
 			this.updateTooltip(this.stopCastTitle);
 			this.casting = true;
 			this.embedPlayer.casting = true;
-			if (this.isNativeSDK){
-				return;
-			}
-
-			this.log( "Session success: " + e.sessionId);
-			this.session = e;
 
 			// set receiver debug if needed
 			if ( this.getConfig("debugReceiver") ){
@@ -214,6 +208,12 @@
 				this.sendMessage({'type': 'load'});
 				this.loadMedia();
 			}
+			if (this.isNativeSDK){
+				return;
+			}
+
+			this.log( "Session success: " + e.sessionId);
+			this.session = e;
 
 			var _this = this;
 			this.session.addMessageListener(this.MESSAGE_NAMESPACE, function(namespace, message){
@@ -534,7 +534,6 @@
 		stopApp: function() {
 			clearInterval(this.monitorInterval);
 			var _this = this;
-			var seekTime = this.getCurrentTime();
 			this.getComponent().css("color","white");
 			this.updateTooltip(this.startCastTitle);
 			this.casting = false;
@@ -543,6 +542,7 @@
 			if (this.isNativeSDK){
 				return;
 			}
+			var seekTime = this.getCurrentTime();
 			// stop casting
 			this.session.stop(this.onStopAppSuccess, this.onError);
 			// restore native player
