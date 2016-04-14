@@ -236,9 +236,18 @@
 			// add support for custom proxyData for OTT app developers
 			var proxyData = this.getConfig('proxyData');
 			if ( proxyData ){
-				$.each( proxyData, function(k,v){
-					proxyData[k] = _this.embedPlayer.evaluate( v );
-				});
+				var recursiveIteration = function(object) {
+					for (var property in object) {
+						if (object.hasOwnProperty(property)) {
+							if (typeof object[property] == "object"){
+								recursiveIteration(object[property]);
+							}else{
+								object[property] = _this.embedPlayer.evaluate( object[property] );
+							}
+						}
+					}
+				}
+				recursiveIteration(proxyData);
 				fv['proxyData'] = proxyData;
 			}
 			return fv;
