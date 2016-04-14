@@ -20,6 +20,7 @@
 			'title': gM('mwe-chromecast-chromecast'),
 			'debugReceiver': false,
 			'receiverLogo': false,
+			'logoUrl': null,
 			'useKalturaPlayer': false,
 			'debugKalturaPlayer': false
 		},
@@ -51,18 +52,22 @@
 		setup: function( embedPlayer ) {
 			var _this = this;
 			this.addBindings();
-			var ticks = 0;
-			var intervalID = setInterval(function(){
-				ticks++;
-				if( typeof chrome !== "undefined" && typeof chrome.cast !== "undefined" && typeof chrome.cast.SessionRequest !== "undefined" ){
-					_this.initializeCastApi();
-					clearInterval(intervalID);
-				}else{
-					if (ticks === 40){ // cancel check after 10 seconds
+			this.isNativeSDK  = mw.getConfig( "EmbedPlayer.ForceNativeComponent");
+
+			if (!this.isNativeSDK) {
+				var ticks = 0;
+				var intervalID = setInterval(function () {
+					ticks++;
+					if (typeof chrome !== "undefined" && typeof chrome.cast !== "undefined" && typeof chrome.cast.SessionRequest !== "undefined") {
+						_this.initializeCastApi();
 						clearInterval(intervalID);
+					} else {
+						if (ticks === 40) { // cancel check after 10 seconds
+							clearInterval(intervalID);
+						}
 					}
-				}
-			},250);
+				}, 250);
+			}
 		},
 
 		addBindings: function() {
@@ -76,17 +81,16 @@
 			this.bind('stopCasting', function(){_this.toggleCast();});
 
 			$( this.embedPlayer).bind('chromecastDeviceConnected', function(){
-				_this.getComponent().css("color","#35BCDA");
-				_this.updateScreen();
+				_this.onRequestSessionSuccess();
 			});
 			$( this.embedPlayer).bind('chromecastDeviceDisConnected', function(){
-				_this.getComponent().css("color","white");
-				_this.embedPlayer.disablePlayer();
-				_this.embedPlayer.updatePlaybackInterface()
+				_this.stopApp();
 			});
 
-			$( this.embedPlayer).bind('chromecastShowConnectingMsg', function(){
-				_this.showConnectingMessage();
+			$( this.embedPlayer).bind('hideConnectingMessage', function(){
+				_this.embedPlayer.layoutBuilder.closeAlert();
+				_this.getComponent().css("color","#35BCDA");
+				_this.updateScreen();
 			});
 
 			$( this.embedPlayer).bind('updateDashContextData', function(e, drmConfig){
@@ -99,7 +103,6 @@
 
 			$(this.embedPlayer).bind('playerReady', function() {
 				if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
-					_this.isNativeSDK = true;
 					// send application ID to native app
 					_this.embedPlayer.getPlayerElement().attr( 'chromecastAppId', _this.getConfig( 'applicationID' ));
 				}
@@ -170,18 +173,24 @@
 		},
 
 		onRequestSessionSuccess: function(e) {
+			if (!this.isNativeSDK){
+				this.log( "Session success: " + e.sessionId);
+				this.session = e;
+			}
 			this.embedPlayer.layoutBuilder.closeAlert();
-			this.log( "Session success: " + e.sessionId);
-			this.session = e;
 			this.getComponent().css("color","#35BCDA");
 			this.updateTooltip(this.stopCastTitle);
 			this.casting = true;
 			this.embedPlayer.casting = true;
+
 			// set receiver debug if needed
 			if ( this.getConfig("debugReceiver") ){
 				this.sendMessage({'type': 'show', 'target': 'debug'});
 			}
 			// set kaltura logo if needed
+			if ( this.getConfig("logoUrl") && this.getConfig("receiverLogo") ){
+				this.sendMessage({'type': 'setLogo', 'logo': this.getConfig("logoUrl")});
+			}
 			if ( this.getConfig("receiverLogo") ){
 				this.sendMessage({'type': 'show', 'target': 'logo'});
 			}
@@ -207,6 +216,9 @@
 				this.sendMessage({'type': 'load'});
 				this.loadMedia();
 			}
+			if (this.isNativeSDK){
+				return;
+			}
 
 			var _this = this;
 			this.session.addMessageListener(this.MESSAGE_NAMESPACE, function(namespace, message){
@@ -218,13 +230,31 @@
 		},
 		getFlashVars: function(){
 			var _this = this;
-			var plugins = ['doubleClick', 'youbora', 'kAnalony', 'related', 'comScoreStreamingTag', 'watermark', 'heartbeat'];
+			var plugins = ['doubleClick', 'youbora', 'kAnalony', 'related', 'comScoreStreamingTag', 'watermark', 'heartbeat', 'proxyData'];
+
 			var fv = {};
 			plugins.forEach(function(plugin){
 				if (!$.isEmptyObject(_this.embedPlayer.getKalturaConfig(plugin))){
 					fv[plugin] = _this.embedPlayer.getKalturaConfig(plugin);
 				}
 			});
+			// add support for custom proxyData for OTT app developers
+			var proxyData = this.getConfig('proxyData');
+			if ( proxyData ){
+				var recursiveIteration = function(object) {
+					for (var property in object) {
+						if (object.hasOwnProperty(property)) {
+							if (typeof object[property] == "object"){
+								recursiveIteration(object[property]);
+							}else{
+								object[property] = _this.embedPlayer.evaluate( object[property] );
+							}
+						}
+					}
+				}
+				recursiveIteration(proxyData);
+				fv['proxyData'] = proxyData;
+			}
 			return fv;
 		},
 
@@ -509,14 +539,17 @@
 		stopApp: function() {
 			clearInterval(this.monitorInterval);
 			var _this = this;
-			var seekTime = this.getCurrentTime();
-			// stop casting
-			this.session.stop(this.onStopAppSuccess, this.onError);
 			this.getComponent().css("color","white");
 			this.updateTooltip(this.startCastTitle);
 			this.casting = false;
 			this.embedPlayer.casting = false;
 			this.embedPlayer.getInterface().find(".chromecastScreen").remove();
+			if (this.isNativeSDK){
+				return;
+			}
+			var seekTime = this.getCurrentTime();
+			// stop casting
+			this.session.stop(this.onStopAppSuccess, this.onError);
 			// restore native player
 			this.embedPlayer.selectPlayer(this.savedPlayer);
 			this.savedPlayer = null;
@@ -641,6 +674,10 @@
 
 		sendMessage: function(message) {
 			var _this = this;
+			if (this.isNativeSDK){
+				$( _this.embedPlayer ).trigger( 'sendCCRecieverMessage', message );
+				return;
+			}
 			if (this.session != null) {
 				this.session.sendMessage( this.MESSAGE_NAMESPACE, message, this.onMsgSuccess.bind(this,
 					'Message sent: ' + JSON.stringify(message)), this.onMsgError);
