@@ -49,6 +49,7 @@
 			 * Setup the HLS playback engine wrapper with supplied config options
 			 */
 			setup: function () {
+				this.log("version: " + Hls.version );
 				this.addBindings();
 			},
 			/**
