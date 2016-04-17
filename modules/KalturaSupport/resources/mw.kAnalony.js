@@ -105,6 +105,10 @@
 				_this.sendAnalytics(playerEvent.IMPRESSION);
 			});
 
+			this.embedPlayer.bindHelper( 'onChangeMedia' , function () {
+				_this.firstPlay = true;
+			});
+
 			this.embedPlayer.bindHelper( 'userInitiatedPlay' , function () {
 				_this.sendAnalytics(playerEvent.PLAY_REQUEST);
 			});
