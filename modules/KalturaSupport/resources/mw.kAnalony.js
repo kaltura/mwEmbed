@@ -281,7 +281,7 @@
 				} else if( !_this._p75Once && percent >= .75 && seekPercent < .75 ) {
 					_this._p75Once = true;
 					_this.sendAnalytics(playerEvent.PLAY_75PERCENT);
-				} else if(  !_this._p100Once && percent >= .98 && seekPercent < 1) {
+				} else if(  !_this._p100Once && percent >= .99 && seekPercent < 1) {
 					_this._p100Once = true;
 					_this.sendAnalytics(playerEvent.PLAY_100PERCENT);
 				}
@@ -323,8 +323,10 @@
 				_this.firstPlay = false;
 			}
 			_this.smartSetInterval(function(){
-				_this.sendAnalytics(playerEvent.VIEW);
-				_this.bufferTime = 0;
+				if ( !_this._p100Once ){ // since we report 100% at 99%, we don't want any "VIEW" reports after that (FEC-5269)
+					_this.sendAnalytics(playerEvent.VIEW);
+					_this.bufferTime = 0;
+				}
 			},_this.reportingInterval,_this.monitorIntervalObj);
 
 		},
