@@ -178,6 +178,7 @@
 			});
 
 			this.embedPlayer.bindHelper( 'replayEvent' , function () {
+				_this.resetPlayerflags();
 				_this.sendAnalytics(playerEvent.REPLAY);
 			});
 
