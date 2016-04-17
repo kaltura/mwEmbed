@@ -37,6 +37,7 @@
 		bufferTime : 0,
 		eventIndex : 1,
 		currentBitRate: -1,
+		currentFlavourId: -1,
 		eventType: 1,
 		firstPlay: true,
 		viewEventInterval: null,
@@ -239,6 +240,9 @@
 				if (source.getBitrate()){
 					_this.currentBitRate = source.getBitrate();
 				}
+				if (source.getAssetId()){
+					_this.currentFlavourId = source.getAssetId();
+				}
 			});
 			this.embedPlayer.bindHelper( 'sourceSwitchingEnd' , function (e, newSource) {
 				if (newSource.newBitrate){
@@ -341,6 +345,7 @@
 				'eventIndex'        : this.eventIndex,
 				'bufferTime'        : this.bufferTime,
 				'actualBitrate'     : this.currentBitRate,
+				'flavourId'         : this.currentFlavourId,
 				'referrer'          : encodeURIComponent( mw.getConfig('EmbedPlayer.IframeParentUrl') ),
 				'deliveryType'      : this.embedPlayer.streamerType,
 				'sessionStartTime'  : this.startTime,
