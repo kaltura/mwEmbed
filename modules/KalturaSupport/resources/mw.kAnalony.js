@@ -173,6 +173,10 @@
 				_this.sendAnalytics(playerEvent.EXIT_FULLSCREEN);
 			});
 
+			this.embedPlayer.bindHelper( 'onEndedDone' , function () {
+				_this.stopViewTracking();
+			});
+
 			this.embedPlayer.bindHelper( 'replayEvent' , function () {
 				_this.sendAnalytics(playerEvent.REPLAY);
 			});
@@ -244,6 +248,7 @@
 					_this.currentFlavourId = source.getAssetId();
 				}
 			});
+
 			this.embedPlayer.bindHelper( 'sourceSwitchingEnd' , function (e, newSource) {
 				if (newSource.newBitrate){
 					_this.currentBitRate = newSource.newBitrate;
