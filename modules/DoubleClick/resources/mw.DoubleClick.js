@@ -873,8 +873,14 @@
 			// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
 			this.getAdDisplayContainer();
 			this.hideAdContainer(false);
+			// Ad loader already exists no need to load it again.
+			// Enough to signal it that the content is complete.
+			// TODO: may want to do this after 'ALL_ADS_COMPLETED' event
+			if ( this.adsLoader ) {
+				this.adsLoader.contentComplete();
+			}
 			// Create ads loader.
-			this.adsLoader = new google.ima.AdsLoader( _this.adDisplayContainer );
+			this.adsLoader = this.adsLoader || new google.ima.AdsLoader( _this.adDisplayContainer );
 
 			// Attach the events before making the request.
 			this.adsLoader.addEventListener(
