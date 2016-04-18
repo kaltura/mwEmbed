@@ -1404,8 +1404,13 @@
             var _this = this;
             metadataTrack.addEventListener("cuechange", function (evt) {
                 try {
-                    var id3Tag = evt.currentTarget.cues[evt.currentTarget.cues.length - 1].value.data;
-                    _this.triggerHelper('onId3Tag', id3Tag);
+					var id3Tag;
+					if ( mw.isEdge() ){
+						id3Tag = String.fromCharCode.apply(null, new Uint8Array(evt.currentTarget.cues[evt.currentTarget.cues.length - 1].data));
+					} else {
+						id3Tag = evt.currentTarget.cues[evt.currentTarget.cues.length - 1].value.data;
+					}
+					_this.triggerHelper('onId3Tag', id3Tag);
                 }
                 catch (e) {
                     mw.log("Native player :: id3Tag :: ERROR :: "+e);

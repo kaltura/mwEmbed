@@ -60,20 +60,22 @@
 
         parseTag: function(tag){
             var time;
-            switch(this.getPlayer().instanceOf){
-                case "Native":
-                    time = JSON.parse(tag).timestamp / 1000;
-                    break;
-                case "Kplayer":
-                case "Silverlight":
-                    //id3 tag: {"id":"ac1d4fd80c79bf7807f6c33061833a784ff5ce62","timestamp":1.447225650123E12,"offset":1431918.0,"objectType":"KalturaSyncPoint"}
-                    try{
-                        var timestamp = tag.match(/timestamp\"\:([0-9|\.|A-F]+)/);
-                        time = parseFloat(timestamp[1]) / 1000;
-                    }catch(e){
-                        mw.log("id3Tag plugin :: ERROR parsing tag : " + tag);
-                    }
-                    break;
+            if ( tag ) {
+                switch (this.getPlayer().instanceOf) {
+                    case "Native":
+                        if ( mw.isEdge() ) {
+                            //id3 tag:  "ID3dTEXTZ{"id":"0_f8re4ujs_1_6025","objectType":"KalturaSyncPoint","timestamp":1.460991397195E12}"
+                            time = this.getTimestamp(tag);
+                        } else {
+                            time = JSON.parse(tag).timestamp / 1000;
+                        }
+                        break;
+                    case "Kplayer":
+                    case "Silverlight":
+                        //id3 tag: {"id":"ac1d4fd80c79bf7807f6c33061833a784ff5ce62","timestamp":1.447225650123E12,"offset":1431918.0,"objectType":"KalturaSyncPoint"}
+                        time = this.getTimestamp(tag);
+                        break;
+                }
             }
             if(time) {
                 this.updatedTime = time;
@@ -81,6 +83,17 @@
                 this.getPlayer().setCurrentTime(time);
                 this.sendTrackEventMonitor(mw.seconds2npt(time), true);
             }
+        },
+
+        getTimestamp: function (tag) {
+            var time;
+            try {
+                var timestamp = tag.match(/timestamp\"\:([0-9|\.|A-F]+)/);
+                time = parseFloat(timestamp[1]) / 1000;
+            } catch (e) {
+                mw.log("id3Tag plugin :: ERROR parsing tag : " + tag);
+            }
+            return time;
         },
 
         sendTrackEventMonitor: function(time, isId3TagTime) {
