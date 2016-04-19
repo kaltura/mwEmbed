@@ -1881,7 +1881,7 @@
 
 			$(this).find(".playerPoster").remove();
 			//remove poster on autoPlay when player loaded
-			if ( this.currentState=="load" && mw.getConfig('autoPlay') && !mw.isMobileDevice()){
+			if ( this.currentState=="load" && mw.getConfig('autoPlay') && !mw.isMobileDevice() && !this.isAudio()){
 				return;
 			}
 			if ( mw.getConfig('EmbedPlayer.HidePosterOnStart') === true && !(this.currentState=="end" && mw.getConfig('EmbedPlayer.ShowPosterOnStop')) ) {
