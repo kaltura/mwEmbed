@@ -41,6 +41,7 @@
 		eventType: 1,
 		firstPlay: true,
 		viewEventInterval: null,
+		savedPosition: null,
 		monitorIntervalObj:{},
 
 		_p25Once: false,
@@ -255,6 +256,17 @@
 					_this.currentBitRate = newSource.newBitrate;
 				}
 			});
+
+			this.embedPlayer.bindHelper( 'AdSupport_midroll AdSupport_postroll' , function () {
+				_this.savedPosition = _this.embedPlayer.currentTime; // during ad playback (mid and post only), report position as the last player position
+			});
+
+			this.embedPlayer.bindHelper( 'AdSupport_EndAdPlayback' , function () {
+				setTimeout(function(){
+					_this.savedPosition = null; // use timeout to use the savedPosition for events reported immediately after ad finish (play event)
+				},0);
+
+			});
 		},
 		resetPlayerflags:function(){
 			this._p25Once = false;
@@ -263,6 +275,7 @@
 			this._p100Once = false;
 			this.hasSeeked = false;
 			this.lastSeek = 0;
+			this.savedPosition = null;
 		},
 
 		updateTimeStats: function() {
@@ -359,7 +372,7 @@
 				'sessionStartTime'  : this.startTime,
 				'uiConfId'          : this.embedPlayer.kuiconfid,
 				'clientVer'         : mw.getConfig("version"),
-				'position'          : this.embedPlayer.currentTime,
+				'position'          : this.savedPosition ? this.savedPosition : this.embedPlayer.currentTime,
 				'playbackType'      : playbackType
 			};
 
