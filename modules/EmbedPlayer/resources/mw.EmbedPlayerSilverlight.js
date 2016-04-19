@@ -641,7 +641,6 @@
 				this.getPlayerContainer().css( 'visibility' , 'hidden' );
 				this.durationReceived = true;
 				if ( !this.isError ) {
-					this.callReadyFunc();
 
 					//in silverlight we have unusual situation where "Start" is sent after "playing", this workaround fixes the controls state
 					if ( this.autoplay ) {
