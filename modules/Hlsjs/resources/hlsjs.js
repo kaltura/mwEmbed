@@ -156,7 +156,7 @@
 				var selectedSource = this.getPlayer().getSrc();
 				this.getPlayer().resolveSrcURL( selectedSource ).then( function(source){
 					this.hls.loadSource(source);
-				});
+				}.bind(this));
 			},
 			/**
 			 *
