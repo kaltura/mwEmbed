@@ -26,7 +26,6 @@
 		saveBackgroundColor: null, // used to save background color upon disable and rotate and return it when enabled again to prevent rotating box around the icon when custom style is applied
 
         sourcesList: [],
-        firstPlay:false,
 
 		setup: function(){
 			var _this = this;
@@ -34,10 +33,6 @@
 			this.bind( 'playerReady sourcesReplaced', function(){
 				_this.buildMenu();
 			});
-
-            this.bind( 'firstPlay', function(){
-                _this.firstPlay = true;
-            });
 
 			this.bind( 'SourceChange', function(){
 				var selectedSrc = _this.getPlayer().mediaElement.selectedSource;
@@ -125,6 +120,7 @@
 
 			// Destroy old menu
 			this.getMenu().destroy();
+			this.sourcesList = [];
 
 			var sources = this.getSources().slice(0);
 
@@ -268,9 +264,13 @@
                 return false;
             }
 
-            if( this.getPlayer().streamerType != "http" && this.firstPlay ){ //add and select Auto for adaptive bitrate
+			if ( this.getPlayer().streamerType == "http" && mw.isDesktopSafari() ){
+				this.addAutoToMenu();
+				return false;
+			}
+
+			if( this.getPlayer().streamerType != "http" ){ //add and select Auto for adaptive bitrate
                 this.addAutoToMenu();
-                this.firstPlay = false;
             }
             return true;
         },
