@@ -63,10 +63,11 @@
             if ( tag ) {
                 switch (this.getPlayer().instanceOf) {
                     case "Native":
-                        if ( mw.isEdge() ) {
+                        if ( mw.isEdge() || mw.getConfig('isHLS_JS') ) {
                             //id3 tag:  "ID3dTEXTZ{"id":"0_f8re4ujs_1_6025","objectType":"KalturaSyncPoint","timestamp":1.460991397195E12}"
                             time = this.getTimestamp(tag);
                         } else {
+                            //id3 tag: "{\"id\":\"1_qnsmpr3i_1_2788\",\"objectType\":\"KalturaSyncPoint\",\"timestamp\":1.461080242688E12}"
                             time = JSON.parse(tag).timestamp / 1000;
                         }
                         break;

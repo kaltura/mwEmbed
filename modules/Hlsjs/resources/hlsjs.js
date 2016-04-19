@@ -50,6 +50,7 @@
 			 */
 			setup: function () {
 				this.log("version: " + Hls.version );
+				mw.setConfig('isHLS_JS', true);
 				this.addBindings();
 			},
 			/**
@@ -163,9 +164,11 @@
 			 * @param event
 			 * @param data
 			 */
-			onFragParsingMetadata: function (data) {
+			onFragParsingMetadata: function (e, data) {
 				//TODO: parse ID3 tags
 				//data: { samples : [ id3 pes - pts and dts timestamp are relative, values are in seconds]}
+				var id3Tag = String.fromCharCode.apply( null, new Uint8Array( data.samples[data.samples.length-1].data ) );
+				this.getPlayer().triggerHelper('onId3Tag', id3Tag);
 			},
 			/**
 			 * Extract metadata from parsed manifest data, e.g. ABR etc.
