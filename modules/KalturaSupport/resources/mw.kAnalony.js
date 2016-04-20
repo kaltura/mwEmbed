@@ -49,7 +49,6 @@
 		_p75Once: false,
 		_p100Once: false,
 		hasSeeked: false,
-		lastSeek: 0,
 		dvr: false,
 
 		smartSetInterval:function(callback,time,monitorObj) {
@@ -134,7 +133,6 @@
 
 			this.embedPlayer.bindHelper( 'seeked' , function (e, seekTarget) {
 				_this.hasSeeked = true;
-				_this.lastSeek = seekTarget;
 				if ( _this.embedPlayer.isDVR() ) {
 					_this.dvr = true;
 				}
@@ -274,28 +272,26 @@
 			this._p75Once = false;
 			this._p100Once = false;
 			this.hasSeeked = false;
-			this.lastSeek = 0;
 			this.savedPosition = null;
 		},
 
 		updateTimeStats: function() {
 			var _this = this;
 			var percent = this.embedPlayer.currentTime / this.embedPlayer.duration;
-			var seekPercent = this.lastSeek / this.embedPlayer.duration;
 			var playerEvent = this.PlayerEvent;
 
 			// Send updates based on logic present in StatisticsMediator.as
 			if ( !this.embedPlayer.isLive() ){
-				if( !_this._p25Once && percent >= .25  &&  seekPercent <= .25 ) {
+				if( !_this._p25Once && percent >= .25 ) {
 					_this._p25Once = true;
 					_this.sendAnalytics(playerEvent.PLAY_25PERCENT);
-				} else if ( !_this._p50Once && percent >= .50 && seekPercent < .50 ) {
+				} else if ( !_this._p50Once && percent >= .50 ) {
 					_this._p50Once = true;
 					_this.sendAnalytics(playerEvent.PLAY_50PERCENT);
-				} else if( !_this._p75Once && percent >= .75 && seekPercent < .75 ) {
+				} else if( !_this._p75Once && percent >= .75 ) {
 					_this._p75Once = true;
 					_this.sendAnalytics(playerEvent.PLAY_75PERCENT);
-				} else if(  !_this._p100Once && percent >= .99 && seekPercent < 1) {
+				} else if(  !_this._p100Once && percent >= .99) {
 					_this._p100Once = true;
 					_this.sendAnalytics(playerEvent.PLAY_100PERCENT);
 				}
@@ -358,6 +354,11 @@
 				playbackType = this.dvr ? "dvr" : "live";
 			}
 
+			var position = this.embedPlayer.currentTime ? this.embedPlayer.currentTime : 0;
+			if ( this.savedPosition ){
+				position = this.savedPosition;
+			}
+
 			var statsEvent = {
 				'entryId'           : this.embedPlayer.kentryid,
 				'partnerId'         : this.embedPlayer.kpartnerid,
@@ -372,7 +373,7 @@
 				'sessionStartTime'  : this.startTime,
 				'uiConfId'          : this.embedPlayer.kuiconfid,
 				'clientVer'         : mw.getConfig("version"),
-				'position'          : this.savedPosition ? this.savedPosition : this.embedPlayer.currentTime,
+				'position'          : position,
 				'playbackType'      : playbackType
 			};
 
