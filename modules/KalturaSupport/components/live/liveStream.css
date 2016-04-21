@@ -1,7 +1,6 @@
 .back-to-live {
 	display: inline;
 	border: none;
-	margin-left: 5px;
 }
 
 .play_head_dvr .ui-slider-handle {
@@ -14,7 +13,7 @@
 
 .live-icon {
 	font-size: 0.7em !important;
-	margin-left: 15px !important;
+	margin-left: 10px !important;
 	margin-right: 2px !important;
 }
 

@@ -220,9 +220,10 @@ DAL for Q&A Module
             this.embedPlayer = embedPlayer;
             this.qnaPlugin = qnaPlugin;
 
-            this.requestCuePoints();
+
 
             if (embedPlayer.isLive()) {
+                this.requestCuePoints();
                 this.registerItemNotification();
             }
 
@@ -588,6 +589,7 @@ DAL for Q&A Module
                     'service': 'cuepoint_cuepoint',
                     'action': 'list',
                     'filter:entryIdEqual': entryId,
+                    'filter:tagsLike':'WEBCASTSTATETAG',
                     'filter:cuePointTypeEqual': 'codeCuePoint.Code',
                     'filter:orderBy': '-createdAt',
                     'pager:pageSize': 1,

@@ -33,15 +33,29 @@
 					var clDashPlayerUrl = embedPlayer.getKalturaConfig( "multiDrm", "clDashPlayerUrl" ) || mw.getMwEmbedPath() + "node_modules/mwEmbed-Dash-Everywhere/video.js";
 					var dashJsUrl = embedPlayer.getKalturaConfig( "multiDrm", "dashJsUrl" ) || mw.getMwEmbedPath() + "node_modules/mwEmbed-Dash-Everywhere/cldasheverywhere.min.js";
 					if (clDashPlayerUrl && dashJsUrl) {
-						$.getScript( clDashPlayerUrl)
-							.then(function(){return $.getScript( dashJsUrl)})
+						$.ajax( {
+							url: clDashPlayerUrl,
+							cache: true,
+							dataType: "script"
+						})
+							.then(
+								function(){
+									return $.ajax( {
+										url: dashJsUrl,
+										cache: true,
+										dataType: "script"
+									});
+								}
+							)
 							.done(function(){
 								mw.log("DASH player loaded");
 								//Set reference for DASH playback engine
 								mw.dash = {
 									player: videojs
 								};
-								callback();
+								setTimeout(function(){
+									callback();
+								}, 0);
 							})
 							.fail(function( ) {
 								mw.log("Error::Playback engine couldn't be found");
@@ -85,16 +99,39 @@
 	}
 
     function getMultiDrmSupportedSources(sources) {
-        var drmSources = sources.filter(function (source) {
-            if (mw.isNativeApp()) {
-                var nativeSdkDRMTypes = window.kNativeSdk && window.kNativeSdk.drmFormats;
-                return $.inArray(source.mimeType, nativeSdkDRMTypes) >= 0;
-            } else {
-                // Browser
+
+        var drmSources = [];
+        if (!mw.isNativeApp()) {
+            drmSources = sources.filter(function (source) {
                 return source.mimeType === "application/dash+xml" ||
                     ((source.mimeType === "video/ism" || source.mimeType === "video/playreadySmooth") && mw.isChrome() && !mw.isMobileDevice());
+            });
+        } else {
+            drmSources = sources.filter(function (source) {
+                var nativeSdkDRMTypes = window.kNativeSdk && window.kNativeSdk.drmFormats;
+                return $.inArray(source.mimeType, nativeSdkDRMTypes) >= 0;
+            });
+            
+            // Additional check for iOS, to select FairPlay or WidevineClassic.
+            if (kWidget.isIOS()) {
+                var fpsIndex = drmSources.findIndex(function(src) {return src.mimeType === "application/vnd.apple.mpegurl"});
+                var wvmIndex = drmSources.findIndex(function(src) {return src.mimeType === "video/wvm"});
+                if (fpsIndex >= 0) {
+                    if (drmSources[fpsIndex].fpsCertificate) {
+                        // FPS is supported and configured, remove WVM
+                        if (wvmIndex >= 0) {
+                            drmSources.splice(wvmIndex, 1);
+                            wvmIndex = -1;
+                        }
+                    } else {
+                        // FPS is supported by the platform, but not configured in the backend -- remove it.
+                        drmSources.splice(fpsIndex, 1);
+                        fpsIndex = -1;
+                    }
+                }
             }
-        });
+        }
+        
         return drmSources;
     }
 
@@ -103,7 +140,7 @@
 			var hlsSource = sources.filter( function ( source ) {
 				return ( source.mimeType === "application/vnd.apple.mpegurl" );
 			});
-			drmSources.push(hlsSource);
+			drmSources.concat(hlsSource);
 		}
 		embedPlayer.kalturaFlavors = drmSources;
 		embedPlayer.replaceSources(drmSources);
@@ -136,6 +173,7 @@
 		} );
 	}
 
+    // Polyfills from MDN
 	if (!Array.prototype.filter) {
 		Array.prototype.filter = function(fun/*, thisArg*/) {
 			'use strict';
@@ -155,12 +193,6 @@
 			for (var i = 0; i < len; i++) {
 				if (i in t) {
 					var val = t[i];
-
-					// NOTE: Technically this should Object.defineProperty at
-					//       the next index, as push can be affected by
-					//       properties on Object.prototype and Array.prototype.
-					//       But that method's new, and collisions should be
-					//       rare, so use the more-compatible alternative.
 					if (fun.call(thisArg, val, i, t)) {
 						res.push(val);
 					}
@@ -171,6 +203,29 @@
 		};
 	}
 
+	if (!Array.prototype.findIndex) {
+      Array.prototype.findIndex = function(predicate) {
+        if (this === null) {
+          throw new TypeError('Array.prototype.findIndex called on null or undefined');
+        }
+        if (typeof predicate !== 'function') {
+          throw new TypeError('predicate must be a function');
+        }
+        var list = Object(this);
+        var length = list.length >>> 0;
+        var thisArg = arguments[1];
+        var value;
+
+        for (var i = 0; i < length; i++) {
+          value = list[i];
+          if (predicate.call(thisArg, value, i, list)) {
+            return i;
+          }
+        }
+        return -1;
+      };
+    }
+    
 	function getDefaultDrmConfig(partnerId){
 		var defaultConfig = {
 			"drm": "auto",

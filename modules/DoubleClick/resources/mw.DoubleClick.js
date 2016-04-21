@@ -60,7 +60,9 @@
 		// Flag to enable/ disable timeout for iOS5/ iOS6 when ad is clicked
 		isAdClickTimeoutEnabled: false,
 
-		adsManagerLoadedTimeoutId: null,
+		playerIsReady: false,
+		imaLoaded: false,
+		prePlayActionTriggered: false,
 
 		//indicates we should save the time for the media switch (mobile)
 		saveTimeWhenSwitchMedia:false,
@@ -87,6 +89,7 @@
 
 		adCuePoints: [],
 		skipTimeoutId: null,
+		chromelessAdManagerLoadedId: null,
 
 		init: function( embedPlayer, callback, pluginName ){
 			var _this = this;
@@ -189,14 +192,26 @@
 				_this.adTagUrl = _this.getConfig( 'prerollUrlJS' );
 			}
 
-			_this.embedPlayer.bindHelper( 'playerReady' + this.bindPostfix, function(event){
-				// Request ads
-				mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
-				_this.requestAds();
+			this.embedPlayer.bindHelper( 'playerReady' + this.bindPostfix, function(event){
+				_this.playerIsReady = true;
+				if ( _this.imaLoaded ){
+					mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
+					_this.requestAds();
+				}
+			});
+
+			this.embedPlayer.bindHelper('prePlayAction' + this.bindPostfix, function( e, prePlay ){
+				//This code executed only if prePlayAction triggered before imaLoaded (since imaLoaded does unbinding for 'prePlayAction'),
+				//So we should block the player until the ima will loaded.
+				prePlay.allowPlayback = false;
+				_this.embedPlayer.addPlayerSpinner();
+				_this.prePlayActionTriggered = true;
 			});
 
 			// Load double click ima per doc:
 			this.loadIma( function(){
+				_this.imaLoaded = true;
+				_this.embedPlayer.unbindHelper('prePlayAction' + _this.bindPostfix);
 				// Determine if we are in managed or kaltura point based mode.
 				if ( _this.localizationCode ){
 					google.ima.settings.setLocale(_this.localizationCode);
@@ -204,7 +219,7 @@
 				// set player type and version
 				google.ima.settings.setPlayerType("kaltura/mwEmbed");
 				google.ima.settings.setPlayerVersion(mw.getConfig("version"));
-				google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.INSECURE);
+				google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
 
 				// Set num of redirects for VAST wrapper ads, higher means bigger latency!
 				var numRedirects = _this.getConfig("numRedirects");
@@ -224,18 +239,26 @@
 					// No defined ad pattern always use managed bindings
 					_this.addManagedBinding();
 				}
-				// Issue the callback to continue player build out:
-				callback();
+
+				if ( _this.playerIsReady ) {
+					_this.requestAds();
+					if ( _this.prePlayActionTriggered ){
+						_this.embedPlayer.play();
+					}
+				}
 			}, function( errorCode ){
 				mw.log( "Error::DoubleClick Loading Error: " + errorCode );
-				// Don't add any bindings directly issue callback:
-				callback();
+				_this.embedPlayer.unbindHelper('prePlayAction' + _this.bindPostfix);
+				if ( _this.prePlayActionTriggered ){
+					_this.embedPlayer.play();
+				}
 			});
+
 			var restoreOnInit = function(){
 				_this.destroy();
-			}
+			};
 			$( _this.embedPlayer ).data( 'doubleClickRestore',restoreOnInit );
-
+			callback();
 		},
 		handleCuePoints: function(){
 			var _this = this;
@@ -566,7 +589,7 @@
 			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
 
 			if (isLinear && !this.isNativeSDK) {
-				this.embedPlayer.enablePlayControls(["scrubber","share","infoScreen","related","playlistAPI","nextPrevBtn"]);
+				this.embedPlayer.enablePlayControls(["scrubber","share","infoScreen","related","playlistAPI","nextPrevBtn","sourceSelector"]);
 			} else {
 				_this.embedPlayer.pause();
 			}
@@ -608,7 +631,7 @@
 		},
 
 		toggleAdPlayback: function (isLinear) {
-			if (this.getConfig("pauseAdOnClick") !== false) {
+			if (this.getConfig("pauseAdOnClick") !== false && !this.isNativeSDK) {
 				if (this.adPaused) {
 					this.resumeAd(isLinear);
 				} else {
@@ -832,6 +855,12 @@
 				adsRequest.adTagUrl = encodeURIComponent(adsRequest.adTagUrl);
 				this.embedPlayer.getPlayerElement().sendNotification( 'requestAds', adsRequest );
 				mw.log( "DoubleClick::requestAds: Chromeless player request ad from KDP plugin");
+				var timeout = this.getConfig("adsManagerLoadedTimeout") || 5000;
+				this.chromelessAdManagerLoadedId = setTimeout(function(){
+					mw.log( "DoubleClick::Error: AdsManager failed to load by Flash plugin after " + timeout + " seconds.");
+					_this.restorePlayer(true);
+					_this.embedPlayer.play();
+				}, timeout);
 				return;
 			}
 
@@ -841,20 +870,17 @@
 				return;
 			}
 
-			var timeoutVal = this.getConfig("adsManagerLoadedTimeout") || 5000;
-			mw.log( "DoubleClick::requestAds: start timer for adsManager loading check: " + timeoutVal + "ms");
-			this.adsManagerLoadedTimeoutId = setTimeout(function(){
-				if ( !_this.adManagerLoaded ){
-					mw.log( "DoubleClick::requestAds: adsManager failed loading after " + timeoutVal + "ms");
-					_this.onAdError("adsManager failed loading!");
-				}
-			}, timeoutVal);
-
 			// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
 			this.getAdDisplayContainer();
 			this.hideAdContainer(false);
+			// Ad loader already exists no need to load it again.
+			// Enough to signal it that the content is complete.
+			// TODO: may want to do this after 'ALL_ADS_COMPLETED' event
+			if ( this.adsLoader ) {
+				this.adsLoader.contentComplete();
+			}
 			// Create ads loader.
-			this.adsLoader = new google.ima.AdsLoader( _this.adDisplayContainer );
+			this.adsLoader = this.adsLoader || new google.ima.AdsLoader( _this.adDisplayContainer );
 
 			// Attach the events before making the request.
 			this.adsLoader.addEventListener(
@@ -883,15 +909,12 @@
 		onAdsManagerLoaded: function( loadedEvent ) {
 			mw.log( 'DoubleClick:: onAdsManagerLoaded' );
 
-			if (this.adsManagerLoadedTimeoutId){
-				mw.log( "DoubleClick::requestAds: clear timer for adsManager loading check");
-				clearTimeout(this.adsManagerLoadedTimeoutId);
-				this.adsManagerLoadedTimeoutId = null;
-			}
-
 			var adsRenderingSettings = new google.ima.AdsRenderingSettings();
 			if (!this.getConfig("adTagUrl")){
 				adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true; // for manual VAST, get the SDK to restore the player
+			}
+			if ( this.getConfig( 'enableCountDown' ) === true){
+				adsRenderingSettings["uiElements"] = [];
 			}
 			adsRenderingSettings.useStyledNonLinearAds = true;
 			this.adsManager = loadedEvent.getAdsManager( this.embedPlayer, adsRenderingSettings );
@@ -1072,7 +1095,7 @@
                     podStartTime = ad.getAdPodInfo().getTimeOffset();
                 }
                 // trigger ad play event
-				$(_this.embedPlayer).trigger("onAdPlay",[ad.getAdId(),ad.getAdSystem(),currentAdSlotType,adPosition,ad.getDuration(), podPosition, podStartTime, ad.getTitle()]);
+				$(_this.embedPlayer).trigger("onAdPlay",[ad.getAdId(),ad.getAdSystem(),currentAdSlotType,adPosition,ad.getDuration(), podPosition, podStartTime, ad.getTitle(), ad.getTraffickingParameters()]);
 				// This changes player state to the relevant value ( play-state )
 				$(_this.embedPlayer).trigger("playing");
 				// Check for ad Stacking ( two starts in less then 250ms )
@@ -1200,6 +1223,7 @@
 					_this.embedPlayer.hideSpinner();
 					mw.log("DoubleClick:: adLoadedEvent");
 					_this.adManagerLoaded = true;
+					clearTimeout(_this.chromelessAdManagerLoadedId);
 				}, 'adLoadedEvent');
 
 				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
@@ -1217,7 +1241,7 @@
 						podPosition = adInfo.adPodInfo.podIndex;
 						podStartTime = adInfo.adPodInfo.timeOffset;
 					}
-					$(_this.embedPlayer).trigger("onAdPlay", [adInfo.adID, adInfoObj.adSystem, adInfoObj.currentAdSlotType, adInfoObj.adPosition, adInfo.duration, podPosition,  podStartTime, adInfo.adTitle ]); //index is missing =0 by now
+					$(_this.embedPlayer).trigger("onAdPlay", [adInfo.adID, adInfoObj.adSystem, adInfoObj.currentAdSlotType, adInfoObj.adPosition, adInfo.duration, podPosition,  podStartTime, adInfo.adTitle, adInfo.traffickingParameters ]); //index is missing =0 by now
 
 					if (_this.isNativeSDK || adInfo.linear){ // TODO: remove isNativeSDK once we pass the adInfo object from the native app SDK (currently not passed)
 						_this.embedPlayer.sequenceProxy.isInSequence = true;
@@ -1544,10 +1568,6 @@
 				this.restorePlayer(this.contentDoneFlag);
 				this.embedPlayer.play();
 			}else{
-				if (this.adsManagerLoadedTimeoutId){
-					clearTimeout(this.adsManagerLoadedTimeoutId);
-					this.adsManagerLoadedTimeoutId = null;
-				}
 				this.destroy();
 			}
 		},

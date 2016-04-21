@@ -154,7 +154,10 @@
 		"streamerType": 'http',
 
 		"shouldEndClip": true,
-		"buffering": false
+		"buffering": false,
+
+		// indicates the the player is currently casting to Chromecast
+		"casting": false
 	});
 
 	/**
@@ -298,7 +301,10 @@
 
 		drmRequired: false,
 
-		/**
+        //the offset in hours:minutes:seconds from the playable live edge.
+        liveEdgeOffset: 0,
+
+        /**
 		 * embedPlayer
 		 *
 		 * @constructor
@@ -724,6 +730,10 @@
 
 		getPlayerByStreamerType: function (source) {
 			var targetPlayer;
+			// if currently casting - always return the Chromecast player
+			if ( this.casting ){
+				return mw.EmbedTypes.getMediaPlayers().getPlayerById('chromecast');
+			}
 			//currently only kplayer can handle other streamerTypes
 			if (!mw.getConfig('EmbedPlayer.IgnoreStreamerType')
 				&& !this.isImageSource()   //not an image entry
@@ -887,7 +897,7 @@
 			$(this).trigger('playerReady');
 			this.triggerWidgetLoaded();
 		},
-		/**
+		/** 
 		 * Wraps the autoSelect source call passing in temporal url options
 		 * for use of temporal urls where supported.
 		 */
@@ -966,16 +976,30 @@
 			}
 
 			if ( $.isFunction( _this.setup) ) {
+                var failCallback = function(){
+                    _this.removePoster();
+                    _this.layoutBuilder.displayAlert( {
+                        title: _this.getKalturaMsg( 'ks-PLUGIN-BLOCKED-TITLE' ),
+                        message: _this.getKalturaMsg( 'ks-PLUGIN-BLOCKED' ),
+                        keepOverlay: true,
+                        noButtons : true,
+                        props: {
+                            customAlertTitleCssClass: "AlertTitleTransparent",
+                            customAlertMessageCssClass: "AlertMessageTransparent",
+                            customAlertContainerCssClass: "AlertContainerTransparent flashBlockAlertContainer"
+                        }
+                    });
+                };
 				_this.setup(function(){
 					_this.runPlayerStartupMethods( callback );
-				});
+				}, failCallback);
 				return ;
 			}
 			// run player startup directly ( without setup call if not defined )
 			_this.runPlayerStartupMethods( callback );
 		},
 		/**
-		 * Run player startup methods:
+		 * Run player startup methods: 
 		 */
 		runPlayerStartupMethods: function( callback ){
 			// Update feature support
@@ -1210,6 +1234,10 @@
 					// Restore events if we are not running the interface done actions
 					this.restoreEventPropagation();
 					return;
+				}
+
+				if (!this.stopAfterSeek) {
+					this.stopAfterSeek = true;
 				}
 
 				// if the ended event did not trigger more timeline actions run the actual stop:
@@ -1695,6 +1723,7 @@
 				this.preSequenceFlag = false;
 				this.postSequenceFlag = false;
 				this.shouldEndClip = true;
+				this.mediaLoadedFlag = false;
 			}
 
 			// Add a loader to the embed player:
@@ -1853,7 +1882,7 @@
 
 			$(this).find(".playerPoster").remove();
 			//remove poster on autoPlay when player loaded
-			if ( this.currentState=="load" && mw.getConfig('autoPlay') && !mw.isMobileDevice()){
+			if ( this.currentState=="load" && mw.getConfig('autoPlay') && !mw.isMobileDevice() && !this.isAudio()){
 				return;
 			}
 			if ( mw.getConfig('EmbedPlayer.HidePosterOnStart') === true && !(this.currentState=="end" && mw.getConfig('EmbedPlayer.ShowPosterOnStop')) ) {
@@ -1889,7 +1918,7 @@
 		 * Remove the poster
 		 */
 		removePoster: function () {
-			if ( !mw.getConfig("EmbedPlayer.KeepPoster") === true ){
+			if ( !mw.getConfig("EmbedPlayer.KeepPoster") === true && !this.isAudio()){
 				$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
 				$(this).find('.playerPoster').remove();
 			}
@@ -2218,6 +2247,7 @@
 				// prevent getting another clipdone event on replay
 				this.stopPlayAfterSeek = false;
 				this.seek(0.01, false);
+				return false;
 			}
 			// Store the absolute play time ( to track native events that should not invoke interface updates )
 			mw.log("EmbedPlayer:: play: " + this._propagateEvents + ' isStopped: ' + _this.isStopped());
@@ -2783,6 +2813,15 @@
 				if (!this.userSlide && !this.seeking ) {
 					var playHeadPercent = ( this.currentTime - this.startOffset ) / this.duration;
 					this.updatePlayHead(playHeadPercent);
+                    //update liveEdgeOffset
+                    if(this.isDVR()){
+                        var perc = parseInt(playHeadPercent*1000);
+                        if(perc>998) {
+                            this.liveEdgeOffset = 0;
+                        }else {
+                            this.liveEdgeOffset = this.duration - perc/1000 * this.duration;
+                        }
+                    }
 				}
 			}
 		},
@@ -2807,15 +2846,15 @@
 		setClipDoneGuard: function(){
 			if (!this.clipDoneTimeout && this.shouldEndClip) {
 				var _this = this;
-				var timeoutVal = (this.duration * 0.02 * 1000);
-				this.log( "Setting clip done guard check in " + (timeoutVal / 1000) + " seconds" );
+				var timeoutVal = (Math.abs(this.duration - this.currentTime) * 2);
+				this.log( "Setting clip done guard check in " + timeoutVal + " seconds" );
 				this.clipDoneTimeout = setTimeout( function () {
 					if ( _this.shouldEndClip && !_this.isLive() ) {
 						_this.log( "clipDone guard > should run clip done :: " + _this.currentTime );
 						_this.onClipDone();
 					}
 					_this.clipDoneTimeout = null;
-				}, timeoutVal );
+				}, (timeoutVal * 1000) );
 			}
 		},
 		cancelClipDoneGuard: function() {
@@ -2930,8 +2969,30 @@
 		 * Retuns the set of playable sources.
 		 */
 		getSources: function(){
+			// check if manifest defined flavors have been defined:
+			if( this.manifestAdaptiveFlavors.length ){
+				return this.manifestAdaptiveFlavors;
+			}
 			return this.mediaElement.getPlayableSources();
 		},
+		/*
+		 * get the source index for a given source
+		 */
+
+		getSourceIndex: function ( source ) {
+			var sourceIndex = null;
+			var sourceAssetId = source.getAssetId();
+			$.each( this.getSources() , function ( currentIndex , currentSource ) {
+				if (sourceAssetId == currentSource.getAssetId()) {
+					sourceIndex = currentIndex;
+					return false;
+				}
+			} );
+			if ( sourceIndex == null ) {
+				mw.log( "Error could not find source: " + source.getSrc() );
+			}
+			return sourceIndex;
+		} ,
 		/**
 		 * Static helper to get media sources from a set of videoFiles
 		 *
@@ -3029,7 +3090,7 @@
 		},
 
 		isDrmRequired: function () {
-			return this.drmRequired;
+			return this.drmRequired && !this.getRawKalturaConfig("embedPlayerChromecastReceiver","plugin") === true;
 		},
 
 		isDVR: function () {
@@ -3275,6 +3336,26 @@
 			//adaptive bitrate
 			return this.currentBitrate;
 		},
+
+        /*
+        * get current offset from the playable live edge inside DVR window (positive number for negative offset)
+        */
+        getLiveEdgeOffset: function () {
+          return this.liveEdgeOffset;
+        },
+
+        /*
+        * Some players parse playmanifest and reload flavors list by calling this function
+        * @param offset {positive number}: number of seconds to move back from the playable live edge inside DVR window
+        * @param callback {function}: callback (if exists) will be executed after the seek
+        */
+        setLiveEdgeOffset: function(offset, callback){
+           mw.log( 'EmbedPlayer :: setLiveEdgeOffset -' + offset );
+           this.seek(this.getDuration()-offset);
+           if ($.isFunction(callback)) {
+              callback();
+           }
+        },
 
 		getCurrentBufferLength: function(){
 			mw.log("Error: getPlayerElementTime should be implemented by embed library");

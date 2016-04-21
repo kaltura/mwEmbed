@@ -140,7 +140,7 @@
 				this.supports.volumeControl = false;
 			}
 			// Check if we already have a selected source and a player in the page,
-			if (this.getPlayerElement() && this.getSrc() && !mw.isIE()) {
+			if (this.getPlayerElement() && this.getSrc() && !mw.isIE() && !mw.isEdge()) {
 				$(this.getPlayerElement()).attr('src', this.getSrc());
 			}
 			// Check if we already have a video element an apply bindings ( for native interfaces )
@@ -278,8 +278,10 @@
 				return;
 			}
 			// Update the player source ( if needed )
-			if ($(vid).attr('src') != this.getSrc(this.currentTime) && !mw.isIE()) {
-				$(vid).attr('src', this.getSrc(this.currentTime));
+			if (!this.skipUpdateSource) {
+				if ( $( vid ).attr( 'src' ) != this.getSrc( this.currentTime ) && !mw.isIE() && !mw.isEdge() ) {
+					$( vid ).attr( 'src' , this.getSrc( this.currentTime ) );
+				}
 			}
 
 			if (this.muted) {
@@ -826,16 +828,18 @@
 					if (_this.getPlayerElement() && _this.getPlayerElement().play) {
 						_this.log(" issue native play call:");
 						// make sure the source is set:
-						if ( $(vid).attr('src') != _this.getSrc() || _this.resetSrc ) {
-							$(vid).attr('src', _this.getSrc());
-                            //trigger play again for iPad and El Capitan
-                            setTimeout( function () {
-                                if ( !_this.playing ) {
-                                    vid.play();
-                                    _this.parseTracks();
-                                }
-                            }, 300 );
-                            _this.resetSrc = false;
+						if (!_this.skipUpdateSource) {
+							if ( $( vid ).attr( 'src' ) != _this.getSrc() || _this.resetSrc ) {
+								$( vid ).attr( 'src' , _this.getSrc() );
+								//trigger play again for iPad and El Capitan
+								setTimeout( function () {
+									if ( !_this.playing ) {
+										vid.play();
+										_this.parseTracks();
+									}
+								} , 300 );
+								_this.resetSrc = false;
+							}
 						}
 						_this.hideSpinnerOncePlaying();
 						// make sure the video tag is displayed:
@@ -1076,7 +1080,7 @@
 							if ( (Math.abs( _this.currentSeekTargetTime - _this.getPlayerElement().currentTime ) > 2) &&
 								callbackCount <= 15 ) {
 								setTimeout( function () {
-									timeupdateCallback( callbackCount++ );
+									timeupdateCallback( ++callbackCount );
 								}, 100 );
 							} else {
 								if ( callbackCount > 15 ) {
@@ -1400,8 +1404,18 @@
             var _this = this;
             metadataTrack.addEventListener("cuechange", function (evt) {
                 try {
-                    var id3Tag = evt.currentTarget.cues[evt.currentTarget.cues.length - 1].value.data;
-                    _this.triggerHelper('onId3Tag', id3Tag);
+					var id3Tag;
+					if ( mw.isEdge() ){
+						//Get the data from the event + Unicode transform
+						var id3TagData = String.fromCharCode.apply(null, new Uint8Array(evt.currentTarget.cues[evt.currentTarget.cues.length - 1].data));
+						//Get the JSON substring
+						var id3TagString = id3TagData.substring(id3TagData.indexOf("{"), id3TagData.lastIndexOf("}")+1);
+						//Parse JSON
+						id3Tag = JSON.parse(id3TagString);
+					} else {
+						id3Tag = JSON.parse(evt.currentTarget.cues[evt.currentTarget.cues.length - 1].value.data);
+					}
+					_this.triggerHelper('onId3Tag', id3Tag);
                 }
                 catch (e) {
                     mw.log("Native player :: id3Tag :: ERROR :: "+e);
@@ -1436,7 +1450,10 @@
             this.getPlayerElement().audioTracks[audioTrackIndex].enabled = true;
         },
         getCurrentBufferLength: function(){
-            return parseInt(this.playerElement.buffered.end(0) - this.playerElement.currentTime); //return buffer length in seconds
+            if ( this.playerElement.buffered.length > 0 ) {
+                return parseInt(this.playerElement.buffered.end(0) - this.playerElement.currentTime); //return buffer length in seconds
+            }
+            return 0;
         }
 	};
 })(mediaWiki, jQuery);

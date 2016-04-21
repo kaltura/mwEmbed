@@ -795,15 +795,10 @@ mw.PlayerLayoutBuilder.prototype = {
 							}
 							event.preventDefault();
 							_this.removeMouseMoveHandler();
-							//without setTimeout event still propagates
-							setTimeout( function() {
-								_this.mouseMovedFlag = true;
-								_this.showPlayerControls();
-								if ( !mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
-									_this.addMouseMoveHandler();
-								}
-								_this.getInterface().find( '#touchOverlay' ).remove();
-							}, 500);
+							_this.mouseMovedFlag = true;
+							_this.showPlayerControls();
+							_this.addMouseMoveHandler();
+							_this.getInterface().find( '#touchOverlay' ).remove();
 
 						})
 				);
@@ -1170,7 +1165,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			.css( {
 				'height' : '100%',
 				'width' : '100%',
-				'z-index' : mw.isMobileDevice() ? 200 : 2
+				'z-index' : mw.isMobileDevice() ? 200 : 4
 			})
 		);
 
@@ -1194,7 +1189,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			'position' : 'absolute',
 			'margin': margin,
 			'overflow' : 'hidden',
-			'z-index' : 3
+			'z-index' : 5
 		};
 		var $overlayMenu = $('<div />')
 			.addClass( 'overlay-win ui-state-default ui-widget-header ui-corner-all' )

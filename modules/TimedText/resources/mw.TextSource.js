@@ -127,10 +127,6 @@
 					//mw.log("Start cap time: " + caption.start + ' End time: ' + caption.end );
 					captionSet[i] = caption ;
 				}
-				// captions are stored in start order stop search if we get larger than time
-				if( caption.start > time ){
-					break;
-				}
 			}
 			// Update the prevIndex:
 			this.prevIndex = firstCapIndex;

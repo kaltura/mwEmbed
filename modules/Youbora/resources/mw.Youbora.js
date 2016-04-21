@@ -55,9 +55,12 @@
 				// clear ping interval
 				clearInterval( _this.activePingInterval );
 				_this.activePingInterval = null;
-				_this.sendBeacon( 'stop', {
-					'diffTime': new Date().getTime() - _this.previusPingTime
-				});
+				// dispatch stop beacon if changing media during playback in order to close the session at Youbora
+				if (_this.embedPlayer.currentState !== 'end'){
+					_this.sendBeacon( 'stop', {
+						'diffTime': new Date().getTime() - _this.previusPingTime
+					});
+				}
 				// unbind all events
 				_this.unbind( _this.bindPostfix );
 				if (_this.firstPlayDone){
@@ -419,11 +422,6 @@
 			return this.viewCode + "_" + this.viewIndex;
 		},
 		getCurrentVideoSrc: function(){
-			var vid = this.embedPlayer.getPlayerElement();
-			if( vid && vid.src ){
-				return vid.src;
-			}
-			// else just return the normal content source:
 			return this.embedPlayer.getSrc();
 		}
 

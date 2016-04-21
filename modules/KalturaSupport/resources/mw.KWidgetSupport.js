@@ -478,7 +478,7 @@ mw.KWidgetSupport.prototype = {
 			if (flavorPartnerData.url != "") {
 				var flavorAssetObj = {
 					"data-assetid": flavorAsset.id,
-					src: flavorPartnerData.url,
+					src: _this.addSessionIdToSrc(flavorPartnerData.url),
 					type: flavorPartnerData.type,
 					"data-width": flavorAsset.width,
 					"data-height": flavorAsset.height,
@@ -504,6 +504,15 @@ mw.KWidgetSupport.prototype = {
 
 		//Set proxyData response data
 		embedPlayer.setKalturaConfig( 'proxyData', playerData.meta.partnerData);
+	},
+
+	addSessionIdToSrc: function(srcURL){
+		if (srcURL && srcURL.toLowerCase().indexOf("playmanifest") === -1){
+			return srcURL;
+		}
+
+		var qp = ( srcURL.indexOf('?') === -1) ? '?' : '&';
+		return srcURL + qp + 'playSessionId=' + this.getGUID();
 	},
 	updateVodPlayerData: function(embedPlayer, playerData){
 		embedPlayer.setLive( false );
@@ -1091,6 +1100,11 @@ mw.KWidgetSupport.prototype = {
 			playerRequest.entry_id =  embedPlayer.kentryid;
 		}
 
+		var proxyData = embedPlayer.getKalturaConfig('proxyData', 'data');
+		if(proxyData){
+			playerRequest.proxyData = proxyData;
+		}
+
 		// Add the flashvars
 		playerRequest.flashvars = embedPlayer.getFlashvars();
 
@@ -1667,6 +1681,8 @@ mw.KWidgetSupport.prototype = {
 					protocol: protocol,
 					clipAspect: validClipAspect
 				});
+				this.attachFlavorAssetDrmData(hlsSource, targetFlavors[0], flavorDrmData);
+				hlsSource.fpsCertificate = this.getFairplayCert(playerData);
 				deviceSources.push(hlsSource);
 				addedHlsStream = true;
 			}
@@ -1804,6 +1820,15 @@ mw.KWidgetSupport.prototype = {
 		var assetDrmData = this.getFlavorAssetDrmData(assetId, flavorDrmData);
 		$.extend(source, assetDrmData);
 		return source;
+	},
+	getFairplayCert: function(playerData){
+		var publicCertificate = null;
+		if (playerData.contextData.pluginData &&
+			playerData.contextData.pluginData.KalturaFairplayEntryContextPluginData &&
+			playerData.contextData.pluginData.KalturaFairplayEntryContextPluginData.publicCertificate){
+			publicCertificate = playerData.contextData.pluginData.KalturaFairplayEntryContextPluginData.publicCertificate;
+		}
+		return publicCertificate;
 	},
 	getFlavorAssetsDrmData: function(playerData){
 		var flavorDrmData = {};

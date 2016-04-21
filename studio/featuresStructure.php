@@ -132,6 +132,7 @@ return array(
 			"share" => "",
 			"playersJsReceiver" => "",
 			"related" => "",
+			"dualScreen" => "",
 			"playlistAPI" => "",
 			"nextPrevBtn" => ""
 		)
@@ -187,7 +188,6 @@ return array(
 			"moderation" => "",
 			"playbackRateSelector" => "",
 			"restrictUserAgent" => "",
-			"widevine" => "",
 			"multiDrm" => "",
 			"sourceSelector" => "",
 			"download" => "",

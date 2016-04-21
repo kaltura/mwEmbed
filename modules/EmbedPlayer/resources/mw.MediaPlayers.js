@@ -56,6 +56,9 @@ mw.MediaPlayers.prototype = {
 		if ( mw.getConfig("LeadWithHLSOnFlash") ) {
 			this.defaultPlayers['application/vnd.apple.mpegurl'].push('Kplayer');
 		}
+		if ( mw.getConfig("chromecastReceiver") ) {
+			this.defaultPlayers['application/vnd.apple.mpegurl'].push('ChromecastReceiver');
+		}
 		// If nativeComponent can play dash, use it.
         if ($.inArray('application/dash+xml',  window.kNativeSdk && window.kNativeSdk.allFormats) >= 0) {
             this.defaultPlayers['application/dash+xml'] = ['NativeComponent'];
@@ -129,6 +132,33 @@ mw.MediaPlayers.prototype = {
 			} );
 		}
 		return mimePlayers;
+	},
+	setMIMETypePlayers: function( mimeType, playerName ){
+		if (this.defaultPlayers[mimeType] && $.isArray(this.defaultPlayers[mimeType])) {
+			var contains = false;
+			$.each(this.defaultPlayers[mimeType], function(index, name){
+				if (name === playerName){
+					contains = true;
+					return false;
+				}
+			});
+			if (!contains) {
+				this.defaultPlayers[mimeType].push(playerName);
+			}
+		} else {
+			this.defaultPlayers[mimeType] = [playerName];
+		}
+	},
+	removeMIMETypePlayers: function( mimeType, playerName ){
+		if (this.defaultPlayers[mimeType] && $.isArray(this.defaultPlayers[mimeType])) {
+			var _this = this;
+			$.each(this.defaultPlayers[mimeType], function(index, name){
+				if (name === playerName){
+					_this.defaultPlayers[mimeType].splice(index, 1);
+					return false;
+				}
+			});
+		}
 	},
 	/**
 	 * Deprecated method call lacked get prefix for getter. 
