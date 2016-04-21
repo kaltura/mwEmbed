@@ -1723,6 +1723,7 @@
 				this.preSequenceFlag = false;
 				this.postSequenceFlag = false;
 				this.shouldEndClip = true;
+				this.mediaLoadedFlag = false;
 			}
 
 			// Add a loader to the embed player:
