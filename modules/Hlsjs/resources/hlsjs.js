@@ -298,14 +298,6 @@
 					this.getPlayer().onFlavorsListChanged(flavors);
 				}
 			},
-			load: function(){
-				this.hls.startLoad();
-			},
-			changeMediaCallback: function(){
-				this.getPlayer().play();
-				this.getPlayer().changeMediaStarted = false;
-				this.getPlayer().triggerHelper('onChangeMediaDone');
-			},
 			/**
 			 * Enable override player methods for HLS playback
 			 */
@@ -367,8 +359,21 @@
 				} else {
 					this.hls.nextLevel = -1;
 				}
+			},
+			/**
+			 * Override player method for loading the video element
+			 */
+			load: function(){
+				this.hls.startLoad();
+			},
+			/**
+			 * Override player callback after changing media
+			 */
+			changeMediaCallback: function(){
+				this.getPlayer().play();
+				this.getPlayer().changeMediaStarted = false;
+				this.getPlayer().triggerHelper('onChangeMediaDone');
 			}
-
 		});
 
 		mw.PluginManager.add('hlsjs', hlsjs);
