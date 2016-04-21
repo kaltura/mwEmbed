@@ -298,6 +298,14 @@
 					this.getPlayer().onFlavorsListChanged(flavors);
 				}
 			},
+			load: function(){
+				this.hls.startLoad();
+			},
+			changeMediaCallback: function(){
+				this.getPlayer().play();
+				this.getPlayer().changeMediaStarted = false;
+				this.getPlayer().triggerHelper('onChangeMediaDone');
+			},
 			/**
 			 * Enable override player methods for HLS playback
 			 */
@@ -305,9 +313,11 @@
 				this.orig_backToLive = this.getPlayer().backToLive;
 				this.orig_switchSrc = this.getPlayer().switchSrc;
 				this.orig_changeMediaCallback = this.getPlayer().changeMediaCallback;
+				this.orig_load = this.getPlayer().load;
 				this.getPlayer().backToLive = this.backToLive.bind(this);
 				this.getPlayer().switchSrc = this.switchSrc.bind(this);
-				this.getPlayer().changeMediaCallback = null;
+				this.getPlayer().changeMediaCallback = this.changeMediaCallback.bind(this);
+				this.getPlayer().load = this.load.bind(this);
 			},
 			/**
 			 * Disable override player methods for HLS playback
@@ -316,6 +326,7 @@
 				this.getPlayer().backToLive = this.orig_backToLive;
 				this.getPlayer().switchSrc = this.orig_switchSrc;
 				this.getPlayer().changeMediaCallback = this.orig_changeMediaCallback;
+				this.getPlayer().load = this.orig_load;
 				mw.supportsFlash = orig_supportsFlash;
 			},
 			//Overidable player methods, "this" is bound to HLS plugin instance!
