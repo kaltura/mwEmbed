@@ -155,9 +155,14 @@
 				this.log("Media attached");
 				//Once media is attached load the manifest
 				var selectedSource = this.getPlayer().getSrc();
-				this.getPlayer().resolveSrcURL( selectedSource ).then( function(source){
-					this.hls.loadSource(source);
-				}.bind(this));
+				this.getPlayer().resolveSrcURL( selectedSource ).then(
+					function(source){
+						this.hls.loadSource(source);
+					}.bind(this),
+					function () { //error
+						this.hls.loadSource(selectedSource);
+					}.bind(this)
+				);
 			},
 			/**
 			 *
