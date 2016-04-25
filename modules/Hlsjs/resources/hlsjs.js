@@ -37,6 +37,7 @@
 			isLevelSwitching: false,
 			/** type {Number} */
 			levelIndex: -1,
+			version: "v0.5.23",
 
 			/**
 			 * Check is HLS is supported
@@ -49,7 +50,7 @@
 			 * Setup the HLS playback engine wrapper with supplied config options
 			 */
 			setup: function () {
-				this.log("version: " + Hls.version );
+				this.log( "version: " + Hls.version ? Hls.version : this.version );
 				mw.setConfig('isHLS_JS', true);
 				this.addBindings();
 			},
