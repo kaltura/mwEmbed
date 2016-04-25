@@ -312,10 +312,12 @@
 				this.orig_switchSrc = this.getPlayer().switchSrc;
 				this.orig_changeMediaCallback = this.getPlayer().changeMediaCallback;
 				this.orig_load = this.getPlayer().load;
+				this.orig_onerror = this.getPlayer()._onerror;
 				this.getPlayer().backToLive = this.backToLive.bind(this);
 				this.getPlayer().switchSrc = this.switchSrc.bind(this);
 				this.getPlayer().changeMediaCallback = this.changeMediaCallback.bind(this);
 				this.getPlayer().load = this.load.bind(this);
+				this.getPlayer()._onerror = this._onerror.bind(this);
 			},
 			/**
 			 * Disable override player methods for HLS playback
@@ -325,6 +327,7 @@
 				this.getPlayer().switchSrc = this.orig_switchSrc;
 				this.getPlayer().changeMediaCallback = this.orig_changeMediaCallback;
 				this.getPlayer().load = this.orig_load;
+				this.getPlayer()._onerror = this.orig_onerror;
 				mw.supportsFlash = orig_supportsFlash;
 			},
 			//Overidable player methods, "this" is bound to HLS plugin instance!
@@ -379,6 +382,33 @@
 				this.getPlayer().play();
 				this.getPlayer().changeMediaStarted = false;
 				this.getPlayer().triggerHelper('onChangeMediaDone');
+			},
+			/**
+			 * Override player method for playback error
+			 */
+			_onerror: function ( evt ) {
+				var errorTxt,mediaError = evt.currentTarget.error;
+				switch(mediaError.code) {
+					case mediaError.MEDIA_ERR_ABORTED:
+						errorTxt = "You aborted the video playback";
+						break;
+					case mediaError.MEDIA_ERR_DECODE:
+						errorTxt = "The video playback was aborted due to a corruption problem or because the video used features your browser did not support";
+						this.handleMediaError();
+						this.mediaErrorRecoveryCounter += 1;
+						break;
+					case mediaError.MEDIA_ERR_NETWORK:
+						errorTxt = "A network error caused the video download to fail part-way";
+						break;
+					case mediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+						errorTxt = "The video could not be loaded, either because the server or network failed or because the format is not supported";
+						break;
+				}
+				mw.log("HLS.JS ERROR: "+errorTxt);
+			},
+
+			handleMediaError: function ( ) {
+				this.hls.recoverMediaError();
 			}
 		});
 
