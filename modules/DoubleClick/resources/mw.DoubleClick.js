@@ -1147,6 +1147,7 @@
 
 					// for preroll ad that doesn't play using our video tag - we can load our video tag to improve performance once the ad finish
 					if ( _this.currentAdSlotType === "preroll" && !_this.adsManager.isCustomPlaybackUsed() ){
+						_this.embedPlayer._propagateEvents = true;
 						_this.embedPlayer.load();
 					}
 				}else{
