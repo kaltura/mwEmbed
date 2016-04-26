@@ -34,6 +34,7 @@
 					defaultTrack: this.getConfig('defaultStream')
 				};
 			}
+			this.setConfig('defaultStream', 0);
 		},
 		destroy: function () {
 			this._super();
