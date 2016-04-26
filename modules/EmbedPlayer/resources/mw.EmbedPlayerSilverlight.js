@@ -482,7 +482,6 @@
 					} , timeout );
 				}
 				_this.autoplay = _this.autoplay || _this.isMulticast;
-				flashvars.autoplay = _this.autoplay;
 				flashvars.isLive = _this.isLive();
 				flashvars.isDVR = ( _this.isDVR() == 1 );
 				_this.durationReceived = false;
@@ -758,7 +757,9 @@
 		 * load method calls parent_load to start fetching media from server, in case of DRM the license request will be handled as well
 		 */
 		load: function () {
-			this.playerObject.load();
+			if ( this.streamerType !== "smoothStream" ){
+				this.playerObject.load();
+			}
 		},
 		/**
 		 * playerSwitchSource switches the player source working around a few bugs in browsers
