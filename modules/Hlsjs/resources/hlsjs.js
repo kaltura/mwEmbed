@@ -29,6 +29,7 @@
 
 			/** @type {Number} */
 			mediaErrorRecoveryCounter: 0,
+			playerErrorRecoveryCounter: 0,
 			/** type {boolean} */
 			LoadHLS: false,
 			/** type {boolean} */
@@ -393,9 +394,8 @@
 						errorTxt = "You aborted the video playback";
 						break;
 					case mediaError.MEDIA_ERR_DECODE:
-						errorTxt = "The video playback was aborted due to a corruption problem or because the video used features your browser did not support";
+						errorTxt = "The video playback was aborted due to a corruption problem or because the video used features your browser did not support. Trying to handle MediaError.";
 						this.handleMediaError();
-						this.mediaErrorRecoveryCounter += 1;
 						break;
 					case mediaError.MEDIA_ERR_NETWORK:
 						errorTxt = "A network error caused the video download to fail part-way";
@@ -408,7 +408,18 @@
 			},
 
 			handleMediaError: function ( ) {
-				this.hls.recoverMediaError();
+				if( this.canRecover() ) {
+					this.hls.recoverMediaError();
+				}
+			},
+
+			canRecover: function ( ) {
+				if( this.playerErrorRecoveryCounter > 2 ) {
+					this.playerErrorRecoveryCounter = 0;
+					return false;
+				}
+				this.playerErrorRecoveryCounter += 1;
+				return true;
 			}
 		});
 
