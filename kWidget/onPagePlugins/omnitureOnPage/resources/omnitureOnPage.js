@@ -1,4 +1,4 @@
-kWidget.addReadyCallback( function( playerId ){ 
+kWidget.addReadyCallback( function( playerId ){
 	/**
 	 * The main omnitureOnPage object:
 	 */
@@ -9,12 +9,12 @@ kWidget.addReadyCallback( function( playerId ){
 		instanceName: 'omnitureOnPage',
 		sCodeLoaded: false,
 		entryData: {},
-		
+
 		// event queues
-		mediaQueue:[], 
+		mediaQueue:[],
 		notificationQueue: [],
-		
-		// track waiting for scode propagation 
+
+		// track waiting for scode propagation
 		_startWaitTime: null,
 		// flasg to make sure we setup monitor only once
 		layoutReadyCalled: false,
@@ -30,7 +30,7 @@ kWidget.addReadyCallback( function( playerId ){
 
 			// Check for on-page s-code that already exists
 			this.bind('layoutReady', function(){
-				// check that plugin is enabled: 
+				// check that plugin is enabled:
 				if( _this.getConfig('plugin') == false ){
 					return ;
 				}
@@ -60,7 +60,7 @@ kWidget.addReadyCallback( function( playerId ){
 		},
 		sCodeCheck: function( callback, faliedCallback ){
 			var _this = this;
-			
+
 			// Only run sCode check once
 			if( this.sCodeLoaded ) {
 				return ;
@@ -104,9 +104,9 @@ kWidget.addReadyCallback( function( playerId ){
 				this._startWaitTime = new Date().getTime();
 			}
 			var waitedTime = new Date().getTime() - this._startWaitTime
-			// check if we are waiting: 
+			// check if we are waiting:
 			if( waitedTime > this.getTimeoutMs() ){
-				// failed waitTime is > then sCodeAvailableTimeout load local copy: 
+				// failed waitTime is > then sCodeAvailableTimeout load local copy:
 				kWidget.appendScriptUrl( _this.getConfig('s_codeUrl'), function(){
 					if( _this.isScodeReady() ){
 						readyCallback();
@@ -116,7 +116,7 @@ kWidget.addReadyCallback( function( playerId ){
 				} );
 				// kWidget does not have a failed timeout, give it 10 seconds to load
 				setTimeout(function(){
-					// only issue a fail if we never got success callback: 
+					// only issue a fail if we never got success callback:
 					// Note this will result in two fails where s_codeUrl is invalid )
 					if( !_this.isScodeReady() ){
 						failedCallback();
@@ -129,15 +129,15 @@ kWidget.addReadyCallback( function( playerId ){
 				_this.checkForScodeAndLoad( readyCallback, failedCallback );
 			}, 50 );
 		},
-		// get timeout in Ms: 
+		// get timeout in Ms:
 		getTimeoutMs: function(){
-			return ( this.getConfig( 'sCodeAvailableTimeout' ) ) ? 
+			return ( this.getConfig( 'sCodeAvailableTimeout' ) ) ?
 					this.getConfig( 'sCodeAvailableTimeout' ) * 1000 :
 					5000;
 		},
 		/** Getters **/
 		getMediaPlayerName: function(){
-			return 'Kaltura Omniture OnPage v' + mw.getConfig('version'); 
+			return 'Kaltura Omniture OnPage v' + mw.getConfig('version');
 		},
 
 		trimSpaces: function(str) {
@@ -160,11 +160,11 @@ kWidget.addReadyCallback( function( playerId ){
  			switch( _this.getConfig( 'concatMediaName' ) ){
  				case 'doluk':
  					var refId = _this.entryData.referenceId;
- 					if( !refId ) 
+ 					if( !refId )
  						refId = _this.entryData.id;
- 					return [  this.getCType(), g('SiteSection'), g('PropertyCode'), 
- 						g('ContentType'),  g('ShortTitle').substr(0,30), 
- 						_this.getDuration(),  refId 
+ 					return [  this.getCType(), g('SiteSection'), g('PropertyCode'),
+ 						g('ContentType'),  g('ShortTitle').substr(0,30),
+ 						_this.getDuration(),  refId
  						].join(':').replace(/\s/g, "_");
  				break;
  			}
@@ -235,12 +235,12 @@ kWidget.addReadyCallback( function( playerId ){
 
 		/*
 		Support passing global evars to all events
-		
-		sample attribute config: 
+
+		sample attribute config:
 		additionalEvarsAndProps="eVar51,eVar52,eVar53,eVar54,prop44"
 		additionalEvarsAndPropsValues="{mediaProxy.entry.creatorId},
 			{mediaProxy.entry.createdAt},{configProxy.flashvars.referer},
-			{mediaProxy.entry.duration},{configProxy.flashvars.streamerType}" 
+			{mediaProxy.entry.duration},{configProxy.flashvars.streamerType}"
 		*/
 		setupMonitor: function() {
 			// Exit if sCode not loaded
@@ -253,7 +253,7 @@ kWidget.addReadyCallback( function( playerId ){
 
 			// Check if we have monitor function
 			var originalMediaFunc = s.Media.monitor;
-			
+
 			// List of events we want to track
 			var trackEvents = ['OPEN', 'PLAY', 'STOP', 'SECONDS', 'MILESTONE'];
 			var monitorCount = 0;
@@ -332,13 +332,7 @@ kWidget.addReadyCallback( function( playerId ){
 					_this.runMediaCommand( "close",adID);
 				}
 			};
-
-			this.bind('entryReady', function() {
-				kWidget.log( 'omnitureOnPage: entryReady' );
-				_this.cacheEntryMetadata();
-			});
-			// Run open on first play:
-			this.bind( 'firstPlay', function(){
+			var onFirstPlay = function() {
 				if( firstPlay ){
 					if ( _this.getConfig( 'triggerPlayFirst' ) === true ){
 						play();
@@ -349,7 +343,14 @@ kWidget.addReadyCallback( function( playerId ){
 					}
 				}
 				firstPlay = false;
+			};
+
+			this.bind('entryReady', function() {
+				kWidget.log( 'omnitureOnPage: entryReady' );
+				_this.cacheEntryMetadata();
 			});
+			// Run open on first play:
+			this.bind( 'firstPlay', onFirstPlay);
 			this.bind( 'playerSeekStart', function() {
 				// Ignore HTML5 seek to 0 on PlayerPlayEnd
 				if(firstPlay) return;
@@ -364,6 +365,11 @@ kWidget.addReadyCallback( function( playerId ){
 			this.bind( 'userInitiatedPlay', function(){
 				if (!firstPlay){
 					play();
+				} else {
+					// handle video replay
+					// because 'firstPlay' isn't get triggered
+					// when user initiates the replay
+					onFirstPlay();
 				}
 			} );
 			this.bind( 'AdSupport_midSequenceComplete', play );
@@ -413,7 +419,7 @@ kWidget.addReadyCallback( function( playerId ){
 						_this.sendNotification( eventId, eventName );
 					});
 				}(_this.trimSpaces(customEvents[i])));
-			}		
+			}
 		},
 
 		getPropsAndEvars: function( eventName ){
@@ -430,7 +436,7 @@ kWidget.addReadyCallback( function( playerId ){
 				}
 				propsAndEvars[ eVarId ] = eVarVal;
 			}
-			// Special Case a few base eVar mappings 
+			// Special Case a few base eVar mappings
 			if( this.getConfig( 'contentType') ){
 				propsAndEvars[  this.getConfig( 'contentType') ] = this.getCType();
 			}
@@ -443,12 +449,12 @@ kWidget.addReadyCallback( function( playerId ){
 				propsAndEvars[ ePropId ] = ePropVal;
 			}
 			return propsAndEvars;
-	 	},		
+	 	},
 		/**
 		 * Get the media content type
 		 */
 		getCType: function(){
-			// kaltura mediaTypes are defined here: 
+			// kaltura mediaTypes are defined here:
 			// http://www.kaltura.com/api_v3/testmeDoc/index.php?object=KalturaMediaType
 			switch( this.entryData.mediaType ){
 				case 1:
@@ -467,13 +473,13 @@ kWidget.addReadyCallback( function( playerId ){
 		runMediaCommand: function(){
 			// https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Functions_and_function_scope/arguments#Description
 	 		var args = Array.prototype.slice.call( arguments );
-	 		// always push event to queue: 
+	 		// always push event to queue:
 	 		this.mediaQueue.push( args );
 	 		// Exit if sCode is not loaded exit
 			if( !this.sCodeLoaded ) {
 				return ;
 			}
-			// process queue: 
+			// process queue:
 			this.proccessMediaQueue();
 		},
 		proccessMediaQueue: function(){
@@ -481,7 +487,7 @@ kWidget.addReadyCallback( function( playerId ){
 				return ;
 			}
 			var x;
-			while(x = this.mediaQueue.shift()){ 
+			while(x = this.mediaQueue.shift()){
 				this.runMediaCommandWithArgs( x );
 			}
 		},
@@ -566,8 +572,8 @@ kWidget.addReadyCallback( function( playerId ){
 
 		/**
 	 	 * Dispatches an event to omniture via the s.track(); call
-	 	 * 
-	 	 * This is based on AJAX event tracking docs: 
+	 	 *
+	 	 * This is based on AJAX event tracking docs:
 	 	 * https://microsite.omniture.com/t2/help/en_US/sc/implement/index.html#Implementing_with_AJAX
 	 	 *
 	 	 * @param {String} eventId The omniture event id
@@ -575,7 +581,7 @@ kWidget.addReadyCallback( function( playerId ){
 	 	 * @return
 	 	 */
 	 	sendNotification: function( eventId, eventName ){
-	 		// always add: 
+	 		// always add:
 	 		this.notificationQueue.push( [eventId, eventName ] );
 	 		// exit if sCode is not ready
 	 		if( !this.isScodeReady() ){
@@ -588,7 +594,7 @@ kWidget.addReadyCallback( function( playerId ){
 	 			return ;
 	 		}
 	 		var x;
-			while( x = this.notificationQueue.shift() ){ 
+			while( x = this.notificationQueue.shift() ){
 				this.sendNotificationBeacon( x[0], x[1] );
 			}
 	 	},
@@ -621,10 +627,10 @@ kWidget.addReadyCallback( function( playerId ){
  			s.events = eventId;
  			s.linkTrackEvents= eventId;
  			oDebugDispatch['events'] = s.events;
-	 		
+
 	 		// dispatch the event
 	 		s.tl(this, 'o', eventId);
-	 		
+
 	 		// Log the event:
 	 		try {
 	 			var logMethod = this.getConfig( 'trackEventMonitor' );
@@ -635,8 +641,8 @@ kWidget.addReadyCallback( function( playerId ){
 				);
 	 			_this.log( "s.track(), state:" +  logEvent, oDebugDispatch );
 	 		} catch ( e ){ }
-	 		
-	 	},	 	
+
+	 	},
 		normalizeAttrValue: function( attrValue ){
 			// normalize flash kdp string values
 			switch( attrValue ){
@@ -670,7 +676,7 @@ kWidget.addReadyCallback( function( playerId ){
 			);
 		}
 	}
-	
+
 	/**********************************
 	 * Initialization of omnitureOnpage:
 	 **********************************/
