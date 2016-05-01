@@ -112,7 +112,15 @@
 					this.overridePlayerMethods();
 
 					//Attach video tag to HLS engine
-					this.hls.attachMedia(this.getPlayer().getPlayerElement());
+					//IE ignores preload and loads source right away so defer attaching to first play event
+					if (!mw.isIE()) {
+						this.hls.attachMedia(this.getPlayer().getPlayerElement());
+					} else {
+						this.bind("firstPlay", function(){
+							this.hls.attachMedia(this.getPlayer().getPlayerElement());
+						}.bind(this));
+
+					}
 				}
 			},
 			/**
