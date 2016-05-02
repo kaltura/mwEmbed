@@ -78,7 +78,7 @@
             if(isId3TagTime) {
                 traceString = traceString + "id3 tag time = ";
             }else{
-                traceString = traceString + "updated monitor time = ";
+                //traceString = traceString + "updated monitor time = ";
             }
             mw.log(traceString + time);
             // Send the id3Tag info to the trackEventMonitor
