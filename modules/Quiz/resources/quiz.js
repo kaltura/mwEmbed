@@ -29,9 +29,8 @@
         IVQVer:'IVQ-2.41.rc2',
 
         setup: function () {
-            var _this = this,
-                embedPlayer = _this.getPlayer(),
-                promise;
+            var _this = this;
+            var embedPlayer = _this.getPlayer()
 
             embedPlayer.disableComponentsHover();
             mw.log("Quiz: " + _this.IVQVer);
@@ -50,15 +49,14 @@
                         embedPlayer.autoplay = false;
                     }
 
-                    _this.KIVQModule.setupQuiz()
-                        .fail(function(data, msg) {
-                            mw.log("Quiz: error loading quiz, error: " + msg);
-                            embedPlayer.hideSpinner();
-                            _this.KIVQModule.unloadQuizPlugin(embedPlayer);
-                            embedPlayer.enablePlayControls();
+                    _this.KIVQModule.setupQuiz().fail(function(data, msg) {
+                        mw.log("Quiz: error loading quiz, error: " + msg);
+                        embedPlayer.hideSpinner();
+                        _this.KIVQModule.unloadQuizPlugin(embedPlayer);
+                        embedPlayer.enablePlayControls();
                     }).done(function(data) {
-                            mw.log("Quiz: setup is completed, continuing...");
-                        });
+                        mw.log("Quiz: setup is completed, continuing...");
+                    });
 
                     _this.KIVQScreenTemplate = new mw.KIVQScreenTemplate(embedPlayer);
 
