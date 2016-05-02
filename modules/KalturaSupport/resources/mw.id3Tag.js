@@ -74,20 +74,19 @@
         },
 
         sendTrackEventMonitor: function(time, isId3TagTime) {
-            var traceString = "id3Tag plugin :: ";
+            var traceString = "id3Tag plugin :: id3 tag time = ";
             if(isId3TagTime) {
-                traceString = traceString + "id3 tag time = ";
-            }else{
-                traceString = traceString + "updated monitor time = ";
-            }
-            mw.log(traceString + time);
-            // Send the id3Tag info to the trackEventMonitor
-            if( this.getConfig( 'trackEventMonitor' ) ) {
-                try {
-                    window.parent[this.getConfig('trackEventMonitor')](
-                        traceString + time
-                    );
-                } catch (e) {}
+                mw.log(traceString + time);
+
+                // Send the id3Tag info to the trackEventMonitor
+                if (this.getConfig('trackEventMonitor')) {
+                    try {
+                        window.parent[this.getConfig('trackEventMonitor')](
+                            traceString + time
+                        );
+                    } catch (e) {
+                    }
+                }
             }
         }
 	}));

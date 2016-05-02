@@ -441,8 +441,17 @@
 						_this._onloadedmetadata();
 					});
 					this.log("player can't seek - try to init video element ready state");
-					vid.load();
-					vid.play();
+					if (!_this.skipUpdateSource) {
+						if ( $( vid ).attr( 'src' ) != _this.getSrc() ) { //relevant for IE and EDGE
+							$( vid ).attr( 'src' , _this.getSrc() ); //attach source before triggering play
+							vid.load();
+							vid.play();
+							_this.parseTracks();
+						}
+					}else {
+						vid.load();
+						vid.play();
+					}
 				}
 				// Try to seek for 15 seconds:
 				if (callbackCount >= 15) {

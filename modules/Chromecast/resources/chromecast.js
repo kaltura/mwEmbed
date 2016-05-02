@@ -496,29 +496,37 @@
 			var currentMediaURL = url || this.embedPlayer.getSource().src;
 			var mimeType = mime || this.embedPlayer.getSource().mimeType;
 
-			this.log("loading..." + currentMediaURL);
-			var mediaInfo = new chrome.cast.media.MediaInfo( currentMediaURL );
-			mediaInfo.contentType = mimeType;
-			this.request = new chrome.cast.media.LoadRequest( mediaInfo );
-			this.request.autoplay = false;
-			this.request.currentTime = 0;
+			this.embedPlayer.resolveSrcURL( currentMediaURL ).then(
+				function(source){
+					return source;
+				},
+				function () { //error
+					return currentMediaURL;
+				})
+				.then( function(currentMediaURL ){
+						_this.log("loading..." + currentMediaURL);
+						var mediaInfo = new chrome.cast.media.MediaInfo( currentMediaURL );
+						mediaInfo.contentType = mimeType;
+						_this.request = new chrome.cast.media.LoadRequest( mediaInfo );
+						_this.request.autoplay = false;
+						_this.request.currentTime = 0;
 
-			var payload = {
-				"title:" : $(".titleLabel").html(),
-				"thumb" : this.embedPlayer.poster
-			};
+						var payload = {
+							"title:" : $(".titleLabel").html(),
+							"thumb" : _this.embedPlayer.poster
+						};
 
-			var json = {
-				"payload" : payload
-			};
+						var json = {
+							"payload" : payload
+						};
 
-			this.request.customData = json;
+						_this.request.customData = json;
 
-			this.session.loadMedia(this.request,
-				_this.onMediaDiscovered.bind(this, 'loadMedia'),
-				_this.onMediaError
-			);
-
+						_this.session.loadMedia(_this.request,
+							_this.onMediaDiscovered.bind(_this, 'loadMedia'),
+							_this.onMediaError
+						);
+				});
 		},
 
 		stopMedia: function() {
@@ -567,9 +575,17 @@
 				},1000);
 			}else{
 				if ( this.embedPlayer.selectedPlayer.library == "Kplayer" ){
-					setTimeout(function(){
-						_this.embedPlayer.seek(seekTime, false);
-					},1000);
+					// since we don't have the canSeek promise, we need to reload the media on playerReady, wait for it to load and then preform the seek operation. Add a timeout as seek is not always available on the mediaLoaded event
+					this.bind("playerReady.stopCast", function(){
+						_this.unbind("playerReady.stopCast");
+						_this.bind("mediaLoaded.stopCast", function(){
+							_this.unbind("mediaLoaded.stopCast");
+							setTimeout(function(){
+								_this.embedPlayer.seek(seekTime, false);
+							},1000);
+						});
+						_this.embedPlayer.load();
+					})
 				}else{
 					this.embedPlayer.canSeek().then(function () {
 						_this.embedPlayer.seek(seekTime, false);
@@ -662,7 +678,7 @@
 
 		setPlayingScreen: function(){
 			var factor = $(".chromecastThumb").naturalWidth() / $(".chromecastThumb").naturalHeight();
-			var thumbWidth = this.embedPlayer.getVideoHolder().width() / 4;
+			var thumbWidth = 116;//this.embedPlayer.getVideoHolder().width() / 4;
 			$(".chromecastThumb").width(thumbWidth);
 			$(".chromecastThumbBorder").width(thumbWidth);
 			$(".chromecastThumb").height(thumbWidth / factor);
