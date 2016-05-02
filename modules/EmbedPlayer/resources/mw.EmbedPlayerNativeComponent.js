@@ -749,8 +749,6 @@
 		},
 
 		checkClipDoneCondition: function() {
-			mw.log( 'EmbedPlayer:nativeComponent: checkClipDoneCondition:' );
-
 			if ( mw.isAndroid() ) {
 				this.parent_checkClipDoneCondition();
 			}
