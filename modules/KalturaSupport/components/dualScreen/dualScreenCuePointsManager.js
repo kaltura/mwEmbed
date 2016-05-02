@@ -29,8 +29,9 @@
                         var result = [];
 
                         if (this.cuePoints) {
+                            var filterByTags = (args.tags ? args.tags : (args.tag ? [args.tag] : null));
                             result = $.grep(this.cuePoints, function (cuePoint) {
-                                var isValidTag = (!args.tag || (cuePoint.tags === args.tag));
+                                var isValidTag = (!filterByTags || filterByTags.indexOf(cuePoint.tags) !== -1);
                                 var isValidType = (!args.types || $.grep(args.types, function (cuePointType) {
                                     return (!cuePointType.main || cuePointType.main === cuePoint.cuePointType) && (!cuePointType.sub || cuePointType.sub === cuePoint.subType);
                                 }).length > 0);
