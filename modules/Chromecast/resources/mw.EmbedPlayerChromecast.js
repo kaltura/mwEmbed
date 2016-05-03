@@ -119,7 +119,13 @@
 			this.duration = duration;
 			$( this ).trigger( 'durationChange',[duration] );
 		},
-
+		backToLive: function () {
+			var _this = this;
+			$(this).trigger("chromecastBackToLive");
+			setTimeout( function() {
+				_this.triggerHelper('movingBackToLive'); //for some reason on Mac the isLive client response is a little bit delayed, so in order to get update liveUI properly, we need to delay "movingBackToLive" helper
+			}, 1000 );
+		},
 		getPlayerElement: function(){
 			return this.vid;
 		},
