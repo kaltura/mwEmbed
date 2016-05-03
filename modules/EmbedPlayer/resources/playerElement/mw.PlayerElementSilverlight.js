@@ -220,13 +220,6 @@
 				return {}
 			}
 		},
-		getCurrentBufferLength: function(){
-			var bufferLength = 0;
-			if (this.playerProxy) {
-				bufferLength = this.playerProxy.getCurrentBufferLength(); //return buffer length in seconds
-			}
-			return bufferLength;
-		},
 		/**
 		 * Bind a Player Function,
 		 *
