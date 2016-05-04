@@ -34,6 +34,7 @@
 					_this.play();
 				}
 			});
+			readyCallback();
 		},
 
 		// override these functions so embedPlayer won't try to sync time
