@@ -108,11 +108,20 @@
 
                     var currentTime = player.getPlayerElementTime() * 1000;
 
-                    if ($.isNumeric(lastHandledServerTime) && lastHandledServerTime > currentTime)
+                    if ($.isNumeric(lastHandledServerTime) && (lastHandledServerTime - 3000) > currentTime)
                     {
-                        // this part handles situation when user 'seek' from the player or if the server time changes
-                        // for unknown reason. We don't use the 'seek' event since it sometimes provide an offset time and
-                        // fix the value later but our code already modify its' internal state according to the offset time.
+                        /****
+                         * Developer notice:
+                         * - This part handles situation when user 'seek' from the player or if the server time changes
+                         *   for unknown reason.
+                         * - This condition handles only 'seek' to the past, we don't need to handle 'seek' to future time since it is
+                         *   handled by the function code
+                         * - We don't use the player 'seek' event since it sometimes provide incorrect time and
+                         *   fix the value later but our code already modify its' internal state according to the incorrect time.
+                         * - Still we need to have a grace period of 3 seconds to ignore minor time shifting
+                         * - We don't need to handle seeking
+                         */
+                        //
                         reinvokeReachedLogicManually();
                         return;
                     }
