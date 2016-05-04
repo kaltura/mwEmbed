@@ -24,7 +24,7 @@
 		// The bind postfix:
 		bindPostfix: '.kCuePoints',
 		midCuePointsArray: [],
-		codeCuePointsArray : [],
+		managerCuePointsArray : [],
 		liveCuePointsIntervalId: null,
 		supportedCuePoints: [
 			mw.KCuePoints.TYPE.CODE,
@@ -69,7 +69,7 @@
 			});
 			// Create new array with midrolls only
 			var newCuePointsArray = [];
-			var newCodeCuePointsArray = [];
+			var newManagerCuePointsArray = [];
 			$.each(cuePoints, function (idx, cuePoint) {
 				if ((_this.getVideoAdType(cuePoint) == 'pre' || _this.getVideoAdType(cuePoint) == 'post') &&
 					cuePoint.cuePointType == 'adCuePoint.Ad') {
@@ -78,7 +78,7 @@
 					// Midroll or non-ad cuepoint
 					if (cuePoint.cuePointType === 'codeCuePoint.Code' || cuePoint.cuePointType === 'thumbCuePoint.Thumb')
 					{
-						newCodeCuePointsArray.push(cuePoint);
+						newManagerCuePointsArray.push(cuePoint);
 					}
 
 					if (cuePoint.cuePointType !== 'codeCuePoint.Code'  && cuePoint.cuePointType != "eventCuePoint.Event") {
@@ -88,7 +88,7 @@
 			});
 
 			this.midCuePointsArray = newCuePointsArray;
-			this.codeCuePointsArray = newCodeCuePointsArray;
+			this.managerCuePointsArray = newManagerCuePointsArray;
 		},
 		initSupportedCuepointTypes: function(){
 			//Initial flashvars configuration arrives in form of comma-separated string,
@@ -166,7 +166,7 @@
 			var cuePoints = this.getCuePoints();
 
 			this.fixLiveCuePointArray(this.midCuePointsArray);
-			this.fixLiveCuePointArray(this.codeCuePointsArray);
+			this.fixLiveCuePointArray(this.managerCuePointsArray);
 			this.fixLiveCuePointArray(cuePoints);
 
 			this.associativeCuePoints = {};
@@ -238,7 +238,7 @@
 				var _this = this;
 
 				var thumbNewCuePoints = [];
-				var codeNewCuePoints = [];
+				var managerNewCuePoints = [];
 				//Only add new cuepoints
 				$.each(rawCuePoints, function (id, rawCuePoint) {
 					if (!_this.associativeCuePoints[rawCuePoint.id]) {
@@ -246,7 +246,7 @@
 
 						if (rawCuePoint.cuePointType === 'codeCuePoint.Code' || rawCuePoint.cuePointType === 'thumbCuePoint.Thumb')
 						{
-							codeNewCuePoints.push(rawCuePoint);
+							managerNewCuePoints.push(rawCuePoint);
 						}
 
 						if (rawCuePoint.cuePointType !== 'codeCuePoint.Code')
@@ -268,9 +268,9 @@
 					});
 				}
 
-				if (codeNewCuePoints.length > 0) {
+				if (managerNewCuePoints.length > 0) {
 					// update code cue points
-					$.merge(this.codeCuePointsArray, codeNewCuePoints);
+					$.merge(this.managerCuePointsArray, managerNewCuePoints);
 				}
 			}
 		},
@@ -365,9 +365,9 @@
 			}
 			return this.embedPlayer.rawCuePoints;
 		},
-		getCodeCuePoints : function()
+		getManagerCuePoints : function()
 		{
-			return this.codeCuePointsArray || [];
+			return this.managerCuePointsArray || [];
 		},
 		getCuePointsByType: function (type, subType) {
 			var filteredCuePoints = this.getCuePoints();

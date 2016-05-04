@@ -29,21 +29,7 @@
 				{
 					if (!_this.cuePointsManager) {
 						// we need to initialize the instance
-						_this.cuePointsManager = new mw.dualScreen.CuePointsManager('imagePlayer', '', _this.getPlayer(), function (args) {
-
-							var cuePoints = args.filter({tags: ['remove-selected-thumb']});
-							cuePoints = cuePoints.concat(args.filter({types: [{main:'thumbCuePoint.Thumb'}]}));
-
-							cuePoints.sort(function (a, b) {
-								return  (b.startTime - a.startTime);
-							});
-
-							var mostUpdatedCuePointToHandle = cuePoints.length > 0 ? cuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
-
-							if (mostUpdatedCuePointToHandle) {
-								_this.syncImage(mostUpdatedCuePointToHandle)
-							}
-						});
+						_this.cuePointsManager = new mw.dualScreen.CuePointsManager('imagePlayer', '', _this.getPlayer(),_this.cuePointsReached,_this);
 					}
 
 					// enable cue points manager
@@ -55,6 +41,21 @@
 				if (_this.cuePointsManager) {
 					_this.cuePointsManager.disable();
 				}
+			}
+		},
+		cuePointsReached : function(context)
+		{
+			var cuePoints = context.filter({tags: ['remove-selected-thumb']});
+			cuePoints = cuePoints.concat(context.filter({types: [{main:'thumbCuePoint.Thumb'}]}));
+
+			cuePoints.sort(function (a, b) {
+				return  (b.startTime - a.startTime);
+			});
+
+			var mostUpdatedCuePointToHandle = cuePoints.length > 0 ? cuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
+
+			if (mostUpdatedCuePointToHandle) {
+				this.syncImage(mostUpdatedCuePointToHandle)
 			}
 		},
 		canRender: function () {
@@ -76,30 +77,7 @@
 			this.bind( 'onplay', function () {
 				_this.loadAdditionalAssets();
 			} );
-			//In live mode wait for first updatetime that is bigger then 0 for syncing initial slide
-			if (mw.getConfig("EmbedPlayer.LiveCuepoints") && this.getPlayer().isLive()) {
-				this.bind( 'timeupdate', function ( ) {
-					if (_this.getPlayer().currentTime > 0) {
-						_this.unbind('timeupdate');
-					}
-					_this.sync();
-				} );
-			}
 
-			this.bind( 'KalturaSupport_ThumbCuePointsReady', function () {
-				_this.sync();
-			} );
-			this.bind( 'KalturaSupport_CuePointReached', function ( e, cuePointObj ) {
-				var cuePoint;
-				$.each(_this.getConfig("cuePointType"), function(i, cuePointType){
-					var main = $.isArray(cuePointType.main) ? cuePointType.main : [cuePointType.main];
-					var sub = $.isArray(cuePointType.sub) ? cuePointType.sub : [cuePointType.sub];
-					if ( ( $.inArray( cuePointObj.cuePoint.cuePointType, main ) > -1 ) &&
-						( $.inArray( cuePointObj.cuePoint.subType, sub ) > -1 ) ) {
-						_this.sync();
-					}
-				});
-			} );
 			this.bind("onChangeMedia", function(){
 				if (_this.syncEnabled) {
 					//Clear the current slide before loading the new media
@@ -111,7 +89,11 @@
 			});
 			this.bind("onChangeStreamDone", function(){
 				_this.syncEnabled = true;
-				_this.sync();
+				var cuePointsReachedResult = _this.cuePointsManager.getCuePointsReached();
+				if (cuePointsReachedResult)
+				{
+					_this.cuePointsReached(cuePointsReachedResult);
+				}
 			});
 		},
 		getComponent: function() {
@@ -155,10 +137,6 @@
 				return a.startTime - b.startTime;
 			});
 			return cuePoints;
-		},
-		sync : function()
-		{
-
 		},
 		syncImage: function(cuePoint){
 			if (this.syncEnabled) {
