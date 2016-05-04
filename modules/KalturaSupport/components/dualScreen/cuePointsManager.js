@@ -66,7 +66,7 @@
         function reinvokeReachedLogicManually()
         {
             var currentTime = player.getPlayerElementTime() * 1000;
-            log('reinvokeReachedLogicManually', 'server time was modified to a past time (previously ' + lastHandledServerTime + ', current ' + currentTime + "). re-invoke logic by finding all cue points relevant until current time" );
+            log('reinvokeReachedLogicManually()', 'server time was modified to a past time (previously ' + lastHandledServerTime + ', current ' + currentTime + "). re-invoke logic by finding all cue points relevant until current time" );
             lastHandledServerTime = currentTime;
 
             nextPendingCuePointIndex = getNextCuePointIndex(currentTime, 0);
@@ -109,11 +109,12 @@
 
                     var currentTime = player.getPlayerElementTime() * 1000;
 
-                    if ($.isNumeric(lastHandledServerTime) && lastHandledServerTime > currentTime)
+                    if ($.isNumeric(lastHandledServerTime) && (lastHandledServerTime - 3000) > currentTime)
                     {
                         // this part handles situation when user 'seek' from the player or if the server time changes
                         // for unknown reason. We don't use the 'seek' event since it sometimes provide an offset time and
                         // fix the value later but our code already modify its' internal state according to the offset time.
+                        // NOTE - we set 3 seconds tolerance period to prevent minor shifting of player time.
                         reinvokeReachedLogicManually();
                         return;
                     }

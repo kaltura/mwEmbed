@@ -11,7 +11,7 @@
             {
                 var _this = this;
 
-                if (_this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") || _this.getPlayer().kCuePoints) {
+                if ((_this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints")) || _this.getPlayer().kCuePoints) {
                     // handle cue points only if either live or we have cue points loaded from the server
                     setTimeout(function()
                     {

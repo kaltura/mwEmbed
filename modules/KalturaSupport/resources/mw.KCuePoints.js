@@ -76,10 +76,12 @@
 					_this.triggerCuePoint(cuePoint);
 				} else {
 					// Midroll or non-ad cuepoint
-					if (cuePoint.cuePointType === 'codeCuePoint.Code')
+					if (cuePoint.cuePointType === 'codeCuePoint.Code' || cuePoint.cuePointType === 'thumbCuePoint.Thumb')
 					{
 						newCodeCuePointsArray.push(cuePoint);
-					}else if (cuePoint.cuePointType != "eventCuePoint.Event") {
+					}
+
+					if (cuePoint.cuePointType !== 'codeCuePoint.Code'  && cuePoint.cuePointType != "eventCuePoint.Event") {
 						newCuePointsArray.push(cuePoint);
 					}
 				}
@@ -242,10 +244,13 @@
 					if (!_this.associativeCuePoints[rawCuePoint.id]) {
 						_this.associativeCuePoints[rawCuePoint.id] = rawCuePoint;
 
-						if (rawCuePoint.cuePointType === 'codeCuePoint.Code')
+						if (rawCuePoint.cuePointType === 'codeCuePoint.Code' || rawCuePoint.cuePointType === 'thumbCuePoint.Thumb')
 						{
 							codeNewCuePoints.push(rawCuePoint);
-						}else {
+						}
+
+						if (rawCuePoint.cuePointType !== 'codeCuePoint.Code')
+						{
 							thumbNewCuePoints.push(rawCuePoint);
 						}
 					}
