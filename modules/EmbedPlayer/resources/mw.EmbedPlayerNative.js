@@ -140,7 +140,7 @@
 				this.supports.volumeControl = false;
 			}
 			// Check if we already have a selected source and a player in the page,
-			if (this.getPlayerElement() && this.getSrc() && !mw.isIE()) {
+			if (this.getPlayerElement() && this.getSrc() && !mw.isIE() && !mw.isEdge()) {
 				$(this.getPlayerElement()).attr('src', this.getSrc());
 			}
 			// Check if we already have a video element an apply bindings ( for native interfaces )
@@ -279,7 +279,7 @@
 			}
 			// Update the player source ( if needed )
 			if (!this.skipUpdateSource) {
-				if ( $( vid ).attr( 'src' ) != this.getSrc( this.currentTime ) && !mw.isIE() ) {
+				if ( $( vid ).attr( 'src' ) != this.getSrc( this.currentTime ) && !mw.isIE() && !mw.isEdge() ) {
 					$( vid ).attr( 'src' , this.getSrc( this.currentTime ) );
 				}
 			}
@@ -406,8 +406,9 @@
 				this.playing = true;
 			}
 
+			mw.log("---- 1 vid.readyState = "+vid.readyState);
 			// some initial calls to prime the seek:
-			if (vid.currentTime === 0 && callbackCount === 0) {
+			if ( ( vid.currentTime === 0 && callbackCount === 0 ) && vid.readyState === 0 ) { //load video again if not loaded yet (vid.readyState === 0)
 				// when seeking turn off preload none and issue a load call.
 				$(vid)
 					.attr('preload', 'auto')
@@ -441,8 +442,18 @@
 						_this._onloadedmetadata();
 					});
 					this.log("player can't seek - try to init video element ready state");
-					vid.load();
-					vid.play();
+					if (!_this.skipUpdateSource) {
+						if ( $( vid ).attr( 'src' ) != _this.getSrc() ) { //relevant for IE and EDGE
+							$( vid ).attr( 'src' , _this.getSrc() ); //attach source before triggering play
+							vid.load();
+							vid.play();
+							_this.parseTracks();
+						}
+					}else {
+						mw.log("---- 2 vid.readyState = "+vid.readyState);
+						vid.load();
+						vid.play();
+					}
 				}
 				// Try to seek for 15 seconds:
 				if (callbackCount >= 15) {
@@ -1404,8 +1415,18 @@
             var _this = this;
             metadataTrack.addEventListener("cuechange", function (evt) {
                 try {
-                    var id3Tag = evt.currentTarget.cues[evt.currentTarget.cues.length - 1].value.data;
-                    _this.triggerHelper('onId3Tag', id3Tag);
+					var id3Tag;
+					if ( mw.isEdge() ){
+						//Get the data from the event + Unicode transform
+						var id3TagData = String.fromCharCode.apply(null, new Uint8Array(evt.currentTarget.cues[evt.currentTarget.cues.length - 1].data));
+						//Get the JSON substring
+						var id3TagString = id3TagData.substring(id3TagData.indexOf("{"), id3TagData.lastIndexOf("}")+1);
+						//Parse JSON
+						id3Tag = JSON.parse(id3TagString);
+					} else {
+						id3Tag = JSON.parse(evt.currentTarget.cues[evt.currentTarget.cues.length - 1].value.data);
+					}
+					_this.triggerHelper('onId3Tag', id3Tag);
                 }
                 catch (e) {
                     mw.log("Native player :: id3Tag :: ERROR :: "+e);
@@ -1440,7 +1461,10 @@
             this.getPlayerElement().audioTracks[audioTrackIndex].enabled = true;
         },
         getCurrentBufferLength: function(){
-            return parseInt(this.playerElement.buffered.end(0) - this.playerElement.currentTime); //return buffer length in seconds
+            if ( this.playerElement.buffered.length > 0 ) {
+                return parseInt(this.playerElement.buffered.end(0) - this.playerElement.currentTime); //return buffer length in seconds
+            }
+            return 0;
         }
 	};
 })(mediaWiki, jQuery);

@@ -322,7 +322,6 @@ mw.KAnalytics.prototype = {
 		var percent = embedPlayer.currentTime / embedPlayer.duration;
 		var seekPercent = this.lastSeek/ embedPlayer.duration;
 
-
 		// Send updates based on logic present in StatisticsMediator.as
 		if ( !embedPlayer.isLive() ){
 			if( !_this._p25Once && percent >= .25  &&  seekPercent <= .25 ) {

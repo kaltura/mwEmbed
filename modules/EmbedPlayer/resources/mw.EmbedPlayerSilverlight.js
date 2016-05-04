@@ -482,7 +482,6 @@
 					} , timeout );
 				}
 				_this.autoplay = _this.autoplay || _this.isMulticast;
-				flashvars.autoplay = _this.autoplay;
 				flashvars.isLive = _this.isLive();
 				flashvars.isDVR = ( _this.isDVR() == 1 );
 				_this.durationReceived = false;
@@ -641,7 +640,6 @@
 				this.getPlayerContainer().css( 'visibility' , 'hidden' );
 				this.durationReceived = true;
 				if ( !this.isError ) {
-					this.callReadyFunc();
 
 					//in silverlight we have unusual situation where "Start" is sent after "playing", this workaround fixes the controls state
 					if ( this.autoplay ) {
@@ -759,7 +757,9 @@
 		 * load method calls parent_load to start fetching media from server, in case of DRM the license request will be handled as well
 		 */
 		load: function () {
-			this.playerObject.load();
+			if ( this.streamerType !== "smoothStream" ){
+				this.playerObject.load();
+			}
 		},
 		/**
 		 * playerSwitchSource switches the player source working around a few bugs in browsers
@@ -885,6 +885,14 @@
 
 		onSwitchingChangeComplete: function ( data , id ) {
 			var value = JSON.parse( data );
+
+			var sources = this.getSources();
+			if (sources && (sources.length >= value.newIndex)){
+				var source = sources[value.newIndex];
+				this.triggerHelper('bitrateChange', source.getBitrate());
+				this.currentBitrate = source.getBitrate();
+			}
+
 			//fix a bug that old switching process finished before the user switching request and the UI was misleading
 			if ( this.requestedSrcIndex !== null && value.newIndex !== this.requestedSrcIndex ) {
 				return;
@@ -965,14 +973,17 @@
 		} ,
 
 		switchSrc: function ( source ) {
-			if ( this.playerObject && this.mediaElement.getPlayableSources().length > 1 ) {
+			if ( this.playerObject && this.getSources().length > 1 ) {
 				var trackIndex = -1;
 				if ( source !== -1 ) {
 					trackIndex = this.getSourceIndex( source );
 					mw.log("EmbedPlayerSPlayer:: switch to track index: " + trackIndex);
+					var bitrate = source.getBitrate();
 					$(this).trigger('sourceSwitchingStarted', [
-						{currentBitrate: source.getBitrate()}
+						{currentBitrate: bitrate}
 					]);
+					this.currentBitrate = bitrate;
+					this.triggerHelper('bitrateChange', bitrate);
 				}
 				this.requestedSrcIndex = trackIndex;
 				this.playerObject.selectTrack( trackIndex );

@@ -34,7 +34,7 @@
 		},
 		onConfigChange: function( property, value ){
 			if (value != null){
-				if (mw.isMobileDevice() && property !== 'buttonsIconColor' && property !== 'applyToLargePlayButton'){
+				if (mw.getConfig("EmbedPlayer.EnableMobileSkin") &&  mw.isMobileDevice() && property !== 'buttonsIconColor' && property !== 'applyToLargePlayButton'){
 					return;
 				}
 				switch( property ) {
