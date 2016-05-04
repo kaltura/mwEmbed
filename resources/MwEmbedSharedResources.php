@@ -450,7 +450,11 @@ return array(
     'dotdotdot' => array(
         'scripts' => 'resources/jquery.dotdotdot/jquery.dotdotdot.min.js',
         'dependencies' => 'jquery'
-    )
+    ),
+    'threejs' => array(
+          'scripts' => 'resources/threejs/three.min.js'
+      )
+
 	/*'mediawiki.language.parser' => new MwEmbedResourceLoaderFileModule( array(
 		'scripts' => 'resources/mediawiki.language/mediawiki.language.parser.js',
 		'dependencies' => array( 'mediawiki.language', 'mediawiki.util' ),

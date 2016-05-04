@@ -65,8 +65,10 @@
 				_this.sync( cuePoint );
 			} );
 			this.bind("onChangeMedia", function(){
-				//Clear the current slide before loading the new media
-				_this.getComponent().attr("src", "");
+				if (_this.syncEnabled) {
+					//Clear the current slide before loading the new media
+					_this.getComponent().attr("src", "");
+				}
 			});
 			this.bind("onChangeStream", function(){
 				_this.syncEnabled = false;

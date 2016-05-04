@@ -653,6 +653,55 @@ HTML;
 		}
 	}
 
+		function outputCustomCss(){
+    		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
+    		if (isset($playerConfig['plugins']['theme'])){
+    			$theme = $playerConfig['plugins']['theme'];
+    			$customStyle = '<style type="text/css">';
+    			if (isset($theme['buttonsSize'])){
+    				$customStyle = $customStyle . '.controlsContainer, .topBarContainer {font-size: ' . $theme['buttonsSize'] . 'px}';
+    			}
+    			if (isset($theme['buttonsColor'])){
+    				$customStyle = $customStyle . '.btn {background-color: ' . $theme['buttonsColor'] . '}';
+    				if (isset($theme['applyToLargePlayButton']) && $theme['applyToLargePlayButton'] == true){
+    					$customStyle = $customStyle  . '.largePlayBtn {background-color: ' . $theme['buttonsColor'] . '!important}';
+    				}
+    			}
+    			if (isset($theme['sliderColor'])){
+    				$customStyle = $customStyle . '.ui-slider {background-color: ' . $theme['sliderColor'] . '!important}';
+    			}
+    			if (isset($theme['controlsBkgColor'])){
+    				$customStyle = $customStyle . '.controlsContainer {background-color: ' . $theme['controlsBkgColor'] . '!important}';
+    				$customStyle = $customStyle . '.controlsContainer {background: ' . $theme['controlsBkgColor'] . '!important}';
+    			}
+    			if (isset($theme['scrubberColor'])){
+    				$customStyle = $customStyle . '.playHead {background-color: ' . $theme['scrubberColor'] . '!important}';
+    				$customStyle = $customStyle . '.playHead {background: ' . $theme['scrubberColor'] . '!important}';
+    			}
+    			if (isset($theme['buttonsIconColor'])){
+    				$customStyle = $customStyle . '.btn {color: ' . $theme['buttonsIconColor'] . '!important}';
+    				if (isset($theme['applyToLargePlayButton']) && $theme['applyToLargePlayButton'] == true){
+    					$customStyle = $customStyle  . '.largePlayBtn {color: ' . $theme['buttonsIconColor'] . '!important}';
+    				}
+    			}
+    			if (isset($theme['watchedSliderColor'])){
+    				$customStyle = $customStyle . '.watched {background-color: ' . $theme['watchedSliderColor'] . '!important}';
+    			}
+    			if (isset($theme['bufferedSliderColor'])){
+                    $customStyle = $customStyle . '.buffered {background-color: ' . $theme['bufferedSliderColor'] . '!important}';
+                }
+    			if (isset($theme['timeLabelColor'])){
+    				$customStyle = $customStyle . '.currentTimeLabel {color: ' . $theme['timeLabelColor'] . '!important}';
+    				$customStyle = $customStyle . '.durationLabel {color: ' . $theme['timeLabelColor'] . '!important}';
+    			}
+                if (isset($theme['buttonsIconColorDropShadow']) && isset($theme['dropShadowColor'])){
+                    $customStyle = $customStyle . '.btn {text-shadow: ' . $theme['dropShadowColor'] . '!important}';
+                }
+    			$customStyle =  $customStyle . '</style>' . "\n";
+    			echo $customStyle;
+    		}
+    	}
+
 	function getPath() {
 		global $wgResourceLoaderUrl;
 		return str_replace( 'load.php', '', $wgResourceLoaderUrl );
@@ -1235,6 +1284,7 @@ HTML;
 	<link href='//fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
 	<?php echo $this->outputIframeHeadCss(); ?>
 	<?php echo $this->outputSkinCss(); ?>
+	<?php echo $this->outputCustomCss(); ?>
 
 	<script type="text/javascript">
 		(function (document) {

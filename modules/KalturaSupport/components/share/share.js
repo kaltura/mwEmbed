@@ -165,7 +165,7 @@
 			this.bind('showScreen', function (event, screenName) {
 				if ( screenName === "share" ){
 					_this.getScreen().then(function(screen){
-						$(embedPlayer.getPlayerElement()).addClass("blur");
+						$( "#" + embedPlayer.getPlayerElement().id ).addClass("blur");
 						embedPlayer.getPlayerPoster().addClass("blur");
 					});
 				}
@@ -220,7 +220,7 @@
 
 			this.bind( 'onpause', function(event, data){
 				if ( _this.shareScreenOpened ){
-					$(embedPlayer.getPlayerElement()).addClass("blur");
+					$( "#" + embedPlayer.getPlayerElement().id ).addClass("blur");
 					embedPlayer.getPlayerPoster().addClass("blur");
 				}
 			});
@@ -417,7 +417,7 @@
 		},
 		closeScreen: function(){
 			if (this.getPlayer().getPlayerElement()) {
-				$( this.getPlayer().getPlayerElement()).removeClass( "blur" );
+				$(  "#" + this.getPlayer().getPlayerElement().id ).removeClass( "blur" );
 				this.getPlayer().getPlayerPoster().removeClass( "blur" );
 			}
 			$(".embed-offset-container").hide();

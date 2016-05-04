@@ -140,7 +140,7 @@
 			var hlsSource = sources.filter( function ( source ) {
 				return ( source.mimeType === "application/vnd.apple.mpegurl" );
 			});
-			drmSources.push(hlsSource);
+			drmSources.concat(hlsSource);
 		}
 		embedPlayer.kalturaFlavors = drmSources;
 		embedPlayer.replaceSources(drmSources);
@@ -203,7 +203,7 @@
 		};
 	}
 
-	if (!Array.prototype.findIndex) {
+	if (kWidget.isIOS() && !Array.prototype.findIndex) {
       Array.prototype.findIndex = function(predicate) {
         if (this === null) {
           throw new TypeError('Array.prototype.findIndex called on null or undefined');
