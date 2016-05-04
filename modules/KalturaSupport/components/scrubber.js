@@ -158,13 +158,22 @@
 		},
 		updatePlayheadUI: function (val) {
             if( this.getPlayer().isPlaying() && !this.paused && this.embedPlayer.isDVR() ) {
-                this.checkForLiveEdge();
+				this.checkForLiveEdge();
                 if( !this.getPlayer().isLiveOffSynch()) {
                     this.getComponent().slider('option', 'value', 999);
                     return;
                 }
             }
-            this.getComponent().slider('option', 'value', val);
+			if( this.embedPlayer.isDVR() ) {
+				if ( this.duration < 1800 ) {
+					var relativeEdge = this.calculateRelativeLiveEdge(val);
+					if ( !relativeEdge ) {
+						this.getComponent().slider('option', 'value', val);
+					}
+				}
+			} else {
+				this.getComponent().slider('option', 'value', val);
+			}
             if(this.paused && this.getPlayer().isPlaying()){
                 this.paused = false;
             }
@@ -180,6 +189,32 @@
                 this.getPlayer().setLiveOffSynch(false);
             }
         },
+		calculateRelativeLiveEdge: function ( val ) {
+			if ( this.duration < 50 ) {
+				return val > 700;
+			}
+			if ( this.duration < 100 ) {
+				return val > 800;
+			}
+			if ( this.duration < 200 ) {
+				return val > 850;
+			}
+			if ( this.duration < 500 ) {
+				return val > 900;
+			}
+			if ( this.duration < 900 ) {
+				return val > 950;
+			}
+			if ( this.duration < 1200 ) {
+				return val > 970;
+			}
+			if ( this.duration < 1400 ) {
+				return val > 980;
+			}
+			if ( this.duration < 1650 ) {
+				return val > 990;
+			}
+		},
 		setupThumbPreview: function () {
 			var _this = this;
 			this.thumbnailsLoaded = false;
