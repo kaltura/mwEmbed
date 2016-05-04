@@ -14,12 +14,12 @@
 			'displayImportance': "medium",
 			'disableUntilFirstPlay': false,
 			'showOnlyTime': false,
+			'liveEdge': 98,
 			'thumbSlicesUrl': null
 		},
 
 		waitForFirstPlay: false,
 		updateEnabled: true,
-        liveEdge: 98,
 
 		isSliderPreviewEnabled: function () {
 			return this.getConfig("sliderPreview") && !this.isDisabled;
@@ -176,7 +176,7 @@
             }
             var playHeadPercent = (this.getPlayHeadComponent().position().left + this.getPlayHeadComponent().width()/2) / this.getComponent().width();
             playHeadPercent = parseInt(playHeadPercent*100);
-            if( this.getPlayer().isLiveOffSynch() && playHeadPercent >= this.liveEdge ){
+            if( this.getPlayer().isLiveOffSynch() && playHeadPercent >= this.getConfig('liveEdge') ){
                 this.getPlayer().setLiveOffSynch(false);
             }
         },
@@ -330,7 +330,7 @@
 
             var timeText;
             if( this.embedPlayer.isDVR() ){
-                if( this.getPlayer().isLiveOffSynch() && parseInt(perc*100) > this.liveEdge ){
+                if( this.getPlayer().isLiveOffSynch() && parseInt(perc*100) > this.getConfig('liveEdge') ){
                     timeText = 'LIVE';
                 }else {
                     timeText = "-" + kWidget.seconds2npt(this.duration - currentTime);
