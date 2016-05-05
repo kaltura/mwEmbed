@@ -114,7 +114,7 @@
 
                     var currentTime = player.getPlayerElementTime() * 1000;
 
-                    if ($.isNumeric(lastHandledServerTime) && (lastHandledServerTime ) > currentTime)
+                    if ($.isNumeric(lastHandledServerTime) && (lastHandledServerTime - 2000) > currentTime)
                     {
                         // this part handles situation when user 'seek' from the player or if the server time changes
                         // for unknown reason. We don't use the 'seek' event since it sometimes provide an offset time and
