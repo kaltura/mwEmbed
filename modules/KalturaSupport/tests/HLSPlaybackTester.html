@@ -19,7 +19,7 @@
 
 <div class="form-group">
     <label for="url">HLS URL</label>
-    <input type="email" class="form-control" id="url" value="http://cdnapi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_sf5ovm7u/flavorIds/1_jl7y56al/format/applehttp/protocol/http/a.m3u8">
+    <input type="email" class="form-control" id="url" value="http://cdnapi.kaltura.com/p/1878761/sp/187876100/playManifest/entryId/1_usagz19w/flavorIds/1_5spqkazq,1_nslowvhp,1_boih5aji,1_qahc37ag/format/applehttp/protocol/http/a.m3u8">
   </div>
   
   <div class="form-group">
@@ -180,6 +180,7 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
             "hlsMaxBufferTime": parseInt($('#maxBuffer').val()),
 
             "sourceSelector.plugin" : true,
+            "sourceSelector.displayMode" : "sizebitrate",
             "closedCaptions.showEmbeddedCaptions" : true,
             'debugInfo': {
                 'plugin': true
@@ -240,33 +241,45 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
 
         kWidget.addReadyCallback(function( playerId ){
             var kdp = document.getElementById( playerId );
+            //HLS-JS debug info
+            //kdp.kBind("hlsjsUpdatePTS", function( data ){
+            //});
+            kdp.kBind("hlsjsLevelSwitch", function( data ){
+                $('#currentBitrate').text(data);
+            });
+            kdp.kBind("hlsjsDropFPS", function( data ){
+                $('#droppedFrames').text("FPS_DROP =>" + data);
+            });
+
+            //HLS-OSMF debug info
             kdp.kBind("debugInfoReceived", function( data ){
-                var ts;
-                if( data.uri ){
-                    var url = data.uri.split('.');
-                    ts = url[url.length-2] + ".ts";
-                }
-                if( data.info && data.info == "Playing segment"){
-                    $('#playingSeg').text( ts );
-                }
-                if( data.info && data.info == "Downloading segment"){
-                    $('#downloadingSeg').text( ts);
-                }
-                if( data.info && data.info == "Finished processing segment"){
-                    $('#processedSeg').text( ts );
-                }
-                if( data.bufferLength ){
-                    $('#bufferLen').text( data.bufferLength );
-                }
-                if( data.droppedFrames ){
-                    $('#droppedFrames').text( data.droppedFrames );
-                }
-                if( data.currentBitrate ){
-                    $('#currentBitrate').text( data.currentBitrate );
-                }
-                if( data.FPS ){
-                    $('#currentFPS').text( data.FPS );
-                }
+                    var ts;
+                    if (data.uri) {
+                        var url = data.uri.split('.');
+                        ts = url[url.length - 2] + ".ts";
+                    }
+                    if (data.info && data.info == "Playing segment") {
+                        $('#playingSeg').text(ts);
+                    }
+                    if (data.info && data.info == "Downloading segment") {
+                        $('#downloadingSeg').text(ts);
+                    }
+                    if (data.info && data.info == "Finished processing segment") {
+                        $('#processedSeg').text(ts);
+                    }
+                    if (data.bufferLength) {
+                        $('#bufferLen').text(data.bufferLength);
+                    }
+                    if (data.droppedFrames) {
+                        $('#droppedFrames').text(data.droppedFrames);
+                    }
+                    if (data.currentBitrate) {
+                        $('#currentBitrate').text(data.currentBitrate);
+                    }
+                    if (data.FPS) {
+                        $('#currentFPS').text(data.FPS);
+                    }
+
             });
         });
 	});
