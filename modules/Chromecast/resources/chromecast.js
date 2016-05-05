@@ -79,6 +79,11 @@
 			this.bind('chromecastSetVolume', function(e, percent){_this.setVolume(e,percent);});
 			this.bind('chromecastSeek', function(e, percent){_this.seekMedia(percent);});
 			this.bind('stopCasting', function(){_this.toggleCast();});
+			this.bind('chromecastBackToLive', function(){
+					if (_this.getCurrentTime() > 0){
+						_this.loadMedia();
+					}
+			});
 
 			$( this.embedPlayer).bind('chromecastDeviceConnected', function(){
 				_this.onRequestSessionSuccess();
@@ -193,6 +198,9 @@
 			}
 			if ( this.getConfig("receiverLogo") ){
 				this.sendMessage({'type': 'show', 'target': 'logo'});
+			}
+			if (this.embedPlayer.isLive()){
+				this.sendMessage({'type': 'live', 'value': true});
 			}
 			// add DRM support
 			if (this.drmConfig){

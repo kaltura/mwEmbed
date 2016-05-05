@@ -137,6 +137,7 @@
 		monitor: function(){
 			var vid = this.getPlayerElement();
 			if ( vid && vid.currentTime !== null && vid.duration !== null) {
+				this.currentTime = vid.currentTime;
 				$(this).trigger("updatePlayHeadPercent",[ vid.currentTime / vid.duration ]);
 				$( this ).trigger( 'externalTimeUpdate', [vid.currentTime]);
 			}
