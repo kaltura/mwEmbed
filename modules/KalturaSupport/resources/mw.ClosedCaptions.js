@@ -132,7 +132,16 @@
 				this.bind( 'playing', function(){
 					_this.ended = false;
 				});
-			}
+
+                this.bind('resizeEvent', function () {
+					// in WebVTT we have to remove the caption on resizing
+					// for recalculation the caption layout
+                    if ( _this.selectedSource.mimeType === "text/vtt" ) {
+						mw.log( 'mw.ClosedCaptions:: resizeEvent: remove captions' );
+                        _this.getPlayer().getInterface().find('.track').remove();
+                    }
+                })
+            }
 
 			this.bind( 'onplay', function(){
 				_this.playbackStarted = true;
@@ -578,9 +587,26 @@
 		},
 
 		addCaption: function( source, capId, caption ){
-			// use capId as a class instead of id for easy selections and no conflicts with
-			// multiple players on page.
-			var $textTarget = $('<div />')
+            var $textTarget;
+            if ( source.mimeType === "text/vtt" ) {
+				//in WebVTT we get an entire div which contains the styled caption
+				//so we should only hang it on the DOM
+                $textTarget = $('<div />')
+                    .addClass('track')
+                    .attr('data-capId', capId)
+                    .html($(caption.content).addClass('caption'));
+
+                this.displayTextTarget($textTarget);
+
+				// apply custom style
+                $('.caption div').css(this.getCaptionCss());
+
+                return;
+            }
+
+            // use capId as a class instead of id for easy selections and no conflicts with
+            // multiple players on page.
+            $textTarget = $('<div />')
 				.addClass( 'track' )
 				.attr( 'data-capId', capId )
 				.hide();

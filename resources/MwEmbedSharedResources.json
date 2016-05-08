@@ -461,5 +461,8 @@
     "threejs":{
       "dependencies": "jquery",
       "scripts": "resources/threejs/three.min.js"
+    },
+    "vtt.js": {
+        "scripts": "resources/vtt.js/vtt.js"
     }
 }

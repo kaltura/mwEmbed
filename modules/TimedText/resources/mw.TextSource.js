@@ -99,19 +99,14 @@
 		* @param {Number} time Time in seconds
 		*/
 		getCaptionForTime: function ( time ) {
-			var prevCaption = this.captions[ this.prevIndex ];
 			var captionSet = {};
-
-			// Setup the startIndex:
-			if( prevCaption && time >= prevCaption.start ) {
-				var startIndex = this.prevIndex;
-			} else {
+			var isWebVTT = false;
+			var prevIndexUpdated = false;
+			if( time <  this.captions[this.prevIndex].start ) {
 				// If a backwards seek start searching at the start:
-				var startIndex = 0;
+				this.prevIndex = 0;
 			}
-			var firstCapIndex = 0;
-			// Start looking for the text via time, add all matches that are in range
-			for( var i = startIndex ; i < this.captions.length; i++ ) {
+			for( var i = this.prevIndex ; i < this.captions.length; i++ ) {
 				var caption = this.captions[ i ];
 				// Don't handle captions with 0 or -1 end time:
 				if( caption.end == 0 || caption.end == -1)
@@ -119,17 +114,39 @@
 
 				if( time >= caption.start &&
 					time <= caption.end ) {
-					// set the earliest valid time to the current start index:
-					if( !firstCapIndex ){
-						firstCapIndex = caption.start;
+
+					captionSet[i] = caption ;
+
+					if( caption.constructor.name === "VTTCue" ){
+						isWebVTT = true;
 					}
 
-					//mw.log("Start cap time: " + caption.start + ' End time: ' + caption.end );
-					captionSet[i] = caption ;
+					// Update the prevIndex:
+					if(!prevIndexUpdated){
+						this.prevIndex = i;
+						prevIndexUpdated = true;
+					}
 				}
 			}
-			// Update the prevIndex:
-			this.prevIndex = firstCapIndex;
+
+			if( isWebVTT ){
+				var getValues = function(obj){
+					// returns an array of object's values (as Object.Values() in ECMAScript 2017)
+					var values = [];
+					for( var i in obj ){
+						values.push(obj[i]);
+					}
+					return values;
+				};
+
+				WebVTT.processCues(window, getValues(captionSet), this.captionsArea[0]);
+
+				for( var j in captionSet ){
+					captionSet[j]['content'] = captionSet[j].displayState;
+				}
+			}
+			//mw.log( "TextSource::getCaptionForTime for time: " + time + " the relevant caption set is:", captionSet );
+
 			//Return the set of captions in range:
 			return captionSet;
 		},
@@ -152,6 +169,9 @@
 					break;
 				case 'text/xml':
 					return this.getCaptionsFromTMML( data );
+					break;
+				case 'text/vtt':
+					return this.getCaptionsFromVTT( data );
 					break;
 			}
 			// check for other indicators ( where the caption is missing metadata )
@@ -526,6 +546,35 @@
 			mw.log( "TimedText::getCaptiosnFromMediaWikiSrt found " + captions.length + ' captions');
 			return captions;
 		},
+
+		getCaptionsFromVTT: function( data ){
+			var parser = new WebVTT.Parser(window, WebVTT.StringDecoder());
+			var cues = [];
+			var regions = [];
+
+			parser.oncue = function(cue) {
+				cues.push(cue);
+			};
+			parser.onregion = function(region) {
+				regions.push(region);
+			};
+			parser.onparsingerror = function(error) {
+				mw.log( "TextSource::getCaptionsFromVTT ", error );
+			};
+
+			parser.parse(data);
+			parser.flush();
+			this.captionsArea = $('<div style="visibility:hidden;"></div>');
+			$("body").append(this.captionsArea);
+			for(var i = 0; i < cues.length; i++){
+				cues[i]['start'] = cues[i].startTime;
+				cues[i]['end'] = cues[i].endTime;
+			}
+			mw.log( "TextSource::getCaptionsFromVTT captions: ", cues );
+			return cues;
+
+		},
+
 		/**
 		 * Takes a regular expresion match and converts it to a caption object
 		 */
