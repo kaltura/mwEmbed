@@ -281,9 +281,10 @@
 				recursiveIteration(proxyData);
 				fv['proxyData'] = proxyData;
 			}
+
 			// add support for passing ks
-			if ( window.kalturaIframePackageData.enviornmentConfig.ks ){
-				fv["ks"] = window.kalturaIframePackageData.enviornmentConfig.ks;
+			if ( this.embedPlayer.getFlashvars("ks") ){
+				fv["ks"] = this.embedPlayer.getFlashvars("ks");
 			}
 			return fv;
 		},
