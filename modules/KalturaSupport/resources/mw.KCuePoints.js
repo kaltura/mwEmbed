@@ -106,8 +106,8 @@
 			var requestCuePoints = cuePoints || this.getCuePoints();
 			var thumbCuePoint = $.grep(requestCuePoints, function (cuePoint) {
 				return (cuePoint.cuePointType == 'thumbCuePoint.Thumb');
-			})
-			var loadThumbnailsWithReferrer = this.embedPlayer.getFlashvars( 'loadThumbnailWithReferrer' );
+			});
+			var loadThumbnailWithReferrer = this.embedPlayer.getFlashvars( 'loadThumbnailWithReferrer' );
 			var referrer = window.kWidgetSupport.getHostPageUrl();
 			//Create request data only for cuepoints that have assetId
 			$.each(thumbCuePoint, function (index, item) {
@@ -137,7 +137,7 @@
 						}
 					});
 					$.each(thumbCuePoint, function (index, item) {
-						item.thumbnailUrl = loadThumbnailsWithReferrer ? data[index] + '?options:referrer=' + referrer : data[index];
+						item.thumbnailUrl = loadThumbnailWithReferrer ? data[index] + '?options:referrer=' + referrer : data[index];
 					});
 					if (callback) {
 						callback();
