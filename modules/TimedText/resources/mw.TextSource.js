@@ -100,7 +100,6 @@
 		*/
 		getCaptionForTime: function ( time ) {
 			var captionSet = {};
-			var isWebVTT = false;
 			var prevIndexUpdated = false;
 			if( time <  this.captions[this.prevIndex].start ) {
 				// If a backwards seek start searching at the start:
@@ -117,10 +116,6 @@
 
 					captionSet[i] = caption ;
 
-					if( caption.constructor.name === "VTTCue" ){
-						isWebVTT = true;
-					}
-
 					// Update the prevIndex:
 					if(!prevIndexUpdated){
 						this.prevIndex = i;
@@ -129,7 +124,7 @@
 				}
 			}
 
-			if( isWebVTT ){
+			if( this.mimeType === "text/vtt" ){
 				var getValues = function(obj){
 					// returns an array of object's values (as Object.Values() in ECMAScript 2017)
 					var values = [];
@@ -145,7 +140,6 @@
 					captionSet[j]['content'] = captionSet[j].displayState;
 				}
 			}
-			//mw.log( "TextSource::getCaptionForTime for time: " + time + " the relevant caption set is:", captionSet );
 
 			//Return the set of captions in range:
 			return captionSet;

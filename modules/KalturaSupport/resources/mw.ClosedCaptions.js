@@ -586,29 +586,24 @@
 			});
 		},
 
-		addCaption: function( source, capId, caption ){
-            var $textTarget;
-            if ( source.mimeType === "text/vtt" ) {
-				//in WebVTT we get an entire div which contains the styled caption
-				//so we should only hang it on the DOM
-                $textTarget = $('<div />')
-                    .addClass('track')
-                    .attr('data-capId', capId)
-                    .html($(caption.content).addClass('caption'));
+		addCaptionAsDomElement: function ( source, capId, caption ){
+			var $textTarget = $('<div />')
+				.addClass('track')
+				.attr('data-capId', capId)
+				.html($(caption.content).addClass('caption'));
 
-                this.displayTextTarget($textTarget);
+			this.displayTextTarget($textTarget);
 
-				// apply custom style
-                $('.caption div').css(this.getCaptionCss());
+			// apply custom style
+			$('.caption div').css(this.getCaptionCss());
+		},
 
-                return;
-            }
-
-            // use capId as a class instead of id for easy selections and no conflicts with
-            // multiple players on page.
-            $textTarget = $('<div />')
-				.addClass( 'track' )
-				.attr( 'data-capId', capId )
+		addCaptionAsText: function ( source, capId, caption ) {
+			// use capId as a class instead of id for easy selections and no conflicts with
+			// multiple players on page.
+			var $textTarget = $('<div />')
+				.addClass('track')
+				.attr('data-capId', capId)
 				.hide();
 
 			// Update text ( use "html" instead of "text" so that subtitle format can
@@ -616,51 +611,63 @@
 			// TOOD we should scrub this for non-formating html
 			$textTarget.append(
 				$('<span />')
-					.addClass( 'ttmlStyled' )
-					.css( 'pointer-events', 'auto')
-					.css( this.getCaptionCss() )
+					.addClass('ttmlStyled')
+					.css('pointer-events', 'auto')
+					.css(this.getCaptionCss())
 					.append(
 						$('<span>')
 						// Prevent background (color) overflowing TimedText
 						// http://stackoverflow.com/questions/9077887/avoid-overlapping-rows-in-inline-element-with-a-background-color-applied
-						.css( 'position', 'relative' )
-						.html( caption.content )
+							.css('position', 'relative')
+							.html(caption.content)
 					)
 			);
 
 			// Add/update the lang option
-			$textTarget.attr( 'lang', source.srclang.toLowerCase() );
+			$textTarget.attr('lang', source.srclang.toLowerCase());
 
 			// Update any links to point to a new window
-			$textTarget.find( 'a' ).attr( 'target', '_blank' );
+			$textTarget.find('a').attr('target', '_blank');
 
 			// Add TTML or other complex text styles / layouts if we have ontop captions:
-			if( this.getConfig('layout') == 'ontop' ){
-				if( caption.css ){
-					$textTarget.css( caption.css );
+			if (this.getConfig('layout') == 'ontop') {
+				if (caption.css) {
+					$textTarget.css(caption.css);
 				} else {
-					$textTarget.css( this.getDefaultStyle() );
+					$textTarget.css(this.getDefaultStyle());
 				}
 			}
 			// Apply any custom style ( if we are ontop of the video )
-			this.displayTextTarget( $textTarget );
+			this.displayTextTarget($textTarget);
 
 			// apply any interface size adjustments:
-			$textTarget.css( this.getInterfaceSizeTextCss({
-					'width' :  this.embedPlayer.getInterface().width(),
-					'height' : this.embedPlayer.getInterface().height()
+			$textTarget.css(this.getInterfaceSizeTextCss({
+					'width': this.embedPlayer.getInterface().width(),
+					'height': this.embedPlayer.getInterface().height()
 				})
 			);
 
 			// Update the style of the text object if set
-			if( caption.styleId ){
-				var capCss = source.getStyleCssById( caption.styleId );
+			if (caption.styleId) {
+				var capCss = source.getStyleCssById(caption.styleId);
 				$textTarget.find('span.ttmlStyled').css(
 					capCss
 				);
 			}
 			$textTarget.fadeIn('fast');
 		},
+
+		addCaption: function( source, capId, caption ){
+            if ( source.mimeType === "text/vtt" ) {
+	            //in WebVTT the caption is an entire div which contains the styled caption
+	            //so we should only hang it on the DOM
+				this.addCaptionAsDomElement( source, capId, caption )
+            } else {
+	            // in NO WebVTT the caption is simple text
+	            this.addCaptionAsText( source, capId, caption );
+            }
+		},
+
 		displayTextTarget: function( $textTarget ){
 			var embedPlayer = this.embedPlayer;
 			var $interface = embedPlayer.getInterface();
