@@ -49,9 +49,6 @@
 				if (_this.embedPlayer.isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints")) {
 					_this.setLiveCuepointsWatchDog();
 				}
-
-				_this.embedPlayer.triggerHelper('mw.kCuePoints.Ready');
-
 			});
 		},
 		destroy: function () {
@@ -240,10 +237,12 @@
 
 				var thumbNewCuePoints = [];
 				var codeNewCuePoints = [];
+				var playerNewCuePoints = [];
 				//Only add new cuepoints
 				$.each(rawCuePoints, function (id, rawCuePoint) {
 					if (!_this.associativeCuePoints[rawCuePoint.id]) {
 						_this.associativeCuePoints[rawCuePoint.id] = rawCuePoint;
+						playerNewCuePoints.push(rawCuePoint);
 
 						if (rawCuePoint.cuePointType === 'codeCuePoint.Code')
 						{
@@ -254,10 +253,14 @@
 					}
 				});
 
-				if (thumbNewCuePoints.length > 0) {
-					var cuePoints = this.getCuePoints();
+				if (playerNewCuePoints.length > 0)
+				{
+					var playerCuePoints = this.getCuePoints();
 					//update cuepoints
-					$.merge(cuePoints, thumbNewCuePoints);
+					$.merge(playerCuePoints, playerNewCuePoints);
+				}
+				if (thumbNewCuePoints.length > 0) {
+
 					//update midpoint cuepoints
 					$.merge(this.midCuePointsArray, thumbNewCuePoints);
 					//Request thumb asset only for new cuepoints
