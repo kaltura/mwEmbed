@@ -29,18 +29,9 @@
 				{
 					if (!_this.cuePointsManager) {
 						// we need to initialize the instance
-						_this.cuePointsManager = new mw.dualScreen.CuePointsManager('imagePlayer', '', _this.getPlayer(),_this.cuePointsReached,_this);
+						_this.cuePointsManager = new mw.dualScreen.CuePointsManager('imagePlayer', _this.getPlayer(),_this.cuePointsReached,_this);
 					}
-
-					// enable cue points manager
-					_this.cuePointsManager.enable();
 				},1000);
-			}else
-			{
-				// no need for cue points manager
-				if (_this.cuePointsManager) {
-					_this.cuePointsManager.disable();
-				}
 			}
 		},
 		cuePointsReached : function(context)

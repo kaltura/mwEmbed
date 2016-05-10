@@ -57,7 +57,6 @@
 				this.initConfig();
 				this.initDisplays();
 				this.initFSM();
-				this.initExternalControlManager();
 				this.addBindings();
 			},
 			isSafeEnviornment: function () {
@@ -76,6 +75,8 @@
 					if (_this.syncEnabled){
 						_this.initView();
 						_this.initControlBar();
+						_this.initExternalControlManager();
+
 						if (_this.secondPlayer.canRender()) {
 							_this.log("render condition are met - initializing");
 							_this.checkRenderConditions();
@@ -184,6 +185,9 @@
 						if (!_this.displays.getPrimary().isMain){
 							_this.fsm.consumeEvent('switchView');
 						}
+
+						_this.destroyExternalControlManager();
+
 						//Reset the control bar
 						if (_this.controlBar) {
 							_this.controlBar.destroy();
@@ -274,10 +278,19 @@
 			},
 			initExternalControlManager : function()
 			{
+				mw.log("dualScreen.initExternalControlManager(): creating new instance of external control manager");
 				var _this = this;
 
 				this.externalControlManager = new mw.dualScreen.externalControlManager(this.getPlayer(), function () {
 				}, "dualScreenExternalControlManager");
+			},
+			destroyExternalControlManager : function()
+			{
+				if (this.externalControlManager) {
+					mw.log("dualScreen.destroyExternalControlManager(): removing existing instance of external control manager");
+					this.externalControlManager.destory();
+					this.externalControlManager = null;
+				}
 			},
 			initDisplays: function () {
 				var _this = this;
@@ -405,7 +418,7 @@
 							_this.externalControlManager.setViewById(defaultDualScreenViewId);
 						}
 
-						_this.externalControlManager.initialize();
+						_this.externalControlManager.start();
 					}
 
 				}, 1000 );

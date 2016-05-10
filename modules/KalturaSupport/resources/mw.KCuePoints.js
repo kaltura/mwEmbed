@@ -24,7 +24,7 @@
 		// The bind postfix:
 		bindPostfix: '.kCuePoints',
 		midCuePointsArray: [],
-		managerCuePointsArray : [],
+		codeCuePointsArray : [],
 		liveCuePointsIntervalId: null,
 		supportedCuePoints: [
 			mw.KCuePoints.TYPE.CODE,
@@ -49,6 +49,9 @@
 				if (_this.embedPlayer.isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints")) {
 					_this.setLiveCuepointsWatchDog();
 				}
+
+				_this.embedPlayer.triggerHelper('mw.kCuePoints.Ready');
+
 			});
 		},
 		destroy: function () {
@@ -69,26 +72,24 @@
 			});
 			// Create new array with midrolls only
 			var newCuePointsArray = [];
-			var newManagerCuePointsArray = [];
+			var newCodeCuePointsArray = [];
 			$.each(cuePoints, function (idx, cuePoint) {
 				if ((_this.getVideoAdType(cuePoint) == 'pre' || _this.getVideoAdType(cuePoint) == 'post') &&
 					cuePoint.cuePointType == 'adCuePoint.Ad') {
 					_this.triggerCuePoint(cuePoint);
 				} else {
 					// Midroll or non-ad cuepoint
-					if (cuePoint.cuePointType === 'codeCuePoint.Code' || cuePoint.cuePointType === 'thumbCuePoint.Thumb')
+					if (cuePoint.cuePointType === 'codeCuePoint.Code')
 					{
-						newManagerCuePointsArray.push(cuePoint);
-					}
-
-					if (cuePoint.cuePointType !== 'codeCuePoint.Code'  && cuePoint.cuePointType != "eventCuePoint.Event") {
+						newCodeCuePointsArray.push(cuePoint);
+					}else if (cuePoint.cuePointType != "eventCuePoint.Event") {
 						newCuePointsArray.push(cuePoint);
 					}
 				}
 			});
 
 			this.midCuePointsArray = newCuePointsArray;
-			this.managerCuePointsArray = newManagerCuePointsArray;
+			this.codeCuePointsArray = newCodeCuePointsArray;
 		},
 		initSupportedCuepointTypes: function(){
 			//Initial flashvars configuration arrives in form of comma-separated string,
@@ -166,7 +167,7 @@
 			var cuePoints = this.getCuePoints();
 
 			this.fixLiveCuePointArray(this.midCuePointsArray);
-			this.fixLiveCuePointArray(this.managerCuePointsArray);
+			this.fixLiveCuePointArray(this.codeCuePointsArray);
 			this.fixLiveCuePointArray(cuePoints);
 
 			this.associativeCuePoints = {};
@@ -238,19 +239,16 @@
 				var _this = this;
 
 				var thumbNewCuePoints = [];
-				var managerNewCuePoints = [];
+				var codeNewCuePoints = [];
 				//Only add new cuepoints
 				$.each(rawCuePoints, function (id, rawCuePoint) {
 					if (!_this.associativeCuePoints[rawCuePoint.id]) {
 						_this.associativeCuePoints[rawCuePoint.id] = rawCuePoint;
 
-						if (rawCuePoint.cuePointType === 'codeCuePoint.Code' || rawCuePoint.cuePointType === 'thumbCuePoint.Thumb')
+						if (rawCuePoint.cuePointType === 'codeCuePoint.Code')
 						{
-							managerNewCuePoints.push(rawCuePoint);
-						}
-
-						if (rawCuePoint.cuePointType !== 'codeCuePoint.Code')
-						{
+							codeNewCuePoints.push(rawCuePoint);
+						}else {
 							thumbNewCuePoints.push(rawCuePoint);
 						}
 					}
@@ -268,9 +266,9 @@
 					});
 				}
 
-				if (managerNewCuePoints.length > 0) {
+				if (codeNewCuePoints.length > 0) {
 					// update code cue points
-					$.merge(this.managerCuePointsArray, managerNewCuePoints);
+					$.merge(this.codeCuePointsArray, codeNewCuePoints);
 				}
 			}
 		},
@@ -333,9 +331,9 @@
 			// Bind to monitorEvent to trigger the cue points events and update he nextCuePoint
 			$(embedPlayer).bind(
 				"monitorEvent" + this.bindPostfix +
-					" seeked" + this.bindPostfix +
-					" onplay" + this.bindPostfix +
-					" KalturaSupport_ThumbCuePointsUpdated" + this.bindPostfix,
+				" seeked" + this.bindPostfix +
+				" onplay" + this.bindPostfix +
+				" KalturaSupport_ThumbCuePointsUpdated" + this.bindPostfix,
 				function (e) {
 					var currentTime = embedPlayer.getPlayerElementTime() * 1000;
 					//In case of seeked the current cuepoint needs to be updated to new seek time before
@@ -365,9 +363,9 @@
 			}
 			return this.embedPlayer.rawCuePoints;
 		},
-		getManagerCuePoints : function()
+		getCodeCuePoints : function()
 		{
-			return this.managerCuePointsArray || [];
+			return this.codeCuePointsArray || [];
 		},
 		getCuePointsByType: function (type, subType) {
 			var filteredCuePoints = this.getCuePoints();
@@ -403,7 +401,7 @@
 		 * @param {Number} time Time in milliseconds
 		 */
 		getNextCuePoint: function (time) {
-            if (!isNaN(time) && time >= 0) {
+			if (!isNaN(time) && time >= 0) {
 
 				var cuePoints = this.midCuePointsArray;
 				// Start looking for the cue point via time, return FIRST match:
