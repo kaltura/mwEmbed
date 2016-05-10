@@ -268,7 +268,7 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
                 $('#droppedFrames').text(data);
             });
             kdp.kBind("hlsDropFPS", function( data ){
-                $('#droppedFPS').text(data);
+                $('#droppedFPS').text("FPS_DROP: "+data);
             });
             kdp.kBind("hlsCurrentBitrate", function( data ){
                 $('#currentBitrate').text(data);
