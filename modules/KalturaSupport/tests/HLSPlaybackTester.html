@@ -182,6 +182,7 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
             'hlsInitialBufferTime': parseInt($('#iniBuffer').val()),
             'hlsExpandedBufferTime': parseInt($('#exBuffer').val()),
             'hlsMaxBufferTime': parseInt($('#maxBuffer').val()),
+            'hlsLogs': $('#engine-js').is(':checked'),
             'dvr':  $('#dvr').is(':checked')
 
         }));
@@ -189,9 +190,10 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
 		var settings = {
             "LeadWithHLSOnJs": $('#engine-js').is(':checked'),
 			"LeadWithHLSOnFlash": !$('#engine-js').is(':checked'),
-            hlsjs: {
-              plugin: $('#engine-js').is(':checked')
+            "hlsjs": {
+              'plugin': $('#engine-js').is(':checked')
             },
+            'hlsLogs': $('#engine-js').is(':checked'),
             "hlsLiveSegmentBuffer": parseInt($('#segBuffer').val()),
             "hlsInitialBufferTime": parseInt($('#iniBuffer').val()),
             "hlsExpandedBufferTime": parseInt($('#exBuffer').val()),

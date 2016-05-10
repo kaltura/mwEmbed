@@ -26,7 +26,8 @@
 			defaultConfig: {
 				options: {
 					//debug:true
-				}
+				},
+				hlsLogs: false
 			},
 
 			/** @type {Number} */
@@ -68,7 +69,9 @@
 				this.bind("onSelectSource", this.checkIfHLSNeeded.bind(this));
 				this.bind("playerReady", this.initHls.bind(this));
 				this.bind("onChangeMedia", this.clean.bind(this));
-				this.bind("monitorEvent", this.monitorDebugInfo.bind(this));
+				if( mw.getConfig("hlsLogs") ) {
+					this.bind("monitorEvent", this.monitorDebugInfo.bind(this));
+				}
 			},
 			/**
 			 * Check if HLS engine is required, e.g. sources contain HLS source
@@ -244,9 +247,6 @@
 				//data: { details : levelDetails object, level : id of updated level, drift: PTS drift observed when parsing last fragment }
 				this.getPlayer().triggerHelper('hlsUpdatePTS', data);
 				mw.log("hlsjs :: onPTSUpdated");
-				if ( this.getPlayer().buffering ){
-					this.getPlayer.bufferEnd();
-				}
 			},
 			onFragBuffered: function (e, data) {
 				//fired when fragment remuxed MP4 boxes have all been appended into SourceBuffer
