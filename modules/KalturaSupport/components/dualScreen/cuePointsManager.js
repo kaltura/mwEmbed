@@ -57,11 +57,24 @@
 
         function triggerReachedCuePoints(cuePoints,eventContext)
         {
-            if (onCuePointsReached) {
+            if (onCuePointsReached && cuePoints && cuePoints.length && cuePoints.length > 0) {
+                var clonedCuePointsToHandle = [];
+                var handledCuePointsIds = '';
+                for (var i = 0; i < cuePoints.length; i++) {
+
+                    var reachedCuePoint = cuePoints[i];
+                    handledCuePointsIds += ', ' + reachedCuePoint.id;
+                    // Make a copy of the cue point to be triggered.
+                    // Sometimes the trigger can result in monitorEvent being called and an
+                    // infinite loop ( ie ad network error, no ad received, and restore player calling monitor() )
+                    var cuePointToBeTriggered = $.extend({}, reachedCuePoint);
+                    clonedCuePointsToHandle.push(cuePointToBeTriggered); // update the cloned list that will be used to invoke event
+                }
+
                 // create event args that contains functions to filter the cue points wisely
                 var eventArgs = createReachedCuePointsArgs(cuePoints,eventContext);
 
-                log('triggerReachedCuePoints()', 'notify listener with ' + cuePoints.length + ' cue points to handle');
+                log('triggerReachedCuePoints()', 'notify listener with ' + cuePoints.length + ' cue points to handle' + handledCuePointsIds);
                 onCuePointsReached.call(invoker,eventArgs);
             }
         }
@@ -107,20 +120,20 @@
 
         }
 
-        function onCuePointsManagerReady()
+        function onPlayerReady()
         {
-            log('onCuePointsManagerReady()', 'invoked');
+            log('onPlayerReady()', 'invoked');
 
             var shouldRun = player && ((player.isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints")) || $player.kCuePoints);
             if (!shouldRun) {
-                log('onCuePointsManagerReady()', 'prerequisites check failed, disabling component');
+                log('onPlayerReady()', 'prerequisites check failed, disabling component');
                 return;
             }
 
             reset();
             fetchedCuePoints = player.kCuePoints ? player.kCuePoints.getCuePoints() : [];
 
-            log('onCuePointsManagerReady()', 'registering to events with bind postfix ' + entryEventsBindPostfix);
+            log('onPlayerReady()', 'registering to events with bind postfix ' + entryEventsBindPostfix);
 
             $player.bind(
                 "monitorEvent" + entryEventsBindPostfix +
@@ -152,24 +165,9 @@
                         if (cuePointsReachedToHandle.cuePoints.length > 0) {
                             log('initialize.bind(' + e.type + ')', 'found ' + cuePointsReachedToHandle.cuePoints.length + ' cue point that should be handled (server time ' + currentTime + ')');
                             nextPendingCuePointIndex = cuePointsReachedToHandle.lastIndex + 1;
-                            log('onCuePointsManagerReady.bind(' + e.type + ')', 'updating current index to ' + nextPendingCuePointIndex + ' (will be used next time searching for cue points to handle)');
+                            log('onPlayerReady.bind(' + e.type + ')', 'updating current index to ' + nextPendingCuePointIndex + ' (will be used next time searching for cue points to handle)');
 
-                            var clonedCuePointsToHandle = [];
-                            for (var i = 0; i < cuePointsReachedToHandle.cuePoints.length; i++) {
-
-                                var reachedCuePoint = cuePointsReachedToHandle.cuePoints[i];
-                                log('onCuePointsManagerReady.bind(' + e.type + ')','trigger event for cuePoint ' + reachedCuePoint.id + ' with start time ' + new Date(reachedCuePoint.startTime));
-                                // Make a copy of the cue point to be triggered.
-                                // Sometimes the trigger can result in monitorEvent being called and an
-                                // infinite loop ( ie ad network error, no ad received, and restore player calling monitor() )
-                                var cuePointToBeTriggered = $.extend({}, reachedCuePoint);
-                                clonedCuePointsToHandle.push(cuePointToBeTriggered); // update the cloned list that will be used to invoke event
-                            }
-
-                            // invoke the reached aggregated event - use the cloned list since
-                            // sometimes the trigger can result in monitorEvent being called and an
-                            // infinite loop ( ie ad network error, no ad received, and restore player calling monitor() )
-                            triggerReachedCuePoints(clonedCuePointsToHandle);
+                            triggerReachedCuePoints(cuePointsReachedToHandle.cuePoints);
                         }
 
                         var nextCuePoint = getCuePointByIndex(nextPendingCuePointIndex);
@@ -178,7 +176,7 @@
 
                             if (seconds < 120) {
                                 // log only if when the next cue point will be reached in less then x seconds
-                                log('onCuePointsManagerReady.bind(' + e.type + ')','next cue point with id ' + nextCuePoint.id + ' should be handled in ' + seconds + ' seconds (type \'' + nextCuePoint.cuePointType + '\', tags \'' + nextCuePoint.tags + '\', time ' + nextCuePoint.startTime + ', server time ' + currentTime + ')');
+                                log('onPlayerReady.bind(' + e.type + ')','next cue point with id ' + nextCuePoint.id + ' should be handled in ' + seconds + ' seconds (type \'' + nextCuePoint.cuePointType + '\', tags \'' + nextCuePoint.tags + '\', time ' + nextCuePoint.startTime + ', server time ' + currentTime + ')');
                             }
                         }
                     }
@@ -193,13 +191,13 @@
                 log('onChangeMedia()', 'invoked');
                 reset();
             });
-
-            $player.bind('mw.kCuePoints.Ready' + eventsBindPostfix, function () {
+            
+            $player.bind('playerReady' + eventsBindPostfix, function () {
                 log('playerReady()', 'invoked');
-                onCuePointsManagerReady();
+                onPlayerReady();
             });
 
-            onCuePointsManagerReady();
+            onPlayerReady();
         }
 
         /**
