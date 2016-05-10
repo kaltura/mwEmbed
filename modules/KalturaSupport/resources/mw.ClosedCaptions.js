@@ -85,7 +85,7 @@
 						_this.destory();
 						var newSources = [];
 						$.each( data.languages, function ( inx, src ) {
-							var source = new mw.TextSource( $.extend( { srclang: src.label }, src ) );
+							var source = new mw.TextSource( $.extend( { srclang: src.label }, src ), _this.embedPlayer );
 							//no need to load embedded captions
 							source.loaded = true;
 							newSources.push( source );
@@ -301,7 +301,7 @@
 			this.updateTimeOffset();
 			// Get from <track> elements
 			$.each( this.getPlayer().getTextTracks(), function( inx, textSource ){
-				var textSource = new mw.TextSource( textSource );
+				var textSource = new mw.TextSource( textSource, _this.embedPlayer );
 				if ( !_this.textSourcesInSources(_this.textSources, textSource) ){
 					_this.textSources.push( textSource );
 				}
@@ -465,7 +465,7 @@
 				})[0]
 			);
 			// Return a "textSource" object:
-			return new mw.TextSource( embedSource );
+			return new mw.TextSource( embedSource, _this.embedPlayer );
 		},
 		forceLoadLanguage: function(){
 			var lang = this.getConfig('forceLoadLanguage');

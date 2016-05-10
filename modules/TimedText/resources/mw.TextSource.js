@@ -6,7 +6,8 @@
  */
 ( function( mw, $ ) { "use strict";
 
-	mw.TextSource = function( source ) {
+	mw.TextSource = function( source, embedPlayer ) {
+		this.embedPlayer = embedPlayer;
 		return this.init( source );
 	};
 	mw.TextSource.prototype = {
@@ -559,7 +560,7 @@
 			parser.parse(data);
 			parser.flush();
 			this.captionsArea = $('<div style="visibility:hidden;"></div>');
-			$("body").append(this.captionsArea);
+			this.embedPlayer.getVideoHolder().append(this.captionsArea);
 			for(var i = 0; i < cues.length; i++){
 				cues[i]['start'] = cues[i].startTime;
 				cues[i]['end'] = cues[i].endTime;
