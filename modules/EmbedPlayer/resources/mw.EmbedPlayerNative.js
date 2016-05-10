@@ -1240,6 +1240,10 @@
 				this.updateBufferStatus(e.loaded / e.total);
 				this.progressEventData = e.loaded;
 			}
+
+			if ( this.isLive() && this.buffering ){
+				this.bufferEnd();
+			}
 		},
 
 		/**
