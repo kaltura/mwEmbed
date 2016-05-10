@@ -34,6 +34,14 @@
 				},1000);
 			}
 		},
+		destroyCuePointsManager:function()
+		{
+			if (this.cuePointsManager) {
+				mw.log("imagePlayer.destroyCuePointsManager(): removing existing instance of cue points manager");
+				this.cuePointsManager.destory();
+				this.cuePointsManager = null;
+			}
+		},
 		cuePointsReached : function(context)
 		{
 			var cuePoints = context.filter({tags: ['remove-selected-thumb']});
@@ -71,6 +79,8 @@
 
 			this.bind("onChangeMedia", function(){
 				if (_this.syncEnabled) {
+					_this.destroyCuePointsManager();
+
 					//Clear the current slide before loading the new media
 					_this.getComponent().attr("src", "");
 				}
