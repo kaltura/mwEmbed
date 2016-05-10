@@ -1060,6 +1060,14 @@
 				this.mediaLoadedFlag = true;
 			}
 		},
+		_onratechange: function(e){
+			if ( this.getPlayerElement().playbackRate() === 0 && !this.paused && !this.seeking && !this.buffering ){
+				this.bufferStart();
+			}
+			if ( this.getPlayerElement().playbackRate() > 0 && this.buffering ){
+				this.bufferEnd();
+			}
+		},
 		updateVideoDuration: function(){
 			var player = this.getPlayerElement();
 			var duration = player.duration();

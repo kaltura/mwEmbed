@@ -206,6 +206,9 @@
 				//data: { details : levelDetails object, level : id of updated level, drift: PTS drift observed when parsing last fragment }
 				this.getPlayer().triggerHelper('hlsjsUpdatePTS', data);
 				mw.log("hlsjs:: onDebugInfoReceived | onPTSUpdated");
+				if ( this.getPlayer().buffering ){
+					this.getPlayer.bufferEnd();
+				}
 			},
 			onDropFrames: function (e, data) {
 				//triggered when FPS drop in last monitoring period is higher than given threshold
@@ -294,6 +297,11 @@
 							break;
 					}
 				} else {
+					switch (data.details) {
+						case Hls.ErrorDetails.BUFFER_STALLED_ERROR:
+							this.getPlayer().bufferStart();
+							break;
+					}
 					//If not fatal then log issue, we can switch case errors for specific issues
 					this.log("Error: " + data.type + ", " + data.details);
 				}
