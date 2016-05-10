@@ -111,8 +111,17 @@
 					if ( !(data && $.isArray( data.languages ) ) ) {
 						data.languages = [];
 					}
+
+					//Map all objects to textSources
+					var languages = $.map(data.languages, function(language){
+						var textSource = language;
+						if (!(language instanceof mw.TextSource)){
+							textSource = _this.addTextSource(language);
+						}
+						return textSource;
+					});
 					_this.destory();
-					_this.buildMenu( data.languages );
+					_this.buildMenu( languages );
 				} );
 				outOfBandCaptionEventHandlers.call(this);
 			}
@@ -207,6 +216,23 @@
 			this.bind( 'onDisableInterfaceComponents', function(e, arg ){
 				_this.getMenu().close();
 			});
+		},
+		addTextSource: function(captionData){
+			// Try to insert the track source:
+			var embedSource = _this.embedPlayer.mediaElement.tryAddSource(
+				$( '<track />' ).attr({
+					'kind'		: 'subtitles',
+					'language'	: captionData.language, //full language name, e.g. english
+					'srclang' 	: captionData.languageCode, //language code, e.g. en for english
+					'label'		: captionData.label || captionData.language, //Friendly label
+					'fileExt'	: captionData.fileExt, //accepts xml, srt or vtt
+					'src'		: captionData.src, //valid asset URL
+					'title'		: captionData.label,
+					'default'	: captionData.isDefault
+				})[0]
+			);
+			// Return a "textSource" object:
+			return new mw.TextSource( embedSource, this.embedPlayer );
 		},
 		updateTextSize: function(){
 			// Check if we are in fullscreen or not, if so add an additional bottom offset of
