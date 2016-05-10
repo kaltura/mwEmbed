@@ -32,12 +32,15 @@
                     if (this.cuePoints) {
                         var filterByTags = (args.tags ? args.tags : (args.tag ? [args.tag] : null));
                         result = $.grep(this.cuePoints, function (cuePoint) {
-                            var isValidTag = (!filterByTags || filterByTags.indexOf(cuePoint.tags) !== -1);
-                            var isValidType = (!args.types || $.grep(args.types, function (cuePointType) {
-                                return (!cuePointType.main || cuePointType.main === cuePoint.cuePointType) && (!cuePointType.sub || cuePointType.sub === cuePoint.subType);
-                            }).length > 0);
+                            var hasTagCondition = filterByTags;
+                            var hasTypeCondition = args.types && args.types.length && args.types.length > 0;
+                            var isValidTag = hasTagCondition ? filterByTags.indexOf(cuePoint.tags) !== -1 : false;
 
-                            return isValidTag && isValidType;
+                            var isValidType = hasTypeCondition ? ($.grep(args.types, function (cuePointType) {
+                                return (!cuePointType.main || cuePointType.main === cuePoint.cuePointType) && (!cuePointType.sub || cuePointType.sub === cuePoint.subType);
+                            }).length > 0) : false;
+
+                            return isValidTag || isValidType;
                         });
 
                         result.sort(function (a, b) {
@@ -124,7 +127,7 @@
         {
             log('onPlayerReady()', 'invoked');
 
-            var shouldRun = player && ((player.isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints")) || $player.kCuePoints);
+            var shouldRun = player && ((player.isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints")) || player.kCuePoints);
             if (!shouldRun) {
                 log('onPlayerReady()', 'prerequisites check failed, disabling component');
                 return;
