@@ -210,7 +210,7 @@
 						checkBufferUnderrun = null;
 					}
 					checkBufferUnderrun = setInterval(function(){
-						if (_this.embedPlayer.currentTime === startBufferPlayerTime){
+						if (_this.embedPlayer.currentTime === startBufferPlayerTime || _this.embedPlayer.isLive()){
 							shouldReprotBufferUnderrun = true;
 						}else{
 							startBufferPlayerTime = _this.embedPlayer.currentTime;
