@@ -85,7 +85,7 @@
 						_this.destory();
 						var newSources = [];
 						$.each( data.languages, function ( inx, src ) {
-							var source = new mw.TextSource( $.extend( { srclang: src.label }, src ) );
+							var source = new mw.TextSource( $.extend( { srclang: src.label }, src ), _this.embedPlayer );
 							//no need to load embedded captions
 							source.loaded = true;
 							newSources.push( source );
@@ -132,7 +132,16 @@
 				this.bind( 'playing', function(){
 					_this.ended = false;
 				});
-			}
+
+                this.bind('resizeEvent', function () {
+					// in WebVTT we have to remove the caption on resizing
+					// for recalculation the caption layout
+                    if ( _this.selectedSource.mimeType === "text/vtt" ) {
+						mw.log( 'mw.ClosedCaptions:: resizeEvent: remove captions' );
+                        _this.getPlayer().getInterface().find('.track').remove();
+                    }
+                })
+            }
 
 			this.bind( 'onplay', function(){
 				_this.playbackStarted = true;
@@ -292,7 +301,7 @@
 			this.updateTimeOffset();
 			// Get from <track> elements
 			$.each( this.getPlayer().getTextTracks(), function( inx, textSource ){
-				var textSource = new mw.TextSource( textSource );
+				var textSource = new mw.TextSource( textSource, _this.embedPlayer );
 				if ( !_this.textSourcesInSources(_this.textSources, textSource) ){
 					_this.textSources.push( textSource );
 				}
@@ -420,6 +429,9 @@
 					case '2':
 						dbTextSource.fileExt = 'xml';
 						break;
+					case '3':
+						dbTextSource.fileExt = 'vtt';
+						break;
 				}
 			}
 
@@ -453,7 +465,7 @@
 				})[0]
 			);
 			// Return a "textSource" object:
-			return new mw.TextSource( embedSource );
+			return new mw.TextSource( embedSource, _this.embedPlayer );
 		},
 		forceLoadLanguage: function(){
 			var lang = this.getConfig('forceLoadLanguage');
@@ -577,12 +589,24 @@
 			});
 		},
 
-		addCaption: function( source, capId, caption ){
+		addCaptionAsDomElement: function ( source, capId, caption ){
+			var $textTarget = $('<div />')
+				.addClass('track')
+				.attr('data-capId', capId)
+				.html($(caption.content).addClass('caption'));
+
+			this.displayTextTarget($textTarget);
+
+			// apply custom style
+			$('.caption div').css(this.getCaptionCss());
+		},
+
+		addCaptionAsText: function ( source, capId, caption ) {
 			// use capId as a class instead of id for easy selections and no conflicts with
 			// multiple players on page.
 			var $textTarget = $('<div />')
-				.addClass( 'track' )
-				.attr( 'data-capId', capId )
+				.addClass('track')
+				.attr('data-capId', capId)
 				.hide();
 
 			// Update text ( use "html" instead of "text" so that subtitle format can
@@ -590,51 +614,63 @@
 			// TOOD we should scrub this for non-formating html
 			$textTarget.append(
 				$('<span />')
-					.addClass( 'ttmlStyled' )
-					.css( 'pointer-events', 'auto')
-					.css( this.getCaptionCss() )
+					.addClass('ttmlStyled')
+					.css('pointer-events', 'auto')
+					.css(this.getCaptionCss())
 					.append(
 						$('<span>')
 						// Prevent background (color) overflowing TimedText
 						// http://stackoverflow.com/questions/9077887/avoid-overlapping-rows-in-inline-element-with-a-background-color-applied
-						.css( 'position', 'relative' )
-						.html( caption.content )
+							.css('position', 'relative')
+							.html(caption.content)
 					)
 			);
 
 			// Add/update the lang option
-			$textTarget.attr( 'lang', source.srclang.toLowerCase() );
+			$textTarget.attr('lang', source.srclang.toLowerCase());
 
 			// Update any links to point to a new window
-			$textTarget.find( 'a' ).attr( 'target', '_blank' );
+			$textTarget.find('a').attr('target', '_blank');
 
 			// Add TTML or other complex text styles / layouts if we have ontop captions:
-			if( this.getConfig('layout') == 'ontop' ){
-				if( caption.css ){
-					$textTarget.css( caption.css );
+			if (this.getConfig('layout') == 'ontop') {
+				if (caption.css) {
+					$textTarget.css(caption.css);
 				} else {
-					$textTarget.css( this.getDefaultStyle() );
+					$textTarget.css(this.getDefaultStyle());
 				}
 			}
 			// Apply any custom style ( if we are ontop of the video )
-			this.displayTextTarget( $textTarget );
+			this.displayTextTarget($textTarget);
 
 			// apply any interface size adjustments:
-			$textTarget.css( this.getInterfaceSizeTextCss({
-					'width' :  this.embedPlayer.getInterface().width(),
-					'height' : this.embedPlayer.getInterface().height()
+			$textTarget.css(this.getInterfaceSizeTextCss({
+					'width': this.embedPlayer.getInterface().width(),
+					'height': this.embedPlayer.getInterface().height()
 				})
 			);
 
 			// Update the style of the text object if set
-			if( caption.styleId ){
-				var capCss = source.getStyleCssById( caption.styleId );
+			if (caption.styleId) {
+				var capCss = source.getStyleCssById(caption.styleId);
 				$textTarget.find('span.ttmlStyled').css(
 					capCss
 				);
 			}
 			$textTarget.fadeIn('fast');
 		},
+
+		addCaption: function( source, capId, caption ){
+            if ( source.mimeType === "text/vtt" ) {
+	            //in WebVTT the caption is an entire div which contains the styled caption
+	            //so we should only hang it on the DOM
+				this.addCaptionAsDomElement( source, capId, caption )
+            } else {
+	            // in NO WebVTT the caption is simple text
+	            this.addCaptionAsText( source, capId, caption );
+            }
+		},
+
 		displayTextTarget: function( $textTarget ){
 			var embedPlayer = this.embedPlayer;
 			var $interface = embedPlayer.getInterface();
