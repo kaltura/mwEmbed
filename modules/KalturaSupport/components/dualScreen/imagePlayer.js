@@ -16,9 +16,38 @@
 		cuePointsManager : null,
 		cuePoints: [],
 		syncEnabled: true,
-		setup: function(){
+		slidesCuePointTypes : null,
+		setup: function() {
 			this.addBinding();
+
+			this.initializeSlidesCuePointTypes();
 		},
+		initializeSlidesCuePointTypes : function()
+		{
+			// This function takes the filter configuration and map it to relevent structure (backward competability issues)
+			var cuePointTypes = this.getConfig("cuePointType");
+			var slidesCuePointTypes = [];
+
+			if (cuePointTypes && cuePointTypes.length > 0)
+			{
+				$.each(cuePointTypes, function (index, cuePointType) {
+					if (cuePointType.sub && cuePointType.sub.length > 0) {
+						$.each(cuePointType.sub,function(sindex, subType)
+						{
+							slidesCuePointTypes.push({main : cuePointType.main, sub : subType});
+						});
+					}
+				});
+			}
+
+			if (slidesCuePointTypes.length > 0)
+			{
+				this.slidesCuePointTypes = slidesCuePointTypes;
+			}else {
+				this.slidesCuePointTypes = null;
+			}
+		},
+
 		initializeCuePointsManager:function()
 		{
 			var _this = this;
@@ -45,7 +74,7 @@
 		cuePointsReached : function(context)
 		{
 			var cuePoints = context.filter({tags: ['remove-selected-thumb']});
-			cuePoints = cuePoints.concat(context.filter({types: this.cuePointType}));
+			cuePoints = cuePoints.concat(context.filter({types: this.slidesCuePointTypes}));
 
 			cuePoints.sort(function (a, b) {
 				return  (b.startTime - a.startTime);
