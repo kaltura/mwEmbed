@@ -429,6 +429,9 @@
 					case '2':
 						dbTextSource.fileExt = 'xml';
 						break;
+					case '3':
+						dbTextSource.fileExt = 'vtt';
+						break;
 				}
 			}
 
