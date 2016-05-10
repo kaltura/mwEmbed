@@ -45,7 +45,7 @@
 		cuePointsReached : function(context)
 		{
 			var cuePoints = context.filter({tags: ['remove-selected-thumb']});
-			cuePoints = cuePoints.concat(context.filter({types: [{main:'thumbCuePoint.Thumb'}]}));
+			cuePoints = cuePoints.concat(context.filter({types: this.cuePointType}));
 
 			cuePoints.sort(function (a, b) {
 				return  (b.startTime - a.startTime);
@@ -54,7 +54,7 @@
 			var mostUpdatedCuePointToHandle = cuePoints.length > 0 ? cuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
 
 			if (mostUpdatedCuePointToHandle) {
-				this.syncImage(mostUpdatedCuePointToHandle)
+				this.sync(mostUpdatedCuePointToHandle)
 			}
 		},
 		canRender: function () {
@@ -139,7 +139,7 @@
 			});
 			return cuePoints;
 		},
-		syncImage: function(cuePoint){
+		sync: function(cuePoint){
 			if (this.syncEnabled) {
 				if (cuePoint && cuePoint.cuePointType === 'thumbCuePoint.Thumb') {
 					this.loadAdditionalAssets();
