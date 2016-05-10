@@ -1437,10 +1437,13 @@
                 if( vid.audioTracks && vid.audioTracks.length > 0 ) {
                     var data ={'languages':[]};
                     for (var i = 0; i < vid.audioTracks.length; i++) {
-                        if( vid.audioTracks[i].label !== "" ) {
+						var audioTrack = vid.audioTracks[i];
+						//Edge doesn't parse "NAME" field to label attribute for some reason, use "LANGUAGE" instead
+						var label = audioTrack.label || audioTrack.language;
+                        if( label !== "" ) {
                             var lang = {};
                             lang.index = i;
-                            lang.label = vid.audioTracks[i].label;
+                            lang.label = label;
                             data.languages.push(lang);
                         }
                     }
