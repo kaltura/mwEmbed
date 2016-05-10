@@ -26,7 +26,8 @@
 			"forceLoadLanguage": false,
 			"title": gM( 'mwe-embedplayer-timed_text'),
 			"smartContainer": "qualitySettings",
-			'smartContainerCloseEvent': 'changedClosedCaptions'
+			'smartContainerCloseEvent': 'changedClosedCaptions',
+			"forceWebVTT": false // force using webvtt on-the-fly. only for kalturaAPI captions
 		},
 
 		textSources: [],
@@ -462,7 +463,7 @@
 			}
 
 			var captionsSrc;
-			if( mw.isIphone() && !mw.getConfig('disableTrackElement') && !this.getConfig('forceLoadLanguage') ) {
+			if( mw.isIphone() && !mw.getConfig('disableTrackElement') && !this.getConfig('forceLoadLanguage') || this.getConfig("forceWebVTT") ) {
 				// getting generated vtt file from dfxp/srt
 				captionsSrc = mw.getConfig('Kaltura.ServiceUrl') +
 							"/api_v3/index.php/service/caption_captionasset/action/serveWebVTT/captionAssetId/" +
