@@ -212,14 +212,14 @@
 				//fired when a fragment loading starts
 				//data: { frag : fragment object}
 				this.getPlayer().triggerHelper('hlsFragLoading', data.frag.url);
-				mw.log("hlsjs :: onFragLoading | url = "+data.frag.url);
+				//mw.log("hlsjs :: onFragLoading | url = "+data.frag.url);
 
 			},
 			onFragLoaded: function (e, data) {
 				//fired when a fragment loading is completed
 				//data: { frag : fragment object, payload : fragment payload, stats : { trequest, tfirst, tload, length}}
 				this.getPlayer().triggerHelper('hlsFragLoaded', data.frag.url);
-				mw.log("hlsjs :: onFragLoaded | url = "+data.frag.url);
+				//mw.log("hlsjs :: onFragLoaded | url = "+data.frag.url);
 
 			},
 			onFragParsingMetadata: function (e, data) {
@@ -238,21 +238,23 @@
 				//fired when moof/mdat have been extracted from fragment
 				//data: { moof : moof MP4 box, mdat : mdat MP4 box, startPTS : PTS of first sample, endPTS : PTS of last sample, startDTS : DTS of first sample, endDTS : DTS of last sample, type : stream type (audio or video), nb : number of samples}
 				this.getPlayer().triggerHelper('hlsFragParsingData', data);
+				/*
 				if(data.type === 'video') {
 					mw.log("hlsjs :: onFragParsingData | startPTS = " + mw.seconds2npt(data.startPTS) + " >> endPTS = " + mw.seconds2npt(data.endPTS) + " | startDTS = " + mw.seconds2npt(data.startDTS) + " >> endDTS = " + mw.seconds2npt(data.endDTS));
 				}
+				*/
 			},
 			onPTSUpdated: function (e, data) {
 				//fired when a level's PTS information has been updated after parsing a fragment
 				//data: { details : levelDetails object, level : id of updated level, drift: PTS drift observed when parsing last fragment }
 				this.getPlayer().triggerHelper('hlsUpdatePTS', data);
-				mw.log("hlsjs :: onPTSUpdated");
+				//mw.log("hlsjs :: onPTSUpdated");
 			},
 			onFragBuffered: function (e, data) {
 				//fired when fragment remuxed MP4 boxes have all been appended into SourceBuffer
 				//data: { frag : fragment object, stats : { trequest, tfirst, tload, tparsed, tbuffered, length} }
 				this.getPlayer().triggerHelper('hlsFragBuffered', data.frag.url);
-				mw.log("hlsjs :: onFragBuffered | url = "+data.frag.url);
+				//mw.log("hlsjs :: onFragBuffered | url = "+data.frag.url);
 			},
 			onDropFrames: function (e, data) {
 				//triggered when FPS drop in last monitoring period is higher than given threshold
