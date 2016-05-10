@@ -756,6 +756,7 @@
 				this.skipTimeoutId = null;
 			}
 			$(".ad-skip-btn").hide();
+			$(".ad-skip-label").hide();
 		},
 		/**
 		 * Adds custom params to ad url.
