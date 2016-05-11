@@ -1,0 +1,62 @@
+<html>
+<head>
+	<title>Q and A Demo</title>
+	<script type="text/javascript" src="/html5.kaltura/mwEmbed/tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="/html5.kaltura/mwEmbed/mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="/html5.kaltura/mwEmbed/docs/js/doc-bootstrap.js"></script>
+	<meta charset=UTF-8>
+
+	<script type="text/javascript" src="config.js"></script>
+
+</head>
+<body>
+	<h1>Q and A Demo</h1>
+	<div id="kaltura_player" style="width: 585px; height: 330px;float: left;"></div>
+	<div id="qnaListHolder" style="width: 300px; height: 330px; float:left; float: left"></div>
+	<br style="clear: both;" /><br />
+
+<script>
+
+
+//    mw.setConfig( 'Kaltura.ServiceUrl' , 'http://lbd.kaltura.com' );
+	kWidget.featureConfig({
+		'targetId': 'kaltura_player',
+		'wid': '_1802381',
+		'uiconf_id' : '25906281',
+		'flashvars': {
+                'ks': "djJ8MTgwMjM4MXw7QXflFHAGu0hPrbLtzWv3yam8KteGUeDPdSxa4KZLaJZTQzOdsU7jaUnrG0Yt5q27WyEiTMRaj38Z2_e7MOj3I34ydY_UKbzp4gHLzznfc57AbnuR7A9-EdtqubGX0gmfpdlUSFuffFeK5HXKxzkjJ_Wb4NfpGApRV5jeGBvktA==",
+			 'qna': qna,
+            "chapters": {
+                plugin: true
+            }, "dualScreen": {
+                plugin: true
+            },
+            "sourceSelector" : {
+                plugin : true
+            },
+            "streamSelector" : {
+                plugin : true
+            },
+            "EmbedPlayer.LiveCuepoints" : true,
+            'playlistAPI':{
+                'autoContinue': true,
+                'includeInLayout': true,
+                'autoPlay': false,
+                'loop': false,
+                'onPage': false,
+                'layout': 'vertical',
+                'containerPosition': 'left',
+                'hideClipPoster': true,
+                'kpl0Name': "eran sakal playlist",
+                'kpl0Id': '1_mig1ibhj'
+            },
+            'nextPrevBtn':{
+                'plugin': true
+            }
+		}
+	});
+
+</script>
+
+</body>
+</html>
