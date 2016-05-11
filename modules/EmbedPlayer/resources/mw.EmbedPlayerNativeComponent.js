@@ -77,7 +77,8 @@
 			'loadEmbeddedCaptions',
 			'flavorsListChanged',
 			'sourceSwitchingStarted',
-			'sourceSwitchingEnd'
+			'sourceSwitchingEnd',
+			'audioTracksReceived'
 		],
 
 		// Native player supported feature set
@@ -691,11 +692,21 @@
 
 			}
 		},
-
-		_ontextTracksReceived: function (event, data) {
-			this.unbindHelper('changedClosedCaptions').bindHelper('changedClosedCaptions',function(event, selection){
-				this.getPlayerElement().attr('textTrackSelected', selection);
+		_onaudioTracksReceived:function(event,data){
+			var _this = this;
+			this.unbindHelper('switchAudioTrack').bindHelper('switchAudioTrack',function(event, selection){
+				_this.getPlayerElement().attr('audioTrackSelected', selection.index.toString());
 			});
+
+			this.triggerHelper("audioTracksReceived",data);
+		},
+		_ontextTracksReceived: function (event, data) {
+			var _this = this;
+
+			this.unbindHelper('selectClosedCaptions').bindHelper('selectClosedCaptions',function(event, selection){
+				_this.getPlayerElement().attr('textTrackSelected', selection);
+			});
+
 			this.triggerHelper('textTracksReceived', data);
 		},
 		/*
