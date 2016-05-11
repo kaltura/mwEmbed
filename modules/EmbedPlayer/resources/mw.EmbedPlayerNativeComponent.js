@@ -160,16 +160,14 @@
 		embedPlayerHTML: function () {
 		},
 
-		// Build the licenseUri (if needed) and send it to the native component as the "licenseUri" attribute.
-		pushLicenseUri: function () {
-			var licenseServer = mw.getConfig('Kaltura.UdrmServerURL');
+        buildUdrmLicenseUri: function(mimeType) {
+            var licenseServer = mw.getConfig('Kaltura.UdrmServerURL');
 			var licenseParams = this.mediaElement.getLicenseUriComponent();
+            var licenseUri = null;
 
 			if (licenseServer && licenseParams) {
-				var licenseUri;
 				// Build licenseUri by mimeType.
-				var sourceMimeType = this.mediaElement.selectedSource && this.mediaElement.selectedSource.mimeType;
-				switch (sourceMimeType) {
+				switch (mimeType) {
 					case "video/wvm":
 						// widevine classic
 						licenseUri = licenseServer + "/widevine/license?" + licenseParams;
@@ -181,16 +179,38 @@
 					case "application/vnd.apple.mpegurl":
 						// fps
 						licenseUri = licenseServer + "/fps/license?" + licenseParams;
-						//Add the FPS certificate
-						this.getPlayerElement().attr('fpsCertificate', this.mediaElement.selectedSource.fpsCertificate);
 						break;
 					default:
 						break;
-				}
-				if (licenseUri) {
-					this.getPlayerElement().attr('licenseUri', licenseUri);
-				}
+				}   
 			}
+            
+            return licenseUri;
+        },
+        
+		// Build the licenseUri (if needed) and send it to the native component as the "licenseUri" attribute.
+		pushLicenseUri: function () {
+            var selectedSource = this.mediaElement.selectedSource;
+            if (!selectedSource) {
+                return;
+            }
+            
+            var mimeType = selectedSource.mimeType;
+
+            var overrideDrmServerURL = mw.getConfig('Kaltura.overrideDrmServerURL');
+            var licenseUri = overrideDrmServerURL ? overrideDrmServerURL : this.buildUdrmLicenseUri(mimeType);
+            
+            if (licenseUri) {
+                var playerElement = this.getPlayerElement();
+                
+                // Push the license uri
+                playerElement.attr('licenseUri', licenseUri);
+                
+                // If the source has an FPS certificate, push it as well
+                if (selectedSource.fpsCertificate) {
+                    playerElement.attr('fpsCertificate', selectedSource.fpsCertificate);
+                }                
+            }
 		},
 
 		addStartTimeCheck: function () {
