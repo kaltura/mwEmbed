@@ -57,8 +57,12 @@
 				setTimeout(function()
 				{
 					if (!_this.cuePointsManager) {
-						// we need to initialize the instance
-						_this.cuePointsManager = new mw.dualScreen.CuePointsManager('imagePlayer', _this.getPlayer(),_this.cuePointsReached,_this);
+						_this.cuePointsManager = new mw.dualScreen.CuePointsManager(_this.getPlayer(), function () {
+						}, "imagePlayerCuePointsManager");
+
+						_this.cuePointsManager.onCuePointsReached = function (args) {
+							_this.cuePointsReached(args);
+						};
 					}
 				},1000);
 			}
@@ -67,7 +71,7 @@
 		{
 			if (this.cuePointsManager) {
 				mw.log("imagePlayer.destroyCuePointsManager(): removing existing instance of cue points manager");
-				this.cuePointsManager.destory();
+				this.cuePointsManager.destroy();
 				this.cuePointsManager = null;
 			}
 		},
@@ -228,8 +232,6 @@
 					} else {
 						mw.log('Dual screen:: Asset already loaded, aborting...');
 					}
-				} else {
-					mw.log( 'Dual screen:: No more cuepoints!' );
 				}
 			}
 		},

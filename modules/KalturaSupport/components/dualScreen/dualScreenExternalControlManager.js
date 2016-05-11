@@ -11,7 +11,7 @@
             {
                 if (this.cuePointsManager)
                 {
-                    this.cuePointsManager.destory();
+                    this.cuePointsManager.destroy();
                     this.cuePointsManager = null;
                 }
             },
@@ -29,14 +29,21 @@
                     {
                         if (!_this.cuePointsManager) {
                             // we need to initialize the instance
-                            _this.cuePointsManager = new mw.dualScreen.CuePointsManager('dualScreenExternalControlManager', _this.getPlayer(), function (args) {
-                                var relevantCuePoints = args.filter({tags: ['player-view-mode','change-view-mode'], sortDesc: true});
+                            _this.cuePointsManager = new mw.dualScreen.CuePointsManager(_this.getPlayer(), function () {
+                            }, "externalControlCuePointsManager");
+
+
+                            _this.cuePointsManager.onCuePointsReached = function (args) {
+                                var relevantCuePoints = args.filter({
+                                    tags: ['player-view-mode', 'change-view-mode'],
+                                    sortDesc: true
+                                });
                                 var mostUpdatedCuePointToHandle = relevantCuePoints.length > 0 ? relevantCuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
 
                                 if (mostUpdatedCuePointToHandle) {
                                     _this.handleCuePoint(mostUpdatedCuePointToHandle);
                                 }
-                            });
+                            };
                         }
                     },1000);
                 }

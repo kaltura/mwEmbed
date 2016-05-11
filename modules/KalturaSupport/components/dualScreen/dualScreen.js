@@ -288,7 +288,7 @@
 			{
 				if (this.externalControlManager) {
 					mw.log("dualScreen.destroyExternalControlManager(): removing existing instance of external control manager");
-					this.externalControlManager.destory();
+					this.externalControlManager.destroy();
 					this.externalControlManager = null;
 				}
 			},

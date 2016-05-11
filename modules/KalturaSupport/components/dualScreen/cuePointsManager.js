@@ -2,28 +2,43 @@
     "use strict";
     mw.dualScreen = mw.dualScreen || {};
 
-    var eventBindPostfixIdentifier = 1;
-    var defaultName = 'CuePointsManager';
+    var eventBindPostfixIdentifier = 1; // IMPORTANT - this counter is used outside of the instance to be able to create unique identifiers
 
-    mw.dualScreen.CuePointsManager = function(name, player, onCuePointsReached, invoker) {
+    mw.dualScreen.CuePointsManager = mw.KBasePlugin.extend({
+        _nextPendingCuePointIndex: 0,
+        _lastHandledServerTime: null,
+        _fetchedCuePoints: [],
+        _eventsBindPostfix : '',
+        _entryEventsBindPostfix : '',
+        setup: function () {
+            var _this = this;
 
-        var $player = $(player);
+            _this._eventsBindPostfix = '.' + (_this.pluginName || 'CuePointsManager') + eventBindPostfixIdentifier;
+            eventBindPostfixIdentifier++;
 
+            _this._entryEventsBindPostfix = _this._eventsBindPostfix + '-entry';
 
-        var eventsBindPostfix = '.' + (name || defaultName) + eventBindPostfixIdentifier;
-        eventBindPostfixIdentifier++;
+            _this._log('initialize()', 'invoked');
 
-        var entryEventsBindPostfix = eventsBindPostfix + '-entry';
-                var nextPendingCuePointIndex = 0;
-        var lastHandledServerTime = null;
-        var fetchedCuePoints = [];
+            _this.bind('onChangeMedia' + _this._eventsBindPostfix, function () {
+                _this._log('onChangeMedia()', 'invoked');
+                _this._reset();
+            });
 
-        function log(context, message) {
-            mw.log(name + "." + defaultName + "." + context + ":" + message);
-        }
+            _this.bind('playerReady' + _this._eventsBindPostfix, function () {
+                _this._log('playerReady()', 'invoked');
+                _this._onPlayerReady();
+            });
 
-        function createReachedCuePointsArgs(cuePoints, context)
-        {
+            _this._onPlayerReady();
+        },
+        _log: function (context, message) {
+            var _this = this;
+            mw.log(_this.pluginName + "." + context + ":" + message);
+        },
+        _createReachedCuePointsArgs: function (cuePoints, context) {
+            var _this = this;
+
             return $.extend({
                 'cuePoints': cuePoints,
                 filter: function (args) {
@@ -51,16 +66,17 @@
                     return result;
                 }
             }, context);
-        }
+        },
         /**
          * notify listener with cue points that need to be handled
          * @param cuePoints
          * @param eventContext
          */
 
-        function triggerReachedCuePoints(cuePoints,eventContext)
-        {
-            if (onCuePointsReached && cuePoints && cuePoints.length && cuePoints.length > 0) {
+        _triggerReachedCuePoints: function (cuePoints, eventContext) {
+            var _this = this;
+
+            if (_this.onCuePointsReached && cuePoints && cuePoints.length && cuePoints.length > 0) {
                 var clonedCuePointsToHandle = [];
                 var handledCuePointsIds = '';
                 for (var i = 0; i < cuePoints.length; i++) {
@@ -75,178 +91,154 @@
                 }
 
                 // create event args that contains functions to filter the cue points wisely
-                var eventArgs = createReachedCuePointsArgs(cuePoints,eventContext);
+                var eventArgs = _this._createReachedCuePointsArgs(cuePoints, eventContext);
 
-                log('triggerReachedCuePoints()', 'notify listener with ' + cuePoints.length + ' cue points to handle' + handledCuePointsIds);
-                onCuePointsReached.call(invoker,eventArgs);
+                _this._log('triggerReachedCuePoints()', 'notify listener with ' + cuePoints.length + ' cue points to handle' + handledCuePointsIds);
+                _this.onCuePointsReached(eventArgs);
             }
-        }
-
-
+        },
         /**
          * Invoke reached event manually for all cue points the started before server time.
          * Ignore optimization that prevent notifying a cue point that was already notified by managing
          * all cue points from the beginning of the entry time.
          */
-        function reinvokeReachedLogicManually()
-        {
+        _reinvokeReachedLogicManually: function () {
+            var _this = this;
+            var player = _this.getPlayer();
             var currentTime = player.getPlayerElementTime() * 1000;
-            log('reinvokeReachedLogicManually()', 'server time was modified to a past time (previously ' + lastHandledServerTime + ', current ' + currentTime + "). re-invoke logic by finding all cue points relevant until current time" );
-            lastHandledServerTime = currentTime;
+            _this._log('reinvokeReachedLogicManually()', 'server time was modified to a past time (previously ' + _this._lastHandledServerTime + ', current ' + currentTime + "). re-invoke logic by finding all cue points relevant until current time");
+            _this._lastHandledServerTime = currentTime;
 
-            nextPendingCuePointIndex = getNextCuePointIndex(currentTime, 0);
+            _this._nextPendingCuePointIndex = _this._getNextCuePointIndex(currentTime, 0);
 
-            if (nextPendingCuePointIndex > 0 && nextPendingCuePointIndex <= fetchedCuePoints.length) {
+            if (_this._nextPendingCuePointIndex > 0 && _this._nextPendingCuePointIndex <= _this._fetchedCuePoints.length) {
                 // invoke the following logic if we passed a cue point
-                var passedCuePoints = fetchedCuePoints.slice(0, nextPendingCuePointIndex); // get a list of all the cue points that were passed
-                triggerReachedCuePoints(passedCuePoints);
+                var passedCuePoints = _this._fetchedCuePoints.slice(0, _this._nextPendingCuePointIndex); // get a list of all the cue points that were passed
+                _this._triggerReachedCuePoints(passedCuePoints);
             }
-        }
+        },
+        _reset: function () {
+            var _this = this;
 
-        function reset() {
-            log('reset()', 'reset internals');
-            fetchedCuePoints = [];
-            nextPendingCuePointIndex = 0;
-            lastHandledServerTime = null;
+            _this._log('reset()', 'reset internals');
+            _this._fetchedCuePoints = [];
+            _this._nextPendingCuePointIndex = 0;
+            _this._lastHandledServerTime = null;
 
-            log('reset()', 'removing listeners for events with bind postfix ' + entryEventsBindPostfix);
-            $player.unbind(entryEventsBindPostfix);
+            _this._log('reset()', 'removing listeners for events with bind postfix ' + _this._entryEventsBindPostfix);
+            _this.unbind(_this._entryEventsBindPostfix);
 
-        }
+        },
+        _onPlayerReady: function () {
+            var _this = this;
 
-        function destroy()
-        {
-            log('destroy()', 'removing listeners for events with bind postfix ' + eventsBindPostfix);
-            $player.unbind(eventsBindPostfix);
+            _this._log('onPlayerReady()', 'invoked');
 
-            reset();
-
-        }
-
-        function onPlayerReady()
-        {
-            log('onPlayerReady()', 'invoked');
-
+            var player = _this.getPlayer();
             var shouldRun = player && ((player.isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints")) || player.kCuePoints);
             if (!shouldRun) {
-                log('onPlayerReady()', 'prerequisites check failed, disabling component');
+                _this._log('onPlayerReady()', 'prerequisites check failed, disabling component');
                 return;
             }
 
-            reset();
-            fetchedCuePoints = player.kCuePoints ? player.kCuePoints.getCuePoints() : [];
+            _this._reset();
+            _this._fetchedCuePoints = player.kCuePoints ? player.kCuePoints.getCuePoints() : [];
 
-            log('onPlayerReady()', 'registering to events with bind postfix ' + entryEventsBindPostfix);
+            _this._log('onPlayerReady()', 'registering to events with bind postfix ' + _this._entryEventsBindPostfix);
 
-            $player.bind(
-                "monitorEvent" + entryEventsBindPostfix +
-                " onplay" + entryEventsBindPostfix,
+            _this.bind(
+                "monitorEvent" + _this._entryEventsBindPostfix +
+                " onplay" + _this._entryEventsBindPostfix,
                 function (e) {
+                    var player = _this.getPlayer();
                     var currentTime = player.getPlayerElementTime() * 1000;
 
-                    if (currentTime < 0)
-                    {
+                    if (currentTime < 0) {
                         // ignore undesired temporary use cases
                         return;
                     }
 
-                    if ($.isNumeric(lastHandledServerTime) && (lastHandledServerTime - 2000) > currentTime)
-                    {
+                    if ($.isNumeric(_this._lastHandledServerTime) && (_this._lastHandledServerTime - 2000) > currentTime) {
                         // this part handles situation when user 'seek' from the player or if the server time changes
                         // for unknown reason. We don't use the 'seek' event since it sometimes provide an offset time and
                         // fix the value later but our code already modify its' internal state according to the offset time.
-                        reinvokeReachedLogicManually();
+                        _this._reinvokeReachedLogicManually();
                         return;
                     }
 
-                    lastHandledServerTime = currentTime;
+                    _this._lastHandledServerTime = currentTime;
 
-                    if (getCuePointByIndex(nextPendingCuePointIndex)) {
+                    if (_this._getCuePointByIndex(_this._nextPendingCuePointIndex)) {
 
-                        var cuePointsReachedToHandle = getCuePointsReached(currentTime, nextPendingCuePointIndex);
+                        var cuePointsReachedToHandle = _this._getCuePointsReached(currentTime, _this._nextPendingCuePointIndex);
 
                         if (cuePointsReachedToHandle.cuePoints.length > 0) {
-                            log('initialize.bind(' + e.type + ')', 'found ' + cuePointsReachedToHandle.cuePoints.length + ' cue point that should be handled (server time ' + currentTime + ')');
-                            nextPendingCuePointIndex = cuePointsReachedToHandle.lastIndex + 1;
-                            log('onPlayerReady.bind(' + e.type + ')', 'updating current index to ' + nextPendingCuePointIndex + ' (will be used next time searching for cue points to handle)');
+                            _this._log('initialize.bind(' + e.type + ')', 'found ' + cuePointsReachedToHandle.cuePoints.length + ' cue point that should be handled (server time ' + currentTime + ')');
+                            _this._nextPendingCuePointIndex = cuePointsReachedToHandle.lastIndex + 1;
+                            _this._log('onPlayerReady.bind(' + e.type + ')', 'updating current index to ' + _this._nextPendingCuePointIndex + ' (will be used next time searching for cue points to handle)');
 
-                            triggerReachedCuePoints(cuePointsReachedToHandle.cuePoints);
+                            _this._triggerReachedCuePoints(cuePointsReachedToHandle.cuePoints);
                         }
 
-                        var nextCuePoint = getCuePointByIndex(nextPendingCuePointIndex);
+                        var nextCuePoint = _this._getCuePointByIndex(_this._nextPendingCuePointIndex);
                         if (nextCuePoint && currentTime) {
                             var seconds = Math.round((nextCuePoint.startTime - currentTime ) / 1000);
 
-                            if (seconds < 120) {
+                            if (seconds < 5) {
                                 // log only if when the next cue point will be reached in less then x seconds
-                                log('onPlayerReady.bind(' + e.type + ')','next cue point with id ' + nextCuePoint.id + ' should be handled in ' + seconds + ' seconds (type \'' + nextCuePoint.cuePointType + '\', tags \'' + nextCuePoint.tags + '\', time ' + nextCuePoint.startTime + ', server time ' + currentTime + ')');
+                                _this._log('onPlayerReady.bind(' + e.type + ')', 'next cue point with id ' + nextCuePoint.id + ' should be handled in ' + seconds + ' seconds (type \'' + nextCuePoint.cuePointType + '\', tags \'' + nextCuePoint.tags + '\', time ' + nextCuePoint.startTime + ', server time ' + currentTime + ')');
                             }
                         }
                     }
                 }
             );
-        }
-
-        function initialize() {
-            log('initialize()', 'invoked');
-
-            $player.bind('onChangeMedia' + eventsBindPostfix, function () {
-                log('onChangeMedia()', 'invoked');
-                reset();
-            });
-            
-            $player.bind('playerReady' + eventsBindPostfix, function () {
-                log('playerReady()', 'invoked');
-                onPlayerReady();
-            });
-
-            onPlayerReady();
-        }
-
+        },
         /**
          * Returns the next cuePoint index for requested time
          * @param {Number} time Time in milliseconds
          * @param startFromIndex the first index to start the search from
          * @returns {*}
          */
-        function getNextCuePointIndex(time, startFromIndex) {
+        _getNextCuePointIndex: function (time, startFromIndex) {
+            var _this = this;
+
             if (!isNaN(time) && time >= 0) {
 
                 startFromIndex = startFromIndex || 0;
 
                 // Start looking for the cue point via time, return FIRST match:
-                if (fetchedCuePoints && fetchedCuePoints.length > 0) {
-                    for (var i = startFromIndex; i < fetchedCuePoints.length; i++) {
-                        if (fetchedCuePoints[i].startTime >= time) {
+                if (_this._fetchedCuePoints && _this._fetchedCuePoints.length > 0) {
+                    for (var i = startFromIndex; i < _this._fetchedCuePoints.length; i++) {
+                        if (_this._fetchedCuePoints[i].startTime >= time) {
                             return i;
                         }
                     }
 
-                    return fetchedCuePoints.length; // return the next index which is out-side of the array (because all items in array were already handled)
+                    return _this._fetchedCuePoints.length; // return the next index which is out-side of the array (because all items in array were already handled)
                 }
             }
             // No cue point found in range return false:
             return -1;
-        }
+        },
+        _getCuePointByIndex: function (index) {
+            var _this = this;
 
-        function getCuePointByIndex(index) {
-            if ($.isNumeric(index) && index > -1 && index < fetchedCuePoints.length) {
-                return fetchedCuePoints[index];
+            if ($.isNumeric(index) && index > -1 && index < _this._fetchedCuePoints.length) {
+                return _this._fetchedCuePoints[index];
             }
 
             return null;
-        }
-
-        function getCuePointsReached(time, startFromIndex) {
-
+        },
+        _getCuePointsReached: function (time, startFromIndex) {
+            var _this = this;
             var result = {cuePoints: [], startIndex: startFromIndex, lastIndex: null};
 
             if ($.isNumeric(startFromIndex) && !isNaN(time) && time >= 0) {
                 {
                     startFromIndex = (startFromIndex < 0) ? 0 : startFromIndex;
 
-                    for (var i = startFromIndex; i < fetchedCuePoints.length; i++) {
-                        var curPoint = fetchedCuePoints[i];
+                    for (var i = startFromIndex; i < _this._fetchedCuePoints.length; i++) {
+                        var curPoint = _this._fetchedCuePoints[i];
                         if (curPoint.startTime <= time) {
                             result.cuePoints.push(curPoint);
                             result.lastIndex = i;
@@ -258,20 +250,27 @@
             }
 
             return result;
-        }
-
-        this.getCuePointsReached = function() {
-
+        },
+        getCuePointsReached: function () {
+            var _this = this;
+            var player = _this.getPlayer();
             var currentTime = player.getPlayerElementTime() * 1000;
-            var cuePointsContext = getCuePointsReached(currentTime, 0);
-            return createReachedCuePointsArgs(cuePointsContext.cuePoints);
-
+            var cuePointsContext = _this._getCuePointsReached(currentTime, 0);
+            return _this._createReachedCuePointsArgs(cuePointsContext.cuePoints);
 
             return null;
+        },
+        destroy: function () {
+            var _this = this;
+            _this._log('destroy()', 'removing listeners for events with bind postfix ' + _this._eventsBindPostfix);
+            _this.unbind(_this._eventsBindPostfix);
+
+            _this._reset();
+
+        },
+        onCuePointsReached : function(args)
+        {
+            // do nothing - will be override by creator
         }
-        this.destroy = destroy;
-
-
-        initialize();
-    }
-})( window.mw, window.jQuery);
+    });
+})(window.mw, window.jQuery);
