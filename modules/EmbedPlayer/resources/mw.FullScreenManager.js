@@ -15,18 +15,7 @@
 		bindPostfix: '.fullscreenManager',
 
 		init: function( embedPlayer ) {
-			var _this = this;
 			this.embedPlayer = embedPlayer;
-			// add support for external full screen control
-			$(embedPlayer).bind("onFullscreenStateChange", function(e, state){
-				if ( mw.getConfig('EmbedPlayer.ExternalFullScreenControl') ){
-					if ( state === "enterFullscreen" ){
-						_this.doFullScreenPlayer();
-					}else if ( state === "exitFullscreen" ){
-						_this.restoreWindowPlayer();
-					}
-				}
-			});
 			return this;
 		},
 
@@ -44,7 +33,7 @@
 		 *  restoreWindowPlayer to restore window mode
 		 */
 		toggleFullscreen: function() {
-			this.embedPlayer.triggerHelper( 'onToggleFullscreenButtonPress');
+			this.embedPlayer.triggerHelper( 'onToggleFullscreen');
 
 			if (mw.getConfig('EmbedPlayer.ExternalFullScreenControl')){
 				return;
