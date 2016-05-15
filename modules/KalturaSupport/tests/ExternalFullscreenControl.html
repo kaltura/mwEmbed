@@ -16,8 +16,8 @@ To set it up:
 <p>
     <ol>
         <li>Set the global Flashvar <b>'EmbedPlayer.ExternalFullScreenControl'</b> to true.</li>
-        <li>Register to the player <b>'onToggleFullscreenButtonPress'</b> event to enter and exit full screen using your ustom code.</li>
-        <li>Notify the player on the new state by sending the <b>'onFullscreenStateChange'</b> notification with the current state as a parameter.</li>
+        <li>Register to the player <b>'onToggleFullscreen'</b> event to enter and exit full screen using your custom code.</li>
+        <li>Accordingly, call the player <b>openFullScreen</b> or <b>closeFullScreen</b> notification in order to update its UI.</li>
     </ol>
 </p>
 <div id="kaltura_player" style="width:400px;height:330px;"></div>
@@ -64,7 +64,7 @@ To set it up:
         'readyCallback': function(id){
             var kdp = document.getElementById(id);
 
-            kdp.kBind("onToggleFullscreenButtonPress", function(){
+            kdp.kBind("onToggleFullscreen", function(){
 
                 if (!isFullScreen){
                     enterFullscreen(kdp);
@@ -72,8 +72,8 @@ To set it up:
                     exitFullscreen();
                 }
 
-                var fullscreenState = isFullScreen ? "exitFullscreen" : "enterFullscreen";
-                kdp.sendNotification("onFullscreenStateChange", fullscreenState);
+                var notification = isFullScreen ? "closeFullScreen" : "openFullScreen";
+                kdp.sendNotification(notification);
 
                 isFullScreen = !isFullScreen;
             });
@@ -125,7 +125,7 @@ Sample embed code:
         'readyCallback': function(id){
             var kdp = document.getElementById(id);
 
-            kdp.kBind("onToggleFullscreenButtonPress", function(){
+            kdp.kBind("onToggleFullscreen", function(){
 
                 if (!isFullScreen){
                     enterFullscreen(kdp);
@@ -133,8 +133,8 @@ Sample embed code:
                     exitFullscreen();
                 }
 
-                var fullscreenState = isFullScreen ? "exitFullscreen" : "enterFullscreen";
-                kdp.sendNotification("onFullscreenStateChange", fullscreenState);
+                var notification = isFullScreen ? "closeFullScreen" : "openFullScreen";
+                kdp.sendNotification(notification);
 
                 isFullScreen = !isFullScreen;
             });
