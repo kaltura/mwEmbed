@@ -4,8 +4,7 @@
 ( function( mw ) {
 
 	/**
-	 * Given a float number of seconds, returns npt format response. ( ignore
-	 * days for now )
+	 * Given a float number of seconds, returns npt format response.
 	 *
 	 * @param {Float}
 	 *			sec Seconds
@@ -41,9 +40,14 @@
 			if ( tm.minutes < 10 )
 				tm.minutes = '0' + tm.minutes;
 
-			hoursStr = tm.hours + ":";
+			hoursStr = tm.hours;
 		}
-
+		if (tm.days > 0) {
+			hoursStr += tm.days * 24;
+		}
+		if (hoursStr) {
+			hoursStr += ':';
+		}
 		return hoursStr + tm.minutes + ":" + tm.seconds;
 	};
 
