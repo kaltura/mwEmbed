@@ -100,11 +100,11 @@
 
                 var actionContent = null;
 
-                if (cuePoint && cuePoint.cuePointType === 'codeCuePoint.Code' && cuePoint.tags === 'player-view-mode' && cuePoint.code)
+                if (cuePoint && cuePoint.cuePointType === 'codeCuePoint.Code' && (cuePoint.tags || '').indexOf('player-view-mode') !== -1 && cuePoint.code)
                 {
                     actionContent = cuePoint.code;
 
-                }else if (cuePoint && cuePoint.cuePointType === 'codeCuePoint.Code' && cuePoint.tags === 'change-view-mode' && cuePoint.partnerData)
+                }else if (cuePoint && cuePoint.cuePointType === 'codeCuePoint.Code' && (cuePoint.tags || '').indexOf('change-view-mode') !== -1 && cuePoint.partnerData)
                 {
                     actionContent = cuePoint.partnerData;
                 }

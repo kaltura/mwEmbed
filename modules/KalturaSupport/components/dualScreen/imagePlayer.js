@@ -195,7 +195,7 @@
 				}else if (cuePoint && cuePoint.cuePointType === 'codeCuePoint.Code')
 				{
 					// remove slide if requested
-					if (cuePoint.tags === 'remove-selected-thumb')
+					if ( (cuePoint.tags || '').indexOf('remove-selected-thumb') !== -1)
 					{
 						this.getComponent().attr('src','');
 					}

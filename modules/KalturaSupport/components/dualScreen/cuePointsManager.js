@@ -2,35 +2,80 @@
     "use strict";
     mw.dualScreen = mw.dualScreen || {};
 
-    var eventBindPostfixIdentifier = 1; // IMPORTANT - this counter is used outside of the instance to be able to create unique identifiers
-
     mw.dualScreen.CuePointsManager = mw.KBasePlugin.extend({
         _nextPendingCuePointIndex: 0,
         _lastHandledServerTime: null,
         _fetchedCuePoints: [],
-        _eventsBindPostfix : '',
-        _entryEventsBindPostfix : '',
         setup: function () {
             var _this = this;
 
-            _this._eventsBindPostfix = '.' + (_this.pluginName || 'CuePointsManager') + eventBindPostfixIdentifier;
-            eventBindPostfixIdentifier++;
-
-            _this._entryEventsBindPostfix = _this._eventsBindPostfix + '-entry';
+            _this.addBindings();
 
             _this._log('initialize()', 'invoked');
+        },
+        addBindings : function()
+        {
+            var _this = this;
 
-            _this.bind('onChangeMedia' + _this._eventsBindPostfix, function () {
-                _this._log('onChangeMedia()', 'invoked');
-                _this._reset();
-            });
+            _this._log('addBindings()', 'invoked');
 
-            _this.bind('playerReady' + _this._eventsBindPostfix, function () {
-                _this._log('playerReady()', 'invoked');
-                _this._onPlayerReady();
-            });
+            var player = _this.getPlayer();
+            var shouldRun = player && ((player.isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints")) || player.kCuePoints);
+            if (!shouldRun) {
+                _this._log('addBindings()', 'prerequisites check failed, disabling component');
+                return;
+            }
 
-            _this._onPlayerReady();
+            _this._fetchedCuePoints = player.kCuePoints ? player.kCuePoints.getCuePoints() : [];
+
+            _this._log('addBindings()', 'registering to events with bind postfix ' + _this.bindPostFix);
+
+            _this.bind(
+                "monitorEvent onplay",
+                function (e) {
+                    var player = _this.getPlayer();
+                    var currentTime = player.getPlayerElementTime() * 1000;
+
+                    if (currentTime < 0) {
+                        // ignore undesired temporary use cases
+                        return;
+                    }
+
+                    if ($.isNumeric(_this._lastHandledServerTime) && (_this._lastHandledServerTime - 2000) > currentTime) {
+                        // this part handles situation when user 'seek' from the player or if the server time changes
+                        // for unknown reason. We don't use the 'seek' event since it sometimes provide an offset time and
+                        // fix the value later but our code already modify its' internal state according to the offset time.
+                        _this._reinvokeReachedLogicManually();
+                        return;
+                    }
+
+
+                        _this._lastHandledServerTime = currentTime;
+
+                    if (_this._getCuePointByIndex(_this._nextPendingCuePointIndex)) {
+
+                        var cuePointsReachedToHandle = _this._getCuePointsReached(currentTime, _this._nextPendingCuePointIndex);
+
+                        if (cuePointsReachedToHandle.cuePoints.length > 0) {
+                            _this._log('initialize.bind(' + e.type + ')', 'found ' + cuePointsReachedToHandle.cuePoints.length + ' cue point that should be handled (server time ' + currentTime + ')');
+                            _this._nextPendingCuePointIndex = cuePointsReachedToHandle.lastIndex + 1;
+                            _this._log('onPlayerReady.bind(' + e.type + ')', 'updating current index to ' + _this._nextPendingCuePointIndex + ' (will be used next time searching for cue points to handle)');
+
+                            _this._triggerReachedCuePoints(cuePointsReachedToHandle.cuePoints);
+                        }
+
+                        var nextCuePoint = _this._getCuePointByIndex(_this._nextPendingCuePointIndex);
+                        if (nextCuePoint && currentTime) {
+                            var seconds = Math.round((nextCuePoint.startTime - currentTime ) / 1000);
+
+                            if (seconds < 100) {
+                                // log only if when the next cue point will be reached in less then x seconds
+                                _this._log('onPlayerReady.bind(' + e.type + ')', 'next cue point with id ' + nextCuePoint.id + ' should be handled in ' + seconds + ' seconds (type \'' + nextCuePoint.cuePointType + '\', tags \'' + nextCuePoint.tags + '\', time ' + nextCuePoint.startTime + ', server time ' + currentTime + ')');
+                            }
+                        }
+                    }
+                }
+            );
         },
         _log: function (context, message) {
             var _this = this;
@@ -117,82 +162,6 @@
                 _this._triggerReachedCuePoints(passedCuePoints);
             }
         },
-        _reset: function () {
-            var _this = this;
-
-            _this._log('reset()', 'reset internals');
-            _this._fetchedCuePoints = [];
-            _this._nextPendingCuePointIndex = 0;
-            _this._lastHandledServerTime = null;
-
-            _this._log('reset()', 'removing listeners for events with bind postfix ' + _this._entryEventsBindPostfix);
-            _this.unbind(_this._entryEventsBindPostfix);
-
-        },
-        _onPlayerReady: function () {
-            var _this = this;
-
-            _this._log('onPlayerReady()', 'invoked');
-
-            var player = _this.getPlayer();
-            var shouldRun = player && ((player.isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints")) || player.kCuePoints);
-            if (!shouldRun) {
-                _this._log('onPlayerReady()', 'prerequisites check failed, disabling component');
-                return;
-            }
-
-            _this._reset();
-            _this._fetchedCuePoints = player.kCuePoints ? player.kCuePoints.getCuePoints() : [];
-
-            _this._log('onPlayerReady()', 'registering to events with bind postfix ' + _this._entryEventsBindPostfix);
-
-            _this.bind(
-                "monitorEvent" + _this._entryEventsBindPostfix +
-                " onplay" + _this._entryEventsBindPostfix,
-                function (e) {
-                    var player = _this.getPlayer();
-                    var currentTime = player.getPlayerElementTime() * 1000;
-
-                    if (currentTime < 0) {
-                        // ignore undesired temporary use cases
-                        return;
-                    }
-
-                    if ($.isNumeric(_this._lastHandledServerTime) && (_this._lastHandledServerTime - 2000) > currentTime) {
-                        // this part handles situation when user 'seek' from the player or if the server time changes
-                        // for unknown reason. We don't use the 'seek' event since it sometimes provide an offset time and
-                        // fix the value later but our code already modify its' internal state according to the offset time.
-                        _this._reinvokeReachedLogicManually();
-                        return;
-                    }
-
-                    _this._lastHandledServerTime = currentTime;
-
-                    if (_this._getCuePointByIndex(_this._nextPendingCuePointIndex)) {
-
-                        var cuePointsReachedToHandle = _this._getCuePointsReached(currentTime, _this._nextPendingCuePointIndex);
-
-                        if (cuePointsReachedToHandle.cuePoints.length > 0) {
-                            _this._log('initialize.bind(' + e.type + ')', 'found ' + cuePointsReachedToHandle.cuePoints.length + ' cue point that should be handled (server time ' + currentTime + ')');
-                            _this._nextPendingCuePointIndex = cuePointsReachedToHandle.lastIndex + 1;
-                            _this._log('onPlayerReady.bind(' + e.type + ')', 'updating current index to ' + _this._nextPendingCuePointIndex + ' (will be used next time searching for cue points to handle)');
-
-                            _this._triggerReachedCuePoints(cuePointsReachedToHandle.cuePoints);
-                        }
-
-                        var nextCuePoint = _this._getCuePointByIndex(_this._nextPendingCuePointIndex);
-                        if (nextCuePoint && currentTime) {
-                            var seconds = Math.round((nextCuePoint.startTime - currentTime ) / 1000);
-
-                            if (seconds < 5) {
-                                // log only if when the next cue point will be reached in less then x seconds
-                                _this._log('onPlayerReady.bind(' + e.type + ')', 'next cue point with id ' + nextCuePoint.id + ' should be handled in ' + seconds + ' seconds (type \'' + nextCuePoint.cuePointType + '\', tags \'' + nextCuePoint.tags + '\', time ' + nextCuePoint.startTime + ', server time ' + currentTime + ')');
-                            }
-                        }
-                    }
-                }
-            );
-        },
         /**
          * Returns the next cuePoint index for requested time
          * @param {Number} time Time in milliseconds
@@ -262,11 +231,8 @@
         },
         destroy: function () {
             var _this = this;
-            _this._log('destroy()', 'removing listeners for events with bind postfix ' + _this._eventsBindPostfix);
-            _this.unbind(_this._eventsBindPostfix);
-
-            _this._reset();
-
+            _this._log('destroy()', 'removing listeners for events with bind postfix ' + _this.bindPostFix);
+            _this.unbind();
         },
         onCuePointsReached : function(args)
         {
