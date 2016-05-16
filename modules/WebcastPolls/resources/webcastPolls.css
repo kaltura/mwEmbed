@@ -1,0 +1,6 @@
+.webcastPolls .question{
+    color: pink;
+}
+.webcastPolls .icon-close{
+    display: none !important;
+}

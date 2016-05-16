@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Auto play Player test</title>
+    <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+    <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+    <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+
+</head>
+<body>
+<h2>  </h2>
+
+<div id="kaltura_player" style="width:400px;height:330px;"></div>
+<script>
+    kWidget.embed({
+        'targetId': 'kaltura_player',
+        'wid': '_243342',
+        'uiconf_id' : '12905712',
+        'entry_id' : '0_uka1msg4',
+        'flashvars': {
+            'webcastPolls': {
+                plugin: true
+            }
+        }
+    });
+</script>
+<br>
+Sample embed code:
+<pre class="prettyprint linenums">
+kWidget.embed({<br/>	'targetId': 'kaltura_player',<br/>	'wid': '_243342',<br/>	'uiconf_id' : '12905712',<br/>	'entry_id' : '0_uka1msg4',<br/>	'flashvars': {<br/>		'autoPlay': true<br/>	}<br/>});
+</pre>
+</body>
+</html>

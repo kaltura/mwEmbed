@@ -1,0 +1,12 @@
+{
+    "webcastPolls": {
+        "scripts": [
+            "resources/webcastPolls.js"
+        ],
+        "dependencies": "mw.KBaseScreen",
+        "kalturaPluginName": "webcastPolls",
+	    "templates": "../WebcastPolls/resources/webcastPolls.tmpl.html",
+        "styles": "resources/webcastPolls.css",
+        "messageFile": "WebcastPolls.i18n.json"
+    }
+}
