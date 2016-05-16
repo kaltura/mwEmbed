@@ -220,7 +220,7 @@
 		},
 		addTextSource: function(captionData){
 			// Try to insert the track source:
-			var embedSource = _this.embedPlayer.mediaElement.tryAddSource(
+			var embedSource = this.embedPlayer.mediaElement.tryAddSource(
 				$( '<track />' ).attr({
 					'kind'		: 'subtitles',
 					'language'	: captionData.language, //full language name, e.g. english
