@@ -11,13 +11,10 @@
 		setup: function(){
 			var _this = this;
 			if (this.embedPlayer.isMobileSkin()){
-				this.setConfig('parent','controlBarContainer');
-				this.setConfig('insertMode','firstChild');
+				this.setConfig('parent','videoHolder');
+				this.setConfig('insertMode','lastChild');
 				this.bind('onHideControlBar', function(){
 					_this.$el.fadeOut();
-				});
-				this.bind('layoutBuildDone', function(){
-					_this.$el.hide();
 				});
 				this.bind('onShowControlBar', function(){
 					_this.$el.fadeIn();
