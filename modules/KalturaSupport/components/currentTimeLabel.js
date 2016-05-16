@@ -20,9 +20,10 @@
 				this.setConfig('parent','videoHolder');
 				this.setConfig("countDownMode", true);
 				this.bind('firstPlay', function(){
+					// move current time label from video holder back to controlBar container.
 					var currentTimeLabel = $('.currentTimeLabel').detach();
 					$('.controlsContainer .scrubber').after(currentTimeLabel);
-					_this.embedPlayer.triggerHelper("updateComponentsVisibilityDone");
+					_this.embedPlayer.triggerHelper("updateComponentsVisibilityDone");  // redraw components to calculate their size and location
 				});
 			}
 			this.bindTimeUpdate();

@@ -264,6 +264,9 @@
 .mobileSkin .icon-ad:before {
     content: "\e91e";
 }
+.mobileSkin .icon-arrow-left:before {
+    content: "\e917";
+}
 
 
 

@@ -16,7 +16,11 @@
 		enterFullscreenTxt: gM( 'mwe-embedplayer-player_fullscreen' ),
 		exitFullscreenTxt: gM( 'mwe-embedplayer-player_closefullscreen' ),
 			
-		setup: function( embedPlayer ) {
+		setup: function() {
+			// for mobile skin, assign the back arrow as the full screen exit icon
+			if ( this.getPlayer().isMobileSkin() ){
+				this.onIconClass = 'icon-arrow-left';
+			}
 			this.addBindings();
 		},
 		isSafeEnviornment: function(){
@@ -59,6 +63,16 @@
 		toggleFullscreen: function() {
 			if( this.isDisabled ) return ;
 			this.getPlayer().toggleFullscreen();
+			// for mobile skin we need to put the back arrow in the top bar container in full screen and the controlBar container when inline
+			if ( this.getPlayer().isMobileSkin() ){
+				var fsBtn = $('.fullScreenBtn').detach();
+				if (this.getPlayer().layoutBuilder.fullScreenManager.inFullScreen) {
+					$('.topBarContainer').prepend(fsBtn);
+				}else{
+					$('.controlsContainer').append(fsBtn);
+				}
+				this.getPlayer().triggerHelper("updateComponentsVisibilityDone"); // redraw components to calculate their size and location
+			}
 		}
 	}));
 
