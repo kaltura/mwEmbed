@@ -832,6 +832,9 @@ body {
 	margin-left: 10px;
     color: #ffffff;
 }
+.fullscreen.mobileSkin .currentTimeLabel {
+	margin-right: 10px;
+}
 .mobileSkin.start-state .currentTimeLabel {
     position: absolute;
     right: 8px;
