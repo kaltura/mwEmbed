@@ -269,7 +269,7 @@
 		 */
 		updatePlaybackRate: function( newSpeed ){
 			// workaround for Firefox and IE - changing playbackRate before media loads causes player to stuck
-			if (this.getPlayer().mediaLoadedFlag){
+			if (this.getPlayer().mediaLoadedFlag && !this.getConfig("serverSpeedPlayback")){
 				this.getPlayer().getPlayerElement().playbackRate = newSpeed;
 			}
 			if (!this.embedPlayer.isMobileSkin()){
