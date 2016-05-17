@@ -73,7 +73,7 @@
 			});
 
 			this.bind( 'onRemovePlayerSpinner', function(){
-				 if ( _this.getPlayer().getPlayerElement() ) {
+				 if ( _this.getPlayer().getPlayerElement() && !_this.getConfig("serverSpeedPlayback")) {
 					 _this.getPlayer().getPlayerElement().playbackRate = _this.currentSpeed;
 				 }
 			});
@@ -150,7 +150,7 @@
 			this.getMenu().destroy();
 
 			$.each( this.speedSet, function( idx, speedFloat ){
-				var active = ( _this.currentSpeed == speedFloat ) ? true : false;
+				var active = ( _this.currentSpeed == speedFloat );
 				_this.getMenu().addItem({
 					'label': speedFloat + 'x',
 					'callback': function(){
@@ -269,7 +269,7 @@
 		 */
 		updatePlaybackRate: function( newSpeed ){
 			// workaround for Firefox and IE - changing playbackRate before media loads causes player to stuck
-			if (this.getPlayer().mediaLoadedFlag){
+			if (this.getPlayer().mediaLoadedFlag && !this.getConfig("serverSpeedPlayback")){
 				this.getPlayer().getPlayerElement().playbackRate = newSpeed;
 			}
 			if (!this.embedPlayer.isMobileSkin()){
