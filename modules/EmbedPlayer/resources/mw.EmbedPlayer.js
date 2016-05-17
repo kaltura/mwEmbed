@@ -2855,6 +2855,10 @@
 					}
 					_this.clipDoneTimeout = null;
 				}, (timeoutVal * 1000) );
+				//If while clip done guard in activated we get a seek, clear the guard.
+				this.unbindHelper(".clipDoneGuard").bindOnceHelper("seeking.clipDoneGuard", function(){
+					_this.cancelClipDoneGuard();
+				})
 			}
 		},
 		cancelClipDoneGuard: function() {
