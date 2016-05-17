@@ -73,7 +73,7 @@
 			});
 
 			this.bind( 'onRemovePlayerSpinner', function(){
-				 if ( _this.getPlayer().getPlayerElement() ) {
+				 if ( _this.getPlayer().getPlayerElement() && !_this.getConfig("serverSpeedPlayback")) {
 					 _this.getPlayer().getPlayerElement().playbackRate = _this.currentSpeed;
 				 }
 			});
@@ -150,7 +150,7 @@
 			this.getMenu().destroy();
 
 			$.each( this.speedSet, function( idx, speedFloat ){
-				var active = ( _this.currentSpeed == speedFloat ) ? true : false;
+				var active = ( _this.currentSpeed == speedFloat );
 				_this.getMenu().addItem({
 					'label': speedFloat + 'x',
 					'callback': function(){
