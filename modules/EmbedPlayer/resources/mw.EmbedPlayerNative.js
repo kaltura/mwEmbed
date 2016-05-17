@@ -512,7 +512,7 @@
 				return false;
 			}
             if( this.isLive() && !this.isDVR() ){
-                return this.LiveCurrentTime;
+                return this.LiveCurrentTime ? this.LiveCurrentTime : 0;
             }
 			var ct = this.playerElement.currentTime;
 			// Return 0 or a positive number:
