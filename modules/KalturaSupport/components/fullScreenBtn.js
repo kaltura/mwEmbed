@@ -53,26 +53,28 @@
 				_this.getComponent().removeClass( _this.offIconClass ).addClass( _this.onIconClass );
 				_this.updateTooltip( _this.exitFullscreenTxt );
                 _this.setAccessibility(_this.$el,_this.exitFullscreenTxt);
+				// for mobile skin we need to put the back arrow in the top bar container in full screen and the controlBar container when inline
+				if ( _this.getPlayer().isMobileSkin() ){
+					var fsBtn = $('.fullScreenBtn').detach();
+					$('.topBarContainer').prepend(fsBtn);
+					_this.getPlayer().triggerHelper("updateComponentsVisibilityDone"); // redraw components to calculate their size and location
+				}
 			});
 			this.bind('onCloseFullScreen', function() {
 				_this.getComponent().removeClass( _this.onIconClass ).addClass( _this.offIconClass );
 				_this.updateTooltip( _this.enterFullscreenTxt );
                 _this.setAccessibility(_this.$el,_this.enterFullscreenTxt);
+				// for mobile skin we need to put the back arrow in the top bar container in full screen and the controlBar container when inline
+				if ( _this.getPlayer().isMobileSkin() ){
+					var fsBtn = $('.fullScreenBtn').detach();
+					$('.controlsContainer').append(fsBtn);
+					_this.getPlayer().triggerHelper("updateComponentsVisibilityDone"); // redraw components to calculate their size and location
+				}
 			});
 		},
 		toggleFullscreen: function() {
 			if( this.isDisabled ) return ;
 			this.getPlayer().toggleFullscreen();
-			// for mobile skin we need to put the back arrow in the top bar container in full screen and the controlBar container when inline
-			if ( this.getPlayer().isMobileSkin() ){
-				var fsBtn = $('.fullScreenBtn').detach();
-				if (this.getPlayer().layoutBuilder.fullScreenManager.inFullScreen) {
-					$('.topBarContainer').prepend(fsBtn);
-				}else{
-					$('.controlsContainer').append(fsBtn);
-				}
-				this.getPlayer().triggerHelper("updateComponentsVisibilityDone"); // redraw components to calculate their size and location
-			}
 		}
 	}));
 

@@ -56,14 +56,18 @@ body {
     top: -3.6em;
     background: transparent;
     padding-right: 1em;
+    display: none !important;
 }
 .mobileSkin .topBarContainer.open {
     top: 0;
     height: 3.6em;
-    display: none;
+    display: none !important;
+}
+.fullscreen.mobileSkin .topBarContainer {
+    display: block !important;
 }
 .fullscreen.mobileSkin .topBarContainer.open {
-    display: block;
+    display: block !important;
 }
 .sideBarContainerReminder{
 	padding: 10px;
