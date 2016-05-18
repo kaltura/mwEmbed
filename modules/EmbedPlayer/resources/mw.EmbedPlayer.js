@@ -3330,7 +3330,7 @@
 			$.each(newFlavors, function(inx, flavor){
 				_this.manifestAdaptiveFlavors.push( new mw.MediaSource( flavor ) )
 			});
-			$(this).trigger( 'sourcesReplaced' );;
+			$(this).trigger( 'sourcesReplaced' );
 		},
 		getCurrentBitrate: function(){
 			if ( !this.isLive() && this.mediaElement.selectedSource) {
