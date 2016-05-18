@@ -69,6 +69,7 @@
 				this.bind("onSelectSource", this.checkIfHLSNeeded.bind(this));
 				this.bind("playerReady", this.initHls.bind(this));
 				this.bind("onChangeMedia", this.clean.bind(this));
+				this.bind("reset", this.reset.bind(this));
 				if( mw.getConfig("hlsLogs") ) {
 					this.bind("monitorEvent", this.monitorDebugInfo.bind(this));
 				}
@@ -132,6 +133,12 @@
 
 					}
 				}
+			},
+			reset: function () {
+				this.clean();
+				this.LoadHLS = true;
+				this.initHls();
+				this.load();
 			},
 			/**
 			 * Register HLS playback engine events

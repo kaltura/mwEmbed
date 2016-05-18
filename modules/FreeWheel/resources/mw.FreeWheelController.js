@@ -491,6 +491,9 @@ mw.FreeWheelController.prototype = {
 
 		if( slotType== 'preroll' ){
 			_this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_PLAYING );
+			if( mw.isFirefox() && mw.getConfig('isHLS_JS') === true ) {
+				_this.embedPlayer.triggerHelper( 'reset' );
+			}
 		}
 		if( slotType == 'postroll' ){
 			_this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_COMPLETED) ;

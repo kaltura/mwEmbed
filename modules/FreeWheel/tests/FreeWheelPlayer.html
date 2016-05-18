@@ -23,23 +23,31 @@ function jsKalturaPlayerTest( videoId ){
 <script>
 	kWidget.featureConfig({
 		'targetId': 'myVideoTarget',
-		'wid': '_243342',
+		'wid': '_1878761',
 		'uiconf_id' : '14945112',
-		'entry_id' : '0_uka1msg4',
+		'entry_id' : '1_usagz19w',// Harold video replaced since it has bad decoding for hls.js
 		'flashvars': {
+			/*
+			"hlsjs": {
+			    "plugin": true
+			},
+			"LeadWithHLSOnJs": true,
+			*/
 			'freeWheel': {
-				'adManagerUrl': "http://adm.fwmrm.net/p/release/latest-AS3/adm/dbg/AdManager.swf",
-				'adManagerJsUrl': "http://adm.fwmrm.net/p/release/latest-JS/adm/dbg/AdManager.js",
-				'serverUrl': "http://demo.v.fwmrm.net",
-				'networkId': "176538",
-				'playerProfile': "176538:KDP_Flash",
-				'playerProfileHTML5': "176538:KDP_HTML5",
-				'siteSectionId': "defaultsection",
-				'preSequence': "1",
-				'postSequence':"1",
-				'useKalturaTemporalSlots':"true",
-				'videoAssetId':"videopreroll",
-				'videoAssetFallbackId':"videopreroll"
+					'plugin': true,
+					'asyncInit':"true",
+					'adManagerJsUrl':"http://adm.fwmrm.net/p/release/latest-JS/adm/dbg/AdManager.js",
+					'adManagerUrl':"http://adm.fwmrm.net/p/release/latest-AS3/adm/dbg/AdManager.swf",
+					'networkId':"176538",
+					'playerProfile':"176538:KDP_Flash",
+					'playerProfileHTML5':"176538:KDP_HTML5",
+					'postSequence':"1",
+					'preSequence':"1",
+					'serverUrl':"http://demo.v.fwmrm.net",
+					'siteSectionId':"defaultsection",
+					'useKalturaTemporalSlots':"true",
+					'videoAssetFallbackId':"playerdefined",
+					'videoAssetId':"playerdefined"
 			}
 		}
 	})
