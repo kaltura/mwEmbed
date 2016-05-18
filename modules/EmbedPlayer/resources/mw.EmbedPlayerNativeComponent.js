@@ -500,18 +500,18 @@
 //			mw.log("_onFlavorsListChanged", event, data);
 
 			// Build an array with this format:
-			// [{"assetid":0,"bandwidth":517120,"type":"video/mp4","height":0},{"assetid":1,"bandwidth":727040,"type":"video/mp4","height":0},{"assetid":2,"bandwidth":1041408,"type":"video/mp4","height":0}]
+			//{"tracks" : [{"assetid":0,"originalIndex":0,"bandwidth":517120,"type":"video/mp4","height":0},{"assetid":1,"originalIndex":1,"bandwidth":727040,"type":"video/mp4","height":0},{"assetid":2,"originalIndex":2,"bandwidth":1041408,"type":"video/mp4","height":0}]}
 			//
 
 			var flavorsList = [];
 			$.each(data.tracks, function(idx, obj) {
 				var flavor = {
-					assetid: obj.originalIndex,
+					assetid: obj.assetId,
 					originalIndex: obj.originalIndex,
 					bandwidth: obj.bitrate,
 					height: obj.height,
 					width: obj.width,
-					type: "video/mp4" // not sure about that
+					type: obj.type  //"video/mp4 for example"
 				};
 				flavorsList.push(flavor);
 			});
