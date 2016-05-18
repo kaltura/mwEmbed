@@ -10,24 +10,48 @@
 <body>
 <h2>  </h2>
 
-<div id="kaltura_player" style="width:400px;height:330px;"></div>
+<div id="kaltura_player" style="width: 585px; height: 330px;float: left;"></div>
+<div id="qnaListHolder" style="width: 300px; height: 330px; float:left; float: left"></div>
+
+
 <script>
-    kWidget.embed({
+    kWidget.featureConfig({
         'targetId': 'kaltura_player',
-        'wid': '_243342',
-        'uiconf_id' : '12905712',
-        'entry_id' : '0_uka1msg4',
+        'wid': '_1802381',
+        'uiconf_id' : '25906281',
         'flashvars': {
+            autoPlay : true,
+            'ks': "djJ8MTgwMjM4MXzeU1D24AZ4Hk72EdmTmRU8ag59hIzYM-j2xABSpP-CotnZMT3HvKVeSh_yJ0UbEGIBYU2J4qQMW9p4O0HQlScjwQ6ED8vCxKChuZARHctrJ_vK-fcSdCluuZ58mKcYXKXTSvI5_PEKD7Tca4xBaWHnwiTK1yaTPgLlfubor0h3xA==",
+            'qna': {
+                'plugin': true,
+                'qnaTargetId': 'qnaListHolder',
+                'qnaPollingInterval': 5000,
+                'onPage': true,
+                'containerPosition': 'right',
+                'moduleWidth' : '200',
+                'userId': "Shimi",
+                'userRole':"userRole", //anonymousRole
+                'allowNewQuestionWhenNotLive': true
+            },
+            share: {
+                plugin: true
+            },
+            "chapters": {
+                plugin: true
+            }, "dualScreen": {
+                plugin: true
+            },
+            "EmbedPlayer.LiveCuepoints" : true,
             'webcastPolls': {
                 plugin: true
             }
-        }
+
+        },
+        'entry_id': "1_afjmm4ie" // vod : 1_bzr97hax | live : 1_afjmm4ie
+
     });
+
 </script>
-<br>
-Sample embed code:
-<pre class="prettyprint linenums">
-kWidget.embed({<br/>	'targetId': 'kaltura_player',<br/>	'wid': '_243342',<br/>	'uiconf_id' : '12905712',<br/>	'entry_id' : '0_uka1msg4',<br/>	'flashvars': {<br/>		'autoPlay': true<br/>	}<br/>});
-</pre>
+
 </body>
 </html>

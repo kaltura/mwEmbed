@@ -1,0 +1,39 @@
+@startuml
+
+title Webcast polls state machine
+
+state "idle" as idle
+state "visible poll" as visiblePoll
+
+[*] --> idle
+idle : - not showing any visual indication
+idle : - wathing for polls data\ncuepoint and story internally
+
+state "visible poll" as visiblePoll {
+
+    state "answered poll" as answeredPoll
+    answeredPoll: - the selected answer is highlighted
+    answeredPoll : - if __'showing results'__ then show results per answer
+    answeredPoll : - if __'showing totals'__ then show total answers
+
+    state "readonly poll" as readonlyPoll
+    readonlyPoll : - if __user answered__  then highlight answer
+    readonlyPoll : - if __'showing results'__ then show results per answer
+    readonlyPoll : - if __'showing totals'__ then show total answers
+
+    state "interactive poll" as interactivePoll
+    interactivePoll : - if __'showing results'__ then show results per answer
+    interactivePoll : - if __'showing totals'__ then show total answers
+
+    [*] -->  readonlyPoll : poll state is **'close'**
+    [*] --> interactivePoll : poll state is **'open'**\nAND\nno answer selected
+    [*] --> answeredPoll : poll state is **'open'**\nAND\nanswer selected
+    interactivePoll --> answeredPoll: user select an answer
+    answeredPoll --> answeredPoll : user replaced his answer
+}
+
+idle --> visiblePoll: has poll state\nAND\nstate not **'hide'**
+visiblePoll --> idle: poll state is **'hide'**
+
+
+@enduml
