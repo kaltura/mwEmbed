@@ -86,6 +86,7 @@
 		manifestLoaded: false,
 		dashContextUpdated: false,
 		isSeekable: false,
+		isResolvingUrl: false,
 
 		detectPluginIntervalLoops: 3,
 
@@ -292,13 +293,18 @@
 		updateDashContext: function(){
 			var _this = this;
 			this.dashContextUpdated = true;
-			if (this.getPlayerElement() && this.getSrc()) {
+			//If we have a source to set and playback element is ready and we are not already resolving a URL
+			//then resolve the URL and set the playback source
+			if (this.getPlayerElement() && this.getSrc() && !this.isResolvingUrl) {
+				this.isResolvingUrl = true;
 				this.resolveSrcURL( this.getSrc() ).then( function(source){
 					_this.manifestLoaded = false;
+					_this.isResolvingUrl = false;
 					var el = $(_this.playerElement.el() );
 					el.attr('data-src', _this.getSrc());
 					_this.playerElement.loadVideo( source, _this.getDrmConfig() );
 				}, function(){
+					_this.isResolvingUrl = false;
 					//Report on playManifest redirect error
 					_this.log("Failed resolving playManifest request: " + _this.getSrc());
 					_this.triggerHelper('embedPlayerError');
