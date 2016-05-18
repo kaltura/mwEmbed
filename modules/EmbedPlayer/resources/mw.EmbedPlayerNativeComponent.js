@@ -508,7 +508,7 @@
 				var flavor = {
 					assetid: obj.assetid,
 					originalIndex: obj.originalIndex,
-					bandwidth: obj.bitrate,
+					bandwidth: obj.bandwidth,
 					height: obj.height,
 					width: obj.width,
 					type: "video/mp4"//obj.type  //"video/mp4 for example"
