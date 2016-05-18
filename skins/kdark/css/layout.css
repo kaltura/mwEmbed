@@ -69,6 +69,9 @@ body {
 .fullscreen.mobileSkin .topBarContainer.open {
     display: block !important;
 }
+.fullscreen.mobileSkin.pluginsScreenOpened .topBarContainer {
+    display: none !important;
+}
 .sideBarContainerReminder{
 	padding: 10px;
 	position: absolute;
@@ -262,7 +265,7 @@ body {
 .mobileSkin .btnFixed{
     width: 100%;
 }
-.mobileSkin .pluginsScreenOpened .playbackRateSelector .btn{
+.mobileSkin.pluginsScreenOpened .playbackRateSelector .btn{
     font-family: 'Lato', Helvetica, Arial;;
 }
 .mobileSkin .videoHolder .playbackRateSelector .btn{
@@ -1763,7 +1766,7 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
     transition: opacity 400ms ease-out;
     transition: background 400ms ease-out;
 }
-.mobileSkin .pluginsScreenOpened .videoShadow{
+.mobileSkin.pluginsScreenOpened .videoShadow{
     background: rgba(0,0,0,0.75);
 }
 .closePluginsScreen{
