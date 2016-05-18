@@ -506,12 +506,12 @@
 			var flavorsList = [];
 			$.each(data.tracks, function(idx, obj) {
 				var flavor = {
-					assetid: obj.assetId,
+					assetid: obj.assetid,
 					originalIndex: obj.originalIndex,
 					bandwidth: obj.bitrate,
 					height: obj.height,
 					width: obj.width,
-					type: obj.type  //"video/mp4 for example"
+					type: "video/mp4"//obj.type  //"video/mp4 for example"
 				};
 				flavorsList.push(flavor);
 			});
