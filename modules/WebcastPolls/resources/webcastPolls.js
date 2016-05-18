@@ -16,13 +16,16 @@
         question: 'amir',
         isScreenOpened: false,
         setup: function () {
+
+            // prevent pause of video while poll is being disabled
             this.setConfig('previewPlayerEnabled', true);
             this.setConfig('usePreviewPlayer', true);
 
-            if (mw.isMobileDevice()) {
-                // TODO [es]
-                console.log("mobile device");
-            }
+            // TODO [es] check if neede
+            //if (mw.isMobileDevice()) {
+            //    console.log("mobile device");
+            //}
+
             this.addBindings();
 
         },
@@ -33,10 +36,11 @@
             var embedPlayer = this.getPlayer();
 
             this.bind('onpause', function () {
+                // TODO [es] check if need to disable poll
                 debugger
             });
 
-            this.bind('playerReady', function () {
+            this.bind('onplay', function () {
                 setTimeout(function () {
                     _this.showScreen();
                     //_this.getPlayer().addPlayerSpinner();
@@ -49,11 +53,11 @@
                     //	_this.showScreen();
                     //},5000);
 
-                    setTimeout(function () {
-                        _this.hideScreen();
-
-                    }, 10000);
-                }, 5000);
+                    //setTimeout(function () {
+                    //    _this.hideScreen();
+                    //
+                    //}, 10000);
+                }, 1000);
             });
             this.bind('preShowScreen', function (event, screenName) {
 
@@ -97,9 +101,9 @@
                     // re-enable player controls
                     // TODO [es] amir - what is 'isInSequence'?
                     //if ( !embedPlayer.isInSequence() ){
-                    //	embedPlayer.enablePlayControls();
+                    //	_this.enablePlayerControls();
                     //}
-                    embedPlayer.enablePlayControls();
+                    _this.enablePlayerControls();
 
                     // remove blur
                     if (embedPlayer.getPlayerElement()) {
@@ -138,11 +142,11 @@
         },
 
         disablePlayerControls: function () {
-            embedPlayer.disablePlayControls(["volumeControl", "scrubber", "playPauseBtn", "playlistAPI"]);
+           // embedPlayer.disablePlayControls(["volumeControl", "scrubber", "playPauseBtn", "playlistAPI"]);
         },
 
         enablePlayerControls: function () {
-            embedPlayer.disablePlayControls(["volumeControl", "scrubber", "playPauseBtn", "playlistAPI"]);
+            // embedPlayer.enablePlayControls();
         },
 
         getTemplateData: function () {

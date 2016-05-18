@@ -1,6 +1,53 @@
 .webcastPolls .question{
-    color: pink;
+    float:left;
+    color: #fff;
+    font-size:200%;
 }
 .webcastPolls .icon-close{
     display: none !important;
+}
+
+.webcastPolls .upper-row {
+    position:relative;
+}
+
+.webcastPolls .responds {
+    float:right;
+}
+
+.webcastPolls .responds .responds-number {
+    font-size:250%;
+}
+
+.webcastPolls .answers-container {
+    clear:both;
+}
+
+.webcastPolls .answer {
+    margin-bottom: 10px;
+    border: solid 1px rgba(255, 255, 255, 0.2);
+    -webkit-border-radius:20px;
+    -moz-border-radius:20px;
+    border-radius:20px;
+    height:30px;
+    overflow:hidden;
+    background:rgba(255, 255, 255,0.4);
+    color: #000;
+
+}
+
+.webcastPolls .answer-text {
+    margin-left:20px;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+}
+
+.webcastPolls .answer:hover {
+    background-color: rgb(86,114,53);
+}
+
+.webcastPolls .answer.selected {
+    background-color: rgb(86,168,15);
 }
