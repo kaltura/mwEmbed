@@ -407,6 +407,10 @@
 						break;
 				}
 
+				if (_this.getPlayer().isAudio()){
+					defaultDualScreenViewId = 'no-parent';
+				}
+
 				// the following code is warpped with timeout to make sure it happens in a separated event loop cycle.
 				// otherwise autoplay might not work.
 				setTimeout( function () {
