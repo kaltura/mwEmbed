@@ -64,9 +64,9 @@
 				}
 				_this.sync( cuePoint );
 			} );
-			this.bind("onChangeMedia", function(){
+			this.bind("onChangeMedia seeked", function(){
 				if (_this.syncEnabled) {
-					//Clear the current slide before loading the new media
+					//Clear the current slide before loading the new media or after seek
 					_this.getComponent().attr("src", "");
 				}
 			});
