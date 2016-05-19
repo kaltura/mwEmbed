@@ -7,13 +7,9 @@
             templatePath: '../WebcastPolls/resources/webcastPolls.tmpl.html'
         },
         locale: {
-            startTimeLbl: gM('mwe-share-startTimeLbl'),
-            secureEmbedLbl: gM('mwe-share-secureEmbedLbl'),
-            copyLbl: gM('mwe-share-copyLbl'),
-            errDuration: gM('mwe-share-errDuration'),
-            errFormat: gM('mwe-share-errFormat')
+            respondsLbl: gM('mwe-webc-polls-respondsLbl')
         },
-        question: 'amir',
+        currentPollData : null,
         isScreenOpened: false,
         setup: function () {
 
@@ -21,7 +17,7 @@
             this.setConfig('previewPlayerEnabled', true);
             this.setConfig('usePreviewPlayer', true);
 
-            // TODO [es] check if neede
+            // TODO [es] check if needed
             //if (mw.isMobileDevice()) {
             //    console.log("mobile device");
             //}
@@ -37,14 +33,23 @@
 
             this.bind('onpause', function () {
                 // TODO [es] check if need to disable poll
-                debugger
+
             });
 
-            this.bind('onplay', function () {
+            this.bind('playerReady', function () {
+
+                _this.currentPollData = {
+                    question : 'How do you feel about our new site?'
+                };
+
+
                 setTimeout(function () {
                     _this.showScreen();
-                    //_this.getPlayer().addPlayerSpinner();
-                    // _this.hideScreen();
+
+                    setTimeout(function () {
+                        _this.showPoll();
+
+                    }, 3000);
 
                     //setTimeout(function(){
                     //	_this.getPlayer().hideSpinner();
@@ -84,6 +89,7 @@
 
             this.bind('showScreen', function (event, screenName) {
                 if (screenName === "webcastPolls") {
+                    _this.$webcastPoll = $('.webcastPolls');
                     _this.getScreen().then(function (screen) {
                         $("#" + embedPlayer.getPlayerElement().id).addClass("blur");
                         embedPlayer.getPlayerPoster().addClass("blur");
@@ -93,6 +99,8 @@
 
             this.bind('preHideScreen', function (event, screenName) {
                 if (screenName === "webcastPolls") {
+                    _this.$webcastPoll = $('.webcastPolls');
+
                     _this.isScreenOpened = true;
                     // restore keyboard actions
                     // TODO [es] amir - is there a situation where the keyboard binding was disabled before the screen was loaded?
@@ -151,7 +159,7 @@
 
         getTemplateData: function () {
             return {
-                'name': this.question
+                'locale' : this.locale
             };
         },
 
@@ -163,7 +171,21 @@
         // called from template X button
         closeScreen: function () {
             this.removeScreen();
+        },
+        showLoader : function()
+        {
+            var _this = this;
+            _this.$webcastPoll.find('[name="pollContainer"]').css({'display' : 'none'});
+            _this.$webcastPoll.find('[name="loadingContainer"]').css({display: 'table'});
+        },
+        showPoll : function()
+        {
+            var _this = this;
+
+            _this.$webcastPoll.find('[name="loadingContainer"]').css({display: 'none'});
+            _this.$webcastPoll.find('[name="pollContainer"]').css({'display' : 'table'});
         }
+
 
 
     }));
