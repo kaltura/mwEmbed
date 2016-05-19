@@ -45,7 +45,7 @@
 			}
 
 			this.bind( 'KalturaSupport_ThumbCuePointsReady', function () {
-				var currentCuepoint = _this.getCurrentCuePoint() || _this.getCuePoints()[0];
+				var currentCuepoint = _this.getCurrentCuePoint();
 				_this.sync(currentCuepoint);
 			} );
 			this.bind( 'KalturaSupport_CuePointReached', function ( e, cuePointObj ) {
