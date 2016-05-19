@@ -1028,9 +1028,11 @@
 				this.layoutBuilder.onSeek();
 
 				// Trigger the html5 "seeking" trigger
-				this.log("seeking:trigger:: " + this.seeking);
-				if (this._propagateEvents) {
-					this.triggerHelper('seeking');
+				if( !this.isLive() || ( this.isLive() && this.isDVR() ) ) {
+					this.log("seeking:trigger:: " + this.seeking);
+					if (this._propagateEvents) {
+						this.triggerHelper('seeking');
+					}
 				}
 			}else if (this.useNativePlayerControls()) {
 				//In native controls the seek event is fired every time the scrubber is moved, even if user didn't
@@ -1052,8 +1054,10 @@
 					_this.seeking = false;
 					_this.isFlavorSwitching = false;
 					if (_this._propagateEvents) {
-						_this.log(" trigger: seeked");
-						_this.triggerHelper('seeked', [_this.currentTime]);
+						if( !_this.isLive() || ( _this.isLive() && _this.isDVR() ) ) {
+							_this.log(" trigger: seeked");
+							_this.triggerHelper('seeked', [_this.currentTime]);
+						}
 					}
 					_this.hideSpinner();
 				});
@@ -1467,7 +1471,7 @@
         },
         getCurrentBufferLength: function(){
             if ( this.playerElement.buffered.length > 0 ) {
-                return parseInt(this.playerElement.buffered.end(0) - this.playerElement.currentTime); //return buffer length in seconds
+				return parseInt(this.playerElement.buffered.end(this.playerElement.buffered.length-1) - this.playerElement.currentTime); //return buffer length in seconds
             }
             return 0;
         }
