@@ -45,7 +45,7 @@
 			}
 
 			this.bind( 'KalturaSupport_ThumbCuePointsReady', function () {
-				var currentCuepoint = _this.getCurrentCuePoint() || _this.getCuePoints()[0];
+				var currentCuepoint = _this.getCurrentCuePoint();
 				_this.sync(currentCuepoint);
 			} );
 			this.bind( 'KalturaSupport_CuePointReached', function ( e, cuePointObj ) {
@@ -64,9 +64,9 @@
 				}
 				_this.sync( cuePoint );
 			} );
-			this.bind("onChangeMedia", function(){
+			this.bind("onChangeMedia seeked", function(){
 				if (_this.syncEnabled) {
-					//Clear the current slide before loading the new media
+					//Clear the current slide before loading the new media or after seek
 					_this.getComponent().attr("src", "");
 				}
 			});
