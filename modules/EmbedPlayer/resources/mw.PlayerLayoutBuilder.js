@@ -310,7 +310,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		$(this.embedPlayer ).trigger( 'updateComponentsVisibilityStart' )
 		// Go over containers and update their components
 		$.each(this.layoutContainers, function( containerId, components ) {
-			if( containerId == 'videoHolder' || containerId == 'controlBarContainer' ){
+			if( containerId == 'videoHolder' || containerId == 'controlBarContainer' || containerId == 'smartContainer' ){
 				return true;
 			}
 			_this.updateContainerCompsByAvailableSpace(

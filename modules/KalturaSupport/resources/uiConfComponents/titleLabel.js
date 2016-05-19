@@ -13,12 +13,6 @@
 			if (this.embedPlayer.isMobileSkin()){
 				this.setConfig('parent','videoHolder');
 				this.setConfig('insertMode','lastChild');
-				this.bind('onHideControlBar', function(){
-					_this.$el.fadeOut();
-				});
-				this.bind('onShowControlBar', function(){
-					_this.$el.fadeIn();
-				});
 			}
 			this.bind('playerReady', function(){
 				// Update title to entry name

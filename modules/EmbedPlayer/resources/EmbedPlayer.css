@@ -48,6 +48,9 @@
 	left: 0;
 	background-color: transparent;
 }
+.mobileSkin.start-state .mwEmbedPlayer img{
+    opacity: 0.6;
+}
 .mwEmbedPlayerTransparent{
 	background-color: black;
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
