@@ -74,6 +74,7 @@
 		},
 		updateUI: function (time) {
 			if (this.updateEnabled) {
+				time = Math.floor(time);
 				if (this.getConfig("countDownMode")){
 					time = this.embedPlayer.getDuration() - time;
 				}
