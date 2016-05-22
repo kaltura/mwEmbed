@@ -327,6 +327,9 @@
 			var previewWidth = $sliderPreview.width();
 			var previewHeight = $sliderPreview.height();
 			var top = $(".scrubber").position().top - previewHeight - 10;
+			if ( this.embedPlayer.isMobileSkin() ){
+				top -= 25;
+			}
 
 			if (!showOnlyTime) {
 				sliderLeft = data.x - previewWidth / 2;

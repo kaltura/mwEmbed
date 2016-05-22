@@ -53,13 +53,16 @@ body {
 }
 .mobileSkin .topBarContainer{
     height: 3.6em;
-    top: -3.6em;
+    display: none;
     background: transparent;
     padding-right: 1em;
 }
 .mobileSkin .topBarContainer.open {
-    top: 0;
+    display: block;
     height: 3.6em;
+}
+.mobileSkin.pluginsScreenOpened .topBarContainer {
+    display: none;
 }
 .sideBarContainerReminder{
 	padding: 10px;
@@ -166,14 +169,37 @@ body {
 	color: white;
 }
 .mobileSkin .titleLabel{
+    position: absolute;
+    top: 4px;
     padding-bottom: 0.8em;
-    margin-left: 0.8em;
+    padding-left: 1em;
     text-shadow: 0px 0px 2.4px rgba(0, 0, 0, 0.12);
-    font-size: 1.125em;
+    font-size: 2em;
     font-family: 'Lato', Helvetica, Arial;
     color: rgb(255, 255, 255);
     font-weight: bold;
     line-height: 1.333;
+    text-shadow: 0px 0px 1px rgba(0,0,0,0.40);
+    display: none !important;
+}
+.mobileSkin.start-state .titleLabel{
+    display: block !important;
+}
+.fullscreen.mobileSkin .titleLabel{
+    display: none !important;
+}
+.playlistInterface .fullscreen.mobileSkin .titleLabel{
+    display: block !important;
+    width: 100% !important;
+    text-align: center !important;
+    top: 35%;
+    padding-left: 0px;
+}
+.playlistInterface .fullscreen.mobileSkin.player-out .titleLabel{
+    display: none !important;
+}
+.playlistInterface .fullscreen.mobileSkin.pluginsScreenOpened .titleLabel{
+    display: none !important;
 }
 .controlBarContainer {
 	position: absolute;
@@ -248,7 +274,7 @@ body {
 .mobileSkin .btnFixed{
     width: 100%;
 }
-.mobileSkin .pluginsScreenOpened .playbackRateSelector .btn{
+.mobileSkin.pluginsScreenOpened .playbackRateSelector .btn{
     font-family: 'Lato', Helvetica, Arial;;
 }
 .mobileSkin .videoHolder .playbackRateSelector .btn{
@@ -286,10 +312,18 @@ body {
     width: 100%;
     height: 100%;
     text-align: center;
+    display: flex;
+    position: absolute;
+    justify-content: center;
+    align-items: center;
+    flex-flow: row wrap;
 }
 .mobileSkin .videoHolder .btn {
-    font-size: 3.6em;
+    font-size: 2.6em;
     margin-top: 0em;
+}
+.fullscreen.mobileSkin .videoHolder .btn {
+    font-size: 3.6em;
 }
 .mobileSkin .videoHolder .btn.comp {
     position: relative;
@@ -335,11 +369,13 @@ body {
 	top: -3px;
 }
 .mobileSkin .controlsContainer .scrubber{
-    height: 10px;
-    border-radius: 10px;
+    height: 3px;
+    border-radius: 3px;
     background: rgba(255,255,255,0.8);
     box-shadow: 0px 0px 2.4px 1.6px rgba(0, 0, 0, 0.12);
     margin-left: 20px;
+    /* Supress pointer events */
+    pointer-events: none;
 }
 .sliderPreviewTime {
 	position: absolute;
@@ -456,8 +492,9 @@ body {
     border-radius: 14px;
     width: 32px;
     height: 32px;
-    margin-top: -8px;
+    margin-top: -12px;
     margin-left: -0.7em;
+    pointer-events: auto;
     background: -moz-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%, rgba(255,255,255,1) 30%, rgba(255,255,255,0) 31%, rgba(255,255,255,0) 100%); /* FF3.6-15 */
     background: -webkit-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%,rgba(255,255,255,1) 30%,rgba(255,255,255,0) 31%,rgba(255,255,255,0) 100%); /* Chrome10-25,Safari5.1-6 */
     background: radial-gradient(ellipse at center,  rgba(255,255,255,1) 0%,rgba(255,255,255,1) 30%,rgba(255,255,255,0) 31%,rgba(255,255,255,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
@@ -823,6 +860,18 @@ body {
 	margin-left: 10px;
     color: #ffffff;
 }
+.fullscreen.mobileSkin .currentTimeLabel {
+	margin-right: 10px;
+}
+.mobileSkin.start-state .currentTimeLabel {
+    position: absolute;
+    font-size: 1.5em;
+    right: 1em;
+    bottom: 1em;
+    height: 30px;
+    top: inherit;
+    text-shadow: 0px 1px 2px rgba(0,0,0,0.20);
+}
 
 .durationLabel {
 	padding-left: 0.5em;
@@ -844,6 +893,9 @@ body {
     width: 80%;
     margin-left: 10%;
     padding-top: 20px;
+}
+.mobileSkin .overlay-content{
+    padding-top: 10%;
 }
 .overlay-content select{
     color: #000000;
@@ -1245,24 +1297,25 @@ body {
 	color: #efefef;
 }
 .mobileSkin .largePlayBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: absolute;
     top: 50%;
     left: 50%;
     font-size: 2.6em;
     text-decoration: none;
-    width: 1em;
-    height: 1.3em;
-    border-radius: 2em;
-    padding-left: 0.65em;
-    padding-top: 0.6em;
+    width: 76px;
+    height: 76px;
+    border-radius: 76px;
+    padding: 0px 0px 0px 0px;
     margin-top: -1.1em;
     margin-left: -1.05em;
-    background-color: rgba(0,214,255,0.75);
+    background-color: rgba(0,194,255,0.60);
     color: #ffffff;
-    box-shadow: 0px 0px 1.2px 0.8px rgba(0, 0, 0, 0.12);
+    box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.20);
     outline: none;
 }
-
 .largePlayBtn:hover {
 	background-color: rgba(0,0,0,1);
 	color: #fff;
@@ -1270,6 +1323,9 @@ body {
 .mobileSkin .largePlayBtn:hover {
     background-color: rgba(0,214,255,0.75);
 	color: #fff;
+}
+.mobileSkin.pluginsScreenOpened .largePlayBtn {
+    display: none !important;
 }
 
 .scrubber.disabled {
@@ -1310,17 +1366,17 @@ body {
 	filter: alpha(opacity=40);
 	opacity: 0.4;
 	/*background-image:  -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, rgba(255, 255, 255, 0.15)), color-stop(0.25, transparent), color-stop(0.5, transparent), color-stop(0.5, rgba(255, 255, 255, 0.15)), color-stop(0.75, rgba(255, 255, 255, 0.15)), color-stop(0.75, transparent), to(transparent));
-	
+
 background-image:  -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-	
+
 background-image:  -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-	
+
 background-image:  -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-	
+
 background-image:  -ms-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-	
+
 background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-	
+
 
 	 */
 	/*
@@ -1406,6 +1462,9 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
     background-position: center top;
     background-size: 1em, 1em;
     margin-top: 0.1em;
+}
+.fullscreen.mobileSkin .fullScreenBtn {
+    float: left;
 }
 .playPauseBtn {
 	width: 3.3em;
@@ -1731,7 +1790,7 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
     transition: opacity 400ms ease-out;
     transition: background 400ms ease-out;
 }
-.mobileSkin .pluginsScreenOpened .videoShadow{
+.mobileSkin.pluginsScreenOpened .videoShadow{
     background: rgba(0,0,0,0.75);
 }
 .closePluginsScreen{
@@ -1749,9 +1808,14 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 }
 .mobileSkin .btn.closePluginsScreen{
     position: absolute;
+    font-size: 1.3em;
+    width: 2.6em !important;
+    height: 2.6em !important;
+}
+.fullscreen.mobileSkin .btn.closePluginsScreen{
     font-size: 1.6em;
-    width: 4em !important;
-    height: 4em !important;
+    width: 3.8em !important;
+    height: 3.8em !important;
 }
 .mobileSkin .overlay .closePluginsScreen{
     font-family: 'icomoon' !important;

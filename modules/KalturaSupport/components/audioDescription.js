@@ -9,7 +9,9 @@
 			'showTooltip': true,
 			'file': null,
 			'volume': 1,
-			'disableable': true
+			'disableable': true,
+			smartContainer: 'morePlugins',
+			smartContainerCloseEvent: 'hideScreen'
 		},
 
 		selected: true,

@@ -17,7 +17,14 @@
 			var _this = this;
 			if ( this.embedPlayer.isMobileSkin() ){
 				this.setConfig("order", 26);
+				this.setConfig('parent','videoHolder');
 				this.setConfig("countDownMode", true);
+				this.bind('firstPlay', function(){
+					// move current time label from video holder back to controlBar container.
+					var currentTimeLabel = $('.currentTimeLabel').detach();
+					$('.controlsContainer .scrubber').after(currentTimeLabel);
+					_this.embedPlayer.triggerHelper("updateComponentsVisibilityDone");  // redraw components to calculate their size and location
+				});
 			}
 			this.bindTimeUpdate();
 			this.bind('externalTimeUpdate', function (e, newTime) {
