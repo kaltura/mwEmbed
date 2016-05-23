@@ -502,7 +502,7 @@
 			// Build an array with this format:
 			//{"tracks" : [{"assetid":0,"originalIndex":0,"bandwidth":517120,"type":"video/mp4","height":0},{"assetid":1,"originalIndex":1,"bandwidth":727040,"type":"video/mp4","height":0},{"assetid":2,"originalIndex":2,"bandwidth":1041408,"type":"video/mp4","height":0}]}
 			//
-
+			var _this = this;
 			var flavorsList = [];
 			$.each(data.tracks, function(idx, obj) {
 				var flavor = {
@@ -515,7 +515,9 @@
 				};
 				flavorsList.push(flavor);
 			});
-
+			setTimeout(function(){
+				_this.setKDPAttribute('sourceSelector', 'visible', true);
+			},100);
 			this.onFlavorsListChanged(flavorsList);
 		},
 
