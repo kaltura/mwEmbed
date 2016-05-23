@@ -192,7 +192,7 @@ body {
     display: block !important;
     width: 100% !important;
     text-align: center !important;
-    top: 35%;
+    top: calc(50% - 4em);
     padding-left: 0px;
 }
 .playlistInterface .fullscreen.mobileSkin.player-out .titleLabel{
