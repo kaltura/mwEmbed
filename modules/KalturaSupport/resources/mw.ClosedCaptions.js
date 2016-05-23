@@ -626,6 +626,9 @@
 
 			// apply custom style
 			$('.caption div').css(this.getCaptionCss());
+
+			// vtt.js calculates the caption layout assuming margin of 1.5%
+			this.getCaptionsOverlay().css('margin', '1.5%');
 		},
 
 		addCaptionAsText: function ( source, capId, caption ) {
@@ -685,6 +688,9 @@
 				);
 			}
 			$textTarget.fadeIn('fast');
+
+			// in case we added margin for webvtt, we should remove it for non-webvtt
+			this.getCaptionsOverlay().css('margin', '0px');
 		},
 
 		addCaption: function( source, capId, caption ){
