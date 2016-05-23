@@ -310,7 +310,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		$(this.embedPlayer ).trigger( 'updateComponentsVisibilityStart' )
 		// Go over containers and update their components
 		$.each(this.layoutContainers, function( containerId, components ) {
-			if( containerId == 'videoHolder' || containerId == 'controlBarContainer' ){
+			if( containerId == 'videoHolder' || containerId == 'controlBarContainer' || containerId == 'smartContainer' ){
 				return true;
 			}
 			_this.updateContainerCompsByAvailableSpace(
@@ -1165,7 +1165,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			.css( {
 				'height' : '100%',
 				'width' : '100%',
-				'z-index' : mw.isMobileDevice() ? 200 : 2
+				'z-index' : mw.isMobileDevice() ? 200 : 4
 			})
 		);
 
@@ -1189,7 +1189,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			'position' : 'absolute',
 			'margin': margin,
 			'overflow' : 'hidden',
-			'z-index' : 3
+			'z-index' : 5
 		};
 		var $overlayMenu = $('<div />')
 			.addClass( 'overlay-win ui-state-default ui-widget-header ui-corner-all' )

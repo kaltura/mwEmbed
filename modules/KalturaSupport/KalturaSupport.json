@@ -253,6 +253,11 @@
 		"dependencies": "mw.KBaseComponent",
 		"kalturaPluginName": "logo"
 	},
+  "video360": {
+    "scripts": "components/video360.js",
+    "dependencies": ["threejs","mw.KBasePlugin"],
+    "kalturaPluginName": "video360"
+  },
 	"closeFSMobile": {
 		"scripts": "components/closeFSMobile.js",
 		"dependencies": "mw.KBaseComponent",

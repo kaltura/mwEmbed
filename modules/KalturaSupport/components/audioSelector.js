@@ -34,6 +34,7 @@
 					defaultTrack: this.getConfig('defaultStream')
 				};
 			}
+			this.setConfig('defaultStream', 0);
 		},
 		destroy: function () {
 			this._super();
@@ -54,7 +55,6 @@
 					var tracks = data.languages;
 					_this.streams = tracks;
 					_this.setStream(_this.getDefaultStream());
-					_this.getComponent().find("ul").show();
 					_this.buildMenu();
 					_this.streamsReady = true;
 					_this.onEnable();
@@ -188,7 +188,7 @@
 		getComponent: function () {
 			var _this = this;
 			if (!this.$el) {
-				var $menu = $('<ul />').hide();
+				var $menu = $('<ul />');
 				//TODO: need icon from Shlomit!
 				var $button = $('<button />')
 					.addClass('btn icon-audio')

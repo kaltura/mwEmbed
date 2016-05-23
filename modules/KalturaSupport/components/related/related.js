@@ -153,8 +153,8 @@
 					if (widthOffset > 0) {
 						$img.css("margin-left", widthOffset * (-1) + 'px');
 					} else {
-						$img.height($img.height() * divWidth / $img.width());
 						$img.width(divWidth);
+						$img.height($img.height() * divWidth / $img.width());
 						heightOffset = ($img.height() - divHeight) / 2;
 						$img.css("margin-top", heightOffset * (-1) + 'px');
 					}
@@ -232,7 +232,7 @@
 		updateTemplateData: function( data ){
 			this.numOfEntries = data.length;
 			// make sure entries that were already viewed are the last in the data array
-			if ( this.viewedEntries.length <= data.length ){
+			if ( this.viewedEntries.length < data.length ){
 				for (var i = 0; i < this.viewedEntries.length; i++){
 					for (var j = 0; j < data.length; j++){
 						if (data[j].id === this.viewedEntries[i]){ // entry was already viewed - move it to the last place in the data array
@@ -364,6 +364,7 @@
 			if( data && data.entryId ){
 				this.setConfig('selectedEntryId', data.entryId );
 			}
+			this.updateViewedEntries(data.entryId);
 			//look for the entry in case this is a click
 			if(this.getConfig('clickUrl')){
 				if(this.templateData.nextItem.id && this.templateData.nextItem.id == data.entryId ){
@@ -384,7 +385,6 @@
 			this.getPlayer().sendNotification('relatedVideoSelect', data);
 
 			if(this.getConfig('clickUrl')){
-				this.updateViewedEntries(data.id);
 				try {
 					window.parent.location.href = this.getConfig('clickUrl');
 					return;
@@ -396,7 +396,6 @@
 
 			this.getPlayer().sendNotification('changeMedia', data);
 			this.bind('onChangeMediaDone', function(){
-				_this.updateViewedEntries(data.entryId);
 				if (_this.getPlayer().canAutoPlay()) {
 					_this.getPlayer().play();
 				}

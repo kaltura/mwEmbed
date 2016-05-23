@@ -154,7 +154,10 @@
 		"streamerType": 'http',
 
 		"shouldEndClip": true,
-		"buffering": false
+		"buffering": false,
+
+		// indicates the the player is currently casting to Chromecast
+		"casting": false
 	});
 
 	/**
@@ -727,6 +730,10 @@
 
 		getPlayerByStreamerType: function (source) {
 			var targetPlayer;
+			// if currently casting - always return the Chromecast player
+			if ( this.casting ){
+				return mw.EmbedTypes.getMediaPlayers().getPlayerById('chromecast');
+			}
 			//currently only kplayer can handle other streamerTypes
 			if (!mw.getConfig('EmbedPlayer.IgnoreStreamerType')
 				&& !this.isImageSource()   //not an image entry
@@ -1716,6 +1723,7 @@
 				this.preSequenceFlag = false;
 				this.postSequenceFlag = false;
 				this.shouldEndClip = true;
+				this.mediaLoadedFlag = false;
 			}
 
 			// Add a loader to the embed player:
@@ -1874,7 +1882,7 @@
 
 			$(this).find(".playerPoster").remove();
 			//remove poster on autoPlay when player loaded
-			if ( this.currentState=="load" && mw.getConfig('autoPlay') && !mw.isMobileDevice()){
+			if ( this.currentState=="load" && mw.getConfig('autoPlay') && !mw.isMobileDevice() && !this.isAudio()){
 				return;
 			}
 			if ( mw.getConfig('EmbedPlayer.HidePosterOnStart') === true && !(this.currentState=="end" && mw.getConfig('EmbedPlayer.ShowPosterOnStop')) ) {
@@ -2847,6 +2855,10 @@
 					}
 					_this.clipDoneTimeout = null;
 				}, (timeoutVal * 1000) );
+				//If while clip done guard in activated we get a seek, clear the guard.
+				this.unbindHelper(".clipDoneGuard").bindOnceHelper("seeking.clipDoneGuard", function(){
+					_this.cancelClipDoneGuard();
+				})
 			}
 		},
 		cancelClipDoneGuard: function() {
@@ -3082,7 +3094,7 @@
 		},
 
 		isDrmRequired: function () {
-			return this.drmRequired;
+			return this.drmRequired && !this.getRawKalturaConfig("embedPlayerChromecastReceiver","plugin") === true;
 		},
 
 		isDVR: function () {
@@ -3318,7 +3330,7 @@
 			$.each(newFlavors, function(inx, flavor){
 				_this.manifestAdaptiveFlavors.push( new mw.MediaSource( flavor ) )
 			});
-			$(this).trigger( 'sourcesReplaced' );;
+			$(this).trigger( 'sourcesReplaced' );
 		},
 		getCurrentBitrate: function(){
 			if ( !this.isLive() && this.mediaElement.selectedSource) {
