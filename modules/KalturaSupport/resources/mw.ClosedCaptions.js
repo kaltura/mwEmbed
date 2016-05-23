@@ -955,7 +955,10 @@
 			setCookie = ( setCookie === undefined ) ? true : setCookie;
 			var _this = this;
 			if( !source.loaded ){
-				this.embedPlayer.getInterface().find('.track').text( gM('mwe-timedtext-loading-text') );
+				this.embedPlayer.getInterface().find('.track')
+					.css( this.getDefaultStyle() )
+					.html( $('<div />')
+						.text( gM('mwe-timedtext-loading-text') ) );
 				source.load(function(){
 					_this.getPlayer().triggerHelper('newClosedCaptionsData' , _this.selectedSource);
 					if( _this.playbackStarted ){
