@@ -973,6 +973,10 @@
 			//Only apply seek in VOD or in live if DVR is supported
 			if ((this.getPlayer().isLive() && this.getPlayer().isDVR()) ||
 					!this.getPlayer().isLive()) {
+				//Send play request on first click for devices that don't have autoplay, e.g. mobile devices
+				if (!this.getPlayer().canAutoPlay() && this.getPlayer().firstPlay){
+					this.getPlayer().sendNotification('doPlay');
+				}
 				// see to start time and play ( +.1 to avoid highlight of prev chapter )
 				this.getPlayer().sendNotification('doSeek', ( this.mediaList[mediaIndex].startTime ) + 0.1);
 			}
