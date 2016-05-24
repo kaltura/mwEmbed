@@ -61,8 +61,14 @@ body {
     display: block;
     height: 3.6em;
 }
-.mobileSkin.pluginsScreenOpened .topBarContainer {
+.mobileSkin.size-small .topBarContainer, .mobileSkin.size-tiny .topBarContainer {
     display: none;
+}
+.mobileSkin.size-small.fullscreen .topBarContainer, .mobileSkin.size-tiny.fullscreen .topBarContainer {
+    display: block;
+}
+.mobileSkin.pluginsScreenOpened .topBarContainer {
+    display: none !important;
 }
 .sideBarContainerReminder{
 	padding: 10px;
@@ -318,6 +324,23 @@ body {
     align-items: center;
     flex-flow: row wrap;
 }
+/* Smart container icons */
+.mobileSkin .smartContainer.comp4, .mobileSkin .smartContainer.comp5, .mobileSkin .smartContainer.comp6{
+    height: 80%;
+    top: 15%;
+}
+@media screen and (orientation:portrait) {
+    .mobileSkin.fullscreen .smartContainer{
+        height: 50%;
+        top: 25%;
+    }
+}
+.mobileSkin .videoHolder .smartContainer .btn{
+    font-size: 3.6em;
+}
+.mobileSkin.fullscreen.size-large .videoHolder .smartContainer .btn{
+    font-size: 4.6em;
+}
 .mobileSkin .videoHolder .btn {
     font-size: 2.6em;
     margin-top: 0em;
@@ -527,10 +550,13 @@ body {
 }
 .mobileSkin .nextPrevBtn>.btn {
     position: relative;
-    font-size: 1.6em;
+    font-size: 1.6em !important;
     margin-top: -25px;
     height: 50px;
     top: 50%;
+}
+.mobileSkin.fullscreen.size-large .nextPrevBtn>.btn {
+    font-size: 2.6em !important;
 }
 
 .mobileSkin .nextPrevBtn>.btn.icon-prev {

@@ -12,9 +12,7 @@
 			'speeds': ".5,.75,1,1.5,2",
 			'enableKeyboardShortcuts': true,
 			'serverSpeedPlayback': false,
-			'title': gM( 'mwe-embedplayer-speed' ),
-			'smartContainer': 'qualitySettings',
-			'smartContainerCloseEvent': 'updatedPlaybackRate'
+			'title': gM( 'mwe-embedplayer-speed' )
 		},
 
 		isDisabled: false,
@@ -43,6 +41,8 @@
 		},
 
 		setup: function(){
+			this.setConfig('smartContainer', 'qualitySettings');
+			this.setConfig('smartContainerCloseEvent', 'updatedPlaybackRate');
 			this.currentSpeed = Math.abs(this.getConfig('defaultSpeed')) || 1;
 			this.speedSet = this.getConfig('speeds').split(',');
 			var i;

@@ -112,9 +112,7 @@
 			var _this = this;
 			this.pluginsScreenOpened = true;
 
-			var rowsClassName = _this.registeredPlugins.length < 4 ? "row1" : "row2";
 			var $sc = this.embedPlayer.getVideoHolder().find(".smartContainer");
-			$sc.removeClass("row1 row2").addClass(rowsClassName);
 
 			this.embedPlayer.getInterface().addClass( "pluginsScreenOpened" );
 			$(this.embedPlayer.getPlayerElement()).addClass("blur");
@@ -126,6 +124,7 @@
 			}
 			var pluginHeight = this.embedPlayer.getVideoHolder().width() / (numPlugins + 1);
 			$sc.find(".comp").not(".closePluginsScreen, .icon-next, .icon-prev, .largePlayBtn").width( pluginWidth + "%").height(pluginHeight);
+			$sc.removeClass("comp1 comp2 comp3 comp4 comp5 comp6").addClass("comp" + this.registeredPlugins.length);
 
 			for ( var i = 0; i < this.registeredPlugins.length; i++ ){
 				var plugin = this.registeredPlugins[i].getComponent();
