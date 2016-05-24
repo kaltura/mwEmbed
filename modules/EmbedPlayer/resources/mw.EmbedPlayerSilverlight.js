@@ -493,6 +493,7 @@
 						'durationChange': 'onDurationChange' ,
 						'playerPlayEnd': 'onClipDone' ,
 						'playerUpdatePlayhead': 'onUpdatePlayhead' ,
+						'buffering': 'onBuffering' ,
 						'bytesTotalChange': 'onBytesTotalChange' ,
 						'bytesDownloadedChange': 'onBytesDownloadedChange' ,
 						'playerSeekEnd': 'onPlayerSeekEnd' ,
@@ -618,6 +619,9 @@
 				this.getPlayerContainer().css( 'visibility' , 'visible' );
 				this.hideSpinner();
 				this.stopped = this.paused = false;
+			}
+			if (this.buffering && this.isLive()){
+				this.bufferEnd();
 			}
 			this.removePoster();
 		} ,
@@ -852,6 +856,13 @@
 				this.slCurrentTime = playheadValue;
 			}
 			$( this ).trigger( 'timeupdate' );
+		} ,
+
+		/**
+		 * function called by silverlight on buffering start
+		 */
+		onBuffering: function () {
+			this.bufferStart();
 		} ,
 
 		/**

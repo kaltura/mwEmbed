@@ -756,6 +756,7 @@
 				this.skipTimeoutId = null;
 			}
 			$(".ad-skip-btn").hide();
+			$(".ad-skip-label").hide();
 		},
 		/**
 		 * Adds custom params to ad url.
@@ -1056,6 +1057,7 @@
 				}
 				var size = _this.getPlayerSize();
 				_this.adsManager.resize( size.width, size.height, google.ima.ViewMode.NORMAL );
+				_this.adsManager.setVolume( _this.embedPlayer.getPlayerElementVolume() );
 				if ( _this.isLinear ) {
 					// Hide player content
 					_this.hideContent();

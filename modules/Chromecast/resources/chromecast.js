@@ -48,6 +48,8 @@
 		MESSAGE_NAMESPACE: 'urn:x-cast:com.kaltura.cast.player',
 
 		isNativeSDK: false, //flag for using native mobile IMA SDK
+		pendingRelated: false,
+		pendingReplay: false,
 
 		setup: function( embedPlayer ) {
 			var _this = this;
@@ -104,6 +106,22 @@
 
 			$( this.embedPlayer).bind('onChangeMedia', function(e){
 				_this.savedPosition = 0;
+				_this.pendingReplay = false;
+				_this.pendingRelated = false;
+			});
+
+			$( this.embedPlayer).bind('preShowScreen', function(e){
+				_this.pendingRelated = true;
+			});
+			$( this.embedPlayer).bind('hideScreen', function(e){
+				_this.pendingRelated = false;
+				if (this.casting){
+					this.updatePosterHTML();
+				}
+				if (_this.pendingReplay && !this.changeMediaStarted){
+					_this.loadMedia();
+					_this.pendingReplay = false;
+				}
 			});
 
 			$(this.embedPlayer).bind('playerReady', function() {
@@ -263,6 +281,11 @@
 				recursiveIteration(proxyData);
 				fv['proxyData'] = proxyData;
 			}
+
+			// add support for passing ks
+			if ( this.embedPlayer.getFlashvars("ks") ){
+				fv["ks"] = this.embedPlayer.getFlashvars("ks");
+			}
 			return fv;
 		},
 
@@ -379,7 +402,9 @@
 				if (_this.monitorInterval !== null){
 					clearInterval(_this.monitorInterval);
 				}
-				_this.monitorInterval = setInterval(function(){_this.monitor();},1000);
+				this.monitorInterval = setInterval(function(){
+					_this.monitor();
+				}, mw.getConfig('EmbedPlayer.MonitorRate'));
 			}
 		},
 
@@ -414,7 +439,7 @@
 			var _this = this;
 			this.currentMediaSession.getStatus(null,null,
 				function(){
-					if (this.getCurrentTime() > 0){
+					if (_this.getCurrentTime() > 0){
 						_this.stopApp(); // stop app if chromecast is not connected (user used the browser icon to disconnect)
 					}
 				});
@@ -485,10 +510,14 @@
 				// clip done
 				//this.session = null;
 				// make sure we are still on Chromecast player since session will be lost when returning to the native player as well
-				if ( this.getPlayer().instanceOf === "Chromecast" && this.currentMediaSession.idleReason === "FINISHED" ){
+				if ( this.getPlayer().instanceOf === "Chromecast" && this.currentMediaSession.idleReason === "FINISHED"){
 					this.embedPlayer.clipDone(); // trigger clipDone
 					this.autoPlay = false;       // set autoPlay to false for rewind
-					this.loadMedia();            // reload the media for rewind
+					if (!this.pendingRelated){
+						this.loadMedia();            // reload the media for rewind unless related screen is open
+					}else{
+						this.pendingReplay = true;
+					}
 				}
 			}
 		},
@@ -662,6 +691,7 @@
 
 		updateScreen: function(){
 			var _this = this;
+			this.embedPlayer.updatePosterHTML();
 			this.embedPlayer.getInterface().find(".chromecastScreen").remove();
 			this.embedPlayer.getVideoHolder().append(this.getPlayingScreen());
 			$(".chromecastThumb").load(function(){

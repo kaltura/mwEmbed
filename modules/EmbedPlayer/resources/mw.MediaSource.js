@@ -458,6 +458,9 @@
 				case 'srt':
 					return 'text/x-srt';
 					break;
+				case 'vtt':
+					return 'text/vtt';
+					break;
 				case 'flv':
 					return 'video/x-flv';
 					break;

@@ -25,7 +25,6 @@
 		duration: 0,
 		userSlide: false,
 		volume: 1,
-		monitorInterval: null,
 		receiverName: '',
 		nativeEvents: [
 			'loadstart',
@@ -66,11 +65,7 @@
 			var _this = this;
 			this._propagateEvents = true;
 			$(this.getPlayerElement()).css('position', 'absolute');
-			if (this.monitorInterval !== null){
-				clearInterval(this.monitorInterval);
-			}
 			this.stopped = false;
-			this.monitorInterval = setInterval(function(){_this.monitor();},1000);
 			readyCallback();
 		},
 
@@ -133,15 +128,6 @@
 				this.setDuration(this.getPlayerElement().duration);
 				return;
 			}
-		},
-		monitor: function(){
-			var vid = this.getPlayerElement();
-			if ( vid && vid.currentTime !== null && vid.duration !== null) {
-				this.currentTime = vid.currentTime;
-				$(this).trigger("updatePlayHeadPercent",[ vid.currentTime / vid.duration ]);
-				$( this ).trigger( 'externalTimeUpdate', [vid.currentTime]);
-			}
-			$(this).trigger( 'monitorEvent' );
 		},
 
 		setPlayerElement: function (mediaElement) {

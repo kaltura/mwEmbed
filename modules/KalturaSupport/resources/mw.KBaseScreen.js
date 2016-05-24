@@ -31,15 +31,11 @@
 
 			this.bind('onplay preSequence', $.proxy(function () {
 				if (this.isScreenVisible()) {
-					setTimeout(function () {
-						_this.getPlayer().disableComponentsHover();
-					}, 50);
 					if (this.hasPreviewPlayer()) {
 						this.resizePlayer();
 
 					} else {
 						this.hideScreen();
-
 					}
 				}
 			}, this));

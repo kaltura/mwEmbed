@@ -77,7 +77,8 @@
 			'loadEmbeddedCaptions',
 			'flavorsListChanged',
 			'sourceSwitchingStarted',
-			'sourceSwitchingEnd'
+			'sourceSwitchingEnd',
+			'audioTracksReceived'
 		],
 
 		// Native player supported feature set
@@ -160,16 +161,14 @@
 		embedPlayerHTML: function () {
 		},
 
-		// Build the licenseUri (if needed) and send it to the native component as the "licenseUri" attribute.
-		pushLicenseUri: function () {
-			var licenseServer = mw.getConfig('Kaltura.UdrmServerURL');
+        buildUdrmLicenseUri: function(mimeType) {
+            var licenseServer = mw.getConfig('Kaltura.UdrmServerURL');
 			var licenseParams = this.mediaElement.getLicenseUriComponent();
+            var licenseUri = null;
 
 			if (licenseServer && licenseParams) {
-				var licenseUri;
 				// Build licenseUri by mimeType.
-				var sourceMimeType = this.mediaElement.selectedSource && this.mediaElement.selectedSource.mimeType;
-				switch (sourceMimeType) {
+				switch (mimeType) {
 					case "video/wvm":
 						// widevine classic
 						licenseUri = licenseServer + "/widevine/license?" + licenseParams;
@@ -181,16 +180,38 @@
 					case "application/vnd.apple.mpegurl":
 						// fps
 						licenseUri = licenseServer + "/fps/license?" + licenseParams;
-						//Add the FPS certificate
-						this.getPlayerElement().attr('fpsCertificate', this.mediaElement.selectedSource.fpsCertificate);
 						break;
 					default:
 						break;
-				}
-				if (licenseUri) {
-					this.getPlayerElement().attr('licenseUri', licenseUri);
-				}
+				}   
 			}
+            
+            return licenseUri;
+        },
+        
+		// Build the licenseUri (if needed) and send it to the native component as the "licenseUri" attribute.
+		pushLicenseUri: function () {
+            var selectedSource = this.mediaElement.selectedSource;
+            if (!selectedSource) {
+                return;
+            }
+            
+            var mimeType = selectedSource.mimeType;
+
+            var overrideDrmServerURL = mw.getConfig('Kaltura.overrideDrmServerURL');
+            var licenseUri = overrideDrmServerURL ? overrideDrmServerURL : this.buildUdrmLicenseUri(mimeType);
+            
+            if (licenseUri) {
+                var playerElement = this.getPlayerElement();
+                
+                // Push the license uri
+                playerElement.attr('licenseUri', licenseUri);
+                
+                // If the source has an FPS certificate, push it as well
+                if (selectedSource.fpsCertificate) {
+                    playerElement.attr('fpsCertificate', selectedSource.fpsCertificate);
+                }                
+            }
 		},
 
 		addStartTimeCheck: function () {
@@ -479,22 +500,24 @@
 //			mw.log("_onFlavorsListChanged", event, data);
 
 			// Build an array with this format:
-			// [{"assetid":0,"bandwidth":517120,"type":"video/mp4","height":0},{"assetid":1,"bandwidth":727040,"type":"video/mp4","height":0},{"assetid":2,"bandwidth":1041408,"type":"video/mp4","height":0}]
+			//{"tracks" : [{"assetid":0,"originalIndex":0,"bandwidth":517120,"type":"video/mp4","height":0},{"assetid":1,"originalIndex":1,"bandwidth":727040,"type":"video/mp4","height":0},{"assetid":2,"originalIndex":2,"bandwidth":1041408,"type":"video/mp4","height":0}]}
 			//
-
+			var _this = this;
 			var flavorsList = [];
 			$.each(data.tracks, function(idx, obj) {
 				var flavor = {
-					assetid: obj.originalIndex,
+					assetid: obj.assetid,
 					originalIndex: obj.originalIndex,
-					bandwidth: obj.bitrate,
+					bandwidth: obj.bandwidth,
 					height: obj.height,
 					width: obj.width,
-					type: "video/mp4" // not sure about that
+					type: "video/mp4"//obj.type  //"video/mp4 for example"
 				};
 				flavorsList.push(flavor);
 			});
-
+			setTimeout(function(){
+				_this.setKDPAttribute('sourceSelector', 'visible', true);
+			},100);
 			this.onFlavorsListChanged(flavorsList);
 		},
 
@@ -671,11 +694,21 @@
 
 			}
 		},
-
-		_ontextTracksReceived: function (event, data) {
-			this.unbindHelper('changedClosedCaptions').bindHelper('changedClosedCaptions',function(event, selection){
-				this.getPlayerElement().attr('textTrackSelected', selection);
+		_onaudioTracksReceived:function(event,data){
+			var _this = this;
+			this.unbindHelper('switchAudioTrack').bindHelper('switchAudioTrack',function(event, selection){
+				_this.getPlayerElement().attr('audioTrackSelected', selection.index.toString());
 			});
+
+			this.triggerHelper("audioTracksReceived",data);
+		},
+		_ontextTracksReceived: function (event, data) {
+			var _this = this;
+
+			this.unbindHelper('selectClosedCaptions').bindHelper('selectClosedCaptions',function(event, selection){
+				_this.getPlayerElement().attr('textTrackSelected', selection);
+			});
+
 			this.triggerHelper('textTracksReceived', data);
 		},
 		/*

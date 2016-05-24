@@ -409,9 +409,7 @@
 			// some initial calls to prime the seek:
 			if ( ( vid.currentTime === 0 && callbackCount === 0 ) && vid.readyState === 0 ) { //load video again if not loaded yet (vid.readyState === 0)
 				// when seeking turn off preload none and issue a load call.
-				$(vid)
-					.attr('preload', 'auto')
-					[0].load();
+				$(vid).attr('preload', 'auto');
 			}
 
 			var videoReadyState = mw.isIOS8_9() ? 2 : 1; // on iOS8 wait for video state 1 (dataloaded) instead of 1 (metadataloaded)
@@ -512,7 +510,7 @@
 				return false;
 			}
             if( this.isLive() && !this.isDVR() ){
-                return this.LiveCurrentTime;
+                return this.LiveCurrentTime ? this.LiveCurrentTime : 0;
             }
 			var ct = this.playerElement.currentTime;
 			// Return 0 or a positive number:
@@ -1028,9 +1026,11 @@
 				this.layoutBuilder.onSeek();
 
 				// Trigger the html5 "seeking" trigger
-				this.log("seeking:trigger:: " + this.seeking);
-				if (this._propagateEvents) {
-					this.triggerHelper('seeking');
+				if( !this.isLive() || ( this.isLive() && this.isDVR() ) ) {
+					this.log("seeking:trigger:: " + this.seeking);
+					if (this._propagateEvents) {
+						this.triggerHelper('seeking');
+					}
 				}
 			}else if (this.useNativePlayerControls()) {
 				//In native controls the seek event is fired every time the scrubber is moved, even if user didn't
@@ -1052,8 +1052,10 @@
 					_this.seeking = false;
 					_this.isFlavorSwitching = false;
 					if (_this._propagateEvents) {
-						_this.log(" trigger: seeked");
-						_this.triggerHelper('seeked', [_this.currentTime]);
+						if( !_this.isLive() || ( _this.isLive() && _this.isDVR() ) ) {
+							_this.log(" trigger: seeked");
+							_this.triggerHelper('seeked', [_this.currentTime]);
+						}
 					}
 					_this.hideSpinner();
 				});
@@ -1239,6 +1241,10 @@
 			if (e && e.loaded && e.total) {
 				this.updateBufferStatus(e.loaded / e.total);
 				this.progressEventData = e.loaded;
+			}
+
+			if ( this.isLive() && this.buffering ){
+				this.bufferEnd();
 			}
 		},
 
@@ -1437,10 +1443,13 @@
                 if( vid.audioTracks && vid.audioTracks.length > 0 ) {
                     var data ={'languages':[]};
                     for (var i = 0; i < vid.audioTracks.length; i++) {
-                        if( vid.audioTracks[i].label !== "" ) {
+						var audioTrack = vid.audioTracks[i];
+						//Edge doesn't parse "NAME" field to label attribute for some reason, use "LANGUAGE" instead
+						var label = audioTrack.label || audioTrack.language;
+                        if( label !== "" ) {
                             var lang = {};
                             lang.index = i;
-                            lang.label = vid.audioTracks[i].label;
+                            lang.label = label;
                             data.languages.push(lang);
                         }
                     }
@@ -1460,7 +1469,7 @@
         },
         getCurrentBufferLength: function(){
             if ( this.playerElement.buffered.length > 0 ) {
-                return parseInt(this.playerElement.buffered.end(0) - this.playerElement.currentTime); //return buffer length in seconds
+				return parseInt(this.playerElement.buffered.end(this.playerElement.buffered.length-1) - this.playerElement.currentTime); //return buffer length in seconds
             }
             return 0;
         }

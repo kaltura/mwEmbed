@@ -62,7 +62,11 @@ class mweApiGetLicenseData {
             $flavorId = $_REQUEST['flavor_id'];
             
             $flavorData = $this->getRawFlavorData();
-            $licenseData = $flavorData[$flavorId];
+            if (isset($flavorData[$flavorId])) {
+                $licenseData = $flavorData[$flavorId];
+            } else {
+                throw new Exception('flavorId "' . $flavorId . '" not found');
+            }
             $custom_data = $licenseData['custom_data'];
             $signature = $licenseData['signature'];
             $licenseUri = sprintf('%s/%s?custom_data=%s&signature=%s&files=%s', 
