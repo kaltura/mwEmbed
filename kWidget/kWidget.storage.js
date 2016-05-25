@@ -3,8 +3,14 @@
 
     var NS = "kalturaCache__";
     var ttlSuffix = "_ttl";
-    var storage = window.localStorage;
+    var storage;
 
+    if(window.localStorage) {
+        storage = window.localStorage;
+    }else{
+        mw.log("window.localStorage is not available");
+    }
+    
     var storageManger = {
         get: function (cacheKey) {
             return storage.getItem(NS + md5(cacheKey));
