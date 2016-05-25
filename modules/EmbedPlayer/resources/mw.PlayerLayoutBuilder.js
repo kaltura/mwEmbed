@@ -54,6 +54,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		this.fullScreenManager = new mw.FullScreenManager( embedPlayer );
 		var animationSupported = this.checkAnimationSupport();
 		mw.setConfig( 'EmbedPlayer.AnimationSupported', animationSupported );
+		this.addUserAgentCssClass();
 		$(document.body).append($('<div style="display: block" class="cssChecker"></div>'));
 
 		// Return the layoutBuilder Object:
@@ -144,6 +145,33 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	clearInterface: function() {
 		this.getInterface().find( '.overlay-win' ).remove();
+	},
+	/**
+	 * Add user agent css classes to player interface
+	 */
+	addUserAgentCssClass: function(){
+		if ( mw.isTouchDevice() )
+			this.getInterface().addClass( 'ua-touch' );
+		if ( mw.hasMouseEvents() )
+			this.getInterface().addClass( 'ua-mouse' );
+		if ( mw.isIOS() )
+			this.getInterface().addClass( 'ua-ios' );
+		if ( mw.isAndroid() )
+			this.getInterface().addClass( 'ua-android' );
+		if ( mw.isMacintosh() )
+			this.getInterface().addClass( 'ua-osx' );
+		if ( mw.isWindows() )
+			this.getInterface().addClass( 'ua-win' );
+		if ( mw.isChrome() )
+			this.getInterface().addClass( 'ua-chrome' );
+		if ( mw.isFirefox() )
+			this.getInterface().addClass( 'ua-firefox' );
+		if ( mw.isIE() )
+			this.getInterface().addClass( 'ua-ie' );
+		if ( mw.isSafari() )
+			this.getInterface().addClass( 'ua-safari' );
+		if ( mw.isEdge() )
+			this.getInterface().addClass( 'ua-edge' );
 	},
 	/**
 	* Add the controls HTML to player interface
