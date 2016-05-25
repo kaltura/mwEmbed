@@ -154,6 +154,10 @@
 		supportsVolumeControl: function () {
 			return  !( mw.isIpad() || mw.isAndroid() || mw.isMobileChrome() || this.useNativePlayerControls() )
 		},
+		changeMedia: function(){
+			this.clean();
+			this.parent_changeMedia();
+		},
 		changeMediaCallback: function (callback) {
 			// Check if we have source
 			if (!this.getSource()) {
@@ -173,9 +177,6 @@
 					_this.pause();
 					_this.updatePosterHTML();
 				}
-				if (!(mw.isIOS7() && mw.isIphone())) {
-					_this.changeMediaCallback = null;
-				}
 				callback();
 			});
 		},
@@ -185,6 +186,9 @@
 		clean: function ( ) {
 			if ( this.detectPluginInterval ) {
 				this.cleanInterval(this.detectPluginInterval);
+			}
+			if (this.updateStateInterval ) {
+				this.cleanInterval(this.updateStateInterval);
 			}
 		},
 		/**
@@ -718,7 +722,7 @@
 			this.isPauseLoading = false;
 
 			// Make sure the switch source is different:
-			if (!src || src == vid.src() || $(vid.el() ).attr('data-src') === src) {
+			if (!src || $(vid.el() ).attr('data-src') === src) {
 				if ($.isFunction(switchCallback)) {
 					switchCallback(vid);
 				}
@@ -744,15 +748,8 @@
 			this.previousTime = 0;
 			if (vid) {
 				try {
-					// Remove all old switch player bindings
-					$(vid).unbind(switchBindPostfix);
-
 					// pause before switching source
 					vid.pause();
-
-					var originalControlsState = vid.controls;
-					// Hide controls ( to not display native play button while switching sources )
-					vid.removeAttribute('controls');
 
 					// dissable seeking ( if we were in a seeking state before the switch )
 					if (_this.isFlavorSwitching) {
@@ -760,7 +757,6 @@
 					} else {
 						_this.seeking = false;
 					}
-
 					// Workaround for 'changeMedia' on Android & iOS
 					// When changing media and not playing entry before spinner is stuck on black screen
 					if (!_this.firstPlay) {
@@ -772,37 +768,12 @@
 					// hide the player offscreen while we switch
 					_this.hidePlayerOffScreen();
 
-					// restore position once we have metadata
-					$(vid).bind('loadedmetadata' + switchBindPostfix, function () {
-						$(vid).unbind('loadedmetadata' + switchBindPostfix);
-						_this.log(" playerSwitchSource> loadedmetadata callback for:" + src);
-						// ( do not update the duration )
-						// Android and iOS <5 gives bogus duration, depend on external metadata
-
-						// keep going towards playback! if  switchCallback has not been called yet
-						// we need the "playing" event to trigger the switch callback
-						if (!mw.isIOS71() && $.isFunction(switchCallback) && !_this.isVideoSiblingEnabled()) {
-							vid.play();
-						} else {
-							_this.removeBlackScreen();
-						}
-					});
-
-					$(vid).bind('pause' + switchBindPostfix, function () {
-						_this.log("playerSwitchSource> received pause during switching, issue play to continue source switching!")
-						$(vid).unbind('pause' + switchBindPostfix);
-						vid.play();
-					});
-
 					var handleSwitchCallback = function () {
-						//Clear pause binding on switch exit in case it wasn't triggered.
-						$(vid).unbind('pause' + switchBindPostfix);
 						// restore video position ( now that we are playing with metadata size  )
 						_this.restorePlayerOnScreen();
 						// play hide loading spinner:
 						_this.hideSpinner();
 						// Restore
-						vid.controls = originalControlsState;
 						_this.ignoreNextError = false;
 						_this.ignoreNextNativeEvent = false;
 						// check if we have a switch callback and issue it now:
@@ -812,23 +783,13 @@
 							switchCallback(vid);
 							switchCallback = null;
 						}
+						_this.removeBlackScreen();
 					};
-
-					// once playing issue callbacks:
-					$(vid).bind('playing' + switchBindPostfix, function () {
-						$(vid).unbind('playing' + switchBindPostfix);
-						_this.log(" playerSwitchSource> playing callback: " + vid.currentTime);
-						handleSwitchCallback();
-						setTimeout(function () {
-							_this.removeBlackScreen();
-						}, 100);
-
-					});
 
 					// Add the end binding if we have a post event:
 					if ($.isFunction(doneCallback)) {
 						var sentDoneCallback = false;
-						$(vid).bind('ended' + switchBindPostfix, function (event) {
+						var endedHandler = function () {
 							if (_this.disableSwitchSourceCallback) {
 								return;
 							}
@@ -839,62 +800,40 @@
 							}
 							sentDoneCallback = true;
 							// remove end binding:
-							$(vid).unbind(switchBindPostfix);
+							vid.off("ended", endedHandler);
 							// issue the doneCallback
 							doneCallback();
-
-							// Support loop for older iOS
-							// Temporarily disabled pending more testing or refactor into a better place.
-							//if ( _this.loop ) {
-							//	vid.play();
-							//}
 							return false;
-						});
+						};
+						vid.one('ended', endedHandler);
 
 						// Check if ended event was fired on chrome (android devices), if not fix by time difference approximation
 						if (mw.isMobileChrome()) {
-							$(vid).bind('timeupdate' + switchBindPostfix, function (e) {
+							var timeupdateHandler = function (e) {
 								var _this = this;
-								var timeDiff = this.duration - this.currentTime;
+								var timeDiff = this.duration() - this.currentTime();
 
-								if (timeDiff < 0.5 && this.duration != 0) {
+								if (timeDiff < 0.5 && this.duration() != 0) {
 									_this.mobileChromeTimeoutID = setTimeout(function () {
 										_this.mobileChromeTimeoutID = null;
 										// Check if timeDiff was changed in the last 2 seconds
 										if (timeDiff <= (_this.duration - _this.currentTime)) {
 											_this.log('playerSwitchSource> error in getting ended event, issue doneCallback directly.');
 											if (!sentDoneCallback) {
-												$(vid).unbind(switchBindPostfix);
+												vid.off("timeupdate", timeupdateHandler);
 												sentDoneCallback = true;
 												doneCallback();
 											}
 										}
 									}, 2000);
 								}
-							});
+							};
+							vid.on('timeupdate', timeupdateHandler);
 						}
 					}
 
-					this.playerElement.one("manifestLoaded", function(){
-						// issue the play request:
-						vid.play();
-						if (mw.isIOS()) {
-							setTimeout(function () {
-								handleSwitchCallback();
-							}, 100);
-						}
-						// check if ready state is loading or doing anything ( iOS play restriction )
-						// give iOS 5 seconds to ~start~ loading media
-						setTimeout(function () {
-							// Check that the player got out of readyState 0
-							if (vid.readyState === 0 && $.isFunction(switchCallback) && !_this.canAutoPlay()) {
-								_this.log(" Error: possible play without user click gesture, issue callback");
-								// hand off to the swtich callback method.
-								handleSwitchCallback();
-								// make sure we are in a pause state ( failed to change and play media );
-								_this.pause();
-							}
-						}, 10000);
+					this.waitForManifestLoaded().then(function(){
+						handleSwitchCallback();
 					});
 					//Update dash player context
 					this.updateDashContext();
@@ -955,7 +894,7 @@
 		 * load method calls parent_load to start fetching media from server, in case of DRM the license request will be handled as well
 		 */
 		load: function () {
-			this.getPlayerElement().load();
+			//this.getPlayerElement().load();
 		},
 
 		/**
@@ -1046,7 +985,7 @@
 				//Run initial update to get active video/audio/caption tracks
 				update();
 				//Validate status every 5 sec
-				setInterval(function () {
+				_this.updateStateInterval = setInterval(function () {
 					update();
 				}, 5000);
 			}
