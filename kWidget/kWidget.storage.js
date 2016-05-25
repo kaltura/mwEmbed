@@ -8,7 +8,6 @@
 
     try {
         var uid = new Date;
-        mw.log("window.localStorage test");
         (storage = window.localStorage).setItem(uid, uid);
         fail = storage.getItem(uid) != uid;
         storage.removeItem(uid);
@@ -17,12 +16,8 @@
         }else{
             storage = false;
         }
-
-
-
     } catch (exception) {
         storage = false;
-        mw.log("window.localStorage is not available");
     }
 
 
