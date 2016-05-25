@@ -31,12 +31,32 @@
             }, "dualScreen": {
                 plugin: true
             },
-            "EmbedPlayer.LiveCuepoints" : true
-		},
-		'entry_id': "1_bzr97hax" // vod : 1_bzr97hax | live : 1_afjmm4ie
-
+            "sourceSelector" : {
+                plugin : true
+            },
+            "streamSelector" : {
+                plugin : true
+            },
+            "EmbedPlayer.LiveCuepoints" : true,
+            'playlistAPI':{
+                'autoContinue': true,
+                'includeInLayout': true,
+                'autoPlay': true,
+                'loop': false,
+                'onPage': false,
+                'layout': 'vertical',
+                'containerPosition': 'right',
+                'hideClipPoster': true,
+                'kpl0Name': "Mixed entries playlist",
+                'kpl0Id': '1_mig1ibhj'
+            },
+            'nextPrevBtn':{
+                'plugin': true
+            }
+		}
 	});
 
 </script>
+
 </body>
 </html>
