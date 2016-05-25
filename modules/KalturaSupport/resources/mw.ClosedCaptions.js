@@ -620,12 +620,22 @@
 			var $textTarget = $('<div />')
 				.addClass('track')
 				.attr('data-capId', capId)
-				.html($(caption.content).addClass('caption'));
+				.html($(caption.content)
+					.addClass('caption')
+					.css('pointer-events', 'auto')
+				);
 
 			this.displayTextTarget($textTarget);
 
+			var captionDiv = $('.caption div');
+
+			// remove default background-color which comes from vtt.js
+			captionDiv.css("background-color", "transparent");
 			// apply custom style
-			$('.caption div').css(this.getCaptionCss());
+			captionDiv.css(this.getCaptionCss());
+
+			// vtt.js calculates the caption layout assuming margin of 1.5%
+			this.getCaptionsOverlay().css('margin', '1.5%');
 		},
 
 		addCaptionAsText: function ( source, capId, caption ) {
@@ -685,6 +695,9 @@
 				);
 			}
 			$textTarget.fadeIn('fast');
+
+			// in case we added margin for webvtt, we should remove it for non-webvtt
+			this.getCaptionsOverlay().css('margin', '0px');
 		},
 
 		addCaption: function( source, capId, caption ){
@@ -955,7 +968,10 @@
 			setCookie = ( setCookie === undefined ) ? true : setCookie;
 			var _this = this;
 			if( !source.loaded ){
-				this.embedPlayer.getInterface().find('.track').text( gM('mwe-timedtext-loading-text') );
+				this.embedPlayer.getInterface().find('.track')
+					.css( this.getDefaultStyle() )
+					.html( $('<div />')
+						.text( gM('mwe-timedtext-loading-text') ) );
 				source.load(function(){
 					_this.getPlayer().triggerHelper('newClosedCaptionsData' , _this.selectedSource);
 					if( _this.playbackStarted ){

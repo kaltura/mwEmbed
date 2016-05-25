@@ -135,7 +135,7 @@
 					return values;
 				};
 
-				WebVTT.processCues(window, getValues(captionSet), this.captionsArea[0]);
+				WebVTT.processCues(window, getValues(captionSet), this.captionsArea);
 
 				for( var j in captionSet ){
 					captionSet[j]['content'] = captionSet[j].displayState;
@@ -559,8 +559,14 @@
 
 			parser.parse(data);
 			parser.flush();
-			this.captionsArea = $('<div style="visibility:hidden;"></div>');
-			this.embedPlayer.getVideoHolder().append(this.captionsArea);
+			if(!this.embedPlayer.getInterface().find( '.captionsArea' )[0]){
+				this.embedPlayer.getVideoHolder().append($('<div />')
+					.addClass('captionsArea')
+					.css('visibility', 'hidden'));
+			}
+
+			this.captionsArea = this.embedPlayer.getInterface().find( '.captionsArea' )[0];
+
 			for(var i = 0; i < cues.length; i++){
 				cues[i]['start'] = cues[i].startTime;
 				cues[i]['end'] = cues[i].endTime;

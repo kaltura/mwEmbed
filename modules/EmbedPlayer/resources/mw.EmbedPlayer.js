@@ -722,6 +722,9 @@
 				this.mediaElement.sources = [];
 				this.mediaElement.selectedSource = null;
 			}
+			if( this.manifestAdaptiveFlavors.length ){
+				this.manifestAdaptiveFlavors = [];
+			}
 			// setup pointer to old source:
 			this.prevPlayer = this.selectedPlayer;
 			// don't null out the selected player on empty sources
@@ -2855,6 +2858,10 @@
 					}
 					_this.clipDoneTimeout = null;
 				}, (timeoutVal * 1000) );
+				//If while clip done guard in activated we get a seek, clear the guard.
+				this.unbindHelper(".clipDoneGuard").bindOnceHelper("seeking.clipDoneGuard", function(){
+					_this.cancelClipDoneGuard();
+				})
 			}
 		},
 		cancelClipDoneGuard: function() {
@@ -3326,7 +3333,7 @@
 			$.each(newFlavors, function(inx, flavor){
 				_this.manifestAdaptiveFlavors.push( new mw.MediaSource( flavor ) )
 			});
-			$(this).trigger( 'sourcesReplaced' );;
+			$(this).trigger( 'sourcesReplaced' );
 		},
 		getCurrentBitrate: function(){
 			if ( !this.isLive() && this.mediaElement.selectedSource) {

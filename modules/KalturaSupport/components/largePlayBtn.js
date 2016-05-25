@@ -64,10 +64,11 @@
 		},
 		show: function(){
 			if ( !this.isDisabled ) {
-				if (this.embedPlayer.isMobileSkin() && this.embedPlayer.changeMediaStarted){
+				if (this.embedPlayer.isMobileSkin() && (this.embedPlayer.changeMediaStarted || this.embedPlayer.buffering)){
 					return; // prevent showing large play button on top of the spinner when using mobile skin and changing media
 				}
-				this.getComponent().show();
+				var displayMode = this.embedPlayer.isMobileSkin() ? "flex" : "block";
+				this.getComponent().css('display', displayMode);
 			}
 			this.shouldShow = true;
 		},

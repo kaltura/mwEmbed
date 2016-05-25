@@ -26,6 +26,8 @@
 			defaultConfig: {
 				options: {
 					//debug:true
+					liveSyncDurationCount : 3,
+					liveMaxLatencyDurationCount: 6
 				},
 				hlsLogs: false
 			},
@@ -307,7 +309,7 @@
 					this.getPlayer().triggerHelper("sourceSwitchingEnd");
 				}
 				this.getPlayer().triggerHelper('hlsFragChanged', data.frag);
-				mw.log("hlsjs :: onFragChanged | startPTS = " + mw.seconds2npt(data.frag.startPTS) + " >> endPTS = " + mw.seconds2npt(data.frag.endPTS) + " | url = " + data.frag.url);
+				//mw.log("hlsjs :: onFragChanged | startPTS = " + mw.seconds2npt(data.frag.startPTS) + " >> endPTS = " + mw.seconds2npt(data.frag.endPTS) + " | url = " + data.frag.url);
 			},
 			/**
 			 * Error handler

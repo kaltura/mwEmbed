@@ -76,7 +76,7 @@ class kalturaIframeClass {
 			try {
 				$result = $client->widget->get($widgetId);
 			} catch( Exception $e ){
-				throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
+				throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . htmlspecialchars($e->getMessage()) );
 			}
 			if( $result ) {
 				return $result;
@@ -95,7 +95,7 @@ class kalturaIframeClass {
 				// Init a new result object with the client tag:
 				$this->uiConfResult = $container['uiconf_result'];
 			} catch ( Exception $e ){//die($e->getMessage());
-				$this->fatalError( $e->getMessage() );
+				$this->fatalError( htmlspecialchars($e->getMessage()) );
 			}
 		}
 		return $this->uiConfResult;
@@ -1014,11 +1014,11 @@ HTML;
 					    $payload[ 'entryResult' ] = $this->getEntryResultData();
 					}
 				} catch ( Exception $e ){
-					$payload['error'] = $e->getMessage();
+					$payload['error'] = htmlspecialchars($e->getMessage());
 				}
 				// push up entry result errors to top level:
 				if( isset( $payload[ 'entryResult' ]  ) && isset( $payload[ 'entryResult' ]['error']) ){
-					$payload['error'] = $payload[ 'entryResult' ]['error'];
+					$payload['error'] = htmlspecialchars($payload[ 'entryResult' ]['error']);
 				} 
 				// check for returned errors: 
 				echo json_encode( $payload );
@@ -1281,7 +1281,7 @@ HTML;
 	<?php if($wgRemoteWebInspector && $wgEnableScriptDebug){
 		echo '<script src="' . $wgRemoteWebInspector . '"></script>';
 	 } ?>
-	<link href='//fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+	<link href='//fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
 	<?php echo $this->outputIframeHeadCss(); ?>
 	<?php echo $this->outputSkinCss(); ?>
 	<?php echo $this->outputCustomCss(); ?>
