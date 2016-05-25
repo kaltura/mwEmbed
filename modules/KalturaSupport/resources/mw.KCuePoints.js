@@ -361,7 +361,7 @@
 			return this.embedPlayer.evaluate('{mediaProxy.entry.msDuration}');
 		},
 		getCuePoints: function () {
-			if (!this.embedPlayer.rawCuePoints || !this.embedPlayer.rawCuePoints.length) {
+			if (!this.embedPlayer.rawCuePoints || !$.isArray(this.embedPlayer.rawCuePoints)) {
 				this.embedPlayer.rawCuePoints = [];
 			}
 			return this.embedPlayer.rawCuePoints;
