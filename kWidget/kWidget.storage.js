@@ -5,12 +5,27 @@
     var ttlSuffix = "_ttl";
     var storage;
 
-    if(window.localStorage) {
-        storage = window.localStorage;
-    }else{
+
+    try {
+        var uid = new Date;
+        mw.log("window.localStorage test");
+        (storage = window.localStorage).setItem(uid, uid);
+        fail = storage.getItem(uid) != uid;
+        storage.removeItem(uid);
+        if(!fail){
+            storage = window.localStorage;
+        }else{
+            storage = false;
+        }
+
+
+
+    } catch (exception) {
+        storage = false;
         mw.log("window.localStorage is not available");
     }
-    
+
+
     var storageManger = {
         get: function (cacheKey) {
             return storage.getItem(NS + md5(cacheKey));
