@@ -84,11 +84,17 @@ Poll
 }
 
 .webcastPolls .poll .answer-text {
-    margin-left:20px;
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
-    -webkit-transform: translateY(-50%);
+    font-family: "Lato-Regular";
+    font-size: 2vw;
+    display: table;
+    margin-left: 1vw;
+    margin-right: auto;
+    width: 88vw;
+    color: #FFF;
+    position: absolute;
+    height: 8vh;
+    margin-top: -1vh;
+    padding-left: 1vw;
 }
 
 .webcastPolls .poll .answer:hover {
