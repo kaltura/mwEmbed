@@ -181,14 +181,16 @@
                 startFromIndex = startFromIndex || 0;
 
                 // Start looking for the cue point via time, return FIRST match:
-                if (_this.getCuePoints().length > 0) {
-                    for (var i = startFromIndex; i < _this.getCuePoints().length; i++) {
-                        if (_this.getCuePoints()[i].startTime >= time) {
+                var cuePointsArray = _this.getCuePoints();
+                if (cuePointsArray.length > 0) {
+                    var cuePointsLength = cuePointsArray.length;
+                    for (var i = startFromIndex; i < cuePointsLength; i++) {
+                        if (cuePointsArray[i].startTime >= time) {
                             return i;
                         }
                     }
 
-                    return _this.getCuePoints().length; // return the next index which is out-side of the array (because all items in array were already handled)
+                    return cuePointsLength; // return the next index which is out-side of the array (because all items in array were already handled)
                 }
             }
 
