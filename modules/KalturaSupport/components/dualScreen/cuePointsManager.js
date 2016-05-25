@@ -186,8 +186,8 @@
                     return _this._fetchedCuePoints.length; // return the next index which is out-side of the array (because all items in array were already handled)
                 }
             }
-            // No cue point found in range return false:
-            return -1;
+
+            return 0;
         },
         _getCuePointByIndex: function (index) {
             var _this = this;
