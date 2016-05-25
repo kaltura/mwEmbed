@@ -186,11 +186,9 @@
 		clean: function ( ) {
 			if ( this.detectPluginInterval ) {
 				this.cleanInterval(this.detectPluginInterval);
-				this.detectPluginInterval = null;
 			}
 			if (this.updateStateInterval ) {
-				clearInterval(this.updateStateInterval);
-				this.updateStateInterval = null;
+				this.cleanInterval(this.updateStateInterval);
 			}
 		},
 		/**
