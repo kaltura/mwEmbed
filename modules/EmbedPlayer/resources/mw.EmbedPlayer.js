@@ -722,6 +722,9 @@
 				this.mediaElement.sources = [];
 				this.mediaElement.selectedSource = null;
 			}
+			if( this.manifestAdaptiveFlavors.length ){
+				this.manifestAdaptiveFlavors = [];
+			}
 			// setup pointer to old source:
 			this.prevPlayer = this.selectedPlayer;
 			// don't null out the selected player on empty sources
