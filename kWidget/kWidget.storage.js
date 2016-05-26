@@ -23,7 +23,9 @@
 
     var storageManger = {
         get: function (cacheKey) {
-            return storage.getItem(NS + md5(cacheKey));
+            if(storage){
+                return storage.getItem(NS + md5(cacheKey));
+            }
         },
         getWithTTL: function (cacheKey) {
             var value = this.get(cacheKey);
