@@ -107,13 +107,9 @@
 			var _this = this;
 			if (_this.cuePointsManager) {
 				var cuePointsReachedResult = _this.cuePointsManager.getCuePointsReached();
-				if (cuePointsReachedResult)
-				{
-					if (!_this.cuePointsReached(cuePointsReachedResult))
-					{
-						// when user seek/press play we need to handle scenario that no relevant cue points has reached and thus we need to clear the image shown.
-						_this.sync(null);
-					}
+				if (!_this.cuePointsReached(cuePointsReachedResult)) {
+					// when user seek/press play we need to handle scenario that no relevant cue points has reached and thus we need to clear the image shown.
+					_this.sync(null);
 				}
 			}
 
