@@ -75,19 +75,21 @@
 				this.cuePointsManager = null;
 			}
 		},
-		cuePointsReached : function(context)
-		{
+		cuePointsReached : function(context) {
 			var cuePoints = context.filter({tags: ['remove-selected-thumb']});
 			cuePoints = cuePoints.concat(context.filter({types: this.slidesCuePointTypes}));
 
 			cuePoints.sort(function (a, b) {
-				return  (b.startTime - a.startTime);
+				return (b.startTime - a.startTime);
 			});
 
 			var mostUpdatedCuePointToHandle = cuePoints.length > 0 ? cuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
 
 			if (mostUpdatedCuePointToHandle) {
 				this.sync(mostUpdatedCuePointToHandle)
+				return true;
+			} else {
+				return false;
 			}
 		},
 		canRender: function () {
@@ -100,6 +102,20 @@
 				)
 			);
 		},
+		syncByReachedCuePoints : function()
+		{
+			var _this = this;
+			if (_this.cuePointsManager) {
+				var cuePointsReachedResult = _this.cuePointsManager.getCuePointsReached();
+				if (cuePointsReachedResult)
+				{
+					return _this.cuePointsReached(cuePointsReachedResult);
+
+				}
+			}
+
+			return false;
+		},
 		addBinding: function(){
 			var _this = this;
 			this.bind( 'playerReady', function (  ) {
@@ -108,6 +124,12 @@
 
 			this.bind( 'onplay', function () {
 				_this.loadAdditionalAssets();
+
+				if (!_this.syncByReachedCuePoints())
+				{
+					// when user seek/press play we need to handle scenario that no relevant cue points has reached and thus we need to clear the image shown.
+					_this.sync(null);
+				}
 			} );
 
 			this.bind("onChangeMedia", function(){
@@ -123,11 +145,7 @@
 			});
 			this.bind("onChangeStreamDone", function(){
 				_this.syncEnabled = true;
-				var cuePointsReachedResult = _this.cuePointsManager.getCuePointsReached();
-				if (cuePointsReachedResult)
-				{
-					_this.cuePointsReached(cuePointsReachedResult);
-				}
+				_this.syncByReachedCuePoints();
 			});
 		},
 		getComponent: function() {
@@ -174,7 +192,11 @@
 		},
 		sync: function(cuePoint){
 			if (this.syncEnabled) {
-				if (cuePoint && cuePoint.cuePointType === 'thumbCuePoint.Thumb') {
+
+				if (!cuePoint)
+				{
+					this.getComponent().attr('src','');
+				}else if (cuePoint.cuePointType === 'thumbCuePoint.Thumb') {
 					this.loadAdditionalAssets();
 					var _this = this;
 					var callCallback = function () {
