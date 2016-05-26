@@ -3,11 +3,29 @@
 
     var NS = "kalturaCache__";
     var ttlSuffix = "_ttl";
-    var storage = window.localStorage;
+    var storage;
+
+
+    try {
+        var uid = new Date;
+        (storage = window.localStorage).setItem(uid, uid);
+        fail = storage.getItem(uid) != uid;
+        storage.removeItem(uid);
+        if(!fail){
+            storage = window.localStorage;
+        }else{
+            storage = false;
+        }
+    } catch (exception) {
+        storage = false;
+    }
+
 
     var storageManger = {
         get: function (cacheKey) {
-            return storage.getItem(NS + md5(cacheKey));
+            if(storage){
+                return storage.getItem(NS + md5(cacheKey));
+            }
         },
         getWithTTL: function (cacheKey) {
             var value = this.get(cacheKey);
