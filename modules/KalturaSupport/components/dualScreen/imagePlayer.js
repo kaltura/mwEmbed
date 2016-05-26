@@ -109,8 +109,11 @@
 				var cuePointsReachedResult = _this.cuePointsManager.getCuePointsReached();
 				if (cuePointsReachedResult)
 				{
-					return _this.cuePointsReached(cuePointsReachedResult);
-
+					if (!_this.cuePointsReached(cuePointsReachedResult))
+					{
+						// when user seek/press play we need to handle scenario that no relevant cue points has reached and thus we need to clear the image shown.
+						_this.sync(null);
+					}
 				}
 			}
 
@@ -124,12 +127,7 @@
 
 			this.bind( 'onplay', function () {
 				_this.loadAdditionalAssets();
-
-				if (!_this.syncByReachedCuePoints())
-				{
-					// when user seek/press play we need to handle scenario that no relevant cue points has reached and thus we need to clear the image shown.
-					_this.sync(null);
-				}
+				_this.syncByReachedCuePoints();
 			} );
 
 			this.bind("onChangeMedia", function(){
