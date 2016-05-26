@@ -1083,6 +1083,11 @@
 				if( mw.isIpad() && _this.embedPlayer.getPlayerElement().paused ) {
 					_this.embedPlayer.getPlayerElement().play();
 				}
+				if ( currentAdSlotType === "overlay" && _this.getConfig("timeout") ){ // support timeout Flashvar for overlays
+					setTimeout(function(){
+						_this.adsManager.stop();
+					}, parseFloat( _this.getConfig("timeout") ) * 1000);
+				}
                 var adPosition =  0;
                 if ( ad.getAdPodInfo() && ad.getAdPodInfo().getAdPosition() ){ adPosition = ad.getAdPodInfo().getAdPosition(); }
 				if ( _this.isLinear && adPosition === 1){
