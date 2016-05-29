@@ -405,12 +405,12 @@
 			overridePlayerMethods: function () {
 				this.orig_backToLive = this.getPlayer().backToLive;
 				this.orig_switchSrc = this.getPlayer().switchSrc;
-				this.orig_changeMediaCallback = this.getPlayer().changeMediaCallback;
+				this.orig_playerSwitchSource = this.getPlayer().playerSwitchSource;
 				this.orig_load = this.getPlayer().load;
 				this.orig_onerror = this.getPlayer()._onerror;
 				this.getPlayer().backToLive = this.backToLive.bind(this);
 				this.getPlayer().switchSrc = this.switchSrc.bind(this);
-				this.getPlayer().changeMediaCallback = this.changeMediaCallback.bind(this);
+				this.getPlayer().playerSwitchSource = this.playerSwitchSource.bind(this);
 				this.getPlayer().load = this.load.bind(this);
 				this.getPlayer()._onerror = this._onerror.bind(this);
 			},
@@ -420,7 +420,7 @@
 			restorePlayerMethods: function () {
 				this.getPlayer().backToLive = this.orig_backToLive;
 				this.getPlayer().switchSrc = this.orig_switchSrc;
-				this.getPlayer().changeMediaCallback = this.orig_changeMediaCallback;
+				this.getPlayer().playerSwitchSource = this.orig_playerSwitchSource;
 				this.getPlayer().load = this.orig_load;
 				this.getPlayer()._onerror = this.orig_onerror;
 				mw.supportsFlash = orig_supportsFlash;
@@ -473,10 +473,10 @@
 			/**
 			 * Override player callback after changing media
 			 */
-			changeMediaCallback: function(){
-				this.getPlayer().play();
-				this.getPlayer().changeMediaStarted = false;
-				this.getPlayer().triggerHelper('onChangeMediaDone');
+			playerSwitchSource: function(src, switchCallback, doneCallback){
+				if ($.isFunction(switchCallback)) {
+					switchCallback();
+				}
 			},
 			/**
 			 * Override player method for playback error

@@ -78,9 +78,9 @@
 			switch( property ) {
 				case 'visible':
 					if( value ) {
-						this.show();
+						this.getComponent().show();
 					} else {
-						this.hide();
+						this.getComponent().hide();
 					}
 					break;
 			}
