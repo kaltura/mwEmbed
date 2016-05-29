@@ -119,7 +119,7 @@
 			// calculate the width and height for each plugin. Adding 1 to the plugins count to add some spacing. Done each time the plugins are shown to support responsive players.
 			var numPlugins = this.registeredPlugins.length;
 			var pluginWidth = 33;
-			if ( numPlugins === 4){
+			if ( numPlugins === 4 || numPlugins === 2){
 				pluginWidth = 50;
 			}
 			var pluginHeight = this.embedPlayer.getVideoHolder().width() / (numPlugins + 1);
