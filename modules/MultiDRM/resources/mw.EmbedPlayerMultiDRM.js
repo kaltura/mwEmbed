@@ -1326,7 +1326,7 @@
 		setPlayerElementVolume: function (percent) {
 			if (this.getPlayerElement()) {
 				// Disable mute if positive volume
-				this.playerElement.muted = ( percent === 0 );
+				this.getPlayerElement().muted( percent === 0 );
 
 				this.getPlayerElement().volume(percent);
 			}
