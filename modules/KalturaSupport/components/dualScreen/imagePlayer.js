@@ -121,6 +121,14 @@
 				_this.initializeCuePointsManager();
 			});
 
+			this.bind('seeked',function()
+			{
+				// Checking if we are pausing, if we do then we need to handle sync from 'seeked' event. otherwise the 'onplay' event will handle the sync
+				if (!_this.getPlayer().isPlaying())
+				{
+					_this.syncByReachedCuePoints();
+				}
+			});
 			this.bind( 'onplay', function () {
 				_this.loadAdditionalAssets();
 				_this.syncByReachedCuePoints();
