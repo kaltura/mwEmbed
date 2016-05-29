@@ -928,9 +928,8 @@
 		setPlayerElementVolume: function (percent) {
 			if (this.getPlayerElement()) {
 				// Disable mute if positive volume
-				if (percent != 0) {
-					this.playerElement.muted = false;
-				}
+				this.playerElement.muted = ( percent === 0 );
+
 				this.playerElement.volume = percent;
 			}
 		},
