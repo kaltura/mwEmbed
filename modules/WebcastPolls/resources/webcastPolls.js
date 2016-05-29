@@ -9,8 +9,68 @@
         locale: {
             respondsLbl: gM('mwe-webc-polls-respondsLbl')
         },
+        isShowingPoll : false,
+        cuePointsManager : null,
         currentPollData : null,
         isScreenOpened: false,
+        initializeCuePointsManager : function()
+        {
+            var _this = this;
+
+            if (!_this.cuePointsManager) {
+                // we need to initialize the instance
+                _this.cuePointsManager = new mw.dualScreen.CuePointsManager(_this.getPlayer(), function () {
+                }, "webcastPollsCuePointsManager");
+
+
+                _this.cuePointsManager.onCuePointsReached = function (args) {
+                    var relevantCuePoints = args.filter({
+                        tags: ['select-poll-state','remove-selected-thumb','select-a-thumb'],
+                        sortDesc: true
+                    });
+                    var mostUpdatedCuePointToHandle = relevantCuePoints.length > 0 ? relevantCuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
+
+                    if (mostUpdatedCuePointToHandle) {
+                        var isPollStateCuePoint = mostUpdatedCuePointToHandle.tags.indexOf("select-poll-state") > -1;
+
+                        if (isPollStateCuePoint) {
+                            _this.handlePollStateChangeCuePoint(mostUpdatedCuePointToHandle);
+                        }else {
+                            _this.handleRemovePollCuePoint();
+                        }
+                    }
+                };
+            }
+        },
+        handleRemovePollCuePoint : function()
+        {
+            var _this = this;
+
+            if (_this.isShowingPoll)
+            {
+                _this.hideScreen();
+
+                // TODO [es] reset poll dom to prepare to next poll
+            }
+        },
+
+        handlePollStateChangeCuePoint : function(cuePoint)
+        {
+            var _this = this;
+            var data = cuePoint.partnerData;
+
+            if (!_this.isShowingPoll)
+            {
+                _this.showScreen();
+            }
+
+            if (false /* TODO [es] handle different poll then shown */)
+            {
+
+            }
+
+
+        },
         setup: function () {
 
             // prevent pause of video while poll is being disabled
@@ -23,6 +83,8 @@
             //}
 
             this.addBindings();
+
+            this.initializeCuePointsManager();
 
         },
 
@@ -42,27 +104,26 @@
                     question : 'How do you feel about our new site?'
                 };
 
-
-                setTimeout(function () {
-                    _this.showScreen();
-
-                    setTimeout(function () {
-                        _this.showPoll();
-
-                    }, 3000);
-
-                    //setTimeout(function(){
-                    //	_this.getPlayer().hideSpinner();
-                    //	_this.question="hello";
-                    //	_this.removeScreen();
-                    //	_this.showScreen();
-                    //},5000);
-
-                    //setTimeout(function () {
-                    //    _this.hideScreen();
-                    //
-                    //}, 10000);
-                }, 1000);
+                //setTimeout(function () {
+                //    _this.showScreen();
+                //
+                //    setTimeout(function () {
+                //        _this.showPoll();
+                //
+                //    }, 3000);
+                //
+                //    //setTimeout(function(){
+                //    //	_this.getPlayer().hideSpinner();
+                //    //	_this.question="hello";
+                //    //	_this.removeScreen();
+                //    //	_this.showScreen();
+                //    //},5000);
+                //
+                //    //setTimeout(function () {
+                //    //    _this.hideScreen();
+                //    //
+                //    //}, 10000);
+                //}, 1000);
             });
             this.bind('preShowScreen', function (event, screenName) {
 
@@ -88,6 +149,7 @@
             });
 
             this.bind('showScreen', function (event, screenName) {
+                _this.isShowingPoll = true;
                 if (screenName === "webcastPolls") {
                     _this.$webcastPoll = $('.webcastPolls');
                     _this.getScreen().then(function (screen) {
@@ -95,6 +157,11 @@
                         embedPlayer.getPlayerPoster().addClass("blur");
                     });
                 }
+            });
+
+            this.bind('hideScreen',function()
+            {
+                _this.isShowingPoll = false;
             });
 
             this.bind('preHideScreen', function (event, screenName) {
