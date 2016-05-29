@@ -2595,10 +2595,9 @@
 
 			this.volume = percent;
 
-			// Un-mute if setting positive volume
-			if (percent != 0) {
-				this.muted = false;
-			}
+			// Un-mute if setting positive volume, mute if setting 0
+			this.muted = ( percent === 0 );
+
 			// Update the playerElement volume
 			this.setPlayerElementVolume(percent);
 			//mw.log("EmbedPlayer:: setVolume:: " + percent + ' trigger volumeChanged: ' + triggerChange );
