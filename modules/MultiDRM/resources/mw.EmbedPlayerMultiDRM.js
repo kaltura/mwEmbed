@@ -184,6 +184,7 @@
 			$(this.getPlayerElement()).css('position', 'static');
 		},
 		clean: function ( ) {
+			this.manifestLoaded = false;
 			if ( this.detectPluginInterval ) {
 				this.cleanInterval(this.detectPluginInterval);
 			}
