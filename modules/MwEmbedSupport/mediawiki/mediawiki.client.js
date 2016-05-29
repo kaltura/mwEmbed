@@ -38,7 +38,7 @@
 		return (/safari/).test(userAgent.toLowerCase()) && !mw.isMobileDevice() && !mw.isChrome();
 	};
 	mw.isSafari = function () {
-		return (/safari/).test(userAgent.toLowerCase()) && !mw.isChrome();
+		return (/safari/).test(userAgent.toLowerCase()) && !mw.isChrome() && !mw.isEdge();
 	};
 	mw.isIE9Comp = function () {
 		return (/msie 7/.test(userAgent.toLowerCase()) && /trident\/5/.test(userAgent.toLowerCase()));
@@ -98,7 +98,7 @@
 		return ( userAgent.indexOf('Firefox') != -1 );
 	};
 	mw.isChrome = function () {
-		return ( userAgent.indexOf('Chrome') != -1 );
+		return ( userAgent.indexOf('Chrome') != -1 && !mw.isEdge() );
 	};
 	mw.isAndroidNativeBrowser = function () {
 		return (mw.isAndroid() && !mw.isFirefox() && !mw.isChrome());
