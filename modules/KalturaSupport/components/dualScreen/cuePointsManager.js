@@ -233,8 +233,6 @@
             var currentTime = player.getPlayerElementTime() * 1000;
             var cuePointsContext = _this._getCuePointsReached(currentTime, 0);
             return _this._createReachedCuePointsArgs(cuePointsContext.cuePoints);
-
-            return null;
         },
         destroy: function () {
             var _this = this;
