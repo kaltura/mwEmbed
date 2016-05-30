@@ -57,7 +57,7 @@
 				setTimeout(function()
 				{
 					if (!_this.cuePointsManager) {
-						_this.cuePointsManager = new mw.dualScreen.CuePointsManager(_this.getPlayer(), function () {
+						_this.cuePointsManager = new mw.webcast.CuePointsManager(_this.getPlayer(), function () {
 						}, "imagePlayerCuePointsManager");
 
 						_this.cuePointsManager.onCuePointsReached = function (args) {

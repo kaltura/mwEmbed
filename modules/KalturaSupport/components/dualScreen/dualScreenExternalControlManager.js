@@ -29,7 +29,7 @@
                     {
                         if (!_this.cuePointsManager) {
                             // we need to initialize the instance
-                            _this.cuePointsManager = new mw.dualScreen.CuePointsManager(_this.getPlayer(), function () {
+                            _this.cuePointsManager = new mw.webcast.CuePointsManager(_this.getPlayer(), function () {
                             }, "externalControlCuePointsManager");
 
 

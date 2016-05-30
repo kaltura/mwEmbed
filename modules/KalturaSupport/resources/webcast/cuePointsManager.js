@@ -1,8 +1,8 @@
 (function (mw, $) {
     "use strict";
-    mw.dualScreen = mw.dualScreen || {};
+    mw.webcast = mw.webcast || {};
 
-    mw.dualScreen.CuePointsManager = mw.KBasePlugin.extend({
+    mw.webcast.CuePointsManager = mw.KBasePlugin.extend({
         _nextPendingCuePointIndex: 0,
         _lastHandledServerTime: null,
         setup: function () {
