@@ -10,8 +10,9 @@
             respondsLbl: gM('mwe-webc-polls-respondsLbl')
         },
         isShowingPoll : false,
+        currentPollId : null,
         cuePointsManager : null,
-        currentPollData : null,
+        pollsData : {},
         isScreenOpened: false,
         initializeCuePointsManager : function()
         {
@@ -50,7 +51,7 @@
             {
                 if (pollState.state === 'show')
                 {
-                    _this.showOrUpdatePoll(pollState);
+                    _this.showOrUpdatePollByState(pollState);
                 }else
                 {
                     _this.removePoll();
@@ -63,26 +64,122 @@
 
             if (_this.isShowingPoll)
             {
+                _this.currentPollId = null;
+
                 _this.hideScreen();
 
                 // TODO [es] reset poll dom to prepare to next poll
             }
         },
-        showOrUpdatePoll : function(pollData)
+        syncPollDOM : function(){
+            var _this = this;
+
+            function updateAnswer(answerIndex, pollData)
+            {
+                var answerContent = pollData.answers[answerIndex + ''];
+                if (answerContent) {
+                    _this.$webcastPoll.find('[name="answer' + answerIndex + '"]').text(answerContent).parent().show();
+                }else
+                {
+                    _this.$webcastPoll.find('[name="answer' + answerIndex + '"]').parent().hide();
+                }
+            }
+
+            if (_this.isShowingPoll && _this.$webcastPoll)
+            {
+                var pollData = _this.pollsData[_this.currentPollId];
+
+                if (pollData)
+                {
+                    _this.$webcastPoll.find('[name="question"]').text(pollData.question);
+                    updateAnswer(1,pollData);
+                    updateAnswer(2,pollData);
+                    updateAnswer(3,pollData);
+                    updateAnswer(4,pollData);
+                    updateAnswer(5,pollData);
+
+                    _this.showPoll();
+                }else
+                {
+                    _this.$webcastPoll.find('[name="question"],[name="answer1"],[name="answer2"],[name="answer3"],[name="answer4"],[name="answer5"]').text('');
+                    _this.showLoader();
+                }
+            }
+
+        },
+        showOrUpdatePollByState : function(pollState)
         {
             var _this = this;
+
+            if (!pollState || !pollState.pollId)
+            {
+                // todo [es] handle invalid state
+                return;
+
+            }
 
             if (!_this.isShowingPoll)
             {
                 _this.showScreen();
             }
 
-            if (false /* TODO [es] handle different poll then shown */)
-            {
+            try {
+                if (!_this.currentPollId || _this.currentPollId !== pollState.pollId) {
+                    _this.currentPollId = pollState.pollId;
+                    // new poll to handle
+                    _this.getPollData(pollState.pollId, true).then(function (result) {
+                        _this.syncPollDOM();
+                    }, function (reason) {
+                        // TODO [es] handle
+                    });
 
+
+                } else {
+                    // update existing poll state if needed
+
+                }
+            }catch(e)
+            {
+                // todo [es] handle
+            }
+        },
+        getPollData : function(pollId, forceGet)
+        {
+            var _this = this;
+            var defer = $.Deferred();
+
+            if (_this.pollsData[pollId] && !forceGet)
+            {
+                var pollData = pollData[pollId];
+                defer.resolve({data : pollData });
+            }else {
+                _this.pollsData[pollId] = null;
+
+                var request = {
+                    'service': 'cuepoint_cuepoint',
+                    'action': 'get',
+                    'id': pollId
+                };
+
+                _this.getKalturaClient().doRequest(request, function(result)
+                {
+                    try {
+                        var pollData = JSON.parse(result.text);
+                        _this.pollsData[pollId] = pollData;
+                        defer.resolve({data : pollData });
+                    }catch(e)
+                    {
+                        defer.reject({});
+                    }
+
+                },false, function(reason)
+                {
+                    mw.log(reason);
+                    defer.reject({});
+                });
             }
 
-
+            return defer.promise();
         },
         setup: function () {
 
@@ -111,11 +208,10 @@
 
             });
 
+
+
             this.bind('playerReady', function () {
 
-                _this.currentPollData = {
-                    question : 'How do you feel about our new site?'
-                };
 
                 //setTimeout(function () {
                 //    _this.showScreen();
@@ -167,8 +263,9 @@
                     _this.$webcastPoll = $('.webcastPolls');
                     _this.getScreen().then(function (screen) {
                         $("#" + embedPlayer.getPlayerElement().id).addClass("blur");
-                        embedPlayer.getPlayerPoster().addClass("blur");
+
                     });
+                    _this.syncPollDOM();
                 }
             });
 
