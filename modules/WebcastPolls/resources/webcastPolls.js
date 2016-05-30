@@ -19,30 +19,45 @@
 
             if (!_this.cuePointsManager) {
                 // we need to initialize the instance
-                _this.cuePointsManager = new mw.dualScreen.CuePointsManager(_this.getPlayer(), function () {
+                _this.cuePointsManager = new mw.webcast.CuePointsManager(_this.getPlayer(), function () {
                 }, "webcastPollsCuePointsManager");
 
 
                 _this.cuePointsManager.onCuePointsReached = function (args) {
                     var relevantCuePoints = args.filter({
-                        tags: ['select-poll-state','remove-selected-thumb','select-a-thumb'],
+                        tags: ['select-poll-state'],
                         sortDesc: true
                     });
                     var mostUpdatedCuePointToHandle = relevantCuePoints.length > 0 ? relevantCuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
 
                     if (mostUpdatedCuePointToHandle) {
-                        var isPollStateCuePoint = mostUpdatedCuePointToHandle.tags.indexOf("select-poll-state") > -1;
-
-                        if (isPollStateCuePoint) {
-                            _this.handlePollStateChangeCuePoint(mostUpdatedCuePointToHandle);
-                        }else {
-                            _this.handleRemovePollCuePoint();
+                        try {
+                            var pollState = JSON.parse(mostUpdatedCuePointToHandle.partnerData);
+                            _this.handleNewPollState(pollState);
+                        }catch(e)
+                        {
+                            // TODO [es]
                         }
+
                     }
                 };
             }
         },
-        handleRemovePollCuePoint : function()
+        handleNewPollState : function(pollState)
+        {
+            var _this = this;
+            if (pollState)
+            {
+                if (pollState.state === 'show')
+                {
+                    _this.showOrUpdatePoll(pollState);
+                }else
+                {
+                    _this.removePoll();
+                }
+            }
+        },
+        removePoll : function()
         {
             var _this = this;
 
@@ -53,11 +68,9 @@
                 // TODO [es] reset poll dom to prepare to next poll
             }
         },
-
-        handlePollStateChangeCuePoint : function(cuePoint)
+        showOrUpdatePoll : function(pollData)
         {
             var _this = this;
-            var data = cuePoint.partnerData;
 
             if (!_this.isShowingPoll)
             {
