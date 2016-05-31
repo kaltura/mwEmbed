@@ -14,14 +14,14 @@
         poolVotingProfileId : null,
         userId : null,
         userVotingInProgress : false,
+        kalturaProxy : null,
         userVoteAnswer : null,
         kClient : null,
         isPollShown: false,
         userProfile : null,
         setup: function () {
             this.addBindings();
-            this.initializeCuePointsManager();
-            this.initializeUserProfile();
+            this.initializeDependentPlugins();
             this.initializeImportantInfo();
         },
         addBindings: function () {
@@ -80,32 +80,17 @@
                 }
             });
         },
-        getKClient: function () {
-            if (!this.kClient) {
-                this.kClient = mw.kApiGetPartnerClient(this.getPlayer().kwidgetid);
-            }
-            return this.kClient;
-        },
+
         initializeImportantInfo:function() {
 
             var _this=this;
 
             _this.userId = _this.userProfile.getUserID();
 
-            var listMetadataProfileRequest = {
-                service: "metadata_metadataprofile",
-                action: "list",
-                "filter:systemNameEqual": 'pollVoteCustomMetadataProfile'
-            };
-
-            this.getKClient().doRequest(listMetadataProfileRequest, function (result) {
-                if (result.objects.length) {
-                    _this.poolVotingProfileId = result.objects[0].id;
-                }else
-                {
-                    _this.poolVotingProfileId = null;
-                }
-            },false,function(reason)
+            _this.kalturaProxy.getVoteCustomMetadataProfileId().then(function(result)
+            {
+                _this.poolVotingProfileId = result.profileId;
+            }, function(reason)
             {
                 _this.poolVotingProfileId = null;
             });
@@ -121,7 +106,7 @@
                 }
             }
         },
-        initializeUserProfile : function()
+        initializeDependentPlugins : function()
         {
             var _this = this;
 
@@ -130,10 +115,12 @@
                 _this.userProfile = new mw.webcast.UserProfile(_this.getPlayer(), function () {
                 }, "webcastPollsUserProfile");
             }
-        },
-        initializeCuePointsManager : function()
-        {
-            var _this = this;
+
+            if (!_this.kalturaProxy) {
+                // we need to initialize the instance
+                _this.kalturaProxy = new mw.webcastPolls.WebcastPollsKalturaProxy(_this.getPlayer(), function () {
+                }, "webcastPollsKalturaProxy");
+            }
 
             if (!_this.cuePointsManager) {
                 // we need to initialize the instance
@@ -303,24 +290,16 @@
             }else {
                 _this.pollsData[pollId] = null;
 
-                var request = {
-                    'service': 'cuepoint_cuepoint',
-                    'action': 'get',
-                    'id': pollId
-                };
-
-                _this.getKalturaClient().doRequest(request, function(result)
+                _this.kalturaProxy.getPollData(pollId).then(function(result)
                 {
                     try {
-                        var pollData = JSON.parse(result.text);
-                        _this.pollsData[pollId] = pollData;
-                        defer.resolve({data : pollData });
+                        _this.pollsData[pollId] = result.pollData;
+                        defer.resolve({data : result.pollData });
                     }catch(e)
                     {
                         defer.reject({});
                     }
-
-                },false, function(reason)
+                },function(reason)
                 {
                     mw.log(reason);
                     defer.reject({});
@@ -342,7 +321,7 @@
         {
             var _this = this;
 
-            if (!_this.currentPollId ||  !_this.poolVotingProfileId || _this.userVotingInProgress || ! _this.userId)
+            if (!_this.currentPollId ||  !_this.poolVotingProfileId || _this.userVotingInProgress)
             {
                 return;
             }
@@ -360,39 +339,19 @@
                 _this.userVoteAnswer = selectedAnswer;
                 _this.syncDOMUserVoting();
 
-                var createCuePointRequest = {
-                    "service": "cuePoint_cuePoint",
-                    "action": "add",
-                    "cuePoint:objectType": "KalturaAnnotation",
-                    "cuePoint:entryId": _this.getPlayer().kentryid,
-                    "cuePoint:text": '',
-                    "cuePoint:isPublic": 1,
-                    "cuePoint:searchableOnEntry": 0,
-                    "cuePoint:parentId": _this.currentPollId
-                };
-
-                var addMetadataRequest = {
-                    service: "metadata_metadata",
-                    action: "add",
-                    metadataProfileId: _this.poolVotingProfileId,
-                    objectId: "{1:result:id}",
-                    xmlData: '<metadata><Answer>' + selectedAnswer + '</Answer></metadata>', // TODO [es] add user id
-                    objectType: "annotationMetadata.Annotation"
-                };
-
-                _this.getKClient().doRequest([createCuePointRequest, addMetadataRequest], function (result) {
-
+                _this.kalturaProxy.transmitNewVote(_this.currentPollId, _this.poolVotingProfileId,selectedAnswer).then(function(result)
+                {
                     // TODO [es] if one fails, do we reach this point? if so need to handle results
                     _this.userVotingInProgress = false;
                     _this.syncDOMUserVoting();
-                },false,function()
+
+                },function(reason)
                 {
                     // TODO [es]
                     _this.userVotingInProgress = false;
                     _this.userVoteAnswer = previousAnswer;
                     _this.syncDOMUserVoting();
                 });
-
             }catch(e)
             {
                 // TODO [es]
@@ -453,3 +412,4 @@
     }));
 
 })(window.mw, window.jQuery);
+
