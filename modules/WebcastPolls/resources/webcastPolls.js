@@ -1,10 +1,9 @@
 (function (mw, $) {
     "use strict";
 
-    mw.PluginManager.add('webcastPolls', mw.KBaseScreen.extend({
-
-        defaultConfig: {
-            templatePath: '../WebcastPolls/resources/webcastPolls.tmpl.html'
+    mw.PluginManager.add('webcastPolls', mw.KBasePlugin.extend({
+        defaultConfig : {
+            'templatePath' : '../WebcastPolls/resources/webcastPolls.tmpl.html'
         },
         locale: {
             respondsLbl: gM('mwe-webc-polls-respondsLbl')
@@ -12,7 +11,55 @@
         currentPollId : null,
         cuePointsManager : null,
         pollsData : {},
-        isScreenOpened: false,
+        isPollShown: false,
+        setup: function () {
+            this.addBindings();
+            this.initializeCuePointsManager();
+        },
+        addBindings: function () {
+            // bind to cue point events
+            var _this = this;
+            var embedPlayer = this.getPlayer();
+
+            this.bind('onpause', function () {
+                // TODO [es] handle
+
+            });
+
+            this.bind('onplay', function () {
+                // TODO [es] handle
+
+            });
+
+            this.bind('playerReady', function () {
+                setTimeout(function()
+                {
+                    _this.handleNewPollState({state : 'show', pollId : '1_hq5wdy2w'});
+
+                    setTimeout(function()
+                    {
+                        _this.handleNewPollState({state : 'hide', pollId : '1_hq5wdy2w'});
+
+                        setTimeout(function()
+                        {
+                            _this.handleNewPollState({state : 'show', pollId : '1_orhujkkr'});
+                        },5000);
+                    },5000);
+
+                },5000);
+            });
+
+            this.bind('updateLayout', function (event, data) {
+                if (_this.isPollShown) {
+                    // TODO [es] amir - when 'updateLayout' is relevant?
+                    //if (embedPlayer.getVideoHolder().width() < 400){
+                    //	$(".share").addClass("small");
+                    //}else{
+                    //	$(".share").removeClass("small");
+                    //}
+                }
+            });
+        },
         initializeCuePointsManager : function()
         {
             var _this = this;
@@ -61,9 +108,10 @@
         {
             var _this = this;
 
-            if (_this.isScreenOpened)
+            if (_this.isPollShown)
             {
-                _this.hideScreen();
+                _this.removeWebcastPollElement();
+                _this.isPollShown = false;
             }
 
             _this.currentPollId = null;
@@ -82,8 +130,16 @@
                 }
             }
 
-            if (_this.isScreenOpened && _this.$webcastPoll)
+            if (_this.currentPollId)
             {
+                // ## should check that requested poll is shown
+
+                // Make sure we have a container
+                if (!_this.$webcastPoll)
+                {
+                    _this.$webcastPoll = _this.getWebcastPollElement();
+                }
+
                 var pollData = _this.currentPollId ? _this.pollsData[_this.currentPollId] : null;
 
                 if (pollData)
@@ -95,14 +151,16 @@
                     updateAnswer(4,pollData);
                     updateAnswer(5,pollData);
 
-                    _this.showPoll();
+                    _this.showPollDOMContent();
                 }else
                 {
                     _this.$webcastPoll.find('[name="question"],[name="answer1"],[name="answer2"],[name="answer3"],[name="answer4"],[name="answer5"]').text('');
-                    _this.showLoader();
+                    _this.showPollDOMLoader();
                 }
+            }else
+            {
+                // ## should hide poll if any is shown
             }
-
         },
         showOrUpdatePollByState : function(pollState)
         {
@@ -115,24 +173,29 @@
 
             }
 
-            if (!_this.isScreenOpened)
-            {
-                _this.showScreen();
-            }
-
             try {
-                if (!_this.currentPollId || _this.currentPollId !== pollState.pollId) {
+                var isShowingAPoll = !_this.currentPollId;
+                var isShowingRequestedPoll = isShowingAPoll && (_this.currentPollId === pollState.pollId);
+
+                if (!isShowingAPoll || !isShowingRequestedPoll) {
                     _this.currentPollId = pollState.pollId;
-                    // new poll to handle
-                    _this.getPollData(pollState.pollId, true).then(function (result) {
+                    var webcastPollElement = _this.getWebcastPollElement(); // Important: we invoke this function to make sure the webcast poll element exists,
+                    if (webcastPollElement) {
+                        _this.isPollShown = true;
+
                         _this.syncPollDOM();
-                    }, function (reason) {
-                        // TODO [es] handle
-                    });
 
-
+                        // new poll to handle
+                        _this.getPollData(pollState.pollId, true).then(function (result) {
+                            _this.syncPollDOM();
+                        }, function (reason) {
+                            // TODO [es] handle
+                        });
+                    }else {
+                        // TODO [es]
+                    }
                 } else {
-                    // update existing poll state if needed
+                    // // TODO [es] handle 'allowVote','showResults' and other states
 
                 }
             }catch(e)
@@ -178,152 +241,55 @@
 
             return defer.promise();
         },
-        setup: function () {
-
-            // prevent pause of video while poll is being disabled
-            this.setConfig('previewPlayerEnabled', true);
-            this.setConfig('usePreviewPlayer', true);
-
-            // TODO [es] check if needed
-            //if (mw.isMobileDevice()) {
-            //    console.log("mobile device");
-            //}
-
-            this.addBindings();
-
-            this.initializeCuePointsManager();
-
-        },
-
-        addBindings: function () {
-            // bind to cue point events
+        removeWebcastPollElement : function()
+        {
             var _this = this;
-            var embedPlayer = this.getPlayer();
-
-            this.bind('onpause', function () {
-                // TODO [es] check if need to disable poll
-
-            });
-
-
-
-
-
-            this.bind('showScreen', function (event, screenName) {
-
-                if (screenName === "webcastPolls") {
-                    _this.getScreen().then(function (screen) {
-                        _this.isScreenOpened = true;
-
-                        _this.$webcastPoll = $('.webcastPolls');
-                        _this.syncPollDOM();
-
-                        $("#" + embedPlayer.getPlayerElement().id).addClass("blur");
-
-                        // prevent keyboard key actions to allow typing in share screen fields
-                        embedPlayer.triggerHelper('onDisableKeyboardBinding');
-
-                        // disable all player controls except play button, scrubber and volume control
-                        // TODO [es] amir - what other controls are available?
-                        _this.disablePlayerControls();
-
-                        // set responsive size
-                        if (embedPlayer.getVideoHolder().width() < 400) {
-                            // TODO [es]
-                            //$(".share").addClass("small");
-                        }
-                    });
-                }
-            });
-
-            this.bind('hideScreen',function(screenName)
+            if (_this.$webcastPoll)
             {
-                if (screenName === "webcastPolls") {
-                    _this.isScreenOpened = false;
-
-                    _this.syncPollDOM();
-
-                    // restore keyboard actions
-                    // TODO [es] amir - is there a situation where the keyboard binding was disabled before the screen was loaded?
-                    embedPlayer.triggerHelper('onEnableKeyboardBinding');
-
-                    // re-enable player controls
-                    // TODO [es] amir - what is 'isInSequence'?
-                    //if ( !embedPlayer.isInSequence() ){
-                    //	_this.enablePlayerControls();
-                    //}
-                    _this.enablePlayerControls();
-
-                    // remove blur
-                    if (embedPlayer.getPlayerElement()) {
-                        $("#" + embedPlayer.getPlayerElement().id).removeClass("blur");
-                    }
-                }
-            });
-
-            this.bind('onplay', function (event, data) {
-                if (_this.isScreenOpened) {
-                    setTimeout(function () {
-                        _this.disablePlayerControls();
-                    }, 200);
-                }
-            });
-
-            this.bind('onpause', function (event, data) {
-                // TODO [es] amir - purpose?
-                if (_this.isScreenOpened) {
-                    $("#" + embedPlayer.getPlayerElement().id).addClass("blur");
-                    embedPlayer.getPlayerPoster().addClass("blur");
-                }
-            });
-
-            this.bind('updateLayout', function (event, data) {
-                if (_this.isScreenOpened) {
-                    // TODO [es] amir - when 'updateLayout' is relevant?
-                    //if (embedPlayer.getVideoHolder().width() < 400){
-                    //	$(".share").addClass("small");
-                    //}else{
-                    //	$(".share").removeClass("small");
-                    //}
-                }
-            });
+                _this.$webcastPoll.remove();
+                _this.$webcastPoll = null;
+            }
         },
-
-        disablePlayerControls: function () {
-           // embedPlayer.disablePlayControls(["volumeControl", "scrubber", "playPauseBtn", "playlistAPI"]);
-        },
-
-        enablePlayerControls: function () {
-            // embedPlayer.enablePlayControls();
-        },
-
-        getTemplateData: function () {
-            return {
-                'locale' : this.locale
-            };
-        },
-
-        // bind to template UI events
-        addScreenBindings: function () {
-
-        },
-
-        // called from template X button
-        closeScreen: function () {
-            this.removeScreen();
-        },
-        showLoader : function()
-        {
-            var _this = this;
-            _this.$webcastPoll.find('[name="pollContainer"]').css({'display' : 'none'});
-            _this.$webcastPoll.find('[name="loadingContainer"]').css({display: 'table'});
-        },
-        showPoll : function()
+        getWebcastPollElement : function()
         {
             var _this = this;
 
-            _this.$webcastPoll.find('[name="loadingContainer"]').css({display: 'none'});
-            _this.$webcastPoll.find('[name="pollContainer"]').css({'display' : 'table'});
+            if (_this.$webcastPoll)
+            {
+                return _this.$webcastPoll;
+            }
+
+            try
+            {
+                var pollRawHTML = (window && window.kalturaIframePackageData && window.kalturaIframePackageData.templates) ?  window.kalturaIframePackageData.templates[_this.getConfig('templatePath')] : '';
+
+                if (pollRawHTML && _this.getPlayer() && _this.getPlayer().getVideoHolder()) {
+                    _this.$webcastPoll = $(pollRawHTML);
+                    _this.getPlayer().getVideoHolder().append(_this.$webcastPoll);
+                }
+            }catch(e)
+            {
+                _this.$webcastPoll = null;
+            }
+
+            return _this.$webcastPoll;
+        },
+        showPollDOMLoader : function()
+        {
+            var _this = this;
+            if (_this.$webcastPoll) {
+                _this.$webcastPoll.find('[name="pollContent"]').hide();
+                _this.$webcastPoll.find('[name="loadingContainer"]').show();
+            }
+        },
+        showPollDOMContent : function()
+        {
+            var _this = this;
+
+            if (_this.$webcastPoll) {
+                _this.$webcastPoll.find('[name="loadingContainer"]').hide();
+                _this.$webcastPoll.find('[name="pollContent"]').fadeIn('slow');
+            }
         }
 
 

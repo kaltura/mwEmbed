@@ -2,6 +2,31 @@
 /*****************************
 General
 *****************************/
+.webcastPolls {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 4;
+    box-sizing: border-box;
+    padding: 1em;
+    background-color: #000;
+    background-image: linear-gradient(top, #000000 10%, #3E3E3E 90%);
+    background-image: -o-linear-gradient(top, #000000 10%, #3E3E3E 90%);
+    background-image: -moz-linear-gradient(top, #000000 10%, #3E3E3E 90%);
+    background-image: -webkit-linear-gradient(top, #000000 10%, #3E3E3E 90%);
+    background-image: -ms-linear-gradient(top, #000000 10%, #3E3E3E 90%);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.1, #000000), color-stop(0.9, #3E3E3E));
+}
+
+.webcastPolls .poll-container
+{
+    display:table;
+    width: 100%;
+    height: 100%;
+}
+
 .webcastPolls .parent-center
 {
     width: 100%;
@@ -11,26 +36,6 @@ General
     vertical-align: middle;
 }
 
-/*****************************
-screen internal poll wrapper
-*****************************/
-
-.webcastPolls .screen-content {
-    padding: 10px;
-    position: relative;
-    height: 100%;
-}
-
-.webcastPolls .poll-container, .webcastPolls .tmpl
-{
-    display:table;
-    width: 100%;
-    height: 100%;
-}
-
-.webcastPolls .icon-close{
-    display: none !important;
-}
 
 /*****************************
 Loading
