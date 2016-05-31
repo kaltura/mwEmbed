@@ -3,6 +3,9 @@
     mw.webcast = mw.webcast || {};
 
     mw.webcast.UserProfile = mw.KBasePlugin.extend({
+        defaultConfig : {
+            'userId' : 'User'
+        },
         // get an hash code from a ks
         getKSHash: function(ks) {
             var hash = 0, i, chr, len;
@@ -41,9 +44,9 @@
 
                 //if localStorage is available, get & store the user id from it;
                 if(window.localStorage) {
-                    if (!localStorage.kAnonymousUserId) {
+                    //if (!localStorage.kAnonymousUserId) {
                         localStorage.kAnonymousUserId = _this.generateUserId();
-                    }
+                    //}
                     return localStorage.kAnonymousUserId;
                 }else{
                     // localStorage is not available. Just generate a user id
