@@ -2,7 +2,8 @@
     "webcastPolls": {
         "scripts": [
             "resources/webcastPolls.js",
-            "../KalturaSupport/resources/webcast/cuePointsManager.js"
+            "../KalturaSupport/resources/webcast/cuePointsManager.js",
+            "../KalturaSupport/resources/webcast/userProfile.js"
         ],
         "dependencies": "mw.KBaseScreen",
         "kalturaPluginName": "webcastPolls",

@@ -11,10 +11,18 @@
         currentPollId : null,
         cuePointsManager : null,
         pollsData : {},
+        poolVotingProfileId : null,
+        userId : null,
+        userVotingInProgress : false,
+        userVoteAnswer : null,
+        kClient : null,
         isPollShown: false,
+        userProfile : null,
         setup: function () {
             this.addBindings();
             this.initializeCuePointsManager();
+            this.initializeUserProfile();
+            this.initializeImportantInfo();
         },
         addBindings: function () {
             // bind to cue point events
@@ -46,19 +54,19 @@
             this.bind('playerReady', function () {
                 setTimeout(function()
                 {
-                    _this.handleNewPollState({state : 'show', pollId : '1_hq5wdy2w'});
+                    _this.handleNewPollState({state : 'show', pollId : '1_orhujkkr'});
 
-                    setTimeout(function()
-                    {
-                        _this.handleNewPollState({state : 'hide', pollId : '1_hq5wdy2w'});
+                    //setTimeout(function()
+                    //{
+                    //    _this.handleNewPollState({state : 'hide', pollId : '1_hq5wdy2w'});
+                    //
+                    //    setTimeout(function()
+                    //    {
+                    //        _this.handleNewPollState({state : 'show', pollId : '1_orhujkkr'});
+                    //    },5000);
+                    //},5000);
 
-                        setTimeout(function()
-                        {
-                            _this.handleNewPollState({state : 'show', pollId : '1_orhujkkr'});
-                        },5000);
-                    },5000);
-
-                },5000);
+                },2000);
             });
 
             this.bind('updateLayout', function (event, data) {
@@ -72,6 +80,36 @@
                 }
             });
         },
+        getKClient: function () {
+            if (!this.kClient) {
+                this.kClient = mw.kApiGetPartnerClient(this.getPlayer().kwidgetid);
+            }
+            return this.kClient;
+        },
+        initializeImportantInfo:function() {
+
+            var _this=this;
+
+            _this.userId = _this.userProfile.getUserID();
+
+            var listMetadataProfileRequest = {
+                service: "metadata_metadataprofile",
+                action: "list",
+                "filter:systemNameEqual": 'pollVoteCustomMetadataProfile'
+            };
+
+            this.getKClient().doRequest(listMetadataProfileRequest, function (result) {
+                if (result.objects.length) {
+                    _this.poolVotingProfileId = result.objects[0].id;
+                }else
+                {
+                    _this.poolVotingProfileId = null;
+                }
+            },false,function(reason)
+            {
+                _this.poolVotingProfileId = null;
+            });
+        },
         syncByReachedCuePoints : function()
         {
             var _this = this;
@@ -81,6 +119,16 @@
                     // ## when user seek/press play we need to handle scenario that no relevant cue points has reached and thus we need to clear the poll
                     _this.removePoll();
                 }
+            }
+        },
+        initializeUserProfile : function()
+        {
+            var _this = this;
+
+            if (!_this.userProfile) {
+                // we need to initialize the instance
+                _this.userProfile = new mw.webcast.UserProfile(_this.getPlayer(), function () {
+                }, "webcastPollsUserProfile");
             }
         },
         initializeCuePointsManager : function()
@@ -139,6 +187,22 @@
             }
 
             _this.currentPollId = null;
+        },
+        syncDOMUserVoting : function()
+        {
+            var _this = this;
+            if (_this.$webcastPoll)
+            {
+                var selectedAnswerSelector = '[name="answer' + _this.userVoteAnswer + '"]';
+
+                _this.$webcastPoll.find('.answer').not('.answer>'+selectedAnswerSelector).removeClass('selected');
+
+                if (_this.userVoteAnswer)
+                {
+                    _this.$webcastPoll.find(selectedAnswerSelector).parent().addClass('selected');
+                }
+
+            }
         },
         syncPollDOM : function(){
             var _this = this;
@@ -274,6 +338,71 @@
                 _this.$webcastPoll = null;
             }
         },
+        handleAnswerClicked : function(e)
+        {
+            var _this = this;
+
+            if (!_this.currentPollId ||  !_this.poolVotingProfileId || _this.userVotingInProgress || ! _this.userId)
+            {
+                return;
+            }
+
+            var previousAnswer = _this.userVoteAnswer;
+
+            try {
+                var selectedAnswer = $(e.currentTarget).children(0).data('poll-value');
+
+                if (_this.userVoteAnswer === selectedAnswer)
+                {
+                    return;
+                }
+                _this.userVotingInProgress = true;
+                _this.userVoteAnswer = selectedAnswer;
+                _this.syncDOMUserVoting();
+
+                var createCuePointRequest = {
+                    "service": "cuePoint_cuePoint",
+                    "action": "add",
+                    "cuePoint:objectType": "KalturaAnnotation",
+                    "cuePoint:entryId": _this.getPlayer().kentryid,
+                    "cuePoint:text": '',
+                    "cuePoint:isPublic": 1,
+                    "cuePoint:searchableOnEntry": 0,
+                    "cuePoint:parentId": _this.currentPollId
+                };
+
+                var addMetadataRequest = {
+                    service: "metadata_metadata",
+                    action: "add",
+                    metadataProfileId: _this.poolVotingProfileId,
+                    objectId: "{1:result:id}",
+                    xmlData: '<metadata><Answer>' + selectedAnswer + '</Answer></metadata>', // TODO [es] add user id
+                    objectType: "annotationMetadata.Annotation"
+                };
+
+                _this.getKClient().doRequest([createCuePointRequest, addMetadataRequest], function (result) {
+
+                    // TODO [es] if one fails, do we reach this point? if so need to handle results
+                    _this.userVotingInProgress = false;
+                    _this.syncDOMUserVoting();
+                },false,function()
+                {
+                    // TODO [es]
+                    _this.userVotingInProgress = false;
+                    _this.userVoteAnswer = previousAnswer;
+                    _this.syncDOMUserVoting();
+                });
+
+            }catch(e)
+            {
+                // TODO [es]
+                _this.userVotingInProgress = false;
+                _this.userVoteAnswer = previousAnswer;
+                _this.syncDOMUserVoting();
+
+            }
+
+        },
         getWebcastPollElement : function()
         {
             var _this = this;
@@ -288,7 +417,10 @@
                 var pollRawHTML = (window && window.kalturaIframePackageData && window.kalturaIframePackageData.templates) ?  window.kalturaIframePackageData.templates[_this.getConfig('templatePath')] : '';
 
                 if (pollRawHTML && _this.getPlayer() && _this.getPlayer().getVideoHolder()) {
-                    _this.$webcastPoll = $(pollRawHTML);
+                    var poll = $(pollRawHTML);
+                    poll.find('.answer').click($.proxy(_this.handleAnswerClicked,_this));
+
+                    _this.$webcastPoll = poll;
                     _this.getPlayer().getVideoHolder().append(_this.$webcastPoll);
                 }
             }catch(e)
