@@ -79,11 +79,14 @@
 						_this.hasEnded = true;
 						break;
 					case YT.PlayerState.PLAYING:
-						_this.ytMobilePlayed = true;
 						if (_this.hasEnded){
 							_this.hasEnded = false;
 							return;
 						}
+						if ( mw.isMobileDevice() && !_this.ytMobilePlayed){
+							_this.play();
+						}
+						_this.ytMobilePlayed = true;
 						_this.triggerHelper("onPlayerStateChange",["play"]);
 						// hide the player container so that youtube click through work
 						$(_this).width("100%");
