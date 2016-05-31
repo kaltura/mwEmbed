@@ -247,16 +247,12 @@ body {
 	font-size: 1.1em;
 }
 .mobileSkin .btn {
-    font-size: 2em;
+    font-size: 2.4em;
     width: 2.6em;
-    margin-top: -0.2em;
     color: white;
     outline: 0;
     text-shadow: none;
     -webkit-tap-highlight-color: rgba(0,0,0,0);
-}
-.mobileSkin.fullscreen .btn {
-    font-size: 1.6em;
 }
 .mobileSkin .btn:focus {
     outline: 0;
@@ -363,12 +359,6 @@ body {
     font-size: 2.6em;
     margin-top: 0em;
 }
-.fullscreen.mobileSkin .videoHolder .btn {
-    font-size: 3.6em;
-}
-.fullscreen.mobileSkin.size-small .videoHolder .btn {
-    font-size: 3.2em;
-}
 .mobileSkin .videoHolder .btn.comp {
     position: relative;
 }
@@ -420,7 +410,6 @@ body {
 }
 .mobileSkin .controlsContainer .scrubber{
     height: 3px;
-    top: -5px;
     border-radius: 3px;
     background: rgba(255,255,255,0.8);
     /*box-shadow: 0px 0px 2.4px 1.6px rgba(0, 0, 0, 0.12);*/
@@ -578,7 +567,6 @@ body {
 }
 .mobileSkin .nextPrevBtn>.btn {
     position: relative;
-    font-size: 1.6em !important;
     margin-top: -25px;
     height: 50px;
     top: 50%;
@@ -901,6 +889,7 @@ body {
 
 .mobileSkin .timers{
     font-family: 'Lato', Helvetica, Arial;
+    top: 0px;
     font-weight: bold;
     font-size: 1.2em;
     text-shadow: 0px 0px 2.4px rgba(0, 0, 0, 0.12);
@@ -1647,10 +1636,12 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
     z-index: 100;
 }
 .mobileSkin .screen .icon-close{
-    width: 4em;
-    height: 4em;
-    right: 1.2em;
-    padding-top: 1.6em;
+    width: 1em;
+    height: 1em;
+    right: 0.3em;
+    top: 0em;
+    font-size: 2.6em;
+    font-weight: normal;
 }
 .screen .icon-close:hover{
     text-shadow: 0px 0px 10px #fff;
@@ -1864,32 +1855,19 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
     cursor : pointer;
     top : 2px;
     right : 2px;
-    width: 50px;
-    height: 50px;
+    width: 50px !important;
+    height: 50px !important;
 
 }
 .closePluginsScreen:active{
     outline: 0;
     border: 0;
 }
-.mobileSkin .btn.closePluginsScreen{
-    position: absolute;
-    font-size: 1.3em;
-    width: 3.2em !important;
-    height: 3.2em !important;
-    margin-right: 0.3em;
-    margin-top: 0.3em;
-}
-.fullscreen.mobileSkin .btn.closePluginsScreen{
-    font-size: 1.2em !important;
-    width: 3.8em !important;
-    height: 3.8em !important;
-}
 .mobileSkin .overlay .closePluginsScreen{
     font-family: 'icomoon' !important;
+    font-size: 2.6em;
+    top: -0.5em;
     position: absolute;
-    margin-top: -1em;
-    right: 0;
     -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 .reportButton{

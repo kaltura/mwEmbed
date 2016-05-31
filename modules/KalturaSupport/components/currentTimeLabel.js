@@ -23,7 +23,10 @@
 					// move current time label from video holder back to controlBar container.
 					var currentTimeLabel = $('.currentTimeLabel').detach();
 					$('.controlsContainer .scrubber').after(currentTimeLabel);
-					_this.embedPlayer.triggerHelper("updateComponentsVisibilityDone");  // redraw components to calculate their size and location
+					setTimeout(function(){
+						_this.embedPlayer.triggerHelper("updateComponentsVisibilityDone");  // redraw components to calculate their size and location. Set in a timeout so the component width will get updated by CSS rules before calculation
+					},0);
+
 				});
 			}
 			this.bindTimeUpdate();

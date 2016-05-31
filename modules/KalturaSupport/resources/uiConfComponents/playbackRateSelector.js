@@ -60,7 +60,9 @@
 
 			this.bind( 'onChangeMedia', function(){
 				_this.currentSpeed = 1;
-				_this.getBtn().text( '1x' );
+				if ( !_this.embedPlayer.isMobileSkin() ){
+					_this.getBtn().text( '1x' );
+				}
 				_this.buildMenu();
 
 				_this.manifestSource = null;
