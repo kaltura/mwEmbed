@@ -19,16 +19,28 @@
         addBindings: function () {
             // bind to cue point events
             var _this = this;
-            var embedPlayer = this.getPlayer();
 
             this.bind('onpause', function () {
-                // TODO [es] handle
+                // TODO [es] change status of poll to prevent voting
+            });
 
+            this.bind('seeked',function()
+            {
+                // ## Checking if we are pausing, if we do then we need to handle sync from 'seeked' event. otherwise the 'onplay' event will handle the sync
+                if (!_this.getPlayer().isPlaying())
+                {
+                    _this.syncByReachedCuePoints();
+                }
             });
 
             this.bind('onplay', function () {
-                // TODO [es] handle
+                // ## make sure you sync current poll with latest reached cue point
+                _this.syncByReachedCuePoints();
+            });
 
+            this.bind('onChangeMedia', function () {
+                // ## invoke remove poll when changing media
+                _this.removePoll();
             });
 
             this.bind('playerReady', function () {
@@ -60,6 +72,17 @@
                 }
             });
         },
+        syncByReachedCuePoints : function()
+        {
+            var _this = this;
+            if (_this.cuePointsManager) {
+                var cuePointsReachedResult = _this.cuePointsManager.getCuePointsReached();
+                if (!_this.cuePointsReached(cuePointsReachedResult)) {
+                    // ## when user seek/press play we need to handle scenario that no relevant cue points has reached and thus we need to clear the poll
+                    _this.removePoll();
+                }
+            }
+        },
         initializeCuePointsManager : function()
         {
             var _this = this;
@@ -70,24 +93,25 @@
                 }, "webcastPollsCuePointsManager");
 
 
-                _this.cuePointsManager.onCuePointsReached = function (args) {
-                    var relevantCuePoints = args.filter({
-                        tags: ['select-poll-state'],
-                        sortDesc: true
-                    });
-                    var mostUpdatedCuePointToHandle = relevantCuePoints.length > 0 ? relevantCuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
+                _this.cuePointsManager.onCuePointsReached = _this.handleReachedCuePoints;
+            }
+        },
+        handleReachedCuePoints : function (args) {
+            var relevantCuePoints = args.filter({
+                tags: ['select-poll-state'],
+                sortDesc: true
+            });
+            var mostUpdatedCuePointToHandle = relevantCuePoints.length > 0 ? relevantCuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
 
-                    if (mostUpdatedCuePointToHandle) {
-                        try {
-                            var pollState = JSON.parse(mostUpdatedCuePointToHandle.partnerData);
-                            _this.handleNewPollState(pollState);
-                        }catch(e)
-                        {
-                            // TODO [es]
-                        }
+            if (mostUpdatedCuePointToHandle) {
+                try {
+                    var pollState = JSON.parse(mostUpdatedCuePointToHandle.partnerData);
+                    _this.handleNewPollState(pollState);
+                }catch(e)
+                {
+                    // TODO [es]
+                }
 
-                    }
-                };
             }
         },
         handleNewPollState : function(pollState)
