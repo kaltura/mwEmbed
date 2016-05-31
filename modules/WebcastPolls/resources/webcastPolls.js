@@ -9,7 +9,6 @@
         locale: {
             respondsLbl: gM('mwe-webc-polls-respondsLbl')
         },
-        isShowingPoll : false,
         currentPollId : null,
         cuePointsManager : null,
         pollsData : {},
@@ -62,14 +61,12 @@
         {
             var _this = this;
 
-            if (_this.isShowingPoll)
+            if (_this.isScreenOpened)
             {
-                _this.currentPollId = null;
-
                 _this.hideScreen();
-
-                // TODO [es] reset poll dom to prepare to next poll
             }
+
+            _this.currentPollId = null;
         },
         syncPollDOM : function(){
             var _this = this;
@@ -85,9 +82,9 @@
                 }
             }
 
-            if (_this.isShowingPoll && _this.$webcastPoll)
+            if (_this.isScreenOpened && _this.$webcastPoll)
             {
-                var pollData = _this.pollsData[_this.currentPollId];
+                var pollData = _this.currentPollId ? _this.pollsData[_this.currentPollId] : null;
 
                 if (pollData)
                 {
@@ -118,7 +115,7 @@
 
             }
 
-            if (!_this.isShowingPoll)
+            if (!_this.isScreenOpened)
             {
                 _this.showScreen();
             }
@@ -210,36 +207,18 @@
 
 
 
-            this.bind('playerReady', function () {
 
 
-                //setTimeout(function () {
-                //    _this.showScreen();
-                //
-                //    setTimeout(function () {
-                //        _this.showPoll();
-                //
-                //    }, 3000);
-                //
-                //    //setTimeout(function(){
-                //    //	_this.getPlayer().hideSpinner();
-                //    //	_this.question="hello";
-                //    //	_this.removeScreen();
-                //    //	_this.showScreen();
-                //    //},5000);
-                //
-                //    //setTimeout(function () {
-                //    //    _this.hideScreen();
-                //    //
-                //    //}, 10000);
-                //}, 1000);
-            });
-            this.bind('preShowScreen', function (event, screenName) {
+            this.bind('showScreen', function (event, screenName) {
 
                 if (screenName === "webcastPolls") {
                     _this.getScreen().then(function (screen) {
-                        screen.addClass('semiTransparentBkg'); // add semi-transparent background for share plugin screen only. Won't affect other screen based plugins
                         _this.isScreenOpened = true;
+
+                        _this.$webcastPoll = $('.webcastPolls');
+                        _this.syncPollDOM();
+
+                        $("#" + embedPlayer.getPlayerElement().id).addClass("blur");
 
                         // prevent keyboard key actions to allow typing in share screen fields
                         embedPlayer.triggerHelper('onDisableKeyboardBinding');
@@ -257,28 +236,13 @@
                 }
             });
 
-            this.bind('showScreen', function (event, screenName) {
-                _this.isShowingPoll = true;
-                if (screenName === "webcastPolls") {
-                    _this.$webcastPoll = $('.webcastPolls');
-                    _this.getScreen().then(function (screen) {
-                        $("#" + embedPlayer.getPlayerElement().id).addClass("blur");
-
-                    });
-                    _this.syncPollDOM();
-                }
-            });
-
-            this.bind('hideScreen',function()
+            this.bind('hideScreen',function(screenName)
             {
-                _this.isShowingPoll = false;
-            });
-
-            this.bind('preHideScreen', function (event, screenName) {
                 if (screenName === "webcastPolls") {
-                    _this.$webcastPoll = $('.webcastPolls');
+                    _this.isScreenOpened = false;
 
-                    _this.isScreenOpened = true;
+                    _this.syncPollDOM();
+
                     // restore keyboard actions
                     // TODO [es] amir - is there a situation where the keyboard binding was disabled before the screen was loaded?
                     embedPlayer.triggerHelper('onEnableKeyboardBinding');
@@ -293,7 +257,6 @@
                     // remove blur
                     if (embedPlayer.getPlayerElement()) {
                         $("#" + embedPlayer.getPlayerElement().id).removeClass("blur");
-                        embedPlayer.getPlayerPoster().removeClass("blur");
                     }
                 }
             });
