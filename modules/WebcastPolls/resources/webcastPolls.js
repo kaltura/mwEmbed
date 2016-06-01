@@ -13,7 +13,10 @@
         pollsData : {},
         poolVotingProfileId : null,
         userId : null,
-        userVotingInProgress : false,
+        userVote : {
+            metadataId : null,
+            inProgress : false
+        },
         kalturaProxy : null,
         userVoteAnswer : null,
         kClient : null,
@@ -173,6 +176,9 @@
                 _this.isPollShown = false;
             }
 
+
+            // ## IMPORTANT: perform cleanup of information that was relevant to previous poll
+            _this.userVote = { metadataId : null};
             _this.currentPollId = null;
         },
         syncDOMUserVoting : function()
@@ -332,7 +338,7 @@
         {
             var _this = this;
 
-            if (!_this.currentPollId ||  !_this.poolVotingProfileId || _this.userVotingInProgress)
+            if (!_this.currentPollId ||  !_this.poolVotingProfileId || _this.userVote.inProgress)
             {
                 return;
             }
@@ -346,27 +352,40 @@
                 {
                     return;
                 }
-                _this.userVotingInProgress = true;
+                _this.userVote.inProgress = true;
                 _this.userVoteAnswer = selectedAnswer;
                 _this.syncDOMUserVoting();
 
-                _this.kalturaProxy.transmitNewVote(_this.userId, _this.currentPollId, _this.poolVotingProfileId,selectedAnswer).then(function(result)
+                if (_this.userVote.metadataId)
                 {
-                    // TODO [es] if one fails, do we reach this point? if so need to handle results
-                    _this.userVotingInProgress = false;
-                    _this.syncDOMUserVoting();
+                    _this.kalturaProxy.transmitVoteUpdate(_this.userVote.metadataId, _this.userId, selectedAnswer).then(function (result) {
 
-                },function(reason)
-                {
-                    // TODO [es]
-                    _this.userVotingInProgress = false;
-                    _this.userVoteAnswer = previousAnswer;
-                    _this.syncDOMUserVoting();
-                });
+                        _this.userVote.inProgress = false;
+                        _this.syncDOMUserVoting();
+
+                    }, function (reason) {
+                        // TODO [es]
+                        _this.userVote.inProgress = false;
+                        _this.userVoteAnswer = previousAnswer;
+                        _this.syncDOMUserVoting();
+                    });
+                }else {
+                    _this.kalturaProxy.transmitNewVote( _this.currentPollId, _this.poolVotingProfileId, _this.userId, selectedAnswer).then(function (result) {
+                        _this.userVote.inProgress = false;
+                        _this.userVote.metadataId = result.voteMetadataId;
+                        _this.syncDOMUserVoting();
+
+                    }, function (reason) {
+                        // TODO [es]
+                        _this.userVote.inProgress = false;
+                        _this.userVoteAnswer = previousAnswer;
+                        _this.syncDOMUserVoting();
+                    });
+                }
             }catch(e)
             {
                 // TODO [es]
-                _this.userVotingInProgress = false;
+                _this.userVote.inProgress  = false;
                 _this.userVoteAnswer = previousAnswer;
                 _this.syncDOMUserVoting();
 

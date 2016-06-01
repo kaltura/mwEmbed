@@ -53,7 +53,33 @@
 
             return defer.promise();
         },
-        transmitNewVote : function(userId, pollId, pollProfileId, selectedAnswer)
+        transmitVoteUpdate : function(metadataId, userId, selectedAnswer)
+        {
+            var _this = this;
+            var defer = $.Deferred();
+
+            var updateMetadataRequest = {
+                service: "metadata_metadata",
+                action: "update",
+                id : metadataId,
+                xmlData: '<metadata><Answer>' + selectedAnswer + '</Answer><UserId>' + userId + '</UserId></metadata>',
+            };
+
+            _this.getKClient().doRequest(updateMetadataRequest, function (result) {
+                if (!_this.isErrorResponse(result))
+                {
+                    defer.resolve({});
+                }else {
+                    defer.reject();
+                }
+            },false,function()
+            {
+                defer.reject();
+            });
+
+            return defer.promise();
+        },
+        transmitNewVote : function(pollId, pollProfileId, userId, selectedAnswer)
         {
             var _this = this;
             var defer = $.Deferred();
@@ -63,7 +89,6 @@
                 "action": "add",
                 "cuePoint:objectType": "KalturaAnnotation",
                 "cuePoint:entryId": _this.getPlayer().kentryid,
-                "cuePoint:text": selectedAnswer, // TODO [es] should be removed
                 "cuePoint:isPublic": 1,
                 "cuePoint:searchableOnEntry": 0,
                 "cuePoint:parentId": pollId
@@ -74,17 +99,17 @@
                 action: "add",
                 metadataProfileId: pollProfileId,
                 objectId: "{1:result:id}",
-                xmlData: '<metadata><Answer>' + selectedAnswer + '</Answer><UserId>' + userId + '</UserId></metadata>', // TODO [es] add user id
+                xmlData: '<metadata><Answer>' + selectedAnswer + '</Answer><UserId>' + userId + '</UserId></metadata>',
                 objectType: "annotationMetadata.Annotation"
             };
 
             _this.getKClient().doRequest([createCuePointRequest, addMetadataRequest], function (result) {
 
-                if (_this.isErrorResponse(result))
+                if (result && result.length === 2 && !_this.isErrorResponse(result))
                 {
-                    defer.reject();
+                    defer.resolve({voteMetadataId : result[1].id});
                 }else {
-                    defer.resolve();
+                    defer.reject();
                 }
             },false,function()
             {
@@ -144,12 +169,12 @@
             };
 
             this.getKClient().doRequest(request, function (result) {
-                if (_this.isErrorResponse(result))
+                if (!_this.isErrorResponse(result))
                 {
-                    defer.reject();
-                }else {
                     var vote = (result.objects && result.objects.length > 0) ? result.objects[0].text : null
                     defer.resolve({vote : vote});
+                }else {
+                    defer.reject();
                 }
             },false,function(reason)
             {
