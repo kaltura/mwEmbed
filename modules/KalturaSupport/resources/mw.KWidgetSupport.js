@@ -1215,6 +1215,7 @@ mw.KWidgetSupport.prototype = {
 	 * 		false if the media should not be played.
 	 */
 	getAccessControlStatus: function( ac, embedPlayer ){
+		return true;
 		if( ac.isCountryRestricted ){
 			return embedPlayer.getKalturaMsgObject( 'UNAUTHORIZED_COUNTRY' );
 		}

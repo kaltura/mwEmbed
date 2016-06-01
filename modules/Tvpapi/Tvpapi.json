@@ -33,5 +33,10 @@
         "scripts": "resources/startOver.js",
         "dependencies": ["tvpapiRequest"] ,
         "kalturaPluginName": "tvpapiStartOver"
-    }
+    },
+  "mapPlaymanifestData": {
+    "scripts": "resources/mapData.js",
+    "dependencies": ["mw.KBasePlugin"] ,
+    "kalturaPluginName": "mapplaymanifestdata"
+  }
 }

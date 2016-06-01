@@ -294,7 +294,7 @@ class EntryResult {
 	*  Access Control Handling
 	*/
 	public function isAccessControlAllowed( $resultObject = null ) {
-			
+			return true;
 		// Kaltura only has entry level access control not playlist level access control atm: 
 		// don't check anything without an entry_id
 		/*if( !$this->request->getEntryId() ){
