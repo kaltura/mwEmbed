@@ -4,7 +4,7 @@
     var NS = "kalturaCache__";
     var ttlSuffix = "_ttl";
     var storage;
-    var isStorageSupported = false;
+    var isStorageSupported = true;
 
     function checkLocalStorageSupport(){
         try {
