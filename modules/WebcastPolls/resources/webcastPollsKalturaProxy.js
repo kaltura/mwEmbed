@@ -5,6 +5,26 @@
     mw.webcastPolls.WebcastPollsKalturaProxy = mw.KBasePlugin.extend({
         defaultConfig : {
         },
+        isErrorResponse : function(result)
+        {
+            if (!result)
+            {
+                return true;
+            }
+            if ($.isArray(result))
+            {
+                var hasError = false;
+                $.each(result,function(index, response)
+                {
+                    hasError = hasError || (response && response.objectType && response.objectType === "KalturaAPIException");
+                });
+
+                return hasError;
+            }else
+            {
+                return (result && result.objectType && result.objectType === "KalturaAPIException");
+            }
+        },
         getPollData : function(pollId)
         {
             var _this = this;
@@ -33,7 +53,7 @@
 
             return defer.promise();
         },
-        transmitNewVote : function(pollId, pollProfileId, selectedAnswer)
+        transmitNewVote : function(userId, pollId, pollProfileId, selectedAnswer)
         {
             var _this = this;
             var defer = $.Deferred();
@@ -43,7 +63,7 @@
                 "action": "add",
                 "cuePoint:objectType": "KalturaAnnotation",
                 "cuePoint:entryId": _this.getPlayer().kentryid,
-                "cuePoint:text": '',
+                "cuePoint:text": selectedAnswer, // TODO [es] should be removed
                 "cuePoint:isPublic": 1,
                 "cuePoint:searchableOnEntry": 0,
                 "cuePoint:parentId": pollId
@@ -54,14 +74,18 @@
                 action: "add",
                 metadataProfileId: pollProfileId,
                 objectId: "{1:result:id}",
-                xmlData: '<metadata><Answer>' + selectedAnswer + '</Answer></metadata>', // TODO [es] add user id
+                xmlData: '<metadata><Answer>' + selectedAnswer + '</Answer><UserId>' + userId + '</UserId></metadata>', // TODO [es] add user id
                 objectType: "annotationMetadata.Annotation"
             };
 
             _this.getKClient().doRequest([createCuePointRequest, addMetadataRequest], function (result) {
 
-                // TODO [es] if one fails, do we reach this point? if so need to handle results
-                defer.resolve();
+                if (_this.isErrorResponse(result))
+                {
+                    defer.reject();
+                }else {
+                    defer.resolve();
+                }
             },false,function()
             {
                 defer.reject();
@@ -95,40 +119,44 @@
 
             return defer.promise();
         },
-        getUserVote : function(pollId){
+        getUserVote : function(userId, pollId, profileId ){
             var _this = this;
+            var defer = $.Deferred();
+
 
             var request = {
                 'service': 'cuepoint_cuepoint',
                 'action': 'list',
-                'filter:tagsLike':_this.QandA_cuePointTag,
-                'filter:entryIdEqual': entryId,
+                'filter:entryIdEqual': _this.getPlayer().kentryid,
+                'filter:orderBy': '-createdAt', // although only one vote is allowed per user, we fetch the last one so if for unknown reason we have duplicates, the user will see his last choice
                 'filter:objectType': 'KalturaAnnotationFilter',
-                'filter:orderBy': '+createdAt',
-                'filter:isPublicEqual': '1',
-                "responseProfile:objectType":"KalturaResponseProfileHolder",
-                "responseProfile:systemName":_this.QandA_ResponseProfileSystemName,
+                'filter:cuePointTypeIn': 'annotation.Annotation',
+                'filter:parentIdEqual': pollId,
 
                 /*Search  metadata   */
                 'filter:advancedSearch:objectType': 'KalturaMetadataSearchItem',
-                'filter:advancedSearch:metadataProfileId': _this.metadataProfile.id,
-                'filter:advancedSearch:type': 2, //or
+                'filter:advancedSearch:metadataProfileId': profileId,
 
                 //search all messages on my session id
-                'filter:advancedSearch:items:item0:objectType': "KalturaSearchCondition",
-                'filter:advancedSearch:items:item0:field': "/*[local-name()='metadata']/*[local-name()='ThreadCreatorId']",
-                'filter:advancedSearch:items:item0:value': _this.userId,
-
-                //find all announcements
                 'filter:advancedSearch:items:item1:objectType': "KalturaSearchCondition",
-                'filter:advancedSearch:items:item1:field': "/*[local-name()='metadata']/*[local-name()='Type']",
-                'filter:advancedSearch:items:item1:value': "Announcement",
-
-                //find all AnswerOnAir cue points
-                'filter:advancedSearch:items:item2:objectType': "KalturaSearchCondition",
-                'filter:advancedSearch:items:item2:field': "/*[local-name()='metadata']/*[local-name()='Type']",
-                'filter:advancedSearch:items:item2:value': "AnswerOnAir"
+                'filter:advancedSearch:items:item1:field': "/*[local-name()='metadata']/*[local-name()='UserId']",
+                'filter:advancedSearch:items:item1:value': userId
             };
+
+            this.getKClient().doRequest(request, function (result) {
+                if (_this.isErrorResponse(result))
+                {
+                    defer.reject();
+                }else {
+                    var vote = (result.objects && result.objects.length > 0) ? result.objects[0].text : null
+                    defer.resolve({vote : vote});
+                }
+            },false,function(reason)
+            {
+                defer.reject();
+            });
+
+            return defer.promise();
         },
         getKClient: function () {
             if (!this.kClient) {

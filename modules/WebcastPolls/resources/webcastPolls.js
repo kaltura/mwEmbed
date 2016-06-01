@@ -232,6 +232,8 @@
                     _this.$webcastPoll.find('[name="question"],[name="answer1"],[name="answer2"],[name="answer3"],[name="answer4"],[name="answer5"]').text('');
                     _this.showPollDOMLoader();
                 }
+
+                _this.syncDOMUserVoting();
             }else
             {
                 // ## should hide poll if any is shown
@@ -253,19 +255,28 @@
                 var isShowingRequestedPoll = isShowingAPoll && (_this.currentPollId === pollState.pollId);
 
                 if (!isShowingAPoll || !isShowingRequestedPoll) {
-                    _this.currentPollId = pollState.pollId;
                     var webcastPollElement = _this.getWebcastPollElement(); // Important: we invoke this function to make sure the webcast poll element exists,
                     if (webcastPollElement) {
-                        _this.isPollShown = true;
+                        _this.isPollShown = true; // make sure the poll is shown
+                        _this.currentPollId = pollState.pollId;
+
+                        if (!isShowingRequestedPoll) {
+                            _this.getPollData(pollState.pollId, true).then(function (result) {
+                                _this.syncPollDOM();
+                            }, function (reason) {
+                                // TODO [es] handle
+                            });
+
+
+                            _this.kalturaProxy.getUserVote(_this.userId, _this.currentPollId,_this.poolVotingProfileId ).then(function (result) {
+                                _this.userVoteAnswer = result.vote;
+                                _this.syncDOMUserVoting();
+                            }, function (reason) {
+                                // TODO [es] handle
+                            });
+                        }
 
                         _this.syncPollDOM();
-
-                        // new poll to handle
-                        _this.getPollData(pollState.pollId, true).then(function (result) {
-                            _this.syncPollDOM();
-                        }, function (reason) {
-                            // TODO [es] handle
-                        });
                     }else {
                         // TODO [es]
                     }
@@ -339,7 +350,7 @@
                 _this.userVoteAnswer = selectedAnswer;
                 _this.syncDOMUserVoting();
 
-                _this.kalturaProxy.transmitNewVote(_this.currentPollId, _this.poolVotingProfileId,selectedAnswer).then(function(result)
+                _this.kalturaProxy.transmitNewVote(_this.userId, _this.currentPollId, _this.poolVotingProfileId,selectedAnswer).then(function(result)
                 {
                     // TODO [es] if one fails, do we reach this point? if so need to handle results
                     _this.userVotingInProgress = false;
