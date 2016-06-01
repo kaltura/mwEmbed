@@ -6,7 +6,8 @@
     var storage;
     var isStorageSupported = true;
 
-    function checkLocalStorageSupport(){
+    (function(){
+        debugger;
         try {
             //Check for localStorage object
             var localStorageApiExist = (('localStorage' in win) && (win['localStorage'] != null) && (win['localStorage'] != undefined));
@@ -20,13 +21,13 @@
                 if (fail) {
                     isStorageSupported = false;
                 }
+            } else {
+                isStorageSupported = false;
             }
         } catch (exception) {
             isStorageSupported = false;
         }
-    }
-
-    isStorageSupported = checkLocalStorageSupport();
+    }());
 
     var storageManger = {
         get: function (cacheKey) {
