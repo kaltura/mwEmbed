@@ -7,7 +7,6 @@
     var isStorageSupported = true;
 
     (function(){
-        debugger;
         try {
             //Check for localStorage object
             var localStorageApiExist = (('localStorage' in win) && (win['localStorage'] != null) && (win['localStorage'] != undefined));
