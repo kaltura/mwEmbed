@@ -147,6 +147,15 @@ onload = function () {
 							setMediaManagerEvents();
 							messageBus.broadcast("readyForMedia");
 						});
+						kdp.kBind("waterMarkLoaded", function(waterMarkElement){
+							var css = getCss(waterMarkElement);
+							document.getElementById("videoHolder").appendChild(waterMarkElement);
+							for (var property in css) {
+								if (css.hasOwnProperty(property)) {
+									waterMarkElement.style[property] = css[property];
+								}
+							}
+						});
 					}
 				},
 				"flashvars": fv,
@@ -823,4 +832,31 @@ function extend(a, b){
 		if(b.hasOwnProperty(key))
 			a[key] = b[key];
 	return a;
+}
+/*
+ * get DOM element css properties
+ */
+function getCss(dom){
+	var style;
+	var returns = {};
+	if(window.getComputedStyle){
+		var camelize = function(a,b){
+			return b.toUpperCase();
+		};
+		style = window.getComputedStyle(dom, null);
+		for(var i = 0, l = style.length; i < l; i++){
+			var prop = style[i];
+			var camel = prop.replace(/\-([a-z])/g, camelize);
+			var val = style.getPropertyValue(prop);
+			returns[camel] = val;
+		};
+		return returns;
+	};
+	if(style = dom.currentStyle){
+		for(var prop in style){
+			returns[prop] = style[prop];
+		};
+		return returns;
+	};
+	return this.css();
 }
