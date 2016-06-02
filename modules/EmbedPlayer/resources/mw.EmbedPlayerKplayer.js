@@ -927,8 +927,11 @@
                 clientTag = clientTag.slice(0, clientTag.indexOf("&"))
                 srcUrl = srcUrl + "&" + clientTag;
             }
-
-			var refObj = {src: srcUrl};
+			
+			var sourceElm = $('<source />')
+				.attr( {src: srcUrl} )
+				.get( 0 );
+			var refObj = new mw.MediaSource(sourceElm);
 			this.triggerHelper('SourceSelected', refObj);
 			deferred.resolve(refObj.src);
 			return deferred;
