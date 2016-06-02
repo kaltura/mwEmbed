@@ -27,15 +27,27 @@
 				id: 'switchView',
 				title: gM("ks-DUAL-SCREEN-SWITCH"),
 				event: "switchView"
-			}
+			},
+            contentSelection: {
+                id: 'contentSelection',
+                title: 'Content Selection',
+                event: "contentSelection"
+            }
 		},
 		disabled: false,
 
 		nativeAppTooltip: "Switching content<br/>on current view<br/>is not yet<br/>supported.<br/><br/>Try single view",
+        streams: [],
+
 		setup: function() {
 			this.postFix = "." + this.pluginName;
 			this.addBindings();
 		},
+
+        setStreams: function(streams){
+            streams = streams;
+        },
+
 		getComponent: function ( ) {
 			if ( !this.$controlBar ) {
 				var rawHTML = window.kalturaIframePackageData.templates[ this.getConfig("templatePath")];
@@ -86,14 +98,15 @@
 
 			//Cache buttons
 			var buttons = _this.getComponent().find( "span" );
-			var switchBtn = buttons.filter('[data-type="switch"]');
+            var switchBtn = buttons.filter('[data-type="switch"]');
+
 			//Attach control bar action handlers
 			_this.getComponent()
 				.on( 'click' + this.postFix + ' touchstart' + this.postFix, 'li > span', function (e) {
 					e.stopPropagation();
 					e.preventDefault();
 
-					_this.changeButtonsStyles(this.id);
+					_this.changeButtonsStyles(this.id, true); // pass clicked indicator in order to open subMenu if needed
 
 					var btn = _this.controlBarComponents[this.id];
 					if (btn && btn.event){
@@ -107,9 +120,11 @@
 				switchBtn.addClass("disabled" ).attr("title", _this.nativeAppTooltip );
 			}
 
-			//Set tooltips
-			buttons.attr('data-show-tooltip', true);
-			this.embedPlayer.layoutBuilder.setupTooltip(buttons, "arrowTop");
+            //Set tooltips (each row separately)
+            //buttons.attr('data-show-tooltip', true);
+            //this.embedPlayer.layoutBuilder.setupTooltip(switchBtn, "arrowTop");
+            //this.embedPlayer.layoutBuilder.setupTooltip(stateButtons, "arrowTop");
+            //this.embedPlayer.layoutBuilder.setupTooltip(contentBtn, "arrowTop");
 
 			// listen to state change and update buttons style accordingly
 			_this.bind( 'dualScreenStateChange', function(e, state){
@@ -146,27 +161,37 @@
 		 * This affect they layout only and doesn't change the player state.
 		 * @param activeButtonId
          */
-		changeButtonsStyles : function(activeButtonId)
+		changeButtonsStyles : function(activeButtonId, clicked)
 		{
 			var _this = this;
 			var buttons = _this.getComponent().find( "span" );
 			var switchBtn = buttons.filter('[data-type="switch"]');
+            var stateButtons = buttons.filter('[data-type="state"]');
+            var contentBtn = buttons.filter('[data-type="contentSelection"]');
 
-			var obj = $(_this.getComponent().find('#' + activeButtonId)[0]);
-			//Change state button disabled state
-			if (obj.data("type") === "state") {
-				buttons.removeClass( "disabled" );
-				obj.addClass( "disabled" );
-			}
-			if (mw.isNativeApp()){
-				if (activeButtonId=== _this.controlBarComponents.pip.id){
-					switchBtn
-						.addClass("disabled")
-						.tooltip( "option", "content", _this.nativeAppTooltip);
-				} else if(activeButtonId === _this.controlBarComponents.singleView.id){
-					switchBtn.tooltip( "option", "content", _this.controlBarComponents.switchView.title);
-				}
-			}
+            var obj = $(_this.getComponent().find('#' + activeButtonId)[0]);
+
+            //Change state button disabled state
+            if (obj.data("type") === "state" && clicked ) {
+                //show state buttons if selected state was clicked
+                if (obj.hasClass("stateSelected")) {
+                    stateButtons.removeClass( "subMenuHidden" );
+                    stateButtons.addClass( "subMenuVisible" );
+                }else {
+                    stateButtons.removeClass("stateSelected subMenuVisible");
+                    stateButtons.addClass("subMenuHidden");
+                    obj.addClass("stateSelected subMenuVisible").removeClass("subMenuHidden");
+                }
+            }
+            if (mw.isNativeApp()){
+                if (this.id === _this.controlBarComponents.pip.id){
+                    switchBtn
+                        .addClass("disabled")
+                        .tooltip( "option", "content", _this.nativeAppTooltip);
+                } else if(this.id === _this.controlBarComponents.singleView.id){
+                    switchBtn.tooltip( "option", "content", _this.controlBarComponents.switchView.title);
+                }
+            }
 		},
 		disable: function () {
 			clearTimeout(this.getComponent().handleTouchTimeoutId);
@@ -188,7 +213,10 @@
 		show: function ( ) {
 			if ( !this.disabled) {
 				if ( !this.isVisible ) {
-					this.getComponent().removeClass( 'componentAnimation' ).addClass( 'componentOn' ).removeClass( 'componentOff' );
+                    //show only vertical main buttons (ignore sub-menus)
+                    //this.getComponent().find("span").filter(".dualScreen-switchView, .stateSelected, .dualScreen-contentSelection").removeClass( 'componentAnimation' ).addClass( 'componentOn' ).removeClass( 'componentOff' );
+
+                    this.getComponent().removeClass( 'componentAnimation' ).addClass( 'componentOn' ).removeClass( 'componentOff' );
 					this.isVisible = true;
 					this.embedPlayer.getVideoHolder().find( ".controlBarShadow" ).removeClass( 'componentAnimation' ).addClass( 'componentOn' ).removeClass( 'componentOff' );
 				}

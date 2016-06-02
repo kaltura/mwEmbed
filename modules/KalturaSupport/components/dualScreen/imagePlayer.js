@@ -275,7 +275,14 @@
 
 			}
 			return cuePoint;
-		}
+		},
+        getPoster: function(){
+            return this.getCuePoints()[0].thumbnailUrl;
+        },
+
+        destroy: function ( ) {
+            this.getComponent().remove();
+        }
 	} );
 }
 

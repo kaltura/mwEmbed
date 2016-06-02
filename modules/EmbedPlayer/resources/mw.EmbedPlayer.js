@@ -1889,7 +1889,7 @@
 					$(this).addClass("mwEmbedPlayerTransparent");
 				}
 			}
-
+            this.triggerHelper('setPlayerPoster');
 			//sometimes thumbnail doesn't cover video, add black background
 			$(".mwEmbedPlayer").addClass("mwEmbedPlayerBlackBkg");
 
@@ -1910,7 +1910,8 @@
 		 * Remove the poster
 		 */
 		removePoster: function () {
-			if ( !mw.getConfig("EmbedPlayer.KeepPoster") === true && !this.isAudio()){
+			if ( !mw.getConfig("EmbedPlayer.KeepPoster") === true && !this.isAudio() ){
+                this.triggerHelper('removeVideoPoster');
 				$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
 				$(this).find('.playerPoster').remove();
 			}
