@@ -3,10 +3,6 @@
 
     mw.PluginManager.add('webcastPolls', mw.KBasePlugin.extend({
         defaultConfig : {
-            'templatePath' : '../WebcastPolls/resources/webcastPolls.tmpl.html'
-        },
-        locale: {
-            respondsLbl: gM('mwe-webc-polls-respondsLbl')
         },
         currentPollId : null,
         cuePointsManager : null,
@@ -31,7 +27,19 @@
         setup: function () {
             this.addBindings();
             this.initializeDependentPlugins();
-            this.initializeImportantInfo();
+
+            var _this=this;
+
+            _this.userId = _this.userProfile.getUserID();
+
+            _this.kalturaProxy.getVoteCustomMetadataProfileId().then(function(result)
+            {
+                _this.poolVotingProfileId = result.profileId;
+            }, function(reason)
+            {
+                _this.poolVotingProfileId = null;
+            });
+
         },
         addBindings: function () {
             // bind to cue point events
@@ -89,21 +97,6 @@
                 }
             });
         },
-
-        initializeImportantInfo:function() {
-
-            var _this=this;
-
-            _this.userId = _this.userProfile.getUserID();
-
-            _this.kalturaProxy.getVoteCustomMetadataProfileId().then(function(result)
-            {
-                _this.poolVotingProfileId = result.profileId;
-            }, function(reason)
-            {
-                _this.poolVotingProfileId = null;
-            });
-        },
         syncByReachedCuePoints : function()
         {
             var _this = this;
@@ -129,6 +122,13 @@
                 // we need to initialize the instance
                 _this.kalturaProxy = new mw.webcastPolls.WebcastPollsKalturaProxy(_this.getPlayer(), function () {
                 }, "webcastPollsKalturaProxy");
+            }
+
+            if (!_this.view) {
+                // we need to initialize the instance
+                _this.view = new mw.webcastPolls.WebcastPollsView(_this.getPlayer(), function () {
+                }, "webcastPollsKalturaView");
+                _this.view.parent = _this;
             }
 
             if (!_this.cuePointsManager) {
@@ -178,77 +178,14 @@
 
             if (_this.isPollShown)
             {
-                _this.removeWebcastPollElement();
+                _this.view.removeWebcastPollElement();
                 _this.isPollShown = false;
             }
 
             // ## IMPORTANT: perform cleanup of information that was relevant to previous poll
             _this.resetPersistData();
         },
-        syncDOMUserVoting : function()
-        {
-            var _this = this;
-            if (_this.$webcastPoll)
-            {
-                var selectedAnswerSelector = '[name="answer' + _this.userVote.answer + '"]';
 
-                _this.$webcastPoll.find('.answer').not('.answer>'+selectedAnswerSelector).removeClass('selected');
-
-                if (_this.userVote.answer)
-                {
-                    _this.$webcastPoll.find(selectedAnswerSelector).parent().addClass('selected');
-                }
-
-            }
-        },
-        syncPollDOM : function(){
-            var _this = this;
-
-            function updateAnswer(answerIndex, pollData)
-            {
-                var answerContent = pollData.answers[answerIndex + ''];
-                if (answerContent) {
-                    _this.$webcastPoll.find('[name="answer' + answerIndex + '"]').text(answerContent).parent().show();
-                }else
-                {
-                    _this.$webcastPoll.find('[name="answer' + answerIndex + '"]').parent().hide();
-                }
-            }
-
-            if (_this.currentPollId)
-            {
-                // ## should check that requested poll is shown
-
-                // Make sure we have a container
-                if (!_this.$webcastPoll)
-                {
-                    _this.$webcastPoll = _this.getWebcastPollElement();
-                }
-
-                var pollData = _this.currentPollId ? _this.pollsData[_this.currentPollId] : null;
-
-                if (pollData)
-                {
-                    _this.$webcastPoll.find('[name="question"]').text(pollData.question);
-                    updateAnswer(1,pollData);
-                    updateAnswer(2,pollData);
-                    updateAnswer(3,pollData);
-                    updateAnswer(4,pollData);
-                    updateAnswer(5,pollData);
-
-                    _this.showPollDOMContent();
-                }else
-                {
-                    _this.$webcastPoll.find('[name="question"],[name="answer1"],[name="answer2"],[name="answer3"],[name="answer4"],[name="answer5"]').text('');
-                    _this.showPollDOMLoader();
-                }
-
-                _this.syncDOMUserVoting();
-            }else
-            {
-                // ## should hide poll if any is shown
-            }
-        },
         showOrUpdatePollByState : function(pollState)
         {
             var _this = this;
@@ -265,8 +202,8 @@
                 var isShowingRequestedPoll = isShowingAPoll && (_this.currentPollId === pollState.pollId);
 
                 if (!isShowingAPoll || !isShowingRequestedPoll) {
-                    var webcastPollElement = _this.getWebcastPollElement(); // Important: we invoke this function to make sure the webcast poll element exists,
-                    if (webcastPollElement) {
+                    var pollElementCreated = _this.view.createWebcastPollElement(); // Important: we invoke this function to make sure the webcast poll element exists,
+                    if (pollElementCreated) {
                         _this.isPollShown = true; // make sure the poll is shown
                         _this.currentPollId = pollState.pollId;
 
@@ -274,7 +211,7 @@
                             var invokedByPollId = _this.currentPollId;
                             _this.getPollData(pollState.pollId, true).then(function (result) {
                                 if (invokedByPollId === _this.currentPollId) {
-                                    _this.syncPollDOM();
+                                    _this.view.syncPollDOM();
                                 }
                             }, function (reason) {
                                 if (invokedByPollId === _this.currentPollId) {
@@ -288,7 +225,7 @@
                                     _this.userVote.canUserVote = true;
                                     _this.userVote.answer = result.answer;
                                     _this.userVote.metadataId = result.metadataId;
-                                    _this.syncDOMUserVoting();
+                                    _this.view.syncDOMUserVoting();
                                 }
                             }, function (reason) {
                                 if (invokedByPollId === _this.currentPollId) {
@@ -297,7 +234,7 @@
                             });
                         }
 
-                        _this.syncPollDOM();
+                        _this.view.syncPollDOM();
                     }else {
                         // TODO [es]
                     }
@@ -340,15 +277,6 @@
 
             return defer.promise();
         },
-        removeWebcastPollElement : function()
-        {
-            var _this = this;
-            if (_this.$webcastPoll)
-            {
-                _this.$webcastPoll.remove();
-                _this.$webcastPoll = null;
-            }
-        },
         handleAnswerClicked : function(e)
         {
             var _this = this;
@@ -369,7 +297,7 @@
                 }
                 _this.userVote.inProgress = true;
                 _this.userVote.answer = selectedAnswer;
-                _this.syncDOMUserVoting();
+                _this.view.syncDOMUserVoting();
 
                 if (_this.userVote.metadataId)
                 {
@@ -377,7 +305,7 @@
                     _this.kalturaProxy.transmitVoteUpdate(_this.userVote.metadataId, _this.userId, selectedAnswer).then(function (result) {
                         if (invokedByPollId === _this.currentPollId) {
                             _this.userVote.inProgress = false;
-                            _this.syncDOMUserVoting();
+                            _this.view.syncDOMUserVoting();
                         }
 
                     }, function (reason) {
@@ -385,7 +313,7 @@
                             // TODO [es]
                             _this.userVote.inProgress = false;
                             _this.userVote.answer = previousAnswer;
-                            _this.syncDOMUserVoting();
+                            _this.view.syncDOMUserVoting();
                         }
                     });
                 }else {
@@ -394,7 +322,7 @@
                         if (invokedByPollId === _this.currentPollId) {
                             _this.userVote.inProgress = false;
                             _this.userVote.metadataId = result.metadataId;
-                            _this.syncDOMUserVoting();
+                            _this.view.syncDOMUserVoting();
                         }
 
                     }, function (reason) {
@@ -402,7 +330,7 @@
                             // TODO [es]
                             _this.userVote.inProgress = false;
                             _this.userVote.answer = previousAnswer;
-                            _this.syncDOMUserVoting();
+                            _this.view.syncDOMUserVoting();
                         }
                     });
                 }
@@ -411,58 +339,11 @@
                 // TODO [es]
                 _this.userVote.inProgress  = false;
                 _this.userVote.answer = previousAnswer;
-                _this.syncDOMUserVoting();
+                _this.view.syncDOMUserVoting();
 
             }
 
-        },
-        getWebcastPollElement : function()
-        {
-            var _this = this;
-
-            if (_this.$webcastPoll)
-            {
-                return _this.$webcastPoll;
-            }
-
-            try
-            {
-                var pollRawHTML = (window && window.kalturaIframePackageData && window.kalturaIframePackageData.templates) ?  window.kalturaIframePackageData.templates[_this.getConfig('templatePath')] : '';
-
-                if (pollRawHTML && _this.getPlayer() && _this.getPlayer().getVideoHolder()) {
-                    var poll = $(pollRawHTML);
-                    poll.find('.answer').click($.proxy(_this.handleAnswerClicked,_this));
-
-                    _this.$webcastPoll = poll;
-                    _this.getPlayer().getVideoHolder().append(_this.$webcastPoll);
-                }
-            }catch(e)
-            {
-                _this.$webcastPoll = null;
-            }
-
-            return _this.$webcastPoll;
-        },
-        showPollDOMLoader : function()
-        {
-            var _this = this;
-            if (_this.$webcastPoll) {
-                _this.$webcastPoll.find('[name="pollContent"]').hide();
-                _this.$webcastPoll.find('[name="loadingContainer"]').show();
-            }
-        },
-        showPollDOMContent : function()
-        {
-            var _this = this;
-
-            if (_this.$webcastPoll) {
-                _this.$webcastPoll.find('[name="loadingContainer"]').hide();
-                _this.$webcastPoll.find('[name="pollContent"]').fadeIn('slow');
-            }
         }
-
-
-
     }));
 
 })(window.mw, window.jQuery);
