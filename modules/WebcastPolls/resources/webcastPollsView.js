@@ -61,6 +61,14 @@
                     _this.$webcastPoll.find(selectedAnswerSelector).parent().addClass('selected');
                 }
 
+                if (_this.parent.canUserVote())
+                {
+                    _this.$webcastPoll.addClass('allow-voting');
+                }else
+                {
+                    _this.$webcastPoll.removeClass('allow-voting');
+                }
+
             }
         },
         syncPollDOM : function(){
@@ -86,6 +94,8 @@
                 {
                     _this.$webcastPoll = _this.createWebcastPollElement();
                 }
+
+
 
                 var pollData = _this.parent.currentPollId ? _this.parent.pollsData[_this.parent.currentPollId] : null;
 

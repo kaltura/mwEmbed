@@ -76,7 +76,6 @@ Poll
 }
 
 .webcastPolls .poll .answer {
-    cursor: pointer;
     margin-bottom: 10px;
 
     border: solid 1px rgba(255, 255, 255, 0.2);
@@ -89,6 +88,11 @@ Poll
     color: #000;
 
 }
+
+.webcastPolls.allow-voting .poll .answer {
+    cursor: pointer;
+}
+
 
 .webcastPolls .poll .answer-text {
     font-family: "Lato-Regular";
@@ -104,7 +108,7 @@ Poll
     padding-left: 1vw;
 }
 
-.webcastPolls .poll .answer:hover {
+.webcastPolls.allow-voting .poll .answer:hover {
     background-color: rgb(86,114,53);
 }
 
