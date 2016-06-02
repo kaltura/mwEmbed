@@ -88,7 +88,6 @@
 		// Mute state
 		"muted": false,
 
-		"isFlavorSwitching": false,
 		/**
 		 * Custom attributes for embedPlayer player: (not part of the html5
 		 * video spec)
@@ -3201,7 +3200,6 @@
 				{ newBitrate: source.getBitrate() }
 			]);
 			if (!this.isStopped()) {
-				this.isFlavorSwitching = true;
 				// Get the exact play time
 				var oldMediaTime = this.currentTime;
 				var oldPaused = this.paused;
