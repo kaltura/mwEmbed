@@ -159,14 +159,12 @@
 				});
 
                 this.bind( 'dualScreenDisplaysSwitched sourcesReplaced', function(e){
-                    if ( _this.secondPlayer instanceof mw.dualScreen.videoPlayer && _this.secondPlayer.isABR() ){
-                        if( e.type === 'sourcesReplaced' ){
-                           _this.abrSourcesLoaded = true;
-                        }
-                        if( _this.abrSourcesLoaded ) {
-                            _this.handleABR();
-                        }
-                    }
+                    if( e.type === 'sourcesReplaced' ){
+					   _this.abrSourcesLoaded = true;
+					}
+					if( _this.abrSourcesLoaded ) {
+						_this.handleABR();
+					}
                 });
 
 				//Listen to events which affect controls view state
@@ -222,6 +220,7 @@
                         mw.log('DualScreen - onChangeMedia :: play list case - reset flag on');
                         _this.playerReadyFlag = false;
                         _this.secondScreen = null;
+						_this.abrSourcesLoaded = false;
                         _this.streamSelector = null;
                         _this.resetSecondPlayer = true;
                         _this.streamSelectorLoaded = false;
@@ -991,11 +990,15 @@
                 if ( this.getPlayer().getVideoDisplay().attr('data-display-rule') === 'primary' ) {
                     mw.log("DualScreen :: handleABR :: set kplayer to ABR AUTO and secondPlayer to lowest bitrate");
                     this.getPlayer().switchSrc(-1);
-                    this.secondPlayer.switchSrc(0);
+					if( this.secondPlayer instanceof mw.dualScreen.videoPlayer && _this.secondPlayer.isABR() ) {
+						this.secondPlayer.switchSrc(0);
+					}
                 } else {
                     mw.log("DualScreen :: handleABR :: set secondPlayer to ABR AUTO and kplayer to lowest bitrate");
                     this.getPlayer().switchSrc(0);
-                    this.secondPlayer.switchSrc(-1);
+					if( this.secondPlayer instanceof mw.dualScreen.videoPlayer && _this.secondPlayer.isABR() ) {
+						this.secondPlayer.switchSrc(-1);
+					}
                 }
             },
 
