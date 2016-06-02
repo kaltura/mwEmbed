@@ -15,13 +15,19 @@
         userId : null,
         userVote : {
             metadataId : null,
-            inProgress : false
+            answer : null,
+            inProgress : false,
+            canUserVote : false
         },
         kalturaProxy : null,
-        userVoteAnswer : null,
         kClient : null,
         isPollShown: false,
         userProfile : null,
+        resetPersistData : function()
+        {
+            _this.userVote = { metadataId : null, answer : null, inProgress : false, canUserVote : false};
+            _this.currentPollId = null;
+        },
         setup: function () {
             this.addBindings();
             this.initializeDependentPlugins();
@@ -176,21 +182,19 @@
                 _this.isPollShown = false;
             }
 
-
             // ## IMPORTANT: perform cleanup of information that was relevant to previous poll
-            _this.userVote = { metadataId : null};
-            _this.currentPollId = null;
+            _this.resetPersistData();
         },
         syncDOMUserVoting : function()
         {
             var _this = this;
             if (_this.$webcastPoll)
             {
-                var selectedAnswerSelector = '[name="answer' + _this.userVoteAnswer + '"]';
+                var selectedAnswerSelector = '[name="answer' + _this.userVote.answer + '"]';
 
                 _this.$webcastPoll.find('.answer').not('.answer>'+selectedAnswerSelector).removeClass('selected');
 
-                if (_this.userVoteAnswer)
+                if (_this.userVote.answer)
                 {
                     _this.$webcastPoll.find(selectedAnswerSelector).parent().addClass('selected');
                 }
@@ -267,18 +271,29 @@
                         _this.currentPollId = pollState.pollId;
 
                         if (!isShowingRequestedPoll) {
+                            var invokedByPollId = _this.currentPollId;
                             _this.getPollData(pollState.pollId, true).then(function (result) {
-                                _this.syncPollDOM();
+                                if (invokedByPollId === _this.currentPollId) {
+                                    _this.syncPollDOM();
+                                }
                             }, function (reason) {
-                                // TODO [es] handle
+                                if (invokedByPollId === _this.currentPollId) {
+                                    // TODO [es] handle
+                                }
                             });
 
 
                             _this.kalturaProxy.getUserVote(_this.userId, _this.currentPollId,_this.poolVotingProfileId ).then(function (result) {
-                                _this.userVoteAnswer = result.vote;
-                                _this.syncDOMUserVoting();
+                                if (invokedByPollId === _this.currentPollId) {
+                                    _this.userVote.canUserVote = true;
+                                    _this.userVote.answer = result.answer;
+                                    _this.userVote.metadataId = result.metadataId;
+                                    _this.syncDOMUserVoting();
+                                }
                             }, function (reason) {
-                                // TODO [es] handle
+                                if (invokedByPollId === _this.currentPollId) {
+                                    // TODO [es] handle
+                                }
                             });
                         }
 
@@ -338,55 +353,64 @@
         {
             var _this = this;
 
-            if (!_this.currentPollId ||  !_this.poolVotingProfileId || _this.userVote.inProgress)
+            if (!_this.currentPollId ||  !_this.poolVotingProfileId || _this.userVote.inProgress || !_this.userVote.canUserVote)
             {
                 return;
             }
 
-            var previousAnswer = _this.userVoteAnswer;
+            var previousAnswer = _this.userVote.answer;
 
             try {
                 var selectedAnswer = $(e.currentTarget).children(0).data('poll-value');
 
-                if (_this.userVoteAnswer === selectedAnswer)
+                if (_this.userVote.answer === selectedAnswer)
                 {
                     return;
                 }
                 _this.userVote.inProgress = true;
-                _this.userVoteAnswer = selectedAnswer;
+                _this.userVote.answer = selectedAnswer;
                 _this.syncDOMUserVoting();
 
                 if (_this.userVote.metadataId)
                 {
+                    var invokedByPollId = _this.currentPollId;
                     _this.kalturaProxy.transmitVoteUpdate(_this.userVote.metadataId, _this.userId, selectedAnswer).then(function (result) {
-
-                        _this.userVote.inProgress = false;
-                        _this.syncDOMUserVoting();
+                        if (invokedByPollId === _this.currentPollId) {
+                            _this.userVote.inProgress = false;
+                            _this.syncDOMUserVoting();
+                        }
 
                     }, function (reason) {
-                        // TODO [es]
-                        _this.userVote.inProgress = false;
-                        _this.userVoteAnswer = previousAnswer;
-                        _this.syncDOMUserVoting();
+                        if (invokedByPollId === _this.currentPollId) {
+                            // TODO [es]
+                            _this.userVote.inProgress = false;
+                            _this.userVote.answer = previousAnswer;
+                            _this.syncDOMUserVoting();
+                        }
                     });
                 }else {
+                    var invokedByPollId = _this.currentPollId;
                     _this.kalturaProxy.transmitNewVote( _this.currentPollId, _this.poolVotingProfileId, _this.userId, selectedAnswer).then(function (result) {
-                        _this.userVote.inProgress = false;
-                        _this.userVote.metadataId = result.voteMetadataId;
-                        _this.syncDOMUserVoting();
+                        if (invokedByPollId === _this.currentPollId) {
+                            _this.userVote.inProgress = false;
+                            _this.userVote.metadataId = result.metadataId;
+                            _this.syncDOMUserVoting();
+                        }
 
                     }, function (reason) {
-                        // TODO [es]
-                        _this.userVote.inProgress = false;
-                        _this.userVoteAnswer = previousAnswer;
-                        _this.syncDOMUserVoting();
+                        if (invokedByPollId === _this.currentPollId) {
+                            // TODO [es]
+                            _this.userVote.inProgress = false;
+                            _this.userVote.answer = previousAnswer;
+                            _this.syncDOMUserVoting();
+                        }
                     });
                 }
             }catch(e)
             {
                 // TODO [es]
                 _this.userVote.inProgress  = false;
-                _this.userVoteAnswer = previousAnswer;
+                _this.userVote.answer = previousAnswer;
                 _this.syncDOMUserVoting();
 
             }

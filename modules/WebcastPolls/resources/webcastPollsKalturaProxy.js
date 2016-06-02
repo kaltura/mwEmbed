@@ -107,7 +107,7 @@
 
                 if (result && result.length === 2 && !_this.isErrorResponse(result))
                 {
-                    defer.resolve({voteMetadataId : result[1].id});
+                    defer.resolve({metadataId : result[1].id});
                 }else {
                     defer.reject();
                 }
@@ -161,6 +161,8 @@
                 /*Search  metadata   */
                 'filter:advancedSearch:objectType': 'KalturaMetadataSearchItem',
                 'filter:advancedSearch:metadataProfileId': profileId,
+                "responseProfile:objectType":"KalturaResponseProfileHolder",
+                "responseProfile:systemName":"pollVoteResponseProfile",
 
                 //search all messages on my session id
                 'filter:advancedSearch:items:item1:objectType': "KalturaSearchCondition",
@@ -171,9 +173,48 @@
             this.getKClient().doRequest(request, function (result) {
                 if (!_this.isErrorResponse(result))
                 {
-                    var vote = (result.objects && result.objects.length > 0) ? result.objects[0].text : null
-                    defer.resolve({vote : vote});
+                    try {
+                        var cuePoint =(result.objects && result.objects.length > 0) ? result.objects[0] : null;
+
+                        if (cuePoint)
+                        {
+                            var metadata = (cuePoint.relatedObjects &&
+                                cuePoint.relatedObjects.pollVoteResponseProfile &&
+                                cuePoint.relatedObjects.pollVoteResponseProfile.objects &&
+                                cuePoint.relatedObjects.pollVoteResponseProfile.objects.length > 0
+                            ) ? cuePoint.relatedObjects.pollVoteResponseProfile.objects[0] : null;
+
+                            if (metadata && metadata.xml)
+                            {
+                                var voteAnswerToken = metadata.xml.match(/<Answer>([0-9]+?)<[/]Answer>/);
+                                var vote = (voteAnswerToken.length === 2) ? voteAnswerToken[1] : null;
+                                var metadataId = metadata.id;
+
+                                if (vote) {
+                                    defer.resolve({metadataId: metadataId, answer: vote});
+                                }else {
+                                    // ## failed to extract metadata of cuepoint - invalid situation
+                                    defer.reject();
+                                }
+                            }else
+                            {
+                                // ## got cue point without metadata - invalid situation
+                                defer.reject();
+                            }
+                        }else
+                        {
+                            // ## user didn't vote already - valid situation
+                            defer.resolve({metadataId : null,answer : null});
+                        }
+                    }catch(e)
+                    {
+                        // ## general error
+                        mw.log.error(e);
+                        defer.reject();
+                    }
+
                 }else {
+                    // ## got error from api
                     defer.reject();
                 }
             },false,function(reason)
