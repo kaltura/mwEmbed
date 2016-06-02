@@ -1004,6 +1004,7 @@ body {
     max-height: 40% !important;
     color: #484848;
     letter-spacing: 0;
+    border-radius: 10px;
 }
 .alert {
 	display: table-cell;
