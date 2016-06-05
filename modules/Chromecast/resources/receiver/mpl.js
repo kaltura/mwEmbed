@@ -22,6 +22,7 @@ var mediaPlayer = null;  // an instance of cast.player.api.Player
 var playerInitialized = false;
 
 onload = function () {
+	var kdp;
 	cast.receiver.logger.setLevelValue(cast.receiver.LoggerLevel.DEBUG);
 	cast.player.api.setLoggerLevel(cast.player.api.LoggerLevel.DEBUG);
 
@@ -107,6 +108,8 @@ onload = function () {
 			setDebugMessage('customData', customData);
 		} else if (payload['type'] === 'load') {
 			setMediaManagerEvents();
+		} else if (payload['type'] === 'replay') {
+			kdp.sendNotification("playerReady"); // since we reload the media for replay, trigger playerReady to reset Analytics
 		} else if (payload['type'] === 'setLogo') {
 			document.getElementById('logo').style.backgroundImage = "url(" + payload['logo'] + ")";
 		} else if (payload['type'] === 'embed' && !playerInitialized) {
@@ -142,7 +145,7 @@ onload = function () {
 				"readyCallback": function (playerId) {
 					if (!playerInitialized){
 						playerInitialized = true;
-						var kdp = document.getElementById(playerId);
+						kdp = document.getElementById(playerId);
 						kdp.kBind("chromecastReceiverLoaded", function(){
 							setMediaManagerEvents();
 							messageBus.broadcast("readyForMedia");
@@ -541,7 +544,9 @@ function initApp() {
 	 * 10 minutes for testing, use default 10sec in prod by not setting this value
 	 **/
 	appConfig.maxInactivity = 600;
-
+	castReceiverManager.onShutdown = function(){
+		messageBus.broadcast("shutdown"); // receiver was shut down by the browser Chromecast icon - send message to the player to stop the app
+	}
 	/**
 	 * Initializes the system manager. The application should call this method when
 	 * it is ready to start receiving messages, typically after registering
