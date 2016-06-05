@@ -74,6 +74,17 @@
 				});
 			}
 		},
+		onConfigChange: function( property, value ){
+			switch( property ) {
+				case 'visible':
+					if( value ) {
+						this.getComponent().show();
+					} else {
+						this.getComponent().hide();
+					}
+					break;
+			}
+		},
 		show: function(){
 			if(this.embedPlayer.isMobileSkin() && this.getPlayer().getPlayerPoster().length){
 				return; // prevent showing controls on top of the poster when the video first loads

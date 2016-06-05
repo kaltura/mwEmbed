@@ -37,6 +37,9 @@
 	mw.isDesktopSafari = function () {
 		return (/safari/).test(userAgent.toLowerCase()) && !mw.isMobileDevice() && !mw.isChrome();
 	};
+	mw.isSafari = function () {
+		return (/safari/).test(userAgent.toLowerCase()) && !mw.isChrome() && !mw.isEdge();
+	};
 	mw.isIE9Comp = function () {
 		return (/msie 7/.test(userAgent.toLowerCase()) && /trident\/5/.test(userAgent.toLowerCase()));
 	};
@@ -95,7 +98,7 @@
 		return ( userAgent.indexOf('Firefox') != -1 );
 	};
 	mw.isChrome = function () {
-		return ( userAgent.indexOf('Chrome') != -1 );
+		return ( userAgent.indexOf('Chrome') != -1 && !mw.isEdge() );
 	};
 	mw.isAndroidNativeBrowser = function () {
 		return (mw.isAndroid() && !mw.isFirefox() && !mw.isChrome());
@@ -184,7 +187,15 @@
 	mw.isTouchDevice = function () {
 		return !!('ontouchstart' in window);
 	};
-
+	/**
+	 * platform detection
+	 */
+	mw.isMacintosh = function() {
+		return navigator.platform.indexOf('Mac') > -1
+	};
+	mw.isWindows = function() {
+		return navigator.platform.indexOf('Win') > -1
+	};
 	/**
 	 * Fallforward system by default prefers flash.
 	 *
@@ -250,7 +261,7 @@
 
 		// Desktop safari flash has "power saving bug" as well as cross domain request issues
 		// by default we disable flash on desktop safari.
-		if (mw.isDesktopSafari() && !mw.getConfig('ForceFlashOnDesktopSafari') ) {
+		if ( ( mw.isDesktopSafari() && !mw.getConfig('ForceFlashOnDesktopSafari') ) || mw.isEdge() ) {
 			return false;
 		}
 		var majorVersion = this.getFlashVersion().split(',').shift();

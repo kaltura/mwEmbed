@@ -35,7 +35,8 @@
             },
 
             setupQuiz:function(){
-                var _this = this;
+                var _this = this,
+                    deferred = $.Deferred();
 
                 _this.KIVQApi.getUserEntryIdAndQuizParams( function(data) {
                     if (!_this.checkApiResponse('User Entry err-->', data[0])) {
@@ -43,6 +44,10 @@
                     }
                     if (!_this.checkApiResponse('Quiz Params err-->', data[1])) {
                         return false;
+                    }
+                    if ( !("uiAttributes" in data[1])) {
+                        deferred.reject(data, 'quiz is empty');
+                        return deferred;
                     }
                     else {
                         $.quizParams = data[1];
@@ -81,9 +86,11 @@
 
                     _this.setUserEntryId(data);
                     _this.checkUserEntryIdReady(function(){
-                    _this.getQuestionsAndAnswers(_this.populateCpObject);
+                        _this.getQuestionsAndAnswers(_this.populateCpObject);
+                        deferred.resolve(data);
                     });
                 });
+                return deferred;
             },
 
             getQuestionsAndAnswers: function (callback) {

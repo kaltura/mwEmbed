@@ -224,12 +224,12 @@
 		width: 50%;
 		height: 65.9%;
 	}
-    .screen-content{
+    .related .screen-content{
         width: 100% !important;
     }
 }
 @media only screen and (max-width: 1050px) and (min-width: 651px)  and (orientation: portrait){
-    .screen-content{
+    .related .screen-content{
         height: 50% !important;
     }
 }

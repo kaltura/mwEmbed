@@ -303,7 +303,7 @@
 
 				hideComponentsArr.push( 'durationLabel' );
 				//live + DVR
-				if ( _this.isDVR() ) {
+				if ( _this.isDVR() && !embedPlayer.casting) {
 					_this.dvrWindow = embedPlayer.evaluate( '{mediaProxy.entry.dvrWindow}' ) * 60;
 					if ( !_this.dvrWindow ) {
 						_this.dvrWindow = _this.defaultDVRWindow;
