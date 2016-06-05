@@ -9,6 +9,8 @@
 			downloadName: '{mediaProxy.entry.name}',
 			showTooltip: true,
 			preferredBitrate: '',
+			smartContainer: 'morePlugins',
+			smartContainerCloseEvent: 'downloadMedia',
 			flavorID: '',
 			title: gM('mwe-embedplayer-download_clip'),
 		 	order: 53
@@ -18,8 +20,6 @@
 		},
 		setup: function(){
 			var _this = this;
-			this.setConfig('smartContainer', 'morePlugins');
-			this.setConfig('smartContainerCloseEvent', 'downloadMedia');
 			this.bind( 'downloadMedia', function() {
 				_this.downloadMedia();
 			});

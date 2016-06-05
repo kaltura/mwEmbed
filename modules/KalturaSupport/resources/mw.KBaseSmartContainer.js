@@ -37,7 +37,7 @@
 
 				// add to the smart container all the plugins with the "smartContainer" property set to the smart container pluginName
 				for ( var plugin in plugins){
-					if ( plugins[plugin].getConfig("smartContainer") && plugins[plugin].getConfig("smartContainer") === _this.pluginName ){
+					if ( plugins[plugin].getConfig("smartContainer") && plugins[plugin].getConfig("smartContainer") === _this.pluginName && plugins[plugin].safe){
 						_this.registeredPlugins.push(plugins[plugin]);
 						// add close events
 						if (plugins[plugin].getConfig("smartContainerCloseEvent")){
@@ -110,6 +110,13 @@
 		},
 		showRegisteredPlugins: function(){
 			var _this = this;
+			// clean registeredPlugins array from plugins that were defined as isSafeEnviornment = false by a promise returned after the pluginsReady event
+			for ( var i = this.registeredPlugins.length -1; i >= 0; i-- ){
+				if ( !this.registeredPlugins[i].safe ){
+					this.registeredPlugins.splice( i, 1 );
+				}
+			}
+
 			this.pluginsScreenOpened = true;
 
 			var $sc = this.embedPlayer.getVideoHolder().find(".smartContainer");
