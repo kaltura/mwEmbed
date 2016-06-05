@@ -47,26 +47,51 @@
                 _this.$webcastPoll = null;
             }
         },
+        syncDOMPollResults : function()
+        {
+            var _this = this;
+            if (_this.$webcastPoll)
+            {
+                var $container = _this.$webcastPoll.find("[name='totals']");
+
+                if ($container)
+                {
+                    var pollResults = _this.parent.pollData.pollResults;
+                    var hasPollContent = _this.parent.pollData.content;
+                    var showTotals = _this.parent.pollData.showTotals;
+
+                    if (showTotals &&  hasPollContent && pollResults && pollResults.totalVoters )
+                    {
+                        $container.find("[name='text']").text(pollResults.totalVoters);
+                        $container.show();
+                    }else
+                    {
+                        $container.hide();
+                    }
+                }
+            }
+        },
         syncDOMUserVoting : function()
         {
             var _this = this;
             if (_this.$webcastPoll)
             {
-                var selectedAnswerSelector = '[name="answer' + _this.parent.userVote.answer + '"]';
+                var pollContent = _this.parent.pollData.content;
 
-                _this.$webcastPoll.find('.answer').not('.answer>'+selectedAnswerSelector).removeClass('selected');
+                if (pollContent) {
+                    var selectedAnswerSelector = '[name="answer' + _this.parent.userVote.answer + '"]';
 
-                if (_this.parent.userVote.answer)
-                {
-                    _this.$webcastPoll.find(selectedAnswerSelector).parent().addClass('selected');
-                }
+                    _this.$webcastPoll.find('.answer').not('.answer>' + selectedAnswerSelector).removeClass('selected');
 
-                if (_this.parent.canUserVote())
-                {
-                    _this.$webcastPoll.addClass('allow-voting');
-                }else
-                {
-                    _this.$webcastPoll.removeClass('allow-voting');
+                    if (_this.parent.userVote.answer) {
+                        _this.$webcastPoll.find(selectedAnswerSelector).parent().addClass('selected');
+                    }
+
+                    if (_this.parent.canUserVote()) {
+                        _this.$webcastPoll.addClass('allow-voting');
+                    } else {
+                        _this.$webcastPoll.removeClass('allow-voting');
+                    }
                 }
 
             }
@@ -95,18 +120,16 @@
                     _this.$webcastPoll = _this.createWebcastPollElement();
                 }
 
+                var pollContent = _this.parent.pollData.content;
 
-
-                var pollData = _this.parent.currentPollId ? _this.parent.pollsData[_this.parent.currentPollId] : null;
-
-                if (pollData)
+                if (pollContent)
                 {
-                    _this.$webcastPoll.find('[name="question"]').text(pollData.question);
-                    updateAnswer(1,pollData);
-                    updateAnswer(2,pollData);
-                    updateAnswer(3,pollData);
-                    updateAnswer(4,pollData);
-                    updateAnswer(5,pollData);
+                    _this.$webcastPoll.find('[name="question"]').text(pollContent.question);
+                    updateAnswer(1,pollContent);
+                    updateAnswer(2,pollContent);
+                    updateAnswer(3,pollContent);
+                    updateAnswer(4,pollContent);
+                    updateAnswer(5,pollContent);
 
                     _this.showPollDOMContent();
                 }else
@@ -115,6 +138,7 @@
                     _this.showPollDOMLoader();
                 }
 
+                _this.syncDOMPollResults();
                 _this.syncDOMUserVoting();
             }else
             {
@@ -137,7 +161,7 @@
                 _this.$webcastPoll.find('[name="loadingContainer"]').hide();
                 _this.$webcastPoll.find('[name="pollContent"]').fadeIn('slow');
             }
-        },
+        }
 
     });
 

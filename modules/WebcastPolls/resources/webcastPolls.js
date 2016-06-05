@@ -2,23 +2,31 @@
     "use strict";
 
     mw.PluginManager.add('webcastPolls', mw.KBasePlugin.extend({
-        defaultConfig : {
+        defaultConfig: {
+            monitorPollResultsInterval: 5000
         },
-        currentPollId : null,
-        cuePointsManager : null,
-        pollsData : {},
-        poolVotingProfileId : null,
-        userId : null,
-        userVote : {}, // ## Should remain empty (filled by 'resetPersistData')
-        kalturaProxy : null,
-        kClient : null,
+        currentPollId: null,
+        cuePointsManager: null,
+        cachedPollsContent: {},
+        poolVotingProfileId: null,
+        userId: null,
+        userVote: {}, // ## Should remain empty (filled by 'resetPersistData')
+        pollData: {}, // ## Should remain empty (filled by 'resetPersistData')
+        kalturaProxy: null,
+        kClient: null,
         isPollShown: false,
-        userProfile : null,
-        resetPersistData : function()
-        {
+        userProfile: null,
+        resetPersistData: function () {
             var _this = this;
 
-            _this.userVote = { metadataId : null, answer : null, inProgress : false, canUserVote : false, isReady : false};
+            _this.userVote = {metadataId: null, answer: null, inProgress: false, canUserVote: false, isReady: false};
+            _this.pollData = {
+                content: null,
+                showResults: false,
+                showTotals: false,
+                fetchResultsId: null,
+                pollResults: null
+            };
             _this.currentPollId = null;
         },
         setup: function () {
@@ -31,11 +39,9 @@
 
             _this.userId = _this.userProfile.getUserID();
 
-            _this.kalturaProxy.getVoteCustomMetadataProfileId().then(function(result)
-            {
+            _this.kalturaProxy.getVoteCustomMetadataProfileId().then(function (result) {
                 _this.poolVotingProfileId = result.profileId;
-            }, function(reason)
-            {
+            }, function (reason) {
                 _this.poolVotingProfileId = null;
             });
         },
@@ -47,11 +53,9 @@
                 // TODO [es] change status of poll to prevent voting
             });
 
-            this.bind('seeked',function()
-            {
+            this.bind('seeked', function () {
                 // ## Checking if we are pausing, if we do then we need to handle sync from 'seeked' event. otherwise the 'onplay' event will handle the sync
-                if (!_this.getPlayer().isPlaying())
-                {
+                if (!_this.getPlayer().isPlaying()) {
                     _this.syncByReachedCuePoints();
                 }
             });
@@ -67,9 +71,8 @@
             });
 
             this.bind('playerReady', function () {
-                setTimeout(function()
-                {
-                    _this.showOrUpdatePollByState({ pollId : '1_orhujkkr',showTotals : 'numbers', allowVoting : true});
+                setTimeout(function () {
+                    _this.showOrUpdatePollByState({pollId: '1_orhujkkr', showTotals: 'numbers', allowVoting: true});
 
                     //setTimeout(function()
                     //{
@@ -81,7 +84,7 @@
                     //    },5000);
                     //},5000);
 
-                },2000);
+                }, 2000);
             });
 
             this.bind('updateLayout', function (event, data) {
@@ -95,8 +98,7 @@
                 }
             });
         },
-        syncByReachedCuePoints : function()
-        {
+        syncByReachedCuePoints: function () {
             var _this = this;
             if (_this.cuePointsManager) {
                 var cuePointsReachedResult = _this.cuePointsManager.getCuePointsReached();
@@ -106,8 +108,7 @@
                 }
             }
         },
-        initializeDependentPlugins : function()
-        {
+        initializeDependentPlugins: function () {
             var _this = this;
 
             if (!_this.userProfile) {
@@ -138,10 +139,10 @@
                 _this.cuePointsManager.onCuePointsReached = _this.handleReachedCuePoints;
             }
         },
-        handleReachedCuePoints : function (args) {
+        handleReachedCuePoints: function (args) {
             var _this = this;
             var relevantCuePoints = args.filter({
-                tags: ['select-poll-state', 'remove-selected-thumb','select-a-thumb'],
+                tags: ['select-poll-state', 'remove-selected-thumb', 'select-a-thumb'],
                 sortDesc: true
             });
             var mostUpdatedCuePointToHandle = relevantCuePoints.length > 0 ? relevantCuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
@@ -158,36 +159,32 @@
                             _this.showOrUpdatePollByState(pollState);
                         }
 
-                    }else
-                    {
+                    } else {
                         _this.removePoll();
                     }
-                }catch(e)
-                {
+                } catch (e) {
                     // TODO [es]
                 }
 
             }
         },
-        removePoll : function()
-        {
+        removePoll: function () {
             var _this = this;
 
-            if (_this.isPollShown)
-            {
+            if (_this.isPollShown) {
                 _this.view.removeWebcastPollElement();
                 _this.isPollShown = false;
             }
 
+            _this.stopMonitorPollResults();
+
             // ## IMPORTANT: perform cleanup of information that was relevant to previous poll
             _this.resetPersistData();
         },
-        showOrUpdatePollByState : function(pollState)
-        {
+        showOrUpdatePollByState: function (pollState) {
             var _this = this;
 
-            if (!pollState || !pollState.pollId)
-            {
+            if (!pollState || !pollState.pollId) {
                 // todo [es] handle invalid state
                 return;
 
@@ -199,16 +196,25 @@
 
                 if (!isShowingAPoll || !isShowingRequestedPoll) {
 
-                    var pollElementCreated = _this.view.createWebcastPollElement(); // Important: we invoke this function to make sure the webcast poll element exists,
+                    // ## reset component data
+                    _this.resetPersistData();
+
+                    var pollElementCreated = _this.view.createWebcastPollElement(); // Important: we invoke this function to make sure the webcast poll element exists
+
                     if (pollElementCreated) {
                         _this.isPollShown = true; // make sure the poll is shown
                         _this.currentPollId = pollState.pollId;
                         _this.userVote.canUserVote = pollState.allowVoting;
+                        _this.pollData.showTotals = pollState.showTotals !== 'disabled';
+                        _this.pollData.showResults = pollState.showResults !== 'disabled';
 
                         if (!isShowingRequestedPoll) {
                             var invokedByPollId = _this.currentPollId;
-                            _this.getPollData(pollState.pollId, true).then(function (result) {
+
+                            // ## get poll data to show
+                            _this.getPollContent(pollState.pollId, true).then(function (result) {
                                 if (invokedByPollId === _this.currentPollId) {
+                                    _this.pollData.content = result.content;
                                     _this.view.syncPollDOM();
                                 }
                             }, function (reason) {
@@ -217,8 +223,8 @@
                                 }
                             });
 
-
-                            _this.kalturaProxy.getUserVote(_this.userId, _this.currentPollId,_this.poolVotingProfileId ).then(function (result) {
+                            // ## get user vote for requested poll
+                            _this.kalturaProxy.getUserVote(_this.userId, _this.currentPollId, _this.poolVotingProfileId).then(function (result) {
                                 if (invokedByPollId === _this.currentPollId) {
                                     _this.userVote.isReady = true;
                                     _this.userVote.answer = result.answer;
@@ -232,42 +238,76 @@
                             });
                         }
 
+                        _this.updatePollResultsStatus();
+
+                        // make sure we update the view with the new poll
                         _this.view.syncPollDOM();
-                    }else {
+                    } else {
                         // TODO [es]
                     }
                 } else {
                     // // TODO [es] handle 'allowVote','showResults' and other states
 
                 }
-            }catch(e)
-            {
+            } catch (e) {
                 // todo [es] handle
             }
         },
-        getPollData : function(pollId, forceGet)
-        {
+        updatePollResultsStatus: function () {
+            var _this = this;
+
+            if (_this.pollData.showTotals || _this.pollData.showResults) {
+                _this.startMonitorPollResults();
+            } else {
+                _this.stopMonitorPollResults();
+            }
+        },
+        startMonitorPollResults: function () {
+            var _this = this;
+            if (!_this.pollData.fetchResultsId) {
+                _this.view.syncDOMPollResults();
+                _this.updatePollResults();
+                _this.pollData.fetchResultsId = setInterval($.proxy(_this.updatePollResults,_this), _this.getConfig('monitorPollResultsInterval'))
+            }
+        },
+        updatePollResults: function () {
+            var _this = this;
+            var invokedByPollId = _this.currentPollId;
+            _this.kalturaProxy.getPollResults(invokedByPollId).then(function (result) {
+                if (invokedByPollId === _this.currentPollId) {
+                    _this.pollData.pollResults = result.pollResults;
+                    _this.view.syncDOMPollResults();
+                }
+            }, function (reason) {
+                // TODO [es] handle
+            })
+
+
+        },
+        stopMonitorPollResults: function () {
+            if (_this.pollData.fetchResultsId) {
+                clearInterval(_this.pollData.fetchResultsId);
+                _this.pollData.fetchResultsId = null;
+            }
+        },
+        getPollContent: function (pollId, forceGet) {
             var _this = this;
             var defer = $.Deferred();
 
-            if (_this.pollsData[pollId] && !forceGet)
-            {
+            if (_this.cachedPollsContent[pollId] && !forceGet) {
                 var pollData = pollData[pollId];
-                defer.resolve({data : pollData });
-            }else {
-                _this.pollsData[pollId] = null;
+                defer.resolve({content: pollData});
+            } else {
+                _this.cachedPollsContent[pollId] = null;
 
-                _this.kalturaProxy.getPollData(pollId).then(function(result)
-                {
+                _this.kalturaProxy.getPollContent(pollId).then(function (result) {
                     try {
-                        _this.pollsData[pollId] = result.pollData;
-                        defer.resolve({data : result.pollData });
-                    }catch(e)
-                    {
+                        _this.cachedPollsContent[pollId] = result.pollData;
+                        defer.resolve({content: result.pollData});
+                    } catch (e) {
                         defer.reject({});
                     }
-                },function(reason)
-                {
+                }, function (reason) {
                     mw.log(reason);
                     defer.reject({});
                 });
@@ -275,17 +315,14 @@
 
             return defer.promise();
         },
-        canUserVote : function()
-        {
+        canUserVote: function () {
             var _this = this;
-            return _this.currentPollId &&  _this.poolVotingProfileId && !_this.userVote.inProgress && _this.userVote.canUserVote && _this.userVote.isReady;
+            return _this.currentPollId && _this.poolVotingProfileId && !_this.userVote.inProgress && _this.userVote.canUserVote && _this.userVote.isReady;
         },
-        handleAnswerClicked : function(e)
-        {
+        handleAnswerClicked: function (e) {
             var _this = this;
 
-            if (!_this.canUserVote())
-            {
+            if (!_this.canUserVote()) {
                 return;
             }
 
@@ -294,16 +331,14 @@
             try {
                 var selectedAnswer = $(e.currentTarget).children(0).data('poll-value');
 
-                if (_this.userVote.answer === selectedAnswer)
-                {
+                if (_this.userVote.answer === selectedAnswer) {
                     return;
                 }
                 _this.userVote.inProgress = true;
                 _this.userVote.answer = selectedAnswer;
                 _this.view.syncDOMUserVoting();
 
-                if (_this.userVote.metadataId)
-                {
+                if (_this.userVote.metadataId) {
                     var invokedByPollId = _this.currentPollId;
                     _this.kalturaProxy.transmitVoteUpdate(_this.userVote.metadataId, _this.userId, selectedAnswer).then(function (result) {
                         if (invokedByPollId === _this.currentPollId) {
@@ -319,9 +354,9 @@
                             _this.view.syncDOMUserVoting();
                         }
                     });
-                }else {
+                } else {
                     var invokedByPollId = _this.currentPollId;
-                    _this.kalturaProxy.transmitNewVote( _this.currentPollId, _this.poolVotingProfileId, _this.userId, selectedAnswer).then(function (result) {
+                    _this.kalturaProxy.transmitNewVote(_this.currentPollId, _this.poolVotingProfileId, _this.userId, selectedAnswer).then(function (result) {
                         if (invokedByPollId === _this.currentPollId) {
                             _this.userVote.inProgress = false;
                             _this.userVote.metadataId = result.metadataId;
@@ -337,10 +372,9 @@
                         }
                     });
                 }
-            }catch(e)
-            {
+            } catch (e) {
                 // TODO [es]
-                _this.userVote.inProgress  = false;
+                _this.userVote.inProgress = false;
                 _this.userVote.answer = previousAnswer;
                 _this.view.syncDOMUserVoting();
 

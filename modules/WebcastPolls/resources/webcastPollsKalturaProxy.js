@@ -25,7 +25,51 @@
                 return (result && result.objectType && result.objectType === "KalturaAPIException");
             }
         },
-        getPollData : function(pollId)
+        getPollResults : function(pollId)
+        {
+            var _this = this;
+            var defer = $.Deferred();
+
+            var request = {
+                'service': 'cuepoint_cuepoint',
+                'action': 'list',
+                'filter:objectType': 'KalturaAnnotationFilter',
+                'filter:entryIdEqual': _this.getPlayer().kentryid,
+                'filter:orderBy': '-createdAt',
+                'filter:cuePointTypeIn': 'annotation.Annotation',
+                'filter:parentIdEqual': pollId,
+                'filter:tagsLike': 'poll-results',
+                'pager:pageSize': 1,
+                'pager:pageIndex': 1
+            };
+
+            _this.getKalturaClient().doRequest(request, function(result)
+            {
+                if (!_this.isErrorResponse(result))
+                {
+                    if (result.objects.length) {
+                        try {
+                            var pollContent = result.objects[0].text;
+                            var pollData = JSON.parse(pollContent);
+                            defer.resolve({pollResults : pollData });
+                        }catch(e)
+                        {
+                            defer.reject({});
+                        }
+                    }
+                }else {
+                    defer.reject();
+                }
+
+
+            },false, function(reason)
+            {
+                defer.reject({});
+            });
+
+            return defer.promise();
+        },
+        getPollContent : function(pollId)
         {
             var _this = this;
             var defer = $.Deferred();
@@ -38,12 +82,17 @@
 
             _this.getKalturaClient().doRequest(request, function(result)
             {
-                try {
-                    var pollData = JSON.parse(result.text);
-                    defer.resolve({pollData : pollData });
-                }catch(e)
+                if (!_this.isErrorResponse(result))
                 {
-                    defer.reject({});
+                    try {
+                        var pollData = JSON.parse(result.text);
+                        defer.resolve({pollData : pollData });
+                    }catch(e)
+                    {
+                        defer.reject({});
+                    }
+                }else {
+                    defer.reject();
                 }
 
             },false, function(reason)
@@ -167,7 +216,10 @@
                 //search all messages on my session id
                 'filter:advancedSearch:items:item1:objectType': "KalturaSearchCondition",
                 'filter:advancedSearch:items:item1:field': "/*[local-name()='metadata']/*[local-name()='UserId']",
-                'filter:advancedSearch:items:item1:value': userId
+                'filter:advancedSearch:items:item1:value': userId,
+
+                'pager:pageSize': 1,
+                'pager:pageIndex': 1
             };
 
             this.getKClient().doRequest(request, function (result) {
