@@ -213,8 +213,8 @@
                         _this.isPollShown = true; // make sure the poll is shown
                         _this.currentPollId = pollState.pollId;
                         _this.userVote.canUserVote = pollState.allowVoting;
-                        _this.pollData.showTotals = pollState.showTotals !== 'disabled';
-                        _this.pollData.showResults = pollState.showResults !== 'disabled';
+                        _this.pollData.showTotals = pollState.showTotals && pollState.showTotals !== 'disabled';
+                        _this.pollData.showResults = pollState.showResults && pollState.showResults !== 'disabled';
 
                         if (!isShowingRequestedPoll) {
                             var invokedByPollId = _this.currentPollId;
