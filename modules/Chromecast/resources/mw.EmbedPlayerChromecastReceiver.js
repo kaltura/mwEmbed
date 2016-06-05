@@ -57,18 +57,25 @@
 			});
 
 			this.setPlayerElement(parent.document.getElementById('receiverVideoElement'));
+			this.addBindings();
 			this.applyMediaElementBindings();
 			mw.log('EmbedPlayerChromecastReceiver:: Setup. Video element: '+this.getPlayerElement().toString());
 			this.getPlayerElement().src = '';
 			$(this).trigger("chromecastReceiverLoaded");
-
-			var _this = this;
 			this._propagateEvents = true;
 			$(this.getPlayerElement()).css('position', 'absolute');
 			this.stopped = false;
 			readyCallback();
 		},
-
+		/**
+		 * Apply player bindings for getting events from mpl.js
+		 */
+		addBindings: function(){
+			var _this = this;
+			this.bindHelper("replay", function(){
+				_this.triggerHelper("playerReady"); // since we reload the media for replay, trigger playerReady to reset Analytics
+			})
+		},
 		/**
 		 * Apply media element bindings
 		 */

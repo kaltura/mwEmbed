@@ -109,7 +109,7 @@ onload = function () {
 		} else if (payload['type'] === 'load') {
 			setMediaManagerEvents();
 		} else if (payload['type'] === 'replay') {
-			kdp.sendNotification("playerReady"); // since we reload the media for replay, trigger playerReady to reset Analytics
+			kdp.sendNotification("replay");      // notify replay to the receiver player
 		} else if (payload['type'] === 'setLogo') {
 			document.getElementById('logo').style.backgroundImage = "url(" + payload['logo'] + ")";
 		} else if (payload['type'] === 'embed' && !playerInitialized) {
