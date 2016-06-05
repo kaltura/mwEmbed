@@ -19,7 +19,7 @@
             font-family: Verdana, Geneva, sans-serif;
             font-size:40px;
             float:left;
-            z-index: 1;
+            z-index: 0;
             position:absolute;
         }
         #messages {
@@ -72,6 +72,13 @@
             z-index: 10;
             display: none;
         }
+        #videoHolder{
+            position: absolute;
+            width: 96%;
+            right: 2%;
+            height: 96%;
+            top: 4%;
+        }
     </style>
     <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
     <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/mediaplayer/1.0.0/media_player.js"></script>
@@ -116,7 +123,9 @@
     <span>Segment Credentials: <span id="segmentCredentials">false</span></span>
     <span>License Credentials: <span id="licenseCredentials">false</span></span>
 </div>
-<video id="receiverVideoElement" style="height:95%; width:100%; position: absolute"></video>
+<div id="videoHolder">
+    <video id="receiverVideoElement" style="height:95%; width:100%; position: absolute"></video>
+</div>
 <div id="logo"></div>
 <div id="kdebug"></div>
 </body>

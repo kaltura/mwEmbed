@@ -22,6 +22,7 @@ var mediaPlayer = null;  // an instance of cast.player.api.Player
 var playerInitialized = false;
 
 onload = function () {
+	var kdp;
 	cast.receiver.logger.setLevelValue(cast.receiver.LoggerLevel.DEBUG);
 	cast.player.api.setLoggerLevel(cast.player.api.LoggerLevel.DEBUG);
 
@@ -107,6 +108,8 @@ onload = function () {
 			setDebugMessage('customData', customData);
 		} else if (payload['type'] === 'load') {
 			setMediaManagerEvents();
+		} else if (payload['type'] === 'replay') {
+			kdp.sendNotification("replay");      // notify replay to the receiver player
 		} else if (payload['type'] === 'setLogo') {
 			document.getElementById('logo').style.backgroundImage = "url(" + payload['logo'] + ")";
 		} else if (payload['type'] === 'embed' && !playerInitialized) {
@@ -142,10 +145,19 @@ onload = function () {
 				"readyCallback": function (playerId) {
 					if (!playerInitialized){
 						playerInitialized = true;
-						var kdp = document.getElementById(playerId);
+						kdp = document.getElementById(playerId);
 						kdp.kBind("chromecastReceiverLoaded", function(){
 							setMediaManagerEvents();
 							messageBus.broadcast("readyForMedia");
+						});
+						kdp.kBind("waterMarkLoaded", function(waterMarkElement){
+							var css = getCss(waterMarkElement);
+							document.getElementById("videoHolder").appendChild(waterMarkElement);
+							for (var property in css) {
+								if (css.hasOwnProperty(property)) {
+									waterMarkElement.style[property] = css[property];
+								}
+							}
 						});
 					}
 				},
@@ -532,7 +544,9 @@ function initApp() {
 	 * 10 minutes for testing, use default 10sec in prod by not setting this value
 	 **/
 	appConfig.maxInactivity = 600;
-
+	castReceiverManager.onShutdown = function(){
+		messageBus.broadcast("shutdown"); // receiver was shut down by the browser Chromecast icon - send message to the player to stop the app
+	}
 	/**
 	 * Initializes the system manager. The application should call this method when
 	 * it is ready to start receiving messages, typically after registering
@@ -823,4 +837,31 @@ function extend(a, b){
 		if(b.hasOwnProperty(key))
 			a[key] = b[key];
 	return a;
+}
+/*
+ * get DOM element css properties
+ */
+function getCss(dom){
+	var style;
+	var returns = {};
+	if(window.getComputedStyle){
+		var camelize = function(a,b){
+			return b.toUpperCase();
+		};
+		style = window.getComputedStyle(dom, null);
+		for(var i = 0, l = style.length; i < l; i++){
+			var prop = style[i];
+			var camel = prop.replace(/\-([a-z])/g, camelize);
+			var val = style.getPropertyValue(prop);
+			returns[camel] = val;
+		};
+		return returns;
+	};
+	if(style = dom.currentStyle){
+		for(var prop in style){
+			returns[prop] = style[prop];
+		};
+		return returns;
+	};
+	return this.css();
 }
