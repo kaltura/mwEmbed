@@ -11,13 +11,7 @@ General
     z-index: 4;
     box-sizing: border-box;
     padding: 1em;
-    background-color: #000;
-    background-image: linear-gradient(top, #000000 10%, #3E3E3E 90%);
-    background-image: -o-linear-gradient(top, #000000 10%, #3E3E3E 90%);
-    background-image: -moz-linear-gradient(top, #000000 10%, #3E3E3E 90%);
-    background-image: -webkit-linear-gradient(top, #000000 10%, #3E3E3E 90%);
-    background-image: -ms-linear-gradient(top, #000000 10%, #3E3E3E 90%);
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.1, #000000), color-stop(0.9, #3E3E3E));
+    background-color:rgba(0,0,0,0.4);
 }
 
 .webcastPolls .poll-container

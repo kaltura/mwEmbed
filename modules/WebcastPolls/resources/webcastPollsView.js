@@ -11,7 +11,7 @@
         locale: {
             respondsLbl: gM('mwe-webc-polls-respondsLbl')
         },
-        createWebcastPollElement : function()
+        getWebcastPollElement : function()
         {
             var _this = this;
 
@@ -118,7 +118,7 @@
                 // Make sure we have a container
                 if (!_this.$webcastPoll)
                 {
-                    _this.$webcastPoll = _this.createWebcastPollElement();
+                    _this.$webcastPoll = _this.getWebcastPollElement();
                 }
 
                 var pollContent = _this.parent.pollData.content;
