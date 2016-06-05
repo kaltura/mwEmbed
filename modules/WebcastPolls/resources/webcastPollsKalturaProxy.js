@@ -3,7 +3,8 @@
     mw.webcastPolls = mw.webcastPolls || {};
 
     mw.webcastPolls.WebcastPollsKalturaProxy = mw.KBasePlugin.extend({
-        defaultConfig : {
+        defaultConfig :
+        {
         },
         isErrorResponse : function(result)
         {
@@ -193,7 +194,8 @@
 
             return defer.promise();
         },
-        getUserVote : function(userId, pollId, profileId ){
+        getUserVote : function(userId, pollId, profileId )
+        {
             var _this = this;
             var defer = $.Deferred();
 
@@ -276,7 +278,8 @@
 
             return defer.promise();
         },
-        getKClient: function () {
+        getKClient: function ()
+        {
             if (!this.kClient) {
                 this.kClient = mw.kApiGetPartnerClient(this.getPlayer().kwidgetid);
             }

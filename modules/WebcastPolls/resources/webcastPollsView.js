@@ -96,7 +96,8 @@
 
             }
         },
-        syncPollDOM : function(){
+        syncPollDOM : function()
+        {
             var _this = this;
 
             function updateAnswer(answerIndex, pollData)

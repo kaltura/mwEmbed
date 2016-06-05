@@ -16,7 +16,8 @@
         kClient: null,
         isPollShown: false,
         userProfile: null,
-        resetPersistData: function () {
+        resetPersistData: function ()
+        {
             var _this = this;
 
             _this.userVote = {metadataId: null, answer: null, inProgress: false, canUserVote: false, isReady: false};
@@ -29,7 +30,8 @@
             };
             _this.currentPollId = null;
         },
-        setup: function () {
+        setup: function ()
+        {
             var _this = this;
 
             _this.resetPersistData();
@@ -45,7 +47,8 @@
                 _this.poolVotingProfileId = null;
             });
         },
-        addBindings: function () {
+        addBindings: function ()
+        {
             // bind to cue point events
             var _this = this;
 
@@ -98,7 +101,8 @@
                 }
             });
         },
-        syncByReachedCuePoints: function () {
+        syncByReachedCuePoints: function ()
+        {
             var _this = this;
             if (_this.cuePointsManager) {
                 var cuePointsReachedResult = _this.cuePointsManager.getCuePointsReached();
@@ -108,7 +112,8 @@
                 }
             }
         },
-        initializeDependentPlugins: function () {
+        initializeDependentPlugins: function ()
+        {
             var _this = this;
 
             if (!_this.userProfile) {
@@ -139,7 +144,8 @@
                 _this.cuePointsManager.onCuePointsReached = _this.handleReachedCuePoints;
             }
         },
-        handleReachedCuePoints: function (args) {
+        handleReachedCuePoints: function (args)
+        {
             var _this = this;
             var relevantCuePoints = args.filter({
                 tags: ['select-poll-state', 'remove-selected-thumb', 'select-a-thumb'],
@@ -168,7 +174,8 @@
 
             }
         },
-        removePoll: function () {
+        removePoll: function ()
+        {
             var _this = this;
 
             if (_this.isPollShown) {
@@ -181,7 +188,8 @@
             // ## IMPORTANT: perform cleanup of information that was relevant to previous poll
             _this.resetPersistData();
         },
-        showOrUpdatePollByState: function (pollState) {
+        showOrUpdatePollByState: function (pollState)
+        {
             var _this = this;
 
             if (!pollState || !pollState.pollId) {
@@ -253,7 +261,8 @@
                 // todo [es] handle
             }
         },
-        updatePollResultsStatus: function () {
+        updatePollResultsStatus: function ()
+        {
             var _this = this;
 
             if (_this.pollData.showTotals || _this.pollData.showResults) {
@@ -262,7 +271,8 @@
                 _this.stopMonitorPollResults();
             }
         },
-        startMonitorPollResults: function () {
+        startMonitorPollResults: function ()
+        {
             var _this = this;
             if (!_this.pollData.fetchResultsId) {
                 _this.view.syncDOMPollResults();
@@ -270,7 +280,8 @@
                 _this.pollData.fetchResultsId = setInterval($.proxy(_this.updatePollResults,_this), _this.getConfig('monitorPollResultsInterval'))
             }
         },
-        updatePollResults: function () {
+        updatePollResults: function ()
+        {
             var _this = this;
             var invokedByPollId = _this.currentPollId;
             _this.kalturaProxy.getPollResults(invokedByPollId).then(function (result) {
@@ -284,13 +295,15 @@
 
 
         },
-        stopMonitorPollResults: function () {
+        stopMonitorPollResults: function ()
+        {
             if (_this.pollData.fetchResultsId) {
                 clearInterval(_this.pollData.fetchResultsId);
                 _this.pollData.fetchResultsId = null;
             }
         },
-        getPollContent: function (pollId, forceGet) {
+        getPollContent: function (pollId, forceGet)
+        {
             var _this = this;
             var defer = $.Deferred();
 
@@ -315,11 +328,13 @@
 
             return defer.promise();
         },
-        canUserVote: function () {
+        canUserVote: function ()
+        {
             var _this = this;
             return _this.currentPollId && _this.poolVotingProfileId && !_this.userVote.inProgress && _this.userVote.canUserVote && _this.userVote.isReady;
         },
-        handleAnswerClicked: function (e) {
+        handleAnswerClicked: function (e)
+        {
             var _this = this;
 
             if (!_this.canUserVote()) {
