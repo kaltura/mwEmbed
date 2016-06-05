@@ -5,12 +5,12 @@
 		defaultConfig: {
 			align: "right",
 			"parent": mw.isMobileDevice() ? 'topBarContainer' : 'controlsContainer',
+			smartContainer: 'morePlugins',
+			smartContainerCloseEvent: 'downloadMedia',
 			displayImportance: "low",
 			downloadName: '{mediaProxy.entry.name}',
 			showTooltip: true,
 			preferredBitrate: '',
-			smartContainer: 'morePlugins',
-			smartContainerCloseEvent: 'downloadMedia',
 			flavorID: '',
 			title: gM('mwe-embedplayer-download_clip'),
 		 	order: 53
