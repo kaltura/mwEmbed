@@ -110,11 +110,10 @@
                     break;
                 case 'onplay':
                 case 'seeked':
-                    if (_this.isPollShown && (eventName === 'onplay' || (eventName === 'seeked' && !_this.getPlayer().isPlaying()))) {
+                    if (eventName === 'onplay' || (eventName === 'seeked' && !_this.getPlayer().isPlaying())) {
                         if (_this.cuePointsManager) {
-                            var cuePointsReachedResult = _this.cuePointsManager.getCuePointsReached();
-                            var cuePointReached = _this.filterCuePoints(cuePointsReachedResult);
-                            if (!cuePointReached) {
+                            var cuePointsReachedArgs = _this.cuePointsManager.getCuePointsReached();
+                            if (!_this.handleReachedCuePoints(cuePointsReachedArgs)) {
                                 // when user seek/press play we need to handle scenario that no relevant cue points has reached and thus we need to clear the image shown.
                                 _this.removePoll();
                             }
@@ -182,6 +181,8 @@
                 }
 
             }
+
+            return !!mostUpdatedCuePointToHandle;
         },
         removePoll: function ()
         {
@@ -192,10 +193,10 @@
                 _this.isPollShown = false;
             }
 
-            _this.stopMonitorPollResults();
-
             // ## IMPORTANT: perform cleanup of information that was relevant to previous poll
             _this.resetPersistData();
+
+            _this.stopMonitorPollResults();
         },
         showOrUpdatePollByState: function (pollState)
         {
@@ -311,6 +312,7 @@
         },
         stopMonitorPollResults: function ()
         {
+            var _this = this;
             if (_this.pollData.fetchResultsId) {
                 clearInterval(_this.pollData.fetchResultsId);
                 _this.pollData.fetchResultsId = null;
