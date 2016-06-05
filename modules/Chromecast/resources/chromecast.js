@@ -50,6 +50,7 @@
 		isNativeSDK: false, //flag for using native mobile IMA SDK
 		pendingRelated: false,
 		pendingReplay: false,
+		replay: false,
 
 		setup: function( embedPlayer ) {
 			var _this = this;
@@ -252,6 +253,9 @@
 				if (message == "readyForMedia"){
 					_this.loadMedia();
 				}
+				if (message == "shutdown"){
+					_this.stopApp(); // receiver was shut down by the browser Chromecast icon - stop the app
+				}
 			});
 		},
 		getFlashVars: function(){
@@ -398,6 +402,11 @@
 					if ( _this.getConfig("receiverLogo") ){
 						_this.sendMessage({'type': 'hide', 'target': 'logo'});
 					}
+					if (_this.replay){
+						_this.replay = false;
+						_this.embedPlayer.triggerHelper("onPlayerStateChange",["end"]); // this will set the replay icon on the playPauseBtn button
+						_this.sendMessage({'type': 'replay'}); // since we reload the media for replay, trigger playerReady on the receiver player to reset Analytics
+					}
 				},300);
 				if (_this.monitorInterval !== null){
 					clearInterval(_this.monitorInterval);
@@ -437,12 +446,6 @@
 
 		monitor: function(){
 			var _this = this;
-			this.currentMediaSession.getStatus(null,null,
-				function(){
-					if (_this.getCurrentTime() > 0){
-						_this.stopApp(); // stop app if chromecast is not connected (user used the browser icon to disconnect)
-					}
-				});
 			this.embedPlayer.updatePlayhead( this.getCurrentTime(), this.mediaDuration );
 		},
 
@@ -514,6 +517,7 @@
 					this.embedPlayer.clipDone(); // trigger clipDone
 					this.autoPlay = false;       // set autoPlay to false for rewind
 					if (!this.pendingRelated){
+						this.replay = true;
 						this.loadMedia();            // reload the media for rewind unless related screen is open
 					}else{
 						this.pendingReplay = true;
