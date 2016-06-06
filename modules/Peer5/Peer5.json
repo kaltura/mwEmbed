@@ -3,8 +3,7 @@
         "scripts": "resources/mw.Peer5.js",
         "kalturaPluginName": "peer5",
         "dependencies": [
-            "mw.KBasePlugin",
-            "mw.hlsjs"
+            "mw.KBasePlugin"
         ]
     }
 }
