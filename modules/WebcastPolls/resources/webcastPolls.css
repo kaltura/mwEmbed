@@ -16,18 +16,16 @@ General
 
 .webcastPolls .poll-container
 {
-    display:table;
     width: 100%;
     height: 100%;
+    display:table;
 }
 
-.webcastPolls .parent-center
+.webcastPolls .poll-container-content
 {
-    width: 100%;
-    height: 100%;
-    text-align: center;
-    display: table-cell;
+    display:table-cell;
     vertical-align: middle;
+    text-align: center;
 }
 
 
@@ -35,7 +33,9 @@ General
 Loading
 *****************************/
 .webcastPolls .loading-container {
-
+    display:table-cell;
+    vertical-align: middle;
+    text-align: center;
 }
 
 /*****************************
@@ -43,25 +43,37 @@ Poll
 *****************************/
 .webcastPolls .poll  {
     display:none;
+    width:794px;
+    margin:auto;
+
 }
 
 .webcastPolls .poll .question{
-    float:left;
     color: #fff;
-    font-size:200%;
+    font-size:16pt;
+    width:445pt;
+    margin:auto;
 }
 
 
 .webcastPolls .poll .upper-row {
     position:relative;
+    text-align: center;
+    vertical-align: middle;
+    margin-bottom: 30px;
+}
+
+.webcastPolls .poll .lower-row{
+    text-align:left;
 }
 
 .webcastPolls .poll .responds {
-    float:right;
+    font-size:20px;
 }
 
 .webcastPolls .poll .responds .responds-number {
-    font-size:250%;
+    font-size:24px;
+    margin-right:15px;
 }
 
 .webcastPolls .poll .answers-container {
@@ -71,15 +83,18 @@ Poll
 
 .webcastPolls .poll .answer {
     margin-bottom: 10px;
-
-    border: solid 1px rgba(255, 255, 255, 0.2);
-    -webkit-border-radius:20px;
-    -moz-border-radius:20px;
-    border-radius:20px;
-    height:30px;
+    height:50px;
+    line-height: 50px;
+    width:100%;
+    -webkit-border-radius:3px;
+    -moz-border-radius:3px;
+    border-radius:3px;
     overflow:hidden;
-    background:rgba(255, 255, 255,0.4);
-    color: #000;
+    background:rgba(0,0,0,0.75);
+    color: rgba(255,255,255,0.7);
+    text-align: center;
+    vertical-align: middle;
+
 
 }
 
@@ -90,22 +105,15 @@ Poll
 
 .webcastPolls .poll .answer-text {
     font-family: "Lato-Regular";
-    font-size: 2vw;
-    display: table;
-    margin-left: 1vw;
-    margin-right: auto;
-    width: 88vw;
+    font-size: 17px;
     color: #FFF;
-    position: absolute;
-    height: 8vh;
-    margin-top: -1vh;
-    padding-left: 1vw;
 }
 
 .webcastPolls.allow-voting .poll .answer:hover {
-    background-color: rgb(86,114,53);
+    background-color: rgba(2555, 255, 255, 0.40);
 }
 
 .webcastPolls .poll .answer.selected {
-    background-color: rgb(86,168,15);
+    background-color: rgba(255, 255, 255, 0.20);
+    border: solid 1px rgba(25, 211, 32, 0.60);
 }
