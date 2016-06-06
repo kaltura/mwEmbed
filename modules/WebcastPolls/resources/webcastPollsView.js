@@ -62,7 +62,16 @@
 
                     if (showTotals &&  hasPollContent && pollResults && pollResults.totalVoters )
                     {
-                        $container.find("[name='text']").text(pollResults.totalVoters);
+                        var label = '';
+                        var totalVotersAsNumber = pollResults.totalVoters.match('^[0-9]+$') ? parseInt(pollResults.totalVoters) : null;
+                        if (totalVotersAsNumber && totalVotersAsNumber > 10000)
+                        {
+                            label =  (totalVotersAsNumber - (totalVotersAsNumber % 1000)) / 1000 + "K";
+                        }else
+                        {
+                            label = pollResults.totalVoters;
+                        }
+                        $container.find("[name='text']").text(label);
                         $container.show();
                     }else
                     {
