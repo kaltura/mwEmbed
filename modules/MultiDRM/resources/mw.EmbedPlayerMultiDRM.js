@@ -52,6 +52,10 @@
 		// Disable switch source callback
 		disableSwitchSourceCallback: false,
 
+		dropFrameLocker:true,
+
+		lastDropFrame:0,
+
 		// Flag specifying if a mobile device already played. If true - mobile device can autoPlay
 		mobilePlayed: false,
 		// All the native events per:
@@ -562,6 +566,27 @@
 					this.updateBufferStatus(vid.bufferedPercent());
 				} catch (e) {
 					// opera does not have buffered.end zero index support ?
+				}
+			}
+
+			if (this.dropFrameLocker && this.playerElement && this.playerElement.getPlaybackStatistics
+			){
+				var stats =  this.playerElement.getPlaybackStatistics();
+				if (stats.video.droppedFrames > 200) {
+					this.log( "Drop frames count is high - lower bitrate" );
+					var minBW = 9999999999;
+					var selectedSource = null;
+					$.each( this.manifestAdaptiveFlavors , function ( index , flavor ) {
+						if ( flavor.bandwidth < minBW ) {
+							minBW = flavor.bandwidth;
+							selectedSource = flavor;
+						}
+					} );
+					if ( selectedSource ) {
+						this.dropFrameLocker = false;
+						this.log( "decreasing the bitrate due to high dropframes" );
+						this.switchSrc( selectedSource );
+					}
 				}
 			}
 			_this.parent_monitor();
