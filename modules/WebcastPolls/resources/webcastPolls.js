@@ -238,6 +238,11 @@
                             if (invokedByPollId === _this.currentPollId) {
                                 _this.pollData.content = result.content;
                                 _this.pollData.pollResults = result.results;
+
+                                _this.userVote.isReady = true;
+                                _this.userVote.answer = result.userVote.answer;
+                                _this.userVote.metadataId = result.userVote.metadataId;
+
                                 _this.view.syncPollDOM();
                             }
                         }, function (reason) {
@@ -245,20 +250,6 @@
                                 // TODO [es] handle
                             }
                         });
-
-                        // ## get user vote for requested poll
-                        _this.kalturaProxy.getUserVote(_this.userId, _this.currentPollId, _this.poolVotingProfileId).then(function (result) {
-                                if (invokedByPollId === _this.currentPollId) {
-                                    _this.userVote.isReady = true;
-                                    _this.userVote.answer = result.answer;
-                                    _this.userVote.metadataId = result.metadataId;
-                                    _this.view.syncDOMUserVoting();
-                                }
-                            }, function (reason) {
-                                if (invokedByPollId === _this.currentPollId) {
-                                    // TODO [es] handle
-                                }
-                            });
 
                         _this.updatePollResultsStatus();
 
@@ -324,14 +315,15 @@
             if (_this.cachedPollsContent[pollId] && !forceGet) {
                 var pollData = pollData[pollId].pollData;
                 var pollResults = pollData[pollId].pollResults;
-                defer.resolve({content: pollData, results : pollResults});
+                var userVote = pollData[pollId].userVote;
+                defer.resolve({content: pollData, results : pollResults, userVote : userVote});
             } else {
                 _this.cachedPollsContent[pollId] = null;
 
-                _this.kalturaProxy.getPollContent(pollId).then(function (result) {
+                _this.kalturaProxy.getPollContent(pollId,_this.poolVotingProfileId, _this.userId).then(function (result) {
                     try {
                         _this.cachedPollsContent[pollId] = result;
-                        defer.resolve({content: result.pollData, results : result.pollResults});
+                        defer.resolve({content: result.pollData, results : result.pollResults,  userVote : result.userVote});
                     } catch (e) {
                         defer.reject({});
                     }

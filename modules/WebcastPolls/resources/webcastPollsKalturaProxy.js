@@ -71,6 +71,70 @@
                     var pollData = JSON.parse(response.text);
                     result.pollData = pollData;
                 }
+            },
+            userVote : {
+                getRequest: function(entryId, pollId, profileId, userId)
+                {
+                    var request = {
+                        'service': 'cuepoint_cuepoint',
+                        'action': 'list',
+                        'filter:entryIdEqual': entryId,
+                        'filter:orderBy': '-createdAt', // although only one vote is allowed per user, we fetch the last one so if for unknown reason we have duplicates, the user will see his last choice
+                        'filter:objectType': 'KalturaAnnotationFilter',
+                        'filter:cuePointTypeIn': 'annotation.Annotation',
+                        'filter:parentIdEqual': pollId,
+
+                        /*Search  metadata   */
+                        'filter:advancedSearch:objectType': 'KalturaMetadataSearchItem',
+                        'filter:advancedSearch:metadataProfileId': profileId,
+                        "responseProfile:objectType":"KalturaResponseProfileHolder",
+                        "responseProfile:systemName":"pollVoteResponseProfile",
+
+                        //search all messages on my session id
+                        'filter:advancedSearch:items:item1:objectType': "KalturaSearchCondition",
+                        'filter:advancedSearch:items:item1:field': "/*[local-name()='metadata']/*[local-name()='UserId']",
+                        'filter:advancedSearch:items:item1:value': userId,
+
+                        'pager:pageSize': 1,
+                        'pager:pageIndex': 1
+                    };
+
+                    return request;
+                },
+                handleResponse : function(result, response)
+                {
+                    result.userVote = {};
+
+                    var cuePoint =(response && response.objects && response.objects.length > 0) ? response.objects[0] : null;
+
+                    if (cuePoint)
+                    {
+                        var metadata = (cuePoint.relatedObjects &&
+                            cuePoint.relatedObjects.pollVoteResponseProfile &&
+                            cuePoint.relatedObjects.pollVoteResponseProfile.objects &&
+                            cuePoint.relatedObjects.pollVoteResponseProfile.objects.length > 0
+                        ) ? cuePoint.relatedObjects.pollVoteResponseProfile.objects[0] : null;
+
+                        if (metadata && metadata.xml)
+                        {
+                            var voteAnswerToken = metadata.xml.match(/<Answer>([0-9]+?)<[/]Answer>/);
+                            var vote = (voteAnswerToken.length === 2) ? voteAnswerToken[1] : null;
+                            var metadataId = metadata.id;
+
+                            if (vote) {
+                                result.userVote = {metadataId: metadataId, answer: vote};
+                            }else {
+                                // ## failed to extract metadata of cuepoint - invalid situation
+                                throw new Error("todo"); // TODO [es]
+                            }
+                        }else
+                        {
+                            // ## got cue point without metadata - invalid situation
+                            throw new Error("todo"); // TODO [es]
+                        }
+                    }
+
+                }
             }
         },
         getPollResults : function(pollId)
@@ -97,15 +161,16 @@
 
             return defer.promise();
         },
-        getPollContent : function(pollId)
+        getPollContent : function(pollId, profileId, userId)
         {
             var _this = this;
             var defer = $.Deferred();
 
             var pollDataRequest = _this.adapters.pollData.getRequest(pollId);
             var pollResultsRequest = _this.adapters.pollResults.getRequest(_this.getPlayer().kentryid, pollId);
+            var userVoteRequest = _this.adapters.userVote.getRequest(_this.getPlayer().kentryid,pollId, profileId, userId);
 
-            _this.getKalturaClient().doRequest([pollDataRequest, pollResultsRequest], function(responses)
+            _this.getKalturaClient().doRequest([pollDataRequest, pollResultsRequest, userVoteRequest], function(responses)
             {
                 if (!_this.isErrorResponse(responses))
                 {
@@ -113,6 +178,8 @@
                         var result = {};
                         _this.adapters.pollData.handleResponse(result,responses[0]);
                         _this.adapters.pollResults.handleResponse(result,responses[1]);
+                        _this.adapters.userVote.handleResponse(result,responses[2]);
+
 
                         defer.resolve(result);
                     }catch(e)
@@ -212,90 +279,6 @@
                     defer.resolve({profileId: result.objects[0].id});
                 }else
                 {
-                    defer.reject();
-                }
-            },false,function(reason)
-            {
-                defer.reject();
-            });
-
-            return defer.promise();
-        },
-        getUserVote : function(userId, pollId, profileId )
-        {
-            var _this = this;
-            var defer = $.Deferred();
-
-
-            var request = {
-                'service': 'cuepoint_cuepoint',
-                'action': 'list',
-                'filter:entryIdEqual': _this.getPlayer().kentryid,
-                'filter:orderBy': '-createdAt', // although only one vote is allowed per user, we fetch the last one so if for unknown reason we have duplicates, the user will see his last choice
-                'filter:objectType': 'KalturaAnnotationFilter',
-                'filter:cuePointTypeIn': 'annotation.Annotation',
-                'filter:parentIdEqual': pollId,
-
-                /*Search  metadata   */
-                'filter:advancedSearch:objectType': 'KalturaMetadataSearchItem',
-                'filter:advancedSearch:metadataProfileId': profileId,
-                "responseProfile:objectType":"KalturaResponseProfileHolder",
-                "responseProfile:systemName":"pollVoteResponseProfile",
-
-                //search all messages on my session id
-                'filter:advancedSearch:items:item1:objectType': "KalturaSearchCondition",
-                'filter:advancedSearch:items:item1:field': "/*[local-name()='metadata']/*[local-name()='UserId']",
-                'filter:advancedSearch:items:item1:value': userId,
-
-                'pager:pageSize': 1,
-                'pager:pageIndex': 1
-            };
-
-            this.getKClient().doRequest(request, function (result) {
-                if (!_this.isErrorResponse(result))
-                {
-                    try {
-                        var cuePoint =(result.objects && result.objects.length > 0) ? result.objects[0] : null;
-
-                        if (cuePoint)
-                        {
-                            var metadata = (cuePoint.relatedObjects &&
-                                cuePoint.relatedObjects.pollVoteResponseProfile &&
-                                cuePoint.relatedObjects.pollVoteResponseProfile.objects &&
-                                cuePoint.relatedObjects.pollVoteResponseProfile.objects.length > 0
-                            ) ? cuePoint.relatedObjects.pollVoteResponseProfile.objects[0] : null;
-
-                            if (metadata && metadata.xml)
-                            {
-                                var voteAnswerToken = metadata.xml.match(/<Answer>([0-9]+?)<[/]Answer>/);
-                                var vote = (voteAnswerToken.length === 2) ? voteAnswerToken[1] : null;
-                                var metadataId = metadata.id;
-
-                                if (vote) {
-                                    defer.resolve({metadataId: metadataId, answer: vote});
-                                }else {
-                                    // ## failed to extract metadata of cuepoint - invalid situation
-                                    defer.reject();
-                                }
-                            }else
-                            {
-                                // ## got cue point without metadata - invalid situation
-                                defer.reject();
-                            }
-                        }else
-                        {
-                            // ## user didn't vote already - valid situation
-                            defer.resolve({metadataId : null,answer : null});
-                        }
-                    }catch(e)
-                    {
-                        // ## general error
-                        mw.log.error(e);
-                        defer.reject();
-                    }
-
-                }else {
-                    // ## got error from api
                     defer.reject();
                 }
             },false,function(reason)
