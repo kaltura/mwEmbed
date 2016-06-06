@@ -237,6 +237,7 @@
                         _this.getPollContent(pollState.pollId, true).then(function (result) {
                             if (invokedByPollId === _this.currentPollId) {
                                 _this.pollData.content = result.content;
+                                _this.pollData.pollResults = result.results;
                                 _this.view.syncPollDOM();
                             }
                         }, function (reason) {
@@ -291,7 +292,6 @@
             var _this = this;
             if (!_this.pollData.fetchResultsId) {
                 _this.view.syncDOMPollResults();
-                _this.updatePollResults();
                 _this.pollData.fetchResultsId = setInterval($.proxy(_this.updatePollResults,_this), _this.getConfig('monitorPollResultsInterval'))
             }
         },
@@ -307,8 +307,6 @@
             }, function (reason) {
                 // TODO [es] handle
             })
-
-
         },
         stopMonitorPollResults: function ()
         {
@@ -324,15 +322,16 @@
             var defer = $.Deferred();
 
             if (_this.cachedPollsContent[pollId] && !forceGet) {
-                var pollData = pollData[pollId];
-                defer.resolve({content: pollData});
+                var pollData = pollData[pollId].pollData;
+                var pollResults = pollData[pollId].pollResults;
+                defer.resolve({content: pollData, results : pollResults});
             } else {
                 _this.cachedPollsContent[pollId] = null;
 
                 _this.kalturaProxy.getPollContent(pollId).then(function (result) {
                     try {
-                        _this.cachedPollsContent[pollId] = result.pollData;
-                        defer.resolve({content: result.pollData});
+                        _this.cachedPollsContent[pollId] = result;
+                        defer.resolve({content: result.pollData, results : result.pollResults});
                     } catch (e) {
                         defer.reject({});
                     }

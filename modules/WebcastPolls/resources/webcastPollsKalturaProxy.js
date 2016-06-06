@@ -26,43 +26,70 @@
                 return (result && result.objectType && result.objectType === "KalturaAPIException");
             }
         },
+        adapters : {
+            pollResults: {
+                getRequest: function (entryId, pollId) {
+                    var request = {
+                        'service': 'cuepoint_cuepoint',
+                        'action': 'list',
+                        'filter:objectType': 'KalturaAnnotationFilter',
+                        'filter:entryIdEqual': entryId,
+                        'filter:orderBy': '-createdAt',
+                        'filter:cuePointTypeIn': 'annotation.Annotation',
+                        'filter:parentIdEqual': pollId,
+                        'filter:tagsLike': 'poll-results',
+                        'pager:pageSize': 1,
+                        'pager:pageIndex': 1
+                    };
+
+                    return request;
+                },
+                handleResponse: function (result,response) {
+                    var pollResults = {};
+
+                    if (response.objects && response.objects.length) {
+                        var pollResults = response.objects[0].text;
+                        result.pollResults = JSON.parse(pollResults);
+                    }
+
+                    return pollResults;
+                }
+            },
+            pollData : {
+                getRequest : function(pollId)
+                {
+                    var request = {
+                        'service': 'cuepoint_cuepoint',
+                        'action': 'get',
+                        'id': pollId
+                    };
+
+                    return request;
+                },
+                handleResponse : function(result, response)
+                {
+                    var pollData = JSON.parse(response.text);
+                    result.pollData = pollData;
+                }
+            }
+        },
         getPollResults : function(pollId)
         {
             var _this = this;
             var defer = $.Deferred();
 
-            var request = {
-                'service': 'cuepoint_cuepoint',
-                'action': 'list',
-                'filter:objectType': 'KalturaAnnotationFilter',
-                'filter:entryIdEqual': _this.getPlayer().kentryid,
-                'filter:orderBy': '-createdAt',
-                'filter:cuePointTypeIn': 'annotation.Annotation',
-                'filter:parentIdEqual': pollId,
-                'filter:tagsLike': 'poll-results',
-                'pager:pageSize': 1,
-                'pager:pageIndex': 1
-            };
+            var request = _this.adapters.pollResults.getRequest(_this.getPlayer().kentryid, pollId);
 
-            _this.getKalturaClient().doRequest(request, function(result)
+            _this.getKalturaClient().doRequest(request, function(response)
             {
-                if (!_this.isErrorResponse(result))
+                if (!_this.isErrorResponse(response))
                 {
-                    if (result.objects.length) {
-                        try {
-                            var pollContent = result.objects[0].text;
-                            var pollData = JSON.parse(pollContent);
-                            defer.resolve({pollResults : pollData });
-                        }catch(e)
-                        {
-                            defer.reject({});
-                        }
-                    }
+                    var result = {};
+                    _this.adapters.pollResults.handleResponse(result,response);
+                    defer.resolve(result);
                 }else {
                     defer.reject();
                 }
-
-
             },false, function(reason)
             {
                 defer.reject({});
@@ -75,19 +102,19 @@
             var _this = this;
             var defer = $.Deferred();
 
-            var request = {
-                'service': 'cuepoint_cuepoint',
-                'action': 'get',
-                'id': pollId
-            };
+            var pollDataRequest = _this.adapters.pollData.getRequest(pollId);
+            var pollResultsRequest = _this.adapters.pollResults.getRequest(_this.getPlayer().kentryid, pollId);
 
-            _this.getKalturaClient().doRequest(request, function(result)
+            _this.getKalturaClient().doRequest([pollDataRequest, pollResultsRequest], function(responses)
             {
-                if (!_this.isErrorResponse(result))
+                if (!_this.isErrorResponse(responses))
                 {
                     try {
-                        var pollData = JSON.parse(result.text);
-                        defer.resolve({pollData : pollData });
+                        var result = {};
+                        _this.adapters.pollData.handleResponse(result,responses[0]);
+                        _this.adapters.pollResults.handleResponse(result,responses[1]);
+
+                        defer.resolve(result);
                     }catch(e)
                     {
                         defer.reject({});
