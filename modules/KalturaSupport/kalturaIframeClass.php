@@ -578,6 +578,17 @@ class kalturaIframeClass {
 		return "Kaltura Embed Player iFrame";
 	}
 
+	function outputCompatibilityTags(){
+		$flashvars = $this->request->getFlashVars();
+		if (isset($flashvars) &&
+				isset($flashvars['forceCompatMode']) &&
+				!empty($flashvars['forceCompatMode'])){
+			return '<meta http-equiv="X-UA-Compatible" content="' . $flashvars['forceCompatMode'] . '"/>';
+		}
+
+		return '';
+	}
+
 	/**
 	 * Get the iframe css
 	 */
@@ -1277,6 +1288,7 @@ HTML;
 <!DOCTYPE html>
 <html>
 <head>
+	<?php echo $this->outputCompatibilityTags(); ?>
 	<script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ </script>
 	<?php if($wgRemoteWebInspector && $wgEnableScriptDebug){
 		echo '<script src="' . $wgRemoteWebInspector . '"></script>';
