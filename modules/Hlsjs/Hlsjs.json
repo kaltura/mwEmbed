@@ -4,7 +4,10 @@
             "resources/hls.min.js" ,
           "resources/hlsjs.js"
         ],
-        "dependencies": "mw.KBasePlugin",
+        "dependencies": [
+            "mw.KBasePlugin",
+            "mw.Peer5"
+        ],
         "kalturaPluginName": "hlsjs"
     }
 }

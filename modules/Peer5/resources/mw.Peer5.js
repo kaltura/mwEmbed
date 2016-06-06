@@ -8,20 +8,21 @@
 
         defaultConfig: {
             setupTimeout: 3000
-            // peer5JsUrl: 'https://peer5.com/peer5.js?id=XXXXXX'
-            // peer5HlsjsPluginJsUrl: 'https://peer5.com/peer5.hlsjs.plugin.js'
+            // peer5JsUrl: 'https://api.peer5.com/peer5.js?id=XXXXXX'
+            // peer5HlsjsPluginJsUrl: 'https://api.peer5.com/peer5.hlsjs.plugin.js'
         },
 
         setup: function() {
             var that = this;
             var config = {};
             var configValid = true;
-
-            var tAnyway = setTimeout(setupCompleteCallback, setTimeout);
+            var tAnyway = true;
 
             function setupCompleteCallback() {
                 if (tAnyway) {
-                    clearTimeout(tAnyway);
+                    if (tAnyway !== true) {
+                        clearTimeout(tAnyway);
+                    }
                     tAnyway = null;
 				            that.initCompleteCallback();
                 }
@@ -34,6 +35,7 @@
                     configValid = false;
                 }
             });
+
             if (!configValid) {
                 return setupCompleteCallback();
             }
@@ -42,9 +44,11 @@
                 return setupCompleteCallback();
             }
 
-            $.getScript(config.peer5JsUrl)
+            tAnyway = setTimeout(setupCompleteCallback, config.setupTimeout);
+
+            $.ajax({ dataType: 'script', url: config.peer5JsUrl, cache: true })
                 .done(function() {
-                    $.getScript(config.peer5HlsjsPluginJsUrl)
+                    $.ajax({ dataType: 'script', url: config.peer5HlsjsPluginJsUrl, cache: true })
                         .done(setupCompleteCallback)
                         .fail(function(jqxhr, settings, exception) {
                             mw.log('Peer5: Error loading "' + config.peer5HlsjsPluginJsUrl + '". Plugging out.');
