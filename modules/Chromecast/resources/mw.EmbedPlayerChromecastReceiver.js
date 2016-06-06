@@ -20,12 +20,8 @@
 			'overlays': true
 		},
 		seeking: false,
-		startOffset: 0,
+		triggerReplayEvent: false, // since native replay is not supported in the Receiver, we use this flag to send a replay event to Analytics
 		currentTime: 0,
-		duration: 0,
-		userSlide: false,
-		volume: 1,
-		receiverName: '',
 		nativeEvents: [
 			'loadstart',
 			'progress',
@@ -73,6 +69,7 @@
 		addBindings: function(){
 			var _this = this;
 			this.bindHelper("replay", function(){
+				_this.triggerReplayEvent = true;
 				_this.triggerHelper("playerReady"); // since we reload the media for replay, trigger playerReady to reset Analytics
 			})
 		},
@@ -120,10 +117,31 @@
 		_onplay: function () {
 			this.play();
 			this.restoreEventPropagation();
-			this.layoutBuilder.hidePlayerControls();
 			$(this).trigger('onPlayerStateChange', [ "play", "pause" ]);
-
+			if (this.triggerReplayEvent){
+				$(this).trigger('replayEvent');
+				this.triggerReplayEvent = false;
+			}
 		},
+
+		_onseeking: function () {
+			if (!this.seeking) {
+				this.seeking = true;
+				if ( this._propagateEvents && !this.isLive() ) {
+					this.triggerHelper('seeking');
+				}
+			}
+		},
+
+		_onseeked: function () {
+			if (this.seeking) {
+				this.seeking = false;
+				if (this._propagateEvents && !this.isLive()) {
+					this.triggerHelper('seeked', [this.getPlayerElementTime()]);
+				}
+			}
+		},
+
 		// override these functions so embedPlayer won't try to sync time
 		syncCurrentTime: function(){
 			this.currentTime = this.getPlayerElementTime();
