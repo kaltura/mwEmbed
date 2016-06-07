@@ -71,7 +71,14 @@
 			this.bindHelper("replay", function(){
 				_this.triggerReplayEvent = true;
 				_this.triggerHelper("playerReady"); // since we reload the media for replay, trigger playerReady to reset Analytics
-			})
+			});
+			this.bindHelper("onAdOpen", function(event, id, system, type){
+				_this.triggerHelper("broadcastToSender", ["chromecastReceiverAdOpen"]);
+			});
+			this.bindHelper("onAdComplete", function(){
+				_this.triggerHelper("broadcastToSender", ["chromecastReceiverAdComplete"]);
+				_this.triggerHelper("cancelAllAds");
+			});
 		},
 		/**
 		 * Apply media element bindings
@@ -106,7 +113,6 @@
 		 */
 		_onpause: function () {
 			this.pause();
-			this.layoutBuilder.showPlayerControls();
 			$(this).trigger('onPlayerStateChange', [ "pause", "play" ]);
 
 		},

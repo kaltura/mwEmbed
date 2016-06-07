@@ -51,6 +51,7 @@
 		pendingRelated: false,
 		pendingReplay: false,
 		replay: false,
+		updateProgress: true,
 
 		setup: function( embedPlayer ) {
 			var _this = this;
@@ -249,12 +250,22 @@
 
 			var _this = this;
 			this.session.addMessageListener(this.MESSAGE_NAMESPACE, function(namespace, message){
-				_this.log("Got Message From Receiver: "+message);
-				if (message == "readyForMedia"){
-					_this.loadMedia();
-				}
-				if (message == "shutdown"){
-					_this.stopApp(); // receiver was shut down by the browser Chromecast icon - stop the app
+				_this.log( "Got Message From Receiver: " + message );
+				switch (message){
+					case "readyForMedia":
+						_this.loadMedia();
+						break;
+					case "shutdown":
+						_this.stopApp(); // receiver was shut down by the browser Chromecast icon - stop the app
+						break;
+					case "chromecastReceiverAdOpen":
+						_this.embedPlayer.disablePlayControls(["chromecast"]);
+						_this.updateProgress = false;
+						break;
+					case "chromecastReceiverAdComplete":
+						_this.embedPlayer.enablePlayControls();
+						_this.loadMedia();
+						break;
 				}
 			});
 		},
@@ -337,6 +348,7 @@
 		onMediaDiscovered: function(how, mediaSession) {
 			var _this = this;
 			this.embedPlayer.layoutBuilder.closeAlert();
+			this.updateProgress = true;
 			// if page reloaded and in playlist - select the currently playing clip
 			if ( how === 'onRequestSessionSuccess_' && this.embedPlayer.playlist){
 				this.stopApp();
@@ -402,7 +414,7 @@
 					if ( _this.getConfig("receiverLogo") ){
 						_this.sendMessage({'type': 'hide', 'target': 'logo'});
 					}
-					if (_this.replay){
+					if (_this.replay && !_this.embedPlayer.playlist){
 						_this.replay = false;
 						_this.embedPlayer.triggerHelper("onPlayerStateChange",["end"]); // this will set the replay icon on the playPauseBtn button
 						_this.sendMessage({'type': 'replay'}); // since we reload the media for replay, trigger playerReady on the receiver player to reset Analytics
@@ -445,8 +457,9 @@
 		},
 
 		monitor: function(){
-			var _this = this;
-			this.embedPlayer.updatePlayhead( this.getCurrentTime(), this.mediaDuration );
+			if (this.updateProgress){
+				this.embedPlayer.updatePlayhead( this.getCurrentTime(), this.mediaDuration );
+			}
 		},
 
 		seekMedia: function(pos) {

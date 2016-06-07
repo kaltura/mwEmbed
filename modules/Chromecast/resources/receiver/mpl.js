@@ -20,6 +20,7 @@ var mediaHost = null;  // an instance of cast.player.api.Host
 var mediaProtocol = null;  // an instance of cast.player.api.Protocol
 var mediaPlayer = null;  // an instance of cast.player.api.Player
 var playerInitialized = false;
+var isInSequence = false;
 
 onload = function () {
 	var kdp;
@@ -146,6 +147,10 @@ onload = function () {
 					if (!playerInitialized){
 						playerInitialized = true;
 						kdp = document.getElementById(playerId);
+						kdp.kBind("broadcastToSender", function(msg){
+							messageBus.broadcast(msg);
+							isInSequence = ( msg == "chromecastReceiverAdOpen" );
+						});
 						kdp.kBind("chromecastReceiverLoaded", function(){
 							setMediaManagerEvents();
 							messageBus.broadcast("readyForMedia");
@@ -185,8 +190,9 @@ function setMediaManagerEvents() {
 	 */
 	mediaManager.onEnded = function () {
 		setDebugMessage('mediaManagerMessage', 'ENDED');
-
-		mediaManager['onEndedOrig']();
+		if (!isInSequence){
+			mediaManager['onEndedOrig']();
+		}
 	};
 
 	/**
