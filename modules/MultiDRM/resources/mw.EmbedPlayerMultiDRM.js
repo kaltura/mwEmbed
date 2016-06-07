@@ -564,7 +564,9 @@
 					// opera does not have buffered.end zero index support ?
 				}
 			}
-			if (this.playerElement && this.playerElement.contentEl ){
+
+
+			if (mw.getConfig("monitorDropFrames") && this.playerElement && this.playerElement.contentEl ){
 				try {
 					var vidObj = $( this.playerElement.contentEl() ).find( "video" )[0];
 					if (typeof vidObj.getVideoPlaybackQuality === 'function') {
