@@ -213,8 +213,7 @@
     font-size: 4em;
 }
 .mobile .share.semiTransparentBkg{
-    background-color: rgb(0, 0, 0);
-    opacity: 0.8;
+    background-color: rgba(0, 0, 0, 0.2);
 }
 .share .share-network{
 	display: table;

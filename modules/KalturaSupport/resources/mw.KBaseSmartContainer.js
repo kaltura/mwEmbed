@@ -37,7 +37,7 @@
 
 				// add to the smart container all the plugins with the "smartContainer" property set to the smart container pluginName
 				for ( var plugin in plugins){
-					if ( plugins[plugin].getConfig("smartContainer") && plugins[plugin].getConfig("smartContainer") === _this.pluginName ){
+					if ( plugins[plugin].getConfig("smartContainer") && plugins[plugin].getConfig("smartContainer") === _this.pluginName && plugins[plugin].safe){
 						_this.registeredPlugins.push(plugins[plugin]);
 						// add close events
 						if (plugins[plugin].getConfig("smartContainerCloseEvent")){
@@ -110,22 +110,28 @@
 		},
 		showRegisteredPlugins: function(){
 			var _this = this;
+			// clean registeredPlugins array from plugins that were defined as isSafeEnviornment = false by a promise returned after the pluginsReady event
+			for ( var i = this.registeredPlugins.length -1; i >= 0; i-- ){
+				if ( !this.registeredPlugins[i].safe ){
+					this.registeredPlugins.splice( i, 1 );
+				}
+			}
+
 			this.pluginsScreenOpened = true;
 
-			var rowsClassName = _this.registeredPlugins.length < 4 ? "row1" : "row2";
 			var $sc = this.embedPlayer.getVideoHolder().find(".smartContainer");
-			$sc.removeClass("row1 row2").addClass(rowsClassName);
 
 			this.embedPlayer.getInterface().addClass( "pluginsScreenOpened" );
 			$(this.embedPlayer.getPlayerElement()).addClass("blur");
 			// calculate the width and height for each plugin. Adding 1 to the plugins count to add some spacing. Done each time the plugins are shown to support responsive players.
 			var numPlugins = this.registeredPlugins.length;
 			var pluginWidth = 33;
-			if ( numPlugins === 4){
+			if ( numPlugins === 4 || numPlugins === 2){
 				pluginWidth = 50;
 			}
 			var pluginHeight = this.embedPlayer.getVideoHolder().width() / (numPlugins + 1);
 			$sc.find(".comp").not(".closePluginsScreen, .icon-next, .icon-prev, .largePlayBtn").width( pluginWidth + "%").height(pluginHeight);
+			$sc.removeClass("comp1 comp2 comp3 comp4 comp5 comp6").addClass("comp" + this.registeredPlugins.length);
 
 			for ( var i = 0; i < this.registeredPlugins.length; i++ ){
 				var plugin = this.registeredPlugins[i].getComponent();

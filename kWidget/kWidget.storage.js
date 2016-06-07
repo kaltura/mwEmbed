@@ -3,7 +3,30 @@
 
     var NS = "kalturaCache__";
     var ttlSuffix = "_ttl";
-    var storage = window.localStorage;
+    var storage;
+    var isStorageSupported = true;
+
+    (function(){
+        try {
+            //Check for localStorage object
+            var localStorageApiExist = (('localStorage' in win) && (win['localStorage'] != null) && (win['localStorage'] != undefined));
+            if (localStorageApiExist) {
+                //Check for localStorage functionality
+                storage = window.localStorage;
+                var uid = new Date();
+                storage.setItem(uid, uid);
+                var fail = (storage.getItem(uid) != uid);
+                storage.removeItem(uid);
+                if (fail) {
+                    isStorageSupported = false;
+                }
+            } else {
+                isStorageSupported = false;
+            }
+        } catch (exception) {
+            isStorageSupported = false;
+        }
+    }());
 
     var storageManger = {
         get: function (cacheKey) {
@@ -78,12 +101,7 @@
             return count;
         },
         isSupported: function() {
-            try {
-                return (('localStorage' in win) && (win['localStorage'] != null) && (win['localStorage'] != undefined));
-            }
-            catch(err) {
-                return false;
-            }
+            return isStorageSupported;
         },
         isQuotaExceeded: function(e) {
             var quotaExceeded = false;

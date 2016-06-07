@@ -616,11 +616,7 @@
 					vid.removeAttribute('controls');
 
 					// dissable seeking ( if we were in a seeking state before the switch )
-					if (_this.isFlavorSwitching) {
-						_this.seeking = true;
-					} else {
-						_this.seeking = false;
-					}
+					_this.seeking = false;
 
 					// Workaround for 'changeMedia' on Android & iOS
 					// When changing media and not playing entry before spinner is stuck on black screen
@@ -928,9 +924,8 @@
 		setPlayerElementVolume: function (percent) {
 			if (this.getPlayerElement()) {
 				// Disable mute if positive volume
-				if (percent != 0) {
-					this.playerElement.muted = false;
-				}
+				this.playerElement.muted = ( percent === 0 );
+
 				this.playerElement.volume = percent;
 			}
 		},
@@ -1050,7 +1045,6 @@
 				var _this = this;
 				this.waitForSeekTarget().then(function(){
 					_this.seeking = false;
-					_this.isFlavorSwitching = false;
 					if (_this._propagateEvents) {
 						if( !_this.isLive() || ( _this.isLive() && _this.isDVR() ) ) {
 							_this.log(" trigger: seeked");

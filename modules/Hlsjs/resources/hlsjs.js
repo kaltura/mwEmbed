@@ -474,6 +474,7 @@
 			 * Override player callback after changing media
 			 */
 			playerSwitchSource: function(src, switchCallback, doneCallback){
+				this.getPlayer().play();
 				if ($.isFunction(switchCallback)) {
 					switchCallback();
 				}

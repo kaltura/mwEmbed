@@ -88,7 +88,6 @@
 		// Mute state
 		"muted": false,
 
-		"isFlavorSwitching": false,
 		/**
 		 * Custom attributes for embedPlayer player: (not part of the html5
 		 * video spec)
@@ -2595,10 +2594,9 @@
 
 			this.volume = percent;
 
-			// Un-mute if setting positive volume
-			if (percent != 0) {
-				this.muted = false;
-			}
+			// Un-mute if setting positive volume, mute if setting 0
+			this.muted = ( percent === 0 );
+
 			// Update the playerElement volume
 			this.setPlayerElementVolume(percent);
 			//mw.log("EmbedPlayer:: setVolume:: " + percent + ' trigger volumeChanged: ' + triggerChange );
@@ -3202,7 +3200,6 @@
 				{ newBitrate: source.getBitrate() }
 			]);
 			if (!this.isStopped()) {
-				this.isFlavorSwitching = true;
 				// Get the exact play time
 				var oldMediaTime = this.currentTime;
 				var oldPaused = this.paused;
