@@ -14,32 +14,30 @@
 			'order': 7,
 			'visible': false,
 			'align': "right",
-			'applicationID': "FFCC6D19", // DB6462E9: Chromecast default receiver, FFCC6D19: Kaltura custom receiver supporting DRM, HLS and smooth streaming
+			'applicationID': "C43947A1", // DB6462E9: Chromecast default receiver, C43947A1: Kaltura custom receiver supporting DRM, HLS and smooth streaming
 			'showTooltip': true,
 			'tooltip': gM('mwe-chromecast-chromecast'),
 			'title': gM('mwe-chromecast-chromecast'),
-			'receiverMode': false,
 			'debugReceiver': false,
-			'receiverLogo': false,
-			'useKalturaPlayer': false,
+			'receiverLogo': true,
+			'logoUrl': null,
+			'useKalturaPlayer': true,
 			'debugKalturaPlayer': false
 		},
 		isDisabled: false,
 
-		progressFlag: 1,
 		currentMediaSession: null,
 		mediaCurrentTime: 0,
 		mediaDuration: null,
 		casting: false,
 		session: null,
 		request: null,
-		updateInterval: null,
 		autoPlay: true,
 
 		monitorInterval: null,
 
 		savedPlayer: null, // save player before cast
-		savedVolume: 0,	// save player volume before cast
+		savedVolume: 0,	   // save player volume before cast
 		savedPosition: 0,  // save video position before cast
 
 		startCastTitle: gM( 'mwe-chromecast-startcast' ),
@@ -49,25 +47,27 @@
 		drmConfig: null,
 		MESSAGE_NAMESPACE: 'urn:x-cast:com.kaltura.cast.player',
 
-		setup: function( embedPlayer ) {
-			if ( this.getConfig("receiverMode") === true ){
-				return; // don't initialize Chroemcast when running on the custom receiver
-			}
+		isNativeSDK: false, //flag for using native mobile IMA SDK
 
+		setup: function( embedPlayer ) {
 			var _this = this;
 			this.addBindings();
-			var ticks = 0;
-			 var intervalID = setInterval(function(){
-				 ticks++;
-				if( typeof chrome !== "undefined" && typeof chrome.cast !== "undefined" && typeof chrome.cast.SessionRequest !== "undefined" ){
-					_this.initializeCastApi();
-					clearInterval(intervalID);
-				}else{
-					if (ticks === 40){ // cancel check after 10 seconds
+			this.isNativeSDK  = mw.getConfig( "EmbedPlayer.ForceNativeComponent");
+
+			if (!this.isNativeSDK) {
+				var ticks = 0;
+				var intervalID = setInterval(function () {
+					ticks++;
+					if (typeof chrome !== "undefined" && typeof chrome.cast !== "undefined" && typeof chrome.cast.SessionRequest !== "undefined") {
+						_this.initializeCastApi();
 						clearInterval(intervalID);
+					} else {
+						if (ticks === 40) { // cancel check after 10 seconds
+							clearInterval(intervalID);
+						}
 					}
-				}
-			},250);
+				}, 250);
+			}
 		},
 
 		addBindings: function() {
@@ -79,28 +79,31 @@
 			this.bind('chromecastSetVolume', function(e, percent){_this.setVolume(e,percent);});
 			this.bind('chromecastSeek', function(e, percent){_this.seekMedia(percent);});
 			this.bind('stopCasting', function(){_this.toggleCast();});
+			this.bind('chromecastBackToLive', function(){
+					if (_this.getCurrentTime() > 0){
+						_this.loadMedia();
+					}
+			});
 
 			$( this.embedPlayer).bind('chromecastDeviceConnected', function(){
-				_this.getComponent().css("color","#35BCDA");
-				$(_this.embedPlayer).html(_this.getPlayingScreen());
-				$(".chromecastThumb").load(function(){
-					setTimeout(function(){
-						_this.setPlayingScreen();
-					},0);
-				});
+				_this.onRequestSessionSuccess();
 			});
 			$( this.embedPlayer).bind('chromecastDeviceDisConnected', function(){
-				_this.getComponent().css("color","white");
-				_this.embedPlayer.disablePlayer();
-				_this.embedPlayer.updatePlaybackInterface()
+				_this.stopApp();
 			});
 
-			$( this.embedPlayer).bind('chromecastShowConnectingMsg', function(){
-				_this.showConnectingMessage();
+			$( this.embedPlayer).bind('hideConnectingMessage', function(){
+				_this.embedPlayer.layoutBuilder.closeAlert();
+				_this.getComponent().css("color","#35BCDA");
+				_this.updateScreen();
 			});
 
 			$( this.embedPlayer).bind('updateDashContextData', function(e, drmConfig){
 				_this.drmConfig = drmConfig;
+			});
+
+			$( this.embedPlayer).bind('onChangeMedia', function(e){
+				_this.savedPosition = 0;
 			});
 
 			$(this.embedPlayer).bind('playerReady', function() {
@@ -136,8 +139,8 @@
 		},
 
 		showConnectingMessage: function(){
-			this.embedPlayer.showErrorMsg(
-				{'title':'Chromecast Player',
+			this.embedPlayer.showErrorMsg({
+					'title':'Chromecast Player',
 					'message': gM('mwe-chromecast-connecting'),
 					'props':{
 						'customAlertContainerCssClass': 'connectingMsg',
@@ -175,19 +178,29 @@
 		},
 
 		onRequestSessionSuccess: function(e) {
+			if (!this.isNativeSDK){
+				this.log( "Session success: " + e.sessionId);
+				this.session = e;
+			}
 			this.embedPlayer.layoutBuilder.closeAlert();
-			this.log( "Session success: " + e.sessionId);
-			this.session = e;
 			this.getComponent().css("color","#35BCDA");
 			this.updateTooltip(this.stopCastTitle);
 			this.casting = true;
+			this.embedPlayer.casting = true;
+
 			// set receiver debug if needed
 			if ( this.getConfig("debugReceiver") ){
 				this.sendMessage({'type': 'show', 'target': 'debug'});
 			}
 			// set kaltura logo if needed
+			if ( this.getConfig("logoUrl") && this.getConfig("receiverLogo") ){
+				this.sendMessage({'type': 'setLogo', 'logo': this.getConfig("logoUrl")});
+			}
 			if ( this.getConfig("receiverLogo") ){
 				this.sendMessage({'type': 'show', 'target': 'logo'});
+			}
+			if (this.embedPlayer.isLive()){
+				this.sendMessage({'type': 'live', 'value': true});
 			}
 			// add DRM support
 			if (this.drmConfig){
@@ -195,7 +208,8 @@
 				this.log("set license URL to: " + this.drmConfig.contextData.widevineLicenseServerURL);
 			}
 			if (this.getConfig("useKalturaPlayer") === true){
-				this.sendMessage({'type': 'embed', 'publisherID': this.embedPlayer.kwidgetid.substr(1), 'uiconfID': this.embedPlayer.kuiconfid, 'entryID': this.embedPlayer.kentryid, 'debugKalturaPlayer': this.getConfig("debugKalturaPlayer")});
+				var flashVars = this.getFlashVars();
+				this.sendMessage({'type': 'embed', 'publisherID': this.embedPlayer.kwidgetid.substr(1), 'uiconfID': this.embedPlayer.kuiconfid, 'entryID': this.embedPlayer.kentryid, 'debugKalturaPlayer': this.getConfig("debugKalturaPlayer"), 'flashVars': flashVars});
 				this.embedPlayer.showErrorMsg(
 					{'title':'Chromecast Player',
 						'message': gM('mwe-chromecast-loading'),
@@ -210,6 +224,9 @@
 				this.sendMessage({'type': 'load'});
 				this.loadMedia();
 			}
+			if (this.isNativeSDK){
+				return;
+			}
 
 			var _this = this;
 			this.session.addMessageListener(this.MESSAGE_NAMESPACE, function(namespace, message){
@@ -218,6 +235,35 @@
 					_this.loadMedia();
 				}
 			});
+		},
+		getFlashVars: function(){
+			var _this = this;
+			var plugins = ['doubleClick', 'youbora', 'kAnalony', 'related', 'comScoreStreamingTag', 'watermark', 'heartbeat', 'proxyData'];
+
+			var fv = {};
+			plugins.forEach(function(plugin){
+				if (!$.isEmptyObject(_this.embedPlayer.getKalturaConfig(plugin))){
+					fv[plugin] = _this.embedPlayer.getKalturaConfig(plugin);
+				}
+			});
+			// add support for custom proxyData for OTT app developers
+			var proxyData = this.getConfig('proxyData');
+			if ( proxyData ){
+				var recursiveIteration = function(object) {
+					for (var property in object) {
+						if (object.hasOwnProperty(property)) {
+							if (typeof object[property] == "object"){
+								recursiveIteration(object[property]);
+							}else{
+								object[property] = _this.embedPlayer.evaluate( object[property] );
+							}
+						}
+					}
+				}
+				recursiveIteration(proxyData);
+				fv['proxyData'] = proxyData;
+			}
+			return fv;
 		},
 
 		onLaunchError: function(error) {
@@ -253,6 +299,8 @@
 			if (this.session.media.length !== 0) {
 				this.log('Found ' + this.session.media.length + ' existing media sessions.');
 				this.onMediaDiscovered('onRequestSessionSuccess_', this.session.media[0]);
+			}else{
+				this.onRequestSessionSuccess(e);
 			}
 			this.session.addMediaListener(
 				this.onMediaDiscovered.bind(this, 'addMediaListener'));
@@ -260,12 +308,30 @@
 		},
 
 		onMediaDiscovered: function(how, mediaSession) {
+			var _this = this;
 			this.embedPlayer.layoutBuilder.closeAlert();
+			// if page reloaded and in playlist - select the currently playing clip
+			if ( how === 'onRequestSessionSuccess_' && this.embedPlayer.playlist){
+				this.stopApp();
+				// TODO: handle playlist reload
+				return;
+//				var castedManifest = mediaSession.media.contentId;
+//				var castedMedia = castedManifest.substr(castedManifest.indexOf("/entryId/")+9,10);
+//				var currentManifest = this.embedPlayer.getSource().src;
+//				var currentMedia = currentManifest.substr(currentManifest.indexOf("/entryId/")+9,10);
+//				if (castedMedia !== currentMedia){
+//					setTimeout(function(){
+//						_this.casting = true;
+//						_this.embedPlayer.casting = true;
+//						_this.embedPlayer.sendNotification("playlistPlayMediaById",castedMedia);
+//					},0);
+//
+//				}
+			}
 			this.log("new media session ID:" + mediaSession.mediaSessionId + ' (' + how + ')');
 			this.currentMediaSession = mediaSession;
 			this.getComponent().css("color","#35BCDA");
 			this.updateTooltip(this.stopCastTitle);
-			var _this = this;
 			mediaSession.addUpdateListener(function(e){_this.onMediaStatusUpdate(e);});
 			this.mediaCurrentTime = this.currentMediaSession.currentTime;
 			this.mediaDuration = this.currentMediaSession.media.duration;
@@ -296,7 +362,7 @@
 					_this.embedPlayer.receiverName = _this.session.receiver.friendlyName;
 					// set volume and position according to the video settings before switching players
 					_this.setVolume(null, _this.savedVolume);
-					if (_this.currentMediaSession.media.duration && _this.savedPosition > 0){
+					if (_this.currentMediaSession.media.duration && _this.savedPosition > 0 && !_this.embedPlayer.changeMediaStarted){
 						_this.seekMedia(_this.savedPosition / _this.currentMediaSession.media.duration * 100);
 					}
 					// update media duration for durationLable component
@@ -304,12 +370,7 @@
 					if (_this.autoPlay){
 						_this.embedPlayer.play();
 					}
-					$(_this.embedPlayer).html(_this.getPlayingScreen());
-					$(".chromecastThumb").load(function(){
-						setTimeout(function(){
-							_this.setPlayingScreen();
-						},0);
-					});
+					_this.updateScreen();
 					// hide kaltura logo
 					if ( _this.getConfig("receiverLogo") ){
 						_this.sendMessage({'type': 'hide', 'target': 'logo'});
@@ -350,6 +411,13 @@
 		},
 
 		monitor: function(){
+			var _this = this;
+			this.currentMediaSession.getStatus(null,null,
+				function(){
+					if (this.getCurrentTime() > 0){
+						_this.stopApp(); // stop app if chromecast is not connected (user used the browser icon to disconnect)
+					}
+				});
 			this.embedPlayer.updatePlayhead( this.getCurrentTime(), this.mediaDuration );
 		},
 
@@ -407,6 +475,9 @@
 			var message = isAlive ? 'Session Updated' : 'Session Removed';
 			message += ': ' + this.session.sessionId;
 			this.log(message);
+			if (!isAlive ){
+				this.stopApp();
+			}
 		},
 
 		onMediaStatusUpdate: function(isAlive) {
@@ -424,37 +495,46 @@
 
 		loadMedia: function(url, mime) {
 			var _this = this;
-			if (!this.session) {
+			if (!this.session || (!url && !this.embedPlayer.getSource())) {
 				this.log("no session");
 				return;
 			}
+			this.savedPosition = 0;
 			// if URL and mime type were passed use it. If not - get the them from the embed player current source
 			var currentMediaURL = url || this.embedPlayer.getSource().src;
 			var mimeType = mime || this.embedPlayer.getSource().mimeType;
 
-			this.log("loading..." + currentMediaURL);
-			var mediaInfo = new chrome.cast.media.MediaInfo( currentMediaURL );
-			mediaInfo.contentType = mimeType;
-			this.request = new chrome.cast.media.LoadRequest( mediaInfo );
-			this.request.autoplay = false;
-			this.request.currentTime = 0;
+			this.embedPlayer.resolveSrcURL( currentMediaURL ).then(
+				function(source){
+					return source;
+				},
+				function () { //error
+					return currentMediaURL;
+				})
+				.then( function(currentMediaURL ){
+						_this.log("loading..." + currentMediaURL);
+						var mediaInfo = new chrome.cast.media.MediaInfo( currentMediaURL );
+						mediaInfo.contentType = mimeType;
+						_this.request = new chrome.cast.media.LoadRequest( mediaInfo );
+						_this.request.autoplay = false;
+						_this.request.currentTime = 0;
 
-			var payload = {
-				"title:" : $(".titleLabel").html(),
-				"thumb" : this.embedPlayer.poster
-			};
+						var payload = {
+							"title:" : $(".titleLabel").html(),
+							"thumb" : _this.embedPlayer.poster
+						};
 
-			var json = {
-				"payload" : payload
-			};
+						var json = {
+							"payload" : payload
+						};
 
-			this.request.customData = json;
+						_this.request.customData = json;
 
-			this.session.loadMedia(this.request,
-				_this.onMediaDiscovered.bind(this, 'loadMedia'),
-				_this.onMediaError
-			);
-
+						_this.session.loadMedia(_this.request,
+							_this.onMediaDiscovered.bind(_this, 'loadMedia'),
+							_this.onMediaError
+						);
+				});
 		},
 
 		stopMedia: function() {
@@ -475,20 +555,51 @@
 		stopApp: function() {
 			clearInterval(this.monitorInterval);
 			var _this = this;
-
-			// stop casting
-			this.session.stop(this.onStopAppSuccess, this.onError);
 			this.getComponent().css("color","white");
 			this.updateTooltip(this.startCastTitle);
 			this.casting = false;
+			this.embedPlayer.casting = false;
 			this.embedPlayer.getInterface().find(".chromecastScreen").remove();
+			if (this.isNativeSDK){
+				return;
+			}
+			var seekTime = this.getCurrentTime();
+			// stop casting
+			this.session.stop(this.onStopAppSuccess, this.onError);
 			// restore native player
 			this.embedPlayer.selectPlayer(this.savedPlayer);
 			this.savedPlayer = null;
 			this.embedPlayer.disablePlayer();
 			this.embedPlayer.updatePlaybackInterface();
-			this.embedPlayer.play();
 			this.embedPlayer.enablePlayControls();
+			if (this.embedPlayer.playlist){
+				mw.setConfig("EmbedPlayer.KeepPoster",false);
+				mw.setConfig('EmbedPlayer.HidePosterOnStart', true);
+			}
+			if (this.embedPlayer.isLive()){
+				this.embedPlayer.pause();
+				setTimeout(function(){
+					_this.embedPlayer.play();
+				},1000);
+			}else{
+				if ( this.embedPlayer.selectedPlayer.library == "Kplayer" ){
+					// since we don't have the canSeek promise, we need to reload the media on playerReady, wait for it to load and then preform the seek operation. Add a timeout as seek is not always available on the mediaLoaded event
+					this.bind("playerReady.stopCast", function(){
+						_this.unbind("playerReady.stopCast");
+						_this.bind("mediaLoaded.stopCast", function(){
+							_this.unbind("mediaLoaded.stopCast");
+							setTimeout(function(){
+								_this.embedPlayer.seek(seekTime, false);
+							},1000);
+						});
+						_this.embedPlayer.load();
+					})
+				}else{
+					this.embedPlayer.canSeek().then(function () {
+						_this.embedPlayer.seek(seekTime, false);
+					});
+				}
+			}
 		},
 
 		onStopAppSuccess: function() {
@@ -549,6 +660,16 @@
 			}
 		} ,
 
+		updateScreen: function(){
+			var _this = this;
+			this.embedPlayer.getInterface().find(".chromecastScreen").remove();
+			this.embedPlayer.getVideoHolder().append(this.getPlayingScreen());
+			$(".chromecastThumb").load(function(){
+				setTimeout(function(){
+					_this.setPlayingScreen();
+				},0);
+			});
+		},
 
 		getPlayingScreen: function(){
 			return '<div class="chromecastScreen" style="background-color: #000000; opacity: 0.7; width: 100%; height: 100%; font-family: Arial; position: absolute">' +
@@ -565,7 +686,7 @@
 
 		setPlayingScreen: function(){
 			var factor = $(".chromecastThumb").naturalWidth() / $(".chromecastThumb").naturalHeight();
-			var thumbWidth = this.embedPlayer.getVideoHolder().width() / 4;
+			var thumbWidth = 116;//this.embedPlayer.getVideoHolder().width() / 4;
 			$(".chromecastThumb").width(thumbWidth);
 			$(".chromecastThumbBorder").width(thumbWidth);
 			$(".chromecastThumb").height(thumbWidth / factor);
@@ -577,6 +698,10 @@
 
 		sendMessage: function(message) {
 			var _this = this;
+			if (this.isNativeSDK){
+				$( _this.embedPlayer ).trigger( 'sendCCRecieverMessage', message );
+				return;
+			}
 			if (this.session != null) {
 				this.session.sendMessage( this.MESSAGE_NAMESPACE, message, this.onMsgSuccess.bind(this,
 					'Message sent: ' + JSON.stringify(message)), this.onMsgError);

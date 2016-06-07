@@ -86,8 +86,9 @@
 		manifestLoaded: false,
 		dashContextUpdated: false,
 		isSeekable: false,
+		isResolvingUrl: false,
 
-        detectPluginIntervalLoops: 3,
+		detectPluginIntervalLoops: 3,
 
 		// Native player supported feature set
 		supports: {
@@ -104,29 +105,29 @@
 			mw.log('EmbedPlayerMultiDRM:: Setup');
 			this.initDashPlayer(readyCallback);
 
-            var _this = this;
-            this.detectPluginInterval = setInterval(function () {
-                _this.detectPlugin(failCallback);
-            }, 500);
+			var _this = this;
+			this.detectPluginInterval = setInterval(function () {
+				_this.detectPlugin(failCallback);
+			}, 500);
 		},
 
-        detectPlugin: function (failCallback) {
-            mw.log("EmbedPlayerMultiDRM::detectPlugin::detect loop " + this.detectPluginIntervalLoops);
+		detectPlugin: function (failCallback) {
+			mw.log("EmbedPlayerMultiDRM::detectPlugin::detect loop " + this.detectPluginIntervalLoops);
 
-            if( this.detectPluginIntervalLoops === 0 ){
-                if ( !this.pluginDetected ) {
-                    mw.log("EmbedPlayerMultiDRM::detectPlugin::failed to detecting Silverlight plugin");
-                    failCallback(); //trigger fail callback -> goes to the EmbedPlayer in order to displayAlert with ks-PLUGIN-BLOCKED message
-                }
-                this.cleanInterval(this.detectPluginInterval); // stop trying to detect plugin
-            }
-            this.detectPluginIntervalLoops--;
-        },
+			if( this.detectPluginIntervalLoops === 0 ){
+				if ( !this.pluginDetected ) {
+					mw.log("EmbedPlayerMultiDRM::detectPlugin::failed to detecting Silverlight plugin");
+					failCallback(); //trigger fail callback -> goes to the EmbedPlayer in order to displayAlert with ks-PLUGIN-BLOCKED message
+				}
+				this.cleanInterval(this.detectPluginInterval); // stop trying to detect plugin
+			}
+			this.detectPluginIntervalLoops--;
+		},
 
-        cleanInterval: function (interval) {
-            clearInterval(interval);
-            interval = null;
-        },
+		cleanInterval: function (interval) {
+			clearInterval(interval);
+			interval = null;
+		},
 
 		/**
 		 * Updates the supported features given the "type of player"
@@ -181,11 +182,11 @@
 		disablePlayer: function () {
 			$(this.getPlayerElement()).css('position', 'static');
 		},
-        clean: function ( ) {
-            if ( this.detectPluginInterval ) {
-                this.cleanInterval(this.detectPluginInterval);
-            }
-        },
+		clean: function ( ) {
+			if ( this.detectPluginInterval ) {
+				this.cleanInterval(this.detectPluginInterval);
+			}
+		},
 		/**
 		 * Return the embed code
 		 */
@@ -240,8 +241,8 @@
 					},
 					techOrder: ['dasheverywhere']
 				}, function(){
-                    _this.pluginDetected = true; // used in order to clear detectPlugin interval
-                    _this.cleanInterval(_this.detectPluginInterval); // stop trying to detect plugin
+					_this.pluginDetected = true; // used in order to clear detectPlugin interval
+					_this.cleanInterval(_this.detectPluginInterval); // stop trying to detect plugin
 
 					_this.playerElement = this;
 					var el = $(_this.playerElement.el() );
@@ -292,13 +293,18 @@
 		updateDashContext: function(){
 			var _this = this;
 			this.dashContextUpdated = true;
-			if (this.getPlayerElement() && this.getSrc()) {
+			//If we have a source to set and playback element is ready and we are not already resolving a URL
+			//then resolve the URL and set the playback source
+			if (this.getPlayerElement() && this.getSrc() && !this.isResolvingUrl) {
+				this.isResolvingUrl = true;
 				this.resolveSrcURL( this.getSrc() ).then( function(source){
 					_this.manifestLoaded = false;
+					_this.isResolvingUrl = false;
 					var el = $(_this.playerElement.el() );
 					el.attr('data-src', _this.getSrc());
 					_this.playerElement.loadVideo( source, _this.getDrmConfig() );
 				}, function(){
+					_this.isResolvingUrl = false;
 					//Report on playManifest redirect error
 					_this.log("Failed resolving playManifest request: " + _this.getSrc());
 					_this.triggerHelper('embedPlayerError');
@@ -931,7 +937,7 @@
 			var duration = parseInt(this.duration, 10).toFixed(2);
 			var curTime = parseInt(this.getPlayerElementTime(), 10).toFixed(2);
 			return (( this.currentState === "end" ) ||
-			( this.currentState === "pause" && duration === curTime && this.getPlayerElementTime() > 0 ));
+				( this.currentState === "pause" && duration === curTime && this.getPlayerElementTime() > 0 ));
 		},
 
 		/**
@@ -960,7 +966,7 @@
 			this.playing = false;
 			var timeSincePlay = Math.abs(this.absoluteStartPlayTime - new Date().getTime());
 			this.log(" OnPaused:: propagate:" + this._propagateEvents +
-			' time since play: ' + timeSincePlay + ' duringSeek:' + this.seeking);
+				' time since play: ' + timeSincePlay + ' duringSeek:' + this.seeking);
 
 		},
 
@@ -1021,8 +1027,13 @@
 					//Get Playback statistics
 					var stats = player.getPlaybackStatistics();
 
-					var videoData = stats.video.activeTrack;
+					var videoData = stats.video;
 					if (videoData) {
+						var updatedBitrate = (videoData.bandwidth / 1024);
+						if (_this.currentBitrate !== updatedBitrate){
+							_this.currentBitrate = updatedBitrate;
+							_this.triggerHelper('bitrateChange', _this.currentBitrate);
+						}
 					}
 					var audioData = stats.audio.activeTrack;
 					if (audioData) {
@@ -1064,7 +1075,7 @@
 				&& !isNaN(duration)
 				&&
 				isFinite(duration)
-			) {
+				) {
 				this.log('onloadedmetadata metadata ready Update duration:' + duration + ' old dur: ' + this.getDuration());
 				this.setDuration(this.playerElement.duration());
 			}
@@ -1137,6 +1148,8 @@
 				var sourceIndex = this.getSourceIndex(source);
 				if (sourceIndex != null) {
 					this.getPlayerElement().mediaPlayer.setQualityFor( "video", sourceIndex );
+					this.currentBitrate = source.getBitrate();
+					this.triggerHelper('bitrateChange', source.getBitrate());
 				}
 			} else {
 				this.getPlayerElement().mediaPlayer.setAutoSwitchQuality(true);
@@ -1256,8 +1269,8 @@
 			// don't handle seek event on Android native browser
 			var nua = navigator.userAgent;
 			var is_native_android_browser = ((nua.indexOf('Mozilla/5.0') > -1 &&
-			nua.indexOf('Android ') > -1 &&
-			nua.indexOf('AppleWebKit') > -1) && !(nua.indexOf('Chrome') > -1));
+				nua.indexOf('Android ') > -1 &&
+				nua.indexOf('AppleWebKit') > -1) && !(nua.indexOf('Chrome') > -1));
 
 			if (is_native_android_browser) {
 				return;
@@ -1265,7 +1278,7 @@
 			this.log("onSeeking " + this.seeking + ' new time: ' + this.getPlayerElement().currentTime());
 			if (this.seeking && Math.round(this.getPlayerElement().currentTime - this.currentSeekTargetTime) > 2) {
 				this.log("Error: Seek time mismatch: target:" + this.getPlayerElement().currentTime +
-				' actual ' + this.currentSeekTargetTime + ', note apple HLS can only seek to 10 second targets');
+					' actual ' + this.currentSeekTargetTime + ', note apple HLS can only seek to 10 second targets');
 			}
 			// Trigger the html5 seeking event
 			//( if not already set from interface )
@@ -1314,10 +1327,10 @@
 			// we don't want to trigger the seek event for these "fake" onseeked triggers
 			if ((this.mediaElement.selectedSource.getMIMEType() === 'application/vnd.apple.mpegurl') &&
 				( ( Math.abs(this.currentSeekTargetTime - this.getPlayerElement().currentTime) > 2) ||
-				( this.currentSeekTargetTime > 0.01 && ( mw.isIpad() && !mw.isIOS8_9() ) ) ) ) {
+					( this.currentSeekTargetTime > 0.01 && ( mw.isIpad() && !mw.isIOS8_9() ) ) ) ) {
 
 				this.log( "Error: seeked triggred with time mismatch: target:" +
-				this.currentSeekTargetTime + ' actual:' + this.getPlayerElement().currentTime );
+					this.currentSeekTargetTime + ' actual:' + this.getPlayerElement().currentTime );
 
 				if( !callbackCount ){
 					callbackCount = 0;

@@ -47,8 +47,18 @@ mw.MediaElement.prototype = {
 
 		// Process the videoElement as a source element:
 		if( videoElement ){
-			if ( $( videoElement ).attr( "src" ) ) {
-				_this.tryAddSource( videoElement );
+			var src = $( videoElement ).attr( "src" );
+			var found = false;
+			if (src){
+				$.each( mw.getConfig( 'Kaltura.BlackVideoSources' ), function(inx, sourceAttr ) {
+					if (src.indexOf(sourceAttr.src) !== -1){
+						found = true;
+						return false;
+					}
+				});
+				if (!found) {
+					_this.tryAddSource( videoElement );
+				}
 			}
 			// Process elements source children
 			$( videoElement ).find( 'source,track' ).each( function( ) {
