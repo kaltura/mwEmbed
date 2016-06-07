@@ -1137,7 +1137,7 @@ mw.KWidgetSupport.prototype = {
 				_this.handlePlayerData( embedPlayer, entryResult );
 				//if we dont have special widgetID or the KS is defined continue as usual
 				var kpartnerid = embedPlayer.kpartnerid ? embedPlayer.kpartnerid : "";
-				if ( "_" + kpartnerid == playerRequest.widget_id || _this.kClient.getKs() ) {
+				if ( this.isEmbedServicesEnabled(entryResult) || "_" + kpartnerid == playerRequest.widget_id || _this.kClient.getKs() ) {
 					callback( entryResult );
 				}else{
 					//if we have special widgetID and we dont have a KS - ask for KS before continue the process
