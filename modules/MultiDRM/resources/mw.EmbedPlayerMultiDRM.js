@@ -52,10 +52,6 @@
 		// Disable switch source callback
 		disableSwitchSourceCallback: false,
 
-		dropFrameLocker:true,
-
-		lastDropFrame:0,
-
 		// Flag specifying if a mobile device already played. If true - mobile device can autoPlay
 		mobilePlayed: false,
 		// All the native events per:
