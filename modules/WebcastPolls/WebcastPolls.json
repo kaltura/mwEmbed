@@ -9,7 +9,9 @@
         ],
         "dependencies": "mw.KBaseScreen",
         "kalturaPluginName": "webcastPolls",
-	    "templates": "../WebcastPolls/resources/webcastPolls.tmpl.html",
+	    "templates": ["../WebcastPolls/resources/webcastPolls-large.tmpl.html",
+            "../WebcastPolls/resources/webcastPolls-medium.tmpl.html"
+        ],
         "styles": "resources/webcastPolls.css",
         "messageFile": "WebcastPolls.i18n.json"
     }
