@@ -567,7 +567,12 @@
 			if (this.playerElement && this.playerElement.contentEl ){
 				try {
 					var vidObj = $( this.playerElement.contentEl() ).find( "video" )[0];
-					this.checkFPS( vidObj.webkitDroppedFrameCount , vidObj.webkitDecodedFrameCount );
+					if (typeof vidObj.getVideoPlaybackQuality === 'function') {
+						var videoPlaybackQuality = this.video.getVideoPlaybackQuality();
+						this.checkFPS( videoPlaybackQuality.droppedVideoFrames , videoPlaybackQuality.totalVideoFrames );
+					} else {
+						this.checkFPS( vidObj.webkitDroppedFrameCount , vidObj.webkitDecodedFrameCount );
+					}
 				} catch(exception){
 					this.log("error occur in checkFPS " + exception);
 				}
