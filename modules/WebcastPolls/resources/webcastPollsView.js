@@ -5,6 +5,19 @@
     mw.webcastPolls.WebcastPollsView = mw.KBasePlugin.extend({
         defaultConfig: {
         },
+        setup : function()
+        {
+            var _this = this;
+            _this.addBindings();
+        },
+        addBindings : function()
+        {
+            var _this = this;
+
+            this.bind( 'updateLayout', function(event, data) {
+                _this._handleLayout();
+            });
+        },
         parent: {}, // ## This object will be assigned by the container
         $webcastPoll: null,
         locale: {
@@ -23,6 +36,7 @@
                     var $poll = $('<div></div>').addClass("webcastPolls");
                     _this.$webcastPoll = $poll;
                     _this.getPlayer().getVideoHolder().append(_this.$webcastPoll);
+
                     _this._handleLayout();
                 }
             } catch (e) {
@@ -73,6 +87,7 @@
 
 
                         _this._currentViewType = targetLayoutName;
+                        _this.syncPollDOM();
                     } catch (e) {
                         // TODO [es]
                         _this.$webcastPoll.empty();
@@ -89,6 +104,8 @@
                 _this.$webcastPoll.remove();
                 _this.$webcastPoll = null;
             }
+
+            _this._currentViewType = null;
         },
         syncDOMPollResults: function () {
             var _this = this;

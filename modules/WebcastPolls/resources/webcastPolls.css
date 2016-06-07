@@ -29,7 +29,6 @@ General
     text-align: center;
 }
 
-
 /*****************************
 Loading
 *****************************/
@@ -40,37 +39,26 @@ Loading
 }
 
 /*****************************
-Poll
+Poll (shared)
 *****************************/
 .webcastPolls .poll  {
     display:none;
-    width:597px;
     margin:auto;
 
 }
 
+/**** question elements ****/
 .webcastPolls .poll .question{
     color: #fff;
     font-size:16px;
     line-height:19px;
-    width:455px;
     letter-spacing: 0.5px;
     margin:auto;
 }
 
 
-.webcastPolls .poll .upper-row {
-    position:relative;
-    text-align: center;
-    vertical-align: middle;
-    margin-bottom: 30px;
-}
 
-.webcastPolls .poll .lower-row{
-    text-align:left;
-    margin-top:25px;
-}
-
+/**** respond elements ****/
 .webcastPolls .poll .responds {
     font-size:13px;
     color: rgba(255,255,255,0.8);
@@ -80,7 +68,6 @@ Poll
 .webcastPolls .poll .responds .responds-number {
     font-size:20px;
     letter-spacing:2px;
-    margin-right:20px;
 }
 
 .webcastPolls .poll .responds .responds-text {
@@ -88,17 +75,10 @@ Poll
 
 }
 
-
-
-.webcastPolls .poll .answers-container {
-    clear:both;
-    margin-top:10px;
-}
+/**** answers elements ****/
 
 .webcastPolls .poll .answer {
     margin-bottom: 10px;
-    height:48px;
-    line-height: 50px;
     width:100%;
     -webkit-border-radius:3px;
     -moz-border-radius:3px;
@@ -121,7 +101,6 @@ Poll
     font-size: 13px;
     color: rgba(255,255,255,0.3);
     letter-spacing: 0.5px;
-    margin-left:29px;
     text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);
 }
 
@@ -139,3 +118,140 @@ Poll
     border: rgba(126,211,33,0.6) solid 1px;
 }
 
+
+
+/*****************************
+Poll (medium)
+*****************************/
+
+.webcastPolls .medium-layout
+{
+    height:100%;
+    width:100%;
+}
+
+
+.webcastPolls .medium-layout .poll{
+    display:table;
+    table-layout:fixed;
+    width:100%;
+    min-width:464px;
+}
+
+
+.webcastPolls .medium-layout .poll .column-left {
+    display: table-cell;
+    position:relative;
+    width: 45%;
+}
+
+
+.webcastPolls .medium-layout .poll .column-right {
+    display: table-cell;
+    width: 55%;
+}
+
+
+/**** question elements ****/
+.webcastPolls .medium-layout .poll .question{
+    width:180px;
+}
+
+.webcastPolls .medium-layout .poll .question-widget{
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/**** responds elements ****/
+
+.webcastPolls .medium-layout .poll .responds-widget{
+    position:absolute;
+    bottom:10px;
+    left:0;
+    right:0;
+}
+
+/**** answers elements ****/
+.webcastPolls .medium-layout .poll .answers-widget{
+    margin-right:40px;
+}
+
+
+.webcastPolls .medium-layout .poll .answer {
+    display: inline-block;
+    position:relative;
+    line-height: normal;
+    height:48px;
+}
+
+
+.webcastPolls .medium-layout  .poll .answer-text {
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width:100%;
+    margin:0 5px 0 5px;
+}
+
+
+
+
+/*****************************
+Poll (large)
+*****************************/
+
+.webcastPolls .large-layout
+{
+    height:100%;
+    width:100%;
+}
+
+.webcastPolls .large-layout .poll  {
+    width:597px;
+}
+
+/**** question elements ****/
+
+.webcastPolls .large-layout .poll .question{
+    width:455px;
+}
+
+.webcastPolls .large-layout .poll .question-widget {
+    position:relative;
+    text-align: center;
+    vertical-align: middle;
+    margin-bottom: 30px;
+}
+
+/**** responds elements ****/
+
+.webcastPolls .large-layout .poll .responds-widget{
+    text-align:left;
+    margin-top:25px;
+    margin-right:20px;
+}
+
+.webcastPolls .large-layout .poll .responds-text {
+    margin-left:30px;
+}
+
+/**** answers elements ****/
+
+.webcastPolls .large-layout .poll .answers-widget {
+    clear:both;
+    margin-top:10px;
+}
+
+.webcastPolls .large-layout .poll .answer {
+    margin-bottom: 10px;
+    height:48px;
+    line-height: 48px;
+    vertical-align: middle;
+}
+
+.webcastPolls .large-layout  .poll .answer-text {
+    margin-left:29px;
+}

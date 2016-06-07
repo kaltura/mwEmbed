@@ -55,34 +55,6 @@
             this.bind('onpause seeked onplay onChangeMedia', function (e) {
                 _this.handlePlayerEvent(e.type);
             });
-
-            //this.bind('playerReady', function () {
-            //    setTimeout(function () {
-            //        _this.showOrUpdatePollByState({pollId: '1_orhujkkr', showTotals: 'numbers', allowVoting: true});
-            //
-            //        //setTimeout(function()
-            //        //{
-            //        //    _this.handleNewPollState({state : 'hide', pollId : '1_hq5wdy2w'});
-            //        //
-            //        //    setTimeout(function()
-            //        //    {
-            //        //        _this.handleNewPollState({state : 'show', pollId : '1_orhujkkr'});
-            //        //    },5000);
-            //        //},5000);
-            //
-            //    }, 2000);
-            //});
-
-            //this.bind('updateLayout', function (event, data) {
-            //    if (_this.isPollShown) {
-            //        // TODO [es] amir - when 'updateLayout' is relevant?
-            //        //if (embedPlayer.getVideoHolder().width() < 400){
-            //        //	$(".share").addClass("small");
-            //        //}else{
-            //        //	$(".share").removeClass("small");
-            //        //}
-            //    }
-            //});
         },
         filterCuePoints : function(context)
         {
