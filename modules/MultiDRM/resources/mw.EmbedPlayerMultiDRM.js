@@ -533,6 +533,35 @@
 			_this.parent_monitor();
 		},
 		checkFPS: function ( droppedFrames, decodedFrames) {
+			var reportDropFrames = function(params){
+				var kClient = mw.kApiGetPartnerClient( this.kwidgetid );
+
+				var resourceUrl = undefined;
+				if ( this.mediaElement && this.mediaElement.selectedSource ) {
+					resourceUrl = this.mediaElement.selectedSource.getSrc();
+				}
+				var msgParams = [];
+				msgParams[ 'pid' ] = this.kpartnerid;
+				msgParams[ 'uiconfId' ] = this.kuiconfid;
+				msgParams[ 'referrer' ] = window.kWidgetSupport.getHostPageUrl();
+				msgParams[ 'didSeek' ] = this.didSeek;
+				msgParams[ 'resourceUrl' ] = resourceUrl;
+				msgParams[ 'userAgent' ] = navigator.userAgent;
+				msgParams[ 'playerCurrentTime' ] = this.getPlayerElement().currentTime();
+				msgParams[ 'playerLib' ] = this.selectedPlayer.library;
+				msgParams[ 'streamerType' ] = this.streamerType;
+				msgParams[ 'message' ] = params;
+
+				//translate params to errorMessage String
+				var additionalData = "";
+				for( var i in msgParams ){
+					additionalData += i + ' : ' + msgParams[ i ] + " | ";
+				}
+				var eventRequest = { 'service' : 'stats', 'action' : 'reportFrameDrop', errorCode: 'frameDrop' };
+				eventRequest[ 'errorMessage' ] = additionalData;
+
+				kClient.doRequest( eventRequest );
+			}.bind(this);
 			var currentTime = performance.now();
 			if (decodedFrames) {
 				if (this.lastTime) {
@@ -541,10 +570,10 @@
 						currentDecoded = decodedFrames - this.lastDecodedFrames,
 						droppedFPS = 1000 * currentDropped / currentPeriod;
 					if (droppedFPS > 0) {
-						this.log('checkFPS : droppedFPS/decodedFPS:' + droppedFPS/(1000 * currentDecoded / currentPeriod));
+						reportDropFrames('checkFPS : droppedFPS/decodedFPS:' + droppedFPS/(1000 * currentDecoded / currentPeriod));
 						if ( currentDropped > (mw.getConfig("fpsDroppedMonitoringThreshold") || 0.2)  * currentDecoded ) {
 							var currentLevel = this.getCurrentQuality();
-							this.log('drop FPS ratio greater than max allowed value for currentLevel: ' + currentLevel);
+							reportDropFrames('drop FPS ratio greater than max allowed value for currentLevel: ' + currentLevel);
 							if (currentLevel > 0 ) {
 								currentLevel = currentLevel - 1;
 								this.getPlayerElement().mediaPlayer.setAutoSwitchQuality(false);
