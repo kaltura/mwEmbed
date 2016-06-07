@@ -229,7 +229,7 @@
 			}
 			if (this.getConfig("useKalturaPlayer") === true){
 				var flashVars = this.getFlashVars();
-				this.sendMessage({'type': 'embed', 'publisherID': this.embedPlayer.kwidgetid.substr(1), 'uiconfID': this.embedPlayer.kuiconfid, 'entryID': this.embedPlayer.kentryid, 'debugKalturaPlayer': this.getConfig("debugKalturaPlayer"), 'flashVars': flashVars});
+				this.sendMessage({'type': 'embed', 'lib': kWidget.getPath(), 'publisherID': this.embedPlayer.kwidgetid.substr(1), 'uiconfID': this.embedPlayer.kuiconfid, 'entryID': this.embedPlayer.kentryid, 'debugKalturaPlayer': this.getConfig("debugKalturaPlayer"), 'flashVars': flashVars});
 				this.embedPlayer.showErrorMsg(
 					{'title':'Chromecast Player',
 						'message': gM('mwe-chromecast-loading'),
