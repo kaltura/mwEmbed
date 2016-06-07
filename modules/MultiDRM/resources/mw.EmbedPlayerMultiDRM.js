@@ -534,6 +534,10 @@
 		},
 		checkFPS: function ( droppedFrames, decodedFrames) {
 			var reportDropFrames = function(params){
+				if (mw.getConfig('disableDropFrameReport')){
+					this.log(params);
+					return;
+				}
 				var kClient = mw.kApiGetPartnerClient( this.kwidgetid );
 
 				var resourceUrl = undefined;
