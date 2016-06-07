@@ -564,7 +564,7 @@
 				var eventRequest = { 'service' : 'stats', 'action' : 'reportFrameDrop', errorCode: 'frameDrop' };
 				eventRequest[ 'errorMessage' ] = additionalData;
 
-				kClient.doRequest( eventRequest );
+				kClient.doRequest( eventRequest,null,true );
 			}.bind(this);
 			var currentTime = performance.now();
 			if (decodedFrames) {
