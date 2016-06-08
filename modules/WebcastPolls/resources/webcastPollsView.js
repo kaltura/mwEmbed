@@ -109,27 +109,57 @@
         },
         syncDOMPollResults: function () {
             var _this = this;
-            if (_this.$webcastPoll) {
-                var $container = _this.$webcastPoll.find("[name='totals']");
 
-                if ($container) {
+            function updateAnswerResult(answerIndex, pollResults, showResults) {
+                var answerContent = !isNaN(pollResults.answers[answerIndex + ''])?  (+pollResults.answers[answerIndex + '']) : 0;
+                var totalVoters = !isNaN(pollResults.totalVoters) ? (+pollResults.totalVoters) : 0;
+                var answerPercentage = Math.round(answerContent / totalVoters * 100);
+
+                if (totalVoters && showResults) {
+                    _this.$webcastPoll.find('[name="answer' + answerIndex + 'Result"]').css('width',answerPercentage + '%');
+                    _this.$webcastPoll.find('[name="answer' + answerIndex + 'ResultText"]').text(answerPercentage + '%');
+
+                } else {
+                    _this.$webcastPoll.find('[name="answer' + answerIndex + 'Result"]').css('width','0%');
+                    _this.$webcastPoll.find('[name="answer' + answerIndex + 'ResultText"]').text('');
+                }
+            }
+
+            if (_this.$webcastPoll) {
+                var $totalsContainer = _this.$webcastPoll.find("[name='totals']");
+
+                if ($totalsContainer) {
                     var pollResults = _this.parent.pollData.pollResults;
                     var hasPollContent = _this.parent.pollData.content;
                     var showTotals = _this.parent.pollData.showTotals;
+                    var showResults = _this.parent.pollData.showResults;
 
-                    if (showTotals && hasPollContent && pollResults && pollResults.totalVoters) {
-                        var label = '';
-                        var totalVotersAsNumber = pollResults.totalVoters.match('^[0-9]+$') ? parseInt(pollResults.totalVoters) : null;
-                        if (totalVotersAsNumber && totalVotersAsNumber > 10000) {
-                            label = (totalVotersAsNumber - (totalVotersAsNumber % 1000)) / 1000 + "K";
+                    if ( hasPollContent && pollResults )
+                    {
+                        updateAnswerResult(1,pollResults, showResults);
+                        updateAnswerResult(2,pollResults, showResults);
+                        updateAnswerResult(3,pollResults, showResults);
+                        updateAnswerResult(4,pollResults, showResults);
+                        updateAnswerResult(5,pollResults, showResults);
+
+                        if (showTotals && pollResults.totalVoters) {
+                            var label = '';
+                            var totalVotersAsNumber = pollResults.totalVoters.match('^[0-9]+$') ? parseInt(pollResults.totalVoters) : null;
+                            if (totalVotersAsNumber && totalVotersAsNumber > 10000) {
+                                label = (totalVotersAsNumber - (totalVotersAsNumber % 1000)) / 1000 + "K";
+                            } else {
+                                label = pollResults.totalVoters;
+                            }
+                            $totalsContainer.find("[name='text']").text(label);
+                            $totalsContainer.show();
                         } else {
-                            label = pollResults.totalVoters;
+                            $totalsContainer.hide();
                         }
-                        $container.find("[name='text']").text(label);
-                        $container.show();
-                    } else {
-                        $container.hide();
+                    }else
+                    {
+                        $totalsContainer.hide();
                     }
+
                 }
             }
         },

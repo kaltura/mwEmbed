@@ -88,8 +88,19 @@ Poll (shared)
     text-align: left;
     border : rgba(255,255,255,0.1) solid 1px;
     vertical-align: middle;
+    position:relative;
 
 }
+
+.webcastPolls .poll .answer .answer-result {
+    height:2px;
+    position:absolute;
+    bottom:0;
+    left:0;
+    width:0%;
+    background: rgb(126, 211,33);
+}
+
 
 .webcastPolls.allow-voting .poll .answer {
     border : rgba(255,255,255,0.2) solid 1px;
@@ -97,11 +108,17 @@ Poll (shared)
 }
 
 
-.webcastPolls .poll .answer-text {
+.webcastPolls .poll .answer .answer-text {
     font-size: 13px;
     color: rgba(255,255,255,0.3);
     letter-spacing: 0.5px;
     text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);
+    float:left;
+}
+
+.webcastPolls .poll .answer .answer-result-text {
+    float:right;
+    margin-right:10px;
 }
 
 .webcastPolls.allow-voting .poll .answer-text {
@@ -118,6 +135,10 @@ Poll (shared)
     border: rgba(126,211,33,0.6) solid 1px;
 }
 
+
+.webcastPolls .poll .answer .answer-row {
+    clear:both;
+}
 
 
 /*****************************
