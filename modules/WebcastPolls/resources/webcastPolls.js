@@ -258,14 +258,35 @@
                 _this.pollData.fetchResultsId = setInterval($.proxy(_this.updatePollResults,_this), _this.getConfig('monitorPollResultsInterval'))
             }
         },
+        hasResultsModification : function(pollResults)
+        {
+            var _this = this;
+            if (!_this.pollData.pollResults || !pollResults)
+            {
+                return _this.pollData.pollResults != pollResults;
+            }else
+            {
+                // IMPORTANT: we are using here light comparison (!=) instead of exact comparison (!==) to bypass types issues
+                return (
+                    _this.pollData.pollResults.totalVoters != pollResults.totalVoters ||
+                    _this.pollData.pollResults.answers['1'] != pollResults.answers['1'] ||
+                    _this.pollData.pollResults.answers['2'] != pollResults.answers['2'] ||
+                    _this.pollData.pollResults.answers['3'] != pollResults.answers['3'] ||
+                    _this.pollData.pollResults.answers['4'] != pollResults.answers['4'] ||
+                    _this.pollData.pollResults.answers['5'] != pollResults.answers['5']
+                );
+            }
+        },
         updatePollResults: function ()
         {
             var _this = this;
             var invokedByPollId = _this.currentPollId;
             _this.kalturaProxy.getPollResults(invokedByPollId).then(function (result) {
                 if (invokedByPollId === _this.currentPollId) {
-                    _this.pollData.pollResults = result.pollResults;
-                    _this.view.syncDOMPollResults();
+                    if (_this.hasResultsModification(result.pollResults)){
+                        _this.pollData.pollResults = result.pollResults;
+                        _this.view.syncDOMPollResults();
+                    }
                 }
             }, function (reason) {
                 // TODO [es] handle
