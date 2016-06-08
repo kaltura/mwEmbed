@@ -53,9 +53,9 @@
 
             var pollViewPortWidth = _this.$webcastPoll ? _this.$webcastPoll.width() : null;
             var result = '';
-            if (pollViewPortWidth < 300) {
-                result = '';
-            } else if (pollViewPortWidth < 600) {
+            if (pollViewPortWidth < 510) {
+                result = 'small';
+            } else if (pollViewPortWidth < 640) {
                 result = 'medium';
             } else {
                 result = 'large';

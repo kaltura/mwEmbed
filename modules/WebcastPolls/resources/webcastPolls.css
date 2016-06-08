@@ -131,6 +131,24 @@ Poll (shared)
     border: rgba(126,211,33,0.6) solid 1px;
 }
 
+/*****************************
+Poll (small)
+*****************************/
+
+.webcastPolls .small-layout
+{
+    position:relative;
+    height:100%;
+    width:100%;
+}
+
+.webcastPolls .small-layout .text{
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align:center;
+}
 
 
 /*****************************
@@ -148,7 +166,7 @@ Poll (medium)
     display:table;
     table-layout:fixed;
     width:100%;
-    min-width:464px;
+    min-width:527px;
 }
 
 
