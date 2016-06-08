@@ -55,6 +55,10 @@
                         _this.KIVQModule.unloadQuizPlugin(embedPlayer);
                         embedPlayer.enablePlayControls();
                     }).done(function(data) {
+                        // since we set autoplay to be false.
+                        // to make sure poster is displayed
+                        // we call update poster HTML.
+                        embedPlayer.updatePosterHTML();
                         mw.log("Quiz: setup is completed, continuing...");
                     });
 
