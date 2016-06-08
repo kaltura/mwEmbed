@@ -93,10 +93,7 @@
                         _this.$webcastPoll.empty();
                     }
                 }
-
             }
-
-
         },
         removeWebcastPollElement: function () {
             var _this = this;
@@ -174,7 +171,7 @@
                     _this.$webcastPoll.find('.answer').not('.answer>' + selectedAnswerSelector).removeClass('selected');
 
                     if (_this.parent.userVote.answer) {
-                        _this.$webcastPoll.find(selectedAnswerSelector).parent().addClass('selected');
+                        _this.$webcastPoll.find(selectedAnswerSelector).closest('.answer').addClass('selected');
                     }
 
                     if (_this.parent.canUserVote()) {

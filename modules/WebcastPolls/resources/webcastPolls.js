@@ -323,8 +323,14 @@
             var previousAnswer = _this.userVote.answer;
 
             try {
-                var selectedAnswer = $(e.currentTarget).children(0).data('poll-value');
+                var selectedAnswer = $(e.currentTarget).find("[data-poll-value]").data('poll-value');
 
+                if (isNaN(selectedAnswer))
+                {
+                    // TODO [es]
+                    return;
+
+                }
                 if (_this.userVote.answer === selectedAnswer) {
                     return;
                 }

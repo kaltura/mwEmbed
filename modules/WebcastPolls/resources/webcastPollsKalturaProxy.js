@@ -115,17 +115,16 @@
                             cuePoint.relatedObjects.pollVoteResponseProfile.objects.length > 0
                         ) ? cuePoint.relatedObjects.pollVoteResponseProfile.objects[0] : null;
 
-                        if (metadata && metadata.xml)
-                        {
+                        if (metadata && metadata.xml) {
                             var voteAnswerToken = metadata.xml.match(/<Answer>([0-9]+?)<[/]Answer>/);
-                            var vote = (voteAnswerToken.length === 2) ? voteAnswerToken[1] : null;
+                            var vote = (voteAnswerToken && voteAnswerToken.length === 2) ? voteAnswerToken[1] : null;
                             var metadataId = metadata.id;
 
-                            if (vote) {
-                                result.userVote = {metadataId: metadataId, answer: vote};
-                            }else {
-                                // ## failed to extract metadata of cuepoint - invalid situation
-                                throw new Error("todo"); // TODO [es]
+                            result.userVote = {metadataId: metadataId, answer: vote};
+
+                            if (!vote)
+                            {
+                                // TODO [es] log
                             }
                         }else
                         {
