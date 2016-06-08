@@ -412,6 +412,7 @@
 			if (this.embedPlayer.casting){
 				this.embedPlayer.adTimeline.restorePlayer( null, true);
 				this.destroy();
+				this.addSkipSupport();
 				return;
 			}
 			// Initialize the ads manager. In case of ad playlist with a preroll, the preroll will start playing immediately.
@@ -746,6 +747,12 @@
 							.css({"position": "absolute", "float": "right", "display": "none"})
 					);
 				}
+				this.embedPlayer.bindHelper('chromecastReceiverAdOpen' + this.bindPostfix, function (event) {
+					_this.showSkipBtn();
+				});
+				this.embedPlayer.bindHelper('chromecastReceiverAdComplete' + this.bindPostfix, function (event) {
+					_this.hideSkipBtn();
+				});
 			}
 		},
 		showSkipBtn: function(){

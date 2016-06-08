@@ -113,6 +113,12 @@
 				_this.pendingRelated = false;
 			});
 
+			$( this.embedPlayer).bind('onAdSkip', function(e){
+				_this.sendMessage({'type': 'skipAd'});
+				_this.embedPlayer.enablePlayControls();
+				_this.loadMedia();
+			});
+
 			$( this.embedPlayer).bind('preShowScreen', function(e){
 				_this.pendingRelated = true;
 			});
@@ -261,10 +267,12 @@
 						break;
 					case "chromecastReceiverAdOpen":
 						_this.embedPlayer.disablePlayControls(["chromecast"]);
+						_this.embedPlayer.triggerHelper("chromecastReceiverAdOpen");
 						_this.inSequence = true;
 						break;
 					case "chromecastReceiverAdComplete":
 						_this.embedPlayer.enablePlayControls();
+						_this.embedPlayer.triggerHelper("chromecastReceiverAdComplete");
 						_this.loadMedia();
 						break;
 					case "chromecastReceiverAdDuration":
