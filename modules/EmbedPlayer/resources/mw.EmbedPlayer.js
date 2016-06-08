@@ -885,7 +885,9 @@
 					this.showPlayerError();
 				} else {
 					this.setError(errorObj);
-					this.showErrorMsg(errorObj);
+					if ( !this.changeMediaStarted ){
+						this.showErrorMsg(errorObj); // errors triggered during change media will be shown at the playerReady.changeMedia event
+					}
 				}
 				mw.log("EmbedPlayer:: setupSourcePlayer > player ready ( but with errors ) ");
 			} else {
