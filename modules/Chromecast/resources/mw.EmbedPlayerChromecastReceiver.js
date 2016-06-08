@@ -75,6 +75,9 @@
 			this.bindHelper("onAdOpen", function(event, id, system, type){
 				_this.triggerHelper("broadcastToSender", ["chromecastReceiverAdOpen"]);
 			});
+			this.bindHelper("AdSupport_AdUpdateDuration", function(event, duration){
+				_this.triggerHelper("broadcastToSender", ["chromecastReceiverAdDuration|" + duration]);
+			});
 			this.bindHelper("onAdComplete", function(){
 				_this.triggerHelper("broadcastToSender", ["chromecastReceiverAdComplete"]);
 				_this.triggerHelper("cancelAllAds");

@@ -51,7 +51,8 @@
 		pendingRelated: false,
 		pendingReplay: false,
 		replay: false,
-		updateProgress: true,
+		inSequence: false,
+		adDuration: null,
 
 		setup: function( embedPlayer ) {
 			var _this = this;
@@ -251,7 +252,7 @@
 			var _this = this;
 			this.session.addMessageListener(this.MESSAGE_NAMESPACE, function(namespace, message){
 				_this.log( "Got Message From Receiver: " + message );
-				switch (message){
+				switch (message.split('|')[0]){
 					case "readyForMedia":
 						_this.loadMedia();
 						break;
@@ -260,11 +261,17 @@
 						break;
 					case "chromecastReceiverAdOpen":
 						_this.embedPlayer.disablePlayControls(["chromecast"]);
-						_this.updateProgress = false;
+						_this.inSequence = true;
 						break;
 					case "chromecastReceiverAdComplete":
 						_this.embedPlayer.enablePlayControls();
 						_this.loadMedia();
+						break;
+					case "chromecastReceiverAdDuration":
+						_this.adDuration = parseInt(message.split('|')[1]);
+						_this.embedPlayer.setDuration( _this.adDuration );
+						break;
+					default:
 						break;
 				}
 			});
@@ -348,7 +355,7 @@
 		onMediaDiscovered: function(how, mediaSession) {
 			var _this = this;
 			this.embedPlayer.layoutBuilder.closeAlert();
-			this.updateProgress = true;
+			this.inSequence = false;
 			// if page reloaded and in playlist - select the currently playing clip
 			if ( how === 'onRequestSessionSuccess_' && this.embedPlayer.playlist){
 				this.stopApp();
@@ -457,9 +464,7 @@
 		},
 
 		monitor: function(){
-			if (this.updateProgress){
-				this.embedPlayer.updatePlayhead( this.getCurrentTime(), this.mediaDuration );
-			}
+			this.embedPlayer.updatePlayhead( this.getCurrentTime(), this.inSequence ? this.adDuration : this.mediaDuration );
 		},
 
 		seekMedia: function(pos) {
@@ -526,7 +531,7 @@
 				// clip done
 				//this.session = null;
 				// make sure we are still on Chromecast player since session will be lost when returning to the native player as well
-				if ( this.getPlayer().instanceOf === "Chromecast" && this.currentMediaSession.idleReason === "FINISHED"){
+				if ( this.getPlayer().instanceOf === "Chromecast" && this.currentMediaSession.idleReason === "FINISHED" && !this.inSequence){
 					this.embedPlayer.clipDone(); // trigger clipDone
 					this.autoPlay = false;       // set autoPlay to false for rewind
 					if (!this.pendingRelated){
