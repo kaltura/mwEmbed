@@ -195,7 +195,7 @@
                 }
             }
 
-            if (_this.parent.currentPollId) {
+            if (_this.parent.pollData.pollId) {
                 // ## should check that requested poll is shown
 
                 // Make sure we have a container

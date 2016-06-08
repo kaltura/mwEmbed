@@ -1,34 +1,39 @@
 (function (mw, $) {
     "use strict";
 
+    /**
+     * Plugin representing a webcast polls.
+     * This class is responsible for the the interaction with the producer (using cue points), the player (using player events) and the user (using dom elements and events).
+     */
     mw.PluginManager.add('webcastPolls', mw.KBasePlugin.extend({
         defaultConfig: {
-            monitorPollResultsInterval: 5000
+            monitorPollResultsInterval: 5000 // The interval to be used to trigger a scheduled poll results fetching
         },
-        currentPollId: null,
         cuePointsManager: null,
         cachedPollsContent: {},
-        poolVotingProfileId: null,
-        userId: null,
-        userVote: {}, // ## Should remain empty (filled by 'resetPersistData')
-        pollData: {}, // ## Should remain empty (filled by 'resetPersistData')
         kalturaProxy: null,
         kClient: null,
-        isPollShown: false,
         userProfile: null,
+        userVote: {}, // ## Should remain empty (filled by 'resetPersistData')
+        pollData: {}, // ## Should remain empty (filled by 'resetPersistData')
+        globals : {
+            votingProfileId: null,
+            userId: null,
+            isPollShown: false
+        },
         resetPersistData: function ()
         {
             var _this = this;
 
             _this.userVote = {metadataId: null, answer: null, inProgress: false, canUserVote: false, isReady: false};
             _this.pollData = {
+                pollId : null,
                 content: null,
                 showResults: false,
                 showTotals: false,
                 fetchResultsId: null,
                 pollResults: null
             };
-            _this.currentPollId = null;
         },
         setup: function ()
         {
@@ -39,12 +44,12 @@
             _this.addBindings();
             _this.initializeDependentPlugins();
 
-            _this.userId = _this.userProfile.getUserID();
+            _this.globals.userId = _this.userProfile.getUserID();
 
             _this.kalturaProxy.getVoteCustomMetadataProfileId().then(function (result) {
-                _this.poolVotingProfileId = result.profileId;
+                _this.globals.votingProfileId = result.profileId;
             }, function (reason) {
-                _this.poolVotingProfileId = null;
+                _this.globals.votingProfileId = null;
             });
         },
         addBindings: function ()
@@ -160,9 +165,9 @@
         {
             var _this = this;
 
-            if (_this.isPollShown) {
+            if (_this.globals.isPollShown) {
                 _this.view.removeWebcastPollElement();
-                _this.isPollShown = false;
+                _this.globals.isPollShown = false;
             }
 
             // ## IMPORTANT: perform cleanup of information that was relevant to previous poll
@@ -181,7 +186,7 @@
             }
 
             try {
-                var isShowingRequestedPoll = _this.currentPollId === pollState.pollId;
+                var isShowingRequestedPoll = _this.pollData.pollId === pollState.pollId;
                 var pollElement = _this.view.getWebcastPollElement(); // Important: we invoke this function to make sure the webcast poll element exists
 
                 if (pollElement) {
@@ -191,8 +196,8 @@
                         _this.resetPersistData();
 
                         // ## update internals
-                        _this.isPollShown = true;
-                        _this.currentPollId = pollState.pollId;
+                        _this.globals.isPollShown = true;
+                        _this.pollData.pollId = pollState.pollId;
                     }
 
                     // sync internals with poll status
@@ -204,10 +209,10 @@
                     {
                         // ## show the poll the first time & extract important information
 
-                        var invokedByPollId = _this.currentPollId;
+                        var invokedByPollId = _this.pollData.pollId;
                         // ## get poll data to show
                         _this.getPollContent(pollState.pollId, true).then(function (result) {
-                            if (invokedByPollId === _this.currentPollId) {
+                            if (invokedByPollId === _this.pollData.pollId) {
                                 _this.pollData.content = result.content;
                                 _this.pollData.pollResults = result.results;
 
@@ -218,7 +223,7 @@
                                 _this.view.syncPollDOM();
                             }
                         }, function (reason) {
-                            if (invokedByPollId === _this.currentPollId) {
+                            if (invokedByPollId === _this.pollData.pollId) {
                                 // TODO [es] handle
                             }
                         });
@@ -229,8 +234,10 @@
                         _this.view.syncPollDOM();
                     } else {
                         // ## update current poll with voting and results according to poll status.
+
                         _this.updatePollResultsStatus();
                         _this.view.syncDOMUserVoting();
+                        _this.view.syncDOMPollResults();
                     }
                 }else{
                     // TODO [es]
@@ -280,9 +287,9 @@
         updatePollResults: function ()
         {
             var _this = this;
-            var invokedByPollId = _this.currentPollId;
+            var invokedByPollId = _this.pollData.pollId;
             _this.kalturaProxy.getPollResults(invokedByPollId).then(function (result) {
-                if (invokedByPollId === _this.currentPollId) {
+                if (invokedByPollId === _this.pollData.pollId) {
                     if (_this.hasResultsModification(result.pollResults)){
                         _this.pollData.pollResults = result.pollResults;
                         _this.view.syncDOMPollResults();
@@ -313,7 +320,7 @@
             } else {
                 _this.cachedPollsContent[pollId] = null;
 
-                _this.kalturaProxy.getPollContent(pollId,_this.poolVotingProfileId, _this.userId).then(function (result) {
+                _this.kalturaProxy.getPollContent(pollId,_this.globals.votingProfileId, _this.globals.userId).then(function (result) {
                     try {
                         _this.cachedPollsContent[pollId] = result;
                         defer.resolve({content: result.pollData, results : result.pollResults,  userVote : result.userVote});
@@ -331,7 +338,7 @@
         canUserVote: function ()
         {
             var _this = this;
-            return _this.currentPollId && _this.poolVotingProfileId && !_this.userVote.inProgress && _this.userVote.canUserVote && _this.userVote.isReady;
+            return _this.pollData.pollId && _this.globals.votingProfileId && !_this.userVote.inProgress && _this.userVote.canUserVote && _this.userVote.isReady;
         },
         handleAnswerClicked: function (e)
         {
@@ -360,15 +367,15 @@
                 _this.view.syncDOMUserVoting();
 
                 if (_this.userVote.metadataId) {
-                    var invokedByPollId = _this.currentPollId;
-                    _this.kalturaProxy.transmitVoteUpdate(_this.userVote.metadataId, _this.userId, selectedAnswer).then(function (result) {
-                        if (invokedByPollId === _this.currentPollId) {
+                    var invokedByPollId = _this.pollData.pollId;
+                    _this.kalturaProxy.transmitVoteUpdate(_this.userVote.metadataId, _this.globals.userId, selectedAnswer).then(function (result) {
+                        if (invokedByPollId === _this.pollData.pollId) {
                             _this.userVote.inProgress = false;
                             _this.view.syncDOMUserVoting();
                         }
 
                     }, function (reason) {
-                        if (invokedByPollId === _this.currentPollId) {
+                        if (invokedByPollId === _this.pollData.pollId) {
                             // TODO [es]
                             _this.userVote.inProgress = false;
                             _this.userVote.answer = previousAnswer;
@@ -376,16 +383,16 @@
                         }
                     });
                 } else {
-                    var invokedByPollId = _this.currentPollId;
-                    _this.kalturaProxy.transmitNewVote(_this.currentPollId, _this.poolVotingProfileId, _this.userId, selectedAnswer).then(function (result) {
-                        if (invokedByPollId === _this.currentPollId) {
+                    var invokedByPollId = _this.pollData.pollId;
+                    _this.kalturaProxy.transmitNewVote(_this.pollData.pollId, _this.globals.votingProfileId, _this.globals.userId, selectedAnswer).then(function (result) {
+                        if (invokedByPollId === _this.pollData.pollId) {
                             _this.userVote.inProgress = false;
                             _this.userVote.metadataId = result.metadataId;
                             _this.view.syncDOMUserVoting();
                         }
 
                     }, function (reason) {
-                        if (invokedByPollId === _this.currentPollId) {
+                        if (invokedByPollId === _this.pollData.pollId) {
                             // TODO [es]
                             _this.userVote.inProgress = false;
                             _this.userVote.answer = previousAnswer;
