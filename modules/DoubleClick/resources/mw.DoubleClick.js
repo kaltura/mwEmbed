@@ -409,6 +409,12 @@
 				} );
 		},
 		startAdsManager: function(){
+			if (this.embedPlayer.casting){
+				this.embedPlayer.adTimeline.restorePlayer( null, true);
+				this.destroy();
+				this.addSkipSupport();
+				return;
+			}
 			// Initialize the ads manager. In case of ad playlist with a preroll, the preroll will start playing immediately.
 			this.adsManager.init( this.embedPlayer.getWidth(), this.embedPlayer.getHeight(), google.ima.ViewMode.NORMAL);
 			this.adsManager.setVolume( this.embedPlayer.getPlayerElementVolume() );
@@ -533,6 +539,11 @@
 						_this.embedPlayer.updatePosterHTML();
 					}
 				}
+			});
+
+			_this.embedPlayer.bindHelper('cancelAllAds' + this.bindPostfix, function (event) {
+				mw.log( "DoubleClick::cancelAllAds event called." );
+				_this.destroy();
 			});
 
 			if (_this.embedPlayer.isMobileSkin()){
@@ -737,6 +748,12 @@
 					);
 				}
 			}
+			this.embedPlayer.bindHelper('chromecastReceiverAdOpen' + this.bindPostfix, function (event) {
+				_this.showSkipBtn();
+			});
+			this.embedPlayer.bindHelper('chromecastReceiverAdComplete' + this.bindPostfix, function (event) {
+				_this.hideSkipBtn();
+			});
 		},
 		showSkipBtn: function(){
 			if( this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' ) ){
