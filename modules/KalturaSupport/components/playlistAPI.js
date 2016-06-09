@@ -397,6 +397,9 @@
 
 				var thumbnailUrl = item.thumbnailUrl || customData.thumbUrl || this.getThumbUrl(item);
 				var thumbnailRotatorUrl = this.getConfig('thumbnailRotator') ? this.getThumRotatorUrl() : '';
+				if (this.getPlayer().getFlashvars('loadThumbnailWithKs')) {
+					thumbnailUrl += '/ks/' + this.getPlayer().getFlashvars('ks');
+				}
 
 				item.order = i;
 				item.title = title;
