@@ -579,11 +579,13 @@ class kalturaIframeClass {
 	}
 
 	function outputCompatibilityTags(){
-		$flashvars = $this->request->getFlashVars();
-		if (isset($flashvars) &&
-				isset($flashvars['forceCompatMode']) &&
-				!empty($flashvars['forceCompatMode'])){
-			return '<meta http-equiv="X-UA-Compatible" content="' . $flashvars['forceCompatMode'] . '"/>';
+		if (isset($this->request) && !empty($this->request)) {
+			$flashvars = $this->request->getFlashVars();
+			if (isset($flashvars) &&
+					isset($flashvars['forceCompatMode']) &&
+					!empty($flashvars['forceCompatMode'])){
+				return '<meta http-equiv="X-UA-Compatible" content="' . $flashvars['forceCompatMode'] . '"/>';
+			}
 		}
 
 		return '';
