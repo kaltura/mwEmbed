@@ -183,6 +183,18 @@
 
             }
         },
+        syncDOMAnswersVisibility : function()
+        {
+            var _this = this;
+
+            if (_this.parent.pollData.showAnswers)
+            {
+                _this.showPollDOMContent();
+            }else
+            {
+                _this.showPollDOMQuestionOnly();
+            }
+        },
         syncPollDOM: function () {
             var _this = this;
 
@@ -213,7 +225,8 @@
                     updateAnswer(4, pollContent);
                     updateAnswer(5, pollContent);
 
-                    _this.showPollDOMContent();
+                    _this.syncDOMAnswersVisibility();
+
                 } else {
                     _this.$webcastPoll.find('[name="question"],[name="answer1"],[name="answer2"],[name="answer3"],[name="answer4"],[name="answer5"]').text('');
                     _this.showPollDOMLoader();
@@ -229,7 +242,17 @@
             var _this = this;
             if (_this.$webcastPoll) {
                 _this.$webcastPoll.find('[name="pollContent"]').hide();
+                _this.$webcastPoll.find('[name="questionOnlyContainer"]').hide();
                 _this.$webcastPoll.find('[name="loadingContainer"]').show();
+            }
+        },
+        showPollDOMQuestionOnly: function () {
+            var _this = this;
+
+            if (_this.$webcastPoll) {
+                _this.$webcastPoll.find('[name="loadingContainer"]').hide();
+                _this.$webcastPoll.find('[name="pollContent"]').hide();
+                _this.$webcastPoll.find('[name="questionOnlyContainer"]').fadeIn('slow');
             }
         },
         showPollDOMContent: function () {
@@ -237,6 +260,7 @@
 
             if (_this.$webcastPoll) {
                 _this.$webcastPoll.find('[name="loadingContainer"]').hide();
+                _this.$webcastPoll.find('[name="questionOnlyContainer"]').hide();
                 _this.$webcastPoll.find('[name="pollContent"]').fadeIn('slow');
             }
         }

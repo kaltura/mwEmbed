@@ -56,7 +56,21 @@ Poll (shared)
     margin:auto;
 }
 
+/**** question-only elements ****/
+.webcastPolls .poll-container .question-only-container {
+    position:relative;
+    height:100%;
+    width:100%;
+}
 
+.webcastPolls .poll-container .question-only-container .text {
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align:center;
+    font-size:26px;
+}
 
 /**** respond elements ****/
 .webcastPolls .poll .responds {
@@ -148,6 +162,7 @@ Poll (small)
     left: 50%;
     transform: translate(-50%, -50%);
     text-align:center;
+    font-size:26px;
 }
 
 

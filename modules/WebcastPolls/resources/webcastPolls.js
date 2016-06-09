@@ -25,7 +25,7 @@
         {
             var _this = this;
 
-            _this.userVote = {metadataId: null, answer: null, inProgress: false, canUserVote: false, isReady: false};
+            _this.userVote = {metadataId: null, answer: null, inProgress: false, canUserVote: false, isReady: false, showAnswers :false};
             _this.pollData = {
                 pollId : null,
                 content: null,
@@ -202,6 +202,7 @@
 
                     // sync internals with poll status
                     _this.userVote.canUserVote = pollState.allowVoting;
+                    _this.pollData.showAnswers = pollState.showAnswers;
                     _this.pollData.showTotals = pollState.showTotals && pollState.showTotals !== 'disabled';
                     _this.pollData.showResults = pollState.showResults && pollState.showResults !== 'disabled';
 
@@ -236,6 +237,7 @@
                         // ## update current poll with voting and results according to poll status.
 
                         _this.updatePollResultsStatus();
+                        _this.view.syncDOMAnswersVisibility();
                         _this.view.syncDOMUserVoting();
                         _this.view.syncDOMPollResults();
                     }
