@@ -638,6 +638,8 @@
 			if (this.embedPlayer.isLive()){
 				this.embedPlayer.pause();
 				setTimeout(function(){
+					_this.embedPlayer.setLiveOffSynch(false);
+					_this.embedPlayer.triggerHelper("movingBackToLive");
 					_this.embedPlayer.play();
 				},1000);
 			}else{
