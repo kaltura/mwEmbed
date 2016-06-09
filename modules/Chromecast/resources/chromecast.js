@@ -51,6 +51,8 @@
 		pendingRelated: false,
 		pendingReplay: false,
 		replay: false,
+		inSequence: false,
+		adDuration: null,
 
 		setup: function( embedPlayer ) {
 			var _this = this;
@@ -109,6 +111,12 @@
 				_this.savedPosition = 0;
 				_this.pendingReplay = false;
 				_this.pendingRelated = false;
+			});
+
+			$( this.embedPlayer).bind('onAdSkip', function(e){
+				_this.sendMessage({'type': 'skipAd'});
+				_this.embedPlayer.enablePlayControls();
+				_this.loadMedia();
 			});
 
 			$( this.embedPlayer).bind('preShowScreen', function(e){
@@ -228,7 +236,7 @@
 			}
 			if (this.getConfig("useKalturaPlayer") === true){
 				var flashVars = this.getFlashVars();
-				this.sendMessage({'type': 'embed', 'publisherID': this.embedPlayer.kwidgetid.substr(1), 'uiconfID': this.embedPlayer.kuiconfid, 'entryID': this.embedPlayer.kentryid, 'debugKalturaPlayer': this.getConfig("debugKalturaPlayer"), 'flashVars': flashVars});
+				this.sendMessage({'type': 'embed', 'lib': kWidget.getPath(), 'publisherID': this.embedPlayer.kwidgetid.substr(1), 'uiconfID': this.embedPlayer.kuiconfid, 'entryID': this.embedPlayer.kentryid, 'debugKalturaPlayer': this.getConfig("debugKalturaPlayer"), 'flashVars': flashVars});
 				this.embedPlayer.showErrorMsg(
 					{'title':'Chromecast Player',
 						'message': gM('mwe-chromecast-loading'),
@@ -249,12 +257,30 @@
 
 			var _this = this;
 			this.session.addMessageListener(this.MESSAGE_NAMESPACE, function(namespace, message){
-				_this.log("Got Message From Receiver: "+message);
-				if (message == "readyForMedia"){
-					_this.loadMedia();
-				}
-				if (message == "shutdown"){
-					_this.stopApp(); // receiver was shut down by the browser Chromecast icon - stop the app
+				_this.log( "Got Message From Receiver: " + message );
+				switch (message.split('|')[0]){
+					case "readyForMedia":
+						_this.loadMedia();
+						break;
+					case "shutdown":
+						_this.stopApp(); // receiver was shut down by the browser Chromecast icon - stop the app
+						break;
+					case "chromecastReceiverAdOpen":
+						_this.embedPlayer.disablePlayControls(["chromecast"]);
+						_this.embedPlayer.triggerHelper("chromecastReceiverAdOpen");
+						_this.inSequence = true;
+						break;
+					case "chromecastReceiverAdComplete":
+						_this.embedPlayer.enablePlayControls();
+						_this.embedPlayer.triggerHelper("chromecastReceiverAdComplete");
+						_this.loadMedia();
+						break;
+					case "chromecastReceiverAdDuration":
+						_this.adDuration = parseInt(message.split('|')[1]);
+						_this.embedPlayer.setDuration( _this.adDuration );
+						break;
+					default:
+						break;
 				}
 			});
 		},
@@ -337,6 +363,7 @@
 		onMediaDiscovered: function(how, mediaSession) {
 			var _this = this;
 			this.embedPlayer.layoutBuilder.closeAlert();
+			this.inSequence = false;
 			// if page reloaded and in playlist - select the currently playing clip
 			if ( how === 'onRequestSessionSuccess_' && this.embedPlayer.playlist){
 				this.stopApp();
@@ -402,7 +429,7 @@
 					if ( _this.getConfig("receiverLogo") ){
 						_this.sendMessage({'type': 'hide', 'target': 'logo'});
 					}
-					if (_this.replay){
+					if (_this.replay && !_this.embedPlayer.playlist){
 						_this.replay = false;
 						_this.embedPlayer.triggerHelper("onPlayerStateChange",["end"]); // this will set the replay icon on the playPauseBtn button
 						_this.sendMessage({'type': 'replay'}); // since we reload the media for replay, trigger playerReady on the receiver player to reset Analytics
@@ -445,8 +472,7 @@
 		},
 
 		monitor: function(){
-			var _this = this;
-			this.embedPlayer.updatePlayhead( this.getCurrentTime(), this.mediaDuration );
+			this.embedPlayer.updatePlayhead( this.getCurrentTime(), this.inSequence ? this.adDuration : this.mediaDuration );
 		},
 
 		seekMedia: function(pos) {
@@ -513,7 +539,7 @@
 				// clip done
 				//this.session = null;
 				// make sure we are still on Chromecast player since session will be lost when returning to the native player as well
-				if ( this.getPlayer().instanceOf === "Chromecast" && this.currentMediaSession.idleReason === "FINISHED"){
+				if ( this.getPlayer().instanceOf === "Chromecast" && this.currentMediaSession.idleReason === "FINISHED" && !this.inSequence){
 					this.embedPlayer.clipDone(); // trigger clipDone
 					this.autoPlay = false;       // set autoPlay to false for rewind
 					if (!this.pendingRelated){
@@ -612,6 +638,8 @@
 			if (this.embedPlayer.isLive()){
 				this.embedPlayer.pause();
 				setTimeout(function(){
+					_this.embedPlayer.setLiveOffSynch(false);
+					_this.embedPlayer.triggerHelper("movingBackToLive");
 					_this.embedPlayer.play();
 				},1000);
 			}else{
