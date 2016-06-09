@@ -11,7 +11,7 @@ General
     z-index: 4;
     box-sizing: border-box;
     padding: 1em;
-    background-color:rgba(0,0,0,0.5);
+    background-color:rgba(0,0,0,0.7);
     font-family: 'Lato', 'Helvetica', 'Arial';
 }
 
@@ -70,6 +70,8 @@ Poll (shared)
     transform: translate(-50%, -50%);
     text-align:center;
     font-size:26px;
+    line-height:36px;
+    letter-spacing: 1px;
 }
 
 /**** respond elements ****/
@@ -124,7 +126,7 @@ Poll (shared)
 
 .webcastPolls .poll .answer .answer-text {
     font-size: 13px;
-    color: rgba(255,255,255,0.3);
+    color: rgba(255,255,255,0.5);
     letter-spacing: 0.5px;
     text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);
 }
@@ -137,6 +139,31 @@ Poll (shared)
 
 .webcastPolls .poll .answer.selected {
     border: rgba(126,211,33,0.3) solid 1px;
+    background:rgba(155,154,155,0.3);
+}
+
+.webcastPolls .poll .answer.popular {
+    height: 62px !important;
+    line-height: 62px !important;
+    width: 120% !important;
+    left : -10%;
+    border : rgba(255,255,255,0.2) solid 1px;
+}
+
+.webcastPolls .poll .answer.popular .answer-text {
+    font-size:15px;
+    color: rgba(255,255,255,0.8);
+}
+
+.webcastPolls .poll .answer .answer-result-text {
+    font-weight: lighter;
+    color: rgba(255,255,255,0.5);
+}
+
+.webcastPolls .poll .answer.popular .answer-result-text {
+    font-size:16px;
+    font-weight: bolder;
+    color: rgba(255,255,255,0.8);
 }
 
 .webcastPolls.allow-voting .poll .answer:hover, .webcastPolls.allow-voting .poll .answer.selected {
