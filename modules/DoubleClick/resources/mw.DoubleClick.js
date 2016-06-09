@@ -747,13 +747,13 @@
 							.css({"position": "absolute", "float": "right", "display": "none"})
 					);
 				}
-				this.embedPlayer.bindHelper('chromecastReceiverAdOpen' + this.bindPostfix, function (event) {
-					_this.showSkipBtn();
-				});
-				this.embedPlayer.bindHelper('chromecastReceiverAdComplete' + this.bindPostfix, function (event) {
-					_this.hideSkipBtn();
-				});
 			}
+			this.embedPlayer.bindHelper('chromecastReceiverAdOpen' + this.bindPostfix, function (event) {
+				_this.showSkipBtn();
+			});
+			this.embedPlayer.bindHelper('chromecastReceiverAdComplete' + this.bindPostfix, function (event) {
+				_this.hideSkipBtn();
+			});
 		},
 		showSkipBtn: function(){
 			if( this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' ) ){
