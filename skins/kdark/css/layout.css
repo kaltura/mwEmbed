@@ -60,9 +60,6 @@ body {
     display: block;
     height: 4.8em;
 }
-.mobileSkin.size-small .topBarContainer, .mobileSkin.size-tiny .topBarContainer {
-    display: none;
-}
 .mobileSkin.size-small.fullscreen .topBarContainer, .mobileSkin.size-tiny.fullscreen .topBarContainer {
     display: block;
 }
