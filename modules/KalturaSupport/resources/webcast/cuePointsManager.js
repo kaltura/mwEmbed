@@ -105,7 +105,10 @@
                                 return (!cuePointType.main || cuePointType.main === cuePoint.cuePointType) && (!cuePointType.sub || cuePointType.sub === cuePoint.subType);
                             }).length > 0) : false;
 
-                            return isValidTag || isValidType;
+                            var passedCustomFilter = (isValidTag || isValidType) && args.filter ? args.filter(cuePoint) : true;
+
+
+                            return (isValidTag || isValidType) && passedCustomFilter;
                         });
 
                         result.sort(function (a, b) {

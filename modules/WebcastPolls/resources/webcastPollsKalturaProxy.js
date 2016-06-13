@@ -136,30 +136,6 @@
                 }
             }
         },
-        getPollResults : function(pollId)
-        {
-            var _this = this;
-            var defer = $.Deferred();
-
-            var request = _this.adapters.pollResults.getRequest(_this.getPlayer().kentryid, pollId);
-
-            _this.getKalturaClient().doRequest(request, function(response)
-            {
-                if (!_this.isErrorResponse(response))
-                {
-                    var result = {};
-                    _this.adapters.pollResults.handleResponse(result,response);
-                    defer.resolve(result);
-                }else {
-                    defer.reject();
-                }
-            },false, function(reason)
-            {
-                defer.reject({});
-            });
-
-            return defer.promise();
-        },
         getPollContent : function(pollId, profileId, userId)
         {
             var _this = this;

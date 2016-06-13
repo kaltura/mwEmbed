@@ -7,7 +7,6 @@
      */
     mw.PluginManager.add('webcastPolls', mw.KBasePlugin.extend({
         defaultConfig: {
-            monitorPollResultsInterval: 5000 // The interval to be used to trigger a scheduled poll results fetching
         },
         cuePointsManager: null,
         cachedPollsContent: {},
@@ -31,7 +30,6 @@
                 content: null,
                 showResults: false,
                 showTotals: false,
-                fetchResultsId: null,
                 pollResults: null
             };
         },
@@ -61,7 +59,7 @@
                 _this.handlePlayerEvent(e.type);
             });
         },
-        filterCuePoints : function(context)
+        filterStateCuePoints : function(context)
         {
             var _this = this;
             if (context && context.filter && context.cuePoints) {
@@ -71,6 +69,31 @@
                 });
 
                 return relevantCuePoints.length > 0 ? relevantCuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
+            }
+
+            return null;
+        },
+        filterPollResultsCuePoints : function(context)
+        {
+            var _this = this;
+            if (context && context.filter && context.cuePoints && _this.pollData.pollId) {
+
+                try {
+                    var relevantCuePoints = context.filter({
+                        tags: ['poll-results'],
+                        sortDesc: true,
+                        filter : function(cuePoint)
+                        {
+                            var pollData = JSON.parse(cuePoint.partnerData);
+                            return pollData.pollId  === _this.pollData.pollId;
+                        }
+                    });
+
+                    return relevantCuePoints.length > 0 ? relevantCuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
+                }catch(e)
+                {
+                    // TODO [es]
+                }
             }
 
             return null;
@@ -90,18 +113,16 @@
                     if (eventName === 'onplay' || (eventName === 'seeked' && !_this.getPlayer().isPlaying())) {
                         if (_this.cuePointsManager) {
                             var cuePointsReachedArgs = _this.cuePointsManager.getCuePointsReached();
-                            if (!_this.handleReachedCuePoints(cuePointsReachedArgs)) {
-                                // when user seek/press play we need to handle scenario that no relevant cue points has reached and thus we need to clear the image shown.
-                                _this.removePoll();
-                            }
+
+                            // when user seek/press play we need to handle scenario that no relevant cue points has reached and thus we need to perform some cleanups
+                            _this.handleStateCuePoints(true);
+                            _this.handlePollResultsCuePoints(true);
                         }
                     }
                     break;
                 default:
                     break;
             }
-
-            var _this = this;
 
             return false;
         },
@@ -132,24 +153,81 @@
                 // we need to initialize the instance
                 _this.cuePointsManager = new mw.webcast.CuePointsManager(_this.getPlayer(), function () {
                 }, "webcastPollsCuePointsManager");
-                _this.cuePointsManager.onCuePointsReached = $.proxy(_this.handleReachedCuePoints,_this);
+                _this.cuePointsManager.onCuePointsReached = $.proxy(function(args)
+                {
+                    _this.handleStateCuePoints(args);
+                    _this.handlePollResultsCuePoints(args);
+                },_this);
             }
         },
-        handleReachedCuePoints: function (args)
+        handlePollResultsCuePoints: function (args)
         {
             var _this = this;
-            var mostUpdatedCuePointToHandle = _this.filterCuePoints(args);
-            if (mostUpdatedCuePointToHandle) {
+            var resetMode = false;
+            var cuePointArgs = args;
+
+            if ($.type(args) === 'boolean' )
+            {
+                if (args) {
+                    resetMode = true;
+                    cuePointArgs = _this.cuePointsManager.getCuePointsReached();
+                }else
+                {
+                    return;
+                }
+            }
+
+            if (_this.pollData.showResults || _this.pollData.showTotals)
+            {
+                var pollResultsCuePoint = _this.filterPollResultsCuePoints(cuePointArgs);
+                if (pollResultsCuePoint && pollResultsCuePoint.partnerData) {
+                    try {
+                        var pollResults = JSON.parse(pollResultsCuePoint.partnerData);
+                        _this.pollData.pollResults = pollResults;
+                    } catch (e) {
+                        _this.pollData.pollResults = null;
+                    }
+
+                }else {
+                    if (resetMode) {
+                        _this.pollData.pollResults = null;
+                    }
+                }
+            }else
+            {
+                _this.pollData.pollResults = null;
+            }
+
+            _this.view.syncDOMPollResults();
+        },
+        handleStateCuePoints: function (args)
+        {
+            var _this = this;
+            var resetMode = false;
+            var cuePointArgs = args;
+
+            if ($.type(args) === 'boolean')
+            {
+                if (args) {
+                    resetMode = true;
+                    cuePointArgs = _this.cuePointsManager.getCuePointsReached();
+                }else
+                {
+                    return;
+                }
+            }
+
+            var stateCuePointToHandle = _this.filterStateCuePoints(cuePointArgs);
+            if (stateCuePointToHandle) {
                 try {
-                    var showingAPoll = mostUpdatedCuePointToHandle.tags.indexOf('select-poll-state') > -1;
+                    var showingAPoll = stateCuePointToHandle.tags.indexOf('select-poll-state') > -1;
 
                     if (showingAPoll) {
-                        var pollState = JSON.parse(mostUpdatedCuePointToHandle.partnerData);
+                        var pollState = JSON.parse(stateCuePointToHandle.partnerData);
 
                         if (pollState) {
                             _this.showOrUpdatePollByState(pollState);
                         }
-
                     } else {
                         _this.removePoll();
                     }
@@ -157,9 +235,13 @@
                     // TODO [es]
                 }
 
+            }else {
+                if (resetMode) {
+                    _this.removePoll();
+                }
             }
 
-            return !!mostUpdatedCuePointToHandle;
+            return !!stateCuePointToHandle;
         },
         removePoll: function ()
         {
@@ -172,8 +254,6 @@
 
             // ## IMPORTANT: perform cleanup of information that was relevant to previous poll
             _this.resetPersistData();
-
-            _this.stopMonitorPollResults();
         },
         showOrUpdatePollByState: function (pollState)
         {
@@ -201,7 +281,7 @@
                     }
 
                     // sync internals with poll status
-                    _this.userVote.canUserVote = pollState.allowVoting;
+                    _this.userVote.canUserVote = pollState.status === 'inProgress';
                     _this.pollData.showAnswers = pollState.showAnswers;
                     _this.pollData.showTotals = pollState.showTotals && pollState.showTotals !== 'disabled';
                     _this.pollData.showResults = pollState.showResults && pollState.showResults !== 'disabled';
@@ -215,11 +295,11 @@
                         _this.getPollContent(pollState.pollId, true).then(function (result) {
                             if (invokedByPollId === _this.pollData.pollId) {
                                 _this.pollData.content = result.content;
-                                _this.pollData.pollResults = result.results;
-
                                 _this.userVote.isReady = true;
                                 _this.userVote.answer = result.userVote.answer;
                                 _this.userVote.metadataId = result.userVote.metadataId;
+
+                                _this.updatepoll
 
                                 _this.view.syncPollDOM();
                             }
@@ -229,14 +309,11 @@
                             }
                         });
 
-                        _this.updatePollResultsStatus();
 
                         // make sure we update the view with the new poll
                         _this.view.syncPollDOM();
                     } else {
                         // ## update current poll with voting and results according to poll status.
-
-                        _this.updatePollResultsStatus();
                         _this.view.syncDOMAnswersVisibility();
                         _this.view.syncDOMUserVoting();
                         _this.view.syncDOMPollResults();
@@ -247,66 +324,6 @@
 
             } catch (e) {
                 // todo [es] handle
-            }
-        },
-        updatePollResultsStatus: function ()
-        {
-            var _this = this;
-
-            if (_this.pollData.showTotals || _this.pollData.showResults) {
-                _this.startMonitorPollResults();
-            } else {
-                _this.stopMonitorPollResults();
-            }
-        },
-        startMonitorPollResults: function ()
-        {
-            var _this = this;
-            if (!_this.pollData.fetchResultsId) {
-                _this.view.syncDOMPollResults();
-                _this.pollData.fetchResultsId = setInterval($.proxy(_this.updatePollResults,_this), _this.getConfig('monitorPollResultsInterval'))
-            }
-        },
-        hasResultsModification : function(pollResults)
-        {
-            var _this = this;
-            if (!_this.pollData.pollResults || !pollResults)
-            {
-                return _this.pollData.pollResults != pollResults;
-            }else
-            {
-                // IMPORTANT: we are using here light comparison (!=) instead of exact comparison (!==) to bypass types issues
-                return (
-                    _this.pollData.pollResults.totalVoters != pollResults.totalVoters ||
-                    _this.pollData.pollResults.answers['1'] != pollResults.answers['1'] ||
-                    _this.pollData.pollResults.answers['2'] != pollResults.answers['2'] ||
-                    _this.pollData.pollResults.answers['3'] != pollResults.answers['3'] ||
-                    _this.pollData.pollResults.answers['4'] != pollResults.answers['4'] ||
-                    _this.pollData.pollResults.answers['5'] != pollResults.answers['5']
-                );
-            }
-        },
-        updatePollResults: function ()
-        {
-            var _this = this;
-            var invokedByPollId = _this.pollData.pollId;
-            _this.kalturaProxy.getPollResults(invokedByPollId).then(function (result) {
-                if (invokedByPollId === _this.pollData.pollId) {
-                    if (_this.hasResultsModification(result.pollResults)){
-                        _this.pollData.pollResults = result.pollResults;
-                        _this.view.syncDOMPollResults();
-                    }
-                }
-            }, function (reason) {
-                // TODO [es] handle
-            })
-        },
-        stopMonitorPollResults: function ()
-        {
-            var _this = this;
-            if (_this.pollData.fetchResultsId) {
-                clearInterval(_this.pollData.fetchResultsId);
-                _this.pollData.fetchResultsId = null;
             }
         },
         getPollContent: function (pollId, forceGet)
