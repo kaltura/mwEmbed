@@ -22,6 +22,7 @@
 			'receiverLogo': true,
 			'logoUrl': null,
 			'useKalturaPlayer': true,
+			'useReceiverSource': true,
 			'debugKalturaPlayer': false
 		},
 		isDisabled: false,
@@ -260,7 +261,11 @@
 				_this.log( "Got Message From Receiver: " + message );
 				switch (message.split('|')[0]){
 					case "readyForMedia":
-						_this.loadMedia();
+						if ( _this.getConfig("useReceiverSource") && message.split('|').length > 1){ // we got source and mime type as selected by the player running on the receiver
+							_this.loadMedia(message.split('|')[1], message.split('|')[2]);
+						}else{
+							_this.loadMedia();
+						}
 						break;
 					case "shutdown":
 						_this.stopApp(); // receiver was shut down by the browser Chromecast icon - stop the app

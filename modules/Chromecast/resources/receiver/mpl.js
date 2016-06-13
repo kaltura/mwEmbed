@@ -151,6 +151,10 @@ onload = function () {
 						}
 					};
 					fv = extend(fv, payload['flashVars']);
+
+					var mimeType = null;
+					var src = null;
+
 					kWidget.embed({
 						"targetId": "kaltura_player",
 						"wid": "_" + publisherID,
@@ -165,7 +169,11 @@ onload = function () {
 								});
 								kdp.kBind("chromecastReceiverLoaded", function(){
 									setMediaManagerEvents();
-									messageBus.broadcast("readyForMedia");
+									var msg = "readyForMedia";
+									if (mimeType && src){
+										msg = msg + "|" + src + "|" + mimeType;
+									}
+									messageBus.broadcast(msg);
 								});
 								kdp.kBind("waterMarkLoaded", function(waterMarkElement){
 									var css = getCss(waterMarkElement);
@@ -175,6 +183,10 @@ onload = function () {
 											waterMarkElement.style[property] = css[property];
 										}
 									}
+								});
+								kdp.kBind("SourceSelected", function(source){
+									mimeType = source.mimeType;
+									src = source.src;
 								});
 							}
 						},
