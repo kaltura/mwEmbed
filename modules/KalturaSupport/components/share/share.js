@@ -104,6 +104,11 @@
 			if ( mw.isMobileDevice() || mw.isNativeApp() ){
 				this.setConfig( 'embedEnabled' , false );
 			}
+
+			// force parent to be topBarContainer on mobile
+			if (this.embedPlayer.isMobileSkin()){
+				this.setConfig( 'parent' , 'topBarContainer' );
+			}
 		},
 
 		setShareConfig: function() {
