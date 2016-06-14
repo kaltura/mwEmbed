@@ -27,9 +27,9 @@
 					_this.show();
 				}
 			});
-			// If have no components, hide
+			// If have no components, hide. For mobile skin we always need the topBarContainer to hold the "exit full screen" button
 			this.bind('layoutBuildDone', function(){
-				if( !_this.getComponent().children().length ){
+				if( !_this.getComponent().children().length && !_this.embedPlayer.isMobileSkin() ){
 					_this.destroy();
 				}
 			});
