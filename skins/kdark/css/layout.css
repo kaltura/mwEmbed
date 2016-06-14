@@ -906,7 +906,7 @@ body {
 .fullscreen.mobileSkin .currentTimeLabel {
 	margin-right: 10px;
 }
-.mobileSkin.start-state .currentTimeLabel {
+.mobileSkin.start-state .videoHolder .currentTimeLabel {
     position: absolute;
     font-size: 1.5em;
     right: 1em;
