@@ -26,7 +26,9 @@
 					setTimeout(function(){
 						_this.embedPlayer.triggerHelper("updateComponentsVisibilityDone");  // redraw components to calculate their size and location. Set in a timeout so the component width will get updated by CSS rules before calculation
 					},0);
-
+				});
+				this.bind('doStop', function () {
+					_this.updateUI(0);
 				});
 			}
 			this.bindTimeUpdate();
