@@ -167,9 +167,17 @@
 		},
 
 		showConnectingMessage: function(){
-			this.embedPlayer.showErrorMsg({
+			this.displayMessage(gM('mwe-chromecast-connecting'));
+		},
+
+		displayMessage: function(msg){
+			this.embedPlayer.layoutBuilder.displayAlert({
 					'title':'Chromecast Player',
-					'message': gM('mwe-chromecast-connecting'),
+					'message': msg,
+					'isModal': true,
+					'keepOverlay': true,
+					'noButtons': true,
+					'isError': true,
 					'props':{
 						'customAlertContainerCssClass': 'connectingMsg',
 						'customAlertTitleCssClass': 'hidden',
@@ -238,16 +246,7 @@
 			if (this.getConfig("useKalturaPlayer") === true){
 				var flashVars = this.getFlashVars();
 				this.sendMessage({'type': 'embed', 'lib': kWidget.getPath(), 'publisherID': this.embedPlayer.kwidgetid.substr(1), 'uiconfID': this.embedPlayer.kuiconfid, 'entryID': this.embedPlayer.kentryid, 'debugKalturaPlayer': this.getConfig("debugKalturaPlayer"), 'flashVars': flashVars});
-				this.embedPlayer.showErrorMsg(
-					{'title':'Chromecast Player',
-						'message': gM('mwe-chromecast-loading'),
-						'props':{
-							'customAlertContainerCssClass': 'connectingMsg',
-							'customAlertTitleCssClass': 'hidden',
-							'textColor': '#ffffff'
-						}
-					}
-				);
+				this.displayMessage(gM('mwe-chromecast-loading'));
 			} else {
 				this.sendMessage({'type': 'load'});
 				this.loadMedia();
