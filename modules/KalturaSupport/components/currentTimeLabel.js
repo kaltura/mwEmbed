@@ -19,13 +19,16 @@
 				this.setConfig("order", 26);
 				this.setConfig('parent','videoHolder');
 				this.setConfig("countDownMode", true);
-				this.bind('firstPlay', function(){
-					// move current time label from video holder back to controlBar container.
-					var currentTimeLabel = $('.currentTimeLabel').detach();
-					$('.controlsContainer .scrubber').after(currentTimeLabel);
-					setTimeout(function(){
-						_this.embedPlayer.triggerHelper("updateComponentsVisibilityDone");  // redraw components to calculate their size and location. Set in a timeout so the component width will get updated by CSS rules before calculation
-					},0);
+				this.bind('firstPlay preSequence', function(){
+					if ( _this.getConfig('parent') === 'videoHolder' ){
+						// move current time label from video holder back to controlBar container.
+						_this.setConfig('parent','controlsContainer');
+						var currentTimeLabel = $('.currentTimeLabel').detach();
+						$('.controlsContainer .scrubber').after(currentTimeLabel);
+						setTimeout(function(){
+							_this.embedPlayer.triggerHelper("updateComponentsVisibilityDone");  // redraw components to calculate their size and location. Set in a timeout so the component width will get updated by CSS rules before calculation
+						},0);
+					}
 				});
 				this.bind('doStop', function () {
 					_this.updateUI(0);
