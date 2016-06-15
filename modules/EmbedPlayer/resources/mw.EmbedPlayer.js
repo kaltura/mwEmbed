@@ -519,7 +519,7 @@
 		 * Enables the play controls ( for example when an ad is done )
 		 */
 		enablePlayControls: function (excludedComponents) {
-			if (this._playContorls || this.useNativePlayerControls() || this.getError() !== null) {
+			if (this._playContorls || this.getError() !== null) {
 				return;
 			}
 
@@ -534,7 +534,7 @@
 		 * Disables play controls, for example when an ad is playing back
 		 */
 		disablePlayControls: function (excludedComponents) {
-			if (!this._playContorls || this.useNativePlayerControls()) {
+			if (!this._playContorls) {
 				return;
 			}
 			mw.log("EmbedPlayer:: disablePlayControls");
