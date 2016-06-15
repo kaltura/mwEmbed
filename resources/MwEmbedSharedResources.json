@@ -464,5 +464,14 @@
     },
     "vtt.js": {
         "scripts": "resources/vtt.js/vtt.js"
+    },
+    "polyfill_Array.forEach": {
+        "scripts": "resources/polyfills/Array.forEach.js"
+    },
+    "polyfill_Array.filter": {
+        "scripts": "resources/polyfills/Array.filter.js"
+    },
+    "polyfill_Array.findIndex": {
+        "scripts": "resources/polyfills/Array.findIndex.js"
     }
 }
