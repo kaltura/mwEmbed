@@ -27,6 +27,10 @@
 			if ( mw.isMobileDevice() && !this.getConfig("serverSpeedPlayback")){
 				return false;
 			}
+
+			//If not on a mobile device disable the serverSpeedPlayback to allow playback on Desktop
+			this.setConfig("serverSpeedPlayback", false);
+
 			this.bind('playerReady', function(){
 				if ( _this.getConfig("serverSpeedPlayback") === true && _this.manifestSource ){
 					deferred.resolve(true);
