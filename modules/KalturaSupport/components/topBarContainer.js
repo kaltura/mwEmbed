@@ -86,7 +86,7 @@
 			}
 		},
 		show: function(){
-			if(this.embedPlayer.isMobileSkin() && this.getPlayer().getPlayerPoster().length){
+			if ( this.embedPlayer.isMobileSkin() && this.getPlayer().getPlayerPoster().length && this.embedPlayer.getInterface().hasClass("start-state") ){
 				return; // prevent showing controls on top of the poster when the video first loads
 			}
 			if ( !this.screenOpen ){
