@@ -171,7 +171,7 @@
             } else {
                 selector = 'li[' + idx.key + '=' + idx.val + ']';
 	            if (mw.getConfig("EmbedPlayer.EnableMobileSkin") && mw.isMobileDevice()){
-		            this.mobileMenu.val(idx.val);
+		            this.mobileMenu.val(this.$el.find( selector ).text());
 	            }
             }
 	        this.$el.find( selector ).addClass( 'active' ).attr('aria-checked', 'true');
