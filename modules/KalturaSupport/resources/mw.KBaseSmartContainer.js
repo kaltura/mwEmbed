@@ -22,6 +22,9 @@
 							.attr( 'title', this.title )
 							.addClass( "btn" + this.getCssClass() )
 							.on('click', function(e) {
+								if (_this.isDisabled){
+									return;
+								}
 								if ( !_this.pluginsScreenOpened && !_this.overlayOpen ){
 									_this.showRegisteredPlugins();
 								}else{
