@@ -463,7 +463,8 @@
       "scripts": "resources/threejs/three.min.js"
     },
     "vtt.js": {
-        "scripts": "resources/vtt.js/vtt.js"
+        "scripts": "resources/vtt.js/vtt.js",
+        "dependencies": ["polyfill_Array.forEach"]
     },
     "polyfill_Array.forEach": {
         "scripts": "resources/polyfills/Array.forEach.js"
