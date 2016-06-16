@@ -40,8 +40,11 @@
 					_this.show();
 				}
 			});
-			this.bind('playing AdSupport_StartAdPlayback onAddPlayerSpinner onHideControlBar onChangeMedia', function(e){
+			this.bind('playing AdSupport_StartAdPlayback onHideControlBar onChangeMedia', function(e){
 				_this.hide();
+			});
+			this.bind('onAddPlayerSpinner showScreen', function(e){
+				_this.hide(true);
 			});
 			this.bind('onPlayerStateChange', function(e, newState, oldState){
 				if( newState == 'load' || newState == 'play' ){
