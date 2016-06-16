@@ -82,10 +82,10 @@
 		},
 		updateUI: function (time) {
 			if (this.updateEnabled) {
-				time = Math.floor(time);
 				if (this.getConfig("countDownMode")){
 					time = this.embedPlayer.getDuration() - time;
 				}
+				time = Math.floor(time);
 				this.getComponent().text(mw.seconds2npt(time));
 				// check if the time change caused the label width to change (got to 10 minutes or 1 hour) and recalculate components position if needed
 				var currentWidth = this.$el.width();

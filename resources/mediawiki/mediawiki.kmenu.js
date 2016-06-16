@@ -187,6 +187,9 @@
         destroy: function(){
             this.$el.empty();
             this.itemIdx = 0;
+	        if ( mw.getConfig("EmbedPlayer.EnableMobileSkin") && mw.isMobileDevice() && this.mobileMenu ){
+		        this.mobileMenu.find('option').remove().end();
+	        }
         },
 		numOfChildren: function() {
 			return this.itemIdx;
