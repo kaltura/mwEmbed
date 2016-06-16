@@ -12,6 +12,7 @@
 
 		updateEnabled: true,
 		labelWidth: null,
+		adDuration: null,
 
 		setup: function () {
 			var _this = this;
@@ -32,6 +33,13 @@
 				});
 				this.bind('doStop', function () {
 					_this.updateUI(0);
+				});
+				// Support duration for Ads
+				this.bind( 'AdSupport_AdUpdateDuration', function(e, duration){
+					_this.adDuration = duration;
+				});
+				this.bind( 'AdSupport_EndAdPlayback', function(){
+					_this.adDuration = null;
 				});
 			}
 			this.bindTimeUpdate();
@@ -83,7 +91,11 @@
 		updateUI: function (time) {
 			if (this.updateEnabled) {
 				if (this.getConfig("countDownMode")){
-					time = this.embedPlayer.getDuration() - time;
+					if (this.embedPlayer.isInSequence() && this.adDuration){
+						time = this.adDuration - time;
+					}else{
+						time = this.embedPlayer.getDuration() - time;
+					}
 				}
 				time = Math.floor(time);
 				this.getComponent().text(mw.seconds2npt(time));
