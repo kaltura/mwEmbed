@@ -23,7 +23,7 @@
          */
         addBindings: function () {
             this.bind("playerReady", this.initFPS.bind(this));
-            this.bind("playerReady", this.clean.bind(this));
+            this.bind("onChangeMedia", this.clean.bind(this));
         },
         /**
          * Register the playback events
