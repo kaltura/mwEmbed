@@ -95,13 +95,15 @@
 			 */
 			clean: function () {
 				this.log("Clean");
-				this.LoadHLS = false;
-				this.loaded = false;
-				this.unRegisterHlsEvents();
-				this.restorePlayerMethods();
-				this.hls.detachMedia();
-				this.hls.destroy();
-				this.hls = null;
+				if (this.LoadHLS && this.loaded) {
+					this.LoadHLS = false;
+					this.loaded = false;
+					this.unRegisterHlsEvents();
+					this.restorePlayerMethods();
+					this.hls.detachMedia();
+					this.hls.destroy();
+					this.hls = null;
+				}
 			},
 			/**
 			 * Register the playback events and attach the playback engine to the video element
