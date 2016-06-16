@@ -29,14 +29,12 @@
          * Register the playback events
          */
         initFPS: function () {
-            if (!this.registered) {
-                this.log("Init");
-                this.registered = true;
-                this.onneedkeyHandler = this.onneedkey.bind(this);
-                this.getPlayer().getPlayerElement().addEventListener('webkitneedkey', this.onneedkey.bind(this), false);
-                this.onerrorHandler = this.onerror.bind(this);
-                this.getPlayer().getPlayerElement().addEventListener('error', this.onerrorHandler, false);
-            }
+            this.log("Init");
+            this.registered = true;
+            this.onneedkeyHandler = this.onneedkey.bind(this);
+            this.getPlayer().getPlayerElement().addEventListener('webkitneedkey', this.onneedkey.bind(this), false);
+            this.onerrorHandler = this.onerror.bind(this);
+            this.getPlayer().getPlayerElement().addEventListener('error', this.onerrorHandler, false);
         },
         /**
          * Clean method
