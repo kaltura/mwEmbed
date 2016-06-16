@@ -1208,7 +1208,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			.css( {
 				'height' : '100%',
 				'width' : '100%',
-				'z-index' : mw.isMobileDevice() ? 200 : 4
+				'z-index' : mw.isMobileDevice() ? 1000 : 4
 			})
 		);
 
