@@ -140,6 +140,10 @@
 					_this.embedPlayer.getPlayerElement().attr( 'chromecastAppId', _this.getConfig( 'applicationID' ));
 				}
 			});
+
+			$(this.embedPlayer).bind('onSDKReceiverMessage', function(e, message) {
+				_this.parseMessage(message);
+			});
 		},
 
 		getComponent: function() {
@@ -258,36 +262,40 @@
 			var _this = this;
 			this.session.addMessageListener(this.MESSAGE_NAMESPACE, function(namespace, message){
 				_this.log( "Got Message From Receiver: " + message );
-				switch (message.split('|')[0]){
-					case "readyForMedia":
-						if ( _this.getConfig("useReceiverSource") && message.split('|').length > 1){ // we got source and mime type as selected by the player running on the receiver
-							_this.loadMedia(message.split('|')[1], message.split('|')[2]);
-						}else{
-							_this.loadMedia();
-						}
-						break;
-					case "shutdown":
-						_this.stopApp(); // receiver was shut down by the browser Chromecast icon - stop the app
-						break;
-					case "chromecastReceiverAdOpen":
-						_this.embedPlayer.disablePlayControls(["chromecast"]);
-						_this.embedPlayer.triggerHelper("chromecastReceiverAdOpen");
-						_this.inSequence = true;
-						break;
-					case "chromecastReceiverAdComplete":
-						_this.embedPlayer.enablePlayControls();
-						_this.embedPlayer.triggerHelper("chromecastReceiverAdComplete");
-						_this.loadMedia();
-						break;
-					case "chromecastReceiverAdDuration":
-						_this.adDuration = parseInt(message.split('|')[1]);
-						_this.embedPlayer.setDuration( _this.adDuration );
-						break;
-					default:
-						break;
-				}
+				_this.parseMessage(message);
 			});
 		},
+		parseMessage: function(message){
+			switch (message.split('|')[0]){
+				case "readyForMedia":
+					if ( _this.getConfig("useReceiverSource") && message.split('|').length > 1){ // we got source and mime type as selected by the player running on the receiver
+						_this.loadMedia(message.split('|')[1], message.split('|')[2]);
+					}else{
+						_this.loadMedia();
+					}
+					break;
+				case "shutdown":
+					_this.stopApp(); // receiver was shut down by the browser Chromecast icon - stop the app
+					break;
+				case "chromecastReceiverAdOpen":
+					_this.embedPlayer.disablePlayControls(["chromecast"]);
+					_this.embedPlayer.triggerHelper("chromecastReceiverAdOpen");
+					_this.inSequence = true;
+					break;
+				case "chromecastReceiverAdComplete":
+					_this.embedPlayer.enablePlayControls();
+					_this.embedPlayer.triggerHelper("chromecastReceiverAdComplete");
+					_this.loadMedia();
+					break;
+				case "chromecastReceiverAdDuration":
+					_this.adDuration = parseInt(message.split('|')[1]);
+					_this.embedPlayer.setDuration( _this.adDuration );
+					break;
+				default:
+					break;
+			}
+		},
+
 		getFlashVars: function(){
 			var _this = this;
 			var plugins = ['doubleClick', 'youbora', 'kAnalony', 'related', 'comScoreStreamingTag', 'watermark', 'heartbeat', 'proxyData'];
@@ -557,6 +565,10 @@
 		},
 
 		loadMedia: function(url, mime) {
+			if (this.isNativeSDK){
+				$( this.embedPlayer ).trigger( 'loadReceiverMedia', [url, mime] );
+				return;
+			}
 			var _this = this;
 			if (!this.session || (!url && !this.embedPlayer.getSource())) {
 				this.log("no session");
