@@ -401,7 +401,7 @@ body {
     background: rgba(104,104,104,0.6);
 }
 .controlsContainer .scrubber{
-	display: inline-block !important;
+	display: inline-block;
 	margin-left:5px;
 	top: -3px;
 }
@@ -893,6 +893,9 @@ body {
 }
 .mobileSkin.fullscreen .timers{
     font-size: 1.1em;
+}
+.mobileSkin .liveStatus{
+    font-family: 'icomoon';
 }
 .currentTimeLabel {
 	padding-left: 1em;
