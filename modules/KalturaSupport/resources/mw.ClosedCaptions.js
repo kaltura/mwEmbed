@@ -171,7 +171,7 @@
 			});
 
 			this.bind( 'showClosedCaptions preHideScreen hideMobileComponents', function(){
-				if( !_this.embedPlayer.changeMediaStarted && _this.getConfig('displayCaptions') === false ){
+				if( !_this.embedPlayer.changeMediaStarted && _this.getConfig('displayCaptions') === false && _this.selectedSource ){
 					_this.setConfig('displayCaptions', true);
 				}
 			});
