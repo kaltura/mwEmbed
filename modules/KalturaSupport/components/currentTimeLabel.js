@@ -119,11 +119,11 @@
 				this.$el = $('<div />')
 					.addClass("timers" + this.getCssClass())
 					.text('0:00');
+				this.labelWidth = this.$el.width();
+				if (this.getConfig("countDownMode")){
+					this.$el.text(mw.seconds2npt(this.embedPlayer.getDuration()));
+				}
 			}
-			if (this.getConfig("countDownMode")){
-				this.$el.text(mw.seconds2npt(this.embedPlayer.getDuration()));
-			}
-			this.labelWidth = this.$el.width();
 			return this.$el;
 		},
 		show: function () {
