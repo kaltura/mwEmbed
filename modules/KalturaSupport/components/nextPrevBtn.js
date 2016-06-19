@@ -57,6 +57,9 @@
 		},
 		show: function(){
 			if ( !this.isDisabled ) {
+				if (this.embedPlayer.isMobileSkin() && (this.embedPlayer.changeMediaStarted || this.embedPlayer.buffering)){
+					return; // prevent
+				}
 				this.getComponent().show();
 			}
 		},
