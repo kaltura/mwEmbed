@@ -268,28 +268,28 @@
 		parseMessage: function(message){
 			switch (message.split('|')[0]){
 				case "readyForMedia":
-					if ( _this.getConfig("useReceiverSource") && message.split('|').length > 1){ // we got source and mime type as selected by the player running on the receiver
-						_this.loadMedia(message.split('|')[1], message.split('|')[2]);
+					if ( this.getConfig("useReceiverSource") && message.split('|').length > 1){ // we got source and mime type as selected by the player running on the receiver
+						this.loadMedia(message.split('|')[1], message.split('|')[2]);
 					}else{
-						_this.loadMedia();
+						this.loadMedia();
 					}
 					break;
 				case "shutdown":
-					_this.stopApp(); // receiver was shut down by the browser Chromecast icon - stop the app
+					this.stopApp(); // receiver was shut down by the browser Chromecast icon - stop the app
 					break;
 				case "chromecastReceiverAdOpen":
-					_this.embedPlayer.disablePlayControls(["chromecast"]);
-					_this.embedPlayer.triggerHelper("chromecastReceiverAdOpen");
-					_this.inSequence = true;
+					this.embedPlayer.disablePlayControls(["chromecast"]);
+					this.embedPlayer.triggerHelper("chromecastReceiverAdOpen");
+					this.inSequence = true;
 					break;
 				case "chromecastReceiverAdComplete":
-					_this.embedPlayer.enablePlayControls();
-					_this.embedPlayer.triggerHelper("chromecastReceiverAdComplete");
-					_this.loadMedia();
+					this.embedPlayer.enablePlayControls();
+					this.embedPlayer.triggerHelper("chromecastReceiverAdComplete");
+					this.loadMedia();
 					break;
 				case "chromecastReceiverAdDuration":
-					_this.adDuration = parseInt(message.split('|')[1]);
-					_this.embedPlayer.setDuration( _this.adDuration );
+					this.adDuration = parseInt(message.split('|')[1]);
+					this.embedPlayer.setDuration( this.adDuration );
 					break;
 				default:
 					break;
