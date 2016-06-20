@@ -141,11 +141,16 @@
             var _this = this;
             var defer = $.Deferred();
 
-            var pollDataRequest = _this.adapters.pollData.getRequest(pollId);
-            var pollResultsRequest = _this.adapters.pollResults.getRequest(_this.getPlayer().kentryid, pollId);
-            var userVoteRequest = _this.adapters.userVote.getRequest(_this.getPlayer().kentryid,pollId, profileId, userId);
+            var requests = [];
+            requests.push(_this.adapters.pollData.getRequest(pollId));
+            requests.push(_this.adapters.pollResults.getRequest(_this.getPlayer().kentryid, pollId));
 
-            _this.getKalturaClient().doRequest([pollDataRequest, pollResultsRequest, userVoteRequest], function(responses)
+            if (profileId)
+            {
+                requests.push(_this.adapters.userVote.getRequest(_this.getPlayer().kentryid,pollId, profileId, userId));
+            }
+
+            _this.getKalturaClient().doRequest(requests, function(responses)
             {
                 if (!_this.isErrorResponse(responses))
                 {
@@ -153,8 +158,9 @@
                         var result = {};
                         _this.adapters.pollData.handleResponse(result,responses[0]);
                         _this.adapters.pollResults.handleResponse(result,responses[1]);
-                        _this.adapters.userVote.handleResponse(result,responses[2]);
-
+                        if (responses.length === 3) {
+                            _this.adapters.userVote.handleResponse(result, responses[2]);
+                        }
 
                         defer.resolve(result);
                     }catch(e)

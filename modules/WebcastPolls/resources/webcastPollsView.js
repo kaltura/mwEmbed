@@ -141,14 +141,20 @@
 
                         if (showTotals && pollResults.totalVoters) {
                             var label = '';
-                            var totalVotersAsNumber = pollResults.totalVoters.match('^[0-9]+$') ? parseInt(pollResults.totalVoters) : null;
-                            if (totalVotersAsNumber && totalVotersAsNumber > 10000) {
-                                label = (totalVotersAsNumber - (totalVotersAsNumber % 1000)) / 1000 + "K";
-                            } else {
-                                label = pollResults.totalVoters;
+
+                            if (pollResults.totalVoters && !isNaN(pollResults.totalVoters))
+                            {
+                                var totalVotersAsNumber = parseInt(pollResults.totalVoters);
+                                if (totalVotersAsNumber && totalVotersAsNumber > 10000) {
+                                    label = (totalVotersAsNumber - (totalVotersAsNumber % 1000)) / 1000 + "K";
+                                } else {
+                                    label = pollResults.totalVoters;
+                                }
+                                $totalsContainer.find("[name='text']").text(label);
+                                $totalsContainer.show();
+                            }else {
+                                $totalsContainer.hide();
                             }
-                            $totalsContainer.find("[name='text']").text(label);
-                            $totalsContainer.show();
                         } else {
                             $totalsContainer.hide();
                         }
@@ -201,9 +207,9 @@
             function updateAnswer(answerIndex, pollData) {
                 var answerContent = pollData.answers[answerIndex + ''];
                 if (answerContent) {
-                    _this.$webcastPoll.find('[name="answer' + answerIndex + '"]').text(answerContent).parent().show();
+                    _this.$webcastPoll.find('[name="answer' + answerIndex + '"]').text(answerContent).closest('.answer').show();
                 } else {
-                    _this.$webcastPoll.find('[name="answer' + answerIndex + '"]').parent().hide();
+                    _this.$webcastPoll.find('[name="answer' + answerIndex + '"]').closest('.answer').hide();
                 }
             }
 

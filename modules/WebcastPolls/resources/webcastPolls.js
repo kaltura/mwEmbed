@@ -8,18 +8,21 @@
     mw.PluginManager.add('webcastPolls', mw.KBasePlugin.extend({
         defaultConfig: {
         },
-        cuePointsManager: null,
-        cachedPollsContent: {},
-        kalturaProxy: null,
-        kClient: null,
-        userProfile: null,
+        cuePointsManager: null, // manages all the cue points tracking (cue point reached of poll results, poll states etc).
+        cachedPollsContent: {}, // used to cache poll results to improve poll warm data loading (load the poll before we actually need to show it.)
+        kalturaProxy: null, // manages the communication with the Kaltura api (invoke a vote, extract poll data).
+        userProfile: null, // manages active user profile
         userVote: {}, // ## Should remain empty (filled by 'resetPersistData')
         pollData: {}, // ## Should remain empty (filled by 'resetPersistData')
+        /* stores all the information that doesn't relate directly to the poll currently selected */
         globals : {
-            votingProfileId: null,
-            userId: null,
-            isPollShown: false
+            votingProfileId: null, // used to create a voting cue point (with relevant metadata)
+            userId: null, // used to mange user voting (prevent duplication of voting)
+            isPollShown: false // indicate if we actually showing a poll (all minimal poll data was retrieved and the poll can be shown)
         },
+        /**
+         * Resets poll player plugin internals
+         */
         resetPersistData: function ()
         {
             var _this = this;
@@ -33,6 +36,9 @@
                 pollResults: null
             };
         },
+        /**
+         * Bootstrap the plugin upon player loading.
+         */
         setup: function ()
         {
             var _this = this;
@@ -40,16 +46,20 @@
             _this.resetPersistData();
 
             _this.addBindings();
-            _this.initializeDependentPlugins();
+            _this.initializeDependentComponents();
 
             _this.globals.userId = _this.userProfile.getUserID();
 
             _this.kalturaProxy.getVoteCustomMetadataProfileId().then(function (result) {
                 _this.globals.votingProfileId = result.profileId;
+                // TODO [es] reload poll data
             }, function (reason) {
                 _this.globals.votingProfileId = null;
             });
         },
+        /**
+         * Monitor player events and adjust current poll status accordingly
+         */
         addBindings: function ()
         {
             // bind to cue point events
@@ -59,6 +69,11 @@
                 _this.handlePlayerEvent(e.type);
             });
         },
+        /**
+         * Filter list of reached cue points to get the most updated poll status cue point
+         * @param context
+         * @returns {object} the most updated poll status reached cue point if found, otherwise null
+         */
         filterStateCuePoints : function(context)
         {
             var _this = this;
@@ -73,6 +88,11 @@
 
             return null;
         },
+        /**
+         * Filter list of reached cue points to get the most updated poll results cue point of current poll
+         * @param context
+         * @returns {object} the most updated poll results reached cue point of current poll if found, otherwise null
+         */
         filterPollResultsCuePoints : function(context)
         {
             var _this = this;
@@ -98,6 +118,12 @@
 
             return null;
         },
+        /**
+         * Changes current poll status according to player events.
+         * For example, removing the poll when user pause the player
+         * @param eventName the event name invoked by the player.
+         * @returns {boolean}
+         */
         handlePlayerEvent : function(eventName)
         {
             var _this = this;
@@ -106,6 +132,7 @@
             {
                 case 'onpause':
                 case 'onChangeMedia':
+                    // remove current poll is found when player is being paused or when changing media (during playlist for example)
                     _this.removePoll();
                     break;
                 case 'onplay':
@@ -123,43 +150,51 @@
                 default:
                     break;
             }
-
-            return false;
         },
-        initializeDependentPlugins: function ()
+        /**
+         * Initializes required dependent components used by the polls plugin 
+         */
+        initializeDependentComponents: function ()
         {
             var _this = this;
 
             if (!_this.userProfile) {
-                // we need to initialize the instance
+                // user profile component used to provide current user id needed for voting.
                 _this.userProfile = new mw.webcast.UserProfile(_this.getPlayer(), function () {
                 }, "webcastPollsUserProfile");
             }
 
             if (!_this.kalturaProxy) {
-                // we need to initialize the instance
+                // kaltura api proxy used to communicate with the kaltura api (transmit voting, fetch poll data etc)
                 _this.kalturaProxy = new mw.webcastPolls.WebcastPollsKalturaProxy(_this.getPlayer(), function () {
                 }, "webcastPollsKalturaProxy");
             }
 
             if (!_this.view) {
-                // we need to initialize the instance
+                // initialize component that manages the interactions with polls DOM elements.
                 _this.view = new mw.webcastPolls.WebcastPollsView(_this.getPlayer(), function () {
                 }, "webcastPollsKalturaView");
                 _this.view.parent = _this;
             }
 
             if (!_this.cuePointsManager) {
-                // we need to initialize the instance
+                // cue points manager used to monitor and notify when relevant cue points reached (polls status, results).
                 _this.cuePointsManager = new mw.webcast.CuePointsManager(_this.getPlayer(), function () {
                 }, "webcastPollsCuePointsManager");
+
                 _this.cuePointsManager.onCuePointsReached = $.proxy(function(args)
                 {
+                    // new cue points reached - change internal polls status when releant cue points reached
                     _this.handleStateCuePoints(args);
                     _this.handlePollResultsCuePoints(args);
                 },_this);
             }
         },
+        /**
+         * Modifies current poll results according to cue points reached.
+         * This function searches for relevant cue points and if found changes current poll results
+         * @param args arguments provided by cue points manager with support for smart cue points filtering
+         */
         handlePollResultsCuePoints: function (args)
         {
             var _this = this;
@@ -200,6 +235,11 @@
 
             _this.view.syncDOMPollResults();
         },
+        /**
+         * Modifies current poll status according to cue points reached.
+         * This function searches for relevant cue points and if found changes current poll status
+         * @param args arguments provided by cue points manager with support for smart cue points filtering
+         */
         handleStateCuePoints: function (args)
         {
             var _this = this;
