@@ -154,7 +154,7 @@ body {
 	left: -30%;
 }
 .sideBarContainer.openBtn {
-	z-index: 99;
+	z-index: 1001;
 }
 .sideBarContainer.left.openBtn{
 	left: 0;
