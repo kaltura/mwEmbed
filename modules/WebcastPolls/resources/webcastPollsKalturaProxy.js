@@ -27,34 +27,6 @@
             }
         },
         adapters : {
-            pollResults: {
-                getRequest: function (entryId, pollId) {
-                    var request = {
-                        'service': 'cuepoint_cuepoint',
-                        'action': 'list',
-                        'filter:objectType': 'KalturaAnnotationFilter',
-                        'filter:entryIdEqual': entryId,
-                        'filter:orderBy': '-createdAt',
-                        'filter:cuePointTypeIn': 'annotation.Annotation',
-                        'filter:parentIdEqual': pollId,
-                        'filter:tagsLike': 'poll-results',
-                        'pager:pageSize': 1,
-                        'pager:pageIndex': 1
-                    };
-
-                    return request;
-                },
-                handleResponse: function (result,response) {
-                    var pollResults = {};
-
-                    if (response.objects && response.objects.length) {
-                        var pollResults = response.objects[0].text;
-                        result.pollResults = JSON.parse(pollResults);
-                    }
-
-                    return pollResults;
-                }
-            },
             pollData : {
                 getRequest : function(pollId)
                 {
@@ -136,6 +108,38 @@
                 }
             }
         },
+        getUserVote : function(pollId, profileId, userId)
+        {
+            var _this = this;
+            var defer = $.Deferred();
+
+            if (profileId && userId && pollId) {
+
+                var request = _this.adapters.userVote.getRequest(_this.getPlayer().kentryid, pollId, profileId, userId);
+
+                _this.getKalturaClient().doRequest(request, function (response) {
+                    if (!_this.isErrorResponse(response)) {
+                        try {
+                            var result = {};
+                            _this.adapters.userVote.handleResponse(result, response);
+                            defer.resolve(result);
+                        } catch (e) {
+                            defer.reject({});
+                        }
+                    } else {
+                        defer.reject();
+                    }
+
+                }, false, function (reason) {
+                    defer.reject({});
+                });
+            }else
+            {
+                defer.reject({});
+            }
+
+            return defer.promise();
+        },
         getPollContent : function(pollId, profileId, userId)
         {
             var _this = this;
@@ -143,7 +147,6 @@
 
             var requests = [];
             requests.push(_this.adapters.pollData.getRequest(pollId));
-            requests.push(_this.adapters.pollResults.getRequest(_this.getPlayer().kentryid, pollId));
 
             if (profileId)
             {
@@ -157,9 +160,8 @@
                     try {
                         var result = {};
                         _this.adapters.pollData.handleResponse(result,responses[0]);
-                        _this.adapters.pollResults.handleResponse(result,responses[1]);
-                        if (responses.length === 3) {
-                            _this.adapters.userVote.handleResponse(result, responses[2]);
+                        if (responses.length === 2) {
+                            _this.adapters.userVote.handleResponse(result, responses[1]);
                         }
 
                         defer.resolve(result);

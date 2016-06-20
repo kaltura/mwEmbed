@@ -336,12 +336,15 @@
                             if (invokedByPollId === _this.pollData.pollId) {
                                 _this.pollData.content = result.content;
                                 _this.userVote.isReady = true;
-                                _this.userVote.answer = result.userVote.answer;
-                                _this.userVote.metadataId = result.userVote.metadataId;
 
-                                _this.updatepoll
+                                if (result.userVote) {
+                                    _this.userVote.answer = result.userVote.answer;
+                                    _this.userVote.metadataId = result.userVote.metadataId;
+                                }
 
                                 _this.view.syncPollDOM();
+
+                                _this.handlePollResultsCuePoints(true);
                             }
                         }, function (reason) {
                             if (invokedByPollId === _this.pollData.pollId) {
