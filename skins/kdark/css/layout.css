@@ -537,6 +537,9 @@ body {
     background: radial-gradient(ellipse at center,  rgba(255,255,255,1) 0%,rgba(255,255,255,1) 30%,rgba(255,255,255,0) 31%,rgba(255,255,255,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#00ffffff',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
 }
+.mobileSkin .scrubber .playHead[aria-valuenow="100%"] {
+    margin-left: -0.4em;
+}
 .mobileSkin .scrubber .playHead.ui-state-active {
     background: -moz-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%, rgba(255,255,255,1) 30%, rgba(255,255,255,0.3) 31%, rgba(255,255,255,0.3) 100%); /* FF3.6-15 */
     background: -webkit-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%,rgba(255,255,255,1) 30%,rgba(255,255,255,0.3) 31%,rgba(255,255,255,0.3) 100%); /* Chrome10-25,Safari5.1-6 */
