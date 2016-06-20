@@ -406,8 +406,8 @@ body {
 	top: -3px;
 }
 .mobileSkin .controlsContainer .scrubber{
-    height: 3px;
-    border-radius: 3px;
+    height: 2px;
+    border-radius: 2px;
     background: rgba(255,255,255,0.8);
     /*box-shadow: 0px 0px 2.4px 1.6px rgba(0, 0, 0, 0.12);*/
     margin-left: 20px;
@@ -1364,7 +1364,7 @@ body {
     padding: 0px 0px 0px 0px;
     margin-top: -1.1em;
     margin-left: -1.05em;
-    background-color: rgba(0,194,255,0.60);
+    background-color: rgba(0,194,255,0.8);
     color: #ffffff;
     box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.20);
     outline: none;
@@ -1847,13 +1847,16 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
     animation: rotating 0.8s linear infinite;
 }
 .mobileSkin .videoShadow{
-    background: rgba(0,0,0,0.25);
+    background: rgba(0,0,0,0.5);
     position: absolute;
     width: 100%;
     height: 100%;
     opacity: 1;
-    transition: opacity 400ms ease-out;
-    transition: background 400ms ease-out;
+    transition: opacity 0.3s linear;
+    -webkit-transition: opacity 0.3s linear;
+    -moz-transition: opacity 0.3s linear;
+    -ms-transition: opacity 0.3s linear;
+    -o-transition: opacity 0.3s linear;
 }
 .mobileSkin.pluginsScreenOpened .videoShadow{
     background: rgba(0,0,0,0.75);
@@ -1882,7 +1885,7 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
     width: 100px;
     -webkit-border-radius: 2px;
     -moz-border-radius: 2px;
-    border-radius: 2px;
+    border-radius: 24px;
     background-color: #00d6ff;
     color: white;
     text-align: center;
