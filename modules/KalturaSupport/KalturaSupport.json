@@ -14,7 +14,7 @@
 			"mw.KEntryLoader",
 			"mw.KDPMapping",
 			"mw.KCuePoints",
-			"polyfill_Array.filter"
+			"polyfill_Array_filter"
 		],
 		"kalturaLoad": "always",
 		"messageFile": "KalturaSupport.i18n.json"
