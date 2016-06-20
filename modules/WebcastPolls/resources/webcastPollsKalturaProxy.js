@@ -27,7 +27,7 @@
             }
         },
         adapters : {
-            pollData : {
+            pollContent : {
                 getRequest : function(pollId)
                 {
                     var request = {
@@ -40,8 +40,8 @@
                 },
                 handleResponse : function(result, response)
                 {
-                    var pollData = JSON.parse(response.text);
-                    result.pollData = pollData;
+                    var pollContent = JSON.parse(response.text);
+                    result.pollContent = pollContent;
                 }
             },
             userVote : {
@@ -146,7 +146,7 @@
             var defer = $.Deferred();
 
             var requests = [];
-            requests.push(_this.adapters.pollData.getRequest(pollId));
+            requests.push(_this.adapters.pollContent.getRequest(pollId));
 
             if (profileId)
             {
@@ -159,7 +159,7 @@
                 {
                     try {
                         var result = {};
-                        _this.adapters.pollData.handleResponse(result,responses[0]);
+                        _this.adapters.pollContent.handleResponse(result,responses[0]);
                         if (responses.length === 2) {
                             _this.adapters.userVote.handleResponse(result, responses[1]);
                         }
