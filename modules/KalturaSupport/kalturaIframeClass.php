@@ -1284,6 +1284,10 @@ HTML;
 		echo '<script src="' . $wgRemoteWebInspector . '"></script>';
 	 } ?>
 	<link href='//fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="date=no">
+    <meta name="format-detection" content="address=no">
+    <meta name="format-detection" content="email=no">
 	<?php echo $this->outputIframeHeadCss(); ?>
 	<?php echo $this->outputSkinCss(); ?>
 	<?php echo $this->outputCustomCss(); ?>
