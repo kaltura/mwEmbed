@@ -464,7 +464,7 @@
     },
     "vtt.js": {
         "scripts": "resources/vtt.js/vtt.js",
-        "dependencies": ["polyfill_Array.forEach"]
+        "dependencies": ["polyfill_Array_forEach"]
     },
     "polyfill_Array_forEach": {
         "scripts": "resources/polyfills/Array.forEach.js"
