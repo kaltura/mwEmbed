@@ -115,7 +115,7 @@
 			});
 
 			$( this.embedPlayer).bind('onAdSkip', function(e){
-				_this.sendMessage({'type': 'skipAd'});
+				_this.sendMessage({'type': 'notification','event': 'cancelAllAds'});
 				_this.embedPlayer.enablePlayControls();
 				_this.loadMedia();
 			});
@@ -134,7 +134,8 @@
 				}
 			});
 
-			$(this.embedPlayer).bind('playerReady', function() {
+			$(this.embedPlayer).bind('playerReady', function(e) {
+				_this.sendMessage({'type': 'notification','event': e.type});
 				if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
 					// send application ID to native app
 					_this.embedPlayer.getPlayerElement().attr( 'chromecastAppId', _this.getConfig( 'applicationID' ));
@@ -144,6 +145,20 @@
 			$(this.embedPlayer).bind('onSDKReceiverMessage', function(e, message) {
 				_this.parseMessage(message);
 			});
+
+			// trigger these events on the receiver player to support Analytics
+			$(this.embedPlayer).bind('userInitiatedPause postEnded onChangeMedia AdSupport_PreSequence firstPlay', function(e) {
+				_this.sendMessage({'type': 'notification','event': e.type});
+			});
+
+			// trigger these events on the receiver player to support Analytics
+			$(this.embedPlayer).bind('userInitiatedPlay', function(e) {
+				_this.sendMessage({'type': 'notification','event': e.type});
+				if (_this.replay){
+					_this.loadMedia();
+				}
+			});
+
 		},
 
 		getComponent: function() {
@@ -443,8 +458,8 @@
 					}
 					if (_this.replay && !_this.embedPlayer.playlist){
 						_this.replay = false;
-						_this.embedPlayer.triggerHelper("onPlayerStateChange",["end"]); // this will set the replay icon on the playPauseBtn button
-						_this.sendMessage({'type': 'replay'}); // since we reload the media for replay, trigger playerReady on the receiver player to reset Analytics
+						_this.sendMessage({'type': 'notification','event': 'replay'});  // since we reload the media for replay, trigger playerReady on the receiver player to reset Analytics
+						_this.embedPlayer.play();
 					}
 				},300);
 				if (_this.monitorInterval !== null){
@@ -556,7 +571,6 @@
 					this.autoPlay = false;       // set autoPlay to false for rewind
 					if (!this.pendingRelated){
 						this.replay = true;
-						this.loadMedia();            // reload the media for rewind unless related screen is open
 					}else{
 						this.pendingReplay = true;
 					}
