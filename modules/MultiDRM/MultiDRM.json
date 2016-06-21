@@ -3,5 +3,9 @@
         "scripts": "resources/mw.EmbedPlayerMultiDRM.js",
         "styles": "resources/mw.EmbedPlayerMultiDRM.css",
         "messageFile": "MultiDRM.i18n.json"
+    },
+    "mw.FPS": {
+        "scripts": "resources/mw.FPS.js",
+        "dependencies": ["mw.KBasePlugin"]
     }
 }
