@@ -7,7 +7,6 @@
 		return (window['MediaSource'] || window['WebKitMediaSource']) && !mw.isFirefox() && !mw.isMobileChrome();
 	}
 
-
 	//Load 3rd party plugins if DRM sources are available
 	mw.addKalturaConfCheck( function( embedPlayer, callback ){
 		//For native callout on mobile browsers let the flow continue to native APP and decide if DRM is enbaled and supported in native SDK
@@ -30,20 +29,25 @@
 				//Get multiDRM supported sources
 				var allSources = embedPlayer.getSources();
 				var drmSources = getMultiDrmSupportedSources(allSources);
-				//If DRM is required then also remove any non-DRM flavors which are not playable
+				//If DRM is required then set the available source to be only the DRM source
 				if (embedPlayer.isDrmRequired()) {
-					drmSources = removeNonDrmSources(allSources, drmSources, drmConfig.enableHlsAes, embedPlayer);
+					setDrmSources(drmSources, embedPlayer);
 				}
 				//If there are supported medias load the playback library, unless in native SDK - let native SDK handle sources
-				if ( hasDrmSources(drmSources) && !mw.isNativeApp()) {
+				if ( hasDrmSources(drmSources)) {
+					mw.log("Media sources found");
+					if (mw.isNativeApp()){
+						mw.log("Loading SDK player");
+						callback();
+					}
 					if (useFPS){
-						mw.log("Media sources found, loading HLS FPS player");
+						mw.log("Loading HLS FPS player");
 						loadHlsFpsHandler().then(function(){
 							mw.fps = new mw.FPS(embedPlayer, function(){}, "FPS");
 							callback();
 						});
 					} else {
-						mw.log("Media sources found, loading DASH player");
+						mw.log("Loading DASH player");
 						loadDashCencHandler(embedPlayer).then(callback, function(){
 							unregisterDashPlayer();
 							callback();
@@ -139,13 +143,26 @@
 		return drmConfig;
 	}
 
-    function getMultiDrmSupportedSources(sources) {
+	function isDash(mimeType){
+		return mimeType === "application/dash+xml";
+	}
+
+	function isSmoothStream(mimeType){
+		return (mimeType === "video/ism" || mimeType === "video/playreadySmooth");
+	}
+
+	function isHls(mimeType){
+		return mimeType === "application/vnd.apple.mpegurl";
+	}
+
+    function getMultiDrmSupportedSources(sources, enableHlsAes) {
 
         var drmSources = [];
         if (!mw.isNativeApp()) {
             drmSources = sources.filter(function (source) {
-                return source.mimeType === "application/dash+xml" ||
-                    ((source.mimeType === "video/ism" || source.mimeType === "video/playreadySmooth") && mw.isChrome() && !mw.isMobileDevice());
+                return isDash(source.mimeType) ||
+                    (isSmoothStream(source.mimeType) && mw.isChrome() && !mw.isMobileDevice()) ||
+					(isHls(source.mimeType) && ((enableHlsAes && mw.isMobileDevice()) || mw.isDesktopSafari()));
             });
         } else {
             drmSources = sources.filter(function (source) {
@@ -176,16 +193,9 @@
         return drmSources;
     }
 
-	function removeNonDrmSources(sources, drmSources, enableHlsAes, embedPlayer){
-		if ((enableHlsAes && mw.isMobileDevice()) || mw.isDesktopSafari()){
-			var hlsSource = sources.filter( function ( source ) {
-				return ( source.mimeType === "application/vnd.apple.mpegurl" );
-			});
-			drmSources = drmSources.concat(hlsSource);
-		}
+	function setDrmSources(drmSources, embedPlayer){
 		embedPlayer.kalturaFlavors = drmSources;
 		embedPlayer.replaceSources(drmSources);
-		return drmSources;
 	}
 
 	function hasDrmSources(drmSources){
