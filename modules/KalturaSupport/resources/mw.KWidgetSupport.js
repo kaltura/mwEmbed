@@ -490,8 +490,11 @@ mw.KWidgetSupport.prototype = {
 				if (flavorPartnerData["default"] === "true"){
 					flavorAssetObj["default"] = true;
 				}
-				var drmData = _this.getFlavorAssetDrmData(flavorAsset.id, flavorDrmData);
-				$.extend(flavorAssetObj, drmData);
+
+				_this.attachFlavorAssetDrmData(flavorAssetObj, flavorAsset.id, flavorDrmData);
+				if (flavorAssetObj.type === "application/vnd.apple.mpegurl") {
+					flavorAssetObj.fpsCertificate = _this.getFairplayCert(playerData);
+				}
 				flavorAssets.push( flavorAssetObj );
 			}
 		} );
