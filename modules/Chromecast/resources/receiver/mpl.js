@@ -109,10 +109,8 @@ onload = function () {
 			setDebugMessage('customData', customData);
 		} else if (payload['type'] === 'load') {
 			setMediaManagerEvents();
-		} else if (payload['type'] === 'replay') {
-			kdp.sendNotification("replay");      // notify replay to the receiver player
-		} else if (payload['type'] === 'skipAd') {
-			kdp.sendNotification("cancelAllAds");
+		} else if (payload['type'] === 'notification') {
+			kdp.sendNotification(payload['event']); // pass notification event to the player
 		} else if (payload['type'] === 'setLogo') {
 			document.getElementById('logo').style.backgroundImage = "url(" + payload['logo'] + ")";
 		} else if (payload['type'] === 'embed' && !playerInitialized) {
