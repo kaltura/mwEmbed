@@ -107,16 +107,25 @@
         syncDOMPollResults: function () {
             var _this = this;
 
-            function updateAnswerResult(answerIndex, pollResults, showResults) {
+            function updateAnswerResult(answerIndex, pollResults, showResults, popularAnswers) {
                 var answerContent = !isNaN(pollResults.answers[answerIndex + ''])?  (+pollResults.answers[answerIndex + '']) : 0;
+                var isPopularAnswer = popularAnswers.split(',').indexOf(answerIndex + '') !== -1;
                 var totalVoters = !isNaN(pollResults.totalVoters) ? (+pollResults.totalVoters) : 0;
                 var answerPercentage = Math.round(answerContent / totalVoters * 100);
 
-                if (totalVoters && showResults) {
+                if (showResults) {
+                    if (isPopularAnswer) {
+                        _this.$webcastPoll.find('[name="answer' + answerIndex + '"]').closest('.answer').addClass('popular');
+                    }else
+                    {
+                        _this.$webcastPoll.find('[name="answer' + answerIndex + '"]').closest('.answer').removeClass('popular');
+                    }
+
                     _this.$webcastPoll.find('[name="answer' + answerIndex + 'Result"]').css('width',answerPercentage + '%');
                     _this.$webcastPoll.find('[name="answer' + answerIndex + 'ResultText"]').text(answerPercentage + '%');
 
                 } else {
+                    _this.$webcastPoll.find('[name="answer' + answerIndex + '"]').closest('.answer').removeClass('popular');
                     _this.$webcastPoll.find('[name="answer' + answerIndex + 'Result"]').css('width','0%');
                     _this.$webcastPoll.find('[name="answer' + answerIndex + 'ResultText"]').text('');
                 }
@@ -133,11 +142,24 @@
 
                     if ( hasPollContent && pollResults )
                     {
-                        updateAnswerResult(1,pollResults, showResults);
-                        updateAnswerResult(2,pollResults, showResults);
-                        updateAnswerResult(3,pollResults, showResults);
-                        updateAnswerResult(4,pollResults, showResults);
-                        updateAnswerResult(5,pollResults, showResults);
+                        var popularAnswers = '';
+                        var popularValue = 0;
+
+                        if (showResults) {
+                            for (var propertyName in pollResults.answers) {
+                                if (pollResults.answers[propertyName] > popularValue) {
+                                    popularAnswers = propertyName;
+                                } else if (pollResults.answers[propertyName] == popularValue) {
+                                    popularAnswers = popularAnswers ? (popularAnswers + ',' + propertyName) : propertyName;
+                                }
+                            }
+                        }
+
+                        updateAnswerResult(1,pollResults, showResults, popularAnswers);
+                        updateAnswerResult(2,pollResults, showResults, popularAnswers);
+                        updateAnswerResult(3,pollResults, showResults, popularAnswers);
+                        updateAnswerResult(4,pollResults, showResults, popularAnswers);
+                        updateAnswerResult(5,pollResults, showResults, popularAnswers);
 
                         if (showTotals && pollResults.totalVoters) {
                             var label = '';
