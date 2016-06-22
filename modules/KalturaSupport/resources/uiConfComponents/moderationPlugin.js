@@ -74,7 +74,9 @@
 						});
 					}) )
 			);
-
+			if (mw.isAndroid()){
+				$moderationMessage.find(".icon-toggle").remove();
+			}
 			var $moderationScreen = $( '<div />' ).append($header, $moderationMessage );
 
 			var closeCallback = function() {

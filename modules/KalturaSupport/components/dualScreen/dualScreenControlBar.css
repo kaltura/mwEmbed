@@ -1,7 +1,8 @@
 .controlBar{
     padding-top: 10px;
-    padding-right: 20px;
-    z-index: 3;
+    padding-right: 10px;
+    z-index: 1003;
+    cursor: pointer;
     position: absolute;
     top: 0;
     right: 0;

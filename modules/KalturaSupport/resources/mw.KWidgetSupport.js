@@ -490,8 +490,11 @@ mw.KWidgetSupport.prototype = {
 				if (flavorPartnerData["default"] === "true"){
 					flavorAssetObj["default"] = true;
 				}
-				var drmData = _this.getFlavorAssetDrmData(flavorAsset.id, flavorDrmData);
-				$.extend(flavorAssetObj, drmData);
+
+				_this.attachFlavorAssetDrmData(flavorAssetObj, flavorAsset.id, flavorDrmData);
+				if (flavorAssetObj.type === "application/vnd.apple.mpegurl") {
+					flavorAssetObj.fpsCertificate = _this.getFairplayCert(playerData);
+				}
 				flavorAssets.push( flavorAssetObj );
 			}
 		} );
@@ -1137,7 +1140,7 @@ mw.KWidgetSupport.prototype = {
 				_this.handlePlayerData( embedPlayer, entryResult );
 				//if we dont have special widgetID or the KS is defined continue as usual
 				var kpartnerid = embedPlayer.kpartnerid ? embedPlayer.kpartnerid : "";
-				if ( "_" + kpartnerid == playerRequest.widget_id || _this.kClient.getKs() ) {
+				if ( this.isEmbedServicesEnabled(entryResult) || "_" + kpartnerid == playerRequest.widget_id || _this.kClient.getKs() ) {
 					callback( entryResult );
 				}else{
 					//if we have special widgetID and we dont have a KS - ask for KS before continue the process
@@ -1215,9 +1218,6 @@ mw.KWidgetSupport.prototype = {
 	 * 		false if the media should not be played.
 	 */
 	getAccessControlStatus: function( ac, embedPlayer ){
-		if( ac.isAdmin ){
-			return true;
-		}
 		if( ac.isCountryRestricted ){
 			return embedPlayer.getKalturaMsgObject( 'UNAUTHORIZED_COUNTRY' );
 		}

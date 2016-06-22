@@ -33,8 +33,9 @@
 				},
 				"menuFadeout": 5000,
 				"resizeHandlesFadeout": 5000,
-				"mainViewDisplay": 2, // 1 - Main stream, 2 - Presentation
-                "fullScreenDisplayOnly": false,
+				"mainViewDisplay": 0, // DONT USE THIS - obslete... 1 - Main stream, 2 - Presentation
+				"defaultDualScreenViewId": 'pip-parent-in-small',
+				"fullScreenDisplayOnly": false,
 				"minDisplayWidth": 0,
 				"minDisplayHeight": 0,
 				"enableKeyboardShortcuts": true,
@@ -61,7 +62,6 @@
 				this.initConfig();
 				this.initDisplays();
 				this.initFSM();
-				this.initExternalControlManager();
 				this.addBindings();
 			},
 			isSafeEnviornment: function () {
@@ -203,7 +203,7 @@
 				});
 
 				this.bind("onChangeMedia", function(){
-                    mw.log('DualScreen - onChangeMedia');
+                    this.log('onChangeMedia');
                     if ( _this.syncEnabled && !_this.disabled){
 						//Reset the displays view
 						if (_this.fsm.getStatus() !== "PiP") {
@@ -212,6 +212,9 @@
 						if (!_this.displays.getPrimary().isMain){
 							_this.fsm.consumeEvent('switchView');
 						}
+
+						_this.destroyExternalControlManager();
+
 						//Reset the control bar
 						_this.destroyControlBar();
 					}
@@ -280,7 +283,7 @@
                     mw.log("DualScreen :: renderDualScreenView init");
                     clearInterval(this.waitForSecondScreen);
                     this.waitForSecondScreen = null;
-                    
+
                     if (this.syncEnabled) {
                         var _this = this;
                         this.initView();
@@ -290,7 +293,8 @@
                             }, function () { // master entry doesn't has sub-entries
                                 _this.destroyStreamSelector();
                                 _this.initControlBar();
-                            });
+                            })
+							.then(_this.initExternalControlManager);
 
                         if (_this.secondPlayer.canRender()) {
                             _this.log("render condition are met - initializing");
@@ -372,9 +376,18 @@
 			},
 			initExternalControlManager : function()
 			{
+				this.log("initExternalControlManager(): creating new instance of external control manager");
 				var _this = this;
                 this.externalControlManager = new mw.dualScreen.externalControlManager(this.getPlayer(), function () {
                 }, "dualScreenExternalControlManager");
+			},
+			destroyExternalControlManager : function()
+			{
+				if (this.externalControlManager) {
+					mw.log("dualScreen.destroyExternalControlManager(): removing existing instance of external control manager");
+					this.externalControlManager.destroy();
+					this.externalControlManager = null;
+				}
 			},
 			initDisplays: function () {
 				var _this = this;
@@ -514,12 +527,6 @@
 						_this.unbind( 'postDualScreenTransition.spinnerPostFix' );
 						showLoadingSlide();
 					} );
-					setTimeout( function () {
-						_this.fsm.consumeEvent( "switchView" );
-						if (_this.getPlayer().isAudio()){
-							_this.fsm.consumeEvent( "hide" );
-						}
-					}, 1000 );
 				} else {
 					showLoadingSlide();
 				}
@@ -540,27 +547,25 @@
 						break;
 				}
 
-                // the following code is warpped with timeout to make sure it happens in a separated event loop cycle.
-                // otherwise autoplay might not work.
-                setTimeout( function () {
+				if (_this.getPlayer().isAudio()){
+					defaultDualScreenViewId = 'no-parent';
+				}
 
-                    if (defaultDualScreenViewId)
-                    {
-                        if ( _this.externalControlManager ) {
-                            _this.externalControlManager.setViewById(defaultDualScreenViewId);
-                            _this.externalControlManager.initialize();
-                        }
+				// the following code is warpped with timeout to make sure it happens in a separated event loop cycle.
+				// otherwise autoplay might not work.
+				setTimeout( function () {
 
-                        //if (_this.getPlayer().isAudio()){
-                        //	// The product removed explicit handling for such a scenario
-                        //}
-                    }else
-                    {
-                        if ( _this.externalControlManager ) {
-                            _this.externalControlManager.initialize();
-                        }
-                    }
-                }, 1000 );
+					if ( _this.externalControlManager ) {
+
+						if (defaultDualScreenViewId)
+						{
+							_this.externalControlManager.setViewById(defaultDualScreenViewId);
+						}
+
+						_this.externalControlManager.start();
+					}
+
+				}, 1000 );
 			},
 
 			//Manage display helpers

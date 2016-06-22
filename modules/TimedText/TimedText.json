@@ -13,7 +13,8 @@
         "scripts": "resources/mw.TextSource.js",
         "dependencies": [
             "mediawiki.UtilitiesTime",
-            "mw.ajaxProxy"
+            "mw.ajaxProxy",
+            "vtt.js"
         ]
     },
     "mw.Language.names": {

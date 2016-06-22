@@ -93,7 +93,7 @@
             this.bind('changeStream', function (e, arg) {
                 _this.externalSetStream(arg);
             });
-            
+
             this.bind('onChangeMedia', function () {
                 if (!_this.streamChanging){
                     _this.streams = [];
@@ -107,21 +107,23 @@
             	_this.getMenu().close();
             });
 
-            if (this.getConfig('enableKeyboardShortcuts')) {
-                this.bind('addKeyBindCallback', function (e, addKeyCallback) {
-                    _this.addKeyboardShortcuts(addKeyCallback);
-                });
-            }
-        },
-        getStreams: function () {
-            var _this = this;
-            var requestObject = [];
-            requestObject.push({
-                'service': 'baseEntry',
-                'action': 'list',
-                'filter:objectType': 'KalturaBaseEntryFilter',
-                'filter:parentEntryIdEqual': this.getPlayer().kentryid
-            });
+			if (this.getConfig('enableKeyboardShortcuts')) {
+				this.bind('addKeyBindCallback', function (e, addKeyCallback) {
+					_this.addKeyboardShortcuts(addKeyCallback);
+				});
+			}
+		},
+		getStreams: function () {
+			var _this = this;
+			var requestObject = [];
+			requestObject.push({
+				'service': 'baseEntry',
+				'action': 'list',
+				'filter:objectType': 'KalturaBaseEntryFilter',
+				// MEDIA_CLIP
+				'filter:typeEqual': 1,
+				'filter:parentEntryIdEqual': this.getPlayer().kentryid
+			});
 
             var i = 0;
             var maxNumOfStream = this.getConfig("maxNumOfStream");

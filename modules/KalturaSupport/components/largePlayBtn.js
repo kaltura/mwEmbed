@@ -40,8 +40,11 @@
 					_this.show();
 				}
 			});
-			this.bind('playing AdSupport_StartAdPlayback onAddPlayerSpinner onHideControlBar onChangeMedia', function(e){
+			this.bind('playing AdSupport_StartAdPlayback onHideControlBar onChangeMedia', function(e){
 				_this.hide();
+			});
+			this.bind('onAddPlayerSpinner showScreen', function(e){
+				_this.hide(true);
 			});
 			this.bind('onPlayerStateChange', function(e, newState, oldState){
 				if( newState == 'load' || newState == 'play' ){
@@ -64,10 +67,11 @@
 		},
 		show: function(){
 			if ( !this.isDisabled ) {
-				if (this.embedPlayer.isMobileSkin() && this.embedPlayer.changeMediaStarted){
+				if (this.embedPlayer.isMobileSkin() && (this.embedPlayer.changeMediaStarted || this.embedPlayer.buffering)){
 					return; // prevent showing large play button on top of the spinner when using mobile skin and changing media
 				}
-				this.getComponent().show();
+				var displayMode = this.embedPlayer.isMobileSkin() ? "flex" : "block";
+				this.getComponent().css('display', displayMode);
 			}
 			this.shouldShow = true;
 		},

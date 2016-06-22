@@ -299,25 +299,25 @@
 
 			this.isError = true;
 
-            if ( this.playerObject ) {
-                this.playerObject.stop();
-            }
-            this.stopped = true;
+			if ( this.playerObject ) {
+				this.playerObject.stop();
+			}
+			this.stopped = true;
 
 			var disableMulticastFallback = _this.getKalturaConfig( null , 'disableMulticastFallback' ) || _this.defaultDisableMulticastFallback;
 			if ( !disableMulticastFallback ) {
 				mw.log( 'fallbackToUnicast: try unicast' );
-                //remove current source to fallback to unicast if multicast failed
+				//remove current source to fallback to unicast if multicast failed
 				for ( var i = 0 ; i < _this.mediaElement.sources.length ; i++ ) {
 					if ( _this.mediaElement.sources[i] == _this.mediaElement.selectedSource ) {
-                        _this.mediaElement.sources.splice(i, 1);
-                        break;
-                    }
+						_this.mediaElement.sources.splice(i, 1);
+						break;
+					}
 				}
-                _this.bindHelper("playerReady", function(){
-                    _this.firstPlay = true; //resume live playback when the new player is ready
-                });
-                _this.setupSourcePlayer(); //switch player
+				_this.bindHelper("playerReady", function(){
+					_this.firstPlay = true; //resume live playback when the new player is ready
+				});
+				_this.setupSourcePlayer(); //switch player
 			} else {
 				mw.log( "fallbackToUnicast: stop here since we don't allow multicast failver" );
 				var errorObj = {message: gM( 'ks-LIVE-STREAM-NOT-SUPPORTED' ) , title: gM( 'ks-ERROR' )};
@@ -333,18 +333,18 @@
 				var startSilverlight = function () {
 					_this.resolveSrcURL(_this.getSrc()).then(function (result) {
 
-						if (_this.isMulticast) {
-							_this.handleMulticastPlayManifest(result, doEmbedFunc);
-						} else {
-							doEmbedFunc(result);
-						}
-					},
-					function() { //play manifest retunred error
-						if (_this.isMulticast) {
-							mw.log("got error from resolveSrcURL doing fallbackToUnicast");
-							_this.fallbackToUnicast();
-						}
-					});
+							if (_this.isMulticast) {
+								_this.handleMulticastPlayManifest(result, doEmbedFunc);
+							} else {
+								doEmbedFunc(result);
+							}
+						},
+						function() { //play manifest retunred error
+							if (_this.isMulticast) {
+								mw.log("got error from resolveSrcURL doing fallbackToUnicast");
+								_this.fallbackToUnicast();
+							}
+						});
 				}
 				if ( onAirStatus ) {
 					startSilverlight();
@@ -482,7 +482,6 @@
 					} , timeout );
 				}
 				_this.autoplay = _this.autoplay || _this.isMulticast;
-				flashvars.autoplay = _this.autoplay;
 				flashvars.isLive = _this.isLive();
 				flashvars.isDVR = ( _this.isDVR() == 1 );
 				_this.durationReceived = false;
@@ -494,6 +493,7 @@
 						'durationChange': 'onDurationChange' ,
 						'playerPlayEnd': 'onClipDone' ,
 						'playerUpdatePlayhead': 'onUpdatePlayhead' ,
+						'buffering': 'onBuffering' ,
 						'bytesTotalChange': 'onBytesTotalChange' ,
 						'bytesDownloadedChange': 'onBytesDownloadedChange' ,
 						'playerSeekEnd': 'onPlayerSeekEnd' ,
@@ -620,6 +620,9 @@
 				this.hideSpinner();
 				this.stopped = this.paused = false;
 			}
+			if (this.buffering){
+				this.bufferEnd();
+			}
 			this.removePoster();
 		} ,
 
@@ -641,7 +644,6 @@
 				this.getPlayerContainer().css( 'visibility' , 'hidden' );
 				this.durationReceived = true;
 				if ( !this.isError ) {
-					this.callReadyFunc();
 
 					//in silverlight we have unusual situation where "Start" is sent after "playing", this workaround fixes the controls state
 					if ( this.autoplay ) {
@@ -720,7 +722,7 @@
 		 * play method calls parent_play to update the interface
 		 */
 		play: function () {
-			mw.log( 'EmbedPlayerSPlayer::play' + this.isMulticast + ""+this.durationReceived);
+			mw.log( 'EmbedPlayerSPlayer::play ' + this.isMulticast + " " + this.durationReceived);
 			var _this = this;
 			if ( (!this.isMulticast || this.durationReceived) && this.parent_play() ) {
 				//TODO:: Currently SL player initializes before actual volume is read from cookie, so we set it on play
@@ -759,7 +761,9 @@
 		 * load method calls parent_load to start fetching media from server, in case of DRM the license request will be handled as well
 		 */
 		load: function () {
-			this.playerObject.load();
+			if ( this.streamerType !== "smoothStream" ){
+				this.playerObject.load();
+			}
 		},
 		/**
 		 * playerSwitchSource switches the player source working around a few bugs in browsers
@@ -855,6 +859,13 @@
 		} ,
 
 		/**
+		 * function called by silverlight on buffering start
+		 */
+		onBuffering: function () {
+			this.bufferStart();
+		} ,
+
+		/**
 		 * function called by flash when the total media size changes
 		 */
 		onBytesTotalChange: function ( data , id ) {
@@ -885,6 +896,14 @@
 
 		onSwitchingChangeComplete: function ( data , id ) {
 			var value = JSON.parse( data );
+
+			var sources = this.getSources();
+			if (sources && (sources.length >= value.newIndex)){
+				var source = sources[value.newIndex];
+				this.triggerHelper('bitrateChange', source.getBitrate());
+				this.currentBitrate = source.getBitrate();
+			}
+
 			//fix a bug that old switching process finished before the user switching request and the UI was misleading
 			if ( this.requestedSrcIndex !== null && value.newIndex !== this.requestedSrcIndex ) {
 				return;
@@ -965,14 +984,17 @@
 		} ,
 
 		switchSrc: function ( source ) {
-			if ( this.playerObject && this.mediaElement.getPlayableSources().length > 1 ) {
+			if ( this.playerObject && this.getSources().length > 1 ) {
 				var trackIndex = -1;
 				if ( source !== -1 ) {
 					trackIndex = this.getSourceIndex( source );
 					mw.log("EmbedPlayerSPlayer:: switch to track index: " + trackIndex);
+					var bitrate = source.getBitrate();
 					$(this).trigger('sourceSwitchingStarted', [
-						{currentBitrate: source.getBitrate()}
+						{currentBitrate: bitrate}
 					]);
+					this.currentBitrate = bitrate;
+					this.triggerHelper('bitrateChange', bitrate);
 				}
 				this.requestedSrcIndex = trackIndex;
 				this.playerObject.selectTrack( trackIndex );
@@ -1009,6 +1031,11 @@
 				ttml: captionData.ttml
 			};
 			this.triggerHelper( 'onEmbeddedData' , caption );
+		},
+
+		bufferHandling: function(){
+			// Nothing here, only overwrite the super bufferHandling method.
+			// The buffer handling here made by SilverLight itself, by listening to "buffering" event.
 		}
 
 	}

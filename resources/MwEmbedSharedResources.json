@@ -457,5 +457,22 @@
     "dotdotdot": {
         "scripts": "resources/jquery.dotdotdot/jquery.dotdotdot.min.js",
         "dependencies": "jquery"
+    },
+    "threejs":{
+      "dependencies": "jquery",
+      "scripts": "resources/threejs/three.min.js"
+    },
+    "vtt.js": {
+        "scripts": "resources/vtt.js/vtt.js",
+        "dependencies": ["polyfill_Array_forEach"]
+    },
+    "polyfill_Array_forEach": {
+        "scripts": "resources/polyfills/Array.forEach.js"
+    },
+    "polyfill_Array_filter": {
+        "scripts": "resources/polyfills/Array.filter.js"
+    },
+    "polyfill_Array_findIndex": {
+        "scripts": "resources/polyfills/Array.findIndex.js"
     }
 }

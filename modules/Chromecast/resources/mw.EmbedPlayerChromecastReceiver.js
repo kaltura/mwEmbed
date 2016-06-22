@@ -2,7 +2,7 @@
 ( function( mw, $ ) { "use strict";
 	// Add chromecast player:
 	$( mw ).bind('EmbedPlayerUpdateMediaPlayers', function( event, mediaPlayers ){
-		var chromecastSupportedProtocols = ['video/h264', 'video/mp4'];
+		var chromecastSupportedProtocols = ['video/h264', 'video/mp4', 'application/vnd.apple.mpegurl'];
 		var chromecastReceiverPlayer = new mw.MediaPlayer('chromecastReceiver', chromecastSupportedProtocols, 'ChromecastReceiver');
 		mediaPlayers.addPlayer(chromecastReceiverPlayer);
 	});
@@ -20,14 +20,8 @@
 			'overlays': true
 		},
 		seeking: false,
-		startOffset: 0,
+		triggerReplayEvent: false, // since native replay is not supported in the Receiver, we use this flag to send a replay event to Analytics
 		currentTime: 0,
-		duration: 0,
-		userSlide: false,
-		volume: 1,
-		vid: null,
-		monitorInterval: null,
-		receiverName: '',
 		nativeEvents: [
 			'loadstart',
 			'progress',
@@ -54,20 +48,41 @@
 		],
 
 		setup: function( readyCallback ) {
-			this.vid = this.getPlayerElement();
+			$(this).bind('layoutBuildDone', function(){
+				this.getVideoHolder().find('video').remove();
+			});
+
+			this.setPlayerElement(parent.document.getElementById('receiverVideoElement'));
+			this.addBindings();
 			this.applyMediaElementBindings();
 			mw.log('EmbedPlayerChromecastReceiver:: Setup. Video element: '+this.getPlayerElement().toString());
-			$(this).trigger("chromecastReceiverLoaded",[this.getPlayerElement()]);
-			var _this = this;
+			this.getPlayerElement().src = '';
+			$(this).trigger("chromecastReceiverLoaded");
 			this._propagateEvents = true;
 			$(this.getPlayerElement()).css('position', 'absolute');
-			if (this.monitorInterval !== null){
-				clearInterval(this.monitorInterval);
-			}
-			this.monitorInterval = setInterval(function(){_this.monitor();},1000);
+			this.stopped = false;
 			readyCallback();
 		},
-
+		/**
+		 * Apply player bindings for getting events from mpl.js
+		 */
+		addBindings: function(){
+			var _this = this;
+			this.bindHelper("replay", function(){
+				_this.triggerReplayEvent = true;
+				_this.triggerHelper("playerReady"); // since we reload the media for replay, trigger playerReady to reset Analytics
+			});
+			this.bindHelper("onAdOpen", function(event, id, system, type){
+				_this.triggerHelper("broadcastToSender", ["chromecastReceiverAdOpen"]);
+			});
+			this.bindHelper("AdSupport_AdUpdateDuration", function(event, duration){
+				_this.triggerHelper("broadcastToSender", ["chromecastReceiverAdDuration|" + duration]);
+			});
+			this.bindHelper("onAdComplete", function(){
+				_this.triggerHelper("broadcastToSender", ["chromecastReceiverAdComplete"]);
+				_this.triggerHelper("cancelAllAds");
+			});
+		},
 		/**
 		 * Apply media element bindings
 		 */
@@ -100,37 +115,59 @@
 		 * Handle the native paused event
 		 */
 		_onpause: function () {
-			this.paused = true;
-			this.layoutBuilder.showPlayerControls();
+			this.pause();
 			$(this).trigger('onPlayerStateChange', [ "pause", "play" ]);
-			this.parent_pause();
+
 		},
 
 		/**
 		 * Handle the native play event
 		 */
 		_onplay: function () {
-			this.paused = false;
-			this.stopped = false;
-			this.layoutBuilder.hidePlayerControls();
+			this.play();
+			this.restoreEventPropagation();
 			$(this).trigger('onPlayerStateChange', [ "play", "pause" ]);
-			this.parent_play();
+			if (this.triggerReplayEvent){
+				$(this).trigger('replayEvent');
+				this.triggerReplayEvent = false;
+			}
 		},
+
+		_onseeking: function () {
+			if (!this.seeking) {
+				this.seeking = true;
+				if ( this._propagateEvents && !this.isLive() ) {
+					this.triggerHelper('seeking');
+				}
+			}
+		},
+
+		_onseeked: function () {
+			if (this.seeking) {
+				this.seeking = false;
+				if (this._propagateEvents && !this.isLive()) {
+					this.triggerHelper('seeked', [this.getPlayerElementTime()]);
+				}
+			}
+		},
+
 		// override these functions so embedPlayer won't try to sync time
-		syncCurrentTime: function(){},
+		syncCurrentTime: function(){
+			this.currentTime = this.getPlayerElementTime();
+		},
 
 		isInSequence: function(){return false;},
-
-		monitor: function(){
-			if ( this.vid && this.vid.currentTime !== null && this.vid.duration !== null) {
-				$(this).trigger("updatePlayHeadPercent",[ this.vid.currentTime / this.vid.duration ]);
-				$( this ).trigger( 'externalTimeUpdate', [this.vid.currentTime]);
+		_ondurationchange: function (event, data) {
+			if ( this.playerElement && !isNaN(this.playerElement.duration) && isFinite(this.playerElement.duration) ) {
+				this.setDuration(this.getPlayerElement().duration);
+				return;
 			}
-			$(this).trigger( 'monitorEvent' );
 		},
 
+		setPlayerElement: function (mediaElement) {
+			this.playerElement = mediaElement;
+		},
 		getPlayerElement: function () {
-			this.playerElement = $('#' + this.pid).get(0);
 			return this.playerElement;
 		},
 

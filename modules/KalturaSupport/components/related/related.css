@@ -30,7 +30,11 @@
     right: 0.5em !important;
 }
 .mobileSkin .related .icon-close{
-    margin-right: -2.6em;
+    margin-right: -0.3em;
+}
+.mobileSkin.fullscreen .related .icon-close{
+    margin-top: 0.2em;
+    position: fixed;
 }
 .related .screen-content {
 	padding: 10px 5px;
@@ -224,12 +228,12 @@
 		width: 50%;
 		height: 65.9%;
 	}
-    .screen-content{
+    .related .screen-content{
         width: 100% !important;
     }
 }
 @media only screen and (max-width: 1050px) and (min-width: 651px)  and (orientation: portrait){
-    .screen-content{
+    .related .screen-content{
         height: 50% !important;
     }
 }

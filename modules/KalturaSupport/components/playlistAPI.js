@@ -151,6 +151,9 @@
 					case 'playlistPlayPrevious':
 						_this.playPrevious();
 						break;
+					case 'playlistPlayMediaById':
+						_this.playMediaById(notificationData);
+						break;
 				}
 			});
 
@@ -412,6 +415,16 @@
 			}
 		},
 
+		playMediaById: function(id){
+			var items = this.playlistSet[this.currentPlaylistIndex].items;
+			for ( var i = 0; i < items.length; i++ ) {
+				if ( items[i].id === id ) {
+					this.playMedia( i, false, true );
+					break;
+				}
+			}
+		},
+
 		// play a clip according to the passed index. If autoPlay is set to false - the clip will be loaded but not played
 		playMedia: function (clipIndex, load, autoScrollToMedia) {
 			this.setSelectedMedia(clipIndex);              // this will highlight the selected clip in the UI
@@ -474,7 +487,7 @@
 				_this.loadingEntry = false; // Update the loadingEntry flag//
 
 				// play clip that was selected when autoPlay=false. if autoPlay=true, the embedPlayer will do that for us.
-				if (!_this.getConfig("autoPlay") && mobileAutoPlay && embedPlayer.canAutoPlay()) {
+				if (!_this.getConfig("autoPlay") && mobileAutoPlay && embedPlayer.canAutoPlay() && !embedPlayer.isInSequence()) {
 					setTimeout(function(){
 						embedPlayer.play();
 					},500); // timeout is required when loading live entries

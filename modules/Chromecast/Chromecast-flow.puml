@@ -1,0 +1,25 @@
+@startuml
+title Kaltura Chromecast Sender-Receiver Events and Messages Flow
+Sender -> Receiver: new chrome.cast.SessionRequest (applicationID)
+Receiver --> Sender: onRequestSessionSuccess (session)
+|||
+Sender -> Receiver: sendMessage({'type': 'setLogo', 'logo': this.getConfig("logoUrl")})
+Sender -> Receiver: sendMessage({'type': 'show', 'target': 'logo'})
+Sender -> Receiver: sendMessage({'type': 'live', 'value': true})
+Sender -> Receiver: sendMessage({'type': 'license', 'value': this.drmConfig.contextData.widevineLicenseServerURL})
+Sender -> Receiver: sendMessage({'type': 'embed', 'lib': kWidget.getPath(), 'publisherID': this.embedPlayer.kwidgetid.substr(1), \n'uiconfID': this.embedPlayer.kuiconfid, 'entryID': this.embedPlayer.kentryid, \n'debugKalturaPlayer': this.getConfig("debugKalturaPlayer"), 'flashVars': flashVars})
+Sender -> Receiver: sendMessage({'type': 'live', 'value': true})
+Sender --> Sender: this.session.addMessageListener('urn:x-cast:com.kaltura.cast.player', \nfunction(namespace, message) {...}
+Receiver -[#0000FF]-> Sender: readyForMedia|{url}|{mimeType}
+Sender -> Receiver: session.loadMedia(new chrome.cast.media.LoadRequest( mediaInfo ),successFunc,errFunc)
+Receiver --> Sender: successFunc (mediaSession)
+== Playback ==
+Receiver -[#0000FF]-> Sender: chromecastReceiverAdOpen
+Receiver -[#0000FF]-> Sender: chromecastReceiverAdComplete
+Receiver -[#0000FF]-> Sender: chromecastReceiverAdDuration|{adDuration}
+Receiver -[#0000FF]-> Sender: shutdown
+legend center
+  Blue arrows represent messages send from the Receiver to the Sender
+endlegend
+
+@enduml

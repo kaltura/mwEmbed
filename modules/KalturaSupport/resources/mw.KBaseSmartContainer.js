@@ -22,6 +22,9 @@
 							.attr( 'title', this.title )
 							.addClass( "btn" + this.getCssClass() )
 							.on('click', function(e) {
+								if (_this.isDisabled){
+									return;
+								}
 								if ( !_this.pluginsScreenOpened && !_this.overlayOpen ){
 									_this.showRegisteredPlugins();
 								}else{
@@ -37,7 +40,7 @@
 
 				// add to the smart container all the plugins with the "smartContainer" property set to the smart container pluginName
 				for ( var plugin in plugins){
-					if ( plugins[plugin].getConfig("smartContainer") && plugins[plugin].getConfig("smartContainer") === _this.pluginName ){
+					if ( plugins[plugin].getConfig("smartContainer") && plugins[plugin].getConfig("smartContainer") === _this.pluginName && plugins[plugin].safe){
 						_this.registeredPlugins.push(plugins[plugin]);
 						// add close events
 						if (plugins[plugin].getConfig("smartContainerCloseEvent")){
@@ -96,7 +99,7 @@
 		},
 		hideRegisteredPlugins: function(){
 			this.pluginsScreenOpened = false;
-			this.embedPlayer.getVideoHolder().removeClass( "pluginsScreenOpened" );
+			this.embedPlayer.getInterface().removeClass( "pluginsScreenOpened" );
 			$(this.embedPlayer.getPlayerElement()).removeClass("blur");
 			this.embedPlayer.getVideoHolder().find(".closePluginsScreen").remove(); // remove close button
 			for ( var i = 0; i < this.registeredPlugins.length; i++ ){
@@ -104,19 +107,34 @@
 			}
 
 			this.embedPlayer.getControlBarContainer().show();
-			this.embedPlayer.getTopBarContainer().show();
 			this.embedPlayer.getVideoHolder().find(".nextPrevBtn").show();
 			this.embedPlayer.triggerHelper("hideMobileComponents"); // used by plugins like closed captions to restore captions on screen
 			this.embedPlayer.triggerHelper("updateComponentsVisibilityDone");
 		},
 		showRegisteredPlugins: function(){
 			var _this = this;
+			// clean registeredPlugins array from plugins that were defined as isSafeEnviornment = false by a promise returned after the pluginsReady event
+			for ( var i = this.registeredPlugins.length -1; i >= 0; i-- ){
+				if ( !this.registeredPlugins[i].safe ){
+					this.registeredPlugins.splice( i, 1 );
+				}
+			}
+
 			this.pluginsScreenOpened = true;
-			this.embedPlayer.getVideoHolder().addClass( "pluginsScreenOpened" );
+
+			var $sc = this.embedPlayer.getVideoHolder().find(".smartContainer");
+
+			this.embedPlayer.getInterface().addClass( "pluginsScreenOpened" );
 			$(this.embedPlayer.getPlayerElement()).addClass("blur");
-			// calculate the width for each plugin. Adding 1 to the plugins count to add some spacing. Done each time the plugins are shown to support responsive players.
-			var pluginWidth = this.embedPlayer.getVideoHolder().width() / (this.registeredPlugins.length + 1);
-			this.embedPlayer.getVideoHolder().find(".btn").not(".closePluginsScreen, .icon-next, .icon-prev").width(pluginWidth);
+			// calculate the width and height for each plugin. Adding 1 to the plugins count to add some spacing. Done each time the plugins are shown to support responsive players.
+			var numPlugins = this.registeredPlugins.length;
+			var pluginWidth = 33;
+			if ( numPlugins === 4 || numPlugins === 2){
+				pluginWidth = 50;
+			}
+			var pluginHeight = this.embedPlayer.getVideoHolder().width() / (numPlugins + 1);
+			$sc.find(".comp").not(".closePluginsScreen, .icon-next, .icon-prev, .largePlayBtn").width( pluginWidth + "%").height(pluginHeight);
+			$sc.removeClass("comp1 comp2 comp3 comp4 comp5 comp6").addClass("comp" + this.registeredPlugins.length);
 
 			for ( var i = 0; i < this.registeredPlugins.length; i++ ){
 				var plugin = this.registeredPlugins[i].getComponent();
@@ -135,11 +153,10 @@
 				});
 			}
 			this.shouldResumePlay = !this.embedPlayer.paused;
+			this.embedPlayer.ignoreNextNativeEvent = true;
 			this.embedPlayer.pause();
-			this.embedPlayer.getVideoHolder().find(".largePlayBtn").hide();
 			this.embedPlayer.getVideoHolder().find(".nextPrevBtn").hide();
 			this.embedPlayer.getControlBarContainer().fadeOut();
-			this.embedPlayer.getTopBarContainer().fadeOut();
 			this.embedPlayer.triggerHelper("showMobileComponents"); // used by plugins like closed captions to hide captions
 
 			// add close button to the smart container screen
