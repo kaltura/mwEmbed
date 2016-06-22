@@ -54,6 +54,15 @@
 					_this.show();
 				}
 			});
+			this.bind( 'playlistFirstEntry playlistLastEntry playlistMiddleEntry', function(e){
+				_this.getComponent().find(".btn").removeClass("disabled");
+				if (e.type === "playlistFirstEntry"){
+					_this.getComponent().find(".icon-prev").addClass("disabled");
+				}
+				if (e.type === "playlistLastEntry"){
+					_this.getComponent().find(".icon-next").addClass("disabled");
+				}
+			});
 		},
 		show: function(){
 			if ( !this.isDisabled ) {
@@ -83,7 +92,7 @@
 					});
 				var $prevBtn = $( '<button />' )
 					.attr( 'title', this.prevTitle )
-					.addClass( "btn btnNarrow icon-prev" )
+					.addClass( "btn btnNarrow icon-prev disabled" )
 					.on(eventName, function(e) {
 						e.stopPropagation();
 						e.preventDefault();
