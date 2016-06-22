@@ -107,7 +107,6 @@
 			}
 
 			this.embedPlayer.getControlBarContainer().show();
-			this.embedPlayer.getVideoHolder().find(".nextPrevBtn").show();
 			this.embedPlayer.triggerHelper("hideMobileComponents"); // used by plugins like closed captions to restore captions on screen
 			this.embedPlayer.triggerHelper("updateComponentsVisibilityDone");
 		},
