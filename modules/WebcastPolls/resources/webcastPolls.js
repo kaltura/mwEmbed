@@ -456,7 +456,7 @@
         canUserVote: function ()
         {
             var _this = this;
-            return _this.pollData.pollId && _this.globals.votingProfileId && !_this.userVote.inProgress && _this.userVote.canUserVote && _this.userVote.isReady;
+            return this.embedPlayer.isLive() && _this.pollData.pollId && _this.globals.votingProfileId && !_this.userVote.inProgress && _this.userVote.canUserVote && _this.userVote.isReady;
         },
         handleAnswerClicked: function (e)
         {
