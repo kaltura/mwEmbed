@@ -69,11 +69,11 @@
 				if (this.embedPlayer.isMobileSkin() && (this.embedPlayer.changeMediaStarted || this.embedPlayer.buffering)){
 					return; // prevent
 				}
-				this.getComponent().show();
+				this.getComponent().fadeIn('fast');
 			}
 		},
 		hide: function( force ){
-			this.getComponent().hide();
+			this.getComponent().fadeOut('fast');
 		},
 		getComponent: function() {
 			var _this = this;
