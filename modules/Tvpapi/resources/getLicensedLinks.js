@@ -57,7 +57,7 @@
 							}
 							source.src = mediaLink;
 						} else {
-							setTimout(function(){
+							setTimeout(function(){
 								_this.getPlayer().triggerHelper('tvpapiNoSubscription', [res]);
 							},0)
 						}
