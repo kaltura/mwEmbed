@@ -143,8 +143,6 @@ Poll (shared)
 }
 
 .webcastPolls .poll .answer.popular {
-    height: 62px !important;
-    line-height: 62px !important;
     width: 120% !important;
     left : -10%;
     border : rgba(255,255,255,0.2) solid 1px;
@@ -251,6 +249,10 @@ Poll (medium)
     margin-right:40px;
 }
 
+.webcastPolls .medium-layout .poll .answer.popular {
+
+}
+
 
 .webcastPolls .medium-layout .poll .answer {
     display: inline-block;
@@ -323,6 +325,11 @@ Poll (large)
 .webcastPolls .large-layout .poll .answers-widget {
     clear:both;
     margin-top:10px;
+}
+
+.webcastPolls .large-layout .poll .answer.popular {
+    height: 62px !important;
+    line-height: 62px !important;
 }
 
 .webcastPolls .large-layout .poll .answer {
