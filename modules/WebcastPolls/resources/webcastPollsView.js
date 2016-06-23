@@ -173,7 +173,8 @@
                                 } else {
                                     label = pollResults.totalVoters;
                                 }
-                                $totalsContainer.find("[name='text']").text(label);
+                                $totalsContainer.find("[name='value']").text(label);
+                                $totalsContainer.find("[name='text']").text(totalVotersAsNumber === 1 ? 'response' : 'responses');
                                 $totalsContainer.css('opacity', '1');
                             }else {
                                 $totalsContainer.css('opacity', '0');
