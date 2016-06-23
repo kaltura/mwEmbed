@@ -1255,6 +1255,7 @@
 						}
 
 						// Update the proxy data
+						embedPlayer.setKalturaConfig("proxyData", notificationData.proxyData);
 						embedPlayer.setKalturaConfig("proxyData", "data", notificationData.proxyData);
 
 						// Clear player & entry meta
