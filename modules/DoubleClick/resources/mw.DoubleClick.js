@@ -730,9 +730,6 @@
 							if ( _this.isChromeless ){
 								_this.embedPlayer.getPlayerElement().sendNotification( 'skipAd' );
 							}else{
-								if (_this.adPaused){
-									_this.resumeAd(true);
-								}
 								_this.adsManager.stop();
 								if (_this.currentAdSlotType === "postroll" && _this.getConfig( 'adTagUrl' ) ){
 									_this.restorePlayer(true);
