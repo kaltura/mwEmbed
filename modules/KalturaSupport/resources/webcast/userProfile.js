@@ -4,7 +4,7 @@
 
     mw.webcast.UserProfile = mw.KBasePlugin.extend({
         defaultConfig : {
-            'userId' : 'User'
+            /* IMPORTANT : don't use this plugin config feature since it is a detached plugin. A detached plugin cannot access the player configuration to support overrides */
         },
         // get an hash code from a ks
         getKSHash: function(ks) {
@@ -36,11 +36,17 @@
                 "##";
         },
 
-        getUserID: function(){
+        getUserID: function(pluginGetConfig){
             var _this = this;
 
+            if (!pluginGetConfig)
+            {
+                mw.log('Owner plugin must provide its get config function');
+                return null;
+            }
+
             // If our user ID is the same as the configured anonymousUserId we need to generate one, or get it from localStorage (if exists)
-            if (!_this.getConfig("userRole") || _this.getConfig("userRole") === "anonymousRole"){
+            if (!pluginGetConfig("userRole") || pluginGetConfig("userRole") === "anonymousRole"){
 
                 //if localStorage is available, get & store the user id from it;
                 if(window.localStorage) {
@@ -53,7 +59,7 @@
                     return _this.generateUserId();
                 }
             }
-            return _this.getConfig("userId");
+            return pluginGetConfig("userId");
         }
     });
 })(window.mw, window.jQuery);

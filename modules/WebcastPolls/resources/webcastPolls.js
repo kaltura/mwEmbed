@@ -7,6 +7,7 @@
      */
     mw.PluginManager.add('webcastPolls', mw.KBasePlugin.extend({
         defaultConfig: {
+            'userId' : 'User'
         },
         cuePointsManager: null, // manages all the cue points tracking (cue point reached of poll results, poll states etc).
         cachedPollsContent: {}, // used to cache poll results to improve poll warm data loading (load the poll before we actually need to show it.)
@@ -42,35 +43,44 @@
         setup: function () {
             var _this = this;
 
+            // reset parameters
             _this.resetPersistData();
 
+            // register to player events
             _this.addBindings();
+
+            // initialize dependent components
             _this.initializeDependentComponents();
 
-            _this.globals.userId = _this.userProfile.getUserID();
+            // get user id (will be used later when voting)
+            _this.globals.userId = _this.userProfile.getUserID($.proxy(_this.getConfig,_this));
 
-
-            //  getUserVote
+            //  get voting metadata id needed to create user voting
             _this.kalturaProxy.getVoteCustomMetadataProfileId().then(function (result) {
+                // got metadata id - store for later use and reload user voting of current poll
                 _this.globals.votingProfileId = result.profileId;
 
                 _this.reloadPollUserVoting();
 
             }, function (reason) {
+                // if failed to retrieve metadata id - do nothing (it will
                 _this.globals.votingProfileId = null;
             });
         },
+        /**
+         * Reloads user voting of current poll using the metadata id needed for voting
+         */
         reloadPollUserVoting : function()
         {
             var _this = this;
             if (_this.pollData.pollId) {
                 var invokedByPollId = _this.pollData.pollId;
                 // ## get poll data to show
-                _this.getPollContent(_this.pollData.pollId).then(function (result) {
+                _this.getPollUserVote(_this.pollData.pollId, true).then(function (result) {
                     if (invokedByPollId === _this.pollData.pollId) {
-                        if (result.userVote) {
-                            _this.userVote.answer = result.userVote.answer;
-                            _this.userVote.metadataId = result.userVote.metadataId;
+                        if (result) {
+                            _this.userVote.answer = result.answer;
+                            _this.userVote.metadataId = result.metadataId;
                         }
 
                         _this.view.syncPollDOM();
@@ -359,14 +369,17 @@
 
                         var invokedByPollId = _this.pollData.pollId;
                         // ## get poll data to show
-                        _this.getPollContent(invokedByPollId, true).then(function (result) {
+                        var pollContentPromise =_this.getPollContent(invokedByPollId, true);
+                        var pollUserVotePromise = _this.globals.votingProfileId ? _this.getPollUserVote(invokedByPollId,true) : null;
+
+                        $.when(pollContentPromise,pollUserVotePromise).then(function (pollContentResult, pollUserVoteResult) {
                             if (invokedByPollId === _this.pollData.pollId) {
-                                _this.pollData.content = result.content;
+                                _this.pollData.content = pollContentResult;
                                 _this.userVote.isReady = true;
 
-                                if (result.userVote) {
-                                    _this.userVote.answer = result.userVote.answer;
-                                    _this.userVote.metadataId = result.userVote.metadataId;
+                                if (pollUserVoteResult) {
+                                    _this.userVote.answer = pollUserVoteResult.answer;
+                                    _this.userVote.metadataId = pollUserVoteResult.metadataId;
                                 }
 
                                 _this.view.syncPollDOM();
@@ -378,7 +391,6 @@
                                 // TODO [es] handle
                             }
                         });
-
 
                         // make sure we update the view with the new poll
                         _this.view.syncPollDOM();
@@ -396,59 +408,52 @@
                 // todo [es] handle
             }
         },
+        getPollUserVote : function(pollId, forceGet)
+        {
+            var _this = this;
+            var defer = $.Deferred();
+
+            var cachedPollItem = _this.cachedPollsContent[pollId] = (_this.cachedPollsContent[pollId] || {});
+
+            if (forceGet || !cachedPollItem.userVote) {
+                if (_this.globals.votingProfileId) {
+                    _this.kalturaProxy.getUserVote(pollId, _this.globals.votingProfileId, _this.globals.userId).then(function(result)
+                    {
+                        cachedPollItem.userVote = result;
+                        defer.resolve(cachedPollItem.userVote);
+                    },function()
+                    {
+                        cachedPollItem.userVote = null;
+                        defer.reject();
+                    });
+                }else {
+                    defer.reject();
+                }
+            } else {
+                defer.resolve(cachedPollItem.userVote);
+            }
+
+            return defer.promise();
+        },
         getPollContent: function (pollId, forceGet)
         {
             var _this = this;
             var defer = $.Deferred();
 
-            if (_this.cachedPollsContent[pollId] && !forceGet) {
+            var cachedPollItem = _this.cachedPollsContent[pollId] = (_this.cachedPollsContent[pollId] || {});
 
-                var cachedItem = _this.cachedPollsContent[pollId];
-
-                var userVotePromise;
-                if (cachedItem.userVote)
-                {
-                    userVotePromise = cachedItem.userVote;
-                }else
-                {
-                    if (_this.globals.votingProfileId) {
-                        userVotePromise = _this.kalturaProxy.getUserVote(pollId, _this.globals.votingProfileId, _this.globals.userId).then(function(result)
-                        {
-                            cachedItem.userVote = result.userVote;
-                        },function()
-                        {
-                            cachedItem.userVote = null;
-                        });
-                    }else {
-                        // TODO [es] check
-                        userVotePromise = null;
-                    }
-                }
-
-                $.when(userVotePromise).always(function()
-                {
-                    var pollContent = cachedItem.pollContent;
-                    var userVote = cachedItem.userVote;
-
-                    defer.resolve({content: pollContent, userVote : userVote});
-                },function(reason)
-                {
-                    // TODO [es]
-                })
+            if (forceGet || !cachedPollItem.pollContent) {
+                    _this.kalturaProxy.getPollContent(pollId).then(function (result)
+                    {
+                        cachedPollItem.pollContent = result;
+                        defer.resolve(cachedPollItem.pollContent);
+                    },function()
+                    {
+                        cachedPollItem.pollContent = null;
+                        defer.reject();
+                    });
             } else {
-                _this.cachedPollsContent[pollId] = null;
-
-                _this.kalturaProxy.getPollContent(pollId,_this.globals.votingProfileId, _this.globals.userId).then(function (result) {
-                    try {
-                        _this.cachedPollsContent[pollId] = result;
-                        defer.resolve({content: result.pollContent,   userVote : result.userVote});
-                    } catch (e) {
-                        defer.reject({});
-                    }
-                }, function (reason) {
-                    mw.log(reason);
-                    defer.reject({});
-                });
+                defer.resolve(cachedPollItem.pollContent);
             }
 
             return defer.promise();

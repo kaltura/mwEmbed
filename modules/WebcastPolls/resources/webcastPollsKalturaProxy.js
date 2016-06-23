@@ -26,88 +26,6 @@
                 return (result && result.objectType && result.objectType === "KalturaAPIException");
             }
         },
-        adapters : {
-            pollContent : {
-                getRequest : function(pollId)
-                {
-                    var request = {
-                        'service': 'cuepoint_cuepoint',
-                        'action': 'get',
-                        'id': pollId
-                    };
-
-                    return request;
-                },
-                handleResponse : function(result, response)
-                {
-                    var pollContent = JSON.parse(response.text);
-                    result.pollContent = pollContent;
-                }
-            },
-            userVote : {
-                getRequest: function(entryId, pollId, profileId, userId)
-                {
-                    var request = {
-                        'service': 'cuepoint_cuepoint',
-                        'action': 'list',
-                        'filter:entryIdEqual': entryId,
-                        'filter:orderBy': '-createdAt', // although only one vote is allowed per user, we fetch the last one so if for unknown reason we have duplicates, the user will see his last choice
-                        'filter:objectType': 'KalturaAnnotationFilter',
-                        'filter:cuePointTypeIn': 'annotation.Annotation',
-                        'filter:parentIdEqual': pollId,
-
-                        /*Search  metadata   */
-                        'filter:advancedSearch:objectType': 'KalturaMetadataSearchItem',
-                        'filter:advancedSearch:metadataProfileId': profileId,
-                        "responseProfile:objectType":"KalturaResponseProfileHolder",
-                        "responseProfile:systemName":"pollVoteResponseProfile",
-
-                        //search all messages on my session id
-                        'filter:advancedSearch:items:item1:objectType': "KalturaSearchCondition",
-                        'filter:advancedSearch:items:item1:field': "/*[local-name()='metadata']/*[local-name()='UserId']",
-                        'filter:advancedSearch:items:item1:value': userId,
-
-                        'pager:pageSize': 1,
-                        'pager:pageIndex': 1
-                    };
-
-                    return request;
-                },
-                handleResponse : function(result, response)
-                {
-                    result.userVote = {};
-
-                    var cuePoint =(response && response.objects && response.objects.length > 0) ? response.objects[0] : null;
-
-                    if (cuePoint)
-                    {
-                        var metadata = (cuePoint.relatedObjects &&
-                            cuePoint.relatedObjects.pollVoteResponseProfile &&
-                            cuePoint.relatedObjects.pollVoteResponseProfile.objects &&
-                            cuePoint.relatedObjects.pollVoteResponseProfile.objects.length > 0
-                        ) ? cuePoint.relatedObjects.pollVoteResponseProfile.objects[0] : null;
-
-                        if (metadata && metadata.xml) {
-                            var voteAnswerToken = metadata.xml.match(/<Answer>([0-9]+?)<[/]Answer>/);
-                            var vote = (voteAnswerToken && voteAnswerToken.length === 2) ? voteAnswerToken[1] : null;
-                            var metadataId = metadata.id;
-
-                            result.userVote = {metadataId: metadataId, answer: vote};
-
-                            if (!vote)
-                            {
-                                // TODO [es] log
-                            }
-                        }else
-                        {
-                            // ## got cue point without metadata - invalid situation
-                            throw new Error("todo"); // TODO [es]
-                        }
-                    }
-
-                }
-            }
-        },
         getUserVote : function(pollId, profileId, userId)
         {
             var _this = this;
@@ -115,17 +33,58 @@
 
             if (profileId && userId && pollId) {
 
-                var request = _this.adapters.userVote.getRequest(_this.getPlayer().kentryid, pollId, profileId, userId);
+                var request = {
+                    'service': 'cuepoint_cuepoint',
+                    'action': 'list',
+                    'filter:entryIdEqual': _this.getPlayer().kentryid,
+                    'filter:orderBy': '-createdAt', // although only one vote is allowed per user, we fetch the last one so if for unknown reason we have duplicates, the user will see his last choice
+                    'filter:objectType': 'KalturaAnnotationFilter',
+                    'filter:cuePointTypeIn': 'annotation.Annotation',
+                    'filter:parentIdEqual': pollId,
+
+                    /*Search  metadata   */
+                    'filter:advancedSearch:objectType': 'KalturaMetadataSearchItem',
+                    'filter:advancedSearch:metadataProfileId': profileId,
+                    "responseProfile:objectType":"KalturaResponseProfileHolder",
+                    "responseProfile:systemName":"pollVoteResponseProfile",
+
+                    //search all messages on my session id
+                    'filter:advancedSearch:items:item1:objectType': "KalturaSearchCondition",
+                    'filter:advancedSearch:items:item1:field': "/*[local-name()='metadata']/*[local-name()='UserId']",
+                    'filter:advancedSearch:items:item1:value': userId,
+
+                    'pager:pageSize': 1,
+                    'pager:pageIndex': 1
+                };
 
                 _this.getKalturaClient().doRequest(request, function (response) {
                     if (!_this.isErrorResponse(response)) {
-                        try {
-                            var result = {};
-                            _this.adapters.userVote.handleResponse(result, response);
-                            defer.resolve(result);
-                        } catch (e) {
-                            defer.reject({});
+                        var cuePoint = (response && response.objects && response.objects.length > 0) ? response.objects[0] : null;
+
+                        if (cuePoint) {
+                            var metadata = (cuePoint.relatedObjects &&
+                                cuePoint.relatedObjects.pollVoteResponseProfile &&
+                                cuePoint.relatedObjects.pollVoteResponseProfile.objects &&
+                                cuePoint.relatedObjects.pollVoteResponseProfile.objects.length > 0
+                            ) ? cuePoint.relatedObjects.pollVoteResponseProfile.objects[0] : null;
+
+                            if (metadata && metadata.xml) {
+                                var voteAnswerToken = metadata.xml.match(/<Answer>([0-9]+?)<[/]Answer>/);
+                                var vote = (voteAnswerToken && voteAnswerToken.length === 2) ? voteAnswerToken[1] : null;
+                                var metadataId = metadata.id;
+
+                                var result = {metadataId: metadataId, answer: vote};
+                                defer.resolve(result);
+
+                            } else {
+                                // ## got cue point without metadata - invalid situation
+                                defer.reject();
+                            }
+                        }else {
+                            defer.resolve({});
                         }
+
+
                     } else {
                         defer.reject();
                     }
@@ -140,43 +99,38 @@
 
             return defer.promise();
         },
-        getPollContent : function(pollId, profileId, userId)
+        getPollContent : function(pollId)
         {
             var _this = this;
             var defer = $.Deferred();
 
-            var requests = [];
-            requests.push(_this.adapters.pollContent.getRequest(pollId));
+            if (pollId) {
 
-            if (profileId)
-            {
-                requests.push(_this.adapters.userVote.getRequest(_this.getPlayer().kentryid,pollId, profileId, userId));
-            }
+                var request = {
+                    'service': 'cuepoint_cuepoint',
+                    'action': 'get',
+                    'id': pollId
+                };
 
-            _this.getKalturaClient().doRequest(requests, function(responses)
-            {
-                if (!_this.isErrorResponse(responses))
-                {
-                    try {
-                        var result = {};
-                        _this.adapters.pollContent.handleResponse(result,responses[0]);
-                        if (responses.length === 2) {
-                            _this.adapters.userVote.handleResponse(result, responses[1]);
+                _this.getKalturaClient().doRequest(request, function (response) {
+                    if (!_this.isErrorResponse(response)) {
+                        try {
+                            var pollContent = JSON.parse(response.text);
+                            defer.resolve(pollContent);
+                        } catch (e) {
+                            defer.reject({});
                         }
-
-                        defer.resolve(result);
-                    }catch(e)
-                    {
-                        defer.reject({});
+                    } else {
+                        defer.reject();
                     }
-                }else {
-                    defer.reject();
-                }
 
-            },false, function(reason)
+                }, false, function (reason) {
+                    defer.reject({});
+                });
+            }else
             {
                 defer.reject({});
-            });
+            }
 
             return defer.promise();
         },
@@ -197,10 +151,12 @@
                 {
                     defer.resolve({});
                 }else {
+                    _this.log('Failed to transmit vote update with the following error: ' + result.code + ' - ' + result.message);
                     defer.reject();
                 }
             },false,function()
             {
+                _this.log('Failed to transmit vote update');
                 defer.reject();
             });
 
