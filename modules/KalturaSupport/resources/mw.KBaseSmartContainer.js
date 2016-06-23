@@ -154,7 +154,6 @@
 			this.shouldResumePlay = !this.embedPlayer.paused;
 			this.embedPlayer.ignoreNextNativeEvent = true;
 			this.embedPlayer.pause();
-			this.embedPlayer.getVideoHolder().find(".nextPrevBtn").hide();
 			this.embedPlayer.getControlBarContainer().fadeOut();
 			this.embedPlayer.triggerHelper("showMobileComponents"); // used by plugins like closed captions to hide captions
 

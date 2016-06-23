@@ -65,7 +65,7 @@
 			});
 		},
 		show: function(){
-			if ( !this.isDisabled ) {
+			if ( !this.isDisabled && !this.embedPlayer.layoutBuilder.displayOptionsMenuFlag ) {
 				if (this.embedPlayer.isMobileSkin() && (this.embedPlayer.changeMediaStarted || this.embedPlayer.buffering)){
 					return; // prevent
 				}
@@ -73,7 +73,7 @@
 			}
 		},
 		hide: function( force ){
-			this.getComponent().fadeOut('fast');
+			this.getComponent().hide();
 		},
 		getComponent: function() {
 			var _this = this;

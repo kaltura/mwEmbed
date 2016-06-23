@@ -52,8 +52,10 @@
 					_this.hide();
 				});
 				this.bind( 'onComponentsHoverDisabled', function(){
-					_this.keepOnScreen = true;
-					_this.show();
+					if (!_this.embedPlayer.layoutBuilder.displayOptionsMenuFlag){
+						_this.keepOnScreen = true;
+						_this.show();
+					}
 				});
 				this.bind( 'hideScreen closeMenuOverlay', function(){
 					if (!_this.embedPlayer.paused){

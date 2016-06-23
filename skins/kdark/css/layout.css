@@ -350,10 +350,10 @@ body {
 }
 .mobileSkin .videoHolder .smartContainer .btn{
     width: 100%;
-    font-size: 3.6em;
-}
-.mobileSkin .videoHolder .smartContainer.comp4 .btn, .mobileSkin .videoHolder .smartContainer.comp5 .btn, .mobileSkin .videoHolder .smartContainer.comp6 .btn{
     font-size: 3.2em;
+}
+.mobileSkin .videoHolder .smartContainer.comp2 .btn{
+    font-size: 3.6em;
 }
 
 .mobileSkin.fullscreen.size-large .videoHolder .smartContainer .btn{
@@ -571,6 +571,9 @@ body {
 .mobileSkin .nextPrevBtn {
     width: 100%;
     text-align: left;
+}
+.mobileSkin.pluginsScreenOpened .nextPrevBtn {
+    display: none !important;
 }
 .mobileSkin .nextPrevBtn>.btn {
     position: relative;
