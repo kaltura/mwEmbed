@@ -661,6 +661,15 @@
 			// Set the content element to player element:
 			return this.embedPlayer.getPlayerElement();
 		},
+		addCountdownNotice: function () {
+			if (this.getConfig('countdownText') && this.embedPlayer.getInterface().find(".ad-notice-label").length == 0) {
+				// Add the notice target:
+				this.embedPlayer.getVideoHolder().append(
+					$('<span />')
+						.addClass('ad-component ad-notice-label')
+				);
+			}
+		},
 		getAdContainer: function(){
 			if( !$('#' + this.getAdContainerId() ).length ){
 				this.embedPlayer.getVideoHolder().after(
@@ -672,14 +681,7 @@
 							'left' : '0px'
 						})
 				);
-				if ( this.getConfig( 'countdownText' )){
-					this.embedPlayer.getInterface().find("#"+this.getAdContainerId()).append(
-						$('<span />')
-							.addClass( 'ad-component ad-notice-label' )
-							.css({"position": "fixed","margin-bottom": 36+"px"})
-							.hide()
-					)
-				}
+				this.addCountdownNotice();
 			}
 			return $('#' + this.getAdContainerId() ).get(0);
 		},
@@ -1287,13 +1289,7 @@
 						if (_this.isChromeless) {
 							$(".mwEmbedPlayer").hide();
 						}
-						if (_this.getConfig('countdownText') && _this.embedPlayer.getInterface().find(".ad-notice-label").length == 0) {
-							// Add the notice target:
-							_this.embedPlayer.getVideoHolder().append(
-								$('<span />')
-									.addClass('ad-component ad-notice-label')
-							);
-						}
+						_this.addCountdownNotice();
 						// Send a notification to trigger associated events and update ui
 						_this.embedPlayer.paused = false;
 					}else{
@@ -1603,11 +1599,11 @@
 			mw.log("DoubleClick::restorePlayer: content complete:" + onContentComplete);
 			var _this = this;
 			this.adActive = false;
+			this.embedPlayer.getInterface().find(".ad-notice-label").remove();
 			if (this.isChromeless){
 				if (_this.isLinear || _this.adLoaderErrorFlag){
 					$(".mwEmbedPlayer").show();
 				}
-				this.embedPlayer.getInterface().find(".ad-notice-label").remove();
 				this.embedPlayer.getPlayerElement().redrawObject(50);
 			}else{
 				if (_this.isLinear !== false || _this.adLoaderErrorFlag){
