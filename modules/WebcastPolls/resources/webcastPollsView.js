@@ -174,16 +174,16 @@
                                     label = pollResults.totalVoters;
                                 }
                                 $totalsContainer.find("[name='text']").text(label);
-                                $totalsContainer.show();
+                                $totalsContainer.css('opacity', '1');
                             }else {
-                                $totalsContainer.hide();
+                                $totalsContainer.css('opacity', '0');
                             }
                         } else {
-                            $totalsContainer.hide();
+                            $totalsContainer.css('opacity', '0');
                         }
                     }else
                     {
-                        $totalsContainer.hide();
+                        $totalsContainer.css('opacity', '0');
                     }
 
                 }
