@@ -52,20 +52,23 @@
             // initialize dependent components
             _this.initializeDependentComponents();
 
-            // get user id (will be used later when voting)
-            _this.globals.userId = _this.userProfile.getUserID($.proxy(_this.getConfig,_this));
+            // ## only if live - fetch information that will assist later with voting
+            if (this.embedPlayer.isLive()) {
+                // get user id (will be used later when voting or fetching user vote)
+                _this.globals.userId = _this.userProfile.getUserID($.proxy(_this.getConfig, _this));
 
-            //  get voting metadata id needed to create user voting
-            _this.kalturaProxy.getVoteCustomMetadataProfileId().then(function (result) {
-                // got metadata id - store for later use and reload user voting of current poll
-                _this.globals.votingProfileId = result.profileId;
+                //  get voting metadata id needed to create user voting
+                _this.kalturaProxy.getVoteCustomMetadataProfileId().then(function (result) {
+                    // got metadata id - store for later use and reload user voting of current poll
+                    _this.globals.votingProfileId = result.profileId;
 
-                _this.reloadPollUserVoting();
+                    _this.reloadPollUserVoting();
 
-            }, function (reason) {
-                // if failed to retrieve metadata id - do nothing (it will
-                _this.globals.votingProfileId = null;
-            });
+                }, function (reason) {
+                    // if failed to retrieve metadata id - do nothing (it will
+                    _this.globals.votingProfileId = null;
+                });
+            }
         },
         /**
          * Reloads user voting of current poll using the metadata id needed for voting
@@ -413,24 +416,26 @@
             var _this = this;
             var defer = $.Deferred();
 
-            var cachedPollItem = _this.cachedPollsContent[pollId] = (_this.cachedPollsContent[pollId] || {});
+            if (this.embedPlayer.isLive()) {
+                var cachedPollItem = _this.cachedPollsContent[pollId] = (_this.cachedPollsContent[pollId] || {});
 
-            if (forceGet || !cachedPollItem.userVote) {
-                if (_this.globals.votingProfileId) {
-                    _this.kalturaProxy.getUserVote(pollId, _this.globals.votingProfileId, _this.globals.userId).then(function(result)
-                    {
-                        cachedPollItem.userVote = result;
-                        defer.resolve(cachedPollItem.userVote);
-                    },function()
-                    {
-                        cachedPollItem.userVote = null;
+                if (forceGet || !cachedPollItem.userVote) {
+                    if (_this.globals.votingProfileId) {
+                        _this.kalturaProxy.getUserVote(pollId, _this.globals.votingProfileId, _this.globals.userId).then(function (result) {
+                            cachedPollItem.userVote = result;
+                            defer.resolve(cachedPollItem.userVote);
+                        }, function () {
+                            cachedPollItem.userVote = null;
+                            defer.reject();
+                        });
+                    } else {
                         defer.reject();
-                    });
-                }else {
-                    defer.reject();
+                    }
+                } else {
+                    defer.resolve(cachedPollItem.userVote);
                 }
-            } else {
-                defer.resolve(cachedPollItem.userVote);
+            }else {
+                defer.reject({});
             }
 
             return defer.promise();
