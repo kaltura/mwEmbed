@@ -54,7 +54,7 @@
 					_this.hide();
 				}
 			});
-			this.bind( 'hideScreen', function(){
+			this.bind( 'hideScreen closeMenuOverlay', function(){
 				if (mw.isMobileDevice() && _this.getPlayer().paused){
 					_this.show();
 				}
