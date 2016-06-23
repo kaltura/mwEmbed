@@ -1591,7 +1591,16 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 .hover .ad-notice-label {
 	bottom: 40px;
 }
-
+#touchOverlay{
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+.adplay-state #touchOverlay{
+    top: 3em;
+}
 .clearfix:before,.clearfix:after {
 	content: " ";
 	display: table;
