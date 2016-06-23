@@ -149,6 +149,7 @@
                             for (var propertyName in pollResults.answers) {
                                 if (pollResults.answers[propertyName] > popularValue) {
                                     popularAnswers = propertyName;
+                                    popularValue = pollResults.answers[propertyName];
                                 } else if (pollResults.answers[propertyName] == popularValue) {
                                     popularAnswers = popularAnswers ? (popularAnswers + ',' + propertyName) : propertyName;
                                 }

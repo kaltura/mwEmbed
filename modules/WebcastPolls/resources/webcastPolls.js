@@ -265,13 +265,15 @@
                 }
             }
 
+            _this.log("start syncing poll results by analyzing " + cuePointArgs.cuePoints.length + " reached cue points");
+
             if (_this.pollData.showResults || _this.pollData.showTotals)
             {
                 // according to poll state should show poll results or totals
                 var pollResultsCuePoint = _this.filterPollResultsCuePoints(cuePointArgs);
                 if (pollResultsCuePoint && pollResultsCuePoint.partnerData) {
                     try {
-                        _this.log("found poll results for current poll - syncing poll results");
+                        _this.log("got updated results and/or total voters for current poll  - syncing current poll accordingly");
                         var pollResults = JSON.parse(pollResultsCuePoint.partnerData);
                         _this.pollData.pollResults = pollResults;
                     } catch (e) {
@@ -288,10 +290,13 @@
                 }
             }else
             {
-                _this.log("poll state request to hide results and total voters - hiding poll results (if any)");
+                _this.log("poll state is set to hide results and total voters - hiding poll results (if any)");
                 // according to poll state should hide poll results
                 _this.pollData.pollResults = null;
             }
+
+            _this.log("done syncing poll results");
+
 
             _this.view.syncDOMPollResults();
         },
@@ -319,13 +324,15 @@
                 }
             }
 
+            _this.log("start syncing current poll state by analyzing " + cuePointArgs.cuePoints.length + " reached cue points");
+
             var stateCuePointToHandle = _this.filterStateCuePoints(cuePointArgs);
             if (stateCuePointToHandle) {
                 try {
                     var showingAPoll = stateCuePointToHandle.tags.indexOf('select-poll-state') > -1;
 
                     if (showingAPoll) {
-                        _this.log("found an update for poll - syncing current poll with state '" + stateCuePointToHandle.partnerData + "'");
+                        _this.log("got state update for current poll  - syncing current poll with state '" + stateCuePointToHandle.partnerData + "'");
 
                         var pollState = JSON.parse(stateCuePointToHandle.partnerData);
 
@@ -347,6 +354,8 @@
                     _this.removePoll();
                 }
             }
+
+            _this.log("done syncing current poll state");
 
             return !!stateCuePointToHandle;
         },
