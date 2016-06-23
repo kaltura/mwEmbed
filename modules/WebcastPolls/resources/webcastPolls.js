@@ -113,7 +113,7 @@
             // bind to cue point events
             var _this = this;
 
-            this.bind('onpause seeked onplay onChangeMedia', function (e) {
+            this.bind('onpause onplay onChangeMedia', function (e) {
                 _this.handlePlayerEvent(e.type);
             });
         },
@@ -185,10 +185,9 @@
                     _this.removePoll();
                     break;
                 case 'onplay':
-                case 'seeked':
-                    if (eventName === 'onplay' || (eventName === 'seeked' && !_this.getPlayer().isPlaying())) {
+                    if (eventName === 'onplay') {
                         // # we need to sync current poll state when user press playing or seeking.
-                        // Note that since onplay is triggered also after seeking to prevent duplicate handling of the sync we will check first if user is in pause mode during the seek
+                        // Note that since onplay is triggered also after seeking we don't need to handle that event explicitly
                         _this.log("event '" + eventName + "' - start syncing current poll state");
                         if (_this.cuePointsManager) {
                             var cuePointsReachedArgs = _this.cuePointsManager.getCuePointsReached();
