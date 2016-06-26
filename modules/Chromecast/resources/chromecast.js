@@ -54,6 +54,7 @@
 		replay: false,
 		inSequence: false,
 		adDuration: null,
+		sendPlayerReady: false, // after changing media we need to send the playerReady event to the chromecast receiver as it doesn't reload the player there
 
 		setup: function( embedPlayer ) {
 			var _this = this;
@@ -112,6 +113,7 @@
 				_this.savedPosition = 0;
 				_this.pendingReplay = false;
 				_this.pendingRelated = false;
+				_this.sendPlayerReady = true;
 			});
 
 			$( this.embedPlayer).bind('onAdSkip', function(e){
@@ -135,7 +137,9 @@
 			});
 
 			$(this.embedPlayer).bind('playerReady', function(e) {
-				_this.sendMessage({'type': 'notification','event': e.type});
+				if (_this.sendPlayerReady){
+					_this.sendMessage({'type': 'notification','event': e.type});
+				}
 				if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
 					// send application ID to native app
 					_this.embedPlayer.getPlayerElement().attr( 'chromecastAppId', _this.getConfig( 'applicationID' ));
@@ -147,7 +151,7 @@
 			});
 
 			// trigger these events on the receiver player to support Analytics
-			$(this.embedPlayer).bind('userInitiatedPause postEnded onChangeMedia AdSupport_PreSequence firstPlay', function(e) {
+			$(this.embedPlayer).bind('userInitiatedPause userInitiatedSeek postEnded onChangeMedia AdSupport_PreSequence firstPlay', function(e) {
 				_this.sendMessage({'type': 'notification','event': e.type});
 			});
 
