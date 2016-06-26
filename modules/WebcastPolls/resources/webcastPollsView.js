@@ -51,11 +51,11 @@
         _getLayoutName: function () {
             var _this = this;
 
-            var pollViewPortWidth = _this.$webcastPoll ? _this.$webcastPoll.width() : null;
+            var pollViewPortWidth = _this.$webcastPoll ? _this.$webcastPoll.height() : null;
             var result = '';
-            if (pollViewPortWidth < 510) {
+            if (pollViewPortWidth < 375) {
                 result = 'small';
-            } else if (pollViewPortWidth < 640) {
+            } else if (pollViewPortWidth < 576) {
                 result = 'medium';
             } else {
                 result = 'large';
@@ -174,7 +174,7 @@
                                     label = pollResults.totalVoters;
                                 }
                                 $totalsContainer.find("[name='value']").text(label);
-                                $totalsContainer.find("[name='text']").text(totalVotersAsNumber === 1 ? 'response' : 'responses');
+                                $totalsContainer.find("[name='text']").text(totalVotersAsNumber === 1 ? 'Response' : 'Responses');
                                 $totalsContainer.css('opacity', '1');
                             }else {
                                 $totalsContainer.css('opacity', '0');
@@ -252,6 +252,14 @@
                     var pollContent = _this.parent.pollData.content;
 
                     if (pollContent) {
+
+                        var numberOfAnswers = 0;
+                        $.each(pollContent.answers, function(key, element) {
+                            numberOfAnswers++;
+                        });
+
+                        _this.$webcastPoll.addClass('poll-size-' + numberOfAnswers);
+
                         _this.$webcastPoll.find('[name="question"]').text(pollContent.question);
                         updateAnswer(1, pollContent);
                         updateAnswer(2, pollContent);
