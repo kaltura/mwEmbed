@@ -245,25 +245,32 @@
                     _this.$webcastPoll = _this.getWebcastPollElement();
                 }
 
-                var pollContent = _this.parent.pollData.content;
+                if (_this.parent.pollData.errorContent)
+                {
+                    _this.showPollDOMError();
+                }else {
+                    var pollContent = _this.parent.pollData.content;
 
-                if (pollContent) {
-                    _this.$webcastPoll.find('[name="question"]').text(pollContent.question);
-                    updateAnswer(1, pollContent);
-                    updateAnswer(2, pollContent);
-                    updateAnswer(3, pollContent);
-                    updateAnswer(4, pollContent);
-                    updateAnswer(5, pollContent);
+                    if (pollContent) {
+                        _this.$webcastPoll.find('[name="question"]').text(pollContent.question);
+                        updateAnswer(1, pollContent);
+                        updateAnswer(2, pollContent);
+                        updateAnswer(3, pollContent);
+                        updateAnswer(4, pollContent);
+                        updateAnswer(5, pollContent);
 
-                    _this.syncDOMAnswersVisibility();
+                        _this.syncDOMAnswersVisibility();
 
-                } else {
-                    _this.$webcastPoll.find('[name="question"],[name="answer1"],[name="answer2"],[name="answer3"],[name="answer4"],[name="answer5"]').text('');
-                    _this.showPollDOMLoader();
+                    } else {
+                        _this.$webcastPoll.find('[name="question"],[name="answer1"],[name="answer2"],[name="answer3"],[name="answer4"],[name="answer5"]').text('');
+                        _this.showPollDOMLoader();
+                    }
+
+                    _this.syncDOMPollResults();
+                    _this.syncDOMUserVoting();
                 }
 
-                _this.syncDOMPollResults();
-                _this.syncDOMUserVoting();
+
             } else {
                 // ## should hide poll if any is shown
             }
@@ -273,7 +280,17 @@
             if (_this.$webcastPoll) {
                 _this.$webcastPoll.find('[name="pollContent"]').hide();
                 _this.$webcastPoll.find('[name="questionOnlyContainer"]').hide();
+                _this.$webcastPoll.find('[name="errorContainer"]').hide();
                 _this.$webcastPoll.find('[name="loadingContainer"]').show();
+            }
+        },
+        showPollDOMError: function () {
+            var _this = this;
+            if (_this.$webcastPoll) {
+                _this.$webcastPoll.find('[name="pollContent"]').hide();
+                _this.$webcastPoll.find('[name="questionOnlyContainer"]').hide();
+                _this.$webcastPoll.find('[name="loadingContainer"]').hide();
+                _this.$webcastPoll.find('[name="errorContainer"]').fadeIn('slow');
             }
         },
         showPollDOMQuestionOnly: function () {
@@ -282,6 +299,7 @@
             if (_this.$webcastPoll) {
                 _this.$webcastPoll.find('[name="loadingContainer"]').hide();
                 _this.$webcastPoll.find('[name="pollContent"]').hide();
+                _this.$webcastPoll.find('[name="errorContainer"]').hide();
                 _this.$webcastPoll.find('[name="questionOnlyContainer"]').fadeIn('slow');
             }
         },
@@ -291,6 +309,7 @@
             if (_this.$webcastPoll) {
                 _this.$webcastPoll.find('[name="loadingContainer"]').hide();
                 _this.$webcastPoll.find('[name="questionOnlyContainer"]').hide();
+                _this.$webcastPoll.find('[name="errorContainer"]').hide();
                 _this.$webcastPoll.find('[name="pollContent"]').fadeIn('slow');
             }
         }

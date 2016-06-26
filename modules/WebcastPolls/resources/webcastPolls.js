@@ -32,6 +32,7 @@
             _this.userVote = {metadataId: null, answer: null, inProgress: false, canUserVote: false, isReady: false, showAnswers :false};
             _this.pollData = {
                 pollId : null,
+                errorContent : null,
                 content: null,
                 showResults: false,
                 showTotals: false,
@@ -52,6 +53,7 @@
 
             // initialize dependent components
             _this.initializeDependentComponents();
+
 
             // ## only if live - fetch information that will assist later with voting
             if (this.embedPlayer.isLive()) {
@@ -434,7 +436,9 @@
                             }
                         }, function (reason) {
                             if (invokedByPollId === _this.pollData.pollId) {
-                                // TODO [es] handle
+
+                                _this.pollContent.errorContent = reason || {}; // make sure the error content is filled so the dom will sync correctly
+                                _this.view.syncPollDOM();
                             }
                         });
 
