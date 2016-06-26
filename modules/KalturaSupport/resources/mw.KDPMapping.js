@@ -1297,6 +1297,12 @@
 					embedPlayer.disablePlayControls();
 					}
 					break;
+				case 'addBlackScreen':
+					embedPlayer.addBlackScreen();
+					break;
+				case 'removeBlackScreen':
+					embedPlayer.removeBlackScreen();
+					break;
 				default: 
 					// custom notification
 					$( embedPlayer ).trigger( notificationName, [notificationData] );
