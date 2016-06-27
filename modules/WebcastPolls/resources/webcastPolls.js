@@ -10,7 +10,6 @@
             'userId' : 'User'
         },
         cuePointsManager: null, // manages all the cue points tracking (cue point reached of poll results, poll states etc).
-        cachedPollsContent: {}, // used to cache poll results to improve poll warm data loading (load the poll before we actually need to show it.)
         kalturaProxy: null, // manages the communication with the Kaltura api (invoke a vote, extract poll data).
         userProfile: null, // manages active user profile
         userVote: {}, // ## Should remain empty (filled by 'resetPersistData')
@@ -85,24 +84,22 @@
          */
         reloadPollUserVoting : function()
         {
+
             var _this = this;
-            if (_this.pollData.pollId) {
+            if (this.embedPlayer.isLive() && _this.pollData.pollId) {
                 var invokedByPollId = _this.pollData.pollId;
                 // ## get poll data to show
-                _this.getPollUserVote(_this.pollData.pollId, true).then(function (result) {
+                _this.getPollUserVote(_this.pollData.pollId).then(function (result) {
                     if (invokedByPollId === _this.pollData.pollId) {
-                        if (result) {
-                            _this.userVote.answer = result.answer;
-                            _this.userVote.metadataId = result.metadataId;
-                        }
-
-                        _this.view.syncPollDOM();
-
-                        _this.handlePollResultsCuePoints(true);
+                        _this.userVote.answer = result.answer;
+                        _this.userVote.metadataId = result.metadataId;
+                        _this.view.syncDOMUserVoting();
                     }
                 }, function (reason) {
                     if (invokedByPollId === _this.pollData.pollId) {
-                        // TODO [es] handle
+                        _this.userVote.answer = null;
+                        _this.userVote.metadataId = result.metadataId;
+                        _this.view.syncDOMUserVoting();
                     }
                 });
             }
@@ -413,37 +410,37 @@
                     if (!isShowingRequestedPoll)
                     {
                         // ## show the poll the first time & extract important information
+                        var pollContent =  _this.getPollContent(invokedByPollId);
+                        if (pollContent)
+                        {
+                            _this.pollData.content = pollContent;
+                            if (_this.globals.votingProfileId && this.embedPlayer.isLive())
+                            {
+                                var invokedByPollId = _this.pollData.pollId;
+                                _this.getPollUserVote(invokedByPollId).then(function (result) {
+                                    if (invokedByPollId === _this.pollData.pollId) {
+                                        _this.userVote.isReady = true;
+                                        _this.userVote.answer = result.answer;
+                                        _this.userVote.metadataId = result.metadataId;
 
-                        var invokedByPollId = _this.pollData.pollId;
+                                        _this.view.syncDOMUserVoting();
+                                    }
+                                }, function (reason) {
+                                    if (invokedByPollId === _this.pollData.pollId) {
+                                        // TODO [es] write to log
 
-                        // ## get poll data to show
-                        var pollContentPromise = _this.getPollContent(invokedByPollId, true);
-                        var pollUserVotePromise = _this.globals.votingProfileId ? _this.getPollUserVote(invokedByPollId, true) : null;
-
-                        $.when(pollContentPromise, pollUserVotePromise).then(function (pollContentResult, pollUserVoteResult) {
-                            if (invokedByPollId === _this.pollData.pollId) {
-                                _this.pollData.content = pollContentResult;
-                                _this.userVote.isReady = true;
-
-                                if (pollUserVoteResult) {
-                                    _this.userVote.answer = pollUserVoteResult.answer;
-                                    _this.userVote.metadataId = pollUserVoteResult.metadataId;
-                                }
-
-                                _this.view.syncPollDOM();
-
-                                _this.handlePollResultsCuePoints(true); // update currently shown poll results (if required)
+                                    }
+                                });
                             }
-                        }, function (reason) {
-                            if (invokedByPollId === _this.pollData.pollId) {
 
-                                _this.pollData.errorContent = reason || {}; // make sure the error content is filled so the dom will sync correctly
-                                _this.view.syncPollDOM();
-                            }
-                        });
-
-                        // make sure we update the view with the new poll
-                        _this.view.syncPollDOM();
+                            // make sure we update the view with the new poll
+                            _this.view.syncPollDOM();
+                            _this.handlePollResultsCuePoints(true); // update currently shown poll results (if required)
+                        }else
+                        {
+                            _this.pollData.errorContent = {message : 'cannot get poll content'};
+                            _this.view.syncPollDOM();
+                        }
                     } else {
                         // ## update current poll with voting and results according to poll status.
                         _this.view.syncDOMAnswersVisibility();
@@ -458,41 +455,30 @@
             }
         },
         /**
-         * Gets poll user vote (either from kaltura api or from cache)
+         * Gets poll user vote (during live event only)
          * @param pollId pollId to get user vote for
-         * @param forceGet whether to force get from kaltura api
          * @returns {*} a promise with user vote information
          */
-        getPollUserVote : function(pollId, forceGet)
-        {
+        getPollUserVote : function(pollId) {
             var _this = this;
             var defer = $.Deferred();
 
             if (this.embedPlayer.isLive()) {
-                var cachedPollItem = _this.cachedPollsContent[pollId] = (_this.cachedPollsContent[pollId] || {});
 
-                if (forceGet || !cachedPollItem.userVote) {
-                    if (_this.globals.votingProfileId) {
-                        _this.log("requesting user vote for  poll '" + pollId + "' from kaltura api");
-                        _this.kalturaProxy.getUserVote(pollId, _this.globals.votingProfileId, _this.globals.userId).then(function (result) {
-                            cachedPollItem.userVote = result;
-                            _this.log("retrieved user vote for poll '" + pollId + "' from kaltura api");
-                            defer.resolve(cachedPollItem.userVote);
-                        }, function (reason) {
-                            cachedPollItem.userVote = null;
-                            _this.log("failed to retrieve user vote for poll '" + pollId + "' from kaltura api."  + JSON.stringify(reason || {}));
-                            defer.reject({error : "failed to retrieve user vote for poll '" + pollId + "' from kaltura api"});
-                        });
-                    } else {
-                        _this.log("request aborted. missing voting profile id required by Kaltura api");
-                        defer.reject({error : "missing required information to retrieve user vote"});
-                    }
+                if (_this.globals.votingProfileId) {
+                    _this.log("requesting user vote for  poll '" + pollId + "' from kaltura api");
+                    _this.kalturaProxy.getUserVote(pollId, _this.globals.votingProfileId, _this.globals.userId).then(function (result) {
+                        _this.log("retrieved user vote for poll '" + pollId + "' from kaltura api");
+                        defer.resolve(result);
+                    }, function (reason) {
+                        _this.log("failed to retrieve user vote for poll '" + pollId + "' from kaltura api." + JSON.stringify(reason || {}));
+                        defer.reject({error: "failed to retrieve user vote for poll '" + pollId + "' from kaltura api"});
+                    });
                 } else {
-                    defer.resolve(cachedPollItem.userVote);
-                    _this.log("getting poll '" + pollId + "' user vote from cache");
-
+                    _this.log("request aborted. missing voting profile id required by Kaltura api");
+                    defer.reject({error: "missing required information to retrieve user vote"});
                 }
-            }else {
+            } else {
                 _this.log("request for getting poll user vote is not relevant during vod mode");
                 defer.reject({});
             }
@@ -502,35 +488,10 @@
         /**
          * Gets poll content (either from kaltura api or from cache)
          * @param pollId
-         * @param forceGet
          * @returns {*}
          */
-        getPollContent: function (pollId, forceGet) {
-            var _this = this;
-            var defer = $.Deferred();
-
-            var cachedPollItem = _this.cachedPollsContent[pollId] = (_this.cachedPollsContent[pollId] || {});
-
-            if (forceGet || !cachedPollItem.pollContent) {
-
-                _this.log("getting poll '" + pollId + "' content from kaltura api");
-                _this.kalturaProxy.getPollContent(pollId).then(function (result) {
-                    _this.log("retrieved poll '" + pollId + "' content from kaltura api");
-                    cachedPollItem.pollContent = result;
-                    defer.resolve(cachedPollItem.pollContent);
-                }, function (reason) {
-                    _this.log("fail to retrieve poll '" + pollId + "' content from kaltura api. " + JSON.stringify(reason || {}));
-                    cachedPollItem.pollContent = null;
-                    defer.reject();
-                });
-            } else {
-                defer.resolve(cachedPollItem.pollContent);
-                _this.log("getting poll '" + pollId + "' content from cache");
-
-
-            }
-
-            return defer.promise();
+        getPollContent: function (pollId) {
+            return  {"state":"active","question":"is this a joke or a real situation","answers":{"1":"a2","2":"a22"}};
         },
         /**
          * Indicates if a user can vote

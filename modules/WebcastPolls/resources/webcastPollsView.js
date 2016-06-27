@@ -51,6 +51,7 @@
         _getLayoutName: function () {
             var _this = this;
 
+            return 'medium';
             var pollViewPortWidth = _this.$webcastPoll ? _this.$webcastPoll.height() : null;
             var result = '';
             if (pollViewPortWidth < 375) {
