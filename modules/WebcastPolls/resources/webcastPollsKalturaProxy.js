@@ -8,6 +8,7 @@
         },
         isErrorResponse : function(result)
         {
+            var _this = this;
             var hasError = false;
 
             if (!result)
@@ -126,6 +127,12 @@
                     'id': pollId
                 };
 
+                //_this.bla = isNaN(_this.bla) ? 1 : _this.bla + 1;
+                //
+                //if ((_this.bla % 2) === 0)
+                //{
+                //    request.id = 'ssss';
+                //}
 
 
                 _this.log("requesting information about poll with id '" + pollId + "'");

@@ -437,7 +437,7 @@
                         }, function (reason) {
                             if (invokedByPollId === _this.pollData.pollId) {
 
-                                _this.pollContent.errorContent = reason || {}; // make sure the error content is filled so the dom will sync correctly
+                                _this.pollData.errorContent = reason || {}; // make sure the error content is filled so the dom will sync correctly
                                 _this.view.syncPollDOM();
                             }
                         });
@@ -473,16 +473,19 @@
 
                 if (forceGet || !cachedPollItem.userVote) {
                     if (_this.globals.votingProfileId) {
+                        _this.log("requesting user vote for  poll '" + pollId + "' from kaltura api");
                         _this.kalturaProxy.getUserVote(pollId, _this.globals.votingProfileId, _this.globals.userId).then(function (result) {
                             cachedPollItem.userVote = result;
+                            _this.log("retrieved user vote for poll '" + pollId + "' from kaltura api");
                             defer.resolve(cachedPollItem.userVote);
-                            _this.log("getting poll '" + pollId + "' user vote from kaltura api");
-                        }, function () {
+                        }, function (reason) {
                             cachedPollItem.userVote = null;
-                            defer.reject();
+                            _this.log("failed to retrieve user vote for poll '" + pollId + "' from kaltura api."  + JSON.stringify(reason || {}));
+                            defer.reject({error : "failed to retrieve user vote for poll '" + pollId + "' from kaltura api"});
                         });
                     } else {
-                        defer.reject();
+                        _this.log("request aborted. missing voting profile id required by Kaltura api");
+                        defer.reject({error : "missing required information to retrieve user vote"});
                     }
                 } else {
                     defer.resolve(cachedPollItem.userVote);
@@ -510,11 +513,13 @@
 
             if (forceGet || !cachedPollItem.pollContent) {
 
+                _this.log("getting poll '" + pollId + "' content from kaltura api");
                 _this.kalturaProxy.getPollContent(pollId).then(function (result) {
+                    _this.log("retrieved poll '" + pollId + "' content from kaltura api");
                     cachedPollItem.pollContent = result;
                     defer.resolve(cachedPollItem.pollContent);
-                    _this.log("getting poll '" + pollId + "' content from kaltura api");
-                }, function () {
+                }, function (reason) {
+                    _this.log("fail to retrieve poll '" + pollId + "' content from kaltura api. " + JSON.stringify(reason || {}));
                     cachedPollItem.pollContent = null;
                     defer.reject();
                 });
