@@ -491,7 +491,7 @@
          * @returns {*}
          */
         getPollContent: function (pollId) {
-            return  {"state":"active","question":"is this a joke or a real situation","answers":{"1":"a2","2":"a22"}};
+            return  {"state":"active","question":"For the past few weeks we were working hard to update our site - How do you feel about our new site? filler12","answers":{"1":"It looks amazing, I think it should win serious design award","2":"It looks amazing, I think it should win serious design award",3 : '3', '4' : '4', '5': '5'}};
         },
         /**
          * Indicates if a user can vote

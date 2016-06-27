@@ -50,13 +50,13 @@
         },
         _getLayoutName: function () {
             var _this = this;
-
-            return 'medium';
-            var pollViewPortWidth = _this.$webcastPoll ? _this.$webcastPoll.height() : null;
+            
+            var pollViewPortWidth = _this.$webcastPoll ? _this.$webcastPoll.width() : null;
+            var pollViewPortHeight = _this.$webcastPoll ? _this.$webcastPoll.height() : null;
             var result = '';
-            if (pollViewPortWidth < 375) {
+            if (pollViewPortHeight < 375 || pollViewPortWidth < 670) {
                 result = 'small';
-            } else if (pollViewPortWidth < 576) {
+            } else if (pollViewPortHeight < 576) {
                 result = 'medium';
             } else {
                 result = 'large';

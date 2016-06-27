@@ -253,47 +253,45 @@ Poll (medium)
 }
 
 
-.webcastPolls .medium-layout .poll{
-
-}
-
-
 /**** question only elements ****/
 .webcastPolls  .medium-layout .poll-container .question-only-container .text {
     width:500px;
 }
 
 /**** Poll container ****/
-.webcastPolls .medium-layout .poll .column-left {
-    position:absolute;
-    top:50%;
-    right:55%;
-    transform: translate(0, -50%);
-    width:280px;
+.webcastPolls .medium-layout .poll
+{
+    display:table;
+    table-layout:fixed;
 }
 
-
-.webcastPolls .medium-layout .poll .column-right {
-    width:340px;
-    position:absolute;
-    top:50%;
-    right:50%;
-    transform: translate(90%, -50%)
+.webcastPolls .medium-layout .poll .column-left {
+    display:table-cell;
+    vertical-align: middle;
 }
 
 .webcastPolls .medium-layout .poll .column-left .column-left-container{
-
+    display:inline-block;
+    text-align:center;
+    width:250px;
 }
 
-.webcastPolls .medium-layout .poll .column-left .column-left-content{
-
+.webcastPolls .medium-layout .poll .column-right {
+    display:table-cell;
+    vertical-align: middle;
+    width:350px;
+    text-align:left;
 }
 
-
+.webcastPolls .medium-layout .poll .column-right .column-right-container{
+    display:inline-block;
+    width:350px;
+    margin:0 0 0 40px;
+}
 
 /**** question elements ****/
 .webcastPolls .medium-layout .poll .question{
-    width:225px;
+
 }
 
 .webcastPolls .medium-layout .poll .question-widget{
@@ -310,11 +308,14 @@ Poll (medium)
 
 /**** answers elements ****/
 .webcastPolls .medium-layout .poll .answers-widget{
-    margin-right:40px;
 }
 
 .webcastPolls .medium-layout .poll .answer.popular {
 
+}
+
+.webcastPolls .medium-layout .poll .answer.first-answer {
+    margin-top:10px;
 }
 
 
