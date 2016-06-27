@@ -16,6 +16,7 @@
         pollData: {}, // ## Should remain empty (filled by 'resetPersistData')
         /* stores all the information that doesn't relate directly to the poll currently selected */
         globals : {
+            pollsContentMapping : {},
             votingProfileId: null, // used to create a voting cue point (with relevant metadata)
             userId: null, // used to mange user voting (prevent duplication of voting)
             isPollShown: false // indicate if we actually showing a poll (all minimal poll data was retrieved and the poll can be shown)
@@ -231,6 +232,34 @@
                 _this.cuePointsManager = new mw.webcast.CuePointsManager(_this.getPlayer(), function () {
                 }, "webcastPollsCuePointsManager");
 
+                _this.cuePointsManager.monitorCuepoints(['poll-data'],function(cuepoints)
+                {
+                   for(var i = 0;i< cuepoints.length;i++)
+                   {
+
+                       try {
+                           var cuepoint = cuepoints[i];
+                           var cuepointContent = cuepoint.partnerData ? JSON.parse(cuepoint.partnerData) : null;
+
+                           if (cuepointContent)
+                           {
+                               var pollId = cuepointContent.pollId;
+                               var pollContent = cuepointContent.text;
+
+                               if (pollId && pollContent) {
+                                   _this.log("updated content of poll with id '" + pollId + "'");
+                                   _this.globals.pollsContentMapping[pollId] = pollContent;
+                               }
+                           }
+
+                       }catch(e)
+                       {
+                           _this.log("ERROR while tring to extract poll information with error " + e);
+                       }
+
+                   }
+                });
+
                 _this.cuePointsManager.onCuePointsReached = $.proxy(function(args)
                 {
                     // new cue points reached - change internal polls status when relevant cue points reached
@@ -410,7 +439,8 @@
                     if (!isShowingRequestedPoll)
                     {
                         // ## show the poll the first time & extract important information
-                        var pollContent =  _this.getPollContent(invokedByPollId);
+
+                        var pollContent = _this.globals.pollsContentMapping[_this.pollData.pollId];
                         if (pollContent)
                         {
                             _this.pollData.content = pollContent;
@@ -484,14 +514,6 @@
             }
 
             return defer.promise();
-        },
-        /**
-         * Gets poll content (either from kaltura api or from cache)
-         * @param pollId
-         * @returns {*}
-         */
-        getPollContent: function (pollId) {
-            return  {"state":"active","question":"For the past few weeks we were working hard to update our site - How do you feel about our new site? filler12","answers":{"1":"It looks amazing, I think it should win serious design award","2":"It looks amazing, I think it should win serious design award",3 : '3', '4' : '4', '5': '5'}};
         },
         /**
          * Indicates if a user can vote

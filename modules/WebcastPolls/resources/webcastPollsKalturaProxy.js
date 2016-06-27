@@ -114,55 +114,6 @@
 
             return defer.promise();
         },
-        getPollContent : function(pollId)
-        {
-            var _this = this;
-            var defer = $.Deferred();
-
-            if (pollId) {
-
-                var request = {
-                    'service': 'cuepoint_cuepoint',
-                    'action': 'get',
-                    'id': pollId
-                };
-
-                //_this.bla = isNaN(_this.bla) ? 1 : _this.bla + 1;
-                //
-                //if ((_this.bla % 2) === 0)
-                //{
-                //    request.id = 'ssss';
-                //}
-
-
-                _this.log("requesting information about poll with id '" + pollId + "'");
-                _this.getKalturaClient().doRequest(request, function (response) {
-                    if (!_this.isErrorResponse(response)) {
-                        try {
-                            var pollContent = JSON.parse(response.text);
-                            _this.log("resolving request with the following details: poll question '" + pollContent.question + "'");
-                            defer.resolve(pollContent);
-                        } catch (e) {
-                            _this.log("rejecting request due to invalid response struture from kaltura api: " + (e ? JSON.stringify(e) : ''));
-                            defer.reject({});
-                        }
-                    } else {
-                        _this.log("rejecting request due to error from kaltura api server");
-                        defer.reject();
-                    }
-
-                }, false, function (reason) {
-                    _this.log("rejecting request due to error from kaltura api server with reason " + (reason ? JSON.stringify(reason) : ''));
-                    defer.reject({});
-                });
-            }else
-            {
-                _this.log("rejecting request due to missing required information from plugin");
-                defer.reject({});
-            }
-
-            return defer.promise();
-        },
         transmitVoteUpdate : function(metadataId, userId, selectedAnswer)
         {
             var _this = this;

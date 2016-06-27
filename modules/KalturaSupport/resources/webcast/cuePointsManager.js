@@ -5,12 +5,16 @@
     mw.webcast.CuePointsManager = mw.KBasePlugin.extend({
         _nextPendingCuePointIndex: 0,
         _lastHandledServerTime: null,
+        _monitoredCuepoints : {
+            enabled : false,
+            typesMapping : {}
+        },
         setup: function () {
             var _this = this;
 
             _this.addBindings();
 
-            _this._log('initialize()', 'invoked');
+            _this.log('initialize()', 'invoked');
         },
         getCuePoints : function()
         {
@@ -23,17 +27,81 @@
         {
             var _this = this;
 
-            _this._log('addBindings()', 'invoked');
+            _this.log('addBindings()', 'invoked');
 
             var player = _this.getPlayer();
             var shouldRun = player && ((player.isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints")) || player.kCuePoints);
             if (!shouldRun) {
-                _this._log('addBindings()', 'prerequisites check failed, disabling component');
+                _this.log('addBindings()', 'prerequisites check failed, disabling component');
                 return;
             }
 
 
-            _this._log('addBindings()', 'registering to events with bind postfix ' + _this.bindPostFix);
+            _this.log('addBindings()', 'registering to events with bind postfix ' + _this.bindPostFix);
+
+            _this.bind("onChangeMedia", function() {
+
+                // TODO [es] df
+
+            });
+
+            _this.bind("playerReady", function() {
+                if (_this._monitoredCuepoints.enabled)
+                {
+                    var cuepoints = _this.getCuePoints();
+
+                    var monitoredCuepoints = {};
+
+                    if (cuepoints && cuepoints.length)
+                    {
+                        for(var i=0;i<cuepoints.length;i++)
+                        {
+                            var cuepoint = cuepoints[i];
+
+                            // TODO [es] filter by type cue points and annotation
+                            if (cuepoint && cuepoint.tags && cuepoint.Type !== '')
+                            {
+                                var types = cuepoint.tags.split(',');
+
+                                for(var j=0;j<types.length;j++)
+                                {
+                                    var type = types[j];
+
+                                    var callbacks = _this._monitoredCuepoints.typesMapping[type];
+
+                                    if (callbacks && callbacks.length)
+                                    {
+                                        var monitoredCuepointsByType = monitoredCuepoints[type];
+                                        if (!monitoredCuepointsByType)
+                                        {
+                                            monitoredCuepointsByType = monitoredCuepoints[type] = [];
+                                        }
+
+                                        _this.log("got flagged cuepoint to monitor of type '" + type + "' with cuepoint id '" + cuepoint.id + "'");
+                                        monitoredCuepointsByType.push(cuepoint);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    for(var cuepointType in monitoredCuepoints)
+                    {
+                        var callbacks = _this._monitoredCuepoints.typesMapping[cuepointType];
+
+                        if (callbacks && callbacks.length)
+                        {
+                            var callbackCuepoints = monitoredCuepoints[cuepointType];
+                            for(var k=0;k<callbacks.length;k++)
+                            {
+                                callbacks[k](callbackCuepoints);
+                            }
+                        }
+                    }
+                }
+            });
+
+
 
             _this.bind(
                 "monitorEvent onplay",
@@ -62,9 +130,9 @@
                         var cuePointsReachedToHandle = _this._getCuePointsReached(currentTime, _this._nextPendingCuePointIndex);
 
                         if (cuePointsReachedToHandle.cuePoints.length > 0) {
-                            _this._log('initialize.bind(' + e.type + ')', 'found ' + cuePointsReachedToHandle.cuePoints.length + ' cue point that should be handled (server time ' + currentTime + ')');
+                            _this.log('initialize.bind(' + e.type + ')', 'found ' + cuePointsReachedToHandle.cuePoints.length + ' cue point that should be handled (server time ' + currentTime + ')');
                             _this._nextPendingCuePointIndex = cuePointsReachedToHandle.lastIndex + 1;
-                            _this._log('onPlayerReady.bind(' + e.type + ')', 'updating current index to ' + _this._nextPendingCuePointIndex + ' (will be used next time searching for cue points to handle)');
+                            _this.log('onPlayerReady.bind(' + e.type + ')', 'updating current index to ' + _this._nextPendingCuePointIndex + ' (will be used next time searching for cue points to handle)');
 
                             _this._triggerReachedCuePoints(cuePointsReachedToHandle.cuePoints);
                         }
@@ -75,16 +143,33 @@
 
                             if (seconds < 100) {
                                 // log only if when the next cue point will be reached in less then x seconds
-                                _this._log('onPlayerReady.bind(' + e.type + ')', 'next cue point with id ' + nextCuePoint.id + ' should be handled in ' + seconds + ' seconds (type \'' + nextCuePoint.cuePointType + '\', tags \'' + nextCuePoint.tags + '\', time ' + nextCuePoint.startTime + ', server time ' + currentTime + ')');
+                                _this.log('onPlayerReady.bind(' + e.type + ')', 'next cue point with id ' + nextCuePoint.id + ' should be handled in ' + seconds + ' seconds (type \'' + nextCuePoint.cuePointType + '\', tags \'' + nextCuePoint.tags + '\', time ' + nextCuePoint.startTime + ', server time ' + currentTime + ')');
                             }
                         }
                     }
                 }
             );
         },
-        _log: function (context, message) {
+        monitorCuepoints : function(cuepointTypes, callback)
+        {
             var _this = this;
-            mw.log(_this.pluginName + "." + context + ":" + message);
+
+            if (cuepointTypes && cuepointTypes.length && callback)
+            {
+                _this._monitoredCuepoints.enabled = true;
+                for(var i=0;i<cuepointTypes.length;i++)
+                {
+                    var cuepointType = cuepointTypes[i];
+                    _this.log("added monitor callback for cuepoint of type '" + cuepointType + "'");
+                    var callbackList = _this._monitoredCuepoints.typesMapping[cuepointType];
+                    if (!callbackList)
+                    {
+                        callbackList = _this._monitoredCuepoints    .typesMapping[cuepointType] = [];
+                    }
+
+                    callbackList.push(callback);
+                }
+            }
         },
         _createReachedCuePointsArgs: function (cuePoints, context) {
             var _this = this;
@@ -146,7 +231,7 @@
                 // create event args that contains functions to filter the cue points wisely
                 var eventArgs = _this._createReachedCuePointsArgs(cuePoints, eventContext);
 
-                _this._log('triggerReachedCuePoints()', 'notify listener with ' + cuePoints.length + ' cue points to handle' + handledCuePointsIds);
+                _this.log('triggerReachedCuePoints()', 'notify listener with ' + cuePoints.length + ' cue points to handle' + handledCuePointsIds);
                 _this.onCuePointsReached(eventArgs);
             }
         },
@@ -159,7 +244,7 @@
             var _this = this;
             var player = _this.getPlayer();
             var currentTime = player.getPlayerElementTime() * 1000;
-            _this._log('reinvokeReachedLogicManually()', 'server time was modified to a past time (previously ' + _this._lastHandledServerTime + ', current ' + currentTime + "). re-invoke logic by finding all cue points relevant until current time");
+            _this.log('reinvokeReachedLogicManually()', 'server time was modified to a past time (previously ' + _this._lastHandledServerTime + ', current ' + currentTime + "). re-invoke logic by finding all cue points relevant until current time");
             _this._lastHandledServerTime = currentTime;
 
             _this._nextPendingCuePointIndex = _this._getNextCuePointIndex(currentTime, 0);
@@ -239,7 +324,7 @@
         },
         destroy: function () {
             var _this = this;
-            _this._log('destroy()', 'removing listeners for events with bind postfix ' + _this.bindPostFix);
+            _this.log('destroy()', 'removing listeners for events with bind postfix ' + _this.bindPostFix);
             _this.unbind();
         },
         onCuePointsReached : function(args)
