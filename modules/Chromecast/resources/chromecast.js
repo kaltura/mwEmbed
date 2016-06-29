@@ -246,7 +246,7 @@
 			this.updateTooltip(this.stopCastTitle);
 			this.casting = true;
 			this.embedPlayer.casting = true;
-
+			$( this.embedPlayer ).trigger( 'casting' );
 			// set receiver debug if needed
 			if ( this.getConfig("debugReceiver") ){
 				this.sendMessage({'type': 'show', 'target': 'debug'});
