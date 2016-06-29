@@ -775,7 +775,7 @@
 		},
 
 		getPlayingScreen: function(){
-			return '<div class="chromecastScreen" style="background-color: #000000; opacity: 0.7; width: 100%; height: 100%; font-family: Arial; position: absolute">' +
+			return '<div class="chromecastScreen" style="background-color: rgba(0,0,0,0.7); width: 100%; height: 100%; font-family: Arial; position: absolute">' +
 				'<div class="chromecastPlayback">' +
 				'<div class="chromecastThumbBorder">' +
 				'<img class="chromecastThumb" src="' + this.embedPlayer.poster + '"></img></div> ' +
