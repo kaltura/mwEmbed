@@ -515,6 +515,10 @@
 				}
 			});
 
+			_this.embedPlayer.bindHelper('casting' + this.bindPostfix, function () {
+				_this.destroy();
+			});
+
 			_this.embedPlayer.bindHelper('AdSupport_StartAdPlayback' + this.bindPostfix, function (event) {
 				if (_this.isChromeless){
 					_this.embedPlayer.getPlayerElement().sendNotification("hideContent");
