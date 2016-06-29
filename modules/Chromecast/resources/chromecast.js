@@ -55,6 +55,7 @@
 		inSequence: false,
 		adDuration: null,
 		sendPlayerReady: false, // after changing media we need to send the playerReady event to the chromecast receiver as it doesn't reload the player there
+		supportedPlugins: ['doubleClick', 'youbora', 'kAnalony', 'related', 'comScoreStreamingTag', 'watermark', 'heartbeat', 'proxyData'],
 
 		setup: function( embedPlayer ) {
 			var _this = this;
@@ -160,6 +161,13 @@
 				_this.sendMessage({'type': 'notification','event': e.type});
 				if (_this.replay){
 					_this.loadMedia();
+				}
+			});
+
+			// if ad plays in client - don't send the doubleClick plugin configuration to the receiver as it will play the ad there again when you start to cast
+			$(this.embedPlayer).bind('onAdPlay', function() {
+				if (_this.supportedPlugins.indexOf("doubleClick") === 0){
+					_this.supportedPlugins.shift();
 				}
 			});
 
@@ -317,10 +325,9 @@
 
 		getFlashVars: function(){
 			var _this = this;
-			var plugins = ['doubleClick', 'youbora', 'kAnalony', 'related', 'comScoreStreamingTag', 'watermark', 'heartbeat', 'proxyData'];
 
 			var fv = {};
-			plugins.forEach(function(plugin){
+			this.supportedPlugins.forEach(function(plugin){
 				if (!$.isEmptyObject(_this.embedPlayer.getKalturaConfig(plugin))){
 					fv[plugin] = _this.embedPlayer.getKalturaConfig(plugin);
 				}
