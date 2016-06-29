@@ -168,7 +168,6 @@
 			$(this.embedPlayer).bind('onAdPlay', function() {
 				if (_this.supportedPlugins.indexOf("doubleClick") === 0){
 					_this.supportedPlugins.shift();
-					_this.embedPlayer.setKalturaConfig( 'doubleClick', 'plugin',false );
 				}
 			});
 
@@ -313,7 +312,6 @@
 				case "chromecastReceiverAdComplete":
 					this.embedPlayer.enablePlayControls();
 					this.embedPlayer.triggerHelper("chromecastReceiverAdComplete");
-					this.embedPlayer.setKalturaConfig( 'doubleClick', 'plugin',false );
 					this.loadMedia();
 					break;
 				case "chromecastReceiverAdDuration":

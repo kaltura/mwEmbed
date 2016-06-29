@@ -92,6 +92,10 @@
 		chromelessAdManagerLoadedId: null,
 
 		init: function( embedPlayer, callback, pluginName ){
+			if (embedPlayer.casting){
+				callback();
+				return;
+			}
 			var _this = this;
 			if (mw.getConfig( 'localizationCode' )){
 				_this.localizationCode = mw.getConfig( 'localizationCode' );
