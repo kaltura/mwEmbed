@@ -516,6 +516,7 @@
 			});
 
 			_this.embedPlayer.bindHelper('casting' + this.bindPostfix, function () {
+				_this.embedPlayer.adTimeline.restorePlayer( null, true);
 				_this.destroy();
 			});
 
