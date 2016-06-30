@@ -96,6 +96,9 @@
 					}else{
 						time = this.embedPlayer.getDuration() - time;
 					}
+					if (time < 0 ){
+						time = 0;
+					}
 				}
 				time = Math.floor(time);
 				this.getComponent().text(mw.seconds2npt(time));
