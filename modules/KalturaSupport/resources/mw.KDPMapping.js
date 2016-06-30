@@ -111,7 +111,8 @@
 			
 			switch( property ) {
 				case 'autoPlay':
-					embedPlayer.autoplay = value;
+				case 'loop':
+					embedPlayer[property.toLowerCase()] = value;
 				break;
 				case 'disableAlerts':
 					mw.setConfig('EmbedPlayer.ShowPlayerAlerts', !value );
@@ -437,8 +438,8 @@
 							if( objectPath[2] ) {
 								switch( objectPath[2] ) {
 									case 'autoPlay':
-										// get autoplay
-										return embedPlayer.autoplay;
+									case 'loop':
+										return embedPlayer[objectPath[2].toLowerCase()];
 									break;
 									case 'referer':
 									case 'referrer':
