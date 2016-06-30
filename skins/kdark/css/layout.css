@@ -960,8 +960,11 @@ body {
     margin-left: 10%;
     padding-top: 20px;
 }
-.mobileSkin .overlay-content{
+.mobileSkin:not(.size-small) .overlay-content{
     padding-top: 10%;
+}
+.mobileSkin.size-small .overlay-content{
+    padding-top: 0px;
 }
 .overlay-content select{
     color: #000000;
