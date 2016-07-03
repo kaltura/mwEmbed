@@ -1628,6 +1628,15 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 .mobileSkin:not(.pluginsScreenOpened) .watermark {
     z-index: 2;
 }
+.mobileSkin .watermark {
+    opacity: 0.3;
+}
+.mobileSkin.player-out .watermark {
+    opacity: 1;
+}
+.mobileSkin.start-state .watermark {
+    display: none;
+}
 .watermark img{
 	border: 0px;
 }
