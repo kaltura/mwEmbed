@@ -108,13 +108,15 @@
         syncDOMPollResults: function () {
             var _this = this;
 
-            function updateAnswerResult(answerIndex, pollResults, showResults, popularAnswers) {
-                var answerContent = !isNaN(pollResults.answers[answerIndex + ''])?  (+pollResults.answers[answerIndex + '']) : 0;
-                var isPopularAnswer = popularAnswers.split(',').indexOf(answerIndex + '') !== -1;
-                var totalVoters = !isNaN(pollResults.totalVoters) ? (+pollResults.totalVoters) : 0;
-                var answerPercentage = Math.round(answerContent / totalVoters * 100);
+            function updateAnswerResult(answerIndex, showResults, pollResults, popularAnswers) {
 
-                if (showResults) {
+                if (showResults && pollResults ) {
+
+                    var answerContent = !isNaN(pollResults.answers[answerIndex + ''])?  (+pollResults.answers[answerIndex + '']) : 0;
+                    var isPopularAnswer = popularAnswers.split(',').indexOf(answerIndex + '') !== -1;
+                    var totalVoters = !isNaN(pollResults.totalVoters) ? (+pollResults.totalVoters) : 0;
+                    var answerPercentage = totalVoters > 0 ? Math.round(answerContent / totalVoters * 100) : 0;
+
                     if (isPopularAnswer) {
                         _this.$webcastPoll.find('[name="answer' + answerIndex + '"]').closest('.answer').addClass('popular');
                     }else
@@ -148,20 +150,24 @@
 
                         if (showResults) {
                             for (var propertyName in pollResults.answers) {
-                                if (pollResults.answers[propertyName] > popularValue) {
-                                    popularAnswers = propertyName;
-                                    popularValue = pollResults.answers[propertyName];
-                                } else if (pollResults.answers[propertyName] == popularValue) {
-                                    popularAnswers = popularAnswers ? (popularAnswers + ',' + propertyName) : propertyName;
+                                var answerValue = pollResults.answers[propertyName];
+                                if (answerValue) { // make sure that 0 will not be marked as popular value
+                                    if (answerValue > popularValue) {
+                                        popularAnswers = propertyName;
+                                        popularValue = answerValue;
+                                    }
+                                    else if (answerValue === popularValue) {
+                                        popularAnswers = popularAnswers ? (popularAnswers + ',' + propertyName) : propertyName;
+                                    }
                                 }
                             }
                         }
 
-                        updateAnswerResult(1,pollResults, showResults, popularAnswers);
-                        updateAnswerResult(2,pollResults, showResults, popularAnswers);
-                        updateAnswerResult(3,pollResults, showResults, popularAnswers);
-                        updateAnswerResult(4,pollResults, showResults, popularAnswers);
-                        updateAnswerResult(5,pollResults, showResults, popularAnswers);
+                        updateAnswerResult(1,showResults, pollResults, popularAnswers);
+                        updateAnswerResult(2,showResults, pollResults, popularAnswers);
+                        updateAnswerResult(3,showResults, pollResults, popularAnswers);
+                        updateAnswerResult(4,showResults, pollResults, popularAnswers);
+                        updateAnswerResult(5,showResults, pollResults, popularAnswers);
 
                         if (showTotals && pollResults.totalVoters) {
                             var label = '';
@@ -186,6 +192,11 @@
                     }else
                     {
                         $totalsContainer.css('opacity', '0');
+                        updateAnswerResult(1, false);
+                        updateAnswerResult(2, false);
+                        updateAnswerResult(3, false);
+                        updateAnswerResult(4, false);
+                        updateAnswerResult(5, false);
                     }
 
                 }
