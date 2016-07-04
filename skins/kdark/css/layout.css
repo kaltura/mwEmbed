@@ -326,8 +326,12 @@ body {
     width: 100%;
     height: 100%;
     text-align: center;
+    display: -webkit-flex;
     display: flex;
     position: absolute;
+    -webkit-justify-content: center;
+    -webkit-align-items: center;
+    -webkit-flex-flow: row wrap;
     justify-content: center;
     align-items: center;
     flex-flow: row wrap;
@@ -1367,8 +1371,11 @@ body {
 	color: #efefef;
 }
 .mobileSkin .largePlayBtn {
+    display: -webkit-flex;
     display: flex;
+    -webkit-align-items: center;
     align-items: center;
+    -webkit-justify-content: center;
     justify-content: center;
     position: absolute;
     top: 50%;
