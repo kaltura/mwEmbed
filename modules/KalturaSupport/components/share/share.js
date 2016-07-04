@@ -279,8 +279,13 @@
 						$(".share-icons-container").hide().show(); // force refresh for IE8 :(
 					});
 				}
-				$(this).select();
-			});
+			})
+			.on('mouseup', function (e) {
+					e.preventDefault();
+				})
+			.on('focus', function () {
+					this.setSelectionRange(0, 9999);
+				});
 
 			$(".embed-input").on("click", function(){
 				if ( $(".embed-offset-container").css("display") === "none" ){
@@ -292,8 +297,14 @@
 						$(".share-icons-container").hide().show(); // force refresh for IE8 :(
 					});
 				}
-				$(this).select();
+			})
+			.on('mouseup', function (e) {
+				e.preventDefault();
+			})
+			.on('focus', function () {
+				this.setSelectionRange(0, 9999);
 			});
+
 			this.restrictNPTFields();
 			// handle time offset for share link
 			$(".share-offset-container>.share-offset").on("propertychange change keyup input paste", function(event){
