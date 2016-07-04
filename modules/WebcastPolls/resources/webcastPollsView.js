@@ -257,7 +257,7 @@
                     _this.$webcastPoll = _this.getWebcastPollElement();
                 }
 
-                if (_this.parent.pollData.errorContent)
+                if (_this.parent.pollData.failedToExtractContent)
                 {
                     _this.showPollDOMError();
                 }else {

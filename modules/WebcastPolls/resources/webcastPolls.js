@@ -29,10 +29,11 @@
             var _this = this;
             _this.log('resetting current poll information');
 
-            _this.userVote = {metadataId: null, answer: null, inProgress: false, canUserVote: false, isReady: false, showAnswers :false};
+            _this.userVote = {metadataId: null, answer: null, inProgress: false, canUserVote: false, isReady: false};
             _this.pollData = {
+                showAnswers :false,
                 pollId : null,
-                errorContent : null,
+                failedToExtractContent : false,
                 content: null,
                 showResults: false,
                 showTotals: false,
@@ -211,28 +212,28 @@
             if (!_this.userProfile) {
                 // user profile component used to provide current user id needed for voting.
                 _this.userProfile = new mw.webcast.UserProfile(_this.getPlayer(), function () {
-                }, "webcastPollsUserProfile");
+                }, "webcastPolls_UserProfile");
             }
 
             if (!_this.kalturaProxy) {
                 // kaltura api proxy used to communicate with the kaltura api (transmit voting, fetch poll data etc)
                 _this.kalturaProxy = new mw.webcastPolls.WebcastPollsKalturaProxy(_this.getPlayer(), function () {
-                }, "webcastPollsKalturaProxy");
+                }, "webcastPolls_KalturaProxy");
             }
 
             if (!_this.view) {
                 // initialize component that manages the interactions with polls DOM elements.
                 _this.view = new mw.webcastPolls.WebcastPollsView(_this.getPlayer(), function () {
-                }, "webcastPollsKalturaView");
+                }, "webcastPolls_KalturaView");
                 _this.view.parent = _this;
             }
 
             if (!_this.cuePointsManager) {
                 // cue points manager used to monitor and notify when relevant cue points reached (polls status, results).
                 _this.cuePointsManager = new mw.webcast.CuePointsManager(_this.getPlayer(), function () {
-                }, "webcastPollsCuePointsManager");
+                }, "webcastPolls_CuePointsManager");
 
-                _this.cuePointsManager.monitorCuepoints(['poll-data'],function(cuepoints)
+                _this.cuePointsManager.registerMonitoredCuepointTypes(['poll-data'],function(cuepoints)
                 {
                    for(var i = 0;i< cuepoints.length;i++)
                    {
@@ -428,6 +429,10 @@
                         // ## update internals
                         _this.globals.isPollShown = true;
                         _this.pollData.pollId = pollState.pollId;
+                    }else if (_this.pollData.failedToExtractContent)
+                    {
+                        _this.log("failed to extract poll with id " + pollState.pollId + "'. ignoring state updates");
+                        return;
                     }
 
                     // sync internals with poll status
@@ -444,6 +449,8 @@
                         if (pollContent)
                         {
                             _this.pollData.content = pollContent;
+
+                            // fetch user vote of requested poll only if we are live and has a valid voting profile id
                             if (_this.globals.votingProfileId && this.embedPlayer.isLive())
                             {
                                 var invokedByPollId = _this.pollData.pollId;
@@ -457,18 +464,17 @@
                                     }
                                 }, function (reason) {
                                     if (invokedByPollId === _this.pollData.pollId) {
-                                        // TODO [es] write to log
-
+                                        _this.log("failed to retrieve user voting, ignoring error silently");
                                     }
                                 });
                             }
 
-                            // make sure we update the view with the new poll
-                            _this.view.syncPollDOM();
+                            _this.view.syncPollDOM(); // make sure we update the view with the new poll
                             _this.handlePollResultsCuePoints(true); // update currently shown poll results (if required)
                         }else
                         {
-                            _this.pollData.errorContent = {message : 'cannot get poll content'};
+                            // requesting to show a poll that we dont have data for - show visual error to the user
+                            _this.pollData.failedToExtractContent = true;
                             _this.view.syncPollDOM();
                         }
                     } else {
@@ -479,9 +485,12 @@
                     }
                 }else{
                     // has nothing to do if poll dom element not created
+                    _this.log("failed to retrieve user voting, ignoring error silently");
                 }
             } catch (e) {
-                // todo [es] handle
+                _this.log("general error occurred while trying to show a poll " + e);
+                _this.pollData.failedToExtractContent = true;
+                _this.view.syncPollDOM();
             }
         },
         /**
