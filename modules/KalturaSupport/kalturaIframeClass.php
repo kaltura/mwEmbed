@@ -577,7 +577,6 @@ class kalturaIframeClass {
 		}
 		return "Kaltura Embed Player iFrame";
 	}
-
 	/**
 	 * Get the iframe css
 	 */
@@ -1277,11 +1276,23 @@ HTML;
 <!DOCTYPE html>
 <html>
 <head>
+	<?php if(!empty($flashvars['forceCompatMode'])){
+		echo '<meta http-equiv="X-UA-Compatible" content="' . $flashvars['forceCompatMode'] . '"/>';
+	} ?>
 	<script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ </script>
 	<?php if($wgRemoteWebInspector && $wgEnableScriptDebug){
 		echo '<script src="' . $wgRemoteWebInspector . '"></script>';
 	 } ?>
 	<link href='//fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+	<?php if (isset($flashvars) && isset($flashvars['nativeCallout'])){
+	    $nativeCallout = json_decode($flashvars['nativeCallout'],true);
+        if (isset($nativeCallout) && ($nativeCallout['plugin'] ===  true)){
+            echo '<meta name="format-detection" content="telephone=no">';
+            echo '<meta name="format-detection" content="date=no">';
+            echo '<meta name="format-detection" content="address=no">';
+            echo '<meta name="format-detection" content="email=no">';
+        }
+    } ?>
 	<?php echo $this->outputIframeHeadCss(); ?>
 	<?php echo $this->outputSkinCss(); ?>
 	<?php echo $this->outputCustomCss(); ?>

@@ -2,7 +2,7 @@
 
 	mw.KBaseSmartContainer = mw.KBaseComponent.extend({
 		title: "settings",                          // default title attribute for the smart container button. Should be override by each specific smart container
-		closingEvents: 'onplay', // events that trigger closing the smart container plugins screen. should be override for each smart container according to its plugins
+		closingEvents: 'onplay',                    // events that trigger closing the smart container plugins screen. should be override for each smart container according to its plugins
 		registeredPlugins: [],                      // plugins to display in the Smart Container plugins screen
 		shouldResumePlay: false,                    // resume playback when closing the smart container screen
 		pluginsScreenOpened: false,                 // flag for when the smart container screen is open
@@ -22,6 +22,9 @@
 							.attr( 'title', this.title )
 							.addClass( "btn" + this.getCssClass() )
 							.on('click', function(e) {
+								if (_this.isDisabled){
+									return;
+								}
 								if ( !_this.pluginsScreenOpened && !_this.overlayOpen ){
 									_this.showRegisteredPlugins();
 								}else{
@@ -61,8 +64,8 @@
 					_this.bind( _this.closingEvents, function(){ // close the smart container screen on each one of the closing events (if its opened)
 						if ( _this.pluginsScreenOpened ){
 							_this.hideRegisteredPlugins();
+							_this.checkResumePlayback();
 						}
-						_this.checkResumePlayback();
 					});
 
 					_this.bind( "preShowScreen displayMenuOverlay", function(){ // close the smart container screen when opening a kBaseScreen plugin
@@ -82,6 +85,12 @@
 						setTimeout(function(){
 							_this.hideRegisteredPlugins();
 						},0);
+					});
+
+					_this.bind( "playerReady", function(){
+						setTimeout(function(){
+							_this.hideRegisteredPlugins();
+						},200);
 					});
 
 					setTimeout(function(){
@@ -104,7 +113,6 @@
 			}
 
 			this.embedPlayer.getControlBarContainer().show();
-			this.embedPlayer.getVideoHolder().find(".nextPrevBtn").show();
 			this.embedPlayer.triggerHelper("hideMobileComponents"); // used by plugins like closed captions to restore captions on screen
 			this.embedPlayer.triggerHelper("updateComponentsVisibilityDone");
 		},
@@ -152,7 +160,6 @@
 			this.shouldResumePlay = !this.embedPlayer.paused;
 			this.embedPlayer.ignoreNextNativeEvent = true;
 			this.embedPlayer.pause();
-			this.embedPlayer.getVideoHolder().find(".nextPrevBtn").hide();
 			this.embedPlayer.getControlBarContainer().fadeOut();
 			this.embedPlayer.triggerHelper("showMobileComponents"); // used by plugins like closed captions to hide captions
 

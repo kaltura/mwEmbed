@@ -95,13 +95,15 @@
 			 */
 			clean: function () {
 				this.log("Clean");
-				this.LoadHLS = false;
-				this.loaded = false;
-				this.unRegisterHlsEvents();
-				this.restorePlayerMethods();
-				this.hls.detachMedia();
-				this.hls.destroy();
-				this.hls = null;
+				if (this.LoadHLS && this.loaded) {
+					this.LoadHLS = false;
+					this.loaded = false;
+					this.unRegisterHlsEvents();
+					this.restorePlayerMethods();
+					this.hls.detachMedia();
+					this.hls.destroy();
+					this.hls = null;
+				}
 			},
 			/**
 			 * Register the playback events and attach the playback engine to the video element
@@ -201,14 +203,16 @@
 				this.log("Media attached");
 				//Once media is attached load the manifest
 				var selectedSource = this.getPlayer().getSrc();
-				this.getPlayer().resolveSrcURL( selectedSource ).then(
-					function(source){
-						this.hls.loadSource(source);
-					}.bind(this),
-					function () { //error
-						this.hls.loadSource(selectedSource);
-					}.bind(this)
-				);
+				if( selectedSource ){
+					this.getPlayer().resolveSrcURL( selectedSource ).then(
+						function(source){
+							this.hls.loadSource(source);
+						}.bind(this),
+						function () { //error
+							this.hls.loadSource(selectedSource);
+						}.bind(this)
+					);
+				}
 			},
 			onFragLoading: function (e, data) {
 				//fired when a fragment loading starts

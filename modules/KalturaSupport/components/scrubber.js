@@ -353,7 +353,7 @@
 
             var perc = data.val / 1000;
 			perc = perc > 1 ? 1 : perc;
-			var currentTime = this.duration * perc;
+			var currentTime = Math.floor(this.duration * perc);
 			var thumbWidth = showOnlyTime ? $sliderPreviewTime.width() : this.getConfig("thumbWidth");
 			$sliderPreview.css({top: top, left: sliderLeft });
 			if (!showOnlyTime) {

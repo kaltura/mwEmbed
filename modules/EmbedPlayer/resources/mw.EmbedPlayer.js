@@ -300,10 +300,10 @@
 
 		drmRequired: false,
 
-        //the offset in hours:minutes:seconds from the playable live edge.
-        liveEdgeOffset: 0,
+		//the offset in hours:minutes:seconds from the playable live edge.
+		liveEdgeOffset: 0,
 
-        /**
+		/**
 		 * embedPlayer
 		 *
 		 * @constructor
@@ -519,7 +519,7 @@
 		 * Enables the play controls ( for example when an ad is done )
 		 */
 		enablePlayControls: function (excludedComponents) {
-			if (this._playContorls || this.useNativePlayerControls() || this.getError() !== null) {
+			if (this._playContorls || this.getError() !== null) {
 				return;
 			}
 
@@ -534,7 +534,7 @@
 		 * Disables play controls, for example when an ad is playing back
 		 */
 		disablePlayControls: function (excludedComponents) {
-			if (!this._playContorls || this.useNativePlayerControls()) {
+			if (!this._playContorls) {
 				return;
 			}
 			mw.log("EmbedPlayer:: disablePlayControls");
@@ -616,10 +616,10 @@
 
 			// Set via attribute if CSS is zero or NaN and we have an attribute value:
 			this.height = ( this.height == 0 || isNaN(this.height)
-				&& $(element).attr('height') ) ?
+			&& $(element).attr('height') ) ?
 				parseInt($(element).attr('height')) : this.height;
 			this.width = ( this.width == 0 || isNaN(this.width)
-				&& $(element).attr('width') ) ?
+			&& $(element).attr('width') ) ?
 				parseInt($(element).attr('width')) : this.width;
 
 
@@ -648,11 +648,11 @@
 			// NOTE: browsers that do support height width should set "waitForMeta" flag in addElement
 			if (( isNaN(this.height) || isNaN(this.width) ) ||
 				( this.height == -1 || this.width == -1 ) ||
-				// Check for firefox defaults
-				// Note: ideally firefox would not do random guesses at css
-				// values
+					// Check for firefox defaults
+					// Note: ideally firefox would not do random guesses at css
+					// values
 				( (this.height == 150 || this.height == 64 ) && this.width == 300 )
-				) {
+			) {
 				var defaultSize = mw.getConfig('EmbedPlayer.DefaultSize').split('x');
 				if (isNaN(this.width)) {
 					this.width = defaultSize[0];
@@ -885,7 +885,9 @@
 					this.showPlayerError();
 				} else {
 					this.setError(errorObj);
-					this.showErrorMsg(errorObj);
+					if ( !this.changeMediaStarted ){
+						this.showErrorMsg(errorObj); // errors triggered during change media will be shown at the playerReady.changeMedia event
+					}
 				}
 				mw.log("EmbedPlayer:: setupSourcePlayer > player ready ( but with errors ) ");
 			} else {
@@ -899,7 +901,7 @@
 			$(this).trigger('playerReady');
 			this.triggerWidgetLoaded();
 		},
-		/** 
+		/**
 		 * Wraps the autoSelect source call passing in temporal url options
 		 * for use of temporal urls where supported.
 		 */
@@ -978,20 +980,20 @@
 			}
 
 			if ( $.isFunction( _this.setup) ) {
-                var failCallback = function(){
-                    _this.removePoster();
-                    _this.layoutBuilder.displayAlert( {
-                        title: _this.getKalturaMsg( 'ks-PLUGIN-BLOCKED-TITLE' ),
-                        message: _this.getKalturaMsg( 'ks-PLUGIN-BLOCKED' ),
-                        keepOverlay: true,
-                        noButtons : true,
-                        props: {
-                            customAlertTitleCssClass: "AlertTitleTransparent",
-                            customAlertMessageCssClass: "AlertMessageTransparent",
-                            customAlertContainerCssClass: "AlertContainerTransparent flashBlockAlertContainer"
-                        }
-                    });
-                };
+				var failCallback = function(){
+					_this.removePoster();
+					_this.layoutBuilder.displayAlert( {
+						title: _this.getKalturaMsg( 'ks-PLUGIN-BLOCKED-TITLE' ),
+						message: _this.getKalturaMsg( 'ks-PLUGIN-BLOCKED' ),
+						keepOverlay: true,
+						noButtons : true,
+						props: {
+							customAlertTitleCssClass: "AlertTitleTransparent",
+							customAlertMessageCssClass: "AlertMessageTransparent",
+							customAlertContainerCssClass: "AlertContainerTransparent flashBlockAlertContainer"
+						}
+					});
+				};
 				_this.setup(function(){
 					_this.runPlayerStartupMethods( callback );
 				}, failCallback);
@@ -1001,7 +1003,7 @@
 			_this.runPlayerStartupMethods( callback );
 		},
 		/**
-		 * Run player startup methods: 
+		 * Run player startup methods:
 		 */
 		runPlayerStartupMethods: function( callback ){
 			// Update feature support
@@ -1071,7 +1073,7 @@
 				( this.mediaElement && this.mediaElement.selectedSource && this.mediaElement.selectedSource.mimeType.indexOf('audio/') !== -1 )
 				||
 				this.isAudioPlayer
-				);
+			);
 		},
 
 		/**
@@ -1816,7 +1818,7 @@
 			return ( this.useNativePlayerControls() && !this.isLinkPlayer() &&
 				mw.isIphone() &&
 				mw.getConfig('EmbedPlayer.iPhoneShowHTMLPlayScreen')
-				);
+			);
 		},
 		/**
 		 * Checks if the current player / configuration is an playlist screen:
@@ -2199,7 +2201,7 @@
 
 		isMobileSkin: function(){
 			var skin = this.getRawKalturaConfig("layout") ? this.getRawKalturaConfig("layout").skin : "kdark";
-			return ( mw.getConfig("EmbedPlayer.EnableMobileSkin") === true && skin === "kdark" && mw.isMobileDevice());
+			return ( mw.getConfig("EmbedPlayer.EnableMobileSkin") === true && skin === "kdark" && mw.isMobileDevice() && !mw.isWindowsPhone() );
 		},
 
 		/**
@@ -2763,6 +2765,16 @@
 			}
 		},
 
+		bufferHandling: function () {
+			if (!this.isLive() && this.instanceOf != 'ImageOverlay') {
+				if (this.isPlaying() && this.currentTime == this.getPlayerElementTime()) {
+					this.bufferStart();
+				} else if (this.buffering) {
+					this.bufferEnd();
+				}
+			}
+		},
+
 		/**
 		 * Checks if the currentTime was updated outside of the getPlayerElementTime function
 		 */
@@ -2778,7 +2790,7 @@
 
 			// Check if a javascript currentTime change based seek has occurred
 			if (parseInt(_this.previousTime) != parseInt(_this.currentTime) && !this.userSlide && !this.seeking && !this.isStopped()
-				) {
+			) {
 				// If the time has been updated and is in range issue a seek
 				if (_this.getDuration() && _this.currentTime <= _this.getDuration()) {
 					var seekPercent = _this.currentTime / _this.getDuration();
@@ -2788,13 +2800,7 @@
 					this.seek(_this.currentTime);
 				}
 			}
-			if (!_this.isLive() && _this.instanceOf != 'ImageOverlay') {
-				if (_this.isPlaying() && _this.currentTime == _this.getPlayerElementTime()) {
-					_this.bufferStart();
-				} else if (_this.buffering) {
-					_this.bufferEnd();
-				}
-			}
+			this.bufferHandling();
 
 			// Update currentTime via embedPlayer
 			_this.currentTime = _this.getPlayerElementTime();
@@ -2814,15 +2820,15 @@
 				if (!this.userSlide && !this.seeking ) {
 					var playHeadPercent = ( this.currentTime - this.startOffset ) / this.duration;
 					this.updatePlayHead(playHeadPercent);
-                    //update liveEdgeOffset
-                    if(this.isDVR()){
-                        var perc = parseInt(playHeadPercent*1000);
-                        if(perc>998) {
-                            this.liveEdgeOffset = 0;
-                        }else {
-                            this.liveEdgeOffset = this.duration - perc/1000 * this.duration;
-                        }
-                    }
+					//update liveEdgeOffset
+					if(this.isDVR()){
+						var perc = parseInt(playHeadPercent*1000);
+						if(perc>998) {
+							this.liveEdgeOffset = 0;
+						}else {
+							this.liveEdgeOffset = this.duration - perc/1000 * this.duration;
+						}
+					}
 				}
 			}
 		},
@@ -3341,25 +3347,25 @@
 			return this.currentBitrate;
 		},
 
-        /*
-        * get current offset from the playable live edge inside DVR window (positive number for negative offset)
-        */
-        getLiveEdgeOffset: function () {
-          return this.liveEdgeOffset;
-        },
+		/*
+		 * get current offset from the playable live edge inside DVR window (positive number for negative offset)
+		 */
+		getLiveEdgeOffset: function () {
+			return this.liveEdgeOffset;
+		},
 
-        /*
-        * Some players parse playmanifest and reload flavors list by calling this function
-        * @param offset {positive number}: number of seconds to move back from the playable live edge inside DVR window
-        * @param callback {function}: callback (if exists) will be executed after the seek
-        */
-        setLiveEdgeOffset: function(offset, callback){
-           mw.log( 'EmbedPlayer :: setLiveEdgeOffset -' + offset );
-           this.seek(this.getDuration()-offset);
-           if ($.isFunction(callback)) {
-              callback();
-           }
-        },
+		/*
+		 * Some players parse playmanifest and reload flavors list by calling this function
+		 * @param offset {positive number}: number of seconds to move back from the playable live edge inside DVR window
+		 * @param callback {function}: callback (if exists) will be executed after the seek
+		 */
+		setLiveEdgeOffset: function(offset, callback){
+			mw.log( 'EmbedPlayer :: setLiveEdgeOffset -' + offset );
+			this.seek(this.getDuration()-offset);
+			if ($.isFunction(callback)) {
+				callback();
+			}
+		},
 
 		getCurrentBufferLength: function(){
 			mw.log("Error: getPlayerElementTime should be implemented by embed library");

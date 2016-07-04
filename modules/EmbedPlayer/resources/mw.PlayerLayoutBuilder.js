@@ -458,7 +458,7 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	getComponentsWidthForContainer: function( $container ){
 		var _this = this;
-		var totalWidth = 10; // add some padding
+		var totalWidth = this.embedPlayer.isMobileSkin() ? 2 : 10; // add some padding
 		$container.find('.comp:visible').each(function () {
 			totalWidth += _this.getComponentWidth( $(this) );
 		});
@@ -818,13 +818,6 @@ mw.PlayerLayoutBuilder.prototype = {
 			if ( this.getInterface().find( '#touchOverlay' ).length == 0 ) {
 				var touchOverlay= this.getInterface().find('.controlBarContainer').before(
 					$('<div />')
-						.css({
-							'position': 'absolute',
-							'top': 0,
-							'width': '100%',
-							'height': '100%',
-							'z-index': 1
-						})
 						.attr( 'id', "touchOverlay" )
 						.bind( 'touchstart click', function( event ) {
 							// Don't propogate the event to the document
@@ -1208,7 +1201,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			.css( {
 				'height' : '100%',
 				'width' : '100%',
-				'z-index' : mw.isMobileDevice() ? 200 : 4
+				'z-index' : mw.isMobileDevice() ? 1000 : 4
 			})
 		);
 

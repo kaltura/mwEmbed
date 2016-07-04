@@ -14,6 +14,9 @@
 			"defaultStream": -1, // -1 is auto
 			"maxNumOfStream": 4,
 			"enableKeyboardShortcuts": true,
+			"smartContainer": "qualitySettings",
+			'smartContainerCloseEvent': 'switchAudioTrack',
+			"title": gM( 'mwe-embedplayer-select_audio'),
 			"keyboardShortcutsMap": {
 				"nextStream": 221,   // Add ] Sign for next stream
 				"prevStream": 219,   // Add [ Sigh for previous stream

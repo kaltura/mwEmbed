@@ -564,7 +564,48 @@
 					// opera does not have buffered.end zero index support ?
 				}
 			}
+
+
+			if (mw.getConfig("monitorDropFrames") && this.playerElement && this.playerElement.contentEl ){
+				try {
+					var vidObj = $( this.playerElement.contentEl() ).find( "video" )[0];
+					if (typeof vidObj.getVideoPlaybackQuality === 'function') {
+						var videoPlaybackQuality = this.video.getVideoPlaybackQuality();
+						this.checkFPS( videoPlaybackQuality.droppedVideoFrames , videoPlaybackQuality.totalVideoFrames );
+					} else {
+						this.checkFPS( vidObj.webkitDroppedFrameCount , vidObj.webkitDecodedFrameCount );
+					}
+				} catch(exception){
+					this.log("error occur in checkFPS " + exception);
+				}
+			}
 			_this.parent_monitor();
+		},
+		checkFPS: function ( droppedFrames, decodedFrames) {
+			var currentTime = performance.now();
+			if (decodedFrames) {
+				if (this.lastTime) {
+					var currentPeriod = currentTime - this.lastTime,
+						currentDropped = droppedFrames - this.lastDroppedFrames,
+						currentDecoded = decodedFrames - this.lastDecodedFrames,
+						droppedFPS = 1000 * currentDropped / currentPeriod;
+					if (droppedFPS > 0) {
+						this.log('checkFPS : droppedFPS/decodedFPS:' + droppedFPS/(1000 * currentDecoded / currentPeriod));
+						if ( currentDropped > (mw.getConfig("fpsDroppedMonitoringThreshold") || 0.2)  * currentDecoded ) {
+							var currentLevel = this.getCurrentQuality();
+							this.log('drop FPS ratio greater than max allowed value for currentLevel: ' + currentLevel);
+							if (currentLevel > 0 ) {
+								currentLevel = currentLevel - 1;
+								this.getPlayerElement().mediaPlayer.setAutoSwitchQuality(false);
+								this.setQualityByIndex(currentLevel);
+							}
+						}
+					}
+				}
+				this.lastTime = currentTime;
+				this.lastDroppedFrames = droppedFrames;
+				this.lastDecodedFrames = decodedFrames;
+			}
 		},
 		/**
 		 * Issue a seeking request.
@@ -1092,15 +1133,21 @@
 				this.getPlayerElement().mediaPlayer.setAutoSwitchQuality(false);
 				var sourceIndex = this.getSourceIndex(source);
 				if (sourceIndex != null) {
-					this.getPlayerElement().mediaPlayer.setQualityFor( "video", sourceIndex );
-					this.currentBitrate = source.getBitrate();
-					this.triggerHelper('bitrateChange', source.getBitrate());
+					this.setQualityByIndex(sourceIndex,source);
 				}
 			} else {
 				this.getPlayerElement().mediaPlayer.setAutoSwitchQuality(true);
 			}
 		},
+		setQualityByIndex:function(sourceIndex,source){
+			this.getPlayerElement().mediaPlayer.setQualityFor( "video", sourceIndex );
+			this.currentBitrate = source.getBitrate();
+			this.triggerHelper('bitrateChange', source.getBitrate());
+		},
 
+		getCurrentQuality:function(){
+			return this.getPlayerElement().mediaPlayer.getQualityFor( "video" );
+		},
 
 		onAudioTracksReceived: function (data) {
 			this.triggerHelper('audioTracksReceived', data);

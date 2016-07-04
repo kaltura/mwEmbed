@@ -13,7 +13,8 @@
 			"matchMedia",
 			"mw.KEntryLoader",
 			"mw.KDPMapping",
-			"mw.KCuePoints"
+			"mw.KCuePoints",
+			"polyfill_Array_filter"
 		],
 		"kalturaLoad": "always",
 		"messageFile": "KalturaSupport.i18n.json"

@@ -92,6 +92,10 @@
 		chromelessAdManagerLoadedId: null,
 
 		init: function( embedPlayer, callback, pluginName ){
+			if (embedPlayer.casting){
+				callback();
+				return;
+			}
 			var _this = this;
 			if (mw.getConfig( 'localizationCode' )){
 				_this.localizationCode = mw.getConfig( 'localizationCode' );
@@ -409,6 +413,12 @@
 				} );
 		},
 		startAdsManager: function(){
+			if (this.embedPlayer.casting){
+				this.embedPlayer.adTimeline.restorePlayer( null, true);
+				this.destroy();
+				this.addSkipSupport();
+				return;
+			}
 			// Initialize the ads manager. In case of ad playlist with a preroll, the preroll will start playing immediately.
 			this.adsManager.init( this.embedPlayer.getWidth(), this.embedPlayer.getHeight(), google.ima.ViewMode.NORMAL);
 			this.adsManager.setVolume( this.embedPlayer.getPlayerElementVolume() );
@@ -509,6 +519,11 @@
 				}
 			});
 
+			_this.embedPlayer.bindHelper('casting' + this.bindPostfix, function () {
+				_this.embedPlayer.adTimeline.restorePlayer( null, true);
+				_this.destroy();
+			});
+
 			_this.embedPlayer.bindHelper('AdSupport_StartAdPlayback' + this.bindPostfix, function (event) {
 				if (_this.isChromeless){
 					_this.embedPlayer.getPlayerElement().sendNotification("hideContent");
@@ -533,6 +548,11 @@
 						_this.embedPlayer.updatePosterHTML();
 					}
 				}
+			});
+
+			_this.embedPlayer.bindHelper('cancelAllAds' + this.bindPostfix, function (event) {
+				mw.log( "DoubleClick::cancelAllAds event called." );
+				_this.destroy();
 			});
 
 			if (_this.embedPlayer.isMobileSkin()){
@@ -589,7 +609,7 @@
 			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
 
 			if (isLinear && !this.isNativeSDK) {
-				this.embedPlayer.enablePlayControls(["scrubber","share","infoScreen","related","playlistAPI","nextPrevBtn","sourceSelector"]);
+				this.embedPlayer.enablePlayControls(["scrubber","share","infoScreen","related","playlistAPI","nextPrevBtn","sourceSelector","qualitySettings","morePlugins"]);
 			} else {
 				_this.embedPlayer.pause();
 			}
@@ -650,6 +670,15 @@
 			// Set the content element to player element:
 			return this.embedPlayer.getPlayerElement();
 		},
+		addCountdownNotice: function () {
+			if (this.getConfig('countdownText') && this.embedPlayer.getInterface().find(".ad-notice-label").length == 0) {
+				// Add the notice target:
+				this.embedPlayer.getVideoHolder().append(
+					$('<span />')
+						.addClass('ad-component ad-notice-label')
+				);
+			}
+		},
 		getAdContainer: function(){
 			if( !$('#' + this.getAdContainerId() ).length ){
 				this.embedPlayer.getVideoHolder().after(
@@ -661,14 +690,7 @@
 							'left' : '0px'
 						})
 				);
-				if ( this.getConfig( 'countdownText' )){
-					this.embedPlayer.getInterface().find("#"+this.getAdContainerId()).append(
-						$('<span />')
-							.addClass( 'ad-component ad-notice-label' )
-							.css({"position": "fixed","margin-bottom": 36+"px"})
-							.hide()
-					)
-				}
+				this.addCountdownNotice();
 			}
 			return $('#' + this.getAdContainerId() ).get(0);
 		},
@@ -717,9 +739,6 @@
 							if ( _this.isChromeless ){
 								_this.embedPlayer.getPlayerElement().sendNotification( 'skipAd' );
 							}else{
-								if (_this.adPaused){
-									_this.resumeAd(true);
-								}
 								_this.adsManager.stop();
 								if (_this.currentAdSlotType === "postroll" && _this.getConfig( 'adTagUrl' ) ){
 									_this.restorePlayer(true);
@@ -737,6 +756,12 @@
 					);
 				}
 			}
+			this.embedPlayer.bindHelper('chromecastReceiverAdOpen' + this.bindPostfix, function (event) {
+				_this.showSkipBtn();
+			});
+			this.embedPlayer.bindHelper('chromecastReceiverAdComplete' + this.bindPostfix, function (event) {
+				_this.hideSkipBtn();
+			});
 		},
 		showSkipBtn: function(){
 			if( this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' ) ){
@@ -1270,13 +1295,7 @@
 						if (_this.isChromeless) {
 							$(".mwEmbedPlayer").hide();
 						}
-						if (_this.getConfig('countdownText') && _this.embedPlayer.getInterface().find(".ad-notice-label").length == 0) {
-							// Add the notice target:
-							_this.embedPlayer.getVideoHolder().append(
-								$('<span />')
-									.addClass('ad-component ad-notice-label')
-							);
-						}
+						_this.addCountdownNotice();
 						// Send a notification to trigger associated events and update ui
 						_this.embedPlayer.paused = false;
 					}else{
@@ -1586,11 +1605,11 @@
 			mw.log("DoubleClick::restorePlayer: content complete:" + onContentComplete);
 			var _this = this;
 			this.adActive = false;
+			this.embedPlayer.getInterface().find(".ad-notice-label").remove();
 			if (this.isChromeless){
 				if (_this.isLinear || _this.adLoaderErrorFlag){
 					$(".mwEmbedPlayer").show();
 				}
-				this.embedPlayer.getInterface().find(".ad-notice-label").remove();
 				this.embedPlayer.getPlayerElement().redrawObject(50);
 			}else{
 				if (_this.isLinear !== false || _this.adLoaderErrorFlag){

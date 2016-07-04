@@ -22,6 +22,7 @@
 			'receiverLogo': true,
 			'logoUrl': null,
 			'useKalturaPlayer': true,
+			'useReceiverSource': true,
 			'debugKalturaPlayer': false
 		},
 		isDisabled: false,
@@ -51,6 +52,10 @@
 		pendingRelated: false,
 		pendingReplay: false,
 		replay: false,
+		inSequence: false,
+		adDuration: null,
+		sendPlayerReady: false, // after changing media we need to send the playerReady event to the chromecast receiver as it doesn't reload the player there
+		supportedPlugins: ['doubleClick', 'youbora', 'kAnalony', 'related', 'comScoreStreamingTag', 'watermark', 'heartbeat', 'proxyData'],
 
 		setup: function( embedPlayer ) {
 			var _this = this;
@@ -109,6 +114,13 @@
 				_this.savedPosition = 0;
 				_this.pendingReplay = false;
 				_this.pendingRelated = false;
+				_this.sendPlayerReady = true;
+			});
+
+			$( this.embedPlayer).bind('onAdSkip', function(e){
+				_this.sendMessage({'type': 'notification','event': 'cancelAllAds'});
+				_this.embedPlayer.enablePlayControls();
+				_this.loadMedia();
 			});
 
 			$( this.embedPlayer).bind('preShowScreen', function(e){
@@ -125,12 +137,40 @@
 				}
 			});
 
-			$(this.embedPlayer).bind('playerReady', function() {
+			$(this.embedPlayer).bind('playerReady', function(e) {
+				if (_this.sendPlayerReady){
+					_this.sendMessage({'type': 'notification','event': e.type});
+				}
 				if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
 					// send application ID to native app
 					_this.embedPlayer.getPlayerElement().attr( 'chromecastAppId', _this.getConfig( 'applicationID' ));
 				}
 			});
+
+			$(this.embedPlayer).bind('onSDKReceiverMessage', function(e, message) {
+				_this.parseMessage(message);
+			});
+
+			// trigger these events on the receiver player to support Analytics
+			$(this.embedPlayer).bind('userInitiatedPause userInitiatedSeek postEnded onChangeMedia AdSupport_PreSequence firstPlay', function(e) {
+				_this.sendMessage({'type': 'notification','event': e.type});
+			});
+
+			// trigger these events on the receiver player to support Analytics
+			$(this.embedPlayer).bind('userInitiatedPlay', function(e) {
+				_this.sendMessage({'type': 'notification','event': e.type});
+				if (_this.replay){
+					_this.loadMedia();
+				}
+			});
+
+			// if ad plays in client - don't send the doubleClick plugin configuration to the receiver as it will play the ad there again when you start to cast
+			$(this.embedPlayer).bind('onAdPlay', function() {
+				if (_this.supportedPlugins.indexOf("doubleClick") === 0){
+					_this.supportedPlugins.shift();
+				}
+			});
+
 		},
 
 		getComponent: function() {
@@ -158,9 +198,17 @@
 		},
 
 		showConnectingMessage: function(){
-			this.embedPlayer.showErrorMsg({
+			this.displayMessage(gM('mwe-chromecast-connecting'));
+		},
+
+		displayMessage: function(msg){
+			this.embedPlayer.layoutBuilder.displayAlert({
 					'title':'Chromecast Player',
-					'message': gM('mwe-chromecast-connecting'),
+					'message': msg,
+					'isModal': true,
+					'keepOverlay': true,
+					'noButtons': true,
+					'isError': true,
 					'props':{
 						'customAlertContainerCssClass': 'connectingMsg',
 						'customAlertTitleCssClass': 'hidden',
@@ -206,7 +254,7 @@
 			this.updateTooltip(this.stopCastTitle);
 			this.casting = true;
 			this.embedPlayer.casting = true;
-
+			$( this.embedPlayer ).trigger( 'casting' );
 			// set receiver debug if needed
 			if ( this.getConfig("debugReceiver") ){
 				this.sendMessage({'type': 'show', 'target': 'debug'});
@@ -228,17 +276,8 @@
 			}
 			if (this.getConfig("useKalturaPlayer") === true){
 				var flashVars = this.getFlashVars();
-				this.sendMessage({'type': 'embed', 'publisherID': this.embedPlayer.kwidgetid.substr(1), 'uiconfID': this.embedPlayer.kuiconfid, 'entryID': this.embedPlayer.kentryid, 'debugKalturaPlayer': this.getConfig("debugKalturaPlayer"), 'flashVars': flashVars});
-				this.embedPlayer.showErrorMsg(
-					{'title':'Chromecast Player',
-						'message': gM('mwe-chromecast-loading'),
-						'props':{
-							'customAlertContainerCssClass': 'connectingMsg',
-							'customAlertTitleCssClass': 'hidden',
-							'textColor': '#ffffff'
-						}
-					}
-				);
+				this.sendMessage({'type': 'embed', 'lib': kWidget.getPath(), 'publisherID': this.embedPlayer.kwidgetid.substr(1), 'uiconfID': this.embedPlayer.kuiconfid, 'entryID': this.embedPlayer.kentryid, 'debugKalturaPlayer': this.getConfig("debugKalturaPlayer"), 'flashVars': flashVars});
+				this.displayMessage(gM('mwe-chromecast-loading'));
 			} else {
 				this.sendMessage({'type': 'load'});
 				this.loadMedia();
@@ -249,21 +288,46 @@
 
 			var _this = this;
 			this.session.addMessageListener(this.MESSAGE_NAMESPACE, function(namespace, message){
-				_this.log("Got Message From Receiver: "+message);
-				if (message == "readyForMedia"){
-					_this.loadMedia();
-				}
-				if (message == "shutdown"){
-					_this.stopApp(); // receiver was shut down by the browser Chromecast icon - stop the app
-				}
+				_this.log( "Got Message From Receiver: " + message );
+				_this.parseMessage(message);
 			});
 		},
+		parseMessage: function(message){
+			switch (message.split('|')[0]){
+				case "readyForMedia":
+					if ( this.getConfig("useReceiverSource") && message.split('|').length > 1){ // we got source and mime type as selected by the player running on the receiver
+						this.loadMedia(message.split('|')[1], message.split('|')[2]);
+					}else{
+						this.loadMedia();
+					}
+					break;
+				case "shutdown":
+					this.stopApp(); // receiver was shut down by the browser Chromecast icon - stop the app
+					break;
+				case "chromecastReceiverAdOpen":
+					this.embedPlayer.disablePlayControls(["chromecast"]);
+					this.embedPlayer.triggerHelper("chromecastReceiverAdOpen");
+					this.inSequence = true;
+					break;
+				case "chromecastReceiverAdComplete":
+					this.embedPlayer.enablePlayControls();
+					this.embedPlayer.triggerHelper("chromecastReceiverAdComplete");
+					this.loadMedia();
+					break;
+				case "chromecastReceiverAdDuration":
+					this.adDuration = parseInt(message.split('|')[1]);
+					this.embedPlayer.setDuration( this.adDuration );
+					break;
+				default:
+					break;
+			}
+		},
+
 		getFlashVars: function(){
 			var _this = this;
-			var plugins = ['doubleClick', 'youbora', 'kAnalony', 'related', 'comScoreStreamingTag', 'watermark', 'heartbeat', 'proxyData'];
 
 			var fv = {};
-			plugins.forEach(function(plugin){
+			this.supportedPlugins.forEach(function(plugin){
 				if (!$.isEmptyObject(_this.embedPlayer.getKalturaConfig(plugin))){
 					fv[plugin] = _this.embedPlayer.getKalturaConfig(plugin);
 				}
@@ -337,6 +401,7 @@
 		onMediaDiscovered: function(how, mediaSession) {
 			var _this = this;
 			this.embedPlayer.layoutBuilder.closeAlert();
+			this.inSequence = false;
 			// if page reloaded and in playlist - select the currently playing clip
 			if ( how === 'onRequestSessionSuccess_' && this.embedPlayer.playlist){
 				this.stopApp();
@@ -404,8 +469,8 @@
 					}
 					if (_this.replay){
 						_this.replay = false;
-						_this.embedPlayer.triggerHelper("onPlayerStateChange",["end"]); // this will set the replay icon on the playPauseBtn button
-						_this.sendMessage({'type': 'replay'}); // since we reload the media for replay, trigger playerReady on the receiver player to reset Analytics
+						_this.sendMessage({'type': 'notification','event': 'replay'});  // since we reload the media for replay, trigger playerReady on the receiver player to reset Analytics
+						_this.embedPlayer.play();
 					}
 				},300);
 				if (_this.monitorInterval !== null){
@@ -445,8 +510,7 @@
 		},
 
 		monitor: function(){
-			var _this = this;
-			this.embedPlayer.updatePlayhead( this.getCurrentTime(), this.mediaDuration );
+			this.embedPlayer.updatePlayhead( this.getCurrentTime(), this.inSequence ? this.adDuration : this.mediaDuration );
 		},
 
 		seekMedia: function(pos) {
@@ -513,12 +577,11 @@
 				// clip done
 				//this.session = null;
 				// make sure we are still on Chromecast player since session will be lost when returning to the native player as well
-				if ( this.getPlayer().instanceOf === "Chromecast" && this.currentMediaSession.idleReason === "FINISHED"){
+				if ( this.getPlayer().instanceOf === "Chromecast" && this.currentMediaSession.idleReason === "FINISHED" && !this.inSequence){
 					this.embedPlayer.clipDone(); // trigger clipDone
 					this.autoPlay = false;       // set autoPlay to false for rewind
 					if (!this.pendingRelated){
 						this.replay = true;
-						this.loadMedia();            // reload the media for rewind unless related screen is open
 					}else{
 						this.pendingReplay = true;
 					}
@@ -527,6 +590,10 @@
 		},
 
 		loadMedia: function(url, mime) {
+			if (this.isNativeSDK){
+				$( this.embedPlayer ).trigger( 'loadReceiverMedia', [url, mime] );
+				return;
+			}
 			var _this = this;
 			if (!this.session || (!url && !this.embedPlayer.getSource())) {
 				this.log("no session");
@@ -612,6 +679,8 @@
 			if (this.embedPlayer.isLive()){
 				this.embedPlayer.pause();
 				setTimeout(function(){
+					_this.embedPlayer.setLiveOffSynch(false);
+					_this.embedPlayer.triggerHelper("movingBackToLive");
 					_this.embedPlayer.play();
 				},1000);
 			}else{
@@ -706,7 +775,7 @@
 		},
 
 		getPlayingScreen: function(){
-			return '<div class="chromecastScreen" style="background-color: #000000; opacity: 0.7; width: 100%; height: 100%; font-family: Arial; position: absolute">' +
+			return '<div class="chromecastScreen" style="background-color: rgba(0,0,0,0.7); width: 100%; height: 100%; font-family: Arial; position: absolute">' +
 				'<div class="chromecastPlayback">' +
 				'<div class="chromecastThumbBorder">' +
 				'<img class="chromecastThumb" src="' + this.embedPlayer.poster + '"></img></div> ' +

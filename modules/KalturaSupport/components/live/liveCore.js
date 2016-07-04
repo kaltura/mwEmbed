@@ -342,7 +342,10 @@
 			else {
 				embedPlayer.removePosterFlag = false;
 				hideComponentsArr.push( 'liveStatus' );
-				showComponentsArr.push( 'sourceSelector', 'scrubber', 'durationLabel', 'currentTimeLabel' );
+				showComponentsArr.push( 'scrubber', 'durationLabel', 'currentTimeLabel' );
+				if (!embedPlayer.isMobileSkin()){
+					showComponentsArr.push( 'sourceSelector' );
+				}
 				_this.removeLiveStreamStatusMonitor();
 				_this.unbind('timeupdate');
 			}

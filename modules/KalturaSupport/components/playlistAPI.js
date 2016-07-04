@@ -487,7 +487,7 @@
 				_this.loadingEntry = false; // Update the loadingEntry flag//
 
 				// play clip that was selected when autoPlay=false. if autoPlay=true, the embedPlayer will do that for us.
-				if (!_this.getConfig("autoPlay") && mobileAutoPlay && embedPlayer.canAutoPlay() && !embedPlayer.isInSequence()) {
+				if ( (!_this.getConfig("autoPlay") && mobileAutoPlay && embedPlayer.canAutoPlay() && !embedPlayer.isInSequence()) || embedPlayer.casting) {
 					setTimeout(function(){
 						embedPlayer.play();
 					},500); // timeout is required when loading live entries
@@ -691,7 +691,7 @@
 				this.getMedialistHeaderComponent().prepend( '<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist' ) + '"></div>' );
 				this.getMedialistHeaderComponent().height(this.getConfig('horizontalHeaderHeight'));
 			}
-			if ( this.getConfig( 'showControls' ) === true ) {
+			if ( this.getConfig( 'showControls' ) === true && !this.embedPlayer.isMobileSkin() ) {
 				this.getMedialistHeaderComponent().prepend( '<div class="playlistControls k-' + this.getLayout() + '"><div class="prevBtn playlistBtn"></div><div class="nextBtn playlistBtn"></div></div>' );
 				this.getMedialistHeaderComponent().find( ".playlistControls .nextBtn" ).on( "click", function () {
 					_this.playNext(true)

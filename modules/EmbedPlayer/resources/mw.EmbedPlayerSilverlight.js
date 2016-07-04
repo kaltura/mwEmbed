@@ -299,25 +299,25 @@
 
 			this.isError = true;
 
-            if ( this.playerObject ) {
-                this.playerObject.stop();
-            }
-            this.stopped = true;
+			if ( this.playerObject ) {
+				this.playerObject.stop();
+			}
+			this.stopped = true;
 
 			var disableMulticastFallback = _this.getKalturaConfig( null , 'disableMulticastFallback' ) || _this.defaultDisableMulticastFallback;
 			if ( !disableMulticastFallback ) {
 				mw.log( 'fallbackToUnicast: try unicast' );
-                //remove current source to fallback to unicast if multicast failed
+				//remove current source to fallback to unicast if multicast failed
 				for ( var i = 0 ; i < _this.mediaElement.sources.length ; i++ ) {
 					if ( _this.mediaElement.sources[i] == _this.mediaElement.selectedSource ) {
-                        _this.mediaElement.sources.splice(i, 1);
-                        break;
-                    }
+						_this.mediaElement.sources.splice(i, 1);
+						break;
+					}
 				}
-                _this.bindHelper("playerReady", function(){
-                    _this.firstPlay = true; //resume live playback when the new player is ready
-                });
-                _this.setupSourcePlayer(); //switch player
+				_this.bindHelper("playerReady", function(){
+					_this.firstPlay = true; //resume live playback when the new player is ready
+				});
+				_this.setupSourcePlayer(); //switch player
 			} else {
 				mw.log( "fallbackToUnicast: stop here since we don't allow multicast failver" );
 				var errorObj = {message: gM( 'ks-LIVE-STREAM-NOT-SUPPORTED' ) , title: gM( 'ks-ERROR' )};
@@ -333,18 +333,18 @@
 				var startSilverlight = function () {
 					_this.resolveSrcURL(_this.getSrc()).then(function (result) {
 
-						if (_this.isMulticast) {
-							_this.handleMulticastPlayManifest(result, doEmbedFunc);
-						} else {
-							doEmbedFunc(result);
-						}
-					},
-					function() { //play manifest retunred error
-						if (_this.isMulticast) {
-							mw.log("got error from resolveSrcURL doing fallbackToUnicast");
-							_this.fallbackToUnicast();
-						}
-					});
+							if (_this.isMulticast) {
+								_this.handleMulticastPlayManifest(result, doEmbedFunc);
+							} else {
+								doEmbedFunc(result);
+							}
+						},
+						function() { //play manifest retunred error
+							if (_this.isMulticast) {
+								mw.log("got error from resolveSrcURL doing fallbackToUnicast");
+								_this.fallbackToUnicast();
+							}
+						});
 				}
 				if ( onAirStatus ) {
 					startSilverlight();
@@ -620,7 +620,7 @@
 				this.hideSpinner();
 				this.stopped = this.paused = false;
 			}
-			if (this.buffering && this.isLive()){
+			if (this.buffering){
 				this.bufferEnd();
 			}
 			this.removePoster();
@@ -722,7 +722,7 @@
 		 * play method calls parent_play to update the interface
 		 */
 		play: function () {
-			mw.log( 'EmbedPlayerSPlayer::play' + this.isMulticast + ""+this.durationReceived);
+			mw.log( 'EmbedPlayerSPlayer::play ' + this.isMulticast + " " + this.durationReceived);
 			var _this = this;
 			if ( (!this.isMulticast || this.durationReceived) && this.parent_play() ) {
 				//TODO:: Currently SL player initializes before actual volume is read from cookie, so we set it on play
@@ -1031,6 +1031,11 @@
 				ttml: captionData.ttml
 			};
 			this.triggerHelper( 'onEmbeddedData' , caption );
+		},
+
+		bufferHandling: function(){
+			// Nothing here, only overwrite the super bufferHandling method.
+			// The buffer handling here made by SilverLight itself, by listening to "buffering" event.
 		}
 
 	}

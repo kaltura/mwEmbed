@@ -171,7 +171,7 @@
 			});
 
 			this.bind( 'showClosedCaptions preHideScreen hideMobileComponents', function(){
-				if( !_this.embedPlayer.changeMediaStarted && _this.getConfig('displayCaptions') === false ){
+				if( !_this.embedPlayer.changeMediaStarted && _this.getConfig('displayCaptions') === false && _this.selectedSource ){
 					_this.setConfig('displayCaptions', true);
 				}
 			});
@@ -893,7 +893,7 @@
 
 				return this.getMenu();
 			} else {
-				if( this.getConfig('hideWhenEmpty') == true ){
+				if( this.getConfig('hideWhenEmpty') == true && !this.embedPlayer.isMobileSkin()){
 					this.setConfig('visible', true)
 				}
 				this.getBtn().show();
@@ -957,6 +957,7 @@
 				'callback': function(){
 					_this.selectedSource = null;
 					_this.embedPlayer.triggerHelper("selectClosedCaptions", "Off");
+					_this.embedPlayer.triggerHelper('changedClosedCaptions', {language: ""});
 					_this.setConfig('displayCaptions', false);
 					// also update the cookie to "None"
 					_this.getPlayer().setCookie( _this.cookieName, 'None' );

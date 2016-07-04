@@ -85,6 +85,7 @@
 						}
 						if ( mw.isMobileDevice() && !_this.ytMobilePlayed){
 							_this.play();
+							$(".largePlayBtn").css("opacity",1);
 						}
 						_this.ytMobilePlayed = true;
 						_this.triggerHelper("onPlayerStateChange",["play"]);
@@ -106,9 +107,6 @@
 						}
 						break;
 					case YT.PlayerState.PAUSED:
-						if (mw.isMobileDevice()){
-							$(".largePlayBtn").hide();
-						}
 						stateName = "paused";
 						_this.triggerHelper("onPlayerStateChange",["pause"]);
 						_this.parent_pause();
@@ -407,7 +405,6 @@
 		changeMediaCallback: function (callback) {
 			var _this = this;
 			if (mw.isMobileDevice()){
-				$(".largePlayBtn").css("opacity",0);
 				$(".mwEmbedPlayer").width(0);
 			}
 			this.playerReady.promise().then(function(){

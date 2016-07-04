@@ -4,9 +4,8 @@
 ( function( mw, $ ) {
 	"use strict";
 	function isMseSupported(){
-		return (window['MediaSource'] || window['WebKitMediaSource']) && !mw.isFirefox() && !mw.isDesktopSafari() && !mw.isMobileChrome();
+		return (window['MediaSource'] || window['WebKitMediaSource']) && !mw.isFirefox() && !mw.isMobileChrome();
 	}
-
 
 	//Load 3rd party plugins if DRM sources are available
 	mw.addKalturaConfCheck( function( embedPlayer, callback ){
@@ -19,51 +18,40 @@
 			//Check if we can play via MSE or via fallback silverlight when forceDASH is set to true or in native App
 			if (isMseSupported() || (drmConfig.forceDASH && mw.supportSilverlight()) || mw.isNativeApp()) {
 				mw.log("Media Source Extensions supported on this browser");
-				registerDashPlayer();
+				//If both FPS certificate is available and FPS is supported then
+				//use hls on native html5 video tag and FPS plugin will handle DRM flow
+				//Else register the DRM playback engnie and let it handle DRM flow
+				var cert = getFpsCertificate(embedPlayer);
+				var useFPS = (cert !== null && cert !== "" && mw.isDesktopSafari());
+				if (!useFPS){
+					registerDashPlayer();
+				}
 				//Get multiDRM supported sources
 				var allSources = embedPlayer.getSources();
 				var drmSources = getMultiDrmSupportedSources(allSources);
-				//If DRM is required then also remove any non-DRM flavors which are not playable
+				//If DRM is required then set the available source to be only the DRM source
 				if (embedPlayer.isDrmRequired()) {
-					removeNonDrmSources(allSources, drmSources, drmConfig.enableHlsAes, embedPlayer);
+					setDrmSources(drmSources, embedPlayer);
 				}
 				//If there are supported medias load the playback library, unless in native SDK - let native SDK handle sources
-				if ( hasDrmSources(drmSources) && !mw.isNativeApp()) {
-					mw.log("Media sources found, loading DASH player");
-					var clDashPlayerUrl = embedPlayer.getKalturaConfig( "multiDrm", "clDashPlayerUrl" ) || mw.getMwEmbedPath() + "node_modules/mwEmbed-Dash-Everywhere/video.js";
-					var dashJsUrl = embedPlayer.getKalturaConfig( "multiDrm", "dashJsUrl" ) || mw.getMwEmbedPath() + "node_modules/mwEmbed-Dash-Everywhere/cldasheverywhere.min.js";
-					if (clDashPlayerUrl && dashJsUrl) {
-						$.ajax( {
-							url: clDashPlayerUrl,
-							cache: true,
-							dataType: "script"
-						})
-							.then(
-								function(){
-									return $.ajax( {
-										url: dashJsUrl,
-										cache: true,
-										dataType: "script"
-									});
-								}
-							)
-							.done(function(){
-								mw.log("DASH player loaded");
-								//Set reference for DASH playback engine
-								mw.dash = {
-									player: videojs
-								};
-								setTimeout(function(){
-									callback();
-								}, 0);
-							})
-							.fail(function( ) {
-								mw.log("Error::Playback engine couldn't be found");
-								callback();
-							});
-					} else {
-						mw.log("Playback engine couldn't be found, not loading DASH player");
+				if ( hasDrmSources(drmSources)) {
+					mw.log("Media sources found");
+					if (mw.isNativeApp()){
+						mw.log("Loading SDK player");
 						callback();
+					}
+					if (useFPS){
+						mw.log("Loading HLS FPS player");
+						loadHlsFpsHandler().then(function(){
+							mw.fps = new mw.FPS(embedPlayer, function(){}, "FPS");
+							callback();
+						});
+					} else {
+						mw.log("Loading DASH player");
+						loadDashCencHandler(embedPlayer).then(callback, function(){
+							unregisterDashPlayer();
+							callback();
+						});
 					}
 				} else {
 					mw.log("No media sources found, not loading DASH player");
@@ -87,6 +75,63 @@
 		}
 	});
 
+	function loadHlsFpsHandler(){
+		var deferred = $.Deferred();
+		mw.load( ['mw.FPS'], function() {
+			deferred.resolve();
+		} );
+		return deferred;
+	}
+
+	function loadDashCencHandler(embedPlayer){
+		var deferred = $.Deferred();
+		var clDashPlayerUrl = embedPlayer.getKalturaConfig("multiDrm", "clDashPlayerUrl") || mw.getMwEmbedPath() + "node_modules/mwEmbed-Dash-Everywhere/video.js";
+		var dashJsUrl = embedPlayer.getKalturaConfig("multiDrm", "dashJsUrl") || mw.getMwEmbedPath() + "node_modules/mwEmbed-Dash-Everywhere/cldasheverywhere.min.js";
+		if (clDashPlayerUrl && dashJsUrl) {
+			$.ajax({
+					url: clDashPlayerUrl,
+					cache: true,
+					dataType: "script"
+				})
+				.then(
+					function () {
+						return $.ajax({
+							url: dashJsUrl,
+							cache: true,
+							dataType: "script"
+						});
+					}
+				)
+				.done(function () {
+					mw.log("DASH player loaded");
+					//Set reference for DASH playback engine
+					mw.dash = {
+						player: videojs
+					};
+					setTimeout(function () {
+						deferred.resolve();
+					}, 0);
+				})
+				.fail(function () {
+					mw.log("Error::Playback engine couldn't be found");
+					deferred.reject();
+				});
+
+		} else {
+			mw.log("Playback engine couldn't be found, not loading DASH player");
+			deferred.reject();
+		}
+		return deferred;
+	}
+
+	function getFpsCertificate(embedPlayer){
+		var cert = null;
+		if (window.kWidgetSupport){
+			cert = window.kWidgetSupport.getFairplayCert({contextData: embedPlayer.kalturaContextData});
+		}
+		return cert;
+	}
+
 	function setEmbedPlayerConfig(embedPlayer){
 		//Get user configuration
 		var drmUserConfig = embedPlayer.getKalturaConfig("multiDrm");
@@ -98,13 +143,26 @@
 		return drmConfig;
 	}
 
-    function getMultiDrmSupportedSources(sources) {
+	function isDash(mimeType){
+		return mimeType === "application/dash+xml";
+	}
+
+	function isSmoothStream(mimeType){
+		return (mimeType === "video/ism" || mimeType === "video/playreadySmooth");
+	}
+
+	function isHls(mimeType){
+		return mimeType === "application/vnd.apple.mpegurl";
+	}
+
+    function getMultiDrmSupportedSources(sources, enableHlsAes) {
 
         var drmSources = [];
         if (!mw.isNativeApp()) {
             drmSources = sources.filter(function (source) {
-                return source.mimeType === "application/dash+xml" ||
-                    ((source.mimeType === "video/ism" || source.mimeType === "video/playreadySmooth") && mw.isChrome() && !mw.isMobileDevice());
+                return isDash(source.mimeType) ||
+                    (isSmoothStream(source.mimeType) && mw.isChrome() && !mw.isMobileDevice()) ||
+					(isHls(source.mimeType) && ((enableHlsAes && mw.isMobileDevice()) || mw.isDesktopSafari()));
             });
         } else {
             drmSources = sources.filter(function (source) {
@@ -135,13 +193,7 @@
         return drmSources;
     }
 
-	function removeNonDrmSources(sources, drmSources, enableHlsAes, embedPlayer){
-		if (enableHlsAes && mw.isMobileDevice()){
-			var hlsSource = sources.filter( function ( source ) {
-				return ( source.mimeType === "application/vnd.apple.mpegurl" );
-			});
-			drmSources = drmSources.concat(hlsSource);
-		}
+	function setDrmSources(drmSources, embedPlayer){
 		embedPlayer.kalturaFlavors = drmSources;
 		embedPlayer.replaceSources(drmSources);
 	}
@@ -170,6 +222,21 @@
 				}
 				mediaPlayers.defaultPlayers[mimeType] = ['MultiDRM'];
 			} );
+		} );
+	}
+
+	function unregisterDashPlayer(){
+		mw.log("Unregister DASH player mimetype extensions");
+		var multiDRMProtocols = ['application/dash+xml'];
+		//On chrome add smooth stream mimetype support
+		if ( mw.isChrome() &&  !mw.isMobileDevice()) {
+			multiDRMProtocols.push( "video/ism" );
+			multiDRMProtocols.push( "video/playreadySmooth" );
+		}
+		var mediaPlayers = mw.EmbedTypes.getMediaPlayers();
+
+		$.each( multiDRMProtocols, function ( inx, mimeType ) {
+			mediaPlayers.removeMIMETypePlayers(mimeType, 'MultiDRM');
 		} );
 	}
 

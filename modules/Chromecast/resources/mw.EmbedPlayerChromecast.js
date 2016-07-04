@@ -56,6 +56,10 @@
 			return this.currentTime;
 		},
 
+		isDVR: function () {
+			return false;
+		},
+
 		clipDone: function() {
 			mw.log("Chromecast::clip done");
 			if (this.vid.mediaFinishedCallback){
