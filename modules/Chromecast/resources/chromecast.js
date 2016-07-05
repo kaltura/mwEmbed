@@ -152,8 +152,13 @@
 			});
 
 			// trigger these events on the receiver player to support Analytics
-			$(this.embedPlayer).bind('userInitiatedPause userInitiatedSeek postEnded onChangeMedia AdSupport_PreSequence firstPlay', function(e) {
-				_this.sendMessage({'type': 'notification','event': e.type});
+			$(this.embedPlayer).bind('userInitiatedPause userInitiatedSeek postEnded onChangeMedia AdSupport_PreSequence firstPlay captionsUpdated sourceSelectedByLangKey', function(e, data) {
+				_this.sendMessage({'type': 'notification','event': e.type, 'data': data});
+			});
+
+			// trigger these events on the receiver player to support Analytics
+			$(this.embedPlayer).bind('selectClosedCaptions', function(e, data) {
+				_this.sendMessage({'type': 'notification','event': 'ccSelectClosedCaptions', 'data': data});
 			});
 
 			// trigger these events on the receiver player to support Analytics
