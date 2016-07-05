@@ -124,11 +124,13 @@
 		 * Handle the native play event
 		 */
 		_onplay: function () {
-			this.play();
 			this.restoreEventPropagation();
-			$(this).trigger('onPlayerStateChange', [ "play", "pause" ]);
+			if (this.currentState === "pause"){
+				this.play();
+				this.triggerHelper('onPlayerStateChange', [ "play", "pause" ]);
+			}
 			if (this.triggerReplayEvent){
-				$(this).trigger('replayEvent');
+				this.triggerHelper('replayEvent');
 				this.triggerReplayEvent = false;
 			}
 		},
