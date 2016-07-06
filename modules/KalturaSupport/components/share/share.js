@@ -283,7 +283,7 @@
 			.on('mouseup', function (e) {
 					e.preventDefault();
 				})
-			.on('focus', function () {
+			.on('click', function () {
 					this.setSelectionRange(0, 9999);
 				});
 
@@ -301,7 +301,7 @@
 			.on('mouseup', function (e) {
 				e.preventDefault();
 			})
-			.on('focus', function () {
+			.on('click', function () {
 				this.setSelectionRange(0, 9999);
 			});
 
