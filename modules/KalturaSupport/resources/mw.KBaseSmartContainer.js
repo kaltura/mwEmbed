@@ -87,12 +87,6 @@
 						},0);
 					});
 
-					_this.bind( "playerReady", function(){
-						setTimeout(function(){
-							_this.hideRegisteredPlugins();
-						},200);
-					});
-
 					setTimeout(function(){
 						_this.hideRegisteredPlugins();
 					},0);

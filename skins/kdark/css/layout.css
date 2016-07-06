@@ -349,6 +349,9 @@ body {
     width: 90%;
     left: 5%;
 }
+.mobileSkin:not(.pluginsScreenOpened) .smartContainer .comp{
+    display: none !important;
+}
 @media screen and (orientation:portrait) {
     .mobileSkin.fullscreen .smartContainer{
         height: 50%;
