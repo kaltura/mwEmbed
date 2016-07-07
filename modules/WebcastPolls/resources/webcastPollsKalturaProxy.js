@@ -152,7 +152,6 @@
             var _this = this;
             var defer = $.Deferred();
 
-            return defer.promise();
             if (pollId && pollProfileId && userId && selectedAnswer) {
                 var createCuePointRequest = {
                     "service": "cuePoint_cuePoint",
