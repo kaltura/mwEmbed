@@ -100,6 +100,10 @@
 				_this.stopApp();
 			});
 
+			$( this.embedPlayer).bind('chromecastSelectCaption', function(e, track){
+				_this.sendMessage({'type': 'ENABLE_CC', 'trackNumber': track});
+			});
+
 			$( this.embedPlayer).bind('hideConnectingMessage', function(){
 				_this.embedPlayer.layoutBuilder.closeAlert();
 				_this.getComponent().css("color","#35BCDA");
@@ -293,33 +297,44 @@
 			});
 		},
 		parseMessage: function(message){
-			switch (message.split('|')[0]){
-				case "readyForMedia":
-					if ( this.getConfig("useReceiverSource") && message.split('|').length > 1){ // we got source and mime type as selected by the player running on the receiver
-						this.loadMedia(message.split('|')[1], message.split('|')[2]);
-					}else{
-						this.loadMedia();
+			if ( message.indexOf("{") === 0 ){
+				try{
+					var msgObject = JSON.parse(message);
+					if (msgObject["captions"]){
+						this.embedPlayer.triggerHelper('chromecastCaptionsReceived', msgObject["captions"]);
 					}
-					break;
-				case "shutdown":
-					this.stopApp(); // receiver was shut down by the browser Chromecast icon - stop the app
-					break;
-				case "chromecastReceiverAdOpen":
-					this.embedPlayer.disablePlayControls(["chromecast"]);
-					this.embedPlayer.triggerHelper("chromecastReceiverAdOpen");
-					this.inSequence = true;
-					break;
-				case "chromecastReceiverAdComplete":
-					this.embedPlayer.enablePlayControls();
-					this.embedPlayer.triggerHelper("chromecastReceiverAdComplete");
-					this.loadMedia();
-					break;
-				case "chromecastReceiverAdDuration":
-					this.adDuration = parseInt(message.split('|')[1]);
-					this.embedPlayer.setDuration( this.adDuration );
-					break;
-				default:
-					break;
+				}catch(e){
+					this.log("Error parsing message JSON");
+				}
+			}else{
+				switch (message.split('|')[0]){
+					case "readyForMedia":
+						if ( this.getConfig("useReceiverSource") && message.split('|').length > 1){ // we got source and mime type as selected by the player running on the receiver
+							this.loadMedia(message.split('|')[1], message.split('|')[2]);
+						}else{
+							this.loadMedia();
+						}
+						break;
+					case "shutdown":
+						this.stopApp(); // receiver was shut down by the browser Chromecast icon - stop the app
+						break;
+					case "chromecastReceiverAdOpen":
+						this.embedPlayer.disablePlayControls(["chromecast"]);
+						this.embedPlayer.triggerHelper("chromecastReceiverAdOpen");
+						this.inSequence = true;
+						break;
+					case "chromecastReceiverAdComplete":
+						this.embedPlayer.enablePlayControls();
+						this.embedPlayer.triggerHelper("chromecastReceiverAdComplete");
+						this.loadMedia();
+						break;
+					case "chromecastReceiverAdDuration":
+						this.adDuration = parseInt(message.split('|')[1]);
+						this.embedPlayer.setDuration( this.adDuration );
+						break;
+					default:
+						break;
+				}
 			}
 		},
 

@@ -714,7 +714,7 @@ function setMediaElementEvents(mediaElement) {
 		var captions = {};
 		for (var c = 0; c < streamCount; c++) {
 			streamInfo = protocol.getStreamInfo(c);
-			if (streamInfo.mimeType === 'text') {
+			if (streamInfo.mimeType.indexOf('text') === 0) {
 				captions[c] = streamInfo.language;
 			} else if (streamInfo.mimeType === 'video/mp4' ||
 				streamInfo.mimeType === 'video/mp2t') {

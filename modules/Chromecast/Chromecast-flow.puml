@@ -18,6 +18,9 @@ Receiver -[#0000FF]-> Sender: chromecastReceiverAdOpen
 Receiver -[#0000FF]-> Sender: chromecastReceiverAdComplete
 Receiver -[#0000FF]-> Sender: chromecastReceiverAdDuration|{adDuration}
 Receiver -[#0000FF]-> Sender: shutdown
+== Chromecast plugin events API ==
+Player -[#00FF00]> API: chromecastCaptionsReceived (languagesHashTable)
+API -[#00FF00]> Player: chromecastSelectCaption (trackIndex)
 legend center
   Blue arrows represent messages send from the Receiver to the Sender
 endlegend
