@@ -726,7 +726,7 @@
 			} else {
 				this.log("Possible Error, layout mode not recognized: " + this.getConfig('layout') );
 			}
-			embedPlayer.triggerHelper("captionsUpdated",[$textTarget]);
+			embedPlayer.triggerHelper("captionsUpdated",$textTarget.html());
 		},
 		getInterfaceSizeTextCss: function( size ) {
 			//mw.log(' win size is: ' + $( window ).width() + ' ts: ' + textSize );
