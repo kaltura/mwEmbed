@@ -75,6 +75,7 @@
                     _this.log("error while trying to get voting metadata profile id, user will not be able to vote");
                     _this.globals.votingProfileId = null;
                 });
+
             }else
             {
                 _this.log("entry is in vod mode - disable voting feature for polls");
@@ -93,6 +94,7 @@
                 // ## get poll data to show
                 _this.getPollUserVote(_this.pollData.pollId).then(function (result) {
                     if (invokedByPollId === _this.pollData.pollId) {
+                        _this.userVote.isReady = true;
                         _this.userVote.answer = result.answer;
                         _this.userVote.metadataId = result.metadataId;
                         _this.view.syncDOMUserVoting();
@@ -192,8 +194,8 @@
                         _this.log("event '" + eventName + "' - start syncing current poll state");
                         if (_this.cuePointsManager) {
                             var cuePointsReachedArgs = _this.cuePointsManager.getCuePointsReached();
-                            _this.handleStateCuePoints(true);
-                            _this.handlePollResultsCuePoints(true);
+                            _this.handleStateCuePoints({reset:true});
+                            _this.handlePollResultsCuePoints({reset:true});
                         }
                         _this.log("event '" + eventName + "' - done syncing current poll state");
                     }
@@ -241,10 +243,11 @@
                        try {
                            var cuepoint = cuepoints[i];
                            var cuepointContent = cuepoint.partnerData ? JSON.parse(cuepoint.partnerData) : null;
+                            var pollIdTokens = (cuepoint.tags || '').match(/id:([^, ]*)/);
+                           var pollId = pollIdTokens && pollIdTokens.length === 2 ? pollIdTokens[1] : null;
 
-                           if (cuepointContent)
+                           if (cuepointContent && pollId)
                            {
-                               var pollId = cuepointContent.pollId;
                                var pollContent = cuepointContent.text;
 
                                if (pollId && pollContent) {
@@ -264,128 +267,116 @@
                 _this.cuePointsManager.onCuePointsReached = $.proxy(function(args)
                 {
                     // new cue points reached - change internal polls status when relevant cue points reached
-                    _this.handleStateCuePoints(args);
-                    _this.handlePollResultsCuePoints(args);
+                    _this.handleStateCuePoints({cuepointsArgs : args});
+                    _this.handlePollResultsCuePoints({cuepointsArgs : args});
                 },_this);
             }
         },
         /**
          * Modifies current poll results according to cue points reached.
          * This function searches for relevant cue points and if found changes current poll results
-         * @param args arguments provided by cue points manager with support for smart cue points filtering OR value 'true' to handle reset mode
+         * @param context arguments provided by cue points manager with support for smart cue points filtering OR value 'true' to handle reset mode
          */
-        handlePollResultsCuePoints: function (args)
+        handlePollResultsCuePoints: function (context)
         {
             var _this = this;
             var resetMode = false;
-            var cuePointArgs = args;
+            var cuepointsArgs = context.cuepointsArgs;
 
-            if ($.type(args) === 'boolean' )
-            {
-                if (args) {
-                    _this.log("handling reset mode for poll results");
-                    // # we should check all reached cue points and treat this scenario as reset (meaning if no cue points found should remove previous polls results)
-                    resetMode = true;
-                    cuePointArgs = _this.cuePointsManager.getCuePointsReached();
-                }else
-                {
-                    return;
-                }
+            if (context && context.reset) {
+                _this.log("handling reset mode for poll results");
+                // # we should check all reached cue points and treat this scenario as reset (meaning if no cue points found should remove previous polls results)
+                resetMode = true;
+                cuepointsArgs = _this.cuePointsManager.getCuePointsReached();
             }
 
-            _this.log("start syncing poll results by analyzing " + cuePointArgs.cuePoints.length + " reached cue points");
+            if (cuepointsArgs) {
+                _this.log("start syncing poll results by analyzing " + cuepointsArgs.cuePoints.length + " reached cue points");
 
-            if (_this.pollData.showResults || _this.pollData.showTotals)
-            {
-                // according to poll state should show poll results or totals
-                var pollResultsCuePoint = _this.filterPollResultsCuePoints(cuePointArgs);
-                if (pollResultsCuePoint && pollResultsCuePoint.partnerData) {
-                    try {
-                        _this.log("got updated results and/or total voters for current poll  - syncing current poll accordingly");
-                        var pollResults = JSON.parse(pollResultsCuePoint.partnerData);
-                        _this.pollData.pollResults = pollResults;
-                    } catch (e) {
-                        _this.log("invalid poll results structure - ignoring current result");
-                        _this.pollData.pollResults = null;
-                    }
+                if (_this.pollData.showResults || _this.pollData.showTotals) {
+                    // according to poll state should show poll results or totals
+                    var pollResultsCuePoint = _this.filterPollResultsCuePoints(cuepointsArgs);
+                    if (pollResultsCuePoint && pollResultsCuePoint.partnerData) {
+                        try {
+                            _this.log("got updated results and/or total voters for current poll  - syncing current poll accordingly");
+                            var pollResults = JSON.parse(pollResultsCuePoint.partnerData);
+                            _this.pollData.pollResults = pollResults;
+                        } catch (e) {
+                            _this.log("invalid poll results structure - ignoring current result");
+                            _this.pollData.pollResults = null;
+                        }
 
-                }else {
-                    if (resetMode) {
-                        _this.log("reset mode - didn't find any relevant poll results, removing current poll results (if any)");
-                        // in reset mode if we didn't find any relevant poll results we should assume current poll has not results
-                        _this.pollData.pollResults = null;
+                    } else {
+                        if (resetMode) {
+                            _this.log("reset mode - didn't find any relevant poll results, removing current poll results (if any)");
+                            // in reset mode if we didn't find any relevant poll results we should assume current poll has not results
+                            _this.pollData.pollResults = null;
+                        }
                     }
+                } else {
+                    _this.log("poll state is set to hide results and total voters - hiding poll results (if any)");
+                    // according to poll state should hide poll results
+                    _this.pollData.pollResults = null;
                 }
-            }else
-            {
-                _this.log("poll state is set to hide results and total voters - hiding poll results (if any)");
-                // according to poll state should hide poll results
-                _this.pollData.pollResults = null;
+
+                _this.log("done syncing poll results");
+
+
+                _this.view.syncDOMPollResults();
             }
-
-            _this.log("done syncing poll results");
-
-
-            _this.view.syncDOMPollResults();
         },
         /**
          * Modifies current poll status according to cue points reached.
          * This function searches for relevant cue points and if found changes current poll status
-         * @param args arguments provided by cue points manager with support for smart cue points filtering  OR value 'true' to handle reset mode
+         * @param context arguments provided by cue points manager with support for smart cue points filtering  OR value 'true' to handle reset mode
          */
-        handleStateCuePoints: function (args)
+        handleStateCuePoints: function (context)
         {
             var _this = this;
             var resetMode = false;
-            var cuePointArgs = args;
+            var cuepointsArgs = context.cuepointsArgs;
 
-            if ($.type(args) === 'boolean')
-            {
+            if (context && context.reset) {
+                _this.log("handling reset mode for poll results");
                 // # we should check all reached cue points and treat this scenario as reset (meaning if no cue points found should remove previous polls results)
-                if (args) {
-                    _this.log("handling reset mode for poll state");
-                    resetMode = true;
-                    cuePointArgs = _this.cuePointsManager.getCuePointsReached();
-                }else
-                {
-                    return;
-                }
+                resetMode = true;
+                cuepointsArgs = _this.cuePointsManager.getCuePointsReached();
             }
 
-            _this.log("start syncing current poll state by analyzing " + cuePointArgs.cuePoints.length + " reached cue points");
+            if (cuepointsArgs) {
+                _this.log("start syncing current poll state by analyzing " + cuepointsArgs.cuePoints.length + " reached cue points");
 
-            var stateCuePointToHandle = _this.filterStateCuePoints(cuePointArgs);
-            if (stateCuePointToHandle) {
-                try {
-                    var showingAPoll = stateCuePointToHandle.tags.indexOf('select-poll-state') > -1;
+                var stateCuePointToHandle = _this.filterStateCuePoints(cuepointsArgs);
+                if (stateCuePointToHandle) {
+                    try {
+                        var showingAPoll = stateCuePointToHandle.tags.indexOf('select-poll-state') > -1;
 
-                    if (showingAPoll) {
-                        _this.log("got state update for current poll  - syncing current poll with state '" + stateCuePointToHandle.partnerData + "'");
+                        if (showingAPoll) {
+                            _this.log("got state update for current poll  - syncing current poll with state '" + stateCuePointToHandle.partnerData + "'");
 
-                        var pollState = JSON.parse(stateCuePointToHandle.partnerData);
+                            var pollState = JSON.parse(stateCuePointToHandle.partnerData);
 
-                        if (pollState) {
-                            _this.showOrUpdatePollByState(pollState);
+                            if (pollState) {
+                                _this.showOrUpdatePollByState(pollState);
+                            }
+                        } else {
+                            _this.log("found an update for currently shown asset which is not of type poll, remove current poll (if any)");
+                            _this.removePoll();
                         }
-                    } else {
-                        _this.log("found an update for currently shown asset which is not of type poll, remove current poll (if any)");
+                    } catch (e) {
+                        // TODO [es]
+                    }
+
+                } else {
+                    if (resetMode) {
+                        _this.log("reset mode - didn't find any relevant poll state, removing current poll (if any)");
+                        // in reset mode if we didn't find any relevant poll we should remove the current one
                         _this.removePoll();
                     }
-                } catch (e) {
-                    // TODO [es]
                 }
 
-            }else {
-                if (resetMode) {
-                    _this.log("reset mode - didn't find any relevant poll state, removing current poll (if any)");
-                    // in reset mode if we didn't find any relevant poll we should remove the current one
-                    _this.removePoll();
-                }
+                _this.log("done syncing current poll state");
             }
-
-            _this.log("done syncing current poll state");
-
-            return !!stateCuePointToHandle;
         },
         /**
          * Removes currently shown poll (if any) from the view and reset polls plugin information
@@ -470,7 +461,7 @@
                             }
 
                             _this.view.syncPollDOM(); // make sure we update the view with the new poll
-                            _this.handlePollResultsCuePoints(true); // update currently shown poll results (if required)
+                            _this.handlePollResultsCuePoints({reset: true}); // update currently shown poll results (if required)
                         }else
                         {
                             // requesting to show a poll that we dont have data for - show visual error to the user
@@ -568,10 +559,12 @@
                 _this.userVote.answer = selectedAnswer;
                 _this.view.syncDOMUserVoting();
 
+
+
                 if (_this.userVote.metadataId) {
                     _this.log('user already voted for this poll, update user vote');
                     var invokedByPollId = _this.pollData.pollId;
-                    _this.kalturaProxy.transmitVoteUpdate(_this.userVote.metadataId, _this.globals.userId, selectedAnswer).then(function (result) {
+                    _this.kalturaProxy.transmitVoteUpdate(_this.userVote.metadataId, _this.globals.userId, selectedAnswer, _this.pollData.pollId).then(function (result) {
                         if (invokedByPollId === _this.pollData.pollId) {
                             _this.log('successfully updated server with user answer');
                             _this.userVote.inProgress = false;
@@ -587,7 +580,18 @@
                         }
                     });
                 } else {
-                    _this.log("user didn't vote yet in this poll, update user vote");
+                    _this.log("user didn't vote yet in this poll, add user vote");
+
+                    // increase total voters by 1
+                    if (_this.pollData.pollResults)
+                    {
+                        _this.pollData.pollResults.totalVoters++;
+                    }else {
+                        this.pollData.pollResults = { totalVoters : 1};
+                    }
+                    _this.view.syncDOMPollResults();
+
+
                     var invokedByPollId = _this.pollData.pollId;
                     _this.kalturaProxy.transmitNewVote(_this.pollData.pollId, _this.globals.votingProfileId, _this.globals.userId, selectedAnswer).then(function (result) {
                         if (invokedByPollId === _this.pollData.pollId) {
@@ -600,12 +604,22 @@
                     }, function (reason) {
                         if (invokedByPollId === _this.pollData.pollId) {
                             _this.log('error occurred while updating server with user answer - undo to previously selected answer (if any)');
+
+                            // reduce one vote that was added automatically
+                            if (_this.pollData.pollResults)
+                            {
+                                _this.pollData.pollResults.totalVoters--;
+                            }
+                            _this.view.syncDOMPollResults();
+
                             _this.userVote.inProgress = false;
                             _this.userVote.answer = previousAnswer;
                             _this.view.syncDOMUserVoting();
                         }
                     });
                 }
+
+
             } catch (e) {
                 _this.log('failed to get update user vote in kaltura server - undo to previously selected answer (if any)');
                 _this.userVote.inProgress = false;

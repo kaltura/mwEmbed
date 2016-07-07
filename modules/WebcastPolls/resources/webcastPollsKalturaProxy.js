@@ -50,7 +50,7 @@
                     'filter:orderBy': '-createdAt', // although only one vote is allowed per user, we fetch the last one so if for unknown reason we have duplicates, the user will see his last choice
                     'filter:objectType': 'KalturaAnnotationFilter',
                     'filter:cuePointTypeIn': 'annotation.Annotation',
-                    'filter:parentIdEqual': pollId,
+                    'filter:tagsMultiLikeOr': ('id:' + pollId),
 
                     /*Search  metadata   */
                     'filter:advancedSearch:objectType': 'KalturaMetadataSearchItem',
@@ -114,7 +114,7 @@
 
             return defer.promise();
         },
-        transmitVoteUpdate : function(metadataId, userId, selectedAnswer)
+        transmitVoteUpdate : function(metadataId, userId, selectedAnswer,pollId)
         {
             var _this = this;
             var defer = $.Deferred();
@@ -152,6 +152,7 @@
             var _this = this;
             var defer = $.Deferred();
 
+            return defer.promise();
             if (pollId && pollProfileId && userId && selectedAnswer) {
                 var createCuePointRequest = {
                     "service": "cuePoint_cuePoint",
@@ -159,8 +160,7 @@
                     "cuePoint:objectType": "KalturaAnnotation",
                     "cuePoint:entryId": _this.getPlayer().kentryid,
                     "cuePoint:isPublic": 1,
-                    "cuePoint:searchableOnEntry": 0,
-                    "cuePoint:tags": ('pollId:' + pollId)
+                    "cuePoint:tags": ('id:' + pollId)
                 };
 
                 var addMetadataRequest = {

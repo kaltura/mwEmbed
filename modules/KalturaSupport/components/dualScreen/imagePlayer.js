@@ -58,7 +58,7 @@
 				{
 					if (!_this.cuePointsManager) {
 						_this.cuePointsManager = new mw.webcast.CuePointsManager(_this.getPlayer(), function () {
-						}, "imagePlayerCuePointsManager");
+						}, "imagePlayer_CuePointsManager");
 
 						_this.cuePointsManager.onCuePointsReached = function (args) {
 							_this.cuePointsReached(args);

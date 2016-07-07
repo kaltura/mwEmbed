@@ -23,12 +23,6 @@
         addBindings : function()
         {
             var _this = this;
-            var player = _this.getPlayer();
-            var shouldRun = player && ((player.isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints")) || player.kCuePoints);
-            if (!shouldRun) {
-                _this.log('addBindings(): prerequisites check failed, disabling component');
-                return;
-            }
 
             _this.log('addBindings(): registering to events with bind postfix ' + _this.bindPostFix);
 
@@ -39,6 +33,13 @@
 
             _this.bind("playerReady", function() {
                 _this.log('addBindings(playerReady): start the monitor process');
+
+                var player = _this.getPlayer();
+                var shouldRun = player && ((player.isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints")) || player.kCuePoints);
+                if (!shouldRun) {
+                    _this.log('addBindings(): prerequisites check failed, not monitoring cuepoints for that entry');
+                    return;
+                }
                 _this.handleMonitoredCuepoints(_this.getCuePoints());
                 _this.startMonitorProcess();
             });

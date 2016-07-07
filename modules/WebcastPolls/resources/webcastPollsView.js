@@ -143,7 +143,7 @@
                     var showTotals = _this.parent.pollData.showTotals;
                     var showResults = _this.parent.pollData.showResults;
 
-                    if ( hasPollContent && pollResults )
+                    if ( hasPollContent && pollResults && pollResults.totalVoters )
                     {
                         var popularAnswers = '';
                         var popularValue = 0;
