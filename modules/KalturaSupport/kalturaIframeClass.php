@@ -658,10 +658,10 @@ HTML;
     			$theme = $playerConfig['plugins']['theme'];
     			$customStyle = '<style type="text/css">';
     			if (isset($theme['buttonsSize'])){
-    				$customStyle = $customStyle . '.controlsContainer, .topBarContainer {font-size: ' . $theme['buttonsSize'] . 'px}';
+    				$customStyle = $customStyle . '.mwPlayerContainer:not(.mobileSkin) .controlsContainer, .topBarContainer {font-size: ' . $theme['buttonsSize'] . 'px}';
     			}
     			if (isset($theme['buttonsColor'])){
-    				$customStyle = $customStyle . '.btn {background-color: ' . $theme['buttonsColor'] . '}';
+    				$customStyle = $customStyle . '.mwPlayerContainer:not(.mobileSkin) .btn {background-color: ' . $theme['buttonsColor'] . '}';
     				if (isset($theme['applyToLargePlayButton']) && $theme['applyToLargePlayButton'] == true){
     					$customStyle = $customStyle  . '.largePlayBtn {background-color: ' . $theme['buttonsColor'] . '!important}';
     				}
@@ -670,12 +670,12 @@ HTML;
     				$customStyle = $customStyle . '.ui-slider {background-color: ' . $theme['sliderColor'] . '!important}';
     			}
     			if (isset($theme['controlsBkgColor'])){
-    				$customStyle = $customStyle . '.controlsContainer {background-color: ' . $theme['controlsBkgColor'] . '!important}';
-    				$customStyle = $customStyle . '.controlsContainer {background: ' . $theme['controlsBkgColor'] . '!important}';
+    				$customStyle = $customStyle . '.mwPlayerContainer:not(.mobileSkin) .controlsContainer {background-color: ' . $theme['controlsBkgColor'] . '!important}';
+    				$customStyle = $customStyle . '.mwPlayerContainer:not(.mobileSkin) .controlsContainer {background: ' . $theme['controlsBkgColor'] . '!important}';
     			}
     			if (isset($theme['scrubberColor'])){
-    				$customStyle = $customStyle . '.playHead {background-color: ' . $theme['scrubberColor'] . '!important}';
-    				$customStyle = $customStyle . '.playHead {background: ' . $theme['scrubberColor'] . '!important}';
+    				$customStyle = $customStyle . '.mwPlayerContainer:not(.mobileSkin) .playHead {background-color: ' . $theme['scrubberColor'] . '!important}';
+    				$customStyle = $customStyle . '.mwPlayerContainer:not(.mobileSkin) .playHead {background: ' . $theme['scrubberColor'] . '!important}';
     			}
     			if (isset($theme['buttonsIconColor'])){
     				$customStyle = $customStyle . '.btn {color: ' . $theme['buttonsIconColor'] . '!important}';

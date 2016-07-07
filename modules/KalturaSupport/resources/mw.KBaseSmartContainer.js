@@ -96,6 +96,12 @@
 				}
 			});
 
+			this.bind('playerReady', function(){
+				if (_this.registeredPlugins.length < 2) {
+					_this.hide();
+				}
+			});
+
 		},
 		hideRegisteredPlugins: function(){
 			this.pluginsScreenOpened = false;
