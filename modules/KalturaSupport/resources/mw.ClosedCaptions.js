@@ -57,7 +57,7 @@
 			this.embedPlayer.bindHelper("propertyChangedEvent", function(event, data){
 				if ( data.plugin === _this.pluginName ){
 					if ( data.property === "captions" ){
-						_this.getMenu().$el.find("li a")[data.value].click();
+						_this.getMenu().$el.find("li a[title="+data.value+"]").click();
 					}
 				}
 			});
@@ -562,10 +562,12 @@
 			}
 		},
 		selectSourceByLangKey: function( langKey ){
+			var _this = this;
 			var selectedSource = null;
 			$.each(this.textSources, function(idx, source){
 				if( source.srclang && langKey == source.srclang.toLowerCase() ){
 					selectedSource = source;
+					_this.embedPlayer.triggerHelper("sourceSelectedByLangKey",[selectedSource.label]);
 					return false;
 				}
 			});
@@ -724,6 +726,7 @@
 			} else {
 				this.log("Possible Error, layout mode not recognized: " + this.getConfig('layout') );
 			}
+			embedPlayer.triggerHelper("captionsUpdated",$textTarget.html());
 		},
 		getInterfaceSizeTextCss: function( size ) {
 			//mw.log(' win size is: ' + $( window ).width() + ' ts: ' + textSize );

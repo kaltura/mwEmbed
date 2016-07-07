@@ -82,6 +82,19 @@
 				_this.triggerHelper("broadcastToSender", ["chromecastReceiverAdComplete"]);
 				_this.triggerHelper("cancelAllAds");
 			});
+			this.bindHelper("ccSelectClosedCaptions sourceSelectedByLangKey", function(e, label){
+				_this.triggerHelper("propertyChangedEvent", {"plugin": "closedCaptions", "property":"captions", "value": typeof label === "string" ? label : label[0]});
+				$(parent.document.getElementById('captionsOverlay')).empty();
+			});
+			this.bindHelper("captionsUpdated", function(e, html){
+				var $captionsOverlayTarget = $(parent.document.getElementById('captionsOverlay'));
+				var $textTarget = $('<div style="bottom: 0px; text-align: center; position: absolute; width: 100%; opacity: 0.8"/>')
+					.addClass('track')
+					.html(html)
+					.addClass('caption')
+					.css('pointer-events', 'auto');
+				$captionsOverlayTarget.empty().append( $textTarget );
+			});
 		},
 		/**
 		 * Apply media element bindings
