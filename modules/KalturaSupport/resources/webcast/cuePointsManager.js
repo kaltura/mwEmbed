@@ -101,8 +101,8 @@
             var tagsLike = (_this._monitoredCuepoints && _this._monitoredCuepoints.tagsLike) ? _this._monitoredCuepoints.tagsLike : '';
 
             _this._monitoredCuepoints = {
-                lastUpdatedAt : 0,
-                lastUpdateCuePoints : [],
+                lastCreatedAt : 0,
+                lastCreatedCuePoints : [],
                 intervalId : null,
                 tagsLike : tagsLike,
                 enabled : false,
@@ -142,11 +142,11 @@
                     'filter:statusIn': '1,3', //1=READY, 3=HANDLED  (3 is after copying to VOD)
                     'filter:cuePointTypeIn': 'codeCuePoint.Code',
                     'filter:tagsLike' : _this._monitoredCuepoints.tagsLike,
-                    'filter:orderBy': "+createdAt" //let backend sorting them
+                    'filter:orderBy': "+createdAt"
                 };
 
-                if (_this._monitoredCuepoints.lastUpdatedAt) {
-                    request['filter:updatedAtGreaterThanOrEqual'] =  _this._monitoredCuepoints.lastUpdatedAt;
+                if (_this._monitoredCuepoints.lastCreatedAt) {
+                    request['filter:createdAtGreaterThanOrEqual'] =  _this._monitoredCuepoints.lastCreatedAt;
                 }
 
 
@@ -193,8 +193,8 @@
 
                 if (cuepoints && cuepoints.length)
                 {
-                    var newLastUpdatedAtValue = _this._monitoredCuepoints.lastUpdatedAt;
-                    var newLastUpdateCuePoints = _this._monitoredCuepoints.lastUpdateCuePoints.slice();
+                    var newLastCreatedAtValue = _this._monitoredCuepoints.lastCreatedAt;
+                    var newLastCreatedCuePoints = _this._monitoredCuepoints.lastCreatedCuePoints.slice();
 
                     // filter relevant cue points of registered requests
                     for(var i=0;i<cuepoints.length;i++) {
@@ -205,19 +205,19 @@
                         {
                             /*
                              * Important: Since determining if a cue point should be handled is essential yet we don't want to sort the array due to performance considerations,
-                             * We will perform a comparison against the updated at value of the previous request and only later will update the internal members.
-                             * This way we are not affected if the array was not ordered by updated at.
+                             * We will perform a comparison against the created at value of the previous request and only later will update the internal members.
+                             * This way we are not affected if the array was not ordered by created at.
                              */
-                            if (cuepoint.updatedAt > newLastUpdatedAtValue) {
+                            if (cuepoint.createdAt > newLastCreatedAtValue) {
                                 // ** the retrieved cue point is the most updated one - update variables
-                                newLastUpdateCuePoints = [cuepoint.id];
-                                newLastUpdatedAtValue = cuepoint.updatedAt;
+                                newLastCreatedCuePoints = [cuepoint.id];
+                                newLastCreatedAtValue = cuepoint.createdAt;
                                 shouldHandle = true;
-                            } else if (cuepoint.updatedAt === newLastUpdatedAtValue && newLastUpdateCuePoints.indexOf(cuepoint.id) === -1) {
+                            } else if (cuepoint.createdAt === newLastCreatedAtValue && newLastCreatedCuePoints.indexOf(cuepoint.id) === -1) {
                                 // ** the retrieved cue point has the same updated at value as the most updated one - update variables
-                                newLastUpdateCuePoints.push(cuepoint.id);
+                                newLastCreatedCuePoints.push(cuepoint.id);
                                 shouldHandle = true;
-                            } else if (cuepoint.updatedAt >= _this._monitoredCuepoints.lastUpdatedAt && _this._monitoredCuepoints.lastUpdateCuePoints.indexOf(cuepoint.id) === -1) {
+                            } else if (cuepoint.createdAt >= _this._monitoredCuepoints.lastCreatedAt && _this._monitoredCuepoints.lastCreatedCuePoints.indexOf(cuepoint.id) === -1) {
                                 // ** This is fallback condition - handle cue points that were updated since previous request but due to sorting issue is being handled after a cue point with higher updated at value.
                                 shouldHandle = true;
                             }
@@ -252,8 +252,8 @@
                     }
 
                     // update variables to be used during next request.
-                    _this._monitoredCuepoints.lastUpdatedAt = newLastUpdatedAtValue;
-                    _this._monitoredCuepoints.lastUpdateCuePoints = newLastUpdateCuePoints;
+                    _this._monitoredCuepoints.lastCreatedAt = newLastCreatedAtValue;
+                    _this._monitoredCuepoints.lastCreatedCuePoints = newLastCreatedCuePoints;
                 }
 
                 // invoke callback for monitored cue points
