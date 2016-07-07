@@ -160,7 +160,7 @@
                     "cuePoint:entryId": _this.getPlayer().kentryid,
                     "cuePoint:isPublic": 1,
                     "cuePoint:searchableOnEntry": 0,
-                    "cuePoint:parentId": pollId
+                    "cuePoint:tags": ('pollId:' + pollId)
                 };
 
                 var addMetadataRequest = {
