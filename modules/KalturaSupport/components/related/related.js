@@ -21,7 +21,8 @@
 			formatCountdown : false,
 			clickUrl : null,
 			enableAccessControlExclusion:false,
-			storeSession: false
+			storeSession: false,
+			openInNewTab: false
 		},
 		viewedEntries: [],
 		iconBtnClass: 'icon-related',
@@ -386,11 +387,15 @@
 
 			if(this.getConfig('clickUrl')){
 				try {
+					if( this.getConfig( 'openInNewTab' ) === true ) {
+						window.open(this.getConfig('clickUrl'), '_blank');
+						return;
+					}
 					window.parent.location.href = this.getConfig('clickUrl');
 					return;
 				}catch(err){
 					window.open(this.getConfig('clickUrl'));
-					return;
+				 	return;
 				}
 			}
 
