@@ -230,18 +230,21 @@
                             for (var j = 0; j < types.length; j++) {
                                 var type = types[j];
 
-                                // check if cuepoint type is requested
-                                var callbacks = _this._monitoredCuepoints.typesMapping[type];
+                                if (type.indexOf(':') === -1) // make sure you dont handle tag that is multi context
+                                {
+                                    // check if cuepoint type is requested
+                                    var callbacks = _this._monitoredCuepoints.typesMapping[type];
 
-                                if (callbacks && callbacks.length) {
-                                    // add cue point to list of monitored types (aggregate by type)
-                                    var monitoredCuepointsByType = relevantCuepoints[type];
-                                    if (!monitoredCuepointsByType) {
-                                        monitoredCuepointsByType = relevantCuepoints[type] = [];
+                                    if (callbacks && callbacks.length) {
+                                        // add cue point to list of monitored types (aggregate by type)
+                                        var monitoredCuepointsByType = relevantCuepoints[type];
+                                        if (!monitoredCuepointsByType) {
+                                            monitoredCuepointsByType = relevantCuepoints[type] = [];
+                                        }
+
+                                        _this.log("handleMonitoredCuepoints(): got flagged cuepoint to monitor of type '" + type + "' with cuepoint id '" + cuepoint.id + "'");
+                                        monitoredCuepointsByType.push(cuepoint);
                                     }
-
-                                    _this.log("handleMonitoredCuepoints(): got flagged cuepoint to monitor of type '" + type + "' with cuepoint id '" + cuepoint.id + "'");
-                                    monitoredCuepointsByType.push(cuepoint);
                                 }
                             }
                         }
