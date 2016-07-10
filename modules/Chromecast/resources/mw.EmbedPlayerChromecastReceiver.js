@@ -51,7 +51,6 @@
 			$(this).bind('layoutBuildDone', function(){
 				this.getVideoHolder().find('video').remove();
 			});
-
 			this.setPlayerElement(parent.document.getElementById('receiverVideoElement'));
 			this.addBindings();
 			this.applyMediaElementBindings();
@@ -139,6 +138,8 @@
 		},
 		_onplaying:function(){
 			this.hideSpinner();
+			this.triggerHelper("playing");
+			this.embedPlayer.triggerHelper( 'hidePlayerControls' );
 		},
 		/**
 		 * Handle the native play event
@@ -153,6 +154,8 @@
 				this.triggerHelper('replayEvent');
 				this.triggerReplayEvent = false;
 			}
+			this.embedPlayer.triggerHelper( 'hidePlayerControls' );
+
 		},
 
 		_onseeking: function () {
@@ -170,6 +173,9 @@
 				if (this._propagateEvents && !this.isLive()) {
 					this.triggerHelper('seeked', [this.getPlayerElementTime()]);
 				}
+			}
+			if (this.playing){
+				this.embedPlayer.triggerHelper( 'hidePlayerControls' );
 			}
 		},
 

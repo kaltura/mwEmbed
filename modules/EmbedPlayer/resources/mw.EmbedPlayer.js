@@ -2201,7 +2201,8 @@
 
 		isMobileSkin: function(){
 			var skin = this.getRawKalturaConfig("layout") ? this.getRawKalturaConfig("layout").skin : "kdark";
-			return ( mw.getConfig("EmbedPlayer.EnableMobileSkin") === true && skin === "kdark" && mw.isMobileDevice() && !mw.isWindowsPhone() );
+			return (mw.isChromeCast() || ( mw.getConfig("EmbedPlayer.EnableMobileSkin") === true && skin === "kdark" &&
+			mw.isMobileDevice() && !mw.isWindowsPhone() ));
 		},
 
 		/**

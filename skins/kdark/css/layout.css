@@ -195,6 +195,11 @@ body {
     font-size: 1.5em;
 }
 
+.mobileSkin.pause-state .titleLabel{
+    display: block !important;
+    display: -webkit-box !important;
+}
+
 .mobileSkin.start-state .titleLabel{
     display: block !important;
     display: -webkit-box !important;

@@ -150,6 +150,10 @@ onload = function () {
 					};
 					fv = extend(fv, payload['flashVars']);
 					fv['controlBarContainer'] = {hover:true};
+					fv['volumeControl'] ={plugin:false};
+					fv['titleLabel'] ={plugin:true};
+					fv['fullScreenBtn'] ={plugin:false};
+
 					var mimeType = null;
 					var src = null;
 
