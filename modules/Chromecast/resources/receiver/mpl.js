@@ -149,7 +149,7 @@ onload = function () {
 						}
 					};
 					fv = extend(fv, payload['flashVars']);
-
+					fv['controlBarContainer'] = {hover:true};
 					var mimeType = null;
 					var src = null;
 

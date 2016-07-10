@@ -68,6 +68,11 @@
 		 */
 		addBindings: function(){
 			var _this = this;
+			this.bindHelper("layoutBuildDone", function(){
+				_this.getVideoHolder().css("backgroundColor","transparent");
+				$("body").css("backgroundColor","transparent");
+
+			});
 			this.bindHelper("replay", function(){
 				_this.triggerReplayEvent = true;
 				_this.triggerHelper("playerReady"); // since we reload the media for replay, trigger playerReady to reset Analytics
@@ -132,7 +137,9 @@
 			$(this).trigger('onPlayerStateChange', [ "pause", "play" ]);
 
 		},
-
+		_onplaying:function(){
+			this.hideSpinner();
+		},
 		/**
 		 * Handle the native play event
 		 */
