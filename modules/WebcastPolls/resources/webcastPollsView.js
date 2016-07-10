@@ -37,6 +37,12 @@
                     _this.$webcastPoll = $poll;
                     _this.getPlayer().getVideoHolder().append(_this.$webcastPoll);
 
+                    _this.$webcastPoll.on("click touchstart", function (e) {
+                        if (!$(e.target).hasClass('answer')) {
+                            _this.embedPlayer.triggerHelper(e);
+                        }
+                    });
+
                     _this._handleLayout();
                 }
             } catch (e) {
@@ -99,8 +105,11 @@
         removeWebcastPollElement: function () {
             var _this = this;
             if (_this.$webcastPoll) {
-                _this.$webcastPoll.remove();
-                _this.$webcastPoll = null;
+                _this.$webcastPoll.fadeOut('fast',function()
+                {
+                    _this.$webcastPoll.remove();
+                    _this.$webcastPoll = null;
+                });
             }
 
             _this._currentViewType = null;
