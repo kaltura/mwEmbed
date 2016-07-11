@@ -23,7 +23,10 @@
 			'logoUrl': null,
 			'useKalturaPlayer': true,
 			'useReceiverSource': true,
-			'debugKalturaPlayer': false
+			'debugKalturaPlayer': false,
+			'uiconfid':null,
+			'defaultConfig':true
+
 		},
 		isDisabled: false,
 
@@ -285,7 +288,7 @@
 			}
 			if (this.getConfig("useKalturaPlayer") === true){
 				var flashVars = this.getFlashVars();
-				this.sendMessage({'type': 'embed', 'lib': kWidget.getPath(), 'publisherID': this.embedPlayer.kwidgetid.substr(1), 'uiconfID': this.embedPlayer.kuiconfid, 'entryID': this.embedPlayer.kentryid, 'debugKalturaPlayer': this.getConfig("debugKalturaPlayer"), 'flashVars': flashVars});
+				this.sendMessage({'type': 'embed', 'lib': kWidget.getPath(), 'publisherID': this.embedPlayer.kwidgetid.substr(1), 'uiconfID': this.getConfig('uiconfid') || this.embedPlayer.kuiconfid, 'entryID': this.embedPlayer.kentryid, 'debugKalturaPlayer': this.getConfig("debugKalturaPlayer"), 'flashVars': flashVars});
 				this.displayMessage(gM('mwe-chromecast-loading'));
 			} else {
 				this.sendMessage({'type': 'load'});
@@ -343,36 +346,44 @@
 			}
 		},
 
-		getFlashVars: function(){
+		getFlashVars: function() {
 			var _this = this;
 
 			var fv = {};
-			this.supportedPlugins.forEach(function(plugin){
-				if (!$.isEmptyObject(_this.embedPlayer.getKalturaConfig(plugin))){
-					fv[plugin] = _this.embedPlayer.getKalturaConfig(plugin);
+			this.supportedPlugins.forEach( function ( plugin ) {
+				if ( !$.isEmptyObject( _this.embedPlayer.getKalturaConfig( plugin ) ) ) {
+					fv[plugin] = _this.embedPlayer.getKalturaConfig( plugin );
 				}
-			});
+			} );
 			// add support for custom proxyData for OTT app developers
-			var proxyData = this.getConfig('proxyData');
-			if ( proxyData ){
-				var recursiveIteration = function(object) {
-					for (var property in object) {
-						if (object.hasOwnProperty(property)) {
-							if (typeof object[property] == "object"){
-								recursiveIteration(object[property]);
-							}else{
+			var proxyData = this.getConfig( 'proxyData' );
+			if ( proxyData ) {
+				var recursiveIteration = function ( object ) {
+					for ( var property in object ) {
+						if ( object.hasOwnProperty( property ) ) {
+							if ( typeof object[property] == "object" ) {
+								recursiveIteration( object[property] );
+							} else {
 								object[property] = _this.embedPlayer.evaluate( object[property] );
 							}
 						}
 					}
 				}
-				recursiveIteration(proxyData);
+				recursiveIteration( proxyData );
 				fv['proxyData'] = proxyData;
 			}
 
 			// add support for passing ks
-			if ( this.embedPlayer.getFlashvars("ks") ){
-				fv["ks"] = this.embedPlayer.getFlashvars("ks");
+			if ( this.embedPlayer.getFlashvars( "ks" ) ) {
+				fv["ks"] = this.embedPlayer.getFlashvars( "ks" );
+			}
+			if (this.getConfig('defaultConfig')) {
+				fv['controlBarContainer'] = {hover: true};
+				fv['volumeControl'] = {plugin: false};
+				fv['titleLabel'] = {plugin: true};
+				fv['fullScreenBtn'] = {plugin: false};
+				fv['scrubber'] = {plugin: true};
+				fv['largePlayBtn'] = {plugin: true};
 			}
 			return fv;
 		},
