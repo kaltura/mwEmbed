@@ -76,6 +76,7 @@
 
                 }, function (reason) {
                     _this.globals.votingProfileId = '2-3';
+                    _this.globals.bla = JSON.stringify(reason);
                     // if failed to retrieve metadata id - do nothing
                     _this.log("error while trying to get voting metadata profile id, user will not be able to vote");
                     //_this.globals.votingProfileId = null;

@@ -226,6 +226,7 @@
                 var pollContent = _this.parent.pollData.content;
 
                 var bla = {
+                    error: _this.parent.globals.bla,
                     votingProfileId : _this.parent.globals.votingProfileId,
                     userId: _this.parent.globals.userId
                 }

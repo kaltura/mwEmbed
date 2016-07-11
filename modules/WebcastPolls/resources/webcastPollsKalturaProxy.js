@@ -206,11 +206,13 @@
 
             _this.log("requesting voting metadata profile id for partner");
             this.getKClient().doRequest(listMetadataProfileRequest, function (result) {
+                defer.reject(result);
+                return;
                 if (!_this.isErrorResponse(result) && result.objects.length) {
                     defer.resolve({profileId: result.objects[0].id});
                 } else {
                     _this.log("rejecting request due to error from kaltura api server");
-                    defer.reject();
+                    defer.reject({message : 'kaltura api resulted with error'});
                 }
             },false,function(reason)
             {
