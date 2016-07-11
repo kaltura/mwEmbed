@@ -8,11 +8,10 @@
         _monitoredCuepoints : {
             entryContext : null, // this value is being initialized by function 'resetMonitorVariables'
             intervalId : null,
-            tagsLike : tagsLike,
+            tagsLike : '',
             enabled : false,
-            typesMapping : persistTypesMapping
+            typesMapping : {}
         },
-        
         setup: function () {
             var _this = this;
             _this.resetMonitorVariables();
