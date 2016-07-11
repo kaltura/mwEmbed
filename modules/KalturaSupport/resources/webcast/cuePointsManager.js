@@ -171,11 +171,15 @@
                 );
             }
 
-            var liveCuepointsRequestInterval = mw.getConfig("EmbedPlayer.LiveCuepointsRequestInterval", 10000);
+            var player = _this.getPlayer();
+            (player.isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints"))
+            {
+                var liveCuepointsRequestInterval = mw.getConfig("EmbedPlayer.LiveCuepointsRequestInterval", 10000);
 
-            if (_this._monitoredCuepoints.enabled) {
-                _this.log("startMonitorProcess: Invoking retrieve interval every " + liveCuepointsRequestInterval + " milli-seconds");
-                _this._monitoredCuepoints.intervalId = setInterval(retrieveServerCuepoints,liveCuepointsRequestInterval );
+                if (_this._monitoredCuepoints.enabled) {
+                    _this.log("startMonitorProcess: Invoking retrieve interval every " + liveCuepointsRequestInterval + " milli-seconds");
+                    _this._monitoredCuepoints.intervalId = setInterval(retrieveServerCuepoints, liveCuepointsRequestInterval);
+                }
             }
         },
         handleMonitoredCuepoints : function(cuepoints)
