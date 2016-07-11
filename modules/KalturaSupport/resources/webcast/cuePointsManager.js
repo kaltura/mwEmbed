@@ -56,6 +56,11 @@
                     var player = _this.getPlayer();
                     var currentTime = player.getPlayerElementTime() * 1000;
 
+                    if (e.type === 'monitorEvent' && !_this.embedPlayer.isPlaying()){
+                        // bypass problem with player that starts throwing monitor event even when paused after user seek while he is not playing
+                        return;
+                    }
+
                     if (currentTime < 0) {
                         // ignore undesired temporary use cases
                         return;
@@ -115,6 +120,7 @@
             if (_this._monitoredCuepoints.intervalId)
             {
                 clearInterval(_this._monitoredCuepoints.intervalId);
+                _this._monitoredCuepoints.intervalId = null;
             }
 
             _this.log('stopMonitorProcess(): Stopped monitor process');
