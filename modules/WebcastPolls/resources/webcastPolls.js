@@ -57,29 +57,34 @@
 
 
             // ## only if live - fetch information that will assist later with voting
-
+            _this.globals.votingProfileId = '1';
             if (this.embedPlayer.isLive()) {
+                _this.globals.votingProfileId = '2';
                 // get user id (will be used later when voting or fetching user vote)
                 _this.globals.userId = _this.userProfile.getUserID($.proxy(_this.getConfig, _this));
                 _this.log("got user id '" + _this.globals.userId + "'  that will be used for voting");
 
+                _this.globals.votingProfileId = '2-1';
                 //  get voting metadata id needed to create user voting
                 _this.kalturaProxy.getVoteCustomMetadataProfileId().then(function (result) {
+                    _this.globals.votingProfileId = '2-2';
                     _this.log("got voting metadata profile id '" + result.profileId + "', reload current poll user voting (if any)");
                     // got metadata id - store for later use and reload user voting of current poll
-                    _this.globals.votingProfileId = result.profileId;
-                    _this.globals.votingProfileId = JSON.stringify(result);
+                    //_this.globals.votingProfileId = result.profileId;
+
                     _this.reloadPollUserVoting();
 
                 }, function (reason) {
+                    _this.globals.votingProfileId = '2-3';
                     // if failed to retrieve metadata id - do nothing
                     _this.log("error while trying to get voting metadata profile id, user will not be able to vote");
-                    _this.globals.votingProfileId = null;
-                    _this.globals.votingProfileId = JSON.stringify(reason);
+                    //_this.globals.votingProfileId = null;
+
                 });
 
             }else
             {
+                _this.globals.votingProfileId = '3';
                 _this.log("entry is in vod mode - disable voting feature for polls");
 
             }
