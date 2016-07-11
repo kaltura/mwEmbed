@@ -5,7 +5,14 @@
     mw.webcast.CuePointsManager = mw.KBasePlugin.extend({
         _nextPendingCuePointIndex: 0,
         _lastHandledServerTime: null,
-        _monitoredCuepoints : null, // this value is being initialized by function 'resetMonitorVariables'
+        _monitoredCuepoints : {
+            entryContext : null, // this value is being initialized by function 'resetMonitorVariables'
+            intervalId : null,
+            tagsLike : tagsLike,
+            enabled : false,
+            typesMapping : persistTypesMapping
+        },
+        
         setup: function () {
             var _this = this;
             _this.resetMonitorVariables();
@@ -95,21 +102,12 @@
         {
             var _this = this;
 
-            _this.log('resetMonitorVariables(): Resetting monitor variables');
+            _this.log('resetMonitorVariables(): Resetting monitor variables for current entry');
 
-            var persistTypesMapping = (_this._monitoredCuepoints && _this._monitoredCuepoints.typesMapping) ? _this._monitoredCuepoints.typesMapping : {};
-            var tagsLike = (_this._monitoredCuepoints && _this._monitoredCuepoints.tagsLike) ? _this._monitoredCuepoints.tagsLike : '';
-
-            _this._monitoredCuepoints = {
+            _this._monitoredCuepoints.entryContext = {
                 lastCreatedAt : 0,
-                lastCreatedCuePoints : [],
-                intervalId : null,
-                tagsLike : tagsLike,
-                enabled : false,
-                typesMapping : persistTypesMapping
+                lastCreatedCuePoints : []
             };
-
-
         },
         stopMonitorProcess : function(args)
         {
@@ -145,8 +143,8 @@
                     'filter:orderBy': "+createdAt"
                 };
 
-                if (_this._monitoredCuepoints.lastCreatedAt) {
-                    request['filter:createdAtGreaterThanOrEqual'] =  _this._monitoredCuepoints.lastCreatedAt;
+                if (_this._monitoredCuepoints.entryContext.lastCreatedAt) {
+                    request['filter:createdAtGreaterThanOrEqual'] =  _this._monitoredCuepoints.entryContext.lastCreatedAt;
                 }
 
 
@@ -193,8 +191,8 @@
 
                 if (cuepoints && cuepoints.length)
                 {
-                    var newLastCreatedAtValue = _this._monitoredCuepoints.lastCreatedAt;
-                    var newLastCreatedCuePoints = _this._monitoredCuepoints.lastCreatedCuePoints.slice();
+                    var newLastCreatedAtValue = _this._monitoredCuepoints.entryContext.lastCreatedAt;
+                    var newLastCreatedCuePoints = _this._monitoredCuepoints.entryContext.lastCreatedCuePoints.slice();
 
                     // filter relevant cue points of registered requests
                     for(var i=0;i<cuepoints.length;i++) {
@@ -217,7 +215,7 @@
                                 // ** the retrieved cue point has the same updated at value as the most updated one - update variables
                                 newLastCreatedCuePoints.push(cuepoint.id);
                                 shouldHandle = true;
-                            } else if (cuepoint.createdAt >= _this._monitoredCuepoints.lastCreatedAt && _this._monitoredCuepoints.lastCreatedCuePoints.indexOf(cuepoint.id) === -1) {
+                            } else if (cuepoint.createdAt >= _this._monitoredCuepoints.entryContext.lastCreatedAt && _this._monitoredCuepoints.entryContext.lastCreatedCuePoints.indexOf(cuepoint.id) === -1) {
                                 // ** This is fallback condition - handle cue points that were updated since previous request but due to sorting issue is being handled after a cue point with higher updated at value.
                                 shouldHandle = true;
                             }
@@ -252,8 +250,8 @@
                     }
 
                     // update variables to be used during next request.
-                    _this._monitoredCuepoints.lastCreatedAt = newLastCreatedAtValue;
-                    _this._monitoredCuepoints.lastCreatedCuePoints = newLastCreatedCuePoints;
+                    _this._monitoredCuepoints.entryContext.lastCreatedAt = newLastCreatedAtValue;
+                    _this._monitoredCuepoints.entryContext.lastCreatedCuePoints = newLastCreatedCuePoints;
                 }
 
                 // invoke callback for monitored cue points

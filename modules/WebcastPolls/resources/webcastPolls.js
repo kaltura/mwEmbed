@@ -182,11 +182,16 @@
             switch(eventName)
             {
                 case 'onpause':
+                    _this.log("event '" + eventName + "' triggered - removing current poll (if any)");
+                    // remove current poll is found when player is being paused
+                    _this.removePoll();
+                    break;
                 case 'onChangeMedia':
                     _this.log("event '" + eventName + "' triggered - removing current poll (if any)");
-                    // remove current poll is found when player is being paused or when changing media (during playlist for example)
+                    // remove current poll is found when changing media (during channel playlist for example)
                     _this.removePoll();
 
+                    // clear poll content of previous entry
                     _this.globals.pollsContentMapping = {};
                     break;
                 case 'onplay':
