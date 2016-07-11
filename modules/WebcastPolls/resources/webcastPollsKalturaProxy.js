@@ -215,7 +215,7 @@
             },false,function(reason)
             {
                 _this.log("rejecting request due to error from kaltura api server with reason " + (reason ? JSON.stringify(reason) : ''));
-                defer.reject();
+                defer.reject(reason);
             });
 
             return defer.promise();

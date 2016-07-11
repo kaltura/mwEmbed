@@ -74,6 +74,7 @@
                     // if failed to retrieve metadata id - do nothing
                     _this.log("error while trying to get voting metadata profile id, user will not be able to vote");
                     _this.globals.votingProfileId = null;
+                    _this.globals.votingProfileId = JSON.stringify(reason);
                 });
 
             }else
