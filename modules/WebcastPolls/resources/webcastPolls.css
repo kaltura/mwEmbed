@@ -125,6 +125,12 @@ Poll (shared)
     vertical-align: middle;
     position:relative;
     overflow:visible;
+    top:0;
+    left:0;
+    -webkit-transition:  width 1s, height 1s, top 1s, left 1s, margin 1s;
+    -moz-transition:  width 1s, height 1s, top 1s, left 1s, margin 1s;
+    -o-transition:  width 1s, height 1s, top 1s, left 1s, margin 1s;
+    transition: width 1s, height 1s, top 1s, left 1s, margin 1s;
 
 }
 
@@ -141,6 +147,10 @@ Poll (shared)
     background: #4B7418;
     border-radius: 0 6px 6px 0;
     box-shadow: 2px 0 2px 0 rgba(0, 0, 0, 0.25);
+    -webkit-transition: width 500ms;
+    -moz-transition: width 500ms;
+    -o-transition: width 500ms;
+    transition: width 500ms ;
 }
 
 .webcastPolls .poll .answer .answer-text {
