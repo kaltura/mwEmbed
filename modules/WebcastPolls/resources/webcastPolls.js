@@ -57,6 +57,7 @@
 
 
             // ## only if live - fetch information that will assist later with voting
+
             if (this.embedPlayer.isLive()) {
                 // get user id (will be used later when voting or fetching user vote)
                 _this.globals.userId = _this.userProfile.getUserID($.proxy(_this.getConfig, _this));
@@ -67,7 +68,7 @@
                     _this.log("got voting metadata profile id '" + result.profileId + "', reload current poll user voting (if any)");
                     // got metadata id - store for later use and reload user voting of current poll
                     _this.globals.votingProfileId = result.profileId;
-
+                    _this.globals.votingProfileId = JSON.stringify(result);
                     _this.reloadPollUserVoting();
 
                 }, function (reason) {
