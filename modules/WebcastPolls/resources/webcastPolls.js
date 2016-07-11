@@ -16,7 +16,7 @@
         pollData: {}, // ## Should remain empty (filled by 'resetPersistData')
         /* stores all the information that doesn't relate directly to the poll currently selected */
         globals : {
-            pollsContentMapping : {},
+            pollsContentMapping : {}, // stores the polls questions/answers - resetting this object during ChangeMedia event
             votingProfileId: null, // used to create a voting cue point (with relevant metadata)
             userId: null, // used to mange user voting (prevent duplication of voting)
             isPollShown: false // indicate if we actually showing a poll (all minimal poll data was retrieved and the poll can be shown)
@@ -186,6 +186,8 @@
                     _this.log("event '" + eventName + "' triggered - removing current poll (if any)");
                     // remove current poll is found when player is being paused or when changing media (during playlist for example)
                     _this.removePoll();
+
+                    _this.globals.pollsContentMapping = {};
                     break;
                 case 'onplay':
                     if (eventName === 'onplay') {
@@ -193,7 +195,6 @@
                         // Note that since onplay is triggered also after seeking we don't need to handle that event explicitly
                         _this.log("event '" + eventName + "' - start syncing current poll state");
                         if (_this.cuePointsManager) {
-                            var cuePointsReachedArgs = _this.cuePointsManager.getCuePointsReached();
                             _this.handleStateCuePoints({reset:true});
                             _this.handlePollResultsCuePoints({reset:true});
                         }
