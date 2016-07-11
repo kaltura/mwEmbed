@@ -432,8 +432,10 @@
                 {
                     startFromIndex = (startFromIndex < 0) ? 0 : startFromIndex;
 
-                    for (var i = startFromIndex; i < _this.getCuePoints().length; i++) {
-                        var curPoint = _this.getCuePoints()[i];
+                    var cuePointsArray = _this.getCuePoints();
+
+                    for (var i = startFromIndex; i < cuePointsArray.length; i++) {
+                        var curPoint = cuePointsArray[i];
                         if (curPoint.startTime <= time) {
                             result.cuePoints.push(curPoint);
                             result.lastIndex = i;
