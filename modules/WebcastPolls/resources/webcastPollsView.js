@@ -38,7 +38,8 @@
                     _this.getPlayer().getVideoHolder().append(_this.$webcastPoll);
 
                     _this.$webcastPoll.on("click touchstart", function (e) {
-                        if (!$(e.target).hasClass('answer')) {
+
+                        if (!$(e.target).closest('.answer').length) {
                             _this.embedPlayer.triggerHelper(e);
                         }
                     });
@@ -54,11 +55,16 @@
         isMobile: function () {
             // TODO [es]
         },
-        _getLayoutName: function () {
+        getResizableContainerElement : function()
+        {
+            return this.$webcastPoll ? this.$webcastPoll.parent() : null;
+        },
+        getLayoutName: function () {
             var _this = this;
-            
-            var pollViewPortWidth = _this.$webcastPoll ? _this.$webcastPoll.width() : null;
-            var pollViewPortHeight = _this.$webcastPoll ? _this.$webcastPoll.height() : null;
+
+            var $resizableContainer = _this.getResizableContainerElement();
+            var pollViewPortWidth = $resizableContainer ? $resizableContainer.width() : null;
+            var pollViewPortHeight = $resizableContainer? $resizableContainer.height() : null;
             var result = '';
             if (pollViewPortHeight < 375 || pollViewPortWidth < 670) {
                 result = 'small';
@@ -75,7 +81,7 @@
             var _this = this;
 
             if (_this.$webcastPoll) {
-                var targetLayoutName = _this._getLayoutName();
+                var targetLayoutName = _this.getLayoutName();
 
                 if (_this._currentViewType !== targetLayoutName) {
                     _this.$webcastPoll.empty();
@@ -194,13 +200,16 @@
                                 $totalsContainer.css('opacity', '1');
                             }else {
                                 $totalsContainer.css('opacity', '0');
+                                $totalsContainer.find("[name='value']").text('0'); // we are setting a filler value so the UI will not jump once we later update it
                             }
                         } else {
                             $totalsContainer.css('opacity', '0');
+                            $totalsContainer.find("[name='value']").text('0'); // we are setting a filler value so the UI will not jump once we later update it
                         }
                     }else
                     {
                         $totalsContainer.css('opacity', '0');
+                        $totalsContainer.find("[name='value']").text('0'); // we are setting a filler value so the UI will not jump once we later update it
                         updateAnswerResult(1, false);
                         updateAnswerResult(2, false);
                         updateAnswerResult(3, false);
