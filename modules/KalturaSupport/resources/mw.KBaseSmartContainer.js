@@ -99,6 +99,9 @@
 			this.bind('playerReady', function(){
 				if (_this.registeredPlugins.length < 2) {
 					_this.hide();
+					setTimeout(function(){
+						_this.hideRegisteredPlugins();
+					},250);
 				}
 			});
 
