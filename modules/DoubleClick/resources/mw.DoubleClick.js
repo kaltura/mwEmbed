@@ -1656,7 +1656,8 @@
 		},
 		restorePlayerNoPostroll:function(){
 			var _this = this;
-			if (!_this.getConfig("adTagUrl") && !_this.getConfig("postrollUrl")){
+			var bumperConfig = _this.embedPlayer.getKalturaConfig('bumper.postSequence') || false;
+			if (!_this.getConfig("adTagUrl") && !_this.getConfig("postrollUrl") || bumperConfig){
 				_this.currentAdSlotType = "postroll";
 				_this.restorePlayer(true);
 			}
