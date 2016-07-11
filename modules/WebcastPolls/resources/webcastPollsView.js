@@ -40,7 +40,7 @@
                     _this.$webcastPoll.on("click touchstart", function (e) {
 
                         if (!$(e.target).closest('.answer').length) {
-                        //    _this.embedPlayer.triggerHelper(e);
+                            _this.embedPlayer.triggerHelper(e);
                         }
                     });
 
@@ -224,14 +224,6 @@
             var _this = this;
             if (_this.$webcastPoll) {
                 var pollContent = _this.parent.pollData.content;
-
-                var bla = {
-                    error: _this.parent.globals.bla,
-                    votingProfileId : _this.parent.globals.votingProfileId,
-                    userId: _this.parent.globals.userId
-                }
-                var text = JSON.stringify(bla || {}) + '\n\n' + JSON.stringify(_this.parent.userVote || {}) + '\n\n' +JSON.stringify(_this.parent.pollData);
-                _this.$webcastPoll.find('[name="temp"]').text(text);
 
                 if (pollContent) {
                     var selectedAnswerSelector = '[name="answer' + _this.parent.userVote.answer + '"]';
