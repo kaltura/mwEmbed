@@ -127,10 +127,10 @@ Poll (shared)
     overflow:visible;
     top:0;
     left:0;
-    -webkit-transition:  width 1s, height 1s, top 1s, left 1s, margin 1s;
-    -moz-transition:  width 1s, height 1s, top 1s, left 1s, margin 1s;
-    -o-transition:  width 1s, height 1s, top 1s, left 1s, margin 1s;
-    transition: width 1s, height 1s, top 1s, left 1s, margin 1s;
+    -webkit-transition:  width 1s, height 1s, top 1s, left 1s, margin 1s, background 1s, border 1s;
+    -moz-transition:  width 1s, height 1s, top 1s, left 1s, margin 1s, background 1s, border 1s;
+    -o-transition:  width 1s, height 1s, top 1s, left 1s, margin 1s, background 1s, border 1s;
+    transition: width 1s, height 1s, top 1s, left 1s, margin 1s, background 1s, border 1s;
 
 }
 
@@ -159,6 +159,7 @@ Poll (shared)
     color:rgba(0,0,0,0.6);
     letter-spacing: 0.5px;
     color:black;
+    pointer:cursor;
 
 }
 
