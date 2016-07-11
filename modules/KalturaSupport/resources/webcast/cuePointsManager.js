@@ -3,17 +3,25 @@
     mw.webcast = mw.webcast || {};
 
     mw.webcast.CuePointsManager = mw.KBasePlugin.extend({
-        _nextPendingCuePointIndex: 0,
-        _lastHandledServerTime: null,
-        _monitoredCuepoints : {
-            entryContext : null, // this value is being initialized by function 'resetMonitorVariables'
-            intervalId : null,
-            tagsLike : '',
-            enabled : false,
-            typesMapping : {}
-        },
+        /* DEVELOPER NOTICE: you should not set any property directly here (they will be shared between instances) - use the setup function instead */
         setup: function () {
             var _this = this;
+
+            /*
+             DEVELOPER NOTICE: you should set properties here (they will be scoped per instance)
+            */
+            $.extend(_this,{
+                _nextPendingCuePointIndex: 0,
+                _lastHandledServerTime: null,
+                _monitoredCuepoints : {
+                    entryContext : null, // this value is being initialized by function 'resetMonitorVariables'
+                    intervalId : null,
+                    tagsLike : '',
+                    enabled : false,
+                    typesMapping : {}
+                }
+            });
+
             _this.resetMonitorVariables();
             _this.addBindings();
 
