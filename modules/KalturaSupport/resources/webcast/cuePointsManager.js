@@ -46,14 +46,16 @@
             });
 
             _this.bind("playerReady", function() {
-                _this.log('addBindings(playerReady): start the monitor process');
 
                 var player = _this.getPlayer();
                 var shouldRun = player && ((player.isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints")) || player.kCuePoints);
                 if (!shouldRun) {
-                    _this.log('addBindings(): prerequisites check failed, not monitoring cuepoints for that entry');
+                    _this.log('addBindings(playerReady): prerequisites check failed (event is either vod without cuepoints or marked to ignore live cuepoints), not monitoring cuepoints for that entry');
                     return;
                 }
+
+                _this.log('addBindings(playerReady): start the monitor process');
+
                 _this.handleMonitoredCuepoints(_this.getCuePoints());
                 _this.startMonitorProcess();
             });
@@ -62,12 +64,22 @@
                 "monitorEvent onplay",
                 function (e) {
                     var player = _this.getPlayer();
-                    var currentTime = player.getPlayerElementTime() * 1000;
+
+                    // check if need to handle player events
+                    if (!player ||  !player.kCuePoints)
+                    {
+                        // no cuepoints service found - should not continue with the cuepoint processing
+                        return;
+                    }
 
                     if (e.type === 'monitorEvent' && !_this.embedPlayer.isPlaying()){
                         // bypass problem with player that starts throwing monitor event even when paused after user seek while he is not playing
                         return;
                     }
+
+
+                    var currentTime = player.getPlayerElementTime() * 1000;
+
 
                     if (currentTime < 0) {
                         // ignore undesired temporary use cases
