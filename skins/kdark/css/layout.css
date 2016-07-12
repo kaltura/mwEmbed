@@ -66,6 +66,9 @@ body {
 .mobileSkin.pluginsScreenOpened .topBarContainer {
     display: none !important;
 }
+.mobileSkin.start-state .topBarContainer{
+    display: none;
+}
 .sideBarContainerReminder{
 	padding: 10px;
 	position: absolute;
@@ -917,6 +920,7 @@ body {
 
 .mobileSkin .currentTimeLabel {
 	margin-left: 10px;
+    margin-right: 10px;
     color: #ffffff;
 }
 .fullscreen.mobileSkin .currentTimeLabel {
@@ -956,8 +960,11 @@ body {
     margin-left: 10%;
     padding-top: 20px;
 }
-.mobileSkin .overlay-content{
+.mobileSkin:not(.size-small) .overlay-content{
     padding-top: 10%;
+}
+.mobileSkin.size-small .overlay-content{
+    padding-top: 0px;
 }
 .overlay-content select{
     color: #000000;
@@ -1474,6 +1481,9 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 .sourceSelector {
 	display: inline-block;
 }
+.mobileSkin .controlBarContainer .sourceSelector {
+	margin-top: -5px;
+}
 
 .overlay {
     background: rgb(0,0,0);
@@ -1617,6 +1627,15 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 }
 .mobileSkin:not(.pluginsScreenOpened) .watermark {
     z-index: 2;
+}
+.mobileSkin .watermark {
+    opacity: 0.3;
+}
+.mobileSkin.player-out .watermark {
+    opacity: 1;
+}
+.mobileSkin.start-state .watermark {
+    display: none;
 }
 .watermark img{
 	border: 0px;
@@ -1769,6 +1788,7 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 	width: 100%;
 	height: 100%;
 	background-color: rgba(0,0,0,0);
+    z-index: 2;
 }
 .adCoverIE8{
 	background-color: black;

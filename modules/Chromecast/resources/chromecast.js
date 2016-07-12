@@ -467,7 +467,7 @@
 					if ( _this.getConfig("receiverLogo") ){
 						_this.sendMessage({'type': 'hide', 'target': 'logo'});
 					}
-					if (_this.replay && !_this.embedPlayer.playlist){
+					if (_this.replay){
 						_this.replay = false;
 						_this.sendMessage({'type': 'notification','event': 'replay'});  // since we reload the media for replay, trigger playerReady on the receiver player to reset Analytics
 						_this.embedPlayer.play();

@@ -3,9 +3,19 @@
         mw.dualScreen = mw.dualScreen || {};
 
         mw.dualScreen.externalControlManager = mw.KBasePlugin.extend({
+            /* DEVELOPER NOTICE: you should not set any property directly here (they will be shared between instances) - use the setup function instead */
+            defaultConfig: {
+                /* DEVELOPER NOTICE : don't use this plugin config feature since it is a detached plugin. A detached plugin cannot access the player configuration to support overrides */
+            },
             setup : function()
             {
+                var _this = this;
 
+                /*
+                 DEVELOPER NOTICE: you should set properties here (they will be scoped per instance)
+                 */
+                $.extend(_this, {
+                });
             },
             destroy : function()
             {
@@ -29,7 +39,7 @@
                     {
                         if (!_this.cuePointsManager) {
                             // we need to initialize the instance
-                            _this.cuePointsManager = new mw.dualScreen.CuePointsManager(_this.getPlayer(), function () {
+                            _this.cuePointsManager = new mw.webcast.CuePointsManager(_this.getPlayer(), function () {
                             }, "externalControlCuePointsManager");
 
 
