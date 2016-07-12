@@ -302,7 +302,7 @@ Poll (medium)
 
 /**** question elements ****/
 .webcastPolls .medium-layout .poll .question{
-    word-break: break-all;
+    word-break: keep-all;
 }
 
 .webcastPolls .medium-layout .poll .question-widget{
