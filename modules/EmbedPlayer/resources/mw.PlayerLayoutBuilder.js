@@ -187,6 +187,8 @@ mw.PlayerLayoutBuilder.prototype = {
 			this.getInterface().addClass( 'ua-safari' );
 		if ( mw.isEdge() )
 			this.getInterface().addClass( 'ua-edge' );
+		if ( mw.isChromeCast() )
+			this.getInterface().addClass( 'ua-chromecast' );
 	},
 	/**
 	* Add the controls HTML to player interface

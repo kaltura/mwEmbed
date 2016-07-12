@@ -200,7 +200,7 @@ body {
     display: -webkit-box !important;
 }
 
-.mobileSkin.start-state .titleLabel{
+.mobileSkin.ua-chromecast.start-state .titleLabel{
     display: block !important;
     display: -webkit-box !important;
 }
@@ -1172,7 +1172,9 @@ body {
 	top: auto;
 	bottom: 102%;
 }
-
+.ua-chromecast .closedCaptions{
+    display: none !important;
+}
 .closedCaptions > .dropdown-menu {
 	overflow-y:auto;
 	overflow-x:hidden;

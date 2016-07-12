@@ -159,7 +159,7 @@
 			});
 
 			// trigger these events on the receiver player to support Analytics
-			$(this.embedPlayer).bind('userInitiatedPause userInitiatedSeek postEnded onChangeMedia AdSupport_PreSequence firstPlay captionsUpdated sourceSelectedByLangKey', function(e, data) {
+			$(this.embedPlayer).bind('userInitiatedPause userInitiatedSeek postEnded onChangeMedia AdSupport_PreSequence firstPlay sourceSelectedByLangKey', function(e, data) {
 				_this.sendMessage({'type': 'notification','event': e.type, 'data': data});
 			});
 
@@ -486,6 +486,7 @@
 					// set volume and position according to the video settings before switching players
 					_this.setVolume(null, _this.savedVolume);
 					if (_this.currentMediaSession.media.duration && _this.savedPosition > 0 && !_this.embedPlayer.changeMediaStarted){
+						_this.sendMessage({'type': 'notification','event': 'firstPlay', 'data': null});
 						_this.seekMedia(_this.savedPosition / _this.currentMediaSession.media.duration * 100);
 					}
 					// update media duration for durationLable component

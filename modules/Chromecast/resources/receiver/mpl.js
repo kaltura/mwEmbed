@@ -176,15 +176,6 @@ onload = function () {
 									}
 									messageBus.broadcast(msg);
 								});
-								kdp.kBind("waterMarkLoaded", function(waterMarkElement){
-									var css = getCss(waterMarkElement);
-									document.getElementById("videoHolder").appendChild(waterMarkElement);
-									for (var property in css) {
-										if (css.hasOwnProperty(property)) {
-											waterMarkElement.style[property] = css[property];
-										}
-									}
-								});
 								kdp.kBind("SourceSelected", function(source){
 									mimeType = source.mimeType;
 									src = source.src;
