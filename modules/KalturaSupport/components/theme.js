@@ -20,6 +20,9 @@
 		setup: function( embedPlayer ) {
 			this.addBindings();
 		},
+		isSafeEnviornment: function(){
+			return !this.embedPlayer.isMobileSkin();
+		},
 		addBindings: function() {
 			var _this = this;
 			// update drop shadow after the layout is ready

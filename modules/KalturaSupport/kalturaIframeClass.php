@@ -697,7 +697,7 @@ HTML;
                     $customStyle = $customStyle . '.btn {text-shadow: ' . $theme['dropShadowColor'] . '!important}';
                 }
     			$customStyle =  $customStyle . '</style>' . "\n";
-    			echo $customStyle;
+    			return $customStyle;
     		}
     	}
 
@@ -1295,7 +1295,14 @@ HTML;
     } ?>
 	<?php echo $this->outputIframeHeadCss(); ?>
 	<?php echo $this->outputSkinCss(); ?>
-	<?php echo $this->outputCustomCss(); ?>
+    <?php $customCss = $this->outputCustomCss(); ?>
+
+	<script type="text/javascript">
+	    if (window['kWidget'] && !window['kWidget'].isMobileDevice()){
+            var head = document.head || document.getElementsByTagName('head')[0];
+            head.appendChild(<?php $customCss ?>);
+	    }
+	</script>
 
 	<script type="text/javascript">
 		(function (document) {
