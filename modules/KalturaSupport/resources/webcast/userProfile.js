@@ -36,11 +36,11 @@
         },
 
         // return something like ##guestHashSeparator-186168013885295##
-        generateUserId: function(){
+        generateUserId: function(prefix){
             var _this = this;
 
             return	"##" +
-                _this.getConfig("userId") + "HashSeparator" +
+                prefix + "HashSeparator" +
                 _this.getKSHash(_this.getPlayer().getFlashvars().ks) +
                 _this.getRandomInt(10000,99999999).toString() +
                 "##";
@@ -61,7 +61,7 @@
                 //if localStorage is available, get & store the user id from it;
                 if(window.localStorage) {
                     if (!localStorage.kAnonymousUserId) {
-                        localStorage.kAnonymousUserId = _this.generateUserId();
+                        localStorage.kAnonymousUserId = _this.generateUserId(pluginGetConfig("userId"));
                     }
                     return localStorage.kAnonymousUserId;
                 }else{
