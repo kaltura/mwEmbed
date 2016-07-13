@@ -87,7 +87,7 @@
 
 		// Mute state
 		"muted": false,
-
+		"isFlavorSwitching": false,
 		/**
 		 * Custom attributes for embedPlayer player: (not part of the html5
 		 * video spec)
@@ -2713,7 +2713,7 @@
 
 			if (_this._propagateEvents) {
 
-				if (!_this.seeking) {
+				if (!_this.seeking && !_this.isFlavorSwitching) {
 					this.updatePlayheadStatus();
 					this.checkClipDoneCondition();
 				}
@@ -3208,6 +3208,7 @@
 				{ newBitrate: source.getBitrate() }
 			]);
 			if (!this.isStopped()) {
+				this.isFlavorSwitching = true;
 				// Get the exact play time
 				var oldMediaTime = this.currentTime;
 				var oldPaused = this.paused;
@@ -3218,6 +3219,7 @@
 						_this.addBlackScreen();
 						_this.hidePlayerOffScreen();
 						_this.unbindHelper("seeked.switchSrc" ).bindOnceHelper("seeked.switchSrc", function () {
+							_this.isFlavorSwitching = false;
 							_this.removeBlackScreen();
 							_this.restorePlayerOnScreen();
 						});
