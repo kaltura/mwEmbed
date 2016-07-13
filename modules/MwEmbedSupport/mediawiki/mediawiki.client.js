@@ -38,7 +38,7 @@
         return (/edge/.test(userAgent.toLowerCase()));
     };
 	mw.isDesktopSafari = function () {
-		return (/safari/).test(userAgent.toLowerCase()) && !mw.isMobileDevice() && !mw.isChrome();
+		return mw.isSafari() && !mw.isMobileDevice();
 	};
 	mw.isSafari = function () {
 		return (/safari/).test(userAgent.toLowerCase()) && !mw.isChrome() && !mw.isEdge();
