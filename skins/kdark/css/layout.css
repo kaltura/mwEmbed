@@ -195,7 +195,7 @@ body {
     font-size: 1.5em;
 }
 
-.mobileSkin.pause-state .titleLabel{
+.ua-chromecast.pause-state .titleLabel{
     display: block !important;
     display: -webkit-box !important;
 }
