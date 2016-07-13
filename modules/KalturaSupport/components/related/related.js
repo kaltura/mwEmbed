@@ -385,18 +385,21 @@
 			data["autoSelected"] = (auto === true);
 			this.getPlayer().sendNotification('relatedVideoSelect', data);
 
-			if(this.getConfig('clickUrl')){
+			if( this.getConfig('clickUrl') ){
+
 				try {
 					if( this.getConfig( 'openInNewTab' ) === true ) {
 						window.open(this.getConfig('clickUrl'), '_blank');
-						return;
 					}
-					window.parent.location.href = this.getConfig('clickUrl');
+					else {
+						window.parent.location.href = this.getConfig('clickUrl');
+					}
 					return;
 				}catch(err){
 					window.open(this.getConfig('clickUrl'));
-				 	return;
+					return;
 				}
+
 			}
 
 			this.getPlayer().sendNotification('changeMedia', data);
