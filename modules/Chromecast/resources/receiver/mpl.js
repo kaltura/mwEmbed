@@ -60,7 +60,11 @@ onload = function () {
 				document.getElementById('messages').style.display = 'none';
 			}
 			if (payload['target'] === 'logo') {
-				document.getElementById('logo').style.opacity = 0;
+				var logoElement =  document.getElementById('logo');
+				logoElement.style.opacity = 0;
+				setTimeout(function() {
+					logoElement.style.display = 'none';
+				},1000);
 			} else {
 				document.getElementById('receiverVideoElement').style.display = 'none';
 			}
@@ -149,7 +153,6 @@ onload = function () {
 						}
 					};
 					fv = extend(fv, payload['flashVars']);
-
 					var mimeType = null;
 					var src = null;
 
@@ -172,15 +175,6 @@ onload = function () {
 										msg = msg + "|" + src + "|" + mimeType;
 									}
 									messageBus.broadcast(msg);
-								});
-								kdp.kBind("waterMarkLoaded", function(waterMarkElement){
-									var css = getCss(waterMarkElement);
-									document.getElementById("videoHolder").appendChild(waterMarkElement);
-									for (var property in css) {
-										if (css.hasOwnProperty(property)) {
-											waterMarkElement.style[property] = css[property];
-										}
-									}
 								});
 								kdp.kBind("SourceSelected", function(source){
 									mimeType = source.mimeType;

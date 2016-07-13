@@ -195,7 +195,12 @@ body {
     font-size: 1.5em;
 }
 
-.mobileSkin.start-state .titleLabel{
+.ua-chromecast.pause-state .titleLabel{
+    display: block !important;
+    display: -webkit-box !important;
+}
+
+.mobileSkin.ua-chromecast.start-state .titleLabel{
     display: block !important;
     display: -webkit-box !important;
 }
@@ -332,6 +337,8 @@ body {
     align-items: center;
     flex-flow: row wrap;
 }
+
+
 /* Smart container icons */
 .mobileSkin .smartContainer.comp4, .mobileSkin .smartContainer.comp5, .mobileSkin .smartContainer.comp6{
     height: 80%;
@@ -355,6 +362,7 @@ body {
     width: 100%;
     font-size: 3.2em;
 }
+
 .mobileSkin .videoHolder .smartContainer.comp2 .btn{
     font-size: 3.6em;
 }
@@ -913,6 +921,18 @@ body {
 .mobileSkin .liveStatus{
     font-family: 'icomoon';
 }
+
+.ua-chromecast .liveStatus{
+    display: none;
+}
+
+.ua-chromecast .topBarContainer .btn{
+    display:none;
+}
+
+.ua-chromecast .controlBarContainer .btn:not (.playHead){
+    display:none;
+}
 .currentTimeLabel {
 	padding-left: 1em;
     color: #e8e8e8;
@@ -1167,7 +1187,9 @@ body {
 	top: auto;
 	bottom: 102%;
 }
-
+.ua-chromecast .closedCaptions{
+    display: none !important;
+}
 .closedCaptions > .dropdown-menu {
 	overflow-y:auto;
 	overflow-x:hidden;

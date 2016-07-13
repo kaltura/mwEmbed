@@ -19,6 +19,9 @@
 	mw.isIE = function () {
 		return (/msie/.test(userAgent.toLowerCase()) || /trident/.test(userAgent.toLowerCase()));
 	};
+	mw.isChromeCast = function(){
+		return (/CrKey/.test(userAgent));
+	};
 	mw.isIE7 = function () {
 		return (/msie 7/.test(userAgent.toLowerCase()));
 	};
