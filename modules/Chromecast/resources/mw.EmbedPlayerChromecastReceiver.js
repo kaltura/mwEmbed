@@ -130,7 +130,7 @@
 		_onplaying:function(){
 			this.hideSpinner();
 			this.triggerHelper("playing");
-			this.embedPlayer.triggerHelper( 'hidePlayerControls' );
+			this.triggerHelper( 'hidePlayerControls' );
 		},
 		/**
 		 * Handle the native play event
@@ -145,12 +145,17 @@
 				this.triggerHelper('replayEvent');
 				this.triggerReplayEvent = false;
 			}
-			this.embedPlayer.triggerHelper( 'hidePlayerControls' );
+			this.triggerHelper( 'hidePlayerControls' );
 
+		},
+		replay: function(){
+			var _this = this;
+			this.restoreEventPropagation();
+			this.restoreComponentsHover();
 		},
 
 		_onseeking: function () {
-			this.embedPlayer.triggerHelper( 'hidePlayerControls' );
+			this.triggerHelper( 'hidePlayerControls' );
 			if (!this.seeking) {
 				this.seeking = true;
 				if ( this._propagateEvents && !this.isLive() ) {
