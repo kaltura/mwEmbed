@@ -21,7 +21,8 @@
 			formatCountdown : false,
 			clickUrl : null,
 			enableAccessControlExclusion:false,
-			storeSession: false
+			storeSession: false,
+			openInNewTab: false
 		},
 		viewedEntries: [],
 		iconBtnClass: 'icon-related',
@@ -384,14 +385,21 @@
 			data["autoSelected"] = (auto === true);
 			this.getPlayer().sendNotification('relatedVideoSelect', data);
 
-			if(this.getConfig('clickUrl')){
+			if( this.getConfig('clickUrl') ){
+
 				try {
-					window.parent.location.href = this.getConfig('clickUrl');
+					if( this.getConfig( 'openInNewTab' ) === true ) {
+						window.open(this.getConfig('clickUrl'), '_blank');
+					}
+					else {
+						window.parent.location.href = this.getConfig('clickUrl');
+					}
 					return;
 				}catch(err){
 					window.open(this.getConfig('clickUrl'));
 					return;
 				}
+
 			}
 
 			this.getPlayer().sendNotification('changeMedia', data);
