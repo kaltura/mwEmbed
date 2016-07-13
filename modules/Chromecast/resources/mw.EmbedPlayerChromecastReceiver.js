@@ -164,6 +164,7 @@
 				this.seeking = false;
 				if (this._propagateEvents && !this.isLive()) {
 					this.triggerHelper('seeked', [this.getPlayerElementTime()]);
+					this.updatePlayheadStatus();
 				}
 			}
 		},
