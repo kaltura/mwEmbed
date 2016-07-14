@@ -87,17 +87,17 @@
 						},0);
 					});
 
-					_this.bind( "playerReady", function(){
-						setTimeout(function(){
-							_this.hideRegisteredPlugins();
-						},200);
-					});
-
 					setTimeout(function(){
 						_this.hideRegisteredPlugins();
 					},0);
 				}else{
 					// if we have less than 2 plugins registered to the smart container - hide it so it won't be used
+					_this.hide();
+				}
+			});
+
+			this.bind('playerReady', function(){
+				if (_this.registeredPlugins.length < 2) {
 					_this.hide();
 				}
 			});

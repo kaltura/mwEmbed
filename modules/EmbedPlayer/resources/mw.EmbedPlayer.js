@@ -2201,10 +2201,9 @@
 		},
 
 		isMobileSkin: function(){
-			var skin = this.getRawKalturaConfig("layout") ? this.getRawKalturaConfig("layout").skin : "kdark";
+			var skin = this.getRawKalturaConfig("layout") ? this.getRawKalturaConfig("layout").skin : window["kalturaIframePackageData"].playerConfig.layout ? window["kalturaIframePackageData"].playerConfig.layout.skin : "kdark";
 			return (mw.isChromeCast() || ( mw.getConfig("EmbedPlayer.EnableMobileSkin") === true && skin === "kdark" &&
-			mw.isMobileDevice() && !mw.isWindowsPhone() ));
-		},
+				mw.isMobileDevice() && !mw.isWindowsPhone() ));		},
 
 		/**
 		 * Will trigger 'preSequence' event

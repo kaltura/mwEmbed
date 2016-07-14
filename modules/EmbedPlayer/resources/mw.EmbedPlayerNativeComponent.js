@@ -741,6 +741,7 @@
 		 * Passes a fullscreen request to the layoutBuilder interface
 		 */
 		toggleFullscreen: function () {
+			this.parent_toggleFullscreen();
 			this.getPlayerElement().toggleFullscreen();
 		},
 

@@ -72,7 +72,7 @@
 		// add color and shadow:
 		opts = $.extend({}, spinnerConfig, opts);
 
-		if ((mw.getConfig("EmbedPlayer.EnableMobileSkin") && kWidget.isMobileDevice() )|| mw.isChromeCast()){
+		if ((mw.getConfig("EmbedPlayer.EnableMobileSkin") && kWidget.isMobileDevice()  && !options)|| mw.isChromeCast()){
 			opts["customSpinner"] = true;
 			opts.className = "customSpinner";
 		}

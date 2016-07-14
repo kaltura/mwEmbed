@@ -899,7 +899,9 @@
 				if( this.getConfig('hideWhenEmpty') == true && !this.embedPlayer.isMobileSkin()){
 					this.setConfig('visible', true)
 				}
-				this.getBtn().show();
+				if (this.getConfig("parent") !== "smartContainer"){
+					this.getComponent().show();
+				}
 				this.embedPlayer.triggerHelper("updateComponentsVisibilityDone");
 				// show new timed captions text if exists
 				this.showCaptions();

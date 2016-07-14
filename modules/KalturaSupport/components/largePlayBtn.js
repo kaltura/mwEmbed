@@ -82,7 +82,11 @@
 				}
 
 				if (this.embedPlayer.isMobileSkin()){
-					this.getComponent().fadeIn('fast').css('display', "flex");
+					if (mw.isIOS8()){
+						this.getComponent().fadeIn('fast').css('display', "-webkit-flex");
+					}else{
+						this.getComponent().fadeIn('fast').css('display', "flex");
+					}
 				} else {
 					this.getComponent().css('display', "block");
 				}
