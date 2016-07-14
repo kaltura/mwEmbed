@@ -128,6 +128,7 @@
 			this.pluginsScreenOpened = true;
 
 			var $sc = this.embedPlayer.getVideoHolder().find(".smartContainer");
+			$sc.children().hide();
 
 			this.embedPlayer.getInterface().addClass( "pluginsScreenOpened" );
 			$(this.embedPlayer.getPlayerElement()).addClass("blur");
