@@ -553,6 +553,11 @@ button::-moz-focus-inner {
 	padding-left: 1em;
 	padding-right: 1em;
 }
+.mobile.size-small .smartContainerMenu .pluginIcon{
+	font-size: 3em;
+	padding-left: 0.75em;
+	padding-right: 0.75em;
+}
 .mobile .smartContainerMenu .pluginPropertyLabel{
 	display: none;
 }
