@@ -224,26 +224,26 @@
 
 				},flashFailCallback);
 
-				_this.bindHelper('switchAudioTrack', function (e, data) {
+				_this.bindHelper('switchAudioTrack' + _this.bindPostfix, function (e, data) {
 					if (_this.playerObject) {
 						_this.playerObject.sendNotification("doAudioSwitch", { audioIndex: data.index  });
 					}
 				});
 
-				_this.bindHelper('liveEventEnded', function () {
+				_this.bindHelper('liveEventEnded' + _this.bindPostfix, function () {
 					if (_this.playerObject) {
 						_this.playerObject.sendNotification("liveEventEnded");
 					}
 				});
 
-                _this.bindHelper('changeEmbeddedTextTrack', function (e, data) {
+                _this.bindHelper('changeEmbeddedTextTrack' + _this.bindPostfix, function (e, data) {
                     if (_this.playerObject) {
                         _this.playerObject.sendNotification("doTextTrackSwitch", { textIndex :data.index});
                     }
                 });
 
-                _this.bindHelper('liveOnline', function(){
-                    if( this.isLive() && !this.isDVR() ) {
+                _this.bindHelper('liveOnline' + _this.bindPostfix, function(){
+					if( this.isLive() && !this.isDVR() ) {
                         _this.reset();
                     }
                 });
@@ -261,6 +261,9 @@
         },
 
         reset: function(){
+			if ( this.restarting ) {
+				return;
+			}
             this.restarting = true;
             var _this = this;
             this.clean();
@@ -405,8 +408,8 @@
 			this.playerObject.setKDPAttribute('mediaProxy', 'entryDuration', this.getDuration()); //TODO - to support inteliseek - set the correct duration using seekFrom and clipTo
 			this.getEntryUrl().then(function (srcToPlay) {
 				if (!_this.playlist || _this.autoplay){
-					_this.bindHelper("onChangeMediaDone", function(){
-						_this.unbindHelper("onChangeMediaDone");
+					_this.bindHelper("onChangeMediaDone"+_this.bindPostfix, function(){
+						_this.unbindHelper("onChangeMediaDone"+_this.bindPostfix);
 						_this.play();
 					});
 				}
@@ -815,9 +818,12 @@
         },
 
         onId3tag: function (data) {
-			var id3Tag = base64_decode(data.data);
-			///todo  this is a temp fix until we remove the ID3 header from the content in the flash code
-			id3Tag = id3Tag.substring(id3Tag.indexOf('{'));
+			//Decode the data
+			var id3TagData = base64_decode(data.data);
+			//Get the JSON substring
+			var id3TagString = id3TagData.substring(id3TagData.indexOf("{"), id3TagData.lastIndexOf("}")+1);
+			//Parse JSON
+			var id3Tag = JSON.parse(id3TagString);
 
             this.triggerHelper('onId3Tag', id3Tag);
         },
@@ -921,8 +927,11 @@
                 clientTag = clientTag.slice(0, clientTag.indexOf("&"))
                 srcUrl = srcUrl + "&" + clientTag;
             }
-
-			var refObj = {src: srcUrl};
+			
+			var sourceElm = $('<source />')
+				.attr( {src: srcUrl} )
+				.get( 0 );
+			var refObj = new mw.MediaSource(sourceElm);
 			this.triggerHelper('SourceSelected', refObj);
 			deferred.resolve(refObj.src);
 			return deferred;
@@ -965,20 +974,19 @@
 		backToLive: function () {
 			this.triggerHelper('movingBackToLive');
             var _this = this;
-            var evChannel = ".kBackToLive"; //event channel name ".backToLive" already exists in liveCore class
             if(this.isDVR()){
                 this.playerObject.sendNotification('goLive');
                 if (this.buffering) {
-                    this.bindHelper('bufferEndEvent'+evChannel, function () {
-                        _this.unbindHelper('bufferEndEvent'+evChannel);
+                    this.bindHelper('bufferEndEvent'+this.bindPostfix, function () {
+                        _this.unbindHelper('bufferEndEvent'+_this.bindPostfix);
                         _this.playerObject.seek(_this.getDuration());
                         //Unfreeze scrubber
                         _this.syncMonitor();
                     });
                 }
             }else{
-                this.bindHelper('playing'+evChannel, function () {
-                    _this.unbindHelper('playing'+evChannel);
+                this.bindHelper('playing'+this.bindPostfix, function () {
+                    _this.unbindHelper('playing'+_this.bindPostfix);
                     _this.playerObject.sendNotification('goLive');
                 });
             }
@@ -988,7 +996,9 @@
 			this.playerObject.setKDPAttribute(host, prop, val);
 		},
 		clean: function () {
+			this.unbindHelper(  this.bindPostfix );
 			$(this.getPlayerContainer()).remove();
+			this.playerObject = null;
 		},
 		setStorageId: function (storageId) {
 			var _this = this;

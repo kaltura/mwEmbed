@@ -584,12 +584,12 @@ DAL for Q&A Module
                     request['filter:updatedAtGreaterThanOrEqual'] = lastUpdatedAt;
                 }
 
-                // build list code cue point request
+                // build list code cue point request for qna settings (checking both new and old tags for BC)
                 var codeCuePointListRequest = {
                     'service': 'cuepoint_cuepoint',
                     'action': 'list',
                     'filter:entryIdEqual': entryId,
-                    'filter:tagsLike':'WEBCASTSTATETAG',
+                    'filter:tagsMultiLikeOr':'player-qna-settings-update,WEBCASTSTATETAG',
                     'filter:cuePointTypeEqual': 'codeCuePoint.Code',
                     'filter:orderBy': '-createdAt',
                     'pager:pageSize': 1,
@@ -671,18 +671,34 @@ DAL for Q&A Module
                             disableModule = false;
                             announcementOnly = false;
                         }
-
-                        if (cuePoint.tags && cuePoint.tags.indexOf("WEBCASTSTATETAG")>=0) {
-                            try {
-                                var webCastingState=JSON.parse(cuePoint.code);
-                                disableModule=!webCastingState["QnA"];
-                                announcementOnly=!disableModule && webCastingState["AnnouncementsOnly"];
+                        //for BC supporting both new and old QnA settings cue points
+                        if(cuePoint.tags) {
+                            //old QnA settings cue point convention //todo [sa] remove after releasing new producer version
+                            if (cuePoint.tags.indexOf("WEBCASTSTATETAG") >= 0) {
+                                try {
+                                    var webCastingState=JSON.parse(cuePoint.code);
+                                    disableModule=!webCastingState["QnA"];
+                                    announcementOnly=!disableModule && webCastingState["AnnouncementsOnly"];
+                                }
+                                catch(e) {
+                                    mw.log("Error:: Error parsing WEBCASTSTATETAG code cue point "+ e.message+ " "+ e.stack);
+                                }
                             }
-                            catch(e) {
-                                mw.log("Error:: Error parsing WEBCASTSTATETAG code cue point "+ e.message+ " "+ e.stack);
+                            //new QnA settings cue point convention
+                            else if (cuePoint.tags.indexOf("player-qna-settings-update") >= 0) {
+                                try {
+                                    if(cuePoint.partnerData) {
+                                        var webCastingState = JSON.parse(cuePoint.partnerData);
+                                        webCastingState = webCastingState["qnaSettings"];
+                                        disableModule = !webCastingState["qnaEnabled"];
+                                        announcementOnly = !disableModule && webCastingState["announcementOnly"];
+                                    }
+                                }
+                                catch(e) {
+                                    mw.log("Error:: Error parsing player-qna-settings-update code cue point "+ e.message+ " "+ e.stack);
+                                }
                             }
                         }
-
                         _this.qnaPlugin.hideModule(disableModule, announcementOnly);
                     }
                 );

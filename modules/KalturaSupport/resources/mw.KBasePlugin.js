@@ -9,6 +9,7 @@ mw.KBasePlugin = Class.extend({
 		this.embedPlayer = embedPlayer;
 		this.initCompleteCallback = callback;
 		this.pluginName = pluginName;
+		this.safe = true;
 
 		this.bindPostFix = '.' + pluginName;
 
@@ -21,10 +22,12 @@ mw.KBasePlugin = Class.extend({
 		if( typeof safeEnviornment == 'object' && safeEnviornment.promise ){
 			safeEnviornment.done(function(isSafe){
 				if( !isSafe ){
+					_this.safe = false;
 					_this.destroy();
 				}
 			});
 		} else if( typeof safeEnviornment == 'boolean' && ! safeEnviornment ) {
+			this.safe = false;
 			this.initCompleteCallback();
 			return false;
 		}

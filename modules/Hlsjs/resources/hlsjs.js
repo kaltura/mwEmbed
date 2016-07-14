@@ -1,6 +1,7 @@
 ( function( mw, $ , Hls ) {"use strict";
 
-	if (Hls.isSupported() && mw.getConfig("LeadWithHLSOnJs")) {
+	//Currently use native support when available, e.g. Safari desktop and Edge
+	if (Hls.isSupported() && !mw.isDesktopSafari() && !mw.isEdge() && mw.getConfig("LeadWithHLSOnJs")) {
 		// Add HLS Logic player:
 		//Force HLS streamer type
 		mw.setConfig("streamerType", "hls");
@@ -23,11 +24,21 @@
 		var hlsjs = mw.KBasePlugin.extend({
 
 			defaultConfig: {
-				options: {}
+				options: {
+					//debug:true
+					liveSyncDurationCount : 3,
+					liveMaxLatencyDurationCount: 6
+				},
+				hlsLogs: false
 			},
 
 			/** @type {Number} */
 			mediaErrorRecoveryCounter: 0,
+			playerErrorRecoveryCounter: 0,
+
+			debugInfoInterval: 4,
+			debugInfoCounter:0,
+
 			/** type {boolean} */
 			LoadHLS: false,
 			/** type {boolean} */
@@ -36,6 +47,7 @@
 			isLevelSwitching: false,
 			/** type {Number} */
 			levelIndex: -1,
+			version: "v0.5.23",
 
 			/**
 			 * Check is HLS is supported
@@ -48,6 +60,8 @@
 			 * Setup the HLS playback engine wrapper with supplied config options
 			 */
 			setup: function () {
+				this.log( "version: " + Hls.version ? Hls.version : this.version );
+				mw.setConfig('isHLS_JS', true);
 				this.addBindings();
 			},
 			/**
@@ -57,6 +71,9 @@
 				this.bind("onSelectSource", this.checkIfHLSNeeded.bind(this));
 				this.bind("playerReady", this.initHls.bind(this));
 				this.bind("onChangeMedia", this.clean.bind(this));
+				if( mw.getConfig("hlsLogs") ) {
+					this.bind("monitorEvent", this.monitorDebugInfo.bind(this));
+				}
 			},
 			/**
 			 * Check if HLS engine is required, e.g. sources contain HLS source
@@ -78,13 +95,15 @@
 			 */
 			clean: function () {
 				this.log("Clean");
-				this.LoadHLS = false;
-				this.loaded = false;
-				this.unRegisterHlsEvents();
-				this.restorePlayerMethods();
-				this.hls.detachMedia();
-				this.hls.destroy();
-				this.hls = null;
+				if (this.LoadHLS && this.loaded) {
+					this.LoadHLS = false;
+					this.loaded = false;
+					this.unRegisterHlsEvents();
+					this.restorePlayerMethods();
+					this.hls.detachMedia();
+					this.hls.destroy();
+					this.hls = null;
+				}
 			},
 			/**
 			 * Register the playback events and attach the playback engine to the video element
@@ -107,7 +126,15 @@
 					this.overridePlayerMethods();
 
 					//Attach video tag to HLS engine
-					this.hls.attachMedia(this.getPlayer().getPlayerElement());
+					//IE ignores preload and loads source right away so defer attaching to first play event
+					if (!mw.isIE()) {
+						this.hls.attachMedia(this.getPlayer().getPlayerElement());
+					} else {
+						this.bind("firstPlay", function(){
+							this.hls.attachMedia(this.getPlayer().getPlayerElement());
+						}.bind(this));
+
+					}
 				}
 			},
 			/**
@@ -118,14 +145,26 @@
 				this.hls.on(Hls.Events.MEDIA_ATTACHED, this.onMediaAttachedHandler);
 				this.onManifestParsedHandler = this.onManifestParsed.bind(this);
 				this.hls.on(Hls.Events.MANIFEST_PARSED, this.onManifestParsedHandler);
+				this.onFragLoadingHandler = this.onFragLoading.bind(this);
+				this.hls.on(Hls.Events.FRAG_LOADING, this.onFragLoadingHandler);
+				this.onFragLoadedHandler = this.onFragLoaded.bind(this);
+				this.hls.on(Hls.Events.FRAG_LOADED, this.onFragLoadedHandler);
 				this.onFragParsingMetadataHandler = this.onFragParsingMetadata.bind(this);
 				this.hls.on(Hls.Events.FRAG_PARSING_METADATA, this.onFragParsingMetadataHandler);
+				this.onFragParsingDataHandler = this.onFragParsingData.bind(this);
+				this.hls.on(Hls.Events.FRAG_PARSING_DATA, this.onFragParsingDataHandler);
+				this.onPTSUpdatedHandler = this.onPTSUpdated.bind(this);
+				this.hls.on(Hls.Events.LEVEL_PTS_UPDATED, this.onPTSUpdatedHandler);
+				this.onFragBufferedHandler = this.onFragBuffered.bind(this);
+				this.hls.on(Hls.Events.FRAG_BUFFERED, this.onFragBufferedHandler);
 				this.onLevelSwitchHandler = this.onLevelSwitch.bind(this);
 				this.hls.on(Hls.Events.LEVEL_SWITCH, this.onLevelSwitchHandler);
 				this.onFragChangedHandler = this.onFragChanged.bind(this);
 				this.hls.on(Hls.Events.FRAG_CHANGED, this.onFragChangedHandler);
 				this.onErrorHandler = this.onError.bind(this);
 				this.hls.on(Hls.Events.ERROR, this.onErrorHandler);
+				this.onDropFramesHandler = this.onDropFrames.bind(this);
+				this.hls.on(Hls.Events.FPS_DROP, this.onDropFramesHandler);
 			},
 			/**
 			 * Unregister HLS playback engine events
@@ -135,14 +174,26 @@
 				this.onMediaAttachedHandler = null;
 				this.hls.off(Hls.Events.MANIFEST_PARSED, this.onManifestParsedHandler);
 				this.onManifestParsedHandler = null;
+				this.hls.off(Hls.Events.FRAG_LOADING, this.onFragLoadingHandler);
+				this.onFragLoadingHandler = null;
+				this.hls.off(Hls.Events.FRAG_LOADED, this.onFragLoadedHandler);
+				this.onFragLoadedHandler = null;
 				this.hls.off(Hls.Events.FRAG_PARSING_METADATA, this.onFragParsingMetadataHandler);
 				this.onFragParsingMetadataHandler = null;
+				this.hls.off(Hls.Events.FRAG_PARSING_DATA, this.onFragParsingDataHandler);
+				this.onFragParsingDataHandler = null;
+				this.hls.off(Hls.Events.LEVEL_PTS_UPDATED, this.onPTSUpdatedHandler);
+				this.onPTSUpdatedHandler = null;
+				this.hls.off(Hls.Events.FRAG_BUFFERED, this.onFragBufferedHandler);
+				this.onFragBufferedHandler = null;
 				this.hls.off(Hls.Events.LEVEL_SWITCH, this.onLevelSwitchHandler);
 				this.onLevelSwitchHandler = null;
 				this.hls.off(Hls.Events.FRAG_CHANGED, this.onFragChangedHandler);
 				this.onFragChangedHandler = null;
 				this.hls.off(Hls.Events.ERROR, this.onErrorHandler);
 				this.onErrorHandler = null;
+				this.hls.off(Hls.Events.FPS_DROP, this.onDropFramesHandler);
+				this.onDropFramesHandler = null;
 			},
 			//Event handlers
 			/**
@@ -151,16 +202,71 @@
 			onMediaAttached: function () {
 				this.log("Media attached");
 				//Once media is attached load the manifest
-				this.hls.loadSource(this.getPlayer().getSrc());
+				var selectedSource = this.getPlayer().getSrc();
+				if( selectedSource ){
+					this.getPlayer().resolveSrcURL( selectedSource ).then(
+						function(source){
+							this.hls.loadSource(source);
+						}.bind(this),
+						function () { //error
+							this.hls.loadSource(selectedSource);
+						}.bind(this)
+					);
+				}
 			},
-			/**
-			 *
-			 * @param event
-			 * @param data
-			 */
-			onFragParsingMetadata: function (data) {
-				//TODO: parse ID3 tags
+			onFragLoading: function (e, data) {
+				//fired when a fragment loading starts
+				//data: { frag : fragment object}
+				this.getPlayer().triggerHelper('hlsFragLoading', data.frag.url);
+				//mw.log("hlsjs :: onFragLoading | url = "+data.frag.url);
+
+			},
+			onFragLoaded: function (e, data) {
+				//fired when a fragment loading is completed
+				//data: { frag : fragment object, payload : fragment payload, stats : { trequest, tfirst, tload, length}}
+				this.getPlayer().triggerHelper('hlsFragLoaded', data.frag.url);
+				//mw.log("hlsjs :: onFragLoaded | url = "+data.frag.url);
+
+			},
+			onFragParsingMetadata: function (e, data) {
 				//data: { samples : [ id3 pes - pts and dts timestamp are relative, values are in seconds]}
+
+				//Get the data from the event + Unicode transform
+				var id3TagData = String.fromCharCode.apply( null, new Uint8Array( data.samples[data.samples.length-1].data ) );
+				//Get the JSON substring
+				var id3TagString=id3TagData.substring(id3TagData.indexOf("{"), id3TagData.lastIndexOf("}")+1);
+				//Parse JSON
+				var id3Tag=JSON.parse(id3TagString);
+
+				this.getPlayer().triggerHelper('onId3Tag', id3Tag);
+			},
+			onFragParsingData: function (e, data) {
+				//fired when moof/mdat have been extracted from fragment
+				//data: { moof : moof MP4 box, mdat : mdat MP4 box, startPTS : PTS of first sample, endPTS : PTS of last sample, startDTS : DTS of first sample, endDTS : DTS of last sample, type : stream type (audio or video), nb : number of samples}
+				this.getPlayer().triggerHelper('hlsFragParsingData', data);
+				/*
+				if(data.type === 'video') {
+					mw.log("hlsjs :: onFragParsingData | startPTS = " + mw.seconds2npt(data.startPTS) + " >> endPTS = " + mw.seconds2npt(data.endPTS) + " | startDTS = " + mw.seconds2npt(data.startDTS) + " >> endDTS = " + mw.seconds2npt(data.endDTS));
+				}
+				*/
+			},
+			onPTSUpdated: function (e, data) {
+				//fired when a level's PTS information has been updated after parsing a fragment
+				//data: { details : levelDetails object, level : id of updated level, drift: PTS drift observed when parsing last fragment }
+				this.getPlayer().triggerHelper('hlsUpdatePTS', data);
+				//mw.log("hlsjs :: onPTSUpdated");
+			},
+			onFragBuffered: function (e, data) {
+				//fired when fragment remuxed MP4 boxes have all been appended into SourceBuffer
+				//data: { frag : fragment object, stats : { trequest, tfirst, tload, tparsed, tbuffered, length} }
+				this.getPlayer().triggerHelper('hlsFragBuffered', data.frag.url);
+				//mw.log("hlsjs :: onFragBuffered | url = "+data.frag.url);
+			},
+			onDropFrames: function (e, data) {
+				//triggered when FPS drop in last monitoring period is higher than given threshold
+				//data: {curentDropped : nb of dropped frames in last monitoring period, currentDecoded: nb of decoded frames in last monitoring period, totalDropped : total dropped frames on this video element}
+				this.getPlayer().triggerHelper('hlsDropFPS', data.totalDropped);
+				mw.log("hlsjs :: onDropFrames | totalDropped = "+data.totalDropped);
 			},
 			/**
 			 * Extract metadata from parsed manifest data, e.g. ABR etc.
@@ -177,9 +283,18 @@
 			 * @param data
 			 */
 			onLevelSwitch: function (event, data) {
+				//Set and report bitrate change
+				var source = this.hls.levels[data.level];
+				var currentBitrate = source.bitrate/ 1024
+				this.getPlayer().currentBitrate = currentBitrate;
+				this.getPlayer().triggerHelper('bitrateChange', currentBitrate);
+				//Notify sourceSwitchingStarted
 				if (this.isLevelSwitching && this.levelIndex == data.level) {
 					this.getPlayer().triggerHelper("sourceSwitchingStarted");
 				}
+				//fire debug info
+				this.getPlayer().triggerHelper('hlsCurrentBitrate', currentBitrate);
+				mw.log("hlsjs :: onLevelSwitch | level = "+ data.level+" | current bitrate = "+currentBitrate);
 			},
 			/**
 			 * Trigger source switch ended handler
@@ -187,6 +302,8 @@
 			 * @param data
 			 */
 			onFragChanged: function (event, data) {
+				//fired when fragment matching with current video position is changing
+				//data: { frag : fragment object }
 				if ( data && data.frag && data.frag.duration){
 					this.fragmentDuration = data.frag.duration;
 				}
@@ -195,6 +312,8 @@
 					this.isLevelSwitching = false;
 					this.getPlayer().triggerHelper("sourceSwitchingEnd");
 				}
+				this.getPlayer().triggerHelper('hlsFragChanged', data.frag);
+				//mw.log("hlsjs :: onFragChanged | startPTS = " + mw.seconds2npt(data.frag.startPTS) + " >> endPTS = " + mw.seconds2npt(data.frag.endPTS) + " | url = " + data.frag.url);
 			},
 			/**
 			 * Error handler
@@ -234,6 +353,11 @@
 							break;
 					}
 				} else {
+					switch (data.details) {
+						case Hls.ErrorDetails.BUFFER_STALLED_ERROR:
+							this.getPlayer().bufferStart();
+							break;
+					}
 					//If not fatal then log issue, we can switch case errors for specific issues
 					this.log("Error: " + data.type + ", " + data.details);
 				}
@@ -285,10 +409,14 @@
 			overridePlayerMethods: function () {
 				this.orig_backToLive = this.getPlayer().backToLive;
 				this.orig_switchSrc = this.getPlayer().switchSrc;
-				this.orig_changeMediaCallback = this.getPlayer().changeMediaCallback;
+				this.orig_playerSwitchSource = this.getPlayer().playerSwitchSource;
+				this.orig_load = this.getPlayer().load;
+				this.orig_onerror = this.getPlayer()._onerror;
 				this.getPlayer().backToLive = this.backToLive.bind(this);
 				this.getPlayer().switchSrc = this.switchSrc.bind(this);
-				this.getPlayer().changeMediaCallback = null;
+				this.getPlayer().playerSwitchSource = this.playerSwitchSource.bind(this);
+				this.getPlayer().load = this.load.bind(this);
+				this.getPlayer()._onerror = this._onerror.bind(this);
 			},
 			/**
 			 * Disable override player methods for HLS playback
@@ -296,7 +424,9 @@
 			restorePlayerMethods: function () {
 				this.getPlayer().backToLive = this.orig_backToLive;
 				this.getPlayer().switchSrc = this.orig_switchSrc;
-				this.getPlayer().changeMediaCallback = this.orig_changeMediaCallback;
+				this.getPlayer().playerSwitchSource = this.orig_playerSwitchSource;
+				this.getPlayer().load = this.orig_load;
+				this.getPlayer()._onerror = this.orig_onerror;
 				mw.supportsFlash = orig_supportsFlash;
 			},
 			//Overidable player methods, "this" is bound to HLS plugin instance!
@@ -328,6 +458,8 @@
 						if (this.hls.currentLevel == sourceIndex) {
 							this.onLevelSwitch(Hls.Events.LEVEL_SWITCH, {level: sourceIndex});
 							this.onFragChanged(Hls.Events.LEVEL_LOADED, {frag: {level: sourceIndex}});
+							this.getPlayer().currentBitrate = source.getBitrate();
+							this.getPlayer().triggerHelper('bitrateChange', source.getBitrate());
 						} else {
 							this.hls.nextLevel = sourceIndex;
 						}
@@ -335,8 +467,78 @@
 				} else {
 					this.hls.nextLevel = -1;
 				}
-			}
+			},
+			/**
+			 * Override player method for loading the video element
+			 */
+			load: function(){
+				this.hls.startLoad();
+			},
+			/**
+			 * Override player callback after changing media
+			 */
+			playerSwitchSource: function(src, switchCallback, doneCallback){
+				this.getPlayer().play();
+				if ($.isFunction(switchCallback)) {
+					switchCallback();
+				}
+			},
+			/**
+			 * Override player method for playback error
+			 */
+			_onerror: function ( evt ) {
+				var errorTxt,mediaError = evt.currentTarget.error;
+				switch(mediaError.code) {
+					case mediaError.MEDIA_ERR_ABORTED:
+						errorTxt = "You aborted the video playback";
+						break;
+					case mediaError.MEDIA_ERR_DECODE:
+						errorTxt = "The video playback was aborted due to a corruption problem or because the video used features your browser did not support. Trying to handle MediaError.";
+						this.handleMediaError();
+						break;
+					case mediaError.MEDIA_ERR_NETWORK:
+						errorTxt = "A network error caused the video download to fail part-way";
+						break;
+					case mediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+						errorTxt = "The video could not be loaded, either because the server or network failed or because the format is not supported";
+						break;
+				}
+				mw.log("HLS.JS ERROR: "+errorTxt);
+			},
 
+			handleMediaError: function ( ) {
+				if( this.canRecover() ) {
+					this.hls.recoverMediaError();
+				}
+			},
+
+			canRecover: function ( ) {
+				if( this.playerErrorRecoveryCounter > 2 ) {
+					this.playerErrorRecoveryCounter = 0;
+					return false;
+				}
+				this.playerErrorRecoveryCounter += 1;
+				return true;
+			},
+
+			monitorDebugInfo: function ( ) {
+				//each second trigger debug info: buffer length, dropped frames, current FPS
+				this.debugInfoCounter++;
+				if ( this.debugInfoCounter === this.debugInfoInterval ) {
+					this.debugInfoCounter = 0;
+					this.getPlayer().triggerHelper('hlsCurrentBuffer', mw.seconds2npt( this.getPlayer().getCurrentBufferLength() ));
+
+					//only webkit browsers expose dropped frames parameter
+					if( mw.isChrome() || mw.isDesktopSafari() ) {
+						this.getPlayer().triggerHelper('hlsDroppedFrames', this.getPlayer().getPlayerElement().webkitDroppedFrameCount);
+					} else {
+						this.getPlayer().triggerHelper('hlsDroppedFrames', 'not supported');
+					}
+
+					//HTML5 video tag does not support real fps metric yet
+					this.getPlayer().triggerHelper('hlsFPS', 'not supported');
+				}
+			}
 		});
 
 		mw.PluginManager.add('hlsjs', hlsjs);

@@ -120,6 +120,8 @@
 				'service': 'baseEntry',
 				'action': 'list',
 				'filter:objectType': 'KalturaBaseEntryFilter',
+				// MEDIA_CLIP
+				'filter:typeEqual': 1,
 				'filter:parentEntryIdEqual': this.getPlayer().kentryid
 			});
 

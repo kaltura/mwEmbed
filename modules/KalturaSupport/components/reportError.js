@@ -23,6 +23,9 @@
 					resourceUrl = embedPlayer.mediaElement.selectedSource.getSrc();
 				}
 
+				var currentTime = $.isFunction(embedPlayer.getPlayerElement().currentTime) ?
+					embedPlayer.getPlayerElement().currentTime() : embedPlayer.getPlayerElement().currentTime;
+
 				var msgParams = [];
 				msgParams[ 'pid' ] = embedPlayer.kpartnerid;
 				msgParams[ 'uiconfId' ] = embedPlayer.kuiconfid;
@@ -30,7 +33,7 @@
 				msgParams[ 'didSeek' ] = _this.didSeek;
 				msgParams[ 'resourceUrl' ] = resourceUrl;
 				msgParams[ 'userAgent' ] = navigator.userAgent;
-				msgParams[ 'playerCurrentTime' ] = embedPlayer.getPlayerElement().currentTime;
+				msgParams[ 'playerCurrentTime' ] = currentTime;
 				msgParams[ 'playerLib' ] = embedPlayer.selectedPlayer.library;
 				msgParams[ 'streamerType' ] = embedPlayer.streamerType;
 				//add params from data argument

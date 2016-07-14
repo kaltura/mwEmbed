@@ -76,7 +76,7 @@ class kalturaIframeClass {
 			try {
 				$result = $client->widget->get($widgetId);
 			} catch( Exception $e ){
-				throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
+				throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . htmlspecialchars($e->getMessage()) );
 			}
 			if( $result ) {
 				return $result;
@@ -95,7 +95,7 @@ class kalturaIframeClass {
 				// Init a new result object with the client tag:
 				$this->uiConfResult = $container['uiconf_result'];
 			} catch ( Exception $e ){//die($e->getMessage());
-				$this->fatalError( $e->getMessage() );
+				$this->fatalError( htmlspecialchars($e->getMessage()) );
 			}
 		}
 		return $this->uiConfResult;
@@ -577,7 +577,6 @@ class kalturaIframeClass {
 		}
 		return "Kaltura Embed Player iFrame";
 	}
-
 	/**
 	 * Get the iframe css
 	 */
@@ -652,6 +651,55 @@ HTML;
 			}
 		}
 	}
+
+		function outputCustomCss(){
+    		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
+    		if (isset($playerConfig['plugins']['theme'])){
+    			$theme = $playerConfig['plugins']['theme'];
+    			$customStyle = '<style type="text/css">';
+    			if (isset($theme['buttonsSize'])){
+    				$customStyle = $customStyle . '.mwPlayerContainer:not(.mobileSkin) .controlsContainer, .topBarContainer {font-size: ' . $theme['buttonsSize'] . 'px}';
+    			}
+    			if (isset($theme['buttonsColor'])){
+    				$customStyle = $customStyle . '.mwPlayerContainer:not(.mobileSkin) .btn {background-color: ' . $theme['buttonsColor'] . '}';
+    				if (isset($theme['applyToLargePlayButton']) && $theme['applyToLargePlayButton'] == true){
+    					$customStyle = $customStyle  . '.largePlayBtn {background-color: ' . $theme['buttonsColor'] . '!important}';
+    				}
+    			}
+    			if (isset($theme['sliderColor'])){
+    				$customStyle = $customStyle . '.ui-slider {background-color: ' . $theme['sliderColor'] . '!important}';
+    			}
+    			if (isset($theme['controlsBkgColor'])){
+    				$customStyle = $customStyle . '.mwPlayerContainer:not(.mobileSkin) .controlsContainer {background-color: ' . $theme['controlsBkgColor'] . '!important}';
+    				$customStyle = $customStyle . '.mwPlayerContainer:not(.mobileSkin) .controlsContainer {background: ' . $theme['controlsBkgColor'] . '!important}';
+    			}
+    			if (isset($theme['scrubberColor'])){
+    				$customStyle = $customStyle . '.mwPlayerContainer:not(.mobileSkin) .playHead {background-color: ' . $theme['scrubberColor'] . '!important}';
+    				$customStyle = $customStyle . '.mwPlayerContainer:not(.mobileSkin) .playHead {background: ' . $theme['scrubberColor'] . '!important}';
+    			}
+    			if (isset($theme['buttonsIconColor'])){
+    				$customStyle = $customStyle . '.btn {color: ' . $theme['buttonsIconColor'] . '!important}';
+    				if (isset($theme['applyToLargePlayButton']) && $theme['applyToLargePlayButton'] == true){
+    					$customStyle = $customStyle  . '.largePlayBtn {color: ' . $theme['buttonsIconColor'] . '!important}';
+    				}
+    			}
+    			if (isset($theme['watchedSliderColor'])){
+    				$customStyle = $customStyle . '.watched {background-color: ' . $theme['watchedSliderColor'] . '!important}';
+    			}
+    			if (isset($theme['bufferedSliderColor'])){
+                    $customStyle = $customStyle . '.buffered {background-color: ' . $theme['bufferedSliderColor'] . '!important}';
+                }
+    			if (isset($theme['timeLabelColor'])){
+    				$customStyle = $customStyle . '.currentTimeLabel {color: ' . $theme['timeLabelColor'] . '!important}';
+    				$customStyle = $customStyle . '.durationLabel {color: ' . $theme['timeLabelColor'] . '!important}';
+    			}
+                if (isset($theme['buttonsIconColorDropShadow']) && isset($theme['dropShadowColor'])){
+                    $customStyle = $customStyle . '.btn {text-shadow: ' . $theme['dropShadowColor'] . '!important}';
+                }
+    			$customStyle =  $customStyle . '</style>' . "\n";
+    			return $customStyle;
+    		}
+    	}
 
 	function getPath() {
 		global $wgResourceLoaderUrl;
@@ -965,11 +1013,11 @@ HTML;
 					    $payload[ 'entryResult' ] = $this->getEntryResultData();
 					}
 				} catch ( Exception $e ){
-					$payload['error'] = $e->getMessage();
+					$payload['error'] = htmlspecialchars($e->getMessage());
 				}
 				// push up entry result errors to top level:
 				if( isset( $payload[ 'entryResult' ]  ) && isset( $payload[ 'entryResult' ]['error']) ){
-					$payload['error'] = $payload[ 'entryResult' ]['error'];
+					$payload['error'] = htmlspecialchars($payload[ 'entryResult' ]['error']);
 				} 
 				// check for returned errors: 
 				echo json_encode( $payload );
@@ -1228,13 +1276,33 @@ HTML;
 <!DOCTYPE html>
 <html>
 <head>
+	<?php if(!empty($flashvars['forceCompatMode'])){
+		echo '<meta http-equiv="X-UA-Compatible" content="' . $flashvars['forceCompatMode'] . '"/>';
+	} ?>
 	<script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ </script>
 	<?php if($wgRemoteWebInspector && $wgEnableScriptDebug){
 		echo '<script src="' . $wgRemoteWebInspector . '"></script>';
 	 } ?>
-	<link href='//fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+	<link href='//fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+	<?php if (isset($flashvars) && isset($flashvars['nativeCallout'])){
+	    $nativeCallout = json_decode($flashvars['nativeCallout'],true);
+        if (isset($nativeCallout) && ($nativeCallout['plugin'] ===  true)){
+            echo '<meta name="format-detection" content="telephone=no">';
+            echo '<meta name="format-detection" content="date=no">';
+            echo '<meta name="format-detection" content="address=no">';
+            echo '<meta name="format-detection" content="email=no">';
+        }
+    } ?>
 	<?php echo $this->outputIframeHeadCss(); ?>
 	<?php echo $this->outputSkinCss(); ?>
+    <?php $customCss = $this->outputCustomCss(); ?>
+
+	<script type="text/javascript">
+	    if (window['kWidget'] && !window['kWidget'].isMobileDevice()){
+            var head = document.head || document.getElementsByTagName('head')[0];
+            head.appendChild(<?php $customCss ?>);
+	    }
+	</script>
 
 	<script type="text/javascript">
 		(function (document) {

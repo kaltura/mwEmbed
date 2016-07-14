@@ -27,7 +27,7 @@
 		},
 		addBindings: function() {
 			var _this = this;
-			this.bind('onChangeMediaDone playerReady onpause onEndedDone onRemovePlayerSpinner showPlayerControls', function(){
+			this.bind('onChangeMediaDone playerReady onpause onEndedDone onRemovePlayerSpinner showPlayerControls hideScreen', function(){
 				if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() && !_this.embedPlayer.changeMediaStarted ){
 					_this.show();
 				}
@@ -38,7 +38,7 @@
 					_this.show();
 				}
 			});
-			this.bind('playing AdSupport_StartAdPlayback onAddPlayerSpinner onHideControlBar', function(){
+			this.bind('playing AdSupport_StartAdPlayback onAddPlayerSpinner onHideControlBar showScreen', function(){
 				_this.hide();
 			});
 			this.bind('onPlayerStateChange', function(e, newState, oldState){
@@ -54,10 +54,22 @@
 					_this.show();
 				}
 			});
+			this.bind( 'playlistFirstEntry playlistLastEntry playlistMiddleEntry', function(e){
+				_this.getComponent().find(".btn").removeClass("disabled");
+				if (e.type === "playlistFirstEntry"){
+					_this.getComponent().find(".icon-prev").addClass("disabled");
+				}
+				if (e.type === "playlistLastEntry"){
+					_this.getComponent().find(".icon-next").addClass("disabled");
+				}
+			});
 		},
 		show: function(){
-			if ( !this.isDisabled ) {
-				this.getComponent().show();
+			if ( !this.isDisabled && !this.embedPlayer.layoutBuilder.displayOptionsMenuFlag ) {
+				if (this.embedPlayer.isMobileSkin() && (this.embedPlayer.changeMediaStarted || this.embedPlayer.buffering)){
+					return; // prevent
+				}
+				this.getComponent().fadeIn('fast');
 			}
 		},
 		hide: function( force ){
@@ -80,7 +92,7 @@
 					});
 				var $prevBtn = $( '<button />' )
 					.attr( 'title', this.prevTitle )
-					.addClass( "btn btnNarrow icon-prev" )
+					.addClass( "btn btnNarrow icon-prev disabled" )
 					.on(eventName, function(e) {
 						e.stopPropagation();
 						e.preventDefault();

@@ -308,6 +308,11 @@
                 "type": "boolean",
                 "initvalue": true
             },
+	        "includeHeader": {
+                "doc": "Display playlist header, including title, number of clips and playlist controls.",
+                "type": "boolean",
+                "initvalue": true
+            },
             "autoContinue": {
                 "doc": "If the playlist should autocontinue.",
                 "type": "boolean"

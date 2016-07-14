@@ -303,7 +303,7 @@
 
 				hideComponentsArr.push( 'durationLabel' );
 				//live + DVR
-				if ( _this.isDVR() ) {
+				if ( _this.isDVR() && !embedPlayer.casting) {
 					_this.dvrWindow = embedPlayer.evaluate( '{mediaProxy.entry.dvrWindow}' ) * 60;
 					if ( !_this.dvrWindow ) {
 						_this.dvrWindow = _this.defaultDVRWindow;
@@ -342,7 +342,10 @@
 			else {
 				embedPlayer.removePosterFlag = false;
 				hideComponentsArr.push( 'liveStatus' );
-				showComponentsArr.push( 'sourceSelector', 'scrubber', 'durationLabel', 'currentTimeLabel' );
+				showComponentsArr.push( 'scrubber', 'durationLabel', 'currentTimeLabel' );
+				if (!embedPlayer.isMobileSkin()){
+					showComponentsArr.push( 'sourceSelector' );
+				}
 				_this.removeLiveStreamStatusMonitor();
 				_this.unbind('timeupdate');
 			}

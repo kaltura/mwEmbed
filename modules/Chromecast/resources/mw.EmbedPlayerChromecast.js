@@ -34,6 +34,7 @@
 					_this.play();
 				}
 			});
+			readyCallback();
 		},
 
 		// override these functions so embedPlayer won't try to sync time
@@ -44,7 +45,7 @@
 		updatePlayhead: function (currentTime, duration) {
 			this.currentTime = currentTime;
 			this.vid.currentTime = currentTime;
-			if ( !this.seeking && !this.userSlide) {
+			if ( !this.seeking && !this.userSlide && duration) {
 				$(this).trigger("updatePlayHeadPercent",[ currentTime / duration ]);
 				$( this ).trigger( 'timeupdate' );
 			}
@@ -53,6 +54,10 @@
 
 		getPlayerElementTime: function(){
 			return this.currentTime;
+		},
+
+		isDVR: function () {
+			return false;
 		},
 
 		clipDone: function() {
@@ -79,10 +84,29 @@
 			this.parent_pause();
 		},
 
-		switchPlaySource: function( source, switchCallback, doneCallback ){
+		canAutoPlay: function () {
+			return true;
+		},
+		changeMediaCallback: function (callback) {
+			var _this = this;
+			// Check if we have source
+			if (!this.getSource()) {
+				callback();
+				return;
+			}
+			this.switchPlaySource(this.getSource(), function () {
+				mw.setConfig("EmbedPlayer.KeepPoster",true);
+				mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
+				setTimeout(function(){
+					_this.updatePosterHTML();
+				},0);
+
+				callback();
+			});
+		},
+		switchPlaySource: function( source, switchCallback ){
 			$(this).trigger("chromecastSwitchMedia", [source.src, source.mimeType]);
 			this.vid.mediaLoadedCallback = switchCallback;
-			this.vid.mediaFinishedCallback = doneCallback;
 		},
 
 		mediaLoaded: function(mediaSession){
@@ -100,7 +124,13 @@
 			this.duration = duration;
 			$( this ).trigger( 'durationChange',[duration] );
 		},
-
+		backToLive: function () {
+			var _this = this;
+			$(this).trigger("chromecastBackToLive");
+			setTimeout( function() {
+				_this.triggerHelper('movingBackToLive'); //for some reason on Mac the isLive client response is a little bit delayed, so in order to get update liveUI properly, we need to delay "movingBackToLive" helper
+			}, 1000 );
+		},
 		getPlayerElement: function(){
 			return this.vid;
 		},

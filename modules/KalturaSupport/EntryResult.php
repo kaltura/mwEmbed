@@ -324,11 +324,6 @@ class EntryResult {
 			return true;
 		}
 
-		// Checks if admin
-		if( isset( $accessControl['isAdmin'] ) && $accessControl['isAdmin']) {
-			return true;
-		}
-
 		/* Domain Name Restricted */
 		if( isset( $accessControl['isSiteRestricted'] ) && $accessControl['isSiteRestricted'] ) {
 			return "Un authorized domain\nWe're sorry, this content is only available on certain domains.";

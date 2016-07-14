@@ -1,0 +1,145 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>External Fullscreen Control</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+
+
+</head>
+<body>
+<h2> External Fullscreen Control Example </h2>
+This example shows how to take control over the full screen functionality.<br>
+Changing full screen mode is done externally and the player is notified on the change.<br>
+To set it up:
+<p>
+    <ol>
+        <li>Set the global Flashvar <b>'EmbedPlayer.ExternalFullScreenControl'</b> to true.</li>
+        <li>Register to the player <b>'onToggleFullscreen'</b> event to enter and exit full screen using your custom code.</li>
+        <li>Accordingly, call the player <b>openFullScreen</b> or <b>closeFullScreen</b> notification in order to update its UI.</li>
+    </ol>
+</p>
+<div id="kaltura_player" style="width:400px;height:330px;"></div>
+<script>
+    var isFullScreen = false;
+
+    function enterFullscreen(docElm){
+        if (docElm.requestFullscreen) {
+            docElm.requestFullscreen();
+        }
+        else if (docElm.mozRequestFullScreen) {
+            docElm.mozRequestFullScreen();
+        }
+        else if (docElm.webkitRequestFullScreen) {
+            docElm.webkitRequestFullScreen();
+        }
+        else if (docElm.msRequestFullscreen) {
+            docElm.msRequestFullscreen();
+        }
+    }
+
+    function exitFullscreen(){
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+        else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        }
+        else if (document.webkitCancelFullScreen) {
+            document.webkitCancelFullScreen();
+        }
+        else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    }
+
+    mw.setConfig('EmbedPlayer.ExternalFullScreenControl', true);
+
+    kWidget.embed({
+        'targetId': 'kaltura_player',
+        'wid': '_243342',
+        'uiconf_id' : '12905712',
+        'entry_id' : '0_uka1msg4',
+        'readyCallback': function(id){
+            var kdp = document.getElementById(id);
+
+            kdp.kBind("onToggleFullscreen", function(){
+
+                if (!isFullScreen){
+                    enterFullscreen(kdp);
+                }else{
+                    exitFullscreen();
+                }
+
+                var notification = isFullScreen ? "closeFullScreen" : "openFullScreen";
+                kdp.sendNotification(notification);
+
+                isFullScreen = !isFullScreen;
+            });
+        }
+    });
+</script>
+<br>
+Sample embed code:
+<pre class="prettyprint linenums">
+    var isFullScreen = false;
+
+    function enterFullscreen(docElm){
+        if (docElm.requestFullscreen) {
+            docElm.requestFullscreen();
+        }
+        else if (docElm.mozRequestFullScreen) {
+            docElm.mozRequestFullScreen();
+        }
+        else if (docElm.webkitRequestFullScreen) {
+            docElm.webkitRequestFullScreen();
+        }
+        else if (docElm.msRequestFullscreen) {
+            docElm.msRequestFullscreen();
+        }
+    }
+
+    function exitFullscreen(){
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+        else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        }
+        else if (document.webkitCancelFullScreen) {
+            document.webkitCancelFullScreen();
+        }
+        else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    }
+
+    mw.setConfig('EmbedPlayer.ExternalFullScreenControl', true);
+
+    kWidget.embed({
+        'targetId': 'kaltura_player',
+        'wid': '_243342',
+        'uiconf_id' : '12905712',
+        'entry_id' : '0_uka1msg4',
+        'readyCallback': function(id){
+            var kdp = document.getElementById(id);
+
+            kdp.kBind("onToggleFullscreen", function(){
+
+                if (!isFullScreen){
+                    enterFullscreen(kdp);
+                }else{
+                    exitFullscreen();
+                }
+
+                var notification = isFullScreen ? "closeFullScreen" : "openFullScreen";
+                kdp.sendNotification(notification);
+
+                isFullScreen = !isFullScreen;
+            });
+        }
+    });
+</pre>
+</body>
+</html>

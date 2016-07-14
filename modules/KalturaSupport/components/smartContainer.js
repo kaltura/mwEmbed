@@ -46,6 +46,7 @@
 				config.plugins.forEach(function (plugin, index) {
 					_this.embedPlayer.setKalturaConfig( plugin.pluginName, "visible", false );
 				});
+				_this.embedPlayer.triggerHelper("updateComponentsVisibilityDone");
 			});
 
 			this.bind( 'onOpenFullScreen onCloseFullScreen onHideControlBar', function(){

@@ -1,35 +1,38 @@
 .chromecastPlaying{
 	color: #35BCDA;
 	font-size: 13px;
-	position: absolute;
+    position: absolute;
+    width: 100%;
+    height: 100%;
 	margin-left: 48px;
-	width: 50%;
 	margin-top: 13px;
+    white-space: nowrap;
 }
 .chromecastReceiverName{
 	margin-top: 30px;
 }
 .chromecastPlayingIcon{
 	color: #35BCDA;
-	font-size: 36px;
+	font-size: 40px;
 	float: left;
 	margin-top: 10px;
 	margin-left: 0px;
+    position: absolute;
 }
 .chromecastTitle{
 	color: white;
 	width: 50%;
 }
 .chromecastThumbBorder{
+    position: absolute;white-space: nowrap;
 	border: 2px solid #ffffff;
 	float: left;
 }
 .chromecastPlayback{
-	position: absolute;
-	top: 50%;
-	left: 60%;
-	width: 100%;
-	transform: translate(-50%, -50%);
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%,-50%);
 }
 .connectingMsg{
 	z-index: 101;
@@ -52,5 +55,5 @@
 .titleHolder{
 	float: left;
 	width: 200px;
-	margin-left: 10px;
+	margin-left: 130px;
 }
