@@ -217,6 +217,12 @@
 			this.bind( 'onDisableInterfaceComponents', function(e, arg ){
 				_this.getMenu().close();
 			});
+			this.bind( 'newCaptionsStyles', function (e, stylesObj){
+				_this.customStyle = stylesObj;
+			});
+			this.bind( 'addOptionsToCaptions', function (e, btnOptions){
+				_this.addOptionsButton(btnOptions);
+			});
 		},
 		addTextSource: function(captionData){
 			// Try to insert the track source:
@@ -621,6 +627,7 @@
 		addCaptionAsDomElement: function ( source, capId, caption ){
 			var $textTarget = $('<div />')
 				.addClass('track')
+				.css("background-color", this.customStyle.windowColor ? this.customStyle.windowColor : "none")
 				.attr('data-capId', capId)
 				.html($(caption.content)
 					.addClass('caption')
@@ -645,6 +652,7 @@
 			// multiple players on page.
 			var $textTarget = $('<div />')
 				.addClass('track')
+				.css("background-color", this.customStyle.windowColor ? this.customStyle.windowColor : "none")
 				.attr('data-capId', capId)
 				.hide();
 
@@ -817,37 +825,53 @@
 				textSize = 150;
 			}
 			return textSize;
-		},		
+		},
 		getCaptionCss: function() {
 			var style = {'display': 'inline'};
 
-			if( this.getConfig( 'bg' ) ) {
-				style[ "background-color" ] = mw.getHexColor( this.getConfig( 'bg' ) );
-			}
-			if( this.getConfig( 'fontColor' ) ) {
-				style[ "color" ] = mw.getHexColor( this.getConfig( 'fontColor' ) );
-			}
-			if( this.getConfig( 'fontFamily' ) ) {
-				style[ "font-family" ] = this.getConfig( 'fontFamily' );
-			}
-			if( this.getConfig( 'fontsize' ) ) {
-				// Translate to em size so that font-size parent percentage
-				// base on http://pxtoem.com/
-				var emFontMap = { '6': .5, '7': .583, '8': .666, '9': .75, '10': .833, '11': .916,
-						'12': 1, '13': 1.083, '14': 1.166, '15': 1.25, '16': 1.333, '17': 1.416, '18': 1.5, '19': 1.583,
-						'20': 1.666, '21': 1.75, '22': 1.833, '23': 1.916, '24': 2 };
-				// Make sure its an int:
-				var fontsize = parseInt( this.getConfig( 'fontsize' ) );
-				style[ "font-size" ] = ( emFontMap[ fontsize ] ) ?
-						emFontMap[ fontsize ] +'em' :
-						(  fontsize > 24 )?  emFontMap[ 24 ]+'em' : emFontMap[ 6 ];
-			}
-			if( this.getConfig( 'useGlow' ) && this.getConfig( 'glowBlur' ) && this.getConfig( 'glowColor' ) ) {
-				var hShadow = this.getConfig( 'hShadow' ) ? this.getConfig( 'hShadow' ) : 0;
-				var vShadow = this.getConfig( 'vShadow' ) ? this.getConfig( 'vShadow' ) : 0;
-				style[ "text-shadow" ] = hShadow + 'px ' + vShadow + 'px ' + this.getConfig( 'glowBlur' ) + 'px ' + mw.getHexColor( this.getConfig( 'glowColor' ) );
+			if(!this.customStyle) {
+
+				if (this.getConfig('bg')) {
+					style["background-color"] = mw.getHexColor(this.getConfig('bg'));
+				}
+				if (this.getConfig('fontColor')) {
+					style["color"] = mw.getHexColor(this.getConfig('fontColor'));
+				}
+				if (this.getConfig('fontFamily')) {
+					style["font-family"] = this.getConfig('fontFamily');
+				}
+				if (this.getConfig('fontsize')) {
+					style["font-size"] = this.getFontSize();
+				}
+				if (this.getConfig('useGlow') && this.getConfig('glowBlur') && this.getConfig('glowColor')) {
+					var hShadow = this.getConfig('hShadow') ? this.getConfig('hShadow') : 0;
+					var vShadow = this.getConfig('vShadow') ? this.getConfig('vShadow') : 0;
+					style["text-shadow"] = hShadow + 'px ' + vShadow + 'px ' + this.getConfig('glowBlur') + 'px ' + mw.getHexColor(this.getConfig('glowColor'));
+				}
+			} else {
+
+				style["font-family"] = this.customStyle.fontFamily;
+				style["color"] = this.customStyle.fontColor;
+				this.setConfig('fontsize', this.customStyle.fontSize);
+				style["font-size"] = this.getFontSize();
+				style["background-color"] = this.customStyle.backgroundColor;
+				style["text-shadow"] = this.customStyle.charEdgeStyle;
 			}
 			return style;
+		},
+		getFontSize: function(){
+			// Translate to em size so that font-size parent percentage
+			// base on http://pxtoem.com/
+			var emFontMap = {
+				'6': .5, '7': .583, '8': .666, '9': .75, '10': .833, '11': .916,
+				'12': 1, '13': 1.083, '14': 1.166, '15': 1.25, '16': 1.333, '17': 1.416, '18': 1.5, '19': 1.583,
+				'20': 1.666, '21': 1.75, '22': 1.833, '23': 1.916, '24': 2
+			};
+			// Make sure its an int:
+			var fontsize = parseInt(this.getConfig('fontsize'));
+			return ( emFontMap[fontsize] ) ?
+			emFontMap[fontsize] + 'em' :
+				(  fontsize > 24 ) ? emFontMap[24] + 'em' : emFontMap[6];
 		},
 		getDefaultStyle: function(){
 			var baseCss =  {
@@ -906,6 +930,8 @@
 				// show new timed captions text if exists
 				this.showCaptions();
 			}
+
+			this.getPlayer().triggerHelper('captionsMenuEmpty');
 
 			// Add Off item as first element
 			if( this.getConfig('showOffButton') && this.getConfig('offButtonPosition') == 'first' ) {
@@ -968,6 +994,19 @@
 					_this.getPlayer().setCookie( _this.cookieName, 'None' );
 				},
 				'active': ! _this.getConfig( "displayCaptions" ) 
+			});
+		},
+		addOptionsButton: function(btnOptions) {
+			var _this = this;
+			this.getMenu().addItem({
+				'label': btnOptions.optionsLabel,
+				'itemIdx': 2,
+				'attributes': {
+					'class': "cvaaOptions"
+				},
+				'callback': function(){
+					_this.getPlayer().triggerHelper(btnOptions.optionsEvent);
+				}
 			});
 		},
 		setTextSource: function( source, setCookie ){
