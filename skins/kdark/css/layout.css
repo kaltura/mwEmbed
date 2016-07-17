@@ -1513,7 +1513,7 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 .sourceSelector {
 	display: inline-block;
 }
-.mobileSkin .controlBarContainer .sourceSelector {
+.mobileSkin .controlBarContainer .sourceSelector, .mobileSkin .controlBarContainer .streamSelector {
 	margin-top: -5px;
 }
 .mobileSkin .controlBarContainer .closedCaptions {
