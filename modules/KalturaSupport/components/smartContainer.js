@@ -17,6 +17,10 @@
 		$menu: null,
 		closeMenuTimeoutId: null,
 
+		isSafeEnviornment: function(){
+			return !mw.isMobileDevice();
+		},
+
 		setup: function( embedPlayer ) {
 			if ( $.isEmptyObject(this.getConfig("config")) ){
 				this.setConfig( "visible", false ); // remove plugin if no config was specified
