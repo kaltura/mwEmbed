@@ -1,10 +1,98 @@
-<div class="cvaaScreenPanel">
+<br class="cvaaScreenPanel">
 
-	<div class='eulaText'><%= cvaa.getConfig('genericText') %> <br />
-		<a href="<%= cvaa.getConfig('eulaUrl') %>" target="_blank"><%= cvaa.getConfig('cvaaUrlText') %></a>
-		<br />
-		<label for="eulaCheck"><%= cvaa.getConfig('checkboxText') %></label>
-		<input type="checkbox" id="eulaCheck" value="<%= cvaa.getConfig('checkboxValue') %>"/>
+	<div id="cvaaPreview">
+		<span id="previewWindow">
+			<span id="previewText">
+				Captions look like this
+			</span>
+		</span>
+	</div>
+	</br>
+	</br>
+	<div class="fontFamilyContainer">
+		<div><%=cvaaOptions.options.fontFamily.label%></div>
+		<select id=<%=cvaaOptions.options.fontFamily.selector%>>
+		<% $.each(cvaaOptions.family, function(idx, property){ %>
+			<option value="<%=property.prop%>"><%=property.text%></option>
+		<% }); %>
+		</select>
+	</div>
+
+	<div class="fontColorContainer">
+		<div><%=cvaaOptions.options.fontColor.label%></div>
+		<select id=<%=cvaaOptions.options.fontColor.selector%>>
+			<% $.each(cvaaOptions.color, function(idx, property){ %>
+			<option value="<%=property.prop%>"><%=property.text%></option>
+			<% }); %>
+		</select>
+	</div>
+
+	<div class="fontOpacityContainer">
+		<div><%=cvaaOptions.options.fontOpacity.label%></div>
+		<select id=<%=cvaaOptions.options.fontOpacity.selector%>>
+			<% $.each(cvaaOptions.opacity, function(idx, property){ %>
+			<option value="<%=property.prop%>"><%=property.text%></option>
+			<% }); %>
+		</select>
+	</div>
+
+	<div class="fontSizeContainer">
+		<div><%=cvaaOptions.options.fontSize.label%></div>
+		<select id=<%=cvaaOptions.options.fontSize.selector%>>
+			<% $.each(cvaaOptions.size, function(idx, property){ %>
+			<option value="<%=property.prop%>"><%=property.text%></option>
+			<% }); %>
+		</select>
+	</div>
+
+	<div class="backgroundColorContainer">
+		<div><%=cvaaOptions.options.backgroundColor.label%></div>
+		<select id=<%=cvaaOptions.options.backgroundColor.selector%>>
+			<% $.each(cvaaOptions.color, function(idx, property){ %>
+			<option value="<%=property.prop%>"><%=property.text%></option>
+			<% }); %>
+		</select>
+	</div>
+
+	<div class="backgroundOpacityContainer">
+		<div><%=cvaaOptions.options.backgroundOpacity.label%></div>
+		<select id=<%=cvaaOptions.options.backgroundOpacity.selector%>>
+			<% $.each(cvaaOptions.opacity, function(idx, property){ %>
+			<option value="<%=property.prop%>"><%=property.text%></option>
+			<% }); %>
+		</select>
+	</div>
+
+	<div class="windowColorContainer">
+		<div><%=cvaaOptions.options.windowColor.label%></div>
+		<select id=<%=cvaaOptions.options.windowColor.selector%>>
+			<% $.each(cvaaOptions.color, function(idx, property){ %>
+			<option value="<%=property.prop%>"><%=property.text%></option>
+			<% }); %>
+		</select>
+	</div>
+
+	<div class="windowOpacityContainer">
+		<div><%=cvaaOptions.options.windowOpacity.label%></div>
+		<select id=<%=cvaaOptions.options.windowOpacity.selector%>>
+			<% $.each(cvaaOptions.opacity, function(idx, property){ %>
+			<option value="<%=property.prop%>"><%=property.text%></option>
+			<% }); %>
+		</select>
+	</div>
+
+	<div class="fontEdgeStyleContainer">
+		<div><%=cvaaOptions.options.edgeStyle.label%></div>
+		<select id=<%=cvaaOptions.options.edgeStyle.selector%>>
+			<% $.each(cvaaOptions.edgeStyle, function(idx, property){ %>
+			<option value="<%=property.prop%>"><%=property.text%></option>
+			<% }); %>
+		</select>
+	</div>
+
+	<div id="cvaaButtons">
+		<button type="button" class="saveCvaaSettings">Save settings</button>
+		<button type="button" class="resetCvaaSettings">Reset to default</button>
 	</div>
 
 </div>

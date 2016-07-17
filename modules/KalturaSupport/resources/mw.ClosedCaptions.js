@@ -855,7 +855,7 @@
 				this.setConfig('fontsize', this.customStyle.fontSize);
 				style["font-size"] = this.getFontSize();
 				style["background-color"] = this.customStyle.backgroundColor;
-				style["text-shadow"] = this.customStyle.charEdgeStyle;
+				style["text-shadow"] = this.customStyle.edgeStyle;
 			}
 			return style;
 		},
