@@ -1938,6 +1938,9 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 .mobileSkin.pluginsScreenOpened .videoShadow{
     background: rgba(0,0,0,0.75);
 }
+.mobileSkin.adplay-state  .videoShadow{
+    display: none;
+}
 .closePluginsScreen{
     position: absolute;
     cursor : pointer;
