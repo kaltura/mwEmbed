@@ -372,7 +372,10 @@
 				recursiveIteration( proxyData );
 				fv['proxyData'] = proxyData;
 			} else {
-				fv['proxyData'] = _this.embedPlayer.getKalturaConfig('originalProxyData');
+				var data  = _this.embedPlayer.getKalturaConfig('originalProxyData');
+				if (!$.isEmptyObject(data)) {
+					fv['proxyData'] = data;
+				}
 			}
 
 			// add support for passing ks
