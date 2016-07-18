@@ -2007,7 +2007,7 @@
 			}
 
 			// Don't overlay controls if in audio mode:
-			if (this.isAudio()) {
+			if (this.isAudio() && !this.isMobileSkin()) {
 				return false;
 			}
 
