@@ -974,7 +974,7 @@
 						var companionAds = [];
 
 						try {
-							companionAds = ad.getCompanionAds(adSlotWidth, adSlotHeight, {resourceType: google.ima.CompanionAdSelectionSettings.ResourceType.STATIC, creativeType: google.ima.CompanionAdSelectionSettings.CreativeType.IMAGE});
+							companionAds = ad.getCompanionAds(adSlotWidth, adSlotHeight, {resourceType: google.ima.CompanionAdSelectionSettings.ResourceType.IFRAME, creativeType: google.ima.CompanionAdSelectionSettings.CreativeType.ALL});
 						} catch(e) {
 							mw.log("Error: DoubleClick could not access getCompanionAds");
 						}
@@ -1657,7 +1657,8 @@
 		},
 		restorePlayerNoPostroll:function(){
 			var _this = this;
-			if (!_this.getConfig("adTagUrl") && !_this.getConfig("postrollUrl")){
+			var bumperConfig = _this.embedPlayer.getKalturaConfig('bumper.postSequence') || false;
+			if (!_this.getConfig("adTagUrl") && !_this.getConfig("postrollUrl") || bumperConfig){
 				_this.currentAdSlotType = "postroll";
 				_this.restorePlayer(true);
 			}
