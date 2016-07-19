@@ -974,7 +974,7 @@
 						var companionAds = [];
 
 						try {
-							companionAds = ad.getCompanionAds(adSlotWidth, adSlotHeight, {resourceType: google.ima.CompanionAdSelectionSettings.ResourceType.STATIC, creativeType: google.ima.CompanionAdSelectionSettings.CreativeType.IMAGE});
+							companionAds = ad.getCompanionAds(adSlotWidth, adSlotHeight, {resourceType: google.ima.CompanionAdSelectionSettings.ResourceType.IFRAME, creativeType: google.ima.CompanionAdSelectionSettings.CreativeType.ALL});
 						} catch(e) {
 							mw.log("Error: DoubleClick could not access getCompanionAds");
 						}
