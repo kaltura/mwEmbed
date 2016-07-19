@@ -1,4 +1,4 @@
-<br class="cvaaScreenPanel">
+<div class="cvaaScreenPanel">
 
 	<div id="cvaaPreview">
 		<span id="previewWindow">
@@ -7,92 +7,85 @@
 			</span>
 		</span>
 	</div>
-	</br>
-	</br>
-	<div class="fontFamilyContainer">
-		<div><%=cvaaOptions.options.fontFamily.label%></div>
-		<select id=<%=cvaaOptions.options.fontFamily.selector%>>
-		<% $.each(cvaaOptions.family, function(idx, property){ %>
-			<option value="<%=property.prop%>"><%=property.text%></option>
-		<% }); %>
-		</select>
+
+	<div class="column-1-4">
+		<div class="fontSizeContainer">
+			<input type="text" id=<%=cvaaOptions.options.sliders.fontSize.valueSelector%>>
+			<div><%=cvaaOptions.options.sliders.fontSize.label%></div>
+			<div id=<%=cvaaOptions.options.sliders.fontSize.selector%>></div>
+		</div>
+
+		<div class="fontFamilyContainer">
+			<div><%=cvaaOptions.options.dropdowns.fontFamily.label%></div>
+			<select id=<%=cvaaOptions.options.dropdowns.fontFamily.selector%>>
+				<% $.each(cvaaOptions.family, function(idx, property){ %>
+				<option value="<%=property.prop%>"><%=property.text%></option>
+				<% }); %>
+			</select>
+		</div>
+
+
+		<div class="fontEdgeStyleContainer">
+			<div><%=cvaaOptions.options.dropdowns.edgeStyle.label%></div>
+			<select id=<%=cvaaOptions.options.dropdowns.edgeStyle.selector%>>
+				<% $.each(cvaaOptions.edgeStyle, function(idx, property){ %>
+				<option value="<%=property.prop%>"><%=property.text%></option>
+				<% }); %>
+			</select>
+		</div>
 	</div>
 
-	<div class="fontColorContainer">
-		<div><%=cvaaOptions.options.fontColor.label%></div>
-		<select id=<%=cvaaOptions.options.fontColor.selector%>>
-			<% $.each(cvaaOptions.color, function(idx, property){ %>
-			<option value="<%=property.prop%>"><%=property.text%></option>
-			<% }); %>
-		</select>
+	<div class="column-1-2">
+			<ul class="colorContainer">
+				<div><%=cvaaOptions.options.colors.fontColor.label%></div>
+				<% $.each(cvaaOptions.color, function(idx, property){ %>
+				<li id="<%=cvaaOptions.options.colors.fontColor.selector%>" value="<%=property.prop%>">
+					<span class=<%=property.text%>></span>
+				</li>
+				<% }); %>
+			</ul>
+
+			<ul class="colorContainer">
+				<div><%=cvaaOptions.options.colors.backgroundColor.label%></div>
+				<% $.each(cvaaOptions.color, function(idx, property){ %>
+				<li id="<%=cvaaOptions.options.colors.backgroundColor.selector%>" value="<%=property.prop%>">
+					<span class=<%=property.text%>></span>
+				</li>
+				<% }); %>
+			</ul>
+
+
+			<ul class="colorContainer">
+				<div><%=cvaaOptions.options.colors.windowColor.label%></div>
+				<% $.each(cvaaOptions.color, function(idx, property){ %>
+				<li id="<%=cvaaOptions.options.colors.windowColor.selector%>" value="<%=property.prop%>">
+					<span class=<%=property.text%>></span>
+				</li>
+				<% }); %>
+			</ul>
 	</div>
 
-	<div class="fontOpacityContainer">
-		<div><%=cvaaOptions.options.fontOpacity.label%></div>
-		<select id=<%=cvaaOptions.options.fontOpacity.selector%>>
-			<% $.each(cvaaOptions.opacity, function(idx, property){ %>
-			<option value="<%=property.prop%>"><%=property.text%></option>
-			<% }); %>
-		</select>
-	</div>
-
-	<div class="fontSizeContainer">
-		<div><%=cvaaOptions.options.fontSize.label%></div>
-		<select id=<%=cvaaOptions.options.fontSize.selector%>>
-			<% $.each(cvaaOptions.size, function(idx, property){ %>
-			<option value="<%=property.prop%>"><%=property.text%></option>
-			<% }); %>
-		</select>
-	</div>
-
-	<div class="backgroundColorContainer">
-		<div><%=cvaaOptions.options.backgroundColor.label%></div>
-		<select id=<%=cvaaOptions.options.backgroundColor.selector%>>
-			<% $.each(cvaaOptions.color, function(idx, property){ %>
-			<option value="<%=property.prop%>"><%=property.text%></option>
-			<% }); %>
-		</select>
-	</div>
-
-	<div class="backgroundOpacityContainer">
-		<div><%=cvaaOptions.options.backgroundOpacity.label%></div>
-		<select id=<%=cvaaOptions.options.backgroundOpacity.selector%>>
-			<% $.each(cvaaOptions.opacity, function(idx, property){ %>
-			<option value="<%=property.prop%>"><%=property.text%></option>
-			<% }); %>
-		</select>
-	</div>
-
-	<div class="windowColorContainer">
-		<div><%=cvaaOptions.options.windowColor.label%></div>
-		<select id=<%=cvaaOptions.options.windowColor.selector%>>
-			<% $.each(cvaaOptions.color, function(idx, property){ %>
-			<option value="<%=property.prop%>"><%=property.text%></option>
-			<% }); %>
-		</select>
-	</div>
-
-	<div class="windowOpacityContainer">
-		<div><%=cvaaOptions.options.windowOpacity.label%></div>
-		<select id=<%=cvaaOptions.options.windowOpacity.selector%>>
-			<% $.each(cvaaOptions.opacity, function(idx, property){ %>
-			<option value="<%=property.prop%>"><%=property.text%></option>
-			<% }); %>
-		</select>
-	</div>
-
-	<div class="fontEdgeStyleContainer">
-		<div><%=cvaaOptions.options.edgeStyle.label%></div>
-		<select id=<%=cvaaOptions.options.edgeStyle.selector%>>
-			<% $.each(cvaaOptions.edgeStyle, function(idx, property){ %>
-			<option value="<%=property.prop%>"><%=property.text%></option>
-			<% }); %>
-		</select>
+	<div class="column-1-4">
+		<div class="fontOpacityContainer">
+			<input type="text" id=<%=cvaaOptions.options.sliders.fontOpacity.valueSelector%>></input>
+			<div><%=cvaaOptions.options.sliders.fontOpacity.label%></div>
+			<div id=<%=cvaaOptions.options.sliders.fontOpacity.selector%>></div>
+		</div>
+		<div class="backgroundOpacityContainer">
+			<input type="text" id=<%=cvaaOptions.options.sliders.backgroundOpacity.valueSelector%>></input>
+			<div><%=cvaaOptions.options.sliders.backgroundOpacity.label%></div>
+			<div id=<%=cvaaOptions.options.sliders.backgroundOpacity.selector%>></div>
+		</div>
+		<div class="windowOpacityContainer">
+			<input type="text" id=<%=cvaaOptions.options.sliders.windowOpacity.valueSelector%>></input>
+			<div><%=cvaaOptions.options.sliders.windowOpacity.label%></div>
+			<div id=<%=cvaaOptions.options.sliders.windowOpacity.selector%>></div>
+		</div>
 	</div>
 
 	<div id="cvaaButtons">
-		<button type="button" class="saveCvaaSettings">Save settings</button>
 		<button type="button" class="resetCvaaSettings">Reset to default</button>
+		<button type="button" class="saveCvaaSettings">Save settings</button>
 	</div>
 
 </div>

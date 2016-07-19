@@ -634,6 +634,10 @@
 					.css('pointer-events', 'auto')
 				);
 
+			var $windowTarget = $('<div />')
+				.css("background-color", this.customStyle.windowColor ? this.customStyle.windowColor : "none")
+				.addClass('trackWindow');
+
 			this.displayTextTarget($textTarget);
 
 			var captionDiv = $('.caption div');
@@ -652,14 +656,19 @@
 			// multiple players on page.
 			var $textTarget = $('<div />')
 				.addClass('track')
-				.css("background-color", this.customStyle.windowColor ? this.customStyle.windowColor : "none")
 				.attr('data-capId', capId)
 				.hide();
+
+			var $windowTarget = $('<div />')
+				.css("background-color", this.customStyle.windowColor ? this.customStyle.windowColor : "none")
+				.addClass('trackWindow');
 
 			// Update text ( use "html" instead of "text" so that subtitle format can
 			// include html formating
 			// TOOD we should scrub this for non-formating html
+
 			$textTarget.append(
+				$windowTarget.append(
 				$('<span />')
 					.addClass('ttmlStyled')
 					.css('pointer-events', 'auto')
@@ -671,6 +680,7 @@
 							.css('position', 'relative')
 							.html(caption.content)
 					)
+				)
 			);
 
 			// Add/update the lang option
@@ -1000,13 +1010,13 @@
 			var _this = this;
 			this.getMenu().addItem({
 				'label': btnOptions.optionsLabel,
-				'itemIdx': 2,
 				'attributes': {
 					'class': "cvaaOptions"
 				},
 				'callback': function(){
 					_this.getPlayer().triggerHelper(btnOptions.optionsEvent);
-				}
+				},
+				'active': false
 			});
 		},
 		setTextSource: function( source, setCookie ){
