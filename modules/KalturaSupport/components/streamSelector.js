@@ -14,6 +14,9 @@
 			"defaultStream": 1,
 			"maxNumOfStream": 4,
 			"enableKeyboardShortcuts": true,
+			'smartContainer': 'qualitySettings',
+			'smartContainerCloseEvent': 'onChangeStream',
+			"title": gM( 'mwe-embedplayer-select_stream' ),
 			"keyboardShortcutsMap": {
 				"nextStream": 221,   // Add ] Sign for next stream
 				"prevStream": 219,   // Add [ Sigh for previous stream
@@ -149,8 +152,8 @@
 					if( _this.getConfig('hideWhenEmpty') == false ){
 						_this.setConfig('visible', true);
 					}
-					_this.embedPlayer.triggerHelper("updateComponentsVisibilityDone");
 				}
+				_this.embedPlayer.triggerHelper("updateComponentsVisibilityDone");
 			});
 		},
 		createStreamList: function (data) {

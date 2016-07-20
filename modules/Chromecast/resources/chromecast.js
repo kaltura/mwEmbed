@@ -58,7 +58,7 @@
 		inSequence: false,
 		adDuration: null,
 		sendPlayerReady: false, // after changing media we need to send the playerReady event to the chromecast receiver as it doesn't reload the player there
-		supportedPlugins: ['doubleClick', 'youbora', 'kAnalony', 'related', 'comScoreStreamingTag', 'watermark', 'heartbeat', 'proxyData'],
+		supportedPlugins: ['doubleClick', 'youbora', 'kAnalony', 'related', 'comScoreStreamingTag', 'watermark', 'heartbeat'],
 
 		setup: function( embedPlayer ) {
 			var _this = this;
@@ -371,6 +371,11 @@
 				}
 				recursiveIteration( proxyData );
 				fv['proxyData'] = proxyData;
+			} else {
+				var data  = _this.embedPlayer.getKalturaConfig('originalProxyData');
+				if (!$.isEmptyObject(data)) {
+					fv['proxyData'] = data;
+				}
 			}
 
 			// add support for passing ks
