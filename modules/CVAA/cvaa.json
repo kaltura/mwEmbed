@@ -6,7 +6,7 @@
         "dependencies": "mw.KBaseScreen",
         "kalturaPluginName": "cvaa",
         "styles": "resources/cvaa.css",
-        "messageFile": "CVAA.i18n.json",
+        "messageFile": "cvaa.i18n.json",
         "templates":"../Cvaa/resources/cvaa.tmpl.html"
     }
 }
