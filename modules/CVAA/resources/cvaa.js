@@ -17,69 +17,35 @@
 				fontSize: 12,
 				backgroundColor: "#000000",
 				backgroundOpacity: 75,
-				windowColor: "transparent",
+				windowColor: "#ffffff",
 				windowOpacity: 0,
 				edgeStyle: "none"
 			},
 			cvaaOptions:{
-				"options":{
-					"sliders":{
-						"fontSize":{
-							"label": gM('mwe-cvaa-fontSize'),
-							"selector": "kFontSize",
-							"valueSelector": "kFontSizeVal",
-							"min": 6,
-							"max": 24,
-							"default": "fontSize"
-						},
-						"fontOpacity":{
-							"label": gM( 'mwe-cvaa-fontOpacity' ),
-							"selector": "kFontOpacity",
-							"valueSelector": "kFontOpacityVal",
-							"min": 0,
-							"max": 100,
-							"default": "fontOpacity"
-						},
-						"backgroundOpacity":{
-							"label": gM( 'mwe-cvaa-backgroundOpacity' ),
-							"selector": "kBackgroundOpacity",
-							"valueSelector": "kBackgroundOpacityVal",
-							"min": 0,
-							"max": 100,
-							"default": "backgroundOpacity"
-						},
-						"windowOpacity":{
-							"label": gM( 'mwe-cvaa-windowOpacity' ),
-							"selector": "kWindowOpacity",
-							"valueSelector": "kWindowOpacityVal",
-							"min": 0,
-							"max": 100,
-							"default": "windowOpacity"
-						}
+				"sliders": {
+					"fontSize": {
+						"min": 6,
+						"max": 24,
+						"default": "fontSize",
+						"selector": "kFontSize"
 					},
-					"colors":{
-						"fontColor":{
-							"label": gM( 'mwe-cvaa-fontColor' ),
-							"selector": "kFontColor"
-						},
-						"backgroundColor":{
-							"label": gM( 'mwe-cvaa-backgroundColor' ),
-							"selector": "kBackgroundColor"
-						},
-						"windowColor":{
-							"label": gM( 'mwe-cvaa-windowColor' ),
-							"selector": "kWindowColor"
-						}
+					"fontOpacity": {
+						"min": 0,
+						"max": 100,
+						"default": "fontOpacity",
+						"selector": "kFontOpacity"
 					},
-					"dropdowns":{
-						"fontFamily":{
-							"label": gM('mwe-cvaa-fontFamily'),
-							"selector": "kFontFamily"
-						},
-						"edgeStyle":{
-							"label": gM('mwe-cvaa-edgeStyle'),
-							"selector": "kEdgeStyle"
-						}
+					"backgroundOpacity": {
+						"min": 0,
+						"max": 100,
+						"default": "backgroundOpacity",
+						"selector": "kBackgroundOpacity"
+					},
+					"windowOpacity": {
+						"min": 0,
+						"max": 100,
+						"default": "windowOpacity",
+						"selector": "kWindowOpacity"
 					}
 				},
 				"edgeStyle":[
@@ -109,6 +75,17 @@
 					{"prop": 7, "text":"Small Capitals",			"value":	"Verdana ,Arial Unicode Ms, Arial, Helvetica, Marcellus SC, sans-serif"}
 				]
 			}
+		},
+		locale:{
+			"fontSizelabel": gM('mwe-cvaa-fontSize'),
+			"fontOplabel": gM('mwe-cvaa-fontOpacity'),
+			"backgroundOpLabel": gM('mwe-cvaa-backgroundOpacity'),
+			"windowOplabel": gM('mwe-cvaa-windowOpacity'),
+			"fontColorlabel": gM('mwe-cvaa-fontColor' ),
+			"backgroundColorlabel": gM('mwe-cvaa-backgroundColor'),
+			"windowColorlabel": gM('mwe-cvaa-windowColor'),
+			"fontFamilylabel": gM('mwe-cvaa-fontFamily'),
+			"edgeStylelabel": gM('mwe-cvaa-edgeStyle')
 		},
 		cvaaSettingsObj: null,
 		cvaaSavedSettings:null,
@@ -192,70 +169,61 @@
 		updateSettingsAndPreview: function(option, value){
 			var selectedItem;
 			switch (option) {
-				//font family
-				case this.cvaaSettingsObj.options.dropdowns.fontFamily.selector:
+				case "kFontFamily":
 					selectedItem = this.getValueByProp("family", value);
 					this.updatePreview("text", "font-family", selectedItem);
 					this.cvaaSentSettings.fontFamily = selectedItem;
 					this.cvaaSavedSettings.fontFamily = selectedItem;
 					break;
-				//font color
-				case this.cvaaSettingsObj.options.colors.fontColor.selector:
+				case "kFontColor":
 					this.currentFontColor = this.getValueByProp("color", value);
 					selectedItem = this.rgb2rgba(this.hex2rgb(this.currentFontColor), this.currentFontOpacity);
 					this.updatePreview("text", "color", selectedItem);
 					this.cvaaSentSettings.fontColor = selectedItem;
 					this.cvaaSavedSettings.fontColor = this.currentFontColor;
 					break;
-				//font opacity
-				case this.cvaaSettingsObj.options.sliders.fontOpacity.selector:
+				case "kFontOpacity":
 					this.currentFontOpacity = value;
 					selectedItem = this.rgb2rgba(this.hex2rgb(this.currentFontColor), this.currentFontOpacity);
 					this.updatePreview("text", "color", selectedItem);
 					this.cvaaSentSettings.fontColor = selectedItem;
 					this.cvaaSavedSettings.fontOpacity = this.currentFontOpacity;
 					break;
-				//font size
-				case this.cvaaSettingsObj.options.sliders.fontSize.selector:
+				case "kFontSize":
 					this.currentFontSize = value;
 					this.updatePreview("text", "font-size", this.getFontSize(this.currentFontSize));
 					this.cvaaSentSettings.fontSize = this.currentFontSize;
 					this.cvaaSavedSettings.fontSize = this.currentFontSize;
 					break;
-				//background color
-				case this.cvaaSettingsObj.options.colors.backgroundColor.selector:
+				case "kBackgroundColor":
 					this.currentBackgroundColor = this.getValueByProp("color", value);
 					selectedItem = this.rgb2rgba(this.hex2rgb(this.currentBackgroundColor), this.currentBackgroundOpacity);
 					this.updatePreview("text", "background-color", selectedItem);
 					this.cvaaSentSettings.backgroundColor = selectedItem;
 					this.cvaaSavedSettings.backgroundColor = this.currentBackgroundColor;
 					break;
-				//background opacity
-				case this.cvaaSettingsObj.options.sliders.backgroundOpacity.selector:
+				case "kBackgroundOpacity":
 					this.currentBackgroundOpacity = value;
 					selectedItem = this.rgb2rgba(this.hex2rgb(this.currentBackgroundColor), this.currentBackgroundOpacity);
 					this.updatePreview("text", "background-color", selectedItem);
 					this.cvaaSentSettings.backgroundColor = selectedItem;
 					this.cvaaSavedSettings.backgroundOpacity = this.currentBackgroundOpacity;
 					break;
-				//window color
-				case this.cvaaSettingsObj.options.colors.windowColor.selector:
+				case "kWindowColor":
 					this.currentWindowColor = this.getValueByProp("color", value);
 					selectedItem = this.rgb2rgba(this.hex2rgb(this.currentWindowColor), this.currentWindowOpacity);
 					this.updatePreview("window", "background-color", selectedItem);
 					this.cvaaSentSettings.windowColor = selectedItem;
 					this.cvaaSavedSettings.windowColor = this.currentWindowColor;
 					break;
-				//window opacity
-				case this.cvaaSettingsObj.options.sliders.windowOpacity.selector:
+				case "kWindowOpacity":
 					this.currentWindowOpacity = value;
 					selectedItem = this.rgb2rgba(this.hex2rgb(this.currentWindowColor), this.currentWindowOpacity);
 					this.updatePreview("window", "background-color", selectedItem);
 					this.cvaaSentSettings.windowColor = selectedItem;
 					this.cvaaSavedSettings.windowOpacity = this.currentWindowOpacity;
 					break;
-				//font text shadow - edge style
-				case this.cvaaSettingsObj.options.dropdowns.edgeStyle.selector:
+				case "kEdgeStyle":
 					selectedItem = this.getValueByProp("edgeStyle", value);
 					this.updatePreview("text", "text-shadow", selectedItem);
 					this.cvaaSentSettings.edgeStyle = selectedItem;
@@ -304,14 +272,14 @@
 
 			//set default font family
 			_this.currentFontFamily = _this.cvaaSavedSettings.fontFamily;
-			$("#" + _this.cvaaSettingsObj.options.dropdowns.fontFamily.selector).val(_this.getPropByValue("family", _this.cvaaSentSettings.fontFamily));
+			$("#kFontFamily").val(_this.getPropByValue("family", _this.cvaaSentSettings.fontFamily));
 			_this.updatePreview("text", "font-family", _this.cvaaSentSettings.fontFamily);
 
 			//set default font color and opacity
 			_this.currentFontColor = _this.cvaaSavedSettings.fontColor;
 			_this.currentFontOpacity = _this.cvaaSavedSettings.fontOpacity;
 			_this.cvaaSentSettings.fontColor = _this.rgb2rgba(_this.hex2rgb(_this.currentFontColor), _this.currentFontOpacity);
-			$("#" + _this.cvaaSettingsObj.options.colors.fontColor.selector + "[value='" + _this.getPropByValue("color", _this.cvaaSavedSettings.fontColor) + "']").addClass('active').siblings().removeClass('active');
+			$("#kFontColor[value='" + _this.getPropByValue("color", _this.cvaaSavedSettings.fontColor) + "']").addClass('active').siblings().removeClass('active');
 			_this.updatePreview("text", "color", _this.cvaaSentSettings.fontColor);
 
 			//set default font size
@@ -322,21 +290,19 @@
 			_this.currentBackgroundColor = _this.cvaaSavedSettings.backgroundColor;
 			_this.currentBackgroundOpacity = _this.cvaaSavedSettings.backgroundOpacity;
 			_this.cvaaSentSettings.backgroundColor = _this.rgb2rgba(_this.hex2rgb(_this.currentBackgroundColor), _this.currentBackgroundOpacity);
-			$("#" + _this.cvaaSettingsObj.options.colors.backgroundColor.selector + "[value='" + _this.getPropByValue("color", _this.cvaaSavedSettings.backgroundColor) + "']").addClass('active').siblings().removeClass('active');
+			$("#kBackgroundColor[value='" + _this.getPropByValue("color", _this.cvaaSavedSettings.backgroundColor) + "']").addClass('active').siblings().removeClass('active');
 			_this.updatePreview("text", "background-color", _this.cvaaSentSettings.backgroundColor);
 
 			//set default window color and opacity
 			_this.currentWindowColor = _this.cvaaSavedSettings.windowColor;
 			_this.currentWindowOpacity = _this.cvaaSavedSettings.windowOpacity;
-			_this.cvaaSentSettings.windowColor = _this.currentWindowColor == "transparent" ?
-												 _this.currentWindowColor:
-												 _this.rgb2rgba(_this.hex2rgb(_this.currentWindowColor), _this.currentWindowOpacity);
-			$("#" + _this.cvaaSettingsObj.options.colors.windowColor.selector + "[value='" + _this.getPropByValue("color", _this.cvaaSavedSettings.windowColor) + "']").addClass('active').siblings().removeClass('active');
+			_this.cvaaSentSettings.windowColor = _this.rgb2rgba(_this.hex2rgb(_this.currentWindowColor), _this.currentWindowOpacity);
+			$("#kWindowColor[value='" + _this.getPropByValue("color", _this.cvaaSavedSettings.windowColor) + "']").addClass('active').siblings().removeClass('active');
 			_this.updatePreview("window", "background-color", _this.cvaaSentSettings.windowColor);
 
 			//set default edge style - text shadow
 			_this.currentEdgeStyle = _this.cvaaSavedSettings.edgeStyle;
-			$("#" + _this.cvaaSettingsObj.options.dropdowns.edgeStyle.selector).val(_this.getPropByValue("edgeStyle", _this.cvaaSentSettings.edgeStyle));
+			$("#kEdgeStyle").val(_this.getPropByValue("edgeStyle", _this.cvaaSentSettings.edgeStyle));
 			_this.updatePreview("text", "text-shadow", _this.cvaaSentSettings.edgeStyle);
 
 			//send styles to captions plugin
@@ -345,8 +311,10 @@
 		setUpHandlers: function(){
 			var _this = this;
 			_this.handlersAreSet = true;
+			var dropdowns = ["kFontFamily","kEdgeStyle"];
+
 			//set sliders
-			$.map(this.cvaaSettingsObj.options.sliders, function(el) { return el })
+			$.map(_this.cvaaSettingsObj.sliders, function(el) { return el })
 				.map(function(element){
 					var sliderHolder = $( "#" + element.selector );
 					sliderHolder.slider({
@@ -354,12 +322,12 @@
 						min:	element.min,
 						max:	element.max,
 						slide: function( event, ui ) {
-							$( "#" + element.valueSelector ).val( ui.value );
+							$( "#" + element.selector + "Val" ).val( ui.value );
 							_this.updateSettingsAndPreview(element.selector, ui.value);
 						}
 					});
 					//set initial value
-					$( "#" + element.valueSelector ).val(sliderHolder.slider( "value" ));
+					$( "#" + element.selector + "Val" ).val(sliderHolder.slider( "value" ));
 				});
 
 			//set color pickers
@@ -369,12 +337,11 @@
 			});
 
 			//set dropdowns
-			$.map(_this.cvaaSettingsObj.options.dropdowns, function(el) { return el })
-				.map(function(option){
-					$("#" + option.selector).on("change", function () {
-						_this.updateSettingsAndPreview($(this)[0].id, $(this).val());
-					});
+			dropdowns.map(function(option){
+				$("#" + option).on("change", function () {
+					_this.updateSettingsAndPreview($(this)[0].id, $(this).val());
 				});
+			});
 
 			//set save button
 			_this.getPlayer().getInterface().find(".saveCvaaSettings").click(function(){
@@ -428,21 +395,23 @@
 
 			this.getCurrentSettings();
 			this.initPreviewUpdate();
-
-			//reset sliders and sliders labels
-			$("#" + this.cvaaSettingsObj.options.sliders.fontOpacity.selector).slider("option","value",this.currentFontOpacity);
-			$("#" + this.cvaaSettingsObj.options.sliders.fontOpacity.valueSelector).val(this.currentFontOpacity);
-
-			$("#" + this.cvaaSettingsObj.options.sliders.backgroundOpacity.selector).slider("option","value",this.currentBackgroundOpacity);
-			$("#" + this.cvaaSettingsObj.options.sliders.backgroundOpacity.valueSelector).val(this.currentBackgroundOpacity);
-
-			$("#" + this.cvaaSettingsObj.options.sliders.windowOpacity.selector).slider("option","value",this.currentWindowOpacity);
-			$("#" + this.cvaaSettingsObj.options.sliders.windowOpacity.valueSelector).val(this.currentWindowOpacity);
-
-			$("#" + this.cvaaSettingsObj.options.sliders.fontSize.selector).slider("option","value",this.currentFontSize);
-			$("#" + this.cvaaSettingsObj.options.sliders.fontSize.valueSelector).val(this.currentFontSize);
+			this.resetSliders();
 
 			this.getPlayer().triggerHelper("newCaptionsStyles", this.cvaaSentSettings);
+		},
+		resetSliders: function(){
+			//reset sliders and sliders labels
+			$("#kFontOpacity").slider("option","value",this.currentFontOpacity);
+			$("#kFontOpacityVal").val(this.currentFontOpacity);
+
+			$("#kBackgroundOpacity").slider("option","value",this.currentBackgroundOpacity);
+			$("#kBackgroundOpacityVal").val(this.currentBackgroundOpacity);
+
+			$("#kWindowOpacity").slider("option","value",this.currentWindowOpacity);
+			$("#kWindowOpacityVal").val(this.currentWindowOpacity);
+
+			$("#kFontSize").slider("option","value",this.currentFontSize);
+			$("#kFontSizeVal").val(this.currentFontSize);
 		},
 		addOptionsBtn: function(){
 			this.getPlayer().triggerHelper("addOptionsToCaptions",{

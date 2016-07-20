@@ -10,14 +10,14 @@
 
 	<div class="column-1-4">
 		<div class="fontSizeContainer">
-			<input type="text" id=<%=cvaaOptions.options.sliders.fontSize.valueSelector%>>
-			<div><%=cvaaOptions.options.sliders.fontSize.label%></div>
-			<div id=<%=cvaaOptions.options.sliders.fontSize.selector%>></div>
+			<input type="text" id="kFontSizeVal">
+			<div><%=cvaa.locale.fontSizelabel%></div>
+			<div id="kFontSize"></div>
 		</div>
 
 		<div class="fontFamilyContainer">
-			<div><%=cvaaOptions.options.dropdowns.fontFamily.label%></div>
-			<select id=<%=cvaaOptions.options.dropdowns.fontFamily.selector%>>
+			<div><%=cvaa.locale.fontFamilylabel%></div>
+			<select id="kFontFamily">
 				<% $.each(cvaaOptions.family, function(idx, property){ %>
 				<option value="<%=property.prop%>"><%=property.text%></option>
 				<% }); %>
@@ -26,8 +26,8 @@
 
 
 		<div class="fontEdgeStyleContainer">
-			<div><%=cvaaOptions.options.dropdowns.edgeStyle.label%></div>
-			<select id=<%=cvaaOptions.options.dropdowns.edgeStyle.selector%>>
+			<div><%=cvaa.locale.edgeStylelabel%></div>
+			<select id="kEdgeStyle">
 				<% $.each(cvaaOptions.edgeStyle, function(idx, property){ %>
 				<option value="<%=property.prop%>"><%=property.text%></option>
 				<% }); %>
@@ -37,18 +37,18 @@
 
 	<div class="column-1-2">
 			<ul class="colorContainer">
-				<div><%=cvaaOptions.options.colors.fontColor.label%></div>
+				<div><%=cvaa.locale.fontColorlabel%></div>
 				<% $.each(cvaaOptions.color, function(idx, property){ %>
-				<li id="<%=cvaaOptions.options.colors.fontColor.selector%>" value="<%=property.prop%>">
+				<li id="kFontColor" value="<%=property.prop%>">
 					<span class=<%=property.text%>></span>
 				</li>
 				<% }); %>
 			</ul>
 
 			<ul class="colorContainer">
-				<div><%=cvaaOptions.options.colors.backgroundColor.label%></div>
+				<div><%=cvaa.locale.backgroundColorlabel%></div>
 				<% $.each(cvaaOptions.color, function(idx, property){ %>
-				<li id="<%=cvaaOptions.options.colors.backgroundColor.selector%>" value="<%=property.prop%>">
+				<li id="kBackgroundColor" value="<%=property.prop%>">
 					<span class=<%=property.text%>></span>
 				</li>
 				<% }); %>
@@ -56,9 +56,9 @@
 
 
 			<ul class="colorContainer">
-				<div><%=cvaaOptions.options.colors.windowColor.label%></div>
+				<div><%=cvaa.locale.windowColorlabel%></div>
 				<% $.each(cvaaOptions.color, function(idx, property){ %>
-				<li id="<%=cvaaOptions.options.colors.windowColor.selector%>" value="<%=property.prop%>">
+				<li id="kWindowColor" value="<%=property.prop%>">
 					<span class=<%=property.text%>></span>
 				</li>
 				<% }); %>
@@ -67,19 +67,19 @@
 
 	<div class="column-1-4">
 		<div class="fontOpacityContainer">
-			<input type="text" id=<%=cvaaOptions.options.sliders.fontOpacity.valueSelector%>></input>
-			<div><%=cvaaOptions.options.sliders.fontOpacity.label%></div>
-			<div id=<%=cvaaOptions.options.sliders.fontOpacity.selector%>></div>
+			<input type="text" id="kFontOpacityVal">
+			<div><%=cvaa.locale.fontOplabel%></div>
+			<div id="kFontOpacity"></div>
 		</div>
 		<div class="backgroundOpacityContainer">
-			<input type="text" id=<%=cvaaOptions.options.sliders.backgroundOpacity.valueSelector%>></input>
-			<div><%=cvaaOptions.options.sliders.backgroundOpacity.label%></div>
-			<div id=<%=cvaaOptions.options.sliders.backgroundOpacity.selector%>></div>
+			<input type="text" id="kBackgroundOpacityVal">
+			<div><%=cvaa.locale.backgroundOpLabel%></div>
+			<div id="kBackgroundOpacity"></div>
 		</div>
 		<div class="windowOpacityContainer">
-			<input type="text" id=<%=cvaaOptions.options.sliders.windowOpacity.valueSelector%>></input>
-			<div><%=cvaaOptions.options.sliders.windowOpacity.label%></div>
-			<div id=<%=cvaaOptions.options.sliders.windowOpacity.selector%>></div>
+			<input type="text" id="kWindowOpacityVal">
+			<div><%=cvaa.locale.windowOplabel%></div>
+			<div id="kWindowOpacity"></div>
 		</div>
 	</div>
 

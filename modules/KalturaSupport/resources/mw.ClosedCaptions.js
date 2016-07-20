@@ -627,16 +627,12 @@
 		addCaptionAsDomElement: function ( source, capId, caption ){
 			var $textTarget = $('<div />')
 				.addClass('track')
-				.css("background-color", this.customStyle.windowColor ? this.customStyle.windowColor : "none")
 				.attr('data-capId', capId)
 				.html($(caption.content)
 					.addClass('caption')
 					.css('pointer-events', 'auto')
+					.css("background-color", (this.customStyle && this.customStyle.windowColor) ? this.customStyle.windowColor : "none")
 				);
-
-			var $windowTarget = $('<div />')
-				.css("background-color", this.customStyle.windowColor ? this.customStyle.windowColor : "none")
-				.addClass('trackWindow');
 
 			this.displayTextTarget($textTarget);
 
@@ -660,7 +656,7 @@
 				.hide();
 
 			var $windowTarget = $('<div />')
-				.css("background-color", this.customStyle.windowColor ? this.customStyle.windowColor : "none")
+				.css("background-color", (this.customStyle && this.customStyle.windowColor) ? this.customStyle.windowColor : "none")
 				.addClass('trackWindow');
 
 			// Update text ( use "html" instead of "text" so that subtitle format can
@@ -840,7 +836,6 @@
 			var style = {'display': 'inline'};
 
 			if(!this.customStyle) {
-
 				if (this.getConfig('bg')) {
 					style["background-color"] = mw.getHexColor(this.getConfig('bg'));
 				}
@@ -859,7 +854,6 @@
 					style["text-shadow"] = hShadow + 'px ' + vShadow + 'px ' + this.getConfig('glowBlur') + 'px ' + mw.getHexColor(this.getConfig('glowColor'));
 				}
 			} else {
-
 				style["font-family"] = this.customStyle.fontFamily;
 				style["color"] = this.customStyle.fontColor;
 				this.setConfig('fontsize', this.customStyle.fontSize);

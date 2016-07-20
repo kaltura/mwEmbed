@@ -1,7 +1,3 @@
-#cvaaPreview #previewWindow{
-	padding:20px;
-}
-
 .screen .cvaaScreenPanel {
 	width: 100%;
 	height: 100%;
@@ -9,10 +5,35 @@
 	vertical-align: middle;
 }
 
+.cvaa .screen-content .tmpl {
+	display: table;
+	width: 100%;
+	height: 100%;
+}
+
+#cvaaPreview #previewWindow{
+	padding:20px;
+}
+
+.size-small #cvaaPreview #previewWindow{
+	padding:15px;
+}
+
 .screen .cvaaScreenPanel #cvaaPreview{
 	text-align: center;
 	margin-bottom: 50px;
-	margin-top: 30px;
+}
+
+.size-small .screen .cvaaScreenPanel #cvaaPreview{
+	margin-bottom: 20px;
+}
+
+.size-small #kFontFamily{
+	width:100px;
+}
+
+.fullscreen .screen .cvaaScreenPanel{
+	padding-top: 100px;
 }
 
 .screen .cvaaScreenPanel .column-1-2{
@@ -25,11 +46,6 @@
 	width: 25%;
 }
 
-.cvaa .screen-content .tmpl {
-	display: table;
-	width: 100%;
-	height: 100%;
-}
 .cvaa .ui-slider {
 	height: 0.3em;
 	cursor: pointer;
@@ -64,6 +80,11 @@
 .cvaa ul{
 	list-style: none;
 }
+
+.cvaa ul > div{
+	margin-bottom: 5px;
+}
+
 .cvaa li{
 	float: left;
 	margin: 0 5px 5px 0;
@@ -75,16 +96,20 @@
 	font-weight: bold;
 	text-align: center;
 	height: 30px;
-	min-width: 30px;
+	width: 30px;
 	line-height: 30px;
 	display: block;
 	cursor: pointer;
-	width: 30px;
 	border: 1px solid #fff;
 }
+.size-small .cvaa li span{
+	height: 12px;
+	width: 12px;
+}
 
-.cvaa ul > div{
-	margin-bottom: 5px;
+.size-medium .cvaa li span{
+	height: 23px;
+	width: 23px;
 }
 
 .cvaa #cvaaButtons{
@@ -92,8 +117,8 @@
 }
 
 .cvaa .colorContainer{
-	margin-bottom: 20px;
-	overflow: hidden;
+	margin: 10px auto;
+	display: table;
 }
 
 .cvaa .colorContainer span.White{
@@ -126,4 +151,8 @@
 	-moz-border-radius: 3px / 3px;
 	-webkit-border-radius: 3px 3px;
 	border-radius: 3px / 3px;
+}
+
+.size-small .cvaa .active span{
+	border: 1px solid #3EAFE6;
 }
