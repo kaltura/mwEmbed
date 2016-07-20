@@ -7,7 +7,6 @@
 			templatePath: '../Cvaa/resources/cvaa.tmpl.html',
 			usePreviewPlayer: false,
 			previewPlayerEnabled: false,
-			optionsBtnName:  gM( 'mwe-cvaa-options' ),
 			optionsEvent: "openCvaaOptions",
 			cvaaBtnPosition: "first",
 			cvaaDefaultSettings: {
@@ -85,7 +84,8 @@
 			"backgroundColorlabel": gM('mwe-cvaa-backgroundColor'),
 			"windowColorlabel": gM('mwe-cvaa-windowColor'),
 			"fontFamilylabel": gM('mwe-cvaa-fontFamily'),
-			"edgeStylelabel": gM('mwe-cvaa-edgeStyle')
+			"edgeStylelabel": gM('mwe-cvaa-edgeStyle'),
+			"optionsBtnLabel": gM( 'mwe-cvaa-options' )
 		},
 		cvaaSettingsObj: null,
 		cvaaSavedSettings:null,
@@ -415,7 +415,7 @@
 		},
 		addOptionsBtn: function(){
 			this.getPlayer().triggerHelper("addOptionsToCaptions",{
-				"optionsLabel": this.getConfig('optionsBtnName'),
+				"optionsLabel": this.locale.optionsBtnLabel,
 				"optionsEvent": this.getConfig('optionsEvent')
 			});
 		},

@@ -631,6 +631,7 @@
 				.html($(caption.content)
 					.addClass('caption')
 					.css('pointer-events', 'auto')
+					.css("background-color", (this.customStyle && this.customStyle.windowColor) ? this.customStyle.windowColor : "none")
 				);
 
 			this.displayTextTarget($textTarget);

@@ -12,11 +12,8 @@
 }
 
 #cvaaPreview #previewWindow{
-	padding:20px;
-}
-
-.size-small #cvaaPreview #previewWindow{
-	padding:15px;
+	padding: 10px;
+	display: inline-block;
 }
 
 .screen .cvaaScreenPanel #cvaaPreview{
@@ -39,7 +36,11 @@
 .screen .cvaaScreenPanel .column-1-2{
 	float: left;
 	width: 50%;
-	margin-top: -15px;
+	margin-top: -10px;
+	margin-left: -30px;
+}
+.size-small .screen .cvaaScreenPanel .column-1-2{
+	margin-left: 0;
 }
 .screen .cvaaScreenPanel .column-1-4{
 	float: left;
