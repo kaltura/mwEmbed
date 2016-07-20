@@ -1166,9 +1166,9 @@
 				this.hideSpinner();
 				// pause in a non-blocking call to avoid synchronous playing event
 				setTimeout(function () {
-					_this.updatePlayheadStatus();
 					_this.pause();
 					_this.stopMonitor();
+					_this.updatePlayheadStatus();
 				}, 0);
 			} else {
 				// continue to playback ( in a non-blocking call to avoid synchronous pause event )
