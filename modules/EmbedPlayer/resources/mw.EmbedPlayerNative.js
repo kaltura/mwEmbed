@@ -1205,7 +1205,7 @@
 			}
 
 			// Check if in "playing" state and we are _propagateEvents events and continue to playback:
-			if (!this.paused && this._propagateEvents) {
+			if (!this.paused && !this.isInSequence() && this._propagateEvents) {
 				this.getPlayerElement().play();
 			}
 
