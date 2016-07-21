@@ -51,7 +51,6 @@
 			$(this).bind('layoutBuildDone', function(){
 				this.getVideoHolder().find('video').remove();
 			});
-
 			this.setPlayerElement(parent.document.getElementById('receiverVideoElement'));
 			this.addBindings();
 			this.applyMediaElementBindings();
@@ -68,6 +67,11 @@
 		 */
 		addBindings: function(){
 			var _this = this;
+			this.bindHelper("layoutBuildDone", function(){
+				_this.getVideoHolder().css("backgroundColor","transparent");
+				$("body").css("backgroundColor","transparent");
+
+			});
 			this.bindHelper("replay", function(){
 				_this.triggerReplayEvent = true;
 				_this.triggerHelper("playerReady"); // since we reload the media for replay, trigger playerReady to reset Analytics
@@ -81,6 +85,10 @@
 			this.bindHelper("onAdComplete", function(){
 				_this.triggerHelper("broadcastToSender", ["chromecastReceiverAdComplete"]);
 				_this.triggerHelper("cancelAllAds");
+			});
+			this.bindHelper("ccSelectClosedCaptions sourceSelectedByLangKey", function(e, label){
+				_this.triggerHelper("propertyChangedEvent", {"plugin": "closedCaptions", "property":"captions", "value": typeof label === "string" ? label : label[0]});
+				$(parent.document.getElementById('captionsOverlay')).empty();
 			});
 		},
 		/**
@@ -119,21 +127,35 @@
 			$(this).trigger('onPlayerStateChange', [ "pause", "play" ]);
 
 		},
-
+		_onplaying:function(){
+			this.hideSpinner();
+			this.triggerHelper("playing");
+			this.triggerHelper( 'hidePlayerControls' );
+		},
 		/**
 		 * Handle the native play event
 		 */
 		_onplay: function () {
-			this.play();
 			this.restoreEventPropagation();
-			$(this).trigger('onPlayerStateChange', [ "play", "pause" ]);
+			if (this.currentState === "pause"){
+				this.play();
+				this.triggerHelper('onPlayerStateChange', [ "play", "pause" ]);
+			}
 			if (this.triggerReplayEvent){
-				$(this).trigger('replayEvent');
+				this.triggerHelper('replayEvent');
 				this.triggerReplayEvent = false;
 			}
+			this.triggerHelper( 'hidePlayerControls' );
+
+		},
+		replay: function(){
+			var _this = this;
+			this.restoreEventPropagation();
+			this.restoreComponentsHover();
 		},
 
 		_onseeking: function () {
+			this.triggerHelper( 'hidePlayerControls' );
 			if (!this.seeking) {
 				this.seeking = true;
 				if ( this._propagateEvents && !this.isLive() ) {
@@ -147,6 +169,7 @@
 				this.seeking = false;
 				if (this._propagateEvents && !this.isLive()) {
 					this.triggerHelper('seeked', [this.getPlayerElementTime()]);
+					this.updatePlayheadStatus();
 				}
 			}
 		},

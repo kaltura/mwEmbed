@@ -50,11 +50,11 @@
             background-attachment: fixed;
             background-position: center;
             display: none;
-            z-index: 1;
-            -webkit-transition: opacity 3s ease-in-out;
-            -moz-transition: opacity 3s ease-in-out;
-            -ms-transition: opacity 3s ease-in-out;
-            -o-transition: opacity 3s ease-in-out;
+            z-index: 2;
+            -webkit-transition: opacity 1s ease-in-out;
+            -moz-transition: opacity 1s ease-in-out;
+            -ms-transition: opacity 1s ease-in-out;
+            -o-transition: opacity 1s ease-in-out;
             opacity: 1;
         }
         #kdebug{
@@ -76,8 +76,7 @@
             position: absolute;
             width: 96%;
             right: 2%;
-            height: 96%;
-            top: 4%;
+            height: 98%;
         }
     </style>
     <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
@@ -86,7 +85,7 @@
 </head>
 
 <body>
-<div id="kaltura_player" style="top: -1000px; left: -1000px; width:200px; height: 200px; position: absolute"></div>
+<div id="kaltura_player" style=" width:98%; height: 98%; position: absolute;z-index: 1"></div>
 <div id="messages">
     <div style="font-size:140%; font-weight:bold; margin-left:0px;" id="title">Sample Receiver with Media Player Library for DASH/SS/HLS Streaming with DRMs</div>
     <div>App State: <span id="applicationState">-</span></div>
@@ -123,7 +122,7 @@
     <span>License Credentials: <span id="licenseCredentials">false</span></span>
 </div>
 <div id="videoHolder">
-    <video id="receiverVideoElement" style="height:95%; width:100%; position: absolute"></video>
+    <video id="receiverVideoElement" style="height:98%; width:100%; position: absolute"></video>
 </div>
 <div id="logo"></div>
 <div id="kdebug"></div>

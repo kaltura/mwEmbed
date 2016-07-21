@@ -23,7 +23,10 @@
 			'logoUrl': null,
 			'useKalturaPlayer': true,
 			'useReceiverSource': true,
-			'debugKalturaPlayer': false
+			'debugKalturaPlayer': false,
+			'uiconfid':null,
+			'defaultConfig':true
+
 		},
 		isDisabled: false,
 
@@ -100,6 +103,10 @@
 				_this.stopApp();
 			});
 
+			$( this.embedPlayer).bind('chromecastSelectCaption', function(e, track){
+				_this.sendMessage({'type': 'ENABLE_CC', 'trackNumber': track});
+			});
+
 			$( this.embedPlayer).bind('hideConnectingMessage', function(){
 				_this.embedPlayer.layoutBuilder.closeAlert();
 				_this.getComponent().css("color","#35BCDA");
@@ -152,8 +159,13 @@
 			});
 
 			// trigger these events on the receiver player to support Analytics
-			$(this.embedPlayer).bind('userInitiatedPause userInitiatedSeek postEnded onChangeMedia AdSupport_PreSequence firstPlay', function(e) {
-				_this.sendMessage({'type': 'notification','event': e.type});
+			$(this.embedPlayer).bind('userInitiatedPause userInitiatedSeek postEnded onChangeMedia AdSupport_PreSequence firstPlay sourceSelectedByLangKey', function(e, data) {
+				_this.sendMessage({'type': 'notification','event': e.type, 'data': data});
+			});
+
+			// trigger these events on the receiver player to support Analytics
+			$(this.embedPlayer).bind('selectClosedCaptions', function(e, data) {
+				_this.sendMessage({'type': 'notification','event': 'ccSelectClosedCaptions', 'data': data});
 			});
 
 			// trigger these events on the receiver player to support Analytics
@@ -276,7 +288,7 @@
 			}
 			if (this.getConfig("useKalturaPlayer") === true){
 				var flashVars = this.getFlashVars();
-				this.sendMessage({'type': 'embed', 'lib': kWidget.getPath(), 'publisherID': this.embedPlayer.kwidgetid.substr(1), 'uiconfID': this.embedPlayer.kuiconfid, 'entryID': this.embedPlayer.kentryid, 'debugKalturaPlayer': this.getConfig("debugKalturaPlayer"), 'flashVars': flashVars});
+				this.sendMessage({'type': 'embed', 'lib': kWidget.getPath(), 'publisherID': this.embedPlayer.kwidgetid.substr(1), 'uiconfID': this.getConfig('uiconfid') || this.embedPlayer.kuiconfid, 'entryID': this.embedPlayer.kentryid, 'debugKalturaPlayer': this.getConfig("debugKalturaPlayer"), 'flashVars': flashVars});
 				this.displayMessage(gM('mwe-chromecast-loading'));
 			} else {
 				this.sendMessage({'type': 'load'});
@@ -293,66 +305,85 @@
 			});
 		},
 		parseMessage: function(message){
-			switch (message.split('|')[0]){
-				case "readyForMedia":
-					if ( this.getConfig("useReceiverSource") && message.split('|').length > 1){ // we got source and mime type as selected by the player running on the receiver
-						this.loadMedia(message.split('|')[1], message.split('|')[2]);
-					}else{
-						this.loadMedia();
+			if ( message.indexOf("{") === 0 ){
+				try{
+					var msgObject = JSON.parse(message);
+					if (msgObject["captions"]){
+						this.embedPlayer.triggerHelper('chromecastCaptionsReceived', msgObject["captions"]);
 					}
-					break;
-				case "shutdown":
-					this.stopApp(); // receiver was shut down by the browser Chromecast icon - stop the app
-					break;
-				case "chromecastReceiverAdOpen":
-					this.embedPlayer.disablePlayControls(["chromecast"]);
-					this.embedPlayer.triggerHelper("chromecastReceiverAdOpen");
-					this.inSequence = true;
-					break;
-				case "chromecastReceiverAdComplete":
-					this.embedPlayer.enablePlayControls();
-					this.embedPlayer.triggerHelper("chromecastReceiverAdComplete");
-					this.loadMedia();
-					break;
-				case "chromecastReceiverAdDuration":
-					this.adDuration = parseInt(message.split('|')[1]);
-					this.embedPlayer.setDuration( this.adDuration );
-					break;
-				default:
-					break;
+				}catch(e){
+					this.log("Error parsing message JSON");
+				}
+			}else{
+				switch (message.split('|')[0]){
+					case "readyForMedia":
+						if ( this.getConfig("useReceiverSource") && message.split('|').length > 1){ // we got source and mime type as selected by the player running on the receiver
+							this.loadMedia(message.split('|')[1], message.split('|')[2]);
+						}else{
+							this.loadMedia();
+						}
+						break;
+					case "shutdown":
+						this.stopApp(); // receiver was shut down by the browser Chromecast icon - stop the app
+						break;
+					case "chromecastReceiverAdOpen":
+						this.embedPlayer.disablePlayControls(["chromecast"]);
+						this.embedPlayer.triggerHelper("chromecastReceiverAdOpen");
+						this.inSequence = true;
+						break;
+					case "chromecastReceiverAdComplete":
+						this.embedPlayer.enablePlayControls();
+						this.embedPlayer.triggerHelper("chromecastReceiverAdComplete");
+						this.loadMedia();
+						break;
+					case "chromecastReceiverAdDuration":
+						this.adDuration = parseInt(message.split('|')[1]);
+						this.embedPlayer.setDuration( this.adDuration );
+						break;
+					default:
+						break;
+				}
 			}
 		},
 
-		getFlashVars: function(){
+		getFlashVars: function() {
 			var _this = this;
 
 			var fv = {};
-			this.supportedPlugins.forEach(function(plugin){
-				if (!$.isEmptyObject(_this.embedPlayer.getKalturaConfig(plugin))){
-					fv[plugin] = _this.embedPlayer.getKalturaConfig(plugin);
+			this.supportedPlugins.forEach( function ( plugin ) {
+				if ( !$.isEmptyObject( _this.embedPlayer.getKalturaConfig( plugin ) ) ) {
+					fv[plugin] = _this.embedPlayer.getKalturaConfig( plugin );
 				}
-			});
+			} );
 			// add support for custom proxyData for OTT app developers
-			var proxyData = this.getConfig('proxyData');
-			if ( proxyData ){
-				var recursiveIteration = function(object) {
-					for (var property in object) {
-						if (object.hasOwnProperty(property)) {
-							if (typeof object[property] == "object"){
-								recursiveIteration(object[property]);
-							}else{
+			var proxyData = this.getConfig( 'proxyData' );
+			if ( proxyData ) {
+				var recursiveIteration = function ( object ) {
+					for ( var property in object ) {
+						if ( object.hasOwnProperty( property ) ) {
+							if ( typeof object[property] == "object" ) {
+								recursiveIteration( object[property] );
+							} else {
 								object[property] = _this.embedPlayer.evaluate( object[property] );
 							}
 						}
 					}
 				}
-				recursiveIteration(proxyData);
+				recursiveIteration( proxyData );
 				fv['proxyData'] = proxyData;
 			}
 
 			// add support for passing ks
-			if ( this.embedPlayer.getFlashvars("ks") ){
-				fv["ks"] = this.embedPlayer.getFlashvars("ks");
+			if ( this.embedPlayer.getFlashvars( "ks" ) ) {
+				fv["ks"] = this.embedPlayer.getFlashvars( "ks" );
+			}
+			if (this.getConfig('defaultConfig')) {
+				fv['controlBarContainer'] = {hover: true};
+				fv['volumeControl'] = {plugin: false};
+				fv['titleLabel'] = {plugin: true};
+				fv['fullScreenBtn'] = {plugin: false};
+				fv['scrubber'] = {plugin: true};
+				fv['largePlayBtn'] = {plugin: true};
 			}
 			return fv;
 		},
@@ -455,6 +486,7 @@
 					// set volume and position according to the video settings before switching players
 					_this.setVolume(null, _this.savedVolume);
 					if (_this.currentMediaSession.media.duration && _this.savedPosition > 0 && !_this.embedPlayer.changeMediaStarted){
+						_this.sendMessage({'type': 'notification','event': 'firstPlay', 'data': null});
 						_this.seekMedia(_this.savedPosition / _this.currentMediaSession.media.duration * 100);
 					}
 					// update media duration for durationLable component
