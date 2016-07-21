@@ -845,8 +845,17 @@
 				if (this.getConfig('fontFamily')) {
 					style["font-family"] = this.getConfig('fontFamily');
 				}
-				if (this.getConfig('fontsize')) {
-					style["font-size"] = this.getFontSize();
+				if( this.getConfig( 'fontsize' ) ) {
+					// Translate to em size so that font-size parent percentage
+					// base on http://pxtoem.com/
+					var emFontMap = { '6': .5, '7': .583, '8': .666, '9': .75, '10': .833, '11': .916,
+						'12': 1, '13': 1.083, '14': 1.166, '15': 1.25, '16': 1.333, '17': 1.416, '18': 1.5, '19': 1.583,
+						'20': 1.666, '21': 1.75, '22': 1.833, '23': 1.916, '24': 2 };
+				// Make sure its an int:
+				var fontsize = parseInt( this.getConfig( 'fontsize' ) );
+				style[ "font-size" ] = ( emFontMap[ fontsize ] ) ?
+						emFontMap[ fontsize ] +'em' :
+						(  fontsize > 24 )?  emFontMap[ 24 ]+'em' : emFontMap[ 6 ];
 				}
 				if (this.getConfig('useGlow') && this.getConfig('glowBlur') && this.getConfig('glowColor')) {
 					var hShadow = this.getConfig('hShadow') ? this.getConfig('hShadow') : 0;
@@ -856,26 +865,11 @@
 			} else {
 				style["font-family"] = this.customStyle.fontFamily;
 				style["color"] = this.customStyle.fontColor;
-				this.setConfig('fontsize', this.customStyle.fontSize);
-				style["font-size"] = this.getFontSize();
+				style["font-size"] = this.customStyle.fontSize;
 				style["background-color"] = this.customStyle.backgroundColor;
 				style["text-shadow"] = this.customStyle.edgeStyle;
 			}
 			return style;
-		},
-		getFontSize: function(){
-			// Translate to em size so that font-size parent percentage
-			// base on http://pxtoem.com/
-			var emFontMap = {
-				'6': .5, '7': .583, '8': .666, '9': .75, '10': .833, '11': .916,
-				'12': 1, '13': 1.083, '14': 1.166, '15': 1.25, '16': 1.333, '17': 1.416, '18': 1.5, '19': 1.583,
-				'20': 1.666, '21': 1.75, '22': 1.833, '23': 1.916, '24': 2
-			};
-			// Make sure its an int:
-			var fontsize = parseInt(this.getConfig('fontsize'));
-			return ( emFontMap[fontsize] ) ?
-			emFontMap[fontsize] + 'em' :
-				(  fontsize > 24 ) ? emFontMap[24] + 'em' : emFontMap[6];
 		},
 		getDefaultStyle: function(){
 			var baseCss =  {

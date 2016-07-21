@@ -193,7 +193,7 @@
 				case "kFontSize":
 					this.currentFontSize = value;
 					this.updatePreview("text", "font-size", this.getFontSize(this.currentFontSize));
-					this.cvaaSentSettings.fontSize = this.currentFontSize;
+					this.cvaaSentSettings.fontSize = this.getFontSize(this.currentFontSize);
 					this.cvaaSavedSettings.fontSize = this.currentFontSize;
 					break;
 				case "kBackgroundColor":
@@ -285,6 +285,7 @@
 
 			//set default font size
 			_this.currentFontSize = _this.cvaaSavedSettings.fontSize;
+			_this.cvaaSentSettings.fontSize = this.getFontSize(_this.currentFontSize);
 			_this.updatePreview("text", "font-size", _this.cvaaSentSettings.fontSize);
 
 			//set default background color and opacity
@@ -319,7 +320,7 @@
 				.map(function(element){
 					var sliderHolder = $( "#" + element.selector );
 					sliderHolder.slider({
-						value:	_this.cvaaSentSettings[element.default],
+						value:	_this.cvaaSavedSettings[element.default],
 						min:	element.min,
 						max:	element.max,
 						slide: function( event, ui ) {
