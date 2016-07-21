@@ -117,8 +117,9 @@
 			});
 
 			this.bind('openCvaaOptions', function () {
-				_this.getScreen();
-				_this.toggleScreen();
+				_this.getScreen().then(function(screen){
+					_this.toggleScreen();
+				});
 			});
 
 			if(_this.getConfig('cvaaBtnPosition')=="first"){
