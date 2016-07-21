@@ -286,6 +286,11 @@
 				this.sendMessage({'type': 'license', 'value': this.drmConfig.contextData.widevineLicenseServerURL});
 				this.log("set license URL to: " + this.drmConfig.contextData.widevineLicenseServerURL);
 			}
+			if (this.isNativeSDK){
+				var licenseUrl = this.embedPlayer.buildUdrmLicenseUri("application/dash+xml");
+				this.sendMessage({'type': 'license', 'value': licenseUrl});
+				this.log("set license URL to: " + licenseUrl);
+			}
 			if (this.getConfig("useKalturaPlayer") === true){
 				var flashVars = this.getFlashVars();
 				this.sendMessage({'type': 'embed', 'lib': kWidget.getPath(), 'publisherID': this.embedPlayer.kwidgetid.substr(1), 'uiconfID': this.getConfig('uiconfid') || this.embedPlayer.kuiconfid, 'entryID': this.embedPlayer.kentryid, 'debugKalturaPlayer': this.getConfig("debugKalturaPlayer"), 'flashVars': flashVars});
