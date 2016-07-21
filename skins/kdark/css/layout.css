@@ -1644,7 +1644,7 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
     z-index: 1;
 }
 .adplay-state #touchOverlay{
-    top: 3em;
+    top: 3em !important;
 }
 .clearfix:before,.clearfix:after {
 	content: " ";
