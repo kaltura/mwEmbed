@@ -7,6 +7,6 @@
         "kalturaPluginName": "cvaa",
         "styles": "resources/cvaa.css",
         "messageFile": "Cvaa.i18n.json",
-        "templates":"../CVvaa/resources/cvaa.tmpl.html"
+        "templates":"../Cvaa/resources/cvaa.tmpl.html"
     }
 }
