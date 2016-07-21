@@ -118,7 +118,7 @@
 
 			this.bind('openCvaaOptions', function () {
 				_this.getScreen();
-				setTimeout(function(){ _this.showScreen(); }, 0);
+				_this.toggleScreen();
 			});
 
 			if(_this.getConfig('cvaaBtnPosition')=="first"){
@@ -142,6 +142,7 @@
 					_this.getScreen().then(function(screen){
 						screen.addClass('semiTransparentBkg');
 						embedPlayer.triggerHelper("cvaaScreenOpen");
+						embedPlayer.disablePlayControls(["cvaa"]);
 					});
 				}
 			});
@@ -161,8 +162,10 @@
 						$( "#" + _this.getPlayer().getPlayerElement().id ).removeClass( "blur" );
 						_this.getPlayer().getPlayerPoster().removeClass( "blur" );
 					}
-					embedPlayer.enablePlayControls();
-					_this.showControls();
+					// re-enable player controls
+					if ( !embedPlayer.isInSequence() ){
+						embedPlayer.enablePlayControls();
+					}
 				}
 			});
 
@@ -385,6 +388,7 @@
 				domain : ''
 			});
 			this.getPlayer().triggerHelper("newCaptionsStyles", this.cvaaSentSettings);
+			this.hideScreen();
 		},
 		resetCvaaSettings: function(){
 			this.firstInit = true;
@@ -428,7 +432,7 @@
 			};
 		},
 		isSafeEnviornment: function() {
-
+			!mw.isIphone();
 		}
 	}));
 
