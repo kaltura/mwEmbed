@@ -68,6 +68,13 @@ return array(
 				"endline" => "true"
 			),
 			array(
+				"label" => "Enable mobile skin",
+				"helpnote" => "Enable mobile skin",
+				"type" => "checkbox",
+				"endline" => "true",
+				"model" => "config.uiVars.EmbedPlayer.EnableMobileSkin"
+			),
+			array(
 				"label" => "Automatically play video on page load",
 				"type" => "checkbox",
 				"endline" => "true",

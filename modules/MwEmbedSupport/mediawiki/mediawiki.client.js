@@ -188,7 +188,7 @@
 	};
 
 	mw.isTouchDevice = function () {
-		return !!('ontouchstart' in window);
+		return !!('ontouchstart' in window)  || ( mw.getConfig("EmbedPlayer.EnableMobileSkin") === true && mw.getConfig("EmbedPlayer.SimulateMobile") === true);
 	};
 	/**
 	 * platform detection
