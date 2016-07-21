@@ -1504,10 +1504,11 @@
 							$( embedPlayer ).trigger( "onPlayerStateChange", ["pause", embedPlayer.currentState] );
 							break;
 						case 'doPlay':
+							embedPlayer.paused = false;
+							embedPlayer.stopped = false;
 							if (_this.adPaused){
 								_this.adPaused = false;
 								_this.adsManager.resume();
-								embedPlayer.paused = false;
 								$( embedPlayer ).trigger( 'onplay' );
 								$( embedPlayer ).trigger( "onPlayerStateChange", ["play", embedPlayer.currentState] );
 								_this.monitorAdProgress();

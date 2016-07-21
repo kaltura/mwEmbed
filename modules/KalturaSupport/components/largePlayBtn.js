@@ -77,8 +77,8 @@
 		},
 		show: function(){
 			if ( !this.isDisabled && !this.embedPlayer.layoutBuilder.displayOptionsMenuFlag ) {
-				if (this.embedPlayer.isMobileSkin() && (this.embedPlayer.changeMediaStarted || this.embedPlayer.buffering)){
-					return; // prevent showing large play button on top of the spinner when using mobile skin and changing media
+				if (this.embedPlayer.isMobileSkin() && (this.embedPlayer.changeMediaStarted || this.embedPlayer.buffering || this.embedPlayer.isInSequence())){
+					return; // prevent showing large play button on top of the spinner when using mobile skin and changing media or during ads
 				}
 
 				if (this.embedPlayer.isMobileSkin()){

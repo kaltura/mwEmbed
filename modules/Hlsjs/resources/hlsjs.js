@@ -127,7 +127,8 @@
 
 					//Attach video tag to HLS engine
 					//IE ignores preload and loads source right away so defer attaching to first play event
-					if (!mw.isIE()) {
+					//But in case this is live then play comes early so attach as well
+					if (!mw.isIE() || (mw.isIE() && this.getPlayer().isLive())) {
 						this.hls.attachMedia(this.getPlayer().getPlayerElement());
 					} else {
 						this.bind("firstPlay", function(){

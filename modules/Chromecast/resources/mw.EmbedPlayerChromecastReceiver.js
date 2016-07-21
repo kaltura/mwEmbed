@@ -76,6 +76,10 @@
 				_this.triggerReplayEvent = true;
 				_this.triggerHelper("playerReady"); // since we reload the media for replay, trigger playerReady to reset Analytics
 			});
+			this.bindHelper("postEnded", function(){
+				_this.currentTime = _this.getPlayerElement().duration;
+				_this.updatePlayheadStatus();
+			});
 			this.bindHelper("onAdOpen", function(event, id, system, type){
 				_this.triggerHelper("broadcastToSender", ["chromecastReceiverAdOpen"]);
 			});
@@ -169,6 +173,7 @@
 				this.seeking = false;
 				if (this._propagateEvents && !this.isLive()) {
 					this.triggerHelper('seeked', [this.getPlayerElementTime()]);
+					this.syncCurrentTime();
 					this.updatePlayheadStatus();
 				}
 			}
