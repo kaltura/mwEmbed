@@ -810,14 +810,16 @@
 
 		updateScreen: function(){
 			var _this = this;
-			this.embedPlayer.updatePosterHTML();
-			this.embedPlayer.getInterface().find(".chromecastScreen").remove();
-			this.embedPlayer.getVideoHolder().append(this.getPlayingScreen());
-			$(".chromecastThumb").load(function(){
-				setTimeout(function(){
-					_this.setPlayingScreen();
-				},0);
-			});
+			if (!this.getConfig('disableSenderUI')) {
+				this.embedPlayer.updatePosterHTML();
+				this.embedPlayer.getInterface().find( ".chromecastScreen" ).remove();
+				this.embedPlayer.getVideoHolder().append( this.getPlayingScreen() );
+				$( ".chromecastThumb" ).load( function () {
+					setTimeout( function () {
+						_this.setPlayingScreen();
+					} , 0 );
+				} );
+			}
 		},
 
 		getPlayingScreen: function(){
