@@ -85,7 +85,8 @@
 			"windowColorlabel": gM('mwe-cvaa-windowColor'),
 			"fontFamilylabel": gM('mwe-cvaa-fontFamily'),
 			"edgeStylelabel": gM('mwe-cvaa-edgeStyle'),
-			"optionsBtnLabel": gM( 'mwe-cvaa-options' )
+			"optionsBtnLabel": gM( 'mwe-cvaa-options' ),
+			"captionsPreviewText": gM( 'mwe-cvaa-previewText' )
 		},
 		cvaaSettingsObj: null,
 		cvaaSavedSettings:null,

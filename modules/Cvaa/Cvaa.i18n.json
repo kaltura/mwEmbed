@@ -10,6 +10,7 @@
 		"mwe-cvaa-backgroundOpacity": 	"Background Opacity",
 		"mwe-cvaa-windowColor": 		"Window Color",
 		"mwe-cvaa-windowOpacity": 		"Window Opacity",
-		"mwe-cvaa-edgeStyle": 			"Character Edge Style"
+		"mwe-cvaa-edgeStyle": 			"Character Edge Style",
+		"mwe-cvaa-previewText":			"Captions Preview"
 	}
 }
