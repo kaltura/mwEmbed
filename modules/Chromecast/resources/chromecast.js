@@ -25,7 +25,8 @@
 			'useReceiverSource': true,
 			'debugKalturaPlayer': false,
 			'uiconfid':null,
-			'defaultConfig':true
+			'defaultConfig':true,
+			'disableSenderUI':false
 
 		},
 		isDisabled: false,
@@ -210,10 +211,13 @@
 		},
 
 		showConnectingMessage: function(){
+			if (this.getConfig('disableSenderUI')) {return;}
 			this.displayMessage(gM('mwe-chromecast-connecting'));
 		},
 
 		displayMessage: function(msg){
+			if (this.getConfig('disableSenderUI')) {return;}
+
 			this.embedPlayer.layoutBuilder.displayAlert({
 					'title':'Chromecast Player',
 					'message': msg,
