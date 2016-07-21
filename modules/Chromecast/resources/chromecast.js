@@ -25,7 +25,8 @@
 			'useReceiverSource': true,
 			'debugKalturaPlayer': false,
 			'uiconfid':null,
-			'defaultConfig':true
+			'defaultConfig':true,
+			'disableSenderUI':false
 
 		},
 		isDisabled: false,
@@ -210,10 +211,13 @@
 		},
 
 		showConnectingMessage: function(){
+			if (this.getConfig('disableSenderUI')) {return;}
 			this.displayMessage(gM('mwe-chromecast-connecting'));
 		},
 
 		displayMessage: function(msg){
+			if (this.getConfig('disableSenderUI')) {return;}
+
 			this.embedPlayer.layoutBuilder.displayAlert({
 					'title':'Chromecast Player',
 					'message': msg,
@@ -285,6 +289,11 @@
 			if (this.drmConfig){
 				this.sendMessage({'type': 'license', 'value': this.drmConfig.contextData.widevineLicenseServerURL});
 				this.log("set license URL to: " + this.drmConfig.contextData.widevineLicenseServerURL);
+			}
+			if (this.isNativeSDK){
+				var licenseUrl = this.embedPlayer.buildUdrmLicenseUri("application/dash+xml");
+				this.sendMessage({'type': 'license', 'value': licenseUrl});
+				this.log("set license URL to: " + licenseUrl);
 			}
 			if (this.getConfig("useKalturaPlayer") === true){
 				var flashVars = this.getFlashVars();
@@ -801,14 +810,16 @@
 
 		updateScreen: function(){
 			var _this = this;
-			this.embedPlayer.updatePosterHTML();
-			this.embedPlayer.getInterface().find(".chromecastScreen").remove();
-			this.embedPlayer.getVideoHolder().append(this.getPlayingScreen());
-			$(".chromecastThumb").load(function(){
-				setTimeout(function(){
-					_this.setPlayingScreen();
-				},0);
-			});
+			if (!this.getConfig('disableSenderUI')) {
+				this.embedPlayer.updatePosterHTML();
+				this.embedPlayer.getInterface().find( ".chromecastScreen" ).remove();
+				this.embedPlayer.getVideoHolder().append( this.getPlayingScreen() );
+				$( ".chromecastThumb" ).load( function () {
+					setTimeout( function () {
+						_this.setPlayingScreen();
+					} , 0 );
+				} );
+			}
 		},
 
 		getPlayingScreen: function(){

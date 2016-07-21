@@ -582,65 +582,69 @@ function initApp() {
 
 function setCaption(trackNumber) {
 	var current, next;
-	var streamCount = protocol.getStreamCount();
-	var streamInfo;
-	for (current = 0; current < streamCount; current++) {
-		if (protocol.isStreamEnabled(current)) {
-			streamInfo = protocol.getStreamInfo(current);
-			if (streamInfo.mimeType.indexOf('text') === 0) {
-				protocol.enableStream(current, false);
-				mediaPlayer.enableCaptions(false);
-				break;
+	if (protocol) {
+		var streamCount = protocol.getStreamCount();
+		var streamInfo;
+		for ( current = 0 ; current < streamCount ; current++ ) {
+			if ( protocol.isStreamEnabled( current ) ) {
+				streamInfo = protocol.getStreamInfo( current );
+				if ( streamInfo.mimeType.indexOf( 'text' ) === 0 ) {
+					protocol.enableStream( current , false );
+					mediaPlayer.enableCaptions( false );
+					break;
+				}
 			}
 		}
-	}
-	if (trackNumber) {
-		protocol.enableStream(trackNumber, true);
-		mediaPlayer.enableCaptions(true);
+		if ( trackNumber ) {
+			protocol.enableStream( trackNumber , true );
+			mediaPlayer.enableCaptions( true );
+		}
 	}
 }
 
 function nextCaption() {
 	var current, next;
-	var streamCount = protocol.getStreamCount();
-	var streamInfo;
-	for (current = 0; current < streamCount; current++) {
-		if (protocol.isStreamEnabled(current)) {
-			streamInfo = protocol.getStreamInfo(current);
-			if (streamInfo.mimeType.indexOf('text') === 0) {
-				break;
+	if (protocol) {
+		var streamCount = protocol.getStreamCount();
+		var streamInfo;
+		for ( current = 0 ; current < streamCount ; current++ ) {
+			if ( protocol.isStreamEnabled( current ) ) {
+				streamInfo = protocol.getStreamInfo( current );
+				if ( streamInfo.mimeType.indexOf( 'text' ) === 0 ) {
+					break;
+				}
 			}
 		}
-	}
 
-	if (current === streamCount) {
-		next = 0;
-	} else {
-		next = current + 1;
-	}
-
-	while (next !== current) {
-		if (next === streamCount) {
+		if ( current === streamCount ) {
 			next = 0;
+		} else {
+			next = current + 1;
 		}
 
-		streamInfo = protocol.getStreamInfo(next);
-		if (streamInfo.mimeType.indexOf('text') === 0) {
-			break;
+		while ( next !== current ) {
+			if ( next === streamCount ) {
+				next = 0;
+			}
+
+			streamInfo = protocol.getStreamInfo( next );
+			if ( streamInfo.mimeType.indexOf( 'text' ) === 0 ) {
+				break;
+			}
+
+			next++;
 		}
 
-		next++;
-	}
+		if ( next !== current ) {
+			if ( current !== streamCount ) {
+				protocol.enableStream( current , false );
+				mediaPlayer.enableCaptions( false );
+			}
 
-	if (next !== current) {
-		if (current !== streamCount) {
-			protocol.enableStream(current, false);
-			mediaPlayer.enableCaptions(false);
-		}
-
-		if (next !== streamCount) {
-			protocol.enableStream(next, true);
-			mediaPlayer.enableCaptions(true);
+			if ( next !== streamCount ) {
+				protocol.enableStream( next , true );
+				mediaPlayer.enableCaptions( true );
+			}
 		}
 	}
 }
