@@ -33,7 +33,9 @@
 .fullscreen .screen .cvaaScreenPanel{
 	padding-top: 100px;
 }
-
+.mobile.fullscreen .screen .cvaaScreenPanel{
+	padding-top: 20px;
+}
 .screen .cvaaScreenPanel .column-1-2{
 	float: left;
 	width: 50%;
@@ -125,6 +127,9 @@
 }
 .fullscreen .cvaa #cvaaButtons{
 	margin-top: 150px;
+}
+.mobile.fullscreen .cvaa #cvaaButtons{
+	margin-top: 15px;
 }
 
 .cvaa .colorContainer{
