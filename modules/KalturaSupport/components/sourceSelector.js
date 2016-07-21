@@ -253,7 +253,19 @@
 				this.addAutoToMenu();
 				return true;
 			}
-			//HLS, HDS
+
+	        if ( this.getPlayer().streamerType === "http" && !this.getPlayer().isPlaying() && !this.getPlayer().isInSequence() ){
+		        this.addAutoToMenu();
+		        return false;
+	        }
+
+	        //Dash
+	        if( ( this.getPlayer().streamerType === "dash" ) ){
+		        this.addAutoToMenu();
+		        return true;
+	        }
+
+	        //HLS, HDS
             if (mw.isNativeApp()) {
             	this.sourcesList = [];
                 this.addAutoToMenu();

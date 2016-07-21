@@ -5,7 +5,9 @@
  */
 (function (mw, $) {
 	"use strict";
-	
+
+	var originalVTTCue = window.VTTCue;
+
 	mw.EmbedPlayerNative = {
 
 		//Instance Name
@@ -1461,8 +1463,8 @@
 		switchAudioTrack: function(audioTrackIndex){
 			var vid  = this.getPlayerElement();
 			var audioTracks = vid.audioTracks;
-			if(audioTracks[audioTrackIndex] && !audioTracks[audioTrackIndex].enabled) {
-			if(mw.isEdge()){
+			if(audioTracks && audioTracks[audioTrackIndex] && !audioTracks[audioTrackIndex].enabled) {
+				if(mw.isEdge()){
 
 				// Edge has a problem to switch audio track at playback time, so as a workaround - pause before the switching.
 				// When this issue will be fixed we can remove the entire code for Edge.
@@ -1493,6 +1495,9 @@
 				return parseInt(this.playerElement.buffered.end(this.playerElement.buffered.length-1) - this.playerElement.currentTime); //return buffer length in seconds
             }
             return 0;
-        }
+        },
+		getOriginalVTTCue: function(){
+			return originalVTTCue;
+		}
 	};
 })(mediaWiki, jQuery);

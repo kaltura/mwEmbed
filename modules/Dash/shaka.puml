@@ -1,0 +1,33 @@
+@startuml
+title __Shaka Flow__\n
+
+(*) --> __//mw.EmbedPlayer.js//__ \n\n setupSourcePlayer()
+
+--> __//mw.MediaElement.js//__ \n\n autoSelectSource()
+
+--> __//mw.EmbedTypes.js//__ \n\n fire \n 'EmbedPlayerUpdateMediaPlayers'
+
+--> "__//Shaka Plugin//__ \n\n register 'shaka player'" as a1
+
+(*) --> __//mw.PluginManager.js//__ \n\n setup Shaka Plugin
+
+if "shaka\nsupported?"
+
+--> [true] a1
+
+note right
+for 'application/dash+xml' MIME type
+with Native HTML5 player engine
+end note
+
+--> __//mw.EmbedPlayer.js//__ \n\n selectPlayer()
+
+-left> __//mw.EmbedPlayerNative.js//__ \n\n setup()
+
+--> __//mw.EmbedPlayer.js//__ \n\n fire\n'playerReady'
+
+--> __//Shaka Plugin//__ \n\n init player
+
+-> (*)
+
+@enduml
