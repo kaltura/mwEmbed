@@ -68,8 +68,8 @@ return array(
 				"endline" => "true"
 			),
 			array(
-				"label" => "Enable mobile skin",
-				"helpnote" => "Enable mobile skin",
+				"label" => "Enable new mobile skin",
+				"helpnote" => "Caution: Turning on Mobile skin will override any existing custom CSS",
 				"type" => "checkbox",
 				"endline" => "true",
 				"model" => "config.uiVars.EmbedPlayer.EnableMobileSkin"
