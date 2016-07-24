@@ -8,6 +8,7 @@
 			usePreviewPlayer: false,
 			previewPlayerEnabled: false,
 			optionsEvent: "openCvaaOptions",
+			useCookie: true,
 			cvaaBtnPosition: "first",
 			cvaaDefaultSettings: {
 				fontFamily: "Arial, Roboto, Arial Unicode Ms, Helvetica, Verdana, PT Sans Caption, sans-serif",
@@ -267,9 +268,9 @@
 		getCurrentSettings: function(){
 			var _this = this;
 
-			_this.cvaaSentSettings = $.cookie('cvaaSavedSettings') ?
-				JSON.parse($.cookie('cvaaSavedSettings')) :
-				JSON.parse(JSON.stringify(_this.getConfig("cvaaDefaultSettings")));
+			_this.cvaaSentSettings = _this.getConfig('useCookie') && $.cookie('cvaaSavedSettings') ?
+									 JSON.parse($.cookie('cvaaSavedSettings')) :
+									 JSON.parse(JSON.stringify(_this.getConfig("cvaaDefaultSettings")));
 
 			if(_this.firstInit){
 				_this.firstInit = false;

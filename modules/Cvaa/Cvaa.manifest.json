@@ -1,3 +1,13 @@
 {
-
+  "cvaa": {
+    "label": "CVAA",
+    "description": "Closed captions options menu",
+    "type": "menu",
+    "attributes": {
+      "contentId": {
+        "doc": "The contentId, used by DoubleClick plugin API, generally the entry ID, but can also be custom metadata mapping",
+        "type": "string"
+      }
+    }
+  }
 }
