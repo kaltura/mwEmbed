@@ -142,6 +142,8 @@
 				if ( screenName === "cvaa" ){
 					_this.getScreen().then(function(screen){
 						screen.addClass('semiTransparentBkg');
+						// prevent keyboard key actions to allow typing in share screen fields
+						embedPlayer.triggerHelper( 'onDisableKeyboardBinding' );
 						embedPlayer.triggerHelper("cvaaScreenOpen");
 						embedPlayer.disablePlayControls(["cvaa"]);
 					});
@@ -163,6 +165,8 @@
 						$( "#" + _this.getPlayer().getPlayerElement().id ).removeClass( "blur" );
 						_this.getPlayer().getPlayerPoster().removeClass( "blur" );
 					}
+					// restore keyboard actions
+					embedPlayer.triggerHelper( 'onEnableKeyboardBinding' );
 					// re-enable player controls
 					if ( !embedPlayer.isInSequence() ){
 						embedPlayer.enablePlayControls();
@@ -337,15 +341,19 @@
 				});
 
 			//set color pickers
-			$(".colorContainer li").on('click', function () {
-				$(this).addClass('active').siblings().removeClass('active');
-				_this.updateSettingsAndPreview($(this)[0].id, $(this).val());
+			$(".colorContainer li").on('click keydown', function (event) {
+				if(event.which === 32 || event.which === 13 || event.type == "click"){
+					$(this).addClass('active').siblings().removeClass('active');
+					_this.updateSettingsAndPreview($(this)[0].id, $(this).val());
+				}
 			});
 
 			//set dropdowns
 			dropdowns.map(function(option){
-				$("#" + option).on("change", function () {
-					_this.updateSettingsAndPreview($(this)[0].id, $(this).val());
+				$("#" + option).on("change keydown", function (event) {
+					if(event.which === 32 ||event.which === 13 || event.type == "change"){
+						_this.updateSettingsAndPreview($(this)[0].id, $(this).val());
+					}
 				});
 			});
 
