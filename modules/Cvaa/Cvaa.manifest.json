@@ -1,12 +1,35 @@
 {
   "cvaa": {
-    "label": "CVAA",
-    "description": "Closed captions options menu",
-    "type": "menu",
+    "featureCheckbox": true,
+    "label": "Closed captions options menu",
+    "description": "Adds Closed captions options menu which extends existing styling.",
+    "type": "featuremenu",
+    "model": "config.plugins.cvaa",
     "attributes": {
-      "contentId": {
-        "doc": "The contentId, used by DoubleClick plugin API, generally the entry ID, but can also be custom metadata mapping",
+      "cvaaBtnPosition": {
+        "doc": "Captions position within the captions menu. possible options are first and last",
+        "initvalue": "first",
         "type": "string"
+      },
+      "useCookie": {
+        "doc": "Should cookies be used to store user settings. if not used, settings will be set to default every page refresh",
+        "type": "boolean",
+        "initvalue": true
+      },
+      "cvaaDefaultSettings": {
+        "doc": "Initial styling configuration options.",
+        "initvalue": {
+          "fontFamily": "Arial, Roboto, Arial Unicode Ms, Helvetica, Verdana, PT Sans Caption, sans-serif",
+          "fontColor": "#ffffff",
+          "fontOpacity": 100,
+          "fontSize": 12,
+          "backgroundColor": "#000000",
+          "backgroundOpacity": 75,
+          "windowColor": "#ffffff",
+          "windowOpacity": 0,
+          "edgeStyle": "none"
+        },
+        "type": "json"
       }
     }
   }

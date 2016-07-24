@@ -112,8 +112,8 @@
 }
 
 .size-medium .cvaa li span{
-	height: 23px;
-	width: 23px;
+	height: 17px;
+	width: 17px;
 }
 
 .cvaa #cvaaButtons{
@@ -121,7 +121,8 @@
 	margin-top: 60px;
 	margin-right: 25px;
 }
-.size-small .cvaa #cvaaButtons{
+.size-small .cvaa #cvaaButtons,
+.size-medium .cvaa #cvaaButtons{
 	margin-top: 30px;
 	margin-right: 0;
 }
