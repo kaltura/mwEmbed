@@ -197,6 +197,7 @@ return array(
 			"restrictUserAgent" => "",
 			"multiDrm" => "",
 			"sourceSelector" => "",
+			"audioSelector" => "",
 			"download" => "",
 			"strings" => "",
 			"uiVars" => ""
