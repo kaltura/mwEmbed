@@ -141,9 +141,9 @@
 		 */
 		_onplay: function () {
 			this.restoreEventPropagation();
-			if (this.currentState === "pause"){
+			if (this.currentState === "pause" || this.currentState === "start"){
 				this.play();
-				this.triggerHelper('onPlayerStateChange', [ "play", "pause" ]);
+				this.triggerHelper('onPlayerStateChange', [ "play", this.currentState ]);
 			}
 			if (this.triggerReplayEvent){
 				this.triggerHelper('replayEvent');
