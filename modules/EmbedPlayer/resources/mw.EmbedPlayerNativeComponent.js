@@ -139,10 +139,6 @@
 				mw.log("EmbedPlayerNativeComponent:: sendCCRecieverMessage::");
 				_this.getPlayerElement().sendCCRecieverMessage(msg);
 			});
-			this.bindHelper("loadReceiverMedia", function (e,url, mime) {
-				mw.log("EmbedPlayerNativeComponent:: loadReceiverMedia::");
-				_this.getPlayerElement().loadReceiverMedia(url, mime);
-			});
 			this.bindHelper("onEndedDone", function () {
 				_this.playbackDone = true;
 			});
