@@ -469,12 +469,12 @@
         }
     },
     "audioSelector": {
-        "description": "Enables users to select the audio track.",
+        "description": "Enables users to select multiple audio tracks.",
         "attributes": {
-            "maxNumOfStream": {
-                "doc": "Maximum number of stream to display out of the total number of available audio tracks",
-                "label": "Maximum number of stream",
-                "type": "number"
+            "plugin": {
+                "doc": "If the audio selector should be activated.",
+                "label": "Enable audio selector",
+                "type": "hiddenValue"
             }
         }
     },
