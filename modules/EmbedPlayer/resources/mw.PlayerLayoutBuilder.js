@@ -714,8 +714,11 @@ mw.PlayerLayoutBuilder.prototype = {
 		this.embedPlayer.triggerHelper( 'showPlayerControls' );
 	},
 	hidePlayerControls: function(){
-		if (!this.embedPlayer.paused ||
-			this.embedPlayer.isInSequence()){
+		// track open components menus ( FEC-5623 )
+		var areAllCompMenusClosed =
+			this.$interface.find('.controlsContainer > .comp > ul.dropdown-menu.open').length;
+		if ((!this.embedPlayer.paused || this.embedPlayer.isInSequence()) &&
+			areAllCompMenusClosed) {
 			this.getInterface().addClass( this.outPlayerClass );
 			this.addTouchOverlay();
 			if (this.isInFullScreen()){
