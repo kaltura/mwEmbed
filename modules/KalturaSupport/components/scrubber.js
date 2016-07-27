@@ -1,6 +1,11 @@
 (function (mw, $, kWidget) {
 	"use strict";
-
+	var ie10MasksAsiE7GetAttributeNodeWorkaround = {
+		set: function( elem, value, name ) {
+			elem.setAttribute(name, value);
+		}
+	};
+	$.attrHooks.placeholder = ie10MasksAsiE7GetAttributeNodeWorkaround;
 	mw.PluginManager.add('scrubber', mw.KBaseComponent.extend({
 
 		defaultConfig: {
