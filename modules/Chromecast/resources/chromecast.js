@@ -247,7 +247,7 @@
 				chrome.cast.requestSession(
 					function(e){
 						_this.onRequestSessionSuccess(e);
-					}, 
+					},
 					function(error){
 						_this.onLaunchError(error);
 					},
@@ -414,15 +414,15 @@
 			var apiConfig = new chrome.cast.ApiConfig(sessionRequest,
 				function(event){
 					_this.sessionListener(event);
-				}, 
+				},
 				function(event){
 					_this.receiverListener(event);
 				}
 			);
-			chrome.cast.initialize(apiConfig, 
+			chrome.cast.initialize(apiConfig,
 				function(){
 					_this.onInitSuccess();
-				}, 
+				},
 				function(){
 					_this.onError();
 				}
@@ -492,9 +492,7 @@
 					mw.EmbedTypes.mediaPlayers.getPlayerById('chromecast')
 				);
 				this.embedPlayer.disablePlayer();
-				this.embedPlayer.updatePlaybackInterface();
-				// set source using a timeout to avoid setting auto source by Akamai Analytics
-				setTimeout(function(){
+				this.embedPlayer.updatePlaybackInterface(function(){
 					_this.embedPlayer.mediaElement.setSource(chromeCastSource);
 					_this.embedPlayer.receiverName = _this.session.receiver.friendlyName;
 					// set volume and position according to the video settings before switching players
@@ -518,13 +516,14 @@
 						_this.sendMessage({'type': 'notification','event': 'replay'});  // since we reload the media for replay, trigger playerReady on the receiver player to reset Analytics
 						_this.embedPlayer.play();
 					}
-				},300);
-				if (_this.monitorInterval !== null){
-					clearInterval(_this.monitorInterval);
-				}
-				this.monitorInterval = setInterval(function(){
-					_this.monitor();
-				}, mw.getConfig('EmbedPlayer.MonitorRate'));
+
+					if (_this.monitorInterval !== null){
+						clearInterval(_this.monitorInterval);
+					}
+					_this.monitorInterval = setInterval(function(){
+						_this.monitor();
+					}, mw.getConfig('EmbedPlayer.MonitorRate'));
+				});
 			}
 		},
 
@@ -533,11 +532,11 @@
 				return;
 			}
 			this.currentMediaSession.play(
-				null, 
+				null,
 				this.mediaCommandSuccessCallback.bind(
 					this,
 					"playing started for " + this.currentMediaSession.sessionId
-				), 
+				),
 				this.onError
 			);
 		},
@@ -546,11 +545,11 @@
 			if( !this.currentMediaSession ){
 				return;
 			}
-			this.currentMediaSession.pause(null, 
+			this.currentMediaSession.pause(null,
 				this.mediaCommandSuccessCallback.bind(
 					this,
 					"paused " + this.currentMediaSession.sessionId
-				), 
+				),
 				this.onError
 			);
 		},
@@ -560,15 +559,15 @@
 		},
 
 		seekMedia: function(pos) {
-			this.log('Seeking ' + this.currentMediaSession.sessionId + ':' + 
+			this.log('Seeking ' + this.currentMediaSession.sessionId + ':' +
 					this.currentMediaSession.mediaSessionId + ' to ' + pos + "%");
 			var request = new chrome.cast.media.SeekRequest();
 			request.currentTime = pos * this.currentMediaSession.media.duration / 100;
-			this.currentMediaSession.seek( request, 
+			this.currentMediaSession.seek( request,
 				this.onSeekSuccess.bind(
-						this, 
+						this,
 						'media seek done'
-				), 
+				),
 				this.onError
 			);
 		},
@@ -596,11 +595,11 @@
 			volume.muted = (percent === 0);
 			var request = new chrome.cast.media.VolumeRequest();
 			request.volume = volume;
-			this.currentMediaSession.setVolume( request, 
+			this.currentMediaSession.setVolume( request,
 				this.mediaCommandSuccessCallback.bind(
-					this, 
+					this,
 					'media set-volume done'
-				), 
+				),
 				this.onError
 			);
 		},
@@ -688,10 +687,10 @@
 				return;
 			}
 
-			this.currentMediaSession.stop(null, 
+			this.currentMediaSession.stop(null,
 				this.mediaCommandSuccessCallback.bind(this,
 					"stopped " + this.currentMediaSession.sessionId
-				), 
+				),
 				this.onError
 			);
 			this.updateTooltip(this.startCastTitle);
