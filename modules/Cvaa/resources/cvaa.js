@@ -270,11 +270,11 @@
 
 			_this.cvaaSentSettings = _this.getConfig('useCookie') && $.cookie('cvaaSavedSettings') ?
 									 JSON.parse($.cookie('cvaaSavedSettings')) :
-									 JSON.parse(JSON.stringify(_this.getConfig("cvaaDefaultSettings")));
+									 $.extend(true, {}, _this.getConfig("cvaaDefaultSettings"));
 
 			if(_this.firstInit){
 				_this.firstInit = false;
-				_this.cvaaSavedSettings = JSON.parse(JSON.stringify(_this.cvaaSentSettings));
+				_this.cvaaSavedSettings = $.extend(true, {}, _this.cvaaSentSettings);
 			}
 		},
 		initPreviewUpdate: function(){
