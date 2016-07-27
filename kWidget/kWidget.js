@@ -1743,7 +1743,7 @@
 			return false;
 		},
 
-		supportsHTMLPlayerUI: function () {
+		supportsHTMLPlayerUI: function () {           return true;
 			return this.supportsHTML5() || (this.isIE8() && this.supportsFlash());
 		},
 
