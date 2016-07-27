@@ -881,7 +881,7 @@
 				adsRequest.adTagUrl = encodeURIComponent(adsRequest.adTagUrl);
 				this.embedPlayer.getPlayerElement().sendNotification( 'requestAds', adsRequest );
 				mw.log( "DoubleClick::requestAds: Chromeless player request ad from KDP plugin");
-				var timeout = this.getConfig("adsManagerLoadedTimeout") || 5000;
+				var timeout = this.getConfig("adsManagerLoadedTimeout") || (mw.isChromeCast() ? 15000 : 5000);
 				this.chromelessAdManagerLoadedId = setTimeout(function(){
 					mw.log( "DoubleClick::Error: AdsManager failed to load by Flash plugin after " + timeout + " seconds.");
 					_this.restorePlayer(true);
