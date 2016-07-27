@@ -69,10 +69,6 @@
 
 					// Try to load a manifest.
 					player.load(manifestSrc).then(function () {
-						//player.load("https://media.axprod.net/TestVectors/v6-MultiDRM/Manifest.mpd").then(function () {
-						//	player.load("http://192.168.161.138/test1.mpd").then(function () {
-						//	player.load("https://cdnapisec.kaltura.com/p/2089821/sp/208982100/playManifest/entryId/1_x3yt4v60/flavorId/1_ulyziwv3/format/mpegdash/").then(function () {
-						//player.load("https://storage.googleapis.com/shaka-demo-assets/angel-one/dash.mpd").then(function () {
 						// This runs if the asynchronous load is successful.
 						_this.log('The video has now been loaded!');
 						_this.addTracks();

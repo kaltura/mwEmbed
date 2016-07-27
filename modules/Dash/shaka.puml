@@ -7,9 +7,10 @@ title __Shaka Flow__\n
 
 --> __//mw.EmbedTypes.js//__ \n\n fire \n 'EmbedPlayerUpdateMediaPlayers'
 
---> "__//Shaka Plugin//__ \n\n register 'shaka player'" as a1
+--> "__//dash Plugin//__ \n\n register 'shaka player'" as a1
 
-(*) --> __//mw.PluginManager.js//__ \n\n setup Shaka Plugin
+(*) --> __//mw.PluginManager.js//__ \n\n setup dash Plugin
+
 
 if "shaka\nsupported?"
 
@@ -26,7 +27,7 @@ end note
 
 --> __//mw.EmbedPlayer.js//__ \n\n fire\n'playerReady'
 
---> __//Shaka Plugin//__ \n\n init player
+--> __//dash Plugin//__ \n\n init shaka
 
 -> (*)
 
