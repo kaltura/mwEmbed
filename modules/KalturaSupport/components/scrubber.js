@@ -1,11 +1,6 @@
 (function (mw, $, kWidget) {
 	"use strict";
-	var ie10MasksAsiE7GetAttributeNodeWorkaround = {
-		set: function( elem, value, name ) {
-			elem.setAttribute(name, value);
-		}
-	};
-	$.attrHooks.placeholder = ie10MasksAsiE7GetAttributeNodeWorkaround;
+
 	mw.PluginManager.add('scrubber', mw.KBaseComponent.extend({
 
 		defaultConfig: {
@@ -444,7 +439,7 @@
 				'aria-valuetext': mw.seconds2npt(perc * this.embedPlayer.getDuration()),
 				'aria-valuenow': parseInt(perc * 100) + '%'
 			};
-			$slider.attr(attributes);
+			$slider.prop(attributes);
 			if (this.getConfig('accessibilityLabels')) {
 				$slider.html('<span class="accessibilityLabel">' + title + '</span>');
 			}
