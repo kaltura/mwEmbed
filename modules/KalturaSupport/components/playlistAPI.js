@@ -429,7 +429,7 @@
 		playMedia: function (clipIndex, load, autoScrollToMedia) {
 			this.setSelectedMedia(clipIndex);              // this will highlight the selected clip in the UI
 			if ( autoScrollToMedia ){
-				if (this.getLayout() === "vertical" || 1==1) {
+				if (this.getLayout() === "vertical") {
 					this.getMedialistComponent().find(".nano-content").scrollTop(clipIndex * this.getConfig("mediaItemHeight"));
 				}else{
 					this.getMedialistComponent().find( '.k-carousel' )[0].jCarouselLiteGo(clipIndex);
