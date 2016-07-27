@@ -1,0 +1,16 @@
+{
+	"en": {
+		"mwe-cvaa-options": 			"Options",
+		"mwe-cvaa-reset": 				"Reset",
+		"mwe-cvaa-fontFamily": 			"Font Family",
+		"mwe-cvaa-fontColor": 			"Font Color",
+		"mwe-cvaa-fontSize": 			"Font size",
+		"mwe-cvaa-fontOpacity": 		"Font Opacity",
+		"mwe-cvaa-backgroundColor": 	"Background Color",
+		"mwe-cvaa-backgroundOpacity": 	"Background Opacity",
+		"mwe-cvaa-windowColor": 		"Window Color",
+		"mwe-cvaa-windowOpacity": 		"Window Opacity",
+		"mwe-cvaa-edgeStyle": 			"Character Edge Style",
+		"mwe-cvaa-previewText":			"Captions Preview"
+	}
+}
