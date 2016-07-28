@@ -1266,6 +1266,7 @@ HTML;
 	function getIFramePageOutput( ){
 		$this->inlineScript = false;
 		$flashvars = $this->request->getFlashVars();
+		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
 
 		if (isset($flashvars['inlineScript']) && $flashvars['inlineScript'] == "true"){
 			$this->inlineScript = true;
@@ -1279,9 +1280,17 @@ HTML;
 <!DOCTYPE html>
 <html>
 <head>
-	<?php if(!empty($flashvars['forceCompatMode'])){
-		echo '<meta http-equiv="X-UA-Compatible" content="' . $flashvars['forceCompatMode'] . '"/>';
-	} ?>
+
+	<?php
+        $forceCompatMode = $this->getUiConfResult()->getPlayerConfig(false, 'forceCompatMode');
+        if(!empty($forceCompatMode)){
+            if ($forceCompatMode != "none"){
+                echo '<meta http-equiv="X-UA-Compatible" content="' . $forceCompatMode . '"/>';
+            }
+        } else {
+            echo '<meta http-equiv="X-UA-Compatible" content="IE=edge"/>';
+        }
+	?>
 	<script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ </script>
 	<?php if($wgRemoteWebInspector && $wgEnableScriptDebug){
 		echo '<script src="' . $wgRemoteWebInspector . '"></script>';
