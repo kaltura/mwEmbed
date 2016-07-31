@@ -490,7 +490,7 @@
 		},
 
 		isNativeHLS: function() {
-			if ( mw.isIOS() || mw.isDesktopSafari() || mw.isAndroid() ) {
+			if ( mw.isIOS() || mw.isDesktopSafari() || mw.isAndroid() || mw.isEdge()) {
 				return true;
 			}
 			return false;
