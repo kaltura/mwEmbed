@@ -1,19 +1,19 @@
 {
   "cvaa": {
     "featureCheckbox": true,
-    "label": "Closed captions options menu",
-    "description": "Adds closed captions options menu which extends existing styling.",
+    "label": "Closed Captions Styling Editor",
+    "description": "Adds 'Options' to the closed captions menu where viewers can open a styling editor.",
     "type": "featuremenu",
     "model": "config.plugins.cvaa",
     "attributes": {
       "cvaaBtnPosition": {
         "label": "Button position",
-        "doc": "Captions position within the captions menu. possible options are first and last",
+        "doc": "Set the 'Options' button position within the closed captions menu",
         "initvalue": "first",
         "type": "string"
       },
       "useCookie": {
-        "doc": "Should cookies be used to store user settings. if not used, settings will be set to default upon page refresh",
+        "doc": "Allow the use of cookies to save settings. if not used, settings will be set to default upon page refresh",
         "type": "boolean",
         "initvalue": true
       },

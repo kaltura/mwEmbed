@@ -133,6 +133,7 @@ return array(
 			"loadingSpinner" => "",
 			"volumeControl" => "",
 			"closedCaptions" => "",
+			"cvaa" => "",
 			"watermark" => "",
 			"theme" => "",
 			"infoScreen" => "",
