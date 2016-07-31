@@ -19,7 +19,7 @@
     "EmbedPlayer.DefaultSize": "400x300",
     "EmbedPlayer.ControlsHeight": 31,
 	"EmbedPlayer.MobileControlsHeight": 46,
-	"EmbedPlayer.EnableMobileSkin": true,
+	"EmbedPlayer.EnableMobileSkin": false,
     "EmbedPlayer.TimeDisplayWidth": 75,
     "EmbedPlayer.KalturaAttribution": true,
     "EmbedPlayer.AttributionButton": {

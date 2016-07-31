@@ -68,6 +68,13 @@ return array(
 				"endline" => "true"
 			),
 			array(
+				"label" => "Enable new mobile skin",
+				"helpnote" => "Caution: Turning on Mobile skin will override any existing custom CSS",
+				"type" => "checkbox",
+				"endline" => "true",
+				"model" => "config.uiVars.EmbedPlayer.EnableMobileSkin"
+			),
+			array(
 				"label" => "Automatically play video on page load",
 				"type" => "checkbox",
 				"endline" => "true",
@@ -190,6 +197,7 @@ return array(
 			"restrictUserAgent" => "",
 			"multiDrm" => "",
 			"sourceSelector" => "",
+			"audioSelector" => "",
 			"download" => "",
 			"strings" => "",
 			"uiVars" => ""

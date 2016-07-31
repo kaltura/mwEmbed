@@ -15,7 +15,7 @@
             "hideSource": false,
 			"title": gM( 'mwe-embedplayer-select_source' ),
 			'smartContainer': 'qualitySettings',
-			'smartContainerCloseEvent': 'SourceChange'
+			'smartContainerCloseEvent': 'newSourceSelected'
 		},
 
 		isDisabled: false,

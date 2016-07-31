@@ -29,14 +29,24 @@
 			
 			this.bind('onChangeMediaDone playerReady onpause onEndedDone onRemovePlayerSpinner showPlayerControls showLargePlayBtn', function(e){
 				if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() && !_this.embedPlayer.isPauseLoading ){
-					_this.getComponent().removeClass("icon-pause").addClass("icon-play");
+					if (mw.isChromeCast()){
+						_this.getComponent().removeClass("icon-play").addClass("icon-pause");
+
+					} else {
+						_this.getComponent().removeClass( "icon-pause" ).addClass( "icon-play" );
+					}
 					_this.show();
 				}
 			});
 
 			this.bind('onShowControlBar', function(){
 				if( !mw.isIE8() && _this.getConfig("togglePause") && _this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() ){
-					_this.getComponent().removeClass("icon-play").addClass("icon-pause");
+					if (mw.isChromeCast()){
+						_this.getComponent().removeClass("icon-pause").addClass("icon-play");
+
+					} else {
+						_this.getComponent().removeClass( "icon-play" ).addClass( "icon-pause" );
+					}
 					_this.show();
 				}
 			});
@@ -67,12 +77,16 @@
 		},
 		show: function(){
 			if ( !this.isDisabled && !this.embedPlayer.layoutBuilder.displayOptionsMenuFlag ) {
-				if (this.embedPlayer.isMobileSkin() && (this.embedPlayer.changeMediaStarted || this.embedPlayer.buffering)){
-					return; // prevent showing large play button on top of the spinner when using mobile skin and changing media
+				if (this.embedPlayer.isMobileSkin() && (this.embedPlayer.changeMediaStarted || this.embedPlayer.buffering || this.embedPlayer.isInSequence())){
+					return; // prevent showing large play button on top of the spinner when using mobile skin and changing media or during ads
 				}
 
 				if (this.embedPlayer.isMobileSkin()){
-					this.getComponent().fadeIn('fast').css('display', "flex");
+					if (mw.isIOS8()){
+						this.getComponent().fadeIn('fast').css('display', "-webkit-flex");
+					}else{
+						this.getComponent().fadeIn('fast').css('display', "flex");
+					}
 				} else {
 					this.getComponent().css('display', "block");
 				}

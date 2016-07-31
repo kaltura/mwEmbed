@@ -195,7 +195,12 @@ body {
     font-size: 1.5em;
 }
 
-.mobileSkin.start-state .titleLabel{
+.ua-chromecast.pause-state .titleLabel{
+    display: block !important;
+    display: -webkit-box !important;
+}
+
+.mobileSkin.ua-chromecast.start-state .titleLabel{
     display: block !important;
     display: -webkit-box !important;
 }
@@ -326,12 +331,18 @@ body {
     width: 100%;
     height: 100%;
     text-align: center;
+    display: -webkit-flex;
     display: flex;
     position: absolute;
+    -webkit-justify-content: center;
+    -webkit-align-items: center;
+    -webkit-flex-flow: row wrap;
     justify-content: center;
     align-items: center;
     flex-flow: row wrap;
 }
+
+
 /* Smart container icons */
 .mobileSkin .smartContainer.comp4, .mobileSkin .smartContainer.comp5, .mobileSkin .smartContainer.comp6{
     height: 80%;
@@ -345,6 +356,9 @@ body {
     width: 90%;
     left: 5%;
 }
+.mobileSkin:not(.pluginsScreenOpened) .smartContainer .comp{
+    display: none !important;
+}
 @media screen and (orientation:portrait) {
     .mobileSkin.fullscreen .smartContainer{
         height: 50%;
@@ -355,6 +369,7 @@ body {
     width: 100%;
     font-size: 3.2em;
 }
+
 .mobileSkin .videoHolder .smartContainer.comp2 .btn{
     font-size: 3.6em;
 }
@@ -913,6 +928,18 @@ body {
 .mobileSkin .liveStatus{
     font-family: 'icomoon';
 }
+
+.ua-chromecast .liveStatus{
+    display: none;
+}
+
+.ua-chromecast .topBarContainer .btn{
+    display:none;
+}
+
+.ua-chromecast .controlBarContainer .btn:not (.playHead){
+    display:none;
+}
 .currentTimeLabel {
 	padding-left: 1em;
     color: #e8e8e8;
@@ -1167,7 +1194,9 @@ body {
 	top: auto;
 	bottom: 102%;
 }
-
+.ua-chromecast .closedCaptions{
+    display: none !important;
+}
 .closedCaptions > .dropdown-menu {
 	overflow-y:auto;
 	overflow-x:hidden;
@@ -1367,8 +1396,11 @@ body {
 	color: #efefef;
 }
 .mobileSkin .largePlayBtn {
+    display: -webkit-flex;
     display: flex;
+    -webkit-align-items: center;
     align-items: center;
+    -webkit-justify-content: center;
     justify-content: center;
     position: absolute;
     top: 50%;
@@ -1481,8 +1513,11 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 .sourceSelector {
 	display: inline-block;
 }
-.mobileSkin .controlBarContainer .sourceSelector {
+.mobileSkin .controlBarContainer .sourceSelector, .mobileSkin .controlBarContainer .streamSelector {
 	margin-top: -5px;
+}
+.mobileSkin .controlBarContainer .closedCaptions {
+	margin-top: -6px;
 }
 
 .overlay {
@@ -1609,7 +1644,7 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
     z-index: 1;
 }
 .adplay-state #touchOverlay{
-    top: 3em;
+    top: 3em !important;
 }
 .clearfix:before,.clearfix:after {
 	content: " ";
@@ -1902,6 +1937,9 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 }
 .mobileSkin.pluginsScreenOpened .videoShadow{
     background: rgba(0,0,0,0.75);
+}
+.mobileSkin.adplay-state  .videoShadow{
+    display: none;
 }
 .closePluginsScreen{
     position: absolute;

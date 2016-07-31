@@ -187,6 +187,8 @@ mw.PlayerLayoutBuilder.prototype = {
 			this.getInterface().addClass( 'ua-safari' );
 		if ( mw.isEdge() )
 			this.getInterface().addClass( 'ua-edge' );
+		if ( mw.isChromeCast() )
+			this.getInterface().addClass( 'ua-chromecast' );
 	},
 	/**
 	* Add the controls HTML to player interface
@@ -818,6 +820,13 @@ mw.PlayerLayoutBuilder.prototype = {
 			if ( this.getInterface().find( '#touchOverlay' ).length == 0 ) {
 				var touchOverlay= this.getInterface().find('.controlBarContainer').before(
 					$('<div />')
+						.css({
+							'position': 'absolute',
+							'top': 0,
+							'width': '100%',
+							'height': '100%',
+							'z-index': 1
+						})
 						.attr( 'id', "touchOverlay" )
 						.bind( 'touchstart click', function( event ) {
 							// Don't propogate the event to the document

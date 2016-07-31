@@ -429,9 +429,6 @@
     "flavorComboControllerScreen": {
         "description": "The Kaltura flavor selector plugin."
     },
-    "audioSelector": {
-        "description": "Enables users to select from audio tracks active in the stream."
-    },
     "sourceSelector": {
         "description": "Enables users to select the video quality.",
         "attributes": {
@@ -468,6 +465,16 @@
                     "value": "sizebitrate"
                   }
                 ]
+            }
+        }
+    },
+    "audioSelector": {
+        "description": "Enables users to select multiple audio tracks.",
+        "attributes": {
+            "plugin": {
+                "doc": "If the audio selector should be activated.",
+                "label": "Enable audio selector",
+                "type": "hiddenValue"
             }
         }
     },

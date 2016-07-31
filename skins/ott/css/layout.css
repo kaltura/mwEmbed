@@ -169,7 +169,7 @@ body {
 	transition: bottom 0.2s ease-in;
 }
 .mobile .controlBarContainer {
-	height: 42px !important;
+	height: 48px !important;
 }
 .mobile.fullscreen .controlBarContainer {
 	height: 64px !important;
@@ -549,9 +549,14 @@ button::-moz-focus-inner {
 }
 .mobile .smartContainerMenu .pluginIcon{
 	display: block;
-	font-size: 78px;
-	padding-left: 30px;
-	padding-right: 30px;
+	font-size: 5em;
+	padding-left: 1em;
+	padding-right: 1em;
+}
+.mobile.size-small .smartContainerMenu .pluginIcon{
+	font-size: 3em;
+	padding-left: 0.75em;
+	padding-right: 0.75em;
 }
 .mobile .smartContainerMenu .pluginPropertyLabel{
 	display: none;

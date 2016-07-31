@@ -19,6 +19,9 @@
 	mw.isIE = function () {
 		return (/msie/.test(userAgent.toLowerCase()) || /trident/.test(userAgent.toLowerCase()));
 	};
+	mw.isChromeCast = function(){
+		return (/CrKey/.test(userAgent));
+	};
 	mw.isIE7 = function () {
 		return (/msie 7/.test(userAgent.toLowerCase()));
 	};
@@ -35,7 +38,7 @@
         return (/edge/.test(userAgent.toLowerCase()));
     };
 	mw.isDesktopSafari = function () {
-		return (/safari/).test(userAgent.toLowerCase()) && !mw.isMobileDevice() && !mw.isChrome();
+		return mw.isSafari() && !mw.isMobileDevice();
 	};
 	mw.isSafari = function () {
 		return (/safari/).test(userAgent.toLowerCase()) && !mw.isChrome() && !mw.isEdge();
@@ -185,7 +188,7 @@
 	};
 
 	mw.isTouchDevice = function () {
-		return !!('ontouchstart' in window);
+		return !!('ontouchstart' in window)  || ( mw.getConfig("EmbedPlayer.EnableMobileSkin") === true && mw.getConfig("EmbedPlayer.SimulateMobile") === true);
 	};
 	/**
 	 * platform detection

@@ -51,7 +51,6 @@
 			$(this).bind('layoutBuildDone', function(){
 				this.getVideoHolder().find('video').remove();
 			});
-
 			this.setPlayerElement(parent.document.getElementById('receiverVideoElement'));
 			this.addBindings();
 			this.applyMediaElementBindings();
@@ -68,9 +67,18 @@
 		 */
 		addBindings: function(){
 			var _this = this;
+			this.bindHelper("layoutBuildDone", function(){
+				_this.getVideoHolder().css("backgroundColor","transparent");
+				$("body").css("backgroundColor","transparent");
+
+			});
 			this.bindHelper("replay", function(){
 				_this.triggerReplayEvent = true;
 				_this.triggerHelper("playerReady"); // since we reload the media for replay, trigger playerReady to reset Analytics
+			});
+			this.bindHelper("postEnded", function(){
+				_this.currentTime = _this.getPlayerElement().duration;
+				_this.updatePlayheadStatus();
 			});
 			this.bindHelper("onAdOpen", function(event, id, system, type){
 				_this.triggerHelper("broadcastToSender", ["chromecastReceiverAdOpen"]);
@@ -85,15 +93,6 @@
 			this.bindHelper("ccSelectClosedCaptions sourceSelectedByLangKey", function(e, label){
 				_this.triggerHelper("propertyChangedEvent", {"plugin": "closedCaptions", "property":"captions", "value": typeof label === "string" ? label : label[0]});
 				$(parent.document.getElementById('captionsOverlay')).empty();
-			});
-			this.bindHelper("captionsUpdated", function(e, html){
-				var $captionsOverlayTarget = $(parent.document.getElementById('captionsOverlay'));
-				var $textTarget = $('<div style="bottom: 0px; text-align: center; position: absolute; width: 100%; opacity: 0.8"/>')
-					.addClass('track')
-					.html(html)
-					.addClass('caption')
-					.css('pointer-events', 'auto');
-				$captionsOverlayTarget.empty().append( $textTarget );
 			});
 		},
 		/**
@@ -132,23 +131,35 @@
 			$(this).trigger('onPlayerStateChange', [ "pause", "play" ]);
 
 		},
-
+		_onplaying:function(){
+			this.hideSpinner();
+			this.triggerHelper("playing");
+			this.triggerHelper( 'hidePlayerControls' );
+		},
 		/**
 		 * Handle the native play event
 		 */
 		_onplay: function () {
 			this.restoreEventPropagation();
-			if (this.currentState === "pause"){
+			if (this.currentState === "pause" || this.currentState === "start"){
 				this.play();
-				this.triggerHelper('onPlayerStateChange', [ "play", "pause" ]);
+				this.triggerHelper('onPlayerStateChange', [ "play", this.currentState ]);
 			}
 			if (this.triggerReplayEvent){
 				this.triggerHelper('replayEvent');
 				this.triggerReplayEvent = false;
 			}
+			this.triggerHelper( 'hidePlayerControls' );
+
+		},
+		replay: function(){
+			var _this = this;
+			this.restoreEventPropagation();
+			this.restoreComponentsHover();
 		},
 
 		_onseeking: function () {
+			this.triggerHelper( 'hidePlayerControls' );
 			if (!this.seeking) {
 				this.seeking = true;
 				if ( this._propagateEvents && !this.isLive() ) {
@@ -162,6 +173,8 @@
 				this.seeking = false;
 				if (this._propagateEvents && !this.isLive()) {
 					this.triggerHelper('seeked', [this.getPlayerElementTime()]);
+					this.syncCurrentTime();
+					this.updatePlayheadStatus();
 				}
 			}
 		},
