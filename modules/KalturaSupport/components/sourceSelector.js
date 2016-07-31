@@ -253,7 +253,14 @@
 				this.addAutoToMenu();
 				return true;
 			}
-			//HLS, HDS
+
+	        //Dash
+	        if( ( this.getPlayer().streamerType === "dash" ) ){
+		        this.addAutoToMenu();
+		        return true;
+	        }
+
+	        //HLS, HDS
             if (mw.isNativeApp()) {
             	this.sourcesList = [];
                 this.addAutoToMenu();
