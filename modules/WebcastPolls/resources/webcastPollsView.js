@@ -139,7 +139,8 @@
                     var answerContent = !isNaN(pollResults.answers[answerIndex + ''])?  (+pollResults.answers[answerIndex + '']) : 0;
                     var isPopularAnswer = popularAnswers.split(',').indexOf(answerIndex + '') !== -1;
                     var totalVoters = !isNaN(pollResults.totalVoters) ? (+pollResults.totalVoters) : 0;
-                    var answerPercentage = totalVoters > 0 ? Math.round(answerContent / totalVoters * 100) : 0;
+                    //round up to one digit after the decimal point
+                    var answerPercentage = totalVoters > 0 ? (Math.round( (answerContent / totalVoters * 100) * 10 ) / 10) : 0;
 
                     if (isPopularAnswer) {
                         _this.$webcastPoll.find('[name="answer' + answerIndex + '"]').closest('.answer').addClass('popular');
