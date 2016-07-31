@@ -27,7 +27,8 @@
 			"title": gM( 'mwe-embedplayer-timed_text'),
 			"smartContainer": "qualitySettings",
 			'smartContainerCloseEvent': 'changedClosedCaptions',
-			"forceWebVTT": false // force using webvtt on-the-fly. only for kalturaAPI captions
+			"forceWebVTT": false, // force using webvtt on-the-fly. only for kalturaAPI captions
+			"sortCaptionsAlphabetically": false
 		},
 
 		textSources: [],
@@ -441,9 +442,23 @@
 					_this.captionURLs = captionsURLs;
 					// Done adding source issue callback
 					mw.log( 'mw.ClosedCaptions:: loadCaptionsURLsFromApi> total captions count: ' + captions.length );
-					callback( captions );
+					// Check if we need to sort captions array Alphabetically
+					if( _this.embedPlayer.getKalturaConfig( "closedCaptions", "sortCaptionsAlphabetically" )) {
+						captions = _this.sortByKey( captions, 'language' );
+						callback( captions );
+					}
+					else {
+						callback( captions );
+					}
 				} );
 			}
+		},
+		sortByKey: function ( array, key ) {
+			return array.sort( function( a, b ) {
+				var x = a[key];
+				var y = b[key];
+				return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+			});
 		},
 		getTextSourceFromDB: function( dbTextSource ) {
 			var _this = this;
