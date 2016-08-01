@@ -443,13 +443,11 @@
 					// Done adding source issue callback
 					mw.log( 'mw.ClosedCaptions:: loadCaptionsURLsFromApi> total captions count: ' + captions.length );
 					// Check if we need to sort captions array Alphabetically
-					if( _this.embedPlayer.getKalturaConfig( "closedCaptions", "sortCaptionsAlphabetically" )) {
+					if( _this.getConfig("sortCaptionsAlphabetically")) {
 						captions = _this.sortByKey( captions, 'language' );
 						callback( captions );
 					}
-					else {
-						callback( captions );
-					}
+					callback( captions );
 				} );
 			}
 		},
