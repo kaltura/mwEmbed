@@ -104,6 +104,11 @@
                 }
 
             },
+            setViewModeLockState : function (viewModeState)
+            {
+                mw.log("dualscreenExternalControlManager.setViewModeLockState(): Changing player view mode state to '" + viewModeState);
+                this.getPlayer().triggerHelper('dualScreenLockStateChange', { state : viewModeState});
+            },
             handleCuePoint : function(cuePoint)
             {
                 var _this = this;
@@ -124,6 +129,11 @@
                     if (cuePointCode.playerViewModeId) {
                         _this.setViewById(cuePointCode.playerViewModeId)
                     }
+                    //updating current view mode lock state
+                    //the default view mode lock state is 'unlocked'
+                    var viewModeLockState = cuePointCode.viewModeLockState ?
+                        cuePointCode.viewModeLockState : mw.dualScreen.display.STATE.UNLOCKED;
+                    _this.setViewModeLockState(viewModeLockState);
                 }
             }
         });
