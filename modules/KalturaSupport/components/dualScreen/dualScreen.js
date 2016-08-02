@@ -149,9 +149,18 @@
 
 				//listen to view mode lock state changes
 				this.bind( 'dualScreenLockStateChange', function(e, lockState){
-					//changing only hide() / show() state of dualScreen control bar so when unlocked,
-					//prev. configuration will take place (if controlBar was disabled / enabled, etc...)
-					_this.handleViewModeLockStateChange(lockState);
+					switch (lockState.state){
+						case mw.dualScreen.display.STATE.LOCKED:
+							_this.isViewModeLocked = true;
+							_this.controlBar.hide();
+							_this.controlBar.disable();
+							break;
+						case mw.dualScreen.display.STATE.UNLOCKED:
+							_this.isViewModeLocked = false;
+							_this.controlBar.enable();
+							_this.controlBar.show();
+							break;
+					}
 				});
 
 				//Listen to events which affect controls view state
@@ -161,15 +170,14 @@
 						}
 				});
 				this.bind( 'onplay', function () {
-						if (!_this.disabled && !_this.getPlayer().isAudio()) {
+						if (!_this.disabled && !_this.getPlayer().isAudio() && !_this.isViewModeLocked) {
 							_this.controlBar.enable();
 						}
 				} );
 				this.bind( 'onpause ended playerReady', function () {
-						if (!_this.disabled && _this.controlBar && !_this.getPlayer().isAudio()) {
-							if(!_this.isViewModeLocked) {
-								_this.controlBar.show();
-							}
+						if (!_this.disabled && _this.controlBar &&
+							!_this.getPlayer().isAudio() && !_this.isViewModeLocked) {
+							_this.controlBar.show();
 							_this.controlBar.disable();
 						}
 				} );
@@ -182,11 +190,9 @@
 				});
 				this.bind( 'stopDisplayInteraction', function() {
 					//Only enable and show if controlBar was enabled before transition
-					if ( !wasDisabled ) {
+					if ( !wasDisabled && !_this.isViewModeLocked) {
 						_this.controlBar.enable();
-						if(!_this.isViewModeLocked){
-							_this.controlBar.show();
-						}
+                        _this.controlBar.show();
 					}
 					_this.getPlayer().enablePlayControls();
 				});
@@ -452,18 +458,16 @@
 			enableView: function(){
 				this.displays.getMainDisplay().obj.css("visibility", "");
 				this.displays.getAuxDisplay().obj.css("visibility", "");
-				if (!this.getPlayer().isAudio()) {
+				if (!this.getPlayer().isAudio() && !this.isViewModeLocked) {
 					this.controlBar.enable();
-					if(!_this.isViewModeLocked) {
-						this.controlBar.show();
-					}
+                    this.controlBar.show();
 				}
 			},
 			minimizeView: function(screenName){
 				this.screenShown = true;
 				if (this.render) {
 					this.currentScreenNameShown = screenName;
-					if (!this.disabled && !this.getPlayer().isAudio()) {
+					if (!this.disabled && !this.getPlayer().isAudio() && !this.isViewModeLocked) {
 						this.controlBar.enable();
 						this.controlBar.hide();
 						this.controlBar.disable();
@@ -481,11 +485,10 @@
 					//only then preShowScreen
 					var _this = this;
 					setTimeout(function(){
-						if (!_this.screenShown && !_this.disabled && !_this.getPlayer().isAudio()) {
+						if (!_this.screenShown && !_this.disabled &&
+							!_this.getPlayer().isAudio() && !_this.isViewModeLocked) {
 							_this.controlBar.enable();
-							if(!_this.isViewModeLocked) {
-								_this.controlBar.show();
-							}
+                            _this.controlBar.show();
 						}
 					}, 100);
 				}
@@ -694,19 +697,7 @@
 					of: $( this.getPlayer().getInterface() )
 				});
 			},
-			handleViewModeLockStateChange: function (lockState)
-			{
-				switch (lockState){
-					case mw.dualScreen.display.STATE.LOCKED:
-						_this.isViewModeLocked = true;
-						_this.controlBar.hide();
-						break;
-					case mw.dualScreen.display.STATE.UNLOCKED:
-						_this.isViewModeLocked = true;
-						_this.controlBar.show();
-						break;
-				}
-			}
+
 		} )
 	);
 }
