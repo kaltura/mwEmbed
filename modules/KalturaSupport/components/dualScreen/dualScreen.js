@@ -142,7 +142,9 @@
 
 				//Consume view state events
 				this.bind( 'dualScreenStateChange', function(e, state){
-					_this.fsm.consumeEvent( state );
+					if(!_this.isViewModeLocked) {
+						_this.fsm.consumeEvent( state );
+					}
 				});
 
 				//listen to view mode lock state changes
