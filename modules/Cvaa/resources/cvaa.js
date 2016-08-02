@@ -108,6 +108,12 @@
 			this.cvaaSettingsObj = this.getConfig("cvaaOptions");
 			this.addBindings();
 		},
+		addScreenBindings: function(){
+			var _this = this;
+			$(".cvaa .icon-close").on("mousedown", function(e){
+				_this.resetSettingsToLast();
+			});
+		},
 		addBindings: function () {
 			var _this = this;
 			var embedPlayer = this.getPlayer();
@@ -401,19 +407,20 @@
 			this.hideScreen();
 		},
 		resetCvaaSettings: function(){
-			this.firstInit = true;
-
 			$.cookie('cvaaSavedSettings', null, {
 				expires : -1,
 				path : '/',
 				domain : ''
 			});
 
+			this.resetSettingsToLast();
+			this.getPlayer().triggerHelper("newCaptionsStyles", this.cvaaSentSettings);
+		},
+		resetSettingsToLast: function(){
+			this.firstInit = true;
 			this.getCurrentSettings();
 			this.initPreviewUpdate();
 			this.resetSliders();
-
-			this.getPlayer().triggerHelper("newCaptionsStyles", this.cvaaSentSettings);
 		},
 		resetSliders: function(){
 			//reset sliders and sliders labels
