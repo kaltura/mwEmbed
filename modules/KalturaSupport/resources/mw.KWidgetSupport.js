@@ -1691,7 +1691,7 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		//Only support ABR on-the-fly for DRM protected entries
-		if( mw.getConfig('Kaltura.UseFlavorIdsUrls') && !$.isEmptyObject(flavorDrmData)) {
+		if( mw.getConfig('Kaltura.UseFlavorIdsUrls') ) {
 			var validClipAspect = this.getValidAspect(deviceSources);
 			//Only add mpeg dash CENC on the fly if dash sources exist
 			if (dashAdaptiveFlavors.length) {
