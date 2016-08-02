@@ -53,11 +53,9 @@
 			screenShown: false,
 			currentScreenNameShown: "",
 			externalControlManager : null,
-			//Indicates if current view mode is locked by external application.
-			//if current state is 'locked', player events won't be able to perform 'controlBar.show()', all other changes
-			//in controlBar element will be available and will be shown when view mode lock state will change to 'unlocked'
-			isViewModeLocked : false,
-			setup: function ( ) {
+			isViewModeLocked : false, //indicating if current view mode state is locked by external application.
+
+		setup: function ( ) {
 				this.initConfig();
 				this.initDisplays();
 				this.initFSM();
