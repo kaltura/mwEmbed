@@ -9,6 +9,10 @@
 			var cert = this.getFpsCertificate(player);
 			if (cert && mw.isDesktopSafari()) {
 				mw.log("Loading HLS FPS player");
+				$(mw).bind('EmbedPlayerUpdateMediaPlayers', function (event, mediaPlayers) {
+					mediaPlayers.removeMIMETypePlayers('video/playreadySmooth', 'Silverlight');
+					mediaPlayers.removeMIMETypePlayers('video/ism', 'Silverlight');
+				});
 				this.loadHlsFpsHandler().then(function () {
 					mw.fps = new mw.FPS(player, function () {
 					}, "FPS");
