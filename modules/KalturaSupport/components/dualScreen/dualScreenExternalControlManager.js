@@ -106,7 +106,7 @@
             },
             setViewModeLockState : function (viewModeState)
             {
-                mw.log("dualscreenExternalControlManager.setViewModeLockState(): Changing player view mode state to '" + viewModeState);
+                this.log("dualscreenExternalControlManager.setViewModeLockState(): Changing player view mode state to '" + viewModeState);
                 this.getPlayer().triggerHelper('dualScreenLockStateChange', { state : viewModeState});
             },
             handleCuePoint : function(cuePoint)

@@ -199,6 +199,7 @@
 
 				this.bind("onChangeMedia", function(){
 					if ( _this.syncEnabled && !_this.disabled){
+						_this.isViewModeLocked = false;
 						//Reset the displays view
 						if (_this.fsm.getStatus() !== "PiP") {
 							_this.fsm.consumeEvent('PiP');
