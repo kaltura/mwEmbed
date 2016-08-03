@@ -10,6 +10,9 @@
 	{
         "licenseUri": "https://udrm.kaltura.com/widevine/license?custom_data=xyz123&signature=sxyz123&files=sdhu3R"
     }
+    
+    If FairPlay is available and drm=fps is speciafied, the response will contain another property:
+        "fpsCertificate": "BASE64-ENCODED-CERTIFICATE"
 	
 	OR, if there's an error:
 	{
