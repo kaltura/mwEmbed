@@ -8,10 +8,14 @@
 		
 	Return value:
 	{
-        "licenseUri": "https://udrm.kaltura.com/widevine/license?custom_data=xyz123&signature=sxyz123&files=sdhu3R"
+        "licenseUri": "https://udrm.kaltura.com/widevine/license?custom_data=xyz123&signature=sxyz123&files=sdhu3R",
+        "fpsCertificate": "BASE64-ENCODED-CERTIFICATE"
     }
-	
-	OR, if there's an error:
+    
+    The fpsCertificate property is only included if FairPlay is available and drm=fps.
+
+
+    If there's an error in the request or in processing it, an error is returned instead:
 	{
 		"error": {
 			"message": "something is wrong"
@@ -55,13 +59,18 @@ class mweApiGetLicenseData {
                 case 'wvcenc':
                     $licensePath = 'cenc/widevine/license';
                     break;
+                case 'fps':
+                    $licensePath = 'fps/license';
+                    break;
                 default:
                     throw new Exception('Unknown DRM scheme ' . $drm);
             }
 
             $flavorId = $_REQUEST['flavor_id'];
             
-            $flavorData = $this->getRawFlavorData();
+            $rawData = $this->getRawData();
+
+            $flavorData = $rawData['flavorData'];
             if (isset($flavorData[$flavorId])) {
                 $licenseData = $flavorData[$flavorId];
             } else {
@@ -73,6 +82,9 @@ class mweApiGetLicenseData {
                     $udrmBaseURL, $licensePath, $custom_data, $signature, urlencode(base64_encode($flavorId)));
             
             $response = array('licenseUri' => $licenseUri);
+            if ($drm == 'fps' && isset($rawData['fpsCertificate'])) {
+                $response['fpsCertificate'] = $rawData['fpsCertificate'];
+            }
             
         } catch (Exception $e) {
             $response = array(
@@ -94,15 +106,26 @@ class mweApiGetLicenseData {
 		header('Pragma: no-cache'); // 	for HTTP/1.0
 	}
 	
-	function getRawFlavorData() {
+	function getRawData() {
 		global $container;
 		$drmPluginData = null;
 		$resultObject = $container['entry_result']->getResult();
         if (isset($resultObject['error'])) {
             throw new Exception($resultObject['error']);
         }
-		$drmPluginData = (array)$resultObject['contextData']->pluginData['KalturaDrmEntryContextPluginData'];
-        // Convert the result to array.
-        return json_decode(json_encode($drmPluginData['flavorData']), true);
+        $pluginData = $resultObject['contextData']->pluginData;
+		$drmPluginData = (array)$pluginData['KalturaDrmEntryContextPluginData'];
+        if (isset($pluginData['KalturaFairplayEntryContextPluginData'])) {
+            $fpsPluginData = (array)$pluginData['KalturaFairplayEntryContextPluginData'];
+            $fpsCertificate = $fpsPluginData['publicCertificate'];
+        } else {
+            $fpsCertificate = null;
+        }
+
+        $response = array(
+            'flavorData' => json_decode(json_encode($drmPluginData['flavorData']), true), 
+            'fpsCertificate' => $fpsCertificate
+        );
+        return $response;
 	}
 }
