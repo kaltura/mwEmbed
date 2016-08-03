@@ -1690,7 +1690,6 @@ mw.KWidgetSupport.prototype = {
 
 		}
 
-		//Only support ABR on-the-fly for DRM protected entries
 		if( mw.getConfig('Kaltura.UseFlavorIdsUrls') ) {
 			var validClipAspect = this.getValidAspect(deviceSources);
 			//Only add mpeg dash CENC on the fly if dash sources exist
@@ -1708,25 +1707,6 @@ mw.KWidgetSupport.prototype = {
 				});
 				this.attachFlavorAssetDrmData(dashSource, dashAdaptiveFlavors[0], flavorDrmData);
 				deviceSources.push(dashSource);
-			}
-			//Only add playready on the fly if pre-encrypted doesn't exist
-			if ((iphoneAdaptiveFlavors.length || ipadAdaptiveFlavors.length) &&
-				this.getSourcesByAttribute(deviceSources, "type", "video/playreadySmooth").length === 0) {
-				var targetFlavors = ipadAdaptiveFlavors.length ? ipadAdaptiveFlavors : iphoneAdaptiveFlavors;
-				var assetId = targetFlavors[0];
-				var ismSource = this.generateAbrSource({
-					entryId: asset.entryId,
-					flavorUrl: flavorUrl,
-					flavorId: "ism",
-					type: 'video/playreadySmooth',
-					flavors: targetFlavors,
-					format: "sl",
-					ext: "ism",
-					protocol: protocol,
-					clipAspect: validClipAspect
-				});
-				this.attachFlavorAssetDrmData(ismSource, assetId, flavorDrmData);
-				deviceSources.push(ismSource);
 			}
 		}
 
