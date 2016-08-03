@@ -12,6 +12,9 @@
 				this.loadHlsFpsHandler().then(function () {
 					mw.fps = new mw.FPS(player, function () {
 					}, "FPS");
+					mw.EmbedTypes.mediaPlayers.removeMIMETypePlayers('video/playreadySmooth', 'Silverlight');
+					mw.EmbedTypes.mediaPlayers.removeMIMETypePlayers('video/ism', 'Silverlight');
+					player.setupSourcePlayer();
 				});
 			} else if (this.isCastLabsNeeded()) {
 				this.registerCastLabsPlayer();
