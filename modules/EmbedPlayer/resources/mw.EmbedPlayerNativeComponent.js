@@ -438,6 +438,9 @@
 				executeCommand = true;
 			}
 			this.lastPlayPauseTime = t;
+			if (this.currentState == "end") {
+				this.lastPlayPauseTime = 0
+			}
 			return executeCommand;
 		},
 
