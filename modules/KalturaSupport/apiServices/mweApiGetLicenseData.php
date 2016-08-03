@@ -8,13 +8,14 @@
 		
 	Return value:
 	{
-        "licenseUri": "https://udrm.kaltura.com/widevine/license?custom_data=xyz123&signature=sxyz123&files=sdhu3R"
+        "licenseUri": "https://udrm.kaltura.com/widevine/license?custom_data=xyz123&signature=sxyz123&files=sdhu3R",
+        "fpsCertificate": "BASE64-ENCODED-CERTIFICATE"
     }
     
-    If FairPlay is available and drm=fps is speciafied, the response will contain another property:
-        "fpsCertificate": "BASE64-ENCODED-CERTIFICATE"
-	
-	OR, if there's an error:
+    The fpsCertificate property is only included if FairPlay is available and drm=fps.
+
+
+    If there's an error in the request or in processing it, an error is returned instead:
 	{
 		"error": {
 			"message": "something is wrong"
