@@ -65,14 +65,22 @@
 					// Listen for error events.
 					player.addEventListener('error', this.onErrorEvent.bind(this));
 
-					var manifestSrc = this.getPlayer().getSrc();
+					var selectedSource = this.getPlayer().getSrc();
 
-					this.bind("firstPlay", function(){
-						// Try to load a manifest.
-						player.load(manifestSrc).then(function () {
-							_this.log('The video has now been loaded!');
-							_this.addTracks();
-						}).catch(this.onError.bind(this));  // onError is executed if the asynchronous load fails.
+					this.bind("firstPlay", function () {
+						_this.getPlayer().resolveSrcURL(selectedSource)
+							.done(function (manifestSrc) {  // success
+								selectedSource = manifestSrc;
+							})
+							.always(function () {  // both success or error
+									//// Try to load a manifest.
+									player.load(selectedSource).then(function () {
+										// This runs if the asynchronous load is successful.
+										_this.log('The video has now been loaded!');
+										_this.addTracks();
+									}).catch(_this.onError.bind(_this));  // onError is executed if the asynchronous load fails.
+								}
+							);
 					}.bind(this));
 				}
 			},
@@ -149,7 +157,7 @@
 							'data-assetid': rep.id
 						};
 					});
-					mw.log("Dash::" + videoTracks.length + " ABR flavors were found: ",videoTracks);
+					mw.log("Dash::" + videoTracks.length + " ABR flavors were found: ", videoTracks);
 					this.getPlayer().onFlavorsListChanged(flavors);
 				}
 			},
@@ -169,7 +177,7 @@
 							'index': audioTrackData.languages.length
 						});
 					});
-					mw.log("Dash::" + audioTracks.length + " audio tracks were found: ",audioTracks);
+					mw.log("Dash::" + audioTracks.length + " audio tracks were found: ", audioTracks);
 					this.onAudioTracksReceived(audioTrackData);
 				}
 			},
@@ -190,7 +198,7 @@
 							'index': textTrackData.languages.length
 						});
 					});
-					mw.log("Dash::" + textTracks.length + " text tracks were found: ",textTracks);
+					mw.log("Dash::" + textTracks.length + " text tracks were found: ", textTracks);
 					this.onTextTracksReceived(textTrackData);
 				}
 			},
