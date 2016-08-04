@@ -67,12 +67,13 @@
 
 					var manifestSrc = this.getPlayer().getSrc();
 
-					// Try to load a manifest.
-					player.load(manifestSrc).then(function () {
-						// This runs if the asynchronous load is successful.
-						_this.log('The video has now been loaded!');
-						_this.addTracks();
-					}).catch(this.onError.bind(this));  // onError is executed if the asynchronous load fails.
+					this.bind("firstPlay", function(){
+						// Try to load a manifest.
+						player.load(manifestSrc).then(function () {
+							_this.log('The video has now been loaded!');
+							_this.addTracks();
+						}).catch(this.onError.bind(this));  // onError is executed if the asynchronous load fails.
+					}.bind(this));
 				}
 			},
 
