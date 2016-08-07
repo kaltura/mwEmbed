@@ -26,8 +26,7 @@
 			defaultConfig: {
 				options: {
 					//debug:true
-					liveSyncDurationCount : 3,
-					liveMaxLatencyDurationCount: 6
+					liveSyncDurationCount : 3
 				},
 				hlsLogs: false
 			},
