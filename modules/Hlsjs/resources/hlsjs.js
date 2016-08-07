@@ -26,7 +26,8 @@
 			defaultConfig: {
 				options: {
 					//debug:true
-					liveSyncDurationCount : 3
+					liveSyncDurationCount : 3,
+					liveMaxLatencyDurationCount : 6
 				},
 				hlsLogs: false
 			},
@@ -70,6 +71,7 @@
 				this.bind("onSelectSource", this.checkIfHLSNeeded.bind(this));
 				this.bind("playerReady", this.initHls.bind(this));
 				this.bind("onChangeMedia", this.clean.bind(this));
+				this.bind("onLiveOffSynchChanged", this.onLiveOffSyncChanged.bind(this));
 				if( mw.getConfig("hlsLogs") ) {
 					this.bind("monitorEvent", this.monitorDebugInfo.bind(this));
 				}
@@ -445,6 +447,19 @@
 					_this.embedPlayer.goingBackToLive = false;
 				}, 1000);
 			},
+
+			onLiveOffSyncChanged: function(event, status){
+				if(this.getConfig("options") && !this.defaultLiveMaxLatencyDurationCount){
+					// Storing the default value as it configured in the defaultConfig for backing to live
+					this.defaultLiveMaxLatencyDurationCount = this.getConfig("options").liveMaxLatencyDurationCount;
+				}
+				if(status){ // going to offSync - liveMaxLatencyDurationCount should be infinity
+					this.hls.config.liveMaxLatencyDurationCount = Hls.DefaultConfig["liveMaxLatencyDurationCount"];
+				} else { // back to live - restore the default as it configured in the defaultConfig
+					this.hls.config.liveMaxLatencyDurationCount = this.defaultLiveMaxLatencyDurationCount;
+				}
+			},
+
 			/**
 			 * Override player method for source switch
 			 * @param source
