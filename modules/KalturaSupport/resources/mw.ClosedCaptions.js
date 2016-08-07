@@ -27,7 +27,8 @@
 			"title": gM( 'mwe-embedplayer-timed_text'),
 			"smartContainer": "qualitySettings",
 			'smartContainerCloseEvent': 'changedClosedCaptions',
-			"forceWebVTT": false // force using webvtt on-the-fly. only for kalturaAPI captions
+			"forceWebVTT": false, // force using webvtt on-the-fly. only for kalturaAPI captions
+			"enableOptionsMenu": true
 		},
 
 		textSources: [],
@@ -46,6 +47,11 @@
 				( this.getConfig( 'hideClosedCaptions') === true )
 			){
 				this.setConfig('displayCaptions', false );
+			}
+
+			if(_this.getConfig("enableOptionsMenu")){
+				this.optionsMenu = new mw.closedCaptions.cvaa(this.getPlayer(), function () {
+				}, "cvaa");
 			}
 
 			if( (this.embedPlayer.isOverlayControls() && !this.embedPlayer.getInterface().find( '.controlBarContainer' ).is( ':hidden' )) || this.embedPlayer.useNativePlayerControls() ){
@@ -219,9 +225,6 @@
 			});
 			this.bind( 'newCaptionsStyles', function (e, stylesObj){
 				_this.customStyle = stylesObj;
-			});
-			this.bind( 'addOptionsToCaptions', function (e, btnOptions){
-				_this.addOptionsButton(btnOptions);
 			});
 		},
 		addTextSource: function(captionData){
@@ -932,6 +935,11 @@
 			}
 
 			this.getPlayer().triggerHelper('captionsMenuEmpty');
+
+			//add styles menu as first button
+			if(this.getConfig('enableOptionsMenu')){
+				_this.addOptionsButton(this.optionsMenu.addOptionsBtn());
+			}
 
 			// Add Off item as first element
 			if( this.getConfig('showOffButton') && this.getConfig('offButtonPosition') == 'first' ) {

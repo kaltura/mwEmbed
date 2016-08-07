@@ -1,15 +1,15 @@
 ( function( mw, $ ) {"use strict";
 
-	mw.PluginManager.add( 'cvaa', mw.KBaseScreen.extend({
+	mw.closedCaptions = mw.closedCaptions || {};
+
+	mw.closedCaptions.cvaa = mw.KBaseScreen.extend({
 
 		defaultConfig: {
 			parent: "topBarContainer",
-			templatePath: '../Cvaa/resources/cvaa.tmpl.html',
+			templatePath: 'components/cvaa/cvaa.tmpl.html',
 			usePreviewPlayer: false,
 			previewPlayerEnabled: false,
-			optionsEvent: "openCvaaOptions",
 			useCookie: true,
-			cvaaBtnPosition: "first",
 			cvaaDefaultSettings: {
 				fontFamily: "Arial, Roboto, Arial Unicode Ms, Helvetica, Verdana, PT Sans Caption, sans-serif",
 				fontColor: "#ffffff",
@@ -129,16 +129,6 @@
 				});
 			});
 
-			if(_this.getConfig('cvaaBtnPosition')=="first"){
-				this.bind('captionsMenuEmpty', function () {
-					_this.addOptionsBtn();
-				});
-			} else if(_this.getConfig('cvaaBtnPosition')=="last"){
-				this.bind('captionsMenuReady', function () {
-					_this.addOptionsBtn();
-				});
-			}
-
 			this.bind('preShowScreen', function (event, screenName) {
 
 				_this.initPreviewUpdate();
@@ -248,16 +238,20 @@
 			}
 		},
 		getValueByProp: function(option, propValue){
-			for(var i=0; i<this.cvaaSettingsObj[option].length; i++){
-				if(this.cvaaSettingsObj[option][i].prop == propValue){
-					return this.cvaaSettingsObj[option][i].value;
+			var cvaaOptions = this.cvaaSettingsObj[option];
+
+			for(var i=0; i<cvaaOptions.length; i++){
+				if(cvaaOptions[i].prop == propValue){
+					return cvaaOptions[i].value;
 				}
 			}
 		},
 		getPropByValue: function(option,value){
-			for(var i=0; i<this.cvaaSettingsObj[option].length; i++){
-				if(this.cvaaSettingsObj[option][i].value == value){
-					return this.cvaaSettingsObj[option][i].prop;
+			var cvaaOptions = this.cvaaSettingsObj[option];
+
+			for(var i=0; i<cvaaOptions.length; i++){
+				if(cvaaOptions[i].value == value){
+					return cvaaOptions[i].prop;
 				}
 			}
 		},
@@ -398,16 +392,17 @@
 				(  fontsize > 24 ) ? emFontMap[24] + 'em' : emFontMap[6];
 		},
 		saveCvaaSettings: function(){
-			$.cookie('cvaaSavedSettings', JSON.stringify(this.cvaaSavedSettings), {
+			this.getPlayer().setCookie( 'cvaaSavedSettings' ,JSON.stringify(this.cvaaSavedSettings) , {
 				expires : 356,
 				path : '/',
 				domain : ''
 			});
+
 			this.getPlayer().triggerHelper("newCaptionsStyles", this.cvaaSentSettings);
 			this.hideScreen();
 		},
 		resetCvaaSettings: function(){
-			$.cookie('cvaaSavedSettings', null, {
+			this.getPlayer().setCookie( 'cvaaSavedSettings' ,null , {
 				expires : -1,
 				path : '/',
 				domain : ''
@@ -437,10 +432,10 @@
 			$("#kFontSizeVal").val(this.currentFontSize);
 		},
 		addOptionsBtn: function(){
-			this.getPlayer().triggerHelper("addOptionsToCaptions",{
+			return {
 				"optionsLabel": this.locale.optionsBtnLabel,
-				"optionsEvent": this.getConfig('optionsEvent')
-			});
+				"optionsEvent": "openCvaaOptions"
+			}
 		},
 		getTemplateData: function () {
 			return {
@@ -451,6 +446,6 @@
 		isSafeEnviornment: function() {
 			!mw.isIphone();
 		}
-	}));
+	});
 
 } )( window.mw, window.jQuery );
