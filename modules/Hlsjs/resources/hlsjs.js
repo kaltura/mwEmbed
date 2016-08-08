@@ -27,7 +27,7 @@
 				options: {
 					//debug:true
 					liveSyncDurationCount : 3,
-					liveMaxLatencyDurationCount: 6
+					liveMaxLatencyDurationCount : 6
 				},
 				hlsLogs: false
 			},
@@ -71,6 +71,7 @@
 				this.bind("onSelectSource", this.checkIfHLSNeeded.bind(this));
 				this.bind("playerReady", this.initHls.bind(this));
 				this.bind("onChangeMedia", this.clean.bind(this));
+				this.bind("onLiveOffSynchChanged", this.onLiveOffSyncChanged.bind(this));
 				if( mw.getConfig("hlsLogs") ) {
 					this.bind("monitorEvent", this.monitorDebugInfo.bind(this));
 				}
@@ -286,7 +287,7 @@
 			onLevelSwitch: function (event, data) {
 				//Set and report bitrate change
 				var source = this.hls.levels[data.level];
-				var currentBitrate = source.bitrate/ 1024
+				var currentBitrate = source.bitrate/ 1024;
 				this.getPlayer().currentBitrate = currentBitrate;
 				this.getPlayer().triggerHelper('bitrateChange', currentBitrate);
 				//Notify sourceSwitchingStarted
@@ -311,7 +312,7 @@
 				if (this.isLevelSwitching &&
 					(data && data.frag && (this.levelIndex == data.frag.level))) {
 					this.isLevelSwitching = false;
-					this.getPlayer().triggerHelper("sourceSwitchingEnd");
+					this.getPlayer().triggerHelper("sourceSwitchingEnd" , this.getPlayer().currentBitrate);
 				}
 				this.getPlayer().triggerHelper('hlsFragChanged', data.frag);
 				//mw.log("hlsjs :: onFragChanged | startPTS = " + mw.seconds2npt(data.frag.startPTS) + " >> endPTS = " + mw.seconds2npt(data.frag.endPTS) + " | url = " + data.frag.url);
@@ -446,6 +447,19 @@
 					_this.embedPlayer.goingBackToLive = false;
 				}, 1000);
 			},
+
+			onLiveOffSyncChanged: function(event, status){
+				if(this.getConfig("options") && !this.defaultLiveMaxLatencyDurationCount){
+					// Storing the default value as it configured in the defaultConfig for backing to live
+					this.defaultLiveMaxLatencyDurationCount = this.getConfig("options").liveMaxLatencyDurationCount;
+				}
+				if(status){ // going to offSync - liveMaxLatencyDurationCount should be infinity
+					this.hls.config.liveMaxLatencyDurationCount = Hls.DefaultConfig["liveMaxLatencyDurationCount"];
+				} else { // back to live - restore the default as it configured in the defaultConfig
+					this.hls.config.liveMaxLatencyDurationCount = this.defaultLiveMaxLatencyDurationCount;
+				}
+			},
+
 			/**
 			 * Override player method for source switch
 			 * @param source

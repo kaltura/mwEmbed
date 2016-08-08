@@ -1,0 +1,299 @@
+(function (mw, $, shaka) {
+	"use strict";
+	if (!window.Promise) {
+		shaka.polyfill.installAll();
+	}
+	if (shaka.Player.isBrowserSupported() && !mw.isDesktopSafari()) {
+		$(mw).bind('EmbedPlayerUpdateMediaPlayers', function (event, mediaPlayers) {
+			mw.log("Dash::Register shaka player for application/dash+xml mime type");
+			var shakaPlayer = new mw.MediaPlayer('shakaPlayer', ['application/dash+xml'], 'Native');
+			mediaPlayers.addPlayer(shakaPlayer);
+			mw.EmbedTypes.mediaPlayers.setMIMETypePlayers('application/dash+xml', 'Native');
+		});
+		var dash = mw.KBasePlugin.extend({
+
+			/** type {boolean} */
+			loaded: false,
+
+			/**
+			 * Check is shaka is supported
+			 * @returns {boolean}
+			 */
+			isSafeEnviornment: function () {
+				return shaka.Player.isBrowserSupported();
+			},
+			/**
+			 * Setup the shaka playback engine wrapper with supplied config options
+			 */
+			setup: function () {
+				this.addBindings();
+			},
+			/**
+			 *
+			 */
+			addBindings: function () {
+				this.bind("playerReady", this.initShaka.bind(this));
+				this.bind("switchAudioTrack", this.onSwitchAudioTrack.bind(this));
+				this.bind("selectClosedCaptions", this.onSwitchTextTrack.bind(this));
+				this.bind("onChangeMedia", this.clean.bind(this));
+			},
+
+			/**
+			 * Register the playback events and attach the playback engine to the video element
+			 */
+			initShaka: function () {
+				if (!this.loaded) {
+					this.log("Init shaka");
+					var _this = this;
+					//Disable update of video source tag, MSE uses blob urls!
+					this.getPlayer().skipUpdateSource = true;
+					this.overridePlayerMethods();
+
+					//Set streamerType to dash
+					this.embedPlayer.streamerType = 'dash';
+
+					this.setEmbedPlayerConfig(this.getPlayer());
+
+					// Create a Player instance.
+					var player = new shaka.Player(this.getPlayer().getPlayerElement());
+
+					player.configure(this.getConfig("shakaConfig"));
+
+					// Attach player to the window to make it easy to access in the JS console.
+					window.player = player;
+
+					// Listen for error events.
+					player.addEventListener('error', this.onErrorEvent.bind(this));
+
+					var selectedSource = this.getPlayer().getSrc();
+
+					this.bind("firstPlay", function () {
+						_this.getPlayer().resolveSrcURL(selectedSource)
+							.done(function (manifestSrc) {  // success
+								selectedSource = manifestSrc;
+							})
+							.always(function () {  // both success or error
+									//// Try to load a manifest.
+									player.load(selectedSource).then(function () {
+										// This runs if the asynchronous load is successful.
+										_this.log('The video has now been loaded!');
+										_this.addTracks();
+									}).catch(_this.onError.bind(_this));  // onError is executed if the asynchronous load fails.
+								}
+							);
+					}.bind(this));
+				}
+			},
+
+			setEmbedPlayerConfig: function (embedPlayer) {
+				//Get user configuration
+				var userConfig = embedPlayer.getKalturaConfig("dash");
+				//Get default config
+				var dashConfig = this.getDefaultDashConfig();
+				//Deep extend custom config
+				$.extend(true, dashConfig, userConfig);
+				embedPlayer.setKalturaConfig("dash", dashConfig);
+			},
+
+			getDefaultDashConfig: function () {
+				var drmConfig = this.getDrmConfig();
+				var defaultConfig = {
+					shakaConfig: {
+						drm: {
+							servers: {
+								'com.widevine.alpha': drmConfig.licenseBaseUrl + "/cenc/widevine/license?" + drmConfig.licenseData,
+								'com.microsoft.playready': drmConfig.licenseBaseUrl + "/cenc/playready/license?" + drmConfig.licenseData
+							}
+						}
+					}
+				};
+				return defaultConfig;
+			},
+
+			getDrmConfig: function () {
+				var licenseBaseUrl = mw.getConfig('Kaltura.UdrmServerURL');
+				if (!licenseBaseUrl) {
+					this.log('Error:: failed to retrieve UDRM license URL ');
+				}
+
+				var licenseData = this.getPlayer().mediaElement.getLicenseUriComponent();
+				var drmConfig = {
+					licenseBaseUrl: licenseBaseUrl,
+					licenseData: licenseData
+				};
+				return drmConfig;
+			},
+
+			addTracks: function () {
+				this.addAbrFlavors();
+				this.addAudioTracks();
+				this.addSubtitleTracks();
+				if (mw.isEdge() || mw.isIE()) {
+					// Shaka handles the tracks by itself,
+					// so the native player doesn't need to handle them on 'firstPlay'
+					this.getPlayer().unbindHelper('firstPlay');
+				}
+			},
+
+			getTracksByType: function (trackType) {
+				var tracks = player.getTracks().filter(function (track) {
+					return track.type == trackType;
+				});
+				return tracks;
+			},
+
+			addAbrFlavors: function () {
+				var videoTracks = this.getTracksByType("video");
+				if (videoTracks && videoTracks.length > 0) {
+					var flavors = videoTracks.map(function (rep) {
+						var sourceAspect = Math.round(( rep.width / rep.height ) * 100) / 100;
+						// Setup a source object:
+						return {
+							'data-bandwidth': rep.bandwidth,
+							'data-width': rep.width,
+							'data-height': rep.height,
+							'data-aspect': sourceAspect,
+							'type': 'video/mp4',
+							'data-assetid': rep.id
+						};
+					});
+					mw.log("Dash::" + videoTracks.length + " ABR flavors were found: ", videoTracks);
+					this.getPlayer().onFlavorsListChanged(flavors);
+				}
+			},
+
+			addAudioTracks: function () {
+				var audioTracks = this.getTracksByType("audio");
+				if (audioTracks && audioTracks.length > 0) {
+					var audioTrackData = {languages: []};
+					$.each(audioTracks, function (index, audioTrack) {
+						audioTrackData.languages.push({
+							'kind': 'audioTrack',
+							'language': audioTrack.language,
+							'srclang': audioTrack.language,
+							'label': audioTrack.language,
+							'title': audioTrack.language,
+							'id': audioTrack.id,
+							'index': audioTrackData.languages.length
+						});
+					});
+					mw.log("Dash::" + audioTracks.length + " audio tracks were found: ", audioTracks);
+					this.onAudioTracksReceived(audioTrackData);
+				}
+			},
+
+			addSubtitleTracks: function () {
+				var textTracks = this.getTracksByType("text");
+				if (textTracks && textTracks.length > 0) {
+					window.VTTCue = this.getPlayer().getOriginalVTTCue();
+					var textTrackData = {languages: []};
+					$.each(textTracks, function (index, subtitleTrack) {
+						textTrackData.languages.push({
+							'kind': 'subtitle',
+							'language': subtitleTrack.language,
+							'srclang': subtitleTrack.language,
+							'label': subtitleTrack.language,
+							'title': subtitleTrack.language,
+							'id': subtitleTrack.id,
+							'index': textTrackData.languages.length
+						});
+					});
+					mw.log("Dash::" + textTracks.length + " text tracks were found: ", textTracks);
+					this.onTextTracksReceived(textTrackData);
+				}
+			},
+
+			onAudioTracksReceived: function (data) {
+				this.getPlayer().triggerHelper('audioTracksReceived', data);
+			},
+
+			onTextTracksReceived: function (data) {
+				this.getPlayer().triggerHelper('textTracksReceived', data);
+			},
+
+			/**
+			 * Override player method for source switch
+			 * @param source
+			 */
+			switchSrc: function (source) {
+				if (source !== -1) {
+					var selectedAbrTrack = this.getTracksByType("video").filter(function (abrTrack) {
+						return abrTrack.id === source.getAssetId();
+					})[0];
+					if (selectedAbrTrack) {
+						player.selectTrack(selectedAbrTrack, true);
+						this.getPlayer().triggerHelper('bitrateChange', source.getBitrate());
+						mw.log("switchSrc to ", selectedAbrTrack);
+					}
+				} else { // "Auto" option is selected
+					player.configure({
+						abr: {
+							enabled: true
+						}
+					});
+					this.log("switchSrc to Auto");
+				}
+			},
+
+			onSwitchAudioTrack: function (event, data) {
+				var selectedAudioTracks = this.getTracksByType("audio")[data.index];
+				player.configure({
+					preferredAudioLanguage: selectedAudioTracks.language
+				});
+				mw.log("onSwitchAudioTrack switch to ", selectedAudioTracks);
+			},
+
+			onSwitchTextTrack: function (event, data) {
+				if (data === "Off") {
+					player.setTextTrackVisibility(false);
+					this.log("onSwitchTextTrack disable subtitles");
+				} else {
+					player.configure({
+						preferredTextLanguage: data
+					});
+					this.log("onSwitchTextTrack switch to " + data);
+				}
+			},
+
+			onErrorEvent: function (event) {
+				// Extract the shaka.util.Error object from the event.
+				this.onError(event.detail);
+			},
+
+			/**
+			 * Error handler
+			 * @param event
+			 * @param data
+			 */
+			onError: function (event, data) {
+				var errorData = data ? data.type + ", " + data.details : event;
+				this.log("Error: " + errorData);
+			},
+
+			/**
+			 * Clean method
+			 */
+			clean: function () {
+				this.log("Clean");
+				this.restorePlayerMethods();
+			},
+
+			/**
+			 * Enable override player methods for HLS playback
+			 */
+			overridePlayerMethods: function () {
+				this.orig_switchSrc = this.getPlayer().switchSrc;
+				this.getPlayer().switchSrc = this.switchSrc.bind(this);
+			},
+			/**
+			 * Disable override player methods for HLS playback
+			 */
+			restorePlayerMethods: function () {
+				this.getPlayer().switchSrc = this.orig_switchSrc;
+			}
+
+		});
+
+		mw.PluginManager.add('Dash', dash);
+	}
+})(window.mw, window.jQuery, window.shaka);
