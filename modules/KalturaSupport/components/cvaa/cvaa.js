@@ -241,7 +241,7 @@
 			var cvaaOptions = this.cvaaSettingsObj[option];
 
 			for(var i=0; i<cvaaOptions.length; i++){
-				if(cvaaOptions[i].prop == propValue){
+				if(cvaaOptions && cvaaOptions[i].prop == propValue){
 					return cvaaOptions[i].value;
 				}
 			}
@@ -250,7 +250,7 @@
 			var cvaaOptions = this.cvaaSettingsObj[option];
 
 			for(var i=0; i<cvaaOptions.length; i++){
-				if(cvaaOptions[i].value == value){
+				if(cvaaOptions && cvaaOptions[i].value == value){
 					return cvaaOptions[i].prop;
 				}
 			}
