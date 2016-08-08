@@ -46,6 +46,11 @@
                 "initvalue": true,
                 "type": "boolean"
             },
+            "enableOptionsMenu": {
+                "doc": "Should captions styling menu be enabled.",
+                "initvalue": true,
+                "type": "boolean"
+            },
             "useCookie": {
                 "doc": "Should cookies be used to store user language.",
                 "type": "boolean"

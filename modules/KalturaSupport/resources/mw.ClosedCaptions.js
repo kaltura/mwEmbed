@@ -28,6 +28,7 @@
 			"smartContainer": "qualitySettings",
 			'smartContainerCloseEvent': 'changedClosedCaptions',
 			"forceWebVTT": false, // force using webvtt on-the-fly. only for kalturaAPI captions
+			"enableOptionsMenu": true,
 			"sortCaptionsAlphabetically": false
 		},
 
@@ -47,6 +48,11 @@
 				( this.getConfig( 'hideClosedCaptions') === true )
 			){
 				this.setConfig('displayCaptions', false );
+			}
+
+			if(_this.getConfig("enableOptionsMenu")){
+				this.optionsMenu = new mw.closedCaptions.cvaa(this.getPlayer(), function () {
+				}, "cvaa");
 			}
 
 			if( (this.embedPlayer.isOverlayControls() && !this.embedPlayer.getInterface().find( '.controlBarContainer' ).is( ':hidden' )) || this.embedPlayer.useNativePlayerControls() ){
@@ -217,6 +223,9 @@
 			});
 			this.bind( 'onDisableInterfaceComponents', function(e, arg ){
 				_this.getMenu().close();
+			});
+			this.bind( 'newCaptionsStyles', function (e, stylesObj){
+				_this.customStyle = stylesObj;
 			});
 		},
 		addTextSource: function(captionData){
@@ -638,6 +647,7 @@
 				.html($(caption.content)
 					.addClass('caption')
 					.css('pointer-events', 'auto')
+					.css("background-color", (this.customStyle && this.customStyle.windowColor) ? this.customStyle.windowColor : "none")
 				);
 
 			this.displayTextTarget($textTarget);
@@ -661,10 +671,16 @@
 				.attr('data-capId', capId)
 				.hide();
 
+			var $windowTarget = $('<div />')
+				.css("background-color", (this.customStyle && this.customStyle.windowColor) ? this.customStyle.windowColor : "none")
+				.addClass('trackWindow');
+
 			// Update text ( use "html" instead of "text" so that subtitle format can
 			// include html formating
 			// TOOD we should scrub this for non-formating html
+
 			$textTarget.append(
+				$windowTarget.append(
 				$('<span />')
 					.addClass('ttmlStyled')
 					.css('pointer-events', 'auto')
@@ -676,6 +692,7 @@
 							.css('position', 'relative')
 							.html(caption.content)
 					)
+				)
 			);
 
 			// Add/update the lang option
@@ -834,31 +851,41 @@
 		getCaptionCss: function() {
 			var style = {'display': 'inline'};
 
-			if( this.getConfig( 'bg' ) ) {
-				style[ "background-color" ] = mw.getHexColor( this.getConfig( 'bg' ) );
-			}
-			if( this.getConfig( 'fontColor' ) ) {
-				style[ "color" ] = mw.getHexColor( this.getConfig( 'fontColor' ) );
-			}
-			if( this.getConfig( 'fontFamily' ) ) {
-				style[ "font-family" ] = this.getConfig( 'fontFamily' );
-			}
-			if( this.getConfig( 'fontsize' ) ) {
-				// Translate to em size so that font-size parent percentage
-				// base on http://pxtoem.com/
-				var emFontMap = { '6': .5, '7': .583, '8': .666, '9': .75, '10': .833, '11': .916,
+			if(!this.customStyle) {
+				if (this.getConfig('bg')) {
+					style["background-color"] = mw.getHexColor(this.getConfig('bg'));
+				}
+				if (this.getConfig('fontColor')) {
+					style["color"] = mw.getHexColor(this.getConfig('fontColor'));
+				}
+				if (this.getConfig('fontFamily')) {
+					style["font-family"] = this.getConfig('fontFamily');
+				}
+				if (this.getConfig('fontsize')) {
+					// Translate to em size so that font-size parent percentage
+					// base on http://pxtoem.com/
+					var emFontMap = {
+						'6': .5, '7': .583, '8': .666, '9': .75, '10': .833, '11': .916,
 						'12': 1, '13': 1.083, '14': 1.166, '15': 1.25, '16': 1.333, '17': 1.416, '18': 1.5, '19': 1.583,
-						'20': 1.666, '21': 1.75, '22': 1.833, '23': 1.916, '24': 2 };
-				// Make sure its an int:
-				var fontsize = parseInt( this.getConfig( 'fontsize' ) );
-				style[ "font-size" ] = ( emFontMap[ fontsize ] ) ?
-						emFontMap[ fontsize ] +'em' :
-						(  fontsize > 24 )?  emFontMap[ 24 ]+'em' : emFontMap[ 6 ];
-			}
-			if( this.getConfig( 'useGlow' ) && this.getConfig( 'glowBlur' ) && this.getConfig( 'glowColor' ) ) {
-				var hShadow = this.getConfig( 'hShadow' ) ? this.getConfig( 'hShadow' ) : 0;
-				var vShadow = this.getConfig( 'vShadow' ) ? this.getConfig( 'vShadow' ) : 0;
-				style[ "text-shadow" ] = hShadow + 'px ' + vShadow + 'px ' + this.getConfig( 'glowBlur' ) + 'px ' + mw.getHexColor( this.getConfig( 'glowColor' ) );
+						'20': 1.666, '21': 1.75, '22': 1.833, '23': 1.916, '24': 2
+					};
+					// Make sure its an int:
+					var fontsize = parseInt(this.getConfig('fontsize'));
+					style["font-size"] = ( emFontMap[fontsize] ) ?
+					emFontMap[fontsize] + 'em' :
+						(  fontsize > 24 ) ? emFontMap[24] + 'em' : emFontMap[6];
+				}
+				if (this.getConfig('useGlow') && this.getConfig('glowBlur') && this.getConfig('glowColor')) {
+					var hShadow = this.getConfig('hShadow') ? this.getConfig('hShadow') : 0;
+					var vShadow = this.getConfig('vShadow') ? this.getConfig('vShadow') : 0;
+					style["text-shadow"] = hShadow + 'px ' + vShadow + 'px ' + this.getConfig('glowBlur') + 'px ' + mw.getHexColor(this.getConfig('glowColor'));
+				}
+			} else {
+				style["font-family"] = this.customStyle.fontFamily;
+				style["color"] = this.customStyle.fontColor;
+				style["font-size"] = this.customStyle.fontSize;
+				style["background-color"] = this.customStyle.backgroundColor;
+				style["text-shadow"] = this.customStyle.edgeStyle;
 			}
 			return style;
 		},
@@ -918,6 +945,13 @@
 				this.embedPlayer.triggerHelper("updateComponentsVisibilityDone");
 				// show new timed captions text if exists
 				this.showCaptions();
+			}
+
+			this.getPlayer().triggerHelper('captionsMenuEmpty');
+
+			//add styles menu as first button
+			if(this.getConfig('enableOptionsMenu')){
+				_this.addOptionsButton(this.optionsMenu.addOptionsBtn());
 			}
 
 			// Add Off item as first element
@@ -981,6 +1015,19 @@
 					_this.getPlayer().setCookie( _this.cookieName, 'None' );
 				},
 				'active': ! _this.getConfig( "displayCaptions" ) 
+			});
+		},
+		addOptionsButton: function(btnOptions) {
+			var _this = this;
+			this.getMenu().addItem({
+				'label': btnOptions.optionsLabel,
+				'attributes': {
+					'class': "cvaaOptions"
+				},
+				'callback': function(){
+					_this.getPlayer().triggerHelper(btnOptions.optionsEvent);
+				},
+				'active': false
 			});
 		},
 		setTextSource: function( source, setCookie ){
