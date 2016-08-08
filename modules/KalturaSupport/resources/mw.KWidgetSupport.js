@@ -1664,9 +1664,11 @@ mw.KWidgetSupport.prototype = {
 				} else if (lowResolutionDevice){
 					//iPhone
 					targetFlavors = iphoneAdaptiveFlavors;
-				} else {
+				} else if (mw.isMobileDevice() || dashAdaptiveFlavors.length == 0){
 					//iPad
 					targetFlavors = ipadAdaptiveFlavors;
+				}  else {
+					targetFlavors = dashAdaptiveFlavors;
 				}
 				var assetId = targetFlavors[0];
 

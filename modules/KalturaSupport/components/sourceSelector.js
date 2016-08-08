@@ -272,7 +272,10 @@
                     return true;
                 }
                 this.addAutoToMenu();
-                return false;
+	            if ( this.getPlayer().streamerType == "hls" ) {
+		            return true;
+	            }
+	            return false;
             }
 
 			if ( this.getPlayer().streamerType == "http" && mw.isDesktopSafari() ){

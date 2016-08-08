@@ -287,7 +287,7 @@
 			onLevelSwitch: function (event, data) {
 				//Set and report bitrate change
 				var source = this.hls.levels[data.level];
-				var currentBitrate = source.bitrate/ 1024
+				var currentBitrate = source.bitrate/ 1024;
 				this.getPlayer().currentBitrate = currentBitrate;
 				this.getPlayer().triggerHelper('bitrateChange', currentBitrate);
 				//Notify sourceSwitchingStarted
@@ -312,7 +312,7 @@
 				if (this.isLevelSwitching &&
 					(data && data.frag && (this.levelIndex == data.frag.level))) {
 					this.isLevelSwitching = false;
-					this.getPlayer().triggerHelper("sourceSwitchingEnd");
+					this.getPlayer().triggerHelper("sourceSwitchingEnd" , this.getPlayer().currentBitrate);
 				}
 				this.getPlayer().triggerHelper('hlsFragChanged', data.frag);
 				//mw.log("hlsjs :: onFragChanged | startPTS = " + mw.seconds2npt(data.frag.startPTS) + " >> endPTS = " + mw.seconds2npt(data.frag.endPTS) + " | url = " + data.frag.url);
