@@ -3109,6 +3109,9 @@
 			if (this.kalturaPlayerMetaData && this.kalturaPlayerMetaData[ 'dvrStatus' ]) {
 				return this.kalturaPlayerMetaData[ 'dvrStatus' ];
 			}
+			if (mw.getConfig("forceDVR")){
+				return true;
+			}
 
 			return false;
 
