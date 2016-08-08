@@ -9,9 +9,54 @@
 	<script>mw.setConfig('forceMobileHTML5', true);</script>
 </head>
 <body>
-	<h1>Cvaa Demo</h1>
+	<h1>Captions styles menu</h1>
 	<div id="kaltura_player" style="width: 660px; height: 460px;float: left;"></div>
 	<br style="clear: both;" /><br />
+	<h1> Caption Styles Api </h1>
+<pre>
+<h3>It is possible to update styles via API call, using the following object format:</h3>
+ kWidget.addReadyCallback( function( playerId ){
+    var kdp = document.getElementById( playerId );
+     kaltura_player.sendNotification("newCaptionsStyles",
+       {
+           "fontFamily": "Courier New, Courier, Nimbus Mono L, Cutive Mono, monospace",
+           "fontColor": "rgb(123, 33, 111, 0.8)",
+           "fontSize": "3em",
+           "backgroundColor": "rgba(1, 1, 1, 0.5)",
+           "windowColor": "rgba(255, 255, 0, 0.8)",
+           "charEdgeStyle": "rgb(34, 34, 34) 2px 2px 3px, rgb(34, 34, 34) 2px 2px 4px, rgb(34, 34, 34) 2px 2px 5px"
+       }
+     );
+ });
+
+<h3>Additionally you can set up the default styles settings, using "cvaaDefaultSettings" flashvar:</h3>
+        'flashvars': {
+            'cvaa':{
+                'cvaaDefaultSettings': {
+                     'fontFamily': "Arial, Roboto, Arial Unicode Ms, Helvetica, Verdana, PT Sans Caption, sans-serif",
+                     'fontColor': "#ffffff",
+                     'fontOpacity': 100,
+                     'fontSize': 12,
+                     'backgroundColor': "#000000",
+                     'backgroundOpacity': 75,
+                     'windowColor': "#ffffff",
+                     'windowOpacity': 0,
+                     'edgeStyle': "none"
+                 }
+             }
+         }
+
+<b>NOTE:</b>The caption menu style settings are saved using cookies per page, you can disable cookies,
+However upon page refresh the settings will not be saved and the default will be used.
+To disable cookie for the plugin set the following flashvar to false:
+
+        'flashvars': {
+            'cvaa':{
+                'useCookie': false
+             }
+         }
+</pre>
+
 <script>
 	kWidget.featureConfig({
 		'targetId': 'kaltura_player',
@@ -26,60 +71,7 @@
 			'cvaa':{
 				'useCookie': true
 			}
-//			'disableTrackElement': false,
-//			"closedCaptions": {
-//				"useExternalClosedCaptions":true,
-//				"layout": "ontop",
-//				"displayCaptions": true,
-//				"fontFamily": "Arial",
-//				"fontsize": 12,
-//				"fontColor": "#000000",
-//				"bg": "#ffffff",
-//				"useGlow": false,
-//				"glowBlur": 0,
-//				"glowColor": "#ffffff",
-//				"showEmbeddedCaptions": false,
-//				"plugin": true
-//			},
 		}
-//		readyCallback: function(videoid){
-//			var kdp = document.getElementById(videoid);
-//			kdp.kBind( 'playerReady', function () {
-//				kdp.sendNotification("loadExternalClosedCaptions", {
-//					languages: [{
-//						"language": "English",
-//						"languageCode": "en",
-//						"isDefault": true,
-//						"label": "English",
-//						"type": "vtt",
-//						"src": "http://externaltests.dev.kaltura.com/player/resources/captions/texttags.vtt",
-//						"fileExt": "vtt",
-//						"nodeName": "track"
-//					},
-//						{
-//							"language": "French",
-//							"languageCode": "fr",
-//							"isDefault": false,
-//							"label": "French",
-//							"type": "vtt",
-//							"src": "http://externaltests.dev.kaltura.com/player/resources/captions/french.vtt",
-//							"fileExt": "vtt",
-//							"nodeName": "track"
-//						},
-//						{
-//							"language": "Hebrew",
-//							"languageCode": "he",
-//							"isDefault": false,
-//							"label": "Hebrew",
-//							"type": "vtt",
-//							"src": "http://externaltests.dev.kaltura.com/player/resources/captions/hebrew.vtt",
-//							"fileExt": "vtt",
-//							"nodeName": "track"
-//						}
-//					]
-//				});
-//			});
-//		}
 	});
 </script>
 </body>
