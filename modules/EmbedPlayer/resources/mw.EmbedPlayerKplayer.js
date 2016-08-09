@@ -786,13 +786,10 @@
 		},
 
 		onBufferChange: function (buffering) {
-			//vod buffer is already being monitored by EmbedPlayer.js
-			if (this.isLive()) {
-				if (buffering) {
-					this.bufferStart();
-				} else {
-					this.bufferEnd();
-				}
+			if (buffering) {
+				this.bufferStart();
+			} else {
+				this.bufferEnd();
 			}
 		},
 
@@ -1050,7 +1047,12 @@
 		},
         getCurrentBufferLength: function(){
             return parseInt(this.playerObject.getCurrentBufferLength()); //return buffer length in seconds
-        }
+        },
+
+		bufferHandling: function(){
+			// Nothing here, only overwrite the super bufferHandling method.
+			// The buffer handling here made by Flash itself, by listening to "bufferChange" event.
+		}
 	};
 
 })(mediaWiki, jQuery);
