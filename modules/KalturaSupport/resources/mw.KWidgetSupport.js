@@ -174,32 +174,33 @@ mw.KWidgetSupport.prototype = {
 		});
 
 		// Example how to override embedPlayerError handler
-
-		embedPlayer.shouldHandlePlayerError = false;
-		embedPlayer.bindHelper( 'embedPlayerError' , function ( event , data , doneCallback ) {
-			var displayedAcError = false;
-			// check for AC error:
-			if ( mw.getConfig("manualProvider") ) {
-				embedPlayer.shouldHandlePlayerError = true;
-				embedPlayer.handlePlayerError(data);
-				return;
-			}
-			_this.getEntryIdSourcesFromApi( embedPlayer , embedPlayer.kentryid , function ( sources ) {
-				// no sources, or access control error.
-				if ( !sources || sources.message ) {
-					embedPlayer.showErrorMsg( sources );
-					displayedAcError = true;
-					doneCallback();
-				}
-			} );
-			// give the above access control message 3 seconds to resolve; else show default network error
-			setTimeout( function () {
-				if ( displayedAcError ) {
+		if (!this.isEmbedServicesEnabled(kalturaIframePackageData.entryResult)){
+			embedPlayer.shouldHandlePlayerError = false;
+			embedPlayer.bindHelper( 'embedPlayerError' , function ( event , data , doneCallback ) {
+				var displayedAcError = false;
+				// check for AC error:
+				if ( mw.getConfig( "manualProvider" ) ) {
+					embedPlayer.shouldHandlePlayerError = true;
+					embedPlayer.handlePlayerError( data );
 					return;
 				}
-				embedPlayer.handlePlayerError( data , true );
-			} , 3000 );
-		} );
+				_this.getEntryIdSourcesFromApi( embedPlayer , embedPlayer.kentryid , function ( sources ) {
+					// no sources, or access control error.
+					if ( !sources || sources.message ) {
+						embedPlayer.showErrorMsg( sources );
+						displayedAcError = true;
+						doneCallback();
+					}
+				} );
+				// give the above access control message 3 seconds to resolve; else show default network error
+				setTimeout( function () {
+					if ( displayedAcError ) {
+						return;
+					}
+					embedPlayer.handlePlayerError( data , true );
+				} , 3000 );
+			} );
+		}
 
 		// Support mediaPlayFrom, mediaPlayTo properties
 		embedPlayer.bindHelper( 'Kaltura_SetKDPAttribute', function(e, componentName, property, value){
