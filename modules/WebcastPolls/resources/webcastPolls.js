@@ -12,6 +12,7 @@
         cuePointsManager: null, // manages all the cue points tracking (cue point reached of poll results, poll states etc).
         kalturaProxy: null, // manages the communication with the Kaltura api (invoke a vote, extract poll data).
         userProfile: null, // manages active user profile
+        configuration: {}, // ## Should remain empty (filled by 'resetPersistData')
         userVote: {}, // ## Should remain empty (filled by 'resetPersistData')
         pollData: {}, // ## Should remain empty (filled by 'resetPersistData')
         /* stores all the information that doesn't relate directly to the poll currently selected */
@@ -28,7 +29,7 @@
         {
             var _this = this;
             _this.log('resetting current poll information');
-
+            _this.configuration = {currentView: 'sharedView'};
             _this.userVote = {metadataId: null, answer: null, inProgress: false, canUserVote: false, isReady: false};
             _this.pollData = {
                 showAnswers :false,
@@ -529,6 +530,15 @@
         {
             var _this = this;
             return this.embedPlayer.isLive() && _this.pollData.pollId && _this.globals.votingProfileId && !_this.userVote.inProgress && _this.userVote.canUserVote && _this.userVote.isReady;
+        },
+        /**
+         * returns current poll view configuration
+         * @returns {string}
+         */
+        getViewConfig: function ()
+        {
+            var _this = this;
+            return _this.configuration.currentView;
         },
         /**
          * handle answer clicked by user

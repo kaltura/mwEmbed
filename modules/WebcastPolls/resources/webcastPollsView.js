@@ -160,7 +160,7 @@
             }
 
             if (_this.$webcastPoll) {
-                var $totalsContainer = _this.$webcastPoll.find("[name='totals']");
+                var $totalsContainer = _this.$webcastPoll.find("[name='respondsWidget']");
 
                 if ($totalsContainer) {
                     var pollResults = _this.parent.pollData.pollResults;
@@ -230,6 +230,16 @@
                 }
             }
         },
+        syncDOMViewState: function () {
+            var _this = this;
+            if (_this.$webcastPoll) {
+                if (_this.parent.getViewConfig() === 'producerOnly') {
+                    _this.$webcastPoll.addClass('producer-view');
+                } else {
+                    _this.$webcastPoll.removeClass('producer-view');
+                }
+            }
+        },
         syncDOMUserVoting: function () {
             var _this = this;
             if (_this.$webcastPoll) {
@@ -273,8 +283,9 @@
                 if (answerContent) {
                     _this.$webcastPoll.find('[name="answer' + answerIndex + '"]').text(answerContent).closest('.answer').show();
                 } else {
-                    _this.$webcastPoll.find('[name="answer' + answerIndex + '"]').closest('.answer').hide();
-                }
+                    _this.$webcastPoll.find('[name="answer' + answerIndex + '"]').closest('.answers-widget-row').hide();
+                    //supporting large layout
+                    _this.$webcastPoll.find('[name="answer' + answerIndex + '"]').closest('.answer').hide();                }
             }
 
             if (_this.parent.pollData.pollId) {
@@ -313,7 +324,8 @@
                         _this.$webcastPoll.find('[name="question"],[name="answer1"],[name="answer2"],[name="answer3"],[name="answer4"],[name="answer5"]').text('');
                         _this.showPollDOMLoader();
                     }
-
+                    
+                    _this.syncDOMViewState();
                     _this.syncDOMPollResults();
                     _this.syncDOMUserVoting();
                 }
