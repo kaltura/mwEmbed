@@ -8,10 +8,10 @@ General
     height: 100%;
     top: 0;
     left: 0;
-    z-index: 4;
+    z-index: 4; /* Player view only */
     box-sizing: border-box;
     padding: 1em;
-    background-color:rgba(0,0,0,0.6);
+    background-color:rgba(0,0,0,0.6); /* Player view only */
     font-family: 'Lato', 'Helvetica', 'Arial';
 }
 
@@ -43,8 +43,7 @@ Poll (shared)
 *****************************/
 .webcastPolls .poll  {
     display:none;
-    margin:auto;
-
+    margin:auto; /* Player view only */
 }
 
 /**** question elements ****/
@@ -92,6 +91,13 @@ Poll (shared)
     letter-spacing: 1px;
 }
 
+.webcastPolls .poll-container .question-stats {
+    font-size: 32px;
+    height: 32px;
+    width: 32px;
+    color: #7ed321;
+}
+
 /**** respond elements ****/
 .webcastPolls .poll .responds {
     font-size:13px;
@@ -131,8 +137,30 @@ Poll (shared)
     -moz-transition:  width 1s, height 1s, top 1s, left 1s, margin 1s, background 1s, border 1s;
     -o-transition:  width 1s, height 1s, top 1s, left 1s, margin 1s, background 1s, border 1s;
     transition: width 1s, height 1s, top 1s, left 1s, margin 1s, background 1s, border 1s;
-
 }
+
+.webcastPolls.producer-view .poll .answer {
+    width: 73%;
+    float: left;
+}
+
+
+.webcastPolls .poll .answers-widget .answers-widget-row {
+    width: 100%;
+    position: relative;
+}
+
+.webcastPolls .poll .answers-widget .answers-widget-row .producer-results{
+    display: none;
+    width: 23%;
+    float: right;
+    margin-left:12.9px;
+}
+
+.webcastPolls.producer-view .poll .answers-widget .answers-widget-row .producer-results {
+    display: inline-block;
+}
+
 
 .webcastPolls .poll .answer .answer-row {
     overflow :visible;
@@ -167,6 +195,10 @@ Poll (shared)
     color:black;
 }
 
+.webcastPolls .poll .answer .answer-result-text-producer {
+    color:black;
+}
+
 .webcastPolls .poll .answer.selected {
     border: rgba(255, 255, 255, 0.4) solid 2px;
     background-color: rgba(241,241,241,0.58);
@@ -179,23 +211,16 @@ Poll (shared)
 
 
 .webcastPolls .poll .answer.popular {
-    width: 110% !important;
-    left : -5%;
+    width: 105% !important;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5), 0 0 6px 0 rgba(255, 255, 255, 0.7);
     background-color: rgba(241,241,241,0.96);
-
-}
-
-.webcastPolls .poll .answer.popular .answer-text {
-    color:black;
-    font-size:16px;
-    text-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.44);
+    border-radius: 3.5px;
 }
 
 
 .webcastPolls .poll .answer.popular .answer-text {
     color:black;
-    font-size:16px;
+    font-size:15px;
     text-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.44);
 }
 
@@ -204,7 +229,14 @@ Poll (shared)
     background: rgb(126, 211,33);
 }
 
-.webcastPolls .poll .answer.popular .answer-result-text {
+.webcastPolls .poll .answer .answer-result-text {
+    color:black;
+    text-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.44);
+    font-size:16px;
+    font-weight: bolder;
+}
+
+.webcastPolls .poll .answer .answer-result-text-producer {
     color:black;
     text-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.44);
     font-size:16px;
@@ -212,7 +244,7 @@ Poll (shared)
 }
 
 .webcastPolls.allow-voting .poll .answer {
-    background:rgba(241,241,241,0.7);
+    background-color: #f1f1f1;
     border : rgba(255,255,255,0.2) solid 1px;
     cursor: pointer;
 }
@@ -230,7 +262,6 @@ Poll (shared)
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5), 0 0 6px 0 rgba(255, 255, 255, 0.7);
     border: white solid 2px;
 }
-
 
 /*****************************
 Poll (small)
@@ -285,6 +316,8 @@ Poll (medium)
     display:inline-block;
     text-align:center;
     width:250px;
+    padding-left: 15px;
+    padding-right: 10px;
 }
 
 .webcastPolls .medium-layout .poll .column-right {
@@ -297,16 +330,24 @@ Poll (medium)
 .webcastPolls .medium-layout .poll .column-right .column-right-container{
     display:inline-block;
     width:350px;
-    margin:0 0 0 40px;
+    padding-right:15px;
 }
 
 /**** question elements ****/
 .webcastPolls .medium-layout .poll .question{
-    word-break: keep-all;
+    font-family: Lato;
+    font-weight: Bold;
+    font-size: 16px;
+    letter-spacing: 0.2px;
+    color: #ffffff;
 }
 
 .webcastPolls .medium-layout .poll .question-widget{
-    margin-bottom:30px;
+    margin-bottom: 10px;
+}
+
+.webcastPolls .medium-layout .poll .question-widget .question{
+    text-align: left;
 }
 
 .webcastPolls .medium-layout .poll-size-3 .poll .question-widget{
@@ -317,12 +358,88 @@ Poll (medium)
 .webcastPolls .medium-layout .poll .responds-widget{
 }
 
+.webcastPolls .medium-layout .poll .responds-widget .statistics-icon {
+    color: #ffffff;
+    font-size: 83px;
+    margin-bottom: 5px;
+}
+
+.webcastPolls .medium-layout .poll .responds-widget .responds-number {
+    width: 97.5px;
+    height: 34px;
+    font-family: Lato;
+    font-weight: Bold;
+    font-size: 28.7px;
+    letter-spacing: 2.4px;
+    text-align: center;
+    color: #ffffff;
+    margin: auto;
+}
+
+.webcastPolls .medium-layout .poll .responds-widget .responds-text {
+    width: 76.3px;
+    height: 13px;
+    font-family: Lato;
+    font-weight: normal;
+    font-size: 11.1px;
+    letter-spacing: 2.6px;
+    text-align: center;
+    color: #ffffff;
+    margin: auto;
+}
+
 /**** answers elements ****/
 .webcastPolls .medium-layout .poll .answers-widget{
 }
 
 .webcastPolls .medium-layout .poll .answer.popular {
+    left : -2.5%;
+    height: 53px !important;
+    line-height: normal !important;
+    box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.5);
+    border: solid 2.3px #7ed321;
+}
 
+.webcastPolls .medium-layout .poll .answer.popular:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-top: 25.3px solid #7ed321;
+    border-left: 25.3px solid transparent;
+    width: 0;
+}
+
+.webcastPolls.producer-view .medium-layout .poll .answer.popular {
+    left: 0 !important;
+    height:48px !important;
+    border : rgba(255,255,255,0.1) solid 1px;
+    vertical-align: middle;
+    width: 73% !important;
+    box-shadow: none;
+    background:rgba(241,241,241,0.4);
+}
+
+.webcastPolls.producer-view.allow-voting .medium-layout .poll .answer.popular {
+    background-color: rgba(241,241,241,0.96);
+}
+
+.webcastPolls.producer-view .medium-layout .poll .answer.popular:before {
+    display: none;
+    border-top: none;
+    border-left: none;
+    width: 0;
+}
+
+.webcastPolls.producer-view .medium-layout .poll .answer.popular .answer-text {
+    width: 100%;
+    opacity: 0.8;
+    font-family: Lato;
+    font-weight: bold;
+    font-size: 13px;
+    letter-spacing: 0.1px;
+    color: #000000;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.44);
 }
 
 .webcastPolls .medium-layout .poll .answer.first-answer {
@@ -343,9 +460,27 @@ Poll (medium)
     top: 50%;
     transform: translate(0, -50%);
     width:80%;
-    margin-left:14px;
+    padding-left: 14px;
+    opacity: 0.8;
+    font-family: Lato;
+    font-weight: bold;
+    font-size: 13px;
+    letter-spacing: 0.1px;
+    color: #000000;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.44);
 }
 
+.webcastPolls.producer-view .medium-layout .poll .answer-text {
+    width: 100%;
+    opacity: 0.8;
+    font-family: Lato;
+    font-weight: bold;
+    font-size: 13px;
+    letter-spacing: 0.1px;
+    color: #000000;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.44);
+
+}
 
 .webcastPolls .medium-layout .poll .answer .answer-result-text {
     position: absolute;
@@ -355,7 +490,17 @@ Poll (medium)
     transform: translate(0, -50%);
 }
 
+.webcastPolls .medium-layout .poll .answer .answer-result-text-producer {
+    position: relative;
+    top: 50%;
+    letter-spacing: 1px;
+    text-align: center;
+    transform: translate(0, -50%);
+}
 
+.webcastPolls.producer-view .medium-layout .poll .answer .answer-result-text {
+    display: none;
+}
 
 /*****************************
 Poll (large)
@@ -363,45 +508,103 @@ Poll (large)
 
 .webcastPolls .large-layout
 {
-    height:100%;
-    width:100%;
+    position: relative;
+    width: 1025px;
+    height: 576px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: rgba(6, 44, 50, 0.75);
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .webcastPolls .large-layout .poll  {
-    width:597px;
+    width: 639px;
 }
 
 /**** question elements ****/
 
 .webcastPolls .large-layout .poll .question{
-    width:520px;
+    width: 543px;
+    height: 48px;
+    font-family: Lato;
+    font-weight: bold;
+    font-size: 19px;
+    line-height: 1.3;
+    letter-spacing: 0.5px;
+    color: #ffffff;
+    text-align: left;
+    padding-left: 66px;
 }
 
 .webcastPolls .large-layout .poll .question-widget {
     position:relative;
     text-align: center;
     vertical-align: middle;
-    margin-bottom: 30px;
+    margin-bottom: 46px;
+}
+
+.webcastPolls .large-layout .poll .question-widget .question-stats {
+    top: 50%;
+    position: absolute;
+    transform: translate(0, -50%);
+    left: 20px;
 }
 
 
 /**** question only elements ****/
 .webcastPolls  .large-layout .poll-container .question-only-container .text {
-    width:580px;
+    width: 550px;
+    height: 48px;
+    font-family: Lato;
+    font-weight: bold;
+    font-size: 19px;
+    line-height: 1.3;
+    letter-spacing: 0.5px;
+    color: #ffffff;
+    text-align: left;
+}
+
+.webcastPolls  .large-layout .poll-container .question-only-container .question-only-stats {
+    top: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    left: 19%;
 }
 
 /**** responds elements ****/
 
 .webcastPolls .large-layout .poll .responds-widget{
-    text-align:left;
-    margin-top:46px;
-    margin-right:20px;
+    position: absolute;
+    right: 112px;
+    top: 180px;
+    width: 193px;
+}
+
+.webcastPolls .large-layout .poll .responds-widget .statistics-icon {
+    color: #ffffff;
+    font-size: 141px;
+    margin-bottom: 33px;
+}
+
+.webcastPolls .large-layout .poll .responds-number{
+    font-family: Lato;
+    font-weight: bold;
+    font-size: 57px;
+    letter-spacing: 4.7px;
+    text-align: center;
+    color: #ffffff;
 }
 
 .webcastPolls .large-layout .poll .responds-text {
-    margin-left:30px;
+    display: block;
+    font-family: Lato;
+    font-weight: normal;
+    font-size: 22px;
+    letter-spacing: 5.1px;
+    text-align: center;
+    color: #ffffff;
 }
-
 
 /**** answers elements ****/
 
@@ -413,18 +616,44 @@ Poll (large)
 .webcastPolls .large-layout .poll .answer.popular {
     height: 53px !important;
     line-height: 53px !important;
+    box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.5);
+    border-top: solid 2.3px #7ed321;
+    border-bottom: solid 2.3px #7ed321;
+    border-right: solid 2.3px #7ed321;
+}
+
+.webcastPolls .large-layout .poll .answer.popular:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-top: 25.3px solid #7ed321;
+    border-left: 25.3px solid transparent;
+    width: 0;
 }
 
 .webcastPolls .large-layout .poll .answer {
-    margin-bottom: 10px;
-    height:48px;
+    margin-bottom: 14px;
     line-height: 48px;
-    vertical-align: middle;
+    width: 639.1px;
+    height: 48px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    background-color: #f1f1f1;
 }
 
 .webcastPolls .large-layout  .poll .answer-text {
     margin-left:29px;
     float:left;
+    opacity: 0.8;
+    font-family: Lato;
+    font-weight: Bold;
+    font-size: 16px;
+    letter-spacing: 0.3px;
+    color: #000000;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.44);
 }
 
 .webcastPolls .large-layout .poll .answer .answer-result-text {
