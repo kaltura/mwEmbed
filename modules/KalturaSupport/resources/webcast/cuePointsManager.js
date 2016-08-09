@@ -61,7 +61,7 @@
             });
 
             _this.bind(
-                "monitorEvent onplay",
+                "monitorEvent onplay seeked",
                 function (e) {
                     var player = _this.getPlayer();
 
@@ -72,7 +72,7 @@
                         return;
                     }
 
-                    if (e.type === 'monitorEvent' && !_this.embedPlayer.isPlaying()){
+                    if ( (e.type === 'monitorEvent' && !_this.embedPlayer.isPlaying()) || (_this.embedPlayer.isPlaying() && e.type === 'seeked')){
                         // bypass problem with player that starts throwing monitor event even when paused after user seek while he is not playing
                         return;
                     }
@@ -370,7 +370,7 @@
         _triggerReachedCuePoints: function (cuePoints, eventContext) {
             var _this = this;
 
-            if (_this.onCuePointsReached && cuePoints && cuePoints.length && cuePoints.length > 0) {
+            if (_this.onCuePointsReached && cuePoints && cuePoints.length > -1) {
                 var clonedCuePointsToHandle = [];
                 var handledCuePointsIds = '';
 
@@ -394,7 +394,7 @@
             }
         },
         /**
-         * Invoke reached event manually for all cue points the started before server time.
+         * Invoke reached event manually for all cue points that started before server time.
          * Ignore optimization that prevent notifying a cue point that was already notified by managing
          * all cue points from the beginning of the entry time.
          */
@@ -407,11 +407,12 @@
 
             _this._nextPendingCuePointIndex = _this._getNextCuePointIndex(currentTime, 0);
 
+            var passedCuePoints = [];
             if (_this._nextPendingCuePointIndex > 0 && _this._nextPendingCuePointIndex <= _this.getCuePoints().length) {
                 // invoke the following logic if we passed a cue point
-                var passedCuePoints = _this.getCuePoints().slice(0, _this._nextPendingCuePointIndex); // get a list of all the cue points that were passed
-                _this._triggerReachedCuePoints(passedCuePoints);
+                passedCuePoints = _this.getCuePoints().slice(0, _this._nextPendingCuePointIndex); // get a list of all the cue points that were passed
             }
+            _this._triggerReachedCuePoints(passedCuePoints, {reason : 'reconstructState'});
         },
         /**
          * Returns the next cuePoint index for requested time
