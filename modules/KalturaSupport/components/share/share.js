@@ -185,6 +185,7 @@
 					// re-enable player controls
 					if ( !embedPlayer.isInSequence() ){
 						embedPlayer.enablePlayControls();
+						embedPlayer.triggerHelper("showLargePlayBtn");
 					}
 					// remove blur
 					if (embedPlayer.getPlayerElement()) {
