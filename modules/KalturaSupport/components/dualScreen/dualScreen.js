@@ -142,27 +142,26 @@
 
 				//Consume view state events
 				this.bind( 'dualScreenStateChange', function(e, state){
+					//update view mode lock state if needed
+					if(typeof e === 'object' && state.lockState) {
+						switch (state.lockState){
+							case mw.dualScreen.display.STATE.LOCKED:
+								_this.isViewModeLocked = true;
+								_this.controlBar.hide();
+								_this.controlBar.disable();
+								break;
+							case mw.dualScreen.display.STATE.UNLOCKED:
+								_this.isViewModeLocked = false;
+								_this.controlBar.enable();
+								_this.controlBar.show();
+								break;
+						}
+					}
+					//consume event if view state is not locked
 					if(!_this.isViewModeLocked) {
 						_this.fsm.consumeEvent( state );
 					}
 				});
-
-				//listen to view mode lock state changes
-				this.bind( 'dualScreenLockStateChange', function(e, lockState){
-					switch (lockState.state){
-						case mw.dualScreen.display.STATE.LOCKED:
-							_this.isViewModeLocked = true;
-							_this.controlBar.hide();
-							_this.controlBar.disable();
-							break;
-						case mw.dualScreen.display.STATE.UNLOCKED:
-							_this.isViewModeLocked = false;
-							_this.controlBar.enable();
-							_this.controlBar.show();
-							break;
-					}
-				});
-
 				//Listen to events which affect controls view state
 				this.bind( 'showPlayerControls' , function(){
 						if (!_this.disabled && !_this.isViewModeLocked) {
