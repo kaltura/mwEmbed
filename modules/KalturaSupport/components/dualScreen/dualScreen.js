@@ -143,6 +143,7 @@
 				//Consume view state events
 				this.bind( 'dualScreenStateChange', function(e, state){
 					//update view mode lock state if needed
+					var currentLockState = _this.isViewModeLocked;
 					if(typeof e === 'object' && state.lockState) {
 						switch (state.lockState){
 							case mw.dualScreen.display.STATE.LOCKED:
@@ -157,8 +158,9 @@
 								break;
 						}
 					}
-					//consume event if view state is not locked
-					if(!_this.isViewModeLocked) {
+					//consume event if view state is not locked.
+					//also consume events with locked state if previous state was unlocked
+					if(!_this.isViewModeLocked || !currentLockState) {
 						_this.fsm.consumeEvent( state );
 					}
 				});
