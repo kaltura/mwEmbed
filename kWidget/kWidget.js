@@ -481,6 +481,13 @@
 			this.proxyJsCallbackready();
 			settings.isHTML5 = this.isUiConfIdHTML5(uiconf_id);
 
+			if (settings.flashvars && settings.flashvars.chromecast && settings.flashvars.chromecast.plugin){
+				var script = document.createElement("script")
+				script.type = "text/javascript";
+				script.src = "https://www.gstatic.com/cv/js/sender/v1/cast_sender.js";
+				document.getElementsByTagName("head")[0].appendChild(script);
+			}
+
 			/**
 			 * Local scope doEmbed action, either writes out a msg, flash player
 			 */

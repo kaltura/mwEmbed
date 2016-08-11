@@ -21,11 +21,14 @@ var mediaProtocol = null;  // an instance of cast.player.api.Protocol
 var mediaPlayer = null;  // an instance of cast.player.api.Player
 var playerInitialized = false;
 var isInSequence = false;
+var debugMode = false;
 
 onload = function () {
 	var kdp;
-	cast.receiver.logger.setLevelValue(cast.receiver.LoggerLevel.DEBUG);
-	cast.player.api.setLoggerLevel(cast.player.api.LoggerLevel.DEBUG);
+	if (debugMode){
+		cast.receiver.logger.setLevelValue(cast.receiver.LoggerLevel.DEBUG);
+		cast.player.api.setLoggerLevel(cast.player.api.LoggerLevel.DEBUG);
+	}
 
 	mediaElement = document.getElementById('receiverVideoElement');
 	mediaElement.autoplay = false;
@@ -699,7 +702,7 @@ function setMediaElementEvents(mediaElement) {
 
 	});
 	mediaElement.addEventListener('loadeddata', function (e) {
-		if (protocol === null){
+		if (protocol === undefined || protocol === null){
 			return;
 		}
 		console.log('######### MEDIA ELEMENT DATA LOADED');
@@ -849,7 +852,9 @@ function broadcast(message) {
  @param {string} message A message string
  */
 function setDebugMessage(elementId, message) {
-	document.getElementById(elementId).innerHTML = '' + JSON.stringify(message);
+	if (debugMode){
+		document.getElementById(elementId).innerHTML = '' + JSON.stringify(message);
+	}
 }
 
 /*

@@ -60,6 +60,7 @@
 		adDuration: null,
 		sendPlayerReady: false, // after changing media we need to send the playerReady event to the chromecast receiver as it doesn't reload the player there
 		supportedPlugins: ['doubleClick', 'youbora', 'kAnalony', 'related', 'comScoreStreamingTag', 'watermark', 'heartbeat'],
+		chromeLib: null,
 
 		setup: function( embedPlayer ) {
 			var _this = this;
@@ -67,10 +68,17 @@
 			this.isNativeSDK  = mw.getConfig( "EmbedPlayer.ForceNativeComponent");
 
 			if (!this.isNativeSDK) {
+				if (mw.getConfig('EmbedPlayer.IsFriendlyIframe')){
+					this.chromeLib = window.top.chrome;
+				}else{
+					this.chromeLib = window.chrome;
+					$('head').append('<scr' + 'ipt type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js"></scr' + 'ipt>');
+				}
+
 				var ticks = 0;
 				var intervalID = setInterval(function () {
 					ticks++;
-					if (typeof chrome !== "undefined" && typeof chrome.cast !== "undefined" && typeof chrome.cast.SessionRequest !== "undefined") {
+					if (typeof _this.chromeLib !== "undefined" && typeof _this.chromeLib.cast !== "undefined" && _this.chromeLib.cast.isAvailable) {
 						_this.initializeCastApi();
 						clearInterval(intervalID);
 					} else {
@@ -243,15 +251,14 @@
 				// launch app
 				this.showConnectingMessage();
 				this.embedPlayer.disablePlayControls(["chromecast"]);
-				var sessionRequest = new chrome.cast.SessionRequest(this.getConfig("applicationID").toString(), [chrome.cast.Capability.VIDEO_OUT], 60000);
-				chrome.cast.requestSession(
+
+				this.chromeLib.cast.requestSession(
 					function(e){
 						_this.onRequestSessionSuccess(e);
 					},
 					function(error){
 						_this.onLaunchError(error);
-					},
-					sessionRequest
+					}
 				);
 			}else{
 				// stop casting
@@ -410,16 +417,24 @@
 
 		initializeCastApi: function() {
 			var _this = this;
-			var sessionRequest = new chrome.cast.SessionRequest(this.getConfig("applicationID").toString()); // 'Castv2Player'
-			var apiConfig = new chrome.cast.ApiConfig(sessionRequest,
+
+			var autoJoinPolicyArray = [
+				this.chromeLib.cast.AutoJoinPolicy.PAGE_SCOPED,
+				this.chromeLib.cast.AutoJoinPolicy.TAB_AND_ORIGIN_SCOPED,
+				this.chromeLib.cast.AutoJoinPolicy.ORIGIN_SCOPED
+			];
+			var sessionRequest = new this.chromeLib.cast.SessionRequest(this.getConfig("applicationID").toString(), [this.chromeLib.cast.Capability.VIDEO_OUT], 60000);
+
+			var apiConfig = new this.chromeLib.cast.ApiConfig(sessionRequest,
 				function(event){
 					_this.sessionListener(event);
 				},
 				function(event){
 					_this.receiverListener(event);
-				}
+				},
+				autoJoinPolicyArray[1]
 			);
-			chrome.cast.initialize(apiConfig,
+			this.chromeLib.cast.initialize(apiConfig,
 				function(){
 					_this.onInitSuccess();
 				},
@@ -561,7 +576,7 @@
 		seekMedia: function(pos) {
 			this.log('Seeking ' + this.currentMediaSession.sessionId + ':' +
 					this.currentMediaSession.mediaSessionId + ' to ' + pos + "%");
-			var request = new chrome.cast.media.SeekRequest();
+			var request = new this.chromeLib.cast.media.SeekRequest();
 			request.currentTime = pos * this.currentMediaSession.media.duration / 100;
 			this.currentMediaSession.seek( request,
 				this.onSeekSuccess.bind(
@@ -590,10 +605,10 @@
 			}
 
 			this.embedPlayer.volume = percent;
-			var volume = new chrome.cast.Volume();
+			var volume = new this.chromeLib.cast.Volume();
 			volume.level = percent;
 			volume.muted = (percent === 0);
-			var request = new chrome.cast.media.VolumeRequest();
+			var request = new this.chromeLib.cast.media.VolumeRequest();
 			request.volume = volume;
 			this.currentMediaSession.setVolume( request,
 				this.mediaCommandSuccessCallback.bind(
@@ -658,9 +673,9 @@
 				})
 				.then( function(currentMediaURL ){
 						_this.log("loading..." + currentMediaURL);
-						var mediaInfo = new chrome.cast.media.MediaInfo( currentMediaURL );
+						var mediaInfo = new _this.chromeLib.cast.media.MediaInfo( currentMediaURL );
 						mediaInfo.contentType = mimeType;
-						_this.request = new chrome.cast.media.LoadRequest( mediaInfo );
+						_this.request = new _this.chromeLib.cast.media.LoadRequest( mediaInfo );
 						_this.request.autoplay = false;
 						_this.request.currentTime = 0;
 
