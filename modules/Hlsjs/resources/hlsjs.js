@@ -40,8 +40,6 @@
 			debugInfoCounter:0,
 
 			/** type {boolean} */
-			LoadHLS: false,
-			/** type {boolean} */
 			loaded: false,
 			/** type {boolean} */
 			isLevelSwitching: false,
@@ -68,7 +66,6 @@
 			 *
 			 */
 			addBindings: function () {
-				this.bind("onSelectSource", this.checkIfHLSNeeded.bind(this));
 				this.bind("playerReady", this.initHls.bind(this));
 				this.bind("onChangeMedia", this.clean.bind(this));
 				this.bind("onLiveOffSynchChanged", this.onLiveOffSyncChanged.bind(this));
@@ -77,27 +74,11 @@
 				}
 			},
 			/**
-			 * Check if HLS engine is required, e.g. sources contain HLS source
-			 * @param event
-			 * @param sources
-			 */
-			checkIfHLSNeeded: function (event, sources) {
-				var _this = this;
-				//Check if sources contain HLS source, if so then raise a flag to init the player
-				$.each(sources, function (index, item) {
-					if (item.mimeType === "application/vnd.apple.mpegurl") {
-						_this.getPlayer().mediaElement.selectedSource = item;
-						_this.LoadHLS = true;
-					}
-				});
-			},
-			/**
 			 * Clean method
 			 */
 			clean: function () {
 				this.log("Clean");
-				if (this.LoadHLS && this.loaded) {
-					this.LoadHLS = false;
+				if (this.loaded) {
 					this.loaded = false;
 					this.unRegisterHlsEvents();
 					this.restorePlayerMethods();
@@ -110,7 +91,7 @@
 			 * Register the playback events and attach the playback engine to the video element
 			 */
 			initHls: function () {
-				if (this.LoadHLS && !this.loaded) {
+				if (!this.loaded) {
 					this.log("Init");
 					//Set streamerType to hls
 					this.embedPlayer.streamerType = 'hls';
