@@ -68,11 +68,25 @@
 			this.isNativeSDK  = mw.getConfig( "EmbedPlayer.ForceNativeComponent");
 
 			if (!this.isNativeSDK) {
+				var loadScriptInFrame = function(){
+					kWidget.appendScriptUrl("https://www.gstatic.com/cv/js/sender/v1/cast_sender.js", function(){
+						_this.chromeLib = window.chrome;
+					});
+				}
 				if (mw.getConfig('EmbedPlayer.IsFriendlyIframe')){
-					this.chromeLib = window.top.chrome;
+					try{
+						kWidget.appendScriptUrl("https://www.gstatic.com/cv/js/sender/v1/cast_sender.js", function(){
+							try{
+								_this.chromeLib = window.top.chrome;
+							}catch(e){
+								loadScriptInFrame();
+							}
+						}, top.document);
+					}catch(e){
+						loadScriptInFrame();
+					}
 				}else{
-					this.chromeLib = window.chrome;
-					$('head').append('<scr' + 'ipt type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js"></scr' + 'ipt>');
+					loadScriptInFrame();
 				}
 
 				var ticks = 0;
