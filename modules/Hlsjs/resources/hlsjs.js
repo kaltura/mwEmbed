@@ -1,7 +1,7 @@
 ( function( mw, $ , Hls ) {"use strict";
 
-	//Currently use native support when available, e.g. Safari desktop and Edge
-	if (Hls.isSupported() && !mw.isDesktopSafari() && !mw.isEdge() && !mw.getConfig("disableHLSOnJs")) {
+	//Currently use native support when available, e.g. Safari desktop
+	if (Hls.isSupported() && !mw.isDesktopSafari() && !mw.getConfig("disableHLSOnJs")) {
 		// Add HLS Logic player:
 		//Force HLS streamer type
 		mw.setConfig("streamerType", "hls");
