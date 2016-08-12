@@ -5,7 +5,6 @@
 	mw.closedCaptions.cvaa = mw.KBaseScreen.extend({
 
 		defaultConfig: {
-			parent: "topBarContainer",
 			templatePath: 'components/cvaa/cvaa.tmpl.html',
 			usePreviewPlayer: false,
 			previewPlayerEnabled: false,
