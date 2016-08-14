@@ -43,7 +43,6 @@ Poll (shared)
 *****************************/
 .webcastPolls .poll  {
     display:none;
-    margin:auto; /* Player view only */
 }
 
 /**** question elements ****/
@@ -305,6 +304,7 @@ Poll (medium)
 {
     display:table;
     table-layout:fixed;
+    margin: auto;
 }
 
 .webcastPolls .medium-layout .poll .column-left {
@@ -400,15 +400,15 @@ Poll (medium)
     border: solid 2.3px #7ed321;
 }
 
-.webcastPolls .medium-layout .poll .answer.popular:before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    border-top: 25.3px solid #7ed321;
-    border-left: 25.3px solid transparent;
-    width: 0;
-}
+/*.webcastPolls .medium-layout .poll .answer.popular:before {*/
+/*content: '';*/
+/*position: absolute;*/
+/*top: 0;*/
+/*right: 0;*/
+/*border-top: 25.3px solid #7ed321;*/
+/*border-left: 25.3px solid transparent;*/
+/*width: 0;*/
+/*}*/
 
 .webcastPolls.producer-view .medium-layout .poll .answer.popular {
     left: 0 !important;
@@ -424,12 +424,12 @@ Poll (medium)
     background-color: rgba(241,241,241,0.96);
 }
 
-.webcastPolls.producer-view .medium-layout .poll .answer.popular:before {
-    display: none;
-    border-top: none;
-    border-left: none;
-    width: 0;
-}
+/*.webcastPolls.producer-view .medium-layout .poll .answer.popular:before {*/
+/*display: none;*/
+/*border-top: none;*/
+/*border-left: none;*/
+/*width: 0;*/
+/*}*/
 
 .webcastPolls.producer-view .medium-layout .poll .answer.popular .answer-text {
     width: 100%;
@@ -622,15 +622,15 @@ Poll (large)
     border-right: solid 2.3px #7ed321;
 }
 
-.webcastPolls .large-layout .poll .answer.popular:before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    border-top: 25.3px solid #7ed321;
-    border-left: 25.3px solid transparent;
-    width: 0;
-}
+/*.webcastPolls .large-layout .poll .answer.popular:before {*/
+/*content: '';*/
+/*position: absolute;*/
+/*top: 0;*/
+/*right: 0;*/
+/*border-top: 25.3px solid #7ed321;*/
+/*border-left: 25.3px solid transparent;*/
+/*width: 0;*/
+/*}*/
 
 .webcastPolls .large-layout .poll .answer {
     margin-bottom: 14px;
@@ -641,7 +641,6 @@ Poll (large)
     border-bottom-right-radius: 3px;
     border-top-left-radius: 0px;
     border-bottom-left-radius: 0px;
-    background-color: #f1f1f1;
 }
 
 .webcastPolls .large-layout  .poll .answer-text {
