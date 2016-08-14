@@ -1268,6 +1268,7 @@ mw.KWidgetSupport.prototype = {
 	getUiConfId: function( embedPlayer ){
 		return embedPlayer.kuiconfid;
 	},
+
 	/**
 	 * Check if the entryId is a url ( add source and do not include in request )
 	 */
@@ -1616,10 +1617,14 @@ mw.KWidgetSupport.prototype = {
 				ipadAdaptiveFlavors.push( asset.id );
 			}
 
+
 			// Add iPhone Akamai flavor to iPad&iPhone flavor Ids list
 			if( $.inArray( 'iphonenew', tags ) != -1 ){
 				ipadAdaptiveFlavors.push( asset.id );
 				iphoneAdaptiveFlavors.push( asset.id );
+				if (mw.getConfig('includeMobileHighResolutionSources')) {
+					dashAdaptiveFlavors.push(asset.id);
+				}
 			}
 
 			// Add android SDK h246 base profile flavor Ids list
@@ -1656,16 +1661,21 @@ mw.KWidgetSupport.prototype = {
 			// Check if mobile device media query
 			if (iphoneAdaptiveFlavors.length || ipadAdaptiveFlavors.length || androidNativeAdaptiveFlavors.length) {
 				var validClipAspect = this.getValidAspect(deviceSources);
-				var lowResolutionDevice = (mw.isMobileDevice() && mw.isDeviceLessThan480P() && iphoneAdaptiveFlavors.length);
+				//var lowResolutionDevice = (mw.isMobileDevice() && mw.isDeviceLessThan480P() && iphoneAdaptiveFlavors.length);
+
+				var lowResolutionDevice = (mw.isMobileDevice() && mw.isDeviceLessThan480P() && iphoneAdaptiveFlavors.length &&
+				    !mw.getConfig('includeMobileHighResolutionSources'));
 				var targetFlavors;
 				if (androidNativeAdaptiveFlavors.length && mw.isNativeApp() && mw.isAndroid()){
 					//Android h264b
 					targetFlavors = androidNativeAdaptiveFlavors;
 				} else if (lowResolutionDevice){
 					//iPhone
+					mw.log( "IPHONE targetFlavors : " + iphoneAdaptiveFlavors);
 					targetFlavors = iphoneAdaptiveFlavors;
 				} else {
 					//iPad
+					mw.log( "IPAD targetFlavors : " + ipadAdaptiveFlavors);
 					targetFlavors = ipadAdaptiveFlavors;
 				}
 				var assetId = targetFlavors[0];
