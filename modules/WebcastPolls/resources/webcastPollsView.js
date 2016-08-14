@@ -77,7 +77,7 @@
             var result = '';
             if (pollViewPortHeight < 375 || pollViewPortWidth < 670) {
                 result = 'small';
-            } else if (pollViewPortHeight < 576) {
+            } else if (pollViewPortHeight < 576 || pollViewPortWidth < 1025) {
                 result = 'medium';
             } else {
                 result = 'large';
@@ -246,12 +246,22 @@
                 var pollContent = _this.parent.pollData.content;
 
                 if (pollContent) {
-                    var selectedAnswerSelector = '[name="answer' + _this.parent.userVote.answer + '"]';
 
-                    _this.$webcastPoll.find('.answer').not('.answer>' + selectedAnswerSelector).removeClass('selected');
+                    if(_this.parent.getViewConfig() !== 'producerOnly') {
+                        var selectedAnswerSelector = '[name="answer' + _this.parent.userVote.answer + '"]';
 
-                    if (_this.parent.userVote.answer) {
-                        _this.$webcastPoll.find(selectedAnswerSelector).closest('.answer').addClass('selected');
+                        if (_this.parent.userVote.answer) {
+
+                            _this.$webcastPoll.find('.answer')
+                                .not('.answer>' + selectedAnswerSelector)
+                                .removeClass('selected')
+                                .addClass('not-selected');
+                            
+                            _this.$webcastPoll.find(selectedAnswerSelector)
+                                .closest('.answer')
+                                .addClass('selected')
+                                .removeClass('not-selected');
+                        }
                     }
 
                     if (_this.parent.canUserVote()) {
