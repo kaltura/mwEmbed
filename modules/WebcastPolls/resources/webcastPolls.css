@@ -94,6 +94,13 @@ Poll (shared)
     font-size: 32px;
     height: 32px;
     width: 32px;
+    color: #8a8a8a;
+}
+
+.webcastPolls.allow-voting .poll-container .question-stats {
+    font-size: 32px;
+    height: 32px;
+    width: 32px;
     color: #7ed321;
 }
 
@@ -335,10 +342,30 @@ Poll (medium)
     width: 100%;
 }
 
+.webcastPolls  .medium-layout .poll-container .question-only-container{
+    width: 667px;
+    height: 375px;
+    background-color: rgba(6, 44, 50, 0.75);
+    margin: auto;
+}
 
 /**** question only elements ****/
 .webcastPolls  .medium-layout .poll-container .question-only-container .text {
-    width:500px;
+    width:524px;
+    font-family: Lato;
+    font-family:bold;
+    font-size: 21px;
+    letter-spacing: 0.5px;
+    color: #ffffff;
+    text-align: left;
+}
+
+.webcastPolls  .medium-layout .poll-container .question-only-container .question-only-stats {
+    top: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    left: 6%;
+    color: #7ed321;
 }
 
 /**** Poll container ****/
@@ -349,17 +376,28 @@ Poll (medium)
     margin: auto;
 }
 
+.webcastPolls .medium-layout .poll-content {
+    width: 667px;
+    height: 375px;
+    background-color: rgba(6, 44, 50, 0.75);
+    position: relative;
+}
+
 .webcastPolls .medium-layout .poll .column-left {
     display:table-cell;
     vertical-align: middle;
+    height: 375px;
+    width: 250px;
+    position: relative;
 }
 
 .webcastPolls .medium-layout .poll .column-left .column-left-container{
     display:inline-block;
     text-align:center;
+    height: 375px;
     width:250px;
-    padding-left: 15px;
-    padding-right: 10px;
+    padding-left: 28px;
+    position: relative;
 }
 
 .webcastPolls .medium-layout .poll .column-right {
@@ -372,7 +410,7 @@ Poll (medium)
 .webcastPolls .medium-layout .poll .column-right .column-right-container{
     display:inline-block;
     width:350px;
-    padding-right:15px;
+    padding-left:15px;
 }
 
 /**** question elements ****/
@@ -386,6 +424,8 @@ Poll (medium)
 
 .webcastPolls .medium-layout .poll .question-widget{
     margin-bottom: 10px;
+    position: absolute;
+    top:30px;
 }
 
 .webcastPolls .medium-layout .poll-container .question-stats {
@@ -403,17 +443,22 @@ Poll (medium)
 /**** responds elements ****/
 
 .webcastPolls .medium-layout .poll .responds-widget{
+    position: absolute;
+    bottom: 15.9px;
+    text-align: center;
+    left: 50%;
+    transform: translate(-50%, 0);
 }
 
 .webcastPolls .medium-layout .poll .responds-widget .statistics-icon {
     color: #ffffff;
-    font-size: 83px;
+    font-size: 103px;
     margin-bottom: 5px;
     padding-top: 26.6px;
 }
 
 .webcastPolls .medium-layout .poll .responds {
-    padding-top: 16.8px;
+    padding-top: 22px;
 }
 
 .webcastPolls .medium-layout .poll .responds-widget .responds-number {
@@ -614,6 +659,7 @@ Poll (large)
     position: absolute;
     transform: translate(-50%, -50%);
     left: 19%;
+    color: #7ed321;
 }
 
 /**** responds elements ****/
