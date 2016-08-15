@@ -242,7 +242,6 @@ Poll (shared)
     text-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.44);
 }
 
-
 .webcastPolls .poll .answer.popular .answer-result {
     background: rgb(126, 211,33);
 }
@@ -305,7 +304,6 @@ Poll (shared)
     width: 0;
 }
 
-
 /*****************************
 Poll (small)
 *****************************/
@@ -333,8 +331,8 @@ Poll (medium)
 
 .webcastPolls .medium-layout
 {
-    height: 375px;
-    width: 667px;
+    height: 100%;
+    width: 100%;
 }
 
 
@@ -390,6 +388,11 @@ Poll (medium)
     margin-bottom: 10px;
 }
 
+.webcastPolls .medium-layout .poll-container .question-stats {
+    float: left;
+    margin-right: 13px;
+}
+
 .webcastPolls .medium-layout .poll .question-widget .question{
     text-align: left;
 }
@@ -406,6 +409,11 @@ Poll (medium)
     color: #ffffff;
     font-size: 83px;
     margin-bottom: 5px;
+    padding-top: 26.6px;
+}
+
+.webcastPolls .medium-layout .poll .responds {
+    padding-top: 16.8px;
 }
 
 .webcastPolls .medium-layout .poll .responds-widget .responds-number {
@@ -583,6 +591,8 @@ Poll (large)
     position: absolute;
     transform: translate(0, -50%);
     left: 20px;
+    float: left;
+    margin-right: 13px;
 }
 
 
@@ -698,6 +708,4 @@ Poll (large)
 .webcastPolls .large-layout .poll .answer .answer-row {
     clear:both;
 }
-
-
 
