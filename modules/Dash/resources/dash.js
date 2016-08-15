@@ -67,21 +67,19 @@
 
 					var selectedSource = this.getPlayer().getSrc();
 
-					this.bind("firstPlay", function () {
-						_this.getPlayer().resolveSrcURL(selectedSource)
-							.done(function (manifestSrc) {  // success
-								selectedSource = manifestSrc;
-							})
-							.always(function () {  // both success or error
-									//// Try to load a manifest.
-									player.load(selectedSource).then(function () {
-										// This runs if the asynchronous load is successful.
-										_this.log('The video has now been loaded!');
-										_this.addTracks();
-									}).catch(_this.onError.bind(_this));  // onError is executed if the asynchronous load fails.
-								}
-							);
-					}.bind(this));
+					_this.getPlayer().resolveSrcURL(selectedSource)
+						.done(function (manifestSrc) {  // success
+							selectedSource = manifestSrc;
+						})
+						.always(function () {  // both success or error
+								//// Try to load a manifest.
+								player.load(selectedSource).then(function () {
+									// This runs if the asynchronous load is successful.
+									_this.log('The video has now been loaded!');
+									_this.addTracks();
+								}).catch(_this.onError.bind(_this));  // onError is executed if the asynchronous load fails.
+							}
+						);
 				}
 			},
 
