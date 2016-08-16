@@ -19,44 +19,48 @@
         'uiconf_id' : '35826631',
         'entry_id': "1_6e40gk9l", //2 videos
         'flashvars': {
+            // default streamertype = http (HTML5 video progressive download)/
 
-            //default streamertype = http (HTML5 video progressive download)
+            // 'LeadWithHLSOnFlash': true, //flash/native HLS
+            // 'EmbedPlayer.ForceKPlayer': true, // kplayer mp4 (flash progressive download)
+            // streamerType: "auto", //hds
+            // streamerType: "rtmp", //hds
+            // streamerType: "hdnetworkmanifest", //hds
+            // streamerType: "hdnetwork", //hds
+            // streamerType: "http", //HTML5 video progressive download
 
-            'LeadWithHLSOnFlash': true, //flash/native HLS
-            //'EmbedPlayer.ForceKPlayer': true, // kplayer mp4 (flash progressive download)
-            //streamerType: "auto", //hds
-            //streamerType: "rtmp", //hds
-            //streamerType: "hdnetworkmanifest", //hds
-            //streamerType: "hdnetwork", //hds
-            //streamerType: "http", //HTML5 video progressive download
+            // "chapters": {
+            //     plugin: true
+            // },
+            // "sideBarContainer": {
+            //     "clickToClose": true
+            // },
 
-//            "chapters": {
-//                plugin: true
-//            },
-            "sideBarContainer": {
-                "clickToClose": true
-            },
             "dualScreen": {
                 plugin: true
             },
+
             //"streamSelector": {
             //    plugin: true
             //},
-            "sourceSelector": {
-                plugin: true
-            },
+
+            // "sourceSelector": {
+            //     plugin: true
+            // },
+
             "closedCaptions": {
-                plugin: true
+                plugin: false
             },
-            "infoScreen": {
-                plugin: true,
-                parent: "controlsContainer",
-                order: 3,
-                align: "right",
-                minWidth: 400,
-                minWidthClass: 'infoScreenSmall',
-                template: ""
-            }
+
+            // "infoScreen": {
+            //     plugin: true,
+            //     parent: "controlsContainer",
+            //     order: 3,
+            //     align: "right",
+            //     minWidth: 400,
+            //     minWidthClass: 'infoScreenSmall',
+            //     template: ""
+            // }
         }
     });
 </script>
