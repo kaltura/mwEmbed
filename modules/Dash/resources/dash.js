@@ -15,6 +15,9 @@
 			/** type {boolean} */
 			loaded: false,
 
+			/** type {boolean} */
+			LoadShaka: false,
+
 			/**
 			 * Check is shaka is supported
 			 * @returns {boolean}
@@ -32,6 +35,7 @@
 			 *
 			 */
 			addBindings: function () {
+				this.bind("SourceChange", this.isNeeded.bind(this));
 				this.bind("playerReady", this.initShaka.bind(this));
 				this.bind("switchAudioTrack", this.onSwitchAudioTrack.bind(this));
 				this.bind("selectClosedCaptions", this.onSwitchTextTrack.bind(this));
@@ -39,18 +43,30 @@
 			},
 
 			/**
+			 * Check if Shaka engine is required, e.g. the selected source is dash
+			 */
+			isNeeded: function () {
+				if (this.getPlayer().mediaElement.selectedSource.mimeType === "application/dash+xml") {
+					this.LoadShaka = true;
+					//Set streamerType to dash
+					this.embedPlayer.streamerType = 'dash';
+				} else {
+					this.LoadShaka = false;
+				}
+			},
+			/**
 			 * Register the playback events and attach the playback engine to the video element
 			 */
 			initShaka: function () {
-				if (!this.loaded) {
+				if (this.LoadShaka && !this.loaded) {
 					this.log("Init shaka");
 					var _this = this;
+
+					this.loaded = true;
+
 					//Disable update of video source tag, MSE uses blob urls!
 					this.getPlayer().skipUpdateSource = true;
 					this.overridePlayerMethods();
-
-					//Set streamerType to dash
-					this.embedPlayer.streamerType = 'dash';
 
 					this.setEmbedPlayerConfig(this.getPlayer());
 
@@ -272,19 +288,22 @@
 			 * Clean method
 			 */
 			clean: function () {
-				this.log("Clean");
-				this.restorePlayerMethods();
+				if (this.LoadShaka && this.loaded) {
+					this.LoadShaka = false;
+					this.log("Clean");
+					this.restorePlayerMethods();
+				}
 			},
 
 			/**
-			 * Enable override player methods for HLS playback
+			 * Enable override player methods for Dash playback
 			 */
 			overridePlayerMethods: function () {
 				this.orig_switchSrc = this.getPlayer().switchSrc;
 				this.getPlayer().switchSrc = this.switchSrc.bind(this);
 			},
 			/**
-			 * Disable override player methods for HLS playback
+			 * Disable override player methods for Dash playback
 			 */
 			restorePlayerMethods: function () {
 				this.getPlayer().switchSrc = this.orig_switchSrc;

@@ -1,13 +1,8 @@
-( function( mw, $ , Hls ) {"use strict";
+(function (mw, $, Hls) {
+	"use strict";
 
 	//Currently use native support when available, e.g. Safari desktop
 	if (Hls.isSupported() && !mw.isDesktopSafari() && !mw.getConfig("disableHLSOnJs")) {
-		// Add HLS Logic player:
-		//Force HLS streamer type
-		mw.setConfig("streamerType", "hls");
-		var config = mw.config.get("KalturaSupport.PlayerConfig");
-		config.vars.streamerType = "hls";
-		mw.config.set("KalturaSupport.PlayerConfig", config);
 		var orig_supportsFlash = mw.supportsFlash;
 		mw.supportsFlash = function () {
 			return false;
@@ -26,8 +21,8 @@
 			defaultConfig: {
 				options: {
 					//debug:true
-					liveSyncDurationCount : 3,
-					liveMaxLatencyDurationCount : 6
+					liveSyncDurationCount: 3,
+					liveMaxLatencyDurationCount: 6
 				},
 				hlsLogs: false
 			},
@@ -37,8 +32,10 @@
 			playerErrorRecoveryCounter: 0,
 
 			debugInfoInterval: 4,
-			debugInfoCounter:0,
+			debugInfoCounter: 0,
 
+			/** type {boolean} */
+			LoadHLS: false,
 			/** type {boolean} */
 			loaded: false,
 			/** type {boolean} */
@@ -58,7 +55,7 @@
 			 * Setup the HLS playback engine wrapper with supplied config options
 			 */
 			setup: function () {
-				this.log( "version: " + Hls.version ? Hls.version : this.version );
+				this.log("version: " + Hls.version ? Hls.version : this.version);
 				mw.setConfig('isHLS_JS', true);
 				this.addBindings();
 			},
@@ -66,11 +63,24 @@
 			 *
 			 */
 			addBindings: function () {
+				this.bind("SourceChange", this.isNeeded.bind(this));
 				this.bind("playerReady", this.initHls.bind(this));
 				this.bind("onChangeMedia", this.clean.bind(this));
 				this.bind("onLiveOffSynchChanged", this.onLiveOffSyncChanged.bind(this));
-				if( mw.getConfig("hlsLogs") ) {
+				if (mw.getConfig("hlsLogs")) {
 					this.bind("monitorEvent", this.monitorDebugInfo.bind(this));
+				}
+			},
+			/**
+			 * Check if HLS engine is required, e.g. the selected source is HLS
+			 */
+			isNeeded: function () {
+				if (this.getPlayer().mediaElement.selectedSource.mimeType === "application/vnd.apple.mpegurl") {
+					this.LoadHLS = true;
+					//Set streamerType to hls
+					this.embedPlayer.streamerType = 'hls';
+				} else {
+					this.LoadHLS = false;
 				}
 			},
 			/**
@@ -78,7 +88,8 @@
 			 */
 			clean: function () {
 				this.log("Clean");
-				if (this.loaded) {
+				if (this.LoadHLS && this.loaded) {
+					this.LoadHLS = false;
 					this.loaded = false;
 					this.unRegisterHlsEvents();
 					this.restorePlayerMethods();
@@ -91,10 +102,8 @@
 			 * Register the playback events and attach the playback engine to the video element
 			 */
 			initHls: function () {
-				if (!this.loaded) {
+				if (this.LoadHLS && !this.loaded) {
 					this.log("Init");
-					//Set streamerType to hls
-					this.embedPlayer.streamerType = 'hls';
 					//Init the HLS playback engine
 					this.hls = new Hls(this.getConfig("options"));
 
@@ -113,7 +122,7 @@
 					if (!mw.isIE() || (mw.isIE() && this.getPlayer().isLive())) {
 						this.hls.attachMedia(this.getPlayer().getPlayerElement());
 					} else {
-						this.bind("firstPlay", function(){
+						this.bind("firstPlay", function () {
 							this.hls.attachMedia(this.getPlayer().getPlayerElement());
 						}.bind(this));
 
@@ -186,9 +195,9 @@
 				this.log("Media attached");
 				//Once media is attached load the manifest
 				var selectedSource = this.getPlayer().getSrc();
-				if( selectedSource ){
-					this.getPlayer().resolveSrcURL( selectedSource ).then(
-						function(source){
+				if (selectedSource) {
+					this.getPlayer().resolveSrcURL(selectedSource).then(
+						function (source) {
 							this.hls.loadSource(source);
 						}.bind(this),
 						function () { //error
@@ -215,11 +224,11 @@
 				//data: { samples : [ id3 pes - pts and dts timestamp are relative, values are in seconds]}
 
 				//Get the data from the event + Unicode transform
-				var id3TagData = String.fromCharCode.apply( null, new Uint8Array( data.samples[data.samples.length-1].data ) );
+				var id3TagData = String.fromCharCode.apply(null, new Uint8Array(data.samples[data.samples.length - 1].data));
 				//Get the JSON substring
-				var id3TagString=id3TagData.substring(id3TagData.indexOf("{"), id3TagData.lastIndexOf("}")+1);
+				var id3TagString = id3TagData.substring(id3TagData.indexOf("{"), id3TagData.lastIndexOf("}") + 1);
 				//Parse JSON
-				var id3Tag=JSON.parse(id3TagString);
+				var id3Tag = JSON.parse(id3TagString);
 
 				this.getPlayer().triggerHelper('onId3Tag', id3Tag);
 			},
@@ -228,10 +237,10 @@
 				//data: { moof : moof MP4 box, mdat : mdat MP4 box, startPTS : PTS of first sample, endPTS : PTS of last sample, startDTS : DTS of first sample, endDTS : DTS of last sample, type : stream type (audio or video), nb : number of samples}
 				this.getPlayer().triggerHelper('hlsFragParsingData', data);
 				/*
-				if(data.type === 'video') {
-					mw.log("hlsjs :: onFragParsingData | startPTS = " + mw.seconds2npt(data.startPTS) + " >> endPTS = " + mw.seconds2npt(data.endPTS) + " | startDTS = " + mw.seconds2npt(data.startDTS) + " >> endDTS = " + mw.seconds2npt(data.endDTS));
-				}
-				*/
+				 if(data.type === 'video') {
+				 mw.log("hlsjs :: onFragParsingData | startPTS = " + mw.seconds2npt(data.startPTS) + " >> endPTS = " + mw.seconds2npt(data.endPTS) + " | startDTS = " + mw.seconds2npt(data.startDTS) + " >> endDTS = " + mw.seconds2npt(data.endDTS));
+				 }
+				 */
 			},
 			onPTSUpdated: function (e, data) {
 				//fired when a level's PTS information has been updated after parsing a fragment
@@ -249,7 +258,7 @@
 				//triggered when FPS drop in last monitoring period is higher than given threshold
 				//data: {curentDropped : nb of dropped frames in last monitoring period, currentDecoded: nb of decoded frames in last monitoring period, totalDropped : total dropped frames on this video element}
 				this.getPlayer().triggerHelper('hlsDropFPS', data.totalDropped);
-				mw.log("hlsjs :: onDropFrames | totalDropped = "+data.totalDropped);
+				mw.log("hlsjs :: onDropFrames | totalDropped = " + data.totalDropped);
 			},
 			/**
 			 * Extract metadata from parsed manifest data, e.g. ABR etc.
@@ -268,7 +277,7 @@
 			onLevelSwitch: function (event, data) {
 				//Set and report bitrate change
 				var source = this.hls.levels[data.level];
-				var currentBitrate = source.bitrate/ 1024;
+				var currentBitrate = source.bitrate / 1024;
 				this.getPlayer().currentBitrate = currentBitrate;
 				this.getPlayer().triggerHelper('bitrateChange', currentBitrate);
 				//Notify sourceSwitchingStarted
@@ -277,7 +286,7 @@
 				}
 				//fire debug info
 				this.getPlayer().triggerHelper('hlsCurrentBitrate', currentBitrate);
-				mw.log("hlsjs :: onLevelSwitch | level = "+ data.level+" | current bitrate = "+currentBitrate);
+				mw.log("hlsjs :: onLevelSwitch | level = " + data.level + " | current bitrate = " + currentBitrate);
 			},
 			/**
 			 * Trigger source switch ended handler
@@ -287,13 +296,13 @@
 			onFragChanged: function (event, data) {
 				//fired when fragment matching with current video position is changing
 				//data: { frag : fragment object }
-				if ( data && data.frag && data.frag.duration){
+				if (data && data.frag && data.frag.duration) {
 					this.fragmentDuration = data.frag.duration;
 				}
 				if (this.isLevelSwitching &&
 					(data && data.frag && (this.levelIndex == data.frag.level))) {
 					this.isLevelSwitching = false;
-					this.getPlayer().triggerHelper("sourceSwitchingEnd" , this.getPlayer().currentBitrate);
+					this.getPlayer().triggerHelper("sourceSwitchingEnd", this.getPlayer().currentBitrate);
 				}
 				this.getPlayer().triggerHelper('hlsFragChanged', data.frag);
 				//mw.log("hlsjs :: onFragChanged | startPTS = " + mw.seconds2npt(data.frag.startPTS) + " >> endPTS = " + mw.seconds2npt(data.frag.endPTS) + " | url = " + data.frag.url);
@@ -326,12 +335,12 @@
 							// cannot recover
 							this.log("fatal media error encountered, cannot recover");
 							this.clean();
-							if( mw.supportsFlash() ) {
+							if (mw.supportsFlash()) {
 								this.log("Try flash fallback");
 								this.fallbackToFlash();
 							} else {
 								mw.log("MediaError error code: " + error);
-								this.triggerHelper('embedPlayerError', [ data ]);
+								this.triggerHelper('embedPlayerError', [data]);
 							}
 							break;
 					}
@@ -345,7 +354,7 @@
 					this.log("Error: " + data.type + ", " + data.details);
 				}
 			},
-			fallbackToFlash: function(){
+			fallbackToFlash: function () {
 				//In case HLS js fails fallback to Flash OSMF if applicable
 				//1. Remove hls from native players
 				//2. Add Flash player
@@ -429,12 +438,12 @@
 				}, 1000);
 			},
 
-			onLiveOffSyncChanged: function(event, status){
-				if(this.getConfig("options") && !this.defaultLiveMaxLatencyDurationCount){
+			onLiveOffSyncChanged: function (event, status) {
+				if (this.getConfig("options") && !this.defaultLiveMaxLatencyDurationCount) {
 					// Storing the default value as it configured in the defaultConfig for backing to live
 					this.defaultLiveMaxLatencyDurationCount = this.getConfig("options").liveMaxLatencyDurationCount;
 				}
-				if(status){ // going to offSync - liveMaxLatencyDurationCount should be infinity
+				if (status) { // going to offSync - liveMaxLatencyDurationCount should be infinity
 					this.hls.config.liveMaxLatencyDurationCount = Hls.DefaultConfig["liveMaxLatencyDurationCount"];
 				} else { // back to live - restore the default as it configured in the defaultConfig
 					this.hls.config.liveMaxLatencyDurationCount = this.defaultLiveMaxLatencyDurationCount;
@@ -467,13 +476,13 @@
 			/**
 			 * Override player method for loading the video element
 			 */
-			load: function(){
+			load: function () {
 				this.hls.startLoad();
 			},
 			/**
 			 * Override player callback after changing media
 			 */
-			playerSwitchSource: function(src, switchCallback, doneCallback){
+			playerSwitchSource: function (src, switchCallback, doneCallback) {
 				this.getPlayer().play();
 				if ($.isFunction(switchCallback)) {
 					switchCallback();
@@ -482,9 +491,9 @@
 			/**
 			 * Override player method for playback error
 			 */
-			_onerror: function ( evt ) {
-				var errorTxt,mediaError = evt.currentTarget.error;
-				switch(mediaError.code) {
+			_onerror: function (evt) {
+				var errorTxt, mediaError = evt.currentTarget.error;
+				switch (mediaError.code) {
 					case mediaError.MEDIA_ERR_ABORTED:
 						errorTxt = "You aborted the video playback";
 						break;
@@ -499,17 +508,17 @@
 						errorTxt = "The video could not be loaded, either because the server or network failed or because the format is not supported";
 						break;
 				}
-				mw.log("HLS.JS ERROR: "+errorTxt);
+				mw.log("HLS.JS ERROR: " + errorTxt);
 			},
 
-			handleMediaError: function ( ) {
-				if( this.canRecover() ) {
+			handleMediaError: function () {
+				if (this.canRecover()) {
 					this.hls.recoverMediaError();
 				}
 			},
 
-			canRecover: function ( ) {
-				if( this.playerErrorRecoveryCounter > 2 ) {
+			canRecover: function () {
+				if (this.playerErrorRecoveryCounter > 2) {
 					this.playerErrorRecoveryCounter = 0;
 					return false;
 				}
@@ -517,15 +526,15 @@
 				return true;
 			},
 
-			monitorDebugInfo: function ( ) {
+			monitorDebugInfo: function () {
 				//each second trigger debug info: buffer length, dropped frames, current FPS
 				this.debugInfoCounter++;
-				if ( this.debugInfoCounter === this.debugInfoInterval ) {
+				if (this.debugInfoCounter === this.debugInfoInterval) {
 					this.debugInfoCounter = 0;
-					this.getPlayer().triggerHelper('hlsCurrentBuffer', mw.seconds2npt( this.getPlayer().getCurrentBufferLength() ));
+					this.getPlayer().triggerHelper('hlsCurrentBuffer', mw.seconds2npt(this.getPlayer().getCurrentBufferLength()));
 
 					//only webkit browsers expose dropped frames parameter
-					if( mw.isChrome() || mw.isDesktopSafari() ) {
+					if (mw.isChrome() || mw.isDesktopSafari()) {
 						this.getPlayer().triggerHelper('hlsDroppedFrames', this.getPlayer().getPlayerElement().webkitDroppedFrameCount);
 					} else {
 						this.getPlayer().triggerHelper('hlsDroppedFrames', 'not supported');
@@ -539,4 +548,4 @@
 
 		mw.PluginManager.add('hlsjs', hlsjs);
 	}
-} )( window.mw, window.jQuery ,window.Hls);
+})(window.mw, window.jQuery, window.Hls);
