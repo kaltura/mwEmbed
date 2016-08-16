@@ -2,7 +2,6 @@
 <html>
 <head>
     <style type="text/css">
-        @import url(http://fonts.googleapis.com/css?family=Droid+Serif:400,700);
         body {
             overflow:hidden;
         }
@@ -81,12 +80,11 @@
     </style>
     <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
     <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/mediaplayer/1.0.0/media_player.js"></script>
-    <script   src="https://code.jquery.com/jquery-1.12.4.min.js"   integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="   crossorigin="anonymous"></script>
     <script>document.write("<script type='text/javascript' src='mpl.js?v=" + Date.now() + "'><\/script>");</script>
 </head>
 
 <body>
-<div id="kaltura_player" style=" width:98%; height: 98%; position: absolute;z-index: 1"></div>
+<div id="kaltura_player" style=" width:98%; height: 98%; position: absolute;z-index: 1; visibility: hidden;"></div>
 <div id="messages">
     <div style="font-size:140%; font-weight:bold; margin-left:0px;" id="title">Sample Receiver with Media Player Library for DASH/SS/HLS Streaming with DRMs</div>
     <div>App State: <span id="applicationState">-</span></div>
@@ -123,7 +121,7 @@
     <span>License Credentials: <span id="licenseCredentials">false</span></span>
 </div>
 <div id="videoHolder">
-    <video id="receiverVideoElement" style="height:98%; width:100%; position: absolute"></video>
+    <video id="receiverVideoElement" style="height:98%; width:100%; position: absolute" autoplay="autoplay"></video>
 </div>
 <div id="logo"></div>
 <div id="kdebug"></div>
