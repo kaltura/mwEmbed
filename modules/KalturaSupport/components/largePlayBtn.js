@@ -31,7 +31,9 @@
 				if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() && !_this.embedPlayer.isPauseLoading ){
 					if (mw.isChromeCast()){
 						_this.getComponent().removeClass("icon-play").addClass("icon-pause");
-
+						if (e.type !== "onpause" && e.type !== "playerReady"){
+							return;
+						}
 					} else {
 						_this.getComponent().removeClass( "icon-pause" ).addClass( "icon-play" );
 					}
