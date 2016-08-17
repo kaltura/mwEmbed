@@ -49,7 +49,6 @@
 		stopCastTitle: gM( 'mwe-chromecast-stopcast' ),
 
 		receiverName: '',
-		drmConfig: null,
 		MESSAGE_NAMESPACE: 'urn:x-cast:com.kaltura.cast.player',
 
 		isNativeSDK: false, //flag for using native mobile IMA SDK
@@ -134,10 +133,6 @@
 				_this.embedPlayer.layoutBuilder.closeAlert();
 				_this.getComponent().css("color","#35BCDA");
 				_this.updateScreen();
-			});
-
-			$( this.embedPlayer).bind('updateDashContextData', function(e, drmConfig){
-				_this.drmConfig = drmConfig;
 			});
 
 			$( this.embedPlayer).bind('onChangeMedia', function(e){
@@ -306,13 +301,9 @@
 			if (this.embedPlayer.isLive()){
 				this.sendMessage({'type': 'live', 'value': true});
 			}
-			// add DRM support
-			if (this.drmConfig){
-				this.sendMessage({'type': 'license', 'value': this.drmConfig.contextData.widevineLicenseServerURL});
-				this.log("set license URL to: " + this.drmConfig.contextData.widevineLicenseServerURL);
-			}
-			if (this.isNativeSDK){
-				var licenseUrl = this.embedPlayer.buildUdrmLicenseUri("application/dash+xml");
+
+			var licenseUrl = this.buildUdrmLicenseUri("application/dash+xml");
+			if (licenseUrl) {
 				this.sendMessage({'type': 'license', 'value': licenseUrl});
 				this.log("set license URL to: " + licenseUrl);
 			}
@@ -611,7 +602,33 @@
 			return this.mediaCurrentTime;
 		},
 
+		buildUdrmLicenseUri: function(mimeType) {
+			var licenseServer = mw.getConfig('Kaltura.UdrmServerURL');
+			var licenseParams = this.getPlayer().mediaElement.getLicenseUriComponent();
+			var licenseUri = null;
 
+			if (licenseServer && licenseParams) {
+				// Build licenseUri by mimeType.
+				switch (mimeType) {
+					case "video/wvm":
+						// widevine classic
+						licenseUri = licenseServer + "/widevine/license?" + licenseParams;
+						break;
+					case "application/dash+xml":
+						// widevine modular, because we don't have any other dash DRM right now.
+						licenseUri = licenseServer + "/cenc/widevine/license?" + licenseParams;
+						break;
+					case "application/vnd.apple.mpegurl":
+						// fps
+						licenseUri = licenseServer + "/fps/license?" + licenseParams;
+						break;
+					default:
+						break;
+				}
+			}
+
+			return licenseUri;
+		},
 
 		setVolume: function(e, percent){
 			if( !this.currentMediaSession ) {
