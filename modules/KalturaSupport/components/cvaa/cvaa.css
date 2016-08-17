@@ -26,8 +26,9 @@
 	margin-bottom: 20px;
 }
 
-.size-small #kFontFamily{
-	width:100px;
+.cvaa #kFontFamily,
+.cvaa #kEdgeStyle{
+	width:100%;
 }
 
 .fullscreen .screen .cvaaScreenPanel{
