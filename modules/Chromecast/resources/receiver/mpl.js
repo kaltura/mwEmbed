@@ -120,78 +120,78 @@ onload = function () {
 			kdp.sendNotification(payload['event'], [payload['data']]); // pass notification event to the player
 		} else if (payload['type'] === 'setLogo') {
 			document.getElementById('logo').style.backgroundImage = "url(" + payload['logo'] + ")";
-		} else if (payload['type'] === 'embed' && !playerInitialized) {
+		} else if (payload['type'] === 'embed') {
+			if (!playerInitialized) {
+				var playerLib = payload['lib'] + "mwEmbedLoader.php?v=" + Date.now();
+				var s = document.createElement("script");
+				s.type = "text/javascript";
+				s.src = playerLib;
+				document.head.appendChild(s);
 
-			var playerLib = payload['lib'] + "mwEmbedLoader.php?v=" + Date.now();
-			var s = document.createElement("script");
-			s.type = "text/javascript";
-			s.src = playerLib;
-			document.head.appendChild(s);
-
-			var intervalID = setInterval(function(){
-				if (typeof mw !== "undefined"){
-					clearInterval(intervalID);
-					var publisherID = payload['publisherID'];
-					var uiconfID = payload['uiconfID'];
-					var entryID = payload['entryID'];
-					mw.setConfig("EmbedPlayer.HidePosterOnStart", true);
-					if (payload['debugKalturaPlayer'] == true){
-						mw.setConfig("debug", true);
-						mw.setConfig("debugTarget", "kdebug");
-						//mw.setConfig("debugFilter", "---");
-						mw.setConfig("autoScrollDebugTarget", true);
-						document.getElementById('kdebug').style.display = 'block';
-					}
-					mw.setConfig("chromecastReceiver", true);
-					mw.setConfig("Kaltura.ExcludedModules", "chromecast");
-					var fv = {
-						"multiDrm": {
-							'plugin': false
-						},
-						"embedPlayerChromecastReceiver": {
-							'plugin': true
-						},
-						"chromecast": {
-							'plugin': false
+				var intervalID = setInterval(function () {
+					if (typeof mw !== "undefined") {
+						clearInterval(intervalID);
+						var publisherID = payload['publisherID'];
+						var uiconfID = payload['uiconfID'];
+						var entryID = payload['entryID'];
+						mw.setConfig("EmbedPlayer.HidePosterOnStart", true);
+						if (payload['debugKalturaPlayer'] == true) {
+							mw.setConfig("debug", true);
+							mw.setConfig("debugTarget", "kdebug");
+							//mw.setConfig("debugFilter", "---");
+							mw.setConfig("autoScrollDebugTarget", true);
+							document.getElementById('kdebug').style.display = 'block';
 						}
-					};
-					fv = extend(fv, payload['flashVars']);
-					var mimeType = null;
-					var src = null;
-
-					kWidget.embed({
-						"targetId": "kaltura_player",
-						"wid": "_" + publisherID,
-						"uiconf_id": uiconfID,
-						"readyCallback": function (playerId) {
-							if (!playerInitialized){
-								playerInitialized = true;
-								kdp = document.getElementById(playerId);
-								kdp.kBind("broadcastToSender", function(msg){
-									messageBus.broadcast(msg);
-									isInSequence = ( msg == "chromecastReceiverAdOpen" );
-								});
-								kdp.kBind("chromecastReceiverLoaded", function(){
-									setMediaManagerEvents();
-									var msg = "readyForMedia";
-									if (mimeType && src){
-										msg = msg + "|" + src + "|" + mimeType;
-									}
-									messageBus.broadcast(msg);
-								});
-								kdp.kBind("SourceSelected", function(source){
-									mimeType = source.mimeType;
-									src = source.src;
-								});
+						mw.setConfig("chromecastReceiver", true);
+						mw.setConfig("Kaltura.ExcludedModules", "chromecast");
+						var fv = {
+							"multiDrm": {
+								'plugin': false
+							},
+							"embedPlayerChromecastReceiver": {
+								'plugin': true
+							},
+							"chromecast": {
+								'plugin': false
 							}
-						},
-						"flashvars": fv,
-						"cache_st": 1438601385,
-						"entry_id": entryID
-					});
-				}
-			}, 100);
+						};
+						fv = extend(fv, payload['flashVars']);
+						var mimeType = null;
+						var src = null;
 
+						kWidget.embed({
+							"targetId": "kaltura_player",
+							"wid": "_" + publisherID,
+							"uiconf_id": uiconfID,
+							"readyCallback": function (playerId) {
+								if (!playerInitialized) {
+									playerInitialized = true;
+									kdp = document.getElementById(playerId);
+									kdp.kBind("broadcastToSender", function (msg) {
+										messageBus.broadcast(msg);
+										isInSequence = ( msg == "chromecastReceiverAdOpen" );
+									});
+									kdp.kBind("chromecastReceiverLoaded", function () {
+										setMediaManagerEvents();
+										var msg = "readyForMedia";
+										if (mimeType && src) {
+											msg = msg + "|" + src + "|" + mimeType;
+										}
+										messageBus.broadcast(msg);
+									});
+									kdp.kBind("SourceSelected", function (source) {
+										mimeType = source.mimeType;
+										src = source.src;
+									});
+								}
+							},
+							"flashvars": fv,
+							"cache_st": 1438601385,
+							"entry_id": entryID
+						});
+					}
+				}, 100);
+			}
 		} else {
 			licenseUrl = null;
 		}
