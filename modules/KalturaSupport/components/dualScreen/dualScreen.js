@@ -31,6 +31,7 @@
 					"cursor": "move",
 					"containment": "parent"
 				},
+				"mobileTag": null,
 				"menuFadeout": 5000,
 				"resizeHandlesFadeout": 5000,
 				"mainViewDisplay": 0, // DONT USE THIS - obslete... 1 - Main stream, 2 - Presentation
@@ -879,6 +880,10 @@
 
 				if (!this.streamSelector && !this.streamSelectorLoaded) {
 					this.streamSelector = new mw.streamSelectorUtils.selector(this.getPlayer(), function () {
+						//Ignor tag if set and if this is mobile device
+						if(_this.getConfig("mobileTag") != null && !mw.isMobileDevice()){
+							this.setConfig("ignoreTag",_this.getConfig("mobileTag"));
+						}
 						this.getStreams();
 						this.readyAndHasStreams.promise()
 							.then(function () {

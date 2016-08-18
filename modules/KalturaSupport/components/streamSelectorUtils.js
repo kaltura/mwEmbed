@@ -6,7 +6,8 @@
 
         defaultConfig: {
             "defaultStream": 1,
-            "maxNumOfStream": 4
+            "maxNumOfStream": 4,
+            "ignoreTag" : null
         },
 
         streams: [],
@@ -60,7 +61,7 @@
             this.bind('changeStream', function (e, arg) {
                 _this.externalSetStream(arg);
             });
-            
+
             this.bind('onChangeMedia', function () {
                 if (!_this.streamChanging){
                     _this.streams = [];
@@ -78,6 +79,7 @@
                 'filter:typeEqual': 1,
                 'filter:parentEntryIdEqual': this.getPlayer().kentryid
             });
+
 
             var i = 0;
             var maxNumOfStream = this.getConfig("maxNumOfStream");
@@ -106,16 +108,19 @@
             var subStreamsData = data.slice(1);
             if (subStreams && subStreams.length > 0) {
                 $.each( subStreams, function ( i, subStream ) {
-                    if (subStreamsData[i]) {
-                        _this.streams.push( {
-                            id: subStream.id,
-                            data: {
-                                meta: subStream,
-                                contextData: {
-                                    flavorAssets: subStreamsData[i].objects
-                                }
-                            }
-                        } );
+					//if ignoreTag is set don't push it
+                    if(!(_this.getConfig("ignoreTag") != null && subStream.tags && subStream.tags.indexOf(_this.getConfig("ignoreTag")>-1)  )){
+						if (subStreamsData[i]) {
+							_this.streams.push( {
+								id: subStream.id,
+								data: {
+									meta: subStream,
+									contextData: {
+										flavorAssets: subStreamsData[i].objects
+									}
+								}
+							} );
+						}
                     }
                 } );
             } else {
