@@ -128,6 +128,10 @@
 				});
 			});
 
+			this.bind('onChangeMedia', function () {
+				_this.handlersAreSet = false;
+			});
+
 			this.bind('preShowScreen', function (event, screenName) {
 
 				_this.initPreviewUpdate();

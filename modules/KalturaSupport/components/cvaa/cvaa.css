@@ -26,8 +26,9 @@
 	margin-bottom: 20px;
 }
 
-.size-small #kFontFamily{
-	width:100px;
+.cvaa #kFontFamily,
+.cvaa #kEdgeStyle{
+	width:100%;
 }
 
 .fullscreen .screen .cvaaScreenPanel{
@@ -121,7 +122,10 @@
 	margin-top: 60px;
 	margin-right: 25px;
 }
-.size-small .cvaa #cvaaButtons,
+.size-small .cvaa #cvaaButtons{
+	margin-top: 0;
+	margin-right: 0;
+}
 .size-medium .cvaa #cvaaButtons{
 	margin-top: 30px;
 	margin-right: 0;
