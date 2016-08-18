@@ -91,7 +91,7 @@
 				var ticks = 0;
 				var intervalID = setInterval(function () {
 					ticks++;
-					if (typeof _this.chromeLib !== "undefined" && typeof _this.chromeLib.cast !== "undefined" && _this.chromeLib.cast.isAvailable) {
+					if (_this.chromeLib !== null && typeof _this.chromeLib !== "undefined" && typeof _this.chromeLib.cast !== "undefined" && _this.chromeLib.cast.isAvailable) {
 						_this.initializeCastApi();
 						clearInterval(intervalID);
 					} else {
@@ -707,7 +707,7 @@
 						var mediaInfo = new _this.chromeLib.cast.media.MediaInfo( currentMediaURL );
 						mediaInfo.contentType = mimeType;
 						_this.request = new _this.chromeLib.cast.media.LoadRequest( mediaInfo );
-						_this.request.autoplay = false;
+						_this.request.autoplay = true;
 						_this.request.currentTime = 0;
 
 						var payload = {
