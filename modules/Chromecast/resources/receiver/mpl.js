@@ -22,16 +22,16 @@ var mediaPlayer = null;  // an instance of cast.player.api.Player
 var playerInitialized = false;
 var isInSequence = false;
 var debugMode = false;
+var kdp;
 
 onload = function () {
-	var kdp;
 	if (debugMode){
 		cast.receiver.logger.setLevelValue(cast.receiver.LoggerLevel.DEBUG);
 		cast.player.api.setLoggerLevel(cast.player.api.LoggerLevel.DEBUG);
 	}
 
 	mediaElement = document.getElementById('receiverVideoElement');
-	mediaElement.autoplay = false;
+	mediaElement.autoplay = true;
 	setMediaElementEvents(mediaElement);
 	mediaManager = new cast.receiver.MediaManager(mediaElement);
 
@@ -115,14 +115,14 @@ onload = function () {
 			customData = payload['value'];
 			setDebugMessage('customData', customData);
 		} else if (payload['type'] === 'load') {
-			setMediaManagerEvents();
+			//setMediaManagerEvents();
 		} else if (payload['type'] === 'notification') {
 			kdp.sendNotification(payload['event'], [payload['data']]); // pass notification event to the player
 		} else if (payload['type'] === 'setLogo') {
 			document.getElementById('logo').style.backgroundImage = "url(" + payload['logo'] + ")";
 		} else if (payload['type'] === 'embed') {
 			if (!playerInitialized) {
-				var playerLib = payload['lib'] + "mwEmbedLoader.php?v=" + Date.now();
+				var playerLib = payload['lib'] + "mwEmbedLoader.php";
 				var s = document.createElement("script");
 				s.type = "text/javascript";
 				s.src = playerLib;
@@ -696,6 +696,8 @@ function setCastReceiverManagerEvents() {
 
 function setMediaElementEvents(mediaElement) {
 	mediaElement.addEventListener('loadstart', function (e) {
+		kdp.sendNotification("loadstart");
+		document.getElementById("kaltura_player").style.visibility = "visible";
 		console.log('######### MEDIA ELEMENT LOAD START');
 		setDebugMessage('mediaElementState', 'Load Start');
 		messageBus.broadcast("mediaElement: Load Start");
