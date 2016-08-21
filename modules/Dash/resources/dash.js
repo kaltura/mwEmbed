@@ -83,7 +83,7 @@
 
 					var selectedSource = this.getPlayer().getSrc();
 
-					_this.getPlayer().resolveSrcURL(selectedSource)
+					this.getPlayer().resolveSrcURL(selectedSource)
 						.done(function (manifestSrc) {  // success
 							selectedSource = manifestSrc;
 						})
@@ -312,5 +312,14 @@
 		});
 
 		mw.PluginManager.add('Dash', dash);
+
+		var playerConfig = window.kalturaIframePackageData.playerConfig;
+		if (playerConfig && playerConfig.plugins && !playerConfig.plugins["dash"]) {
+			playerConfig.plugins["dash"] = {
+				plugin : true
+			};
+			mw.setConfig('KalturaSupport.PlayerConfig', playerConfig);
+		}
 	}
-})(window.mw, window.jQuery, window.shaka);
+})
+(window.mw, window.jQuery, window.shaka);

@@ -1,7 +1,7 @@
 {
     "multiDrm": {
       "scripts": "resources/mw.MultiDRM.js",
-      "dependencies": ["mw.KBasePlugin"],
+      "dependencies": ["mw.KBasePlugin", "dash"],
       "kalturaPluginName": "multiDrm"
     },
     "mw.FPS": {
