@@ -936,7 +936,7 @@
 			mw.log( 'DoubleClick:: onAdsManagerLoaded' );
 
 			var adsRenderingSettings = new google.ima.AdsRenderingSettings();
-			if (!this.getConfig("adTagUrl")){
+			if (!this.adTagUrl){
 				adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true; // for manual VAST, get the SDK to restore the player
 			}
 			if ( this.getConfig( 'enableCountDown' ) === true){
