@@ -2241,30 +2241,19 @@
 		inPreSequence: false,
 		replayEventCount: 0,
 		play: function () {
+			if (this.seeking){
+				this.log("Play while seeking, will play after seek!");
+				this.stopAfterSeek = false;
+				return false;
+			}
 			var _this = this;
 			var $this = $(this);
-
-			if (!this.casting && !mw.getConfig("EmbedPlayer.ForceNativeComponent")  ) {
-				if (this.seeking){
-					this.log("Play while seeking, will play after seek!");
-					this.stopAfterSeek = false;
-					return false;
-				}
-
-				if (this.currentState == "end") {
-					// prevent getting another clipdone event on replay
-					this.stopPlayAfterSeek = false;
-					this.seek(0.01, false);
-					return false;
-				}
-			} else {
-				if (this.currentState == "end") {
-					// prevent getting another clipdone event on replay
-					this.stopPlayAfterSeek = false;
-					this.seek(0.01, false);
-				}
+			if (this.currentState == "end") {
+				// prevent getting another clipdone event on replay
+				this.stopPlayAfterSeek = false;
+				this.seek(0.01, false);
+				return false;
 			}
-
 			// Store the absolute play time ( to track native events that should not invoke interface updates )
 			mw.log("EmbedPlayer:: play: " + this._propagateEvents + ' isStopped: ' + _this.isStopped());
 			this.absoluteStartPlayTime = new Date().getTime();
