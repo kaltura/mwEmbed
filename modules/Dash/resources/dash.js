@@ -315,8 +315,9 @@
 
 		var playerConfig = window.kalturaIframePackageData.playerConfig;
 		if (playerConfig && playerConfig.plugins && !playerConfig.plugins["dash"]) {
-			playerConfig.plugins["dash"] = {};
-			playerConfig.plugins["dash"].plugin = true;
+			playerConfig.plugins["dash"] = {
+				plugin : true
+			};
 			mw.setConfig('KalturaSupport.PlayerConfig', playerConfig);
 		}
 	}
