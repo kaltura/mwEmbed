@@ -402,7 +402,7 @@
 			});
 
 			var doPlay = function(){
-				if (_this.parent_play()) {
+				if (_this.parent_play() || _this.casting) {
 					if (_this.getPlayerElement()) { // update player
 						_this.getPlayerElement().play();
 					}
