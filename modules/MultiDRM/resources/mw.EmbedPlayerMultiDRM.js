@@ -531,7 +531,7 @@
 
 			_this.boundedEventHandler = _this.boundedEventHandler || _this.nativeEventsHandler.bind(this);
 			$.each(_this.nativeEvents, function (inx, eventName) {
-				if (mw.isIOS8_9() && mw.isIphone() && eventName === "seeking") {
+				if (mw.isIOSAbove7() && mw.isIphone() && eventName === "seeking") {
 					return;
 				}
 
@@ -620,7 +620,7 @@
 				this.hidePlayerOffScreen();
 			}
 
-			if ( seekTime === 0 && this.isLive() && mw.isIpad() && !mw.isIOS8_9() ) {
+			if ( seekTime === 0 && this.isLive() && mw.isIpad() && !mw.isIOSAbove7() ) {
 				//seek to 0 doesn't work well on live on iOS < 8
 				seekTime = 0.01;
 				this.log( "doSeek: fix seekTime to 0.01" );
@@ -1318,7 +1318,7 @@
 			// we don't want to trigger the seek event for these "fake" onseeked triggers
 			if ((this.mediaElement.selectedSource.getMIMEType() === 'application/vnd.apple.mpegurl') &&
 				( ( Math.abs(this.currentSeekTargetTime - this.getPlayerElement().currentTime) > 2) ||
-					( this.currentSeekTargetTime > 0.01 && ( mw.isIpad() && !mw.isIOS8_9() ) ) ) ) {
+					( this.currentSeekTargetTime > 0.01 && ( mw.isIpad() && !mw.isIOSAbove7() ) ) ) ) {
 
 				this.log( "Error: seeked triggred with time mismatch: target:" +
 					this.currentSeekTargetTime + ' actual:' + this.getPlayerElement().currentTime );

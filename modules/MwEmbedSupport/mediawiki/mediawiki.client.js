@@ -155,8 +155,13 @@
 		return ( /OS 8_/.test(userAgent) || /Version\/8/.test(userAgent) ) && mw.isIOS();
 	};
 	mw.isIOS9 = function () {
-		// Known Limitation - It will return false for iOS8 Simulator
+		// Known Limitation - It will return false for iOS9 Simulator
 		return ( /OS 9_/.test(userAgent) || /Version\/9/.test(userAgent) ) && mw.isIOS();
+	};
+
+	mw.isIOS10 = function () {
+		// Known Limitation - It will return false for iOS10 Simulator
+		return ( /OS 10_/.test(userAgent) || /Version\/10/.test(userAgent) ) && mw.isIOS();
 	};
 
 	mw.isIOSBelow9 = function () {
@@ -165,8 +170,8 @@
 		return mw.isIOS() && (mw.isIOS3() || mw.isIOS4() || mw.isIOS5() || mw.isIOS6() || mw.isIOS7() || mw.isIOS8());
 	};
 	
-	mw.isIOS8_9 = function () {
-		return mw.isIOS8() || mw.isIOS9();
+	mw.isIOSAbove7 = function () {
+		return mw.isIOS8() || mw.isIOS9() || mw.isIOS10;
 	};
 
 	mw.isSilk = function () {
