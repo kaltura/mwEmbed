@@ -2,7 +2,7 @@
 
 	// Add chromecast player:
 	$( mw ).bind('EmbedPlayerUpdateMediaPlayers', function( event, mediaPlayers ){
-		var chromecastSupportedProtocols = ['video/h264', 'video/mp4', 'application/vnd.apple.mpegurl'];
+		var chromecastSupportedProtocols = ['video/mp4'];
 		var chromecastPlayer = new mw.MediaPlayer( 'chromecast', chromecastSupportedProtocols, 'Chromecast' );
 		mediaPlayers.addPlayer( chromecastPlayer );
 	});
