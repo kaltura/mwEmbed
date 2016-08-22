@@ -5,6 +5,7 @@
 		setup: function () {
 			//If both FPS certificate is available and FPS is supported then
 			//use hls on native html5 video tag and FPS plugin will handle DRM flow
+			var _this = this;
 			var player = this.getPlayer();
 			var cert = this.getFpsCertificate(player);
 			if (cert && mw.isDesktopSafari()) {
@@ -13,8 +14,11 @@
 					mediaPlayers.removeMIMETypePlayers('video/playreadySmooth', 'Silverlight');
 					mediaPlayers.removeMIMETypePlayers('video/ism', 'Silverlight');
 				});
+				// if we are loading FPS we need to wait until module is loaded then use asyncInit
+				this.asyncInit = true;
 				this.loadHlsFpsHandler().then(function () {
 					mw.fps = new mw.FPS(player, function () {
+						_this.initCompleteCallback();
 					}, "FPS");
 				});
 			} else if (this.isCastLabsNeeded()) {
