@@ -184,7 +184,7 @@
             var params = this.base64EncodeUint8Array(message);
             var serverProcessSPCPath = this.getLicenseUri();
             request.open('POST', serverProcessSPCPath, true);
-            request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            request.setRequestHeader("Content-type", "application/json");
             request.send(params);
         },
         /**
