@@ -105,7 +105,6 @@
 			});
 		},
 		switchPlaySource: function( source, switchCallback ){
-			$(this).trigger("chromecastSwitchMedia", [source.src, source.mimeType]);
 			this.vid.mediaLoadedCallback = switchCallback;
 		},
 

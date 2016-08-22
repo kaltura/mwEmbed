@@ -120,6 +120,8 @@ onload = function () {
 			kdp.sendNotification(payload['event'], [payload['data']]); // pass notification event to the player
 		} else if (payload['type'] === 'setLogo') {
 			document.getElementById('logo').style.backgroundImage = "url(" + payload['logo'] + ")";
+		} else if (payload['type'] === 'changeMedia') {
+			kdp.sendNotification('changeMedia', {"entryId": payload['entryId']});
 		} else if (payload['type'] === 'embed') {
 			if (!playerInitialized) {
 				var playerLib = payload['lib'] + "mwEmbedLoader.php";
@@ -173,15 +175,13 @@ onload = function () {
 									});
 									kdp.kBind("chromecastReceiverLoaded", function () {
 										setMediaManagerEvents();
-										var msg = "readyForMedia";
-										if (mimeType && src) {
-											msg = msg + "|" + src + "|" + mimeType;
-										}
-										messageBus.broadcast(msg);
 									});
 									kdp.kBind("SourceSelected", function (source) {
 										mimeType = source.mimeType;
 										src = source.src;
+										var msg = "readyForMedia";
+										msg = msg + "|" + src + "|" + mimeType;
+										messageBus.broadcast(msg);
 									});
 								}
 							},
