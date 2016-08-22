@@ -66,7 +66,7 @@ body {
 .mobileSkin.pluginsScreenOpened .topBarContainer {
     display: none !important;
 }
-.mobileSkin.start-state .topBarContainer{
+.mobileSkin.start-state .topBarContainer, .mobileSkin.start-state .controlBarContainer{
     display: none;
 }
 .sideBarContainerReminder{
