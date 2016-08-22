@@ -249,6 +249,16 @@
 				}
 			},
 
+			/**
+			 * Override player callback after changing media
+			 */
+			playerSwitchSource: function (src, switchCallback, doneCallback) {
+				this.getPlayer().play();
+				if ($.isFunction(switchCallback)) {
+					switchCallback();
+				}
+			},
+
 			onSwitchAudioTrack: function (event, data) {
 				var selectedAudioTracks = this.getTracksByType("audio")[data.index];
 				player.configure({
@@ -289,8 +299,10 @@
 			 */
 			clean: function () {
 				if (this.LoadShaka && this.loaded) {
-					this.LoadShaka = false;
 					this.log("Clean");
+					this.LoadShaka = false;
+					this.loaded = false;
+					player.destroy();
 					this.restorePlayerMethods();
 				}
 			},
@@ -300,13 +312,16 @@
 			 */
 			overridePlayerMethods: function () {
 				this.orig_switchSrc = this.getPlayer().switchSrc;
+				this.orig_playerSwitchSource = this.getPlayer().playerSwitchSource;
 				this.getPlayer().switchSrc = this.switchSrc.bind(this);
+				this.getPlayer().playerSwitchSource = this.playerSwitchSource.bind(this);
 			},
 			/**
 			 * Disable override player methods for Dash playback
 			 */
 			restorePlayerMethods: function () {
 				this.getPlayer().switchSrc = this.orig_switchSrc;
+				this.getPlayer().playerSwitchSource = this.orig_playerSwitchSource;
 			}
 
 		});
