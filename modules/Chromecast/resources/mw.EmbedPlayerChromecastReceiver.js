@@ -180,7 +180,12 @@
 				}
 			}
 		},
-
+		changeMediaCallback: function (callback) {
+			this.changeMediaStarted = false;
+			if (callback){
+				callback();
+			}
+		},
 		// override these functions so embedPlayer won't try to sync time
 		syncCurrentTime: function(){
 			this.currentTime = this.getPlayerElementTime();

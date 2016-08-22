@@ -2,7 +2,7 @@
 
 	// Add chromecast player:
 	$( mw ).bind('EmbedPlayerUpdateMediaPlayers', function( event, mediaPlayers ){
-		var chromecastSupportedProtocols = ['video/mp4'];
+		var chromecastSupportedProtocols = ['video/h264', 'video/mp4', 'application/vnd.apple.mpegurl'];
 		var chromecastPlayer = new mw.MediaPlayer( 'chromecast', chromecastSupportedProtocols, 'Chromecast' );
 		mediaPlayers.addPlayer( chromecastPlayer );
 	});
@@ -107,7 +107,6 @@
 			var _this = this;
 			this.bind('chromecastPlay', function(){_this.playMedia();});
 			this.bind('chromecastPause', function(){_this.pauseMedia();});
-			this.bind('chromecastSwitchMedia', function(e, url, mime){_this.loadMedia(url, mime);});
 			this.bind('chromecastGetCurrentTime', function(){_this.getCurrentTime();});
 			this.bind('chromecastSetVolume', function(e, percent){_this.setVolume(e,percent);});
 			this.bind('chromecastSeek', function(e, percent){_this.seekMedia(percent);});
@@ -136,6 +135,7 @@
 			});
 
 			$( this.embedPlayer).bind('onChangeMedia', function(e){
+				_this.sendMessage({'type': 'changeMedia', 'entryId': _this.embedPlayer.kentryid});
 				_this.savedPosition = 0;
 				_this.pendingReplay = false;
 				_this.pendingRelated = false;
