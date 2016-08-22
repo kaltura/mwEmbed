@@ -42,13 +42,8 @@
 			});
 
 			this.bind('onShowControlBar', function(){
-				if( !mw.isIE8() && _this.getConfig("togglePause") && _this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() ){
-					if (mw.isChromeCast()){
-						_this.getComponent().removeClass("icon-pause").addClass("icon-play");
-
-					} else {
-						_this.getComponent().removeClass( "icon-play" ).addClass( "icon-pause" );
-					}
+				if( !mw.isIE8() && _this.getConfig("togglePause") && (_this.embedPlayer.isPlaying() || mw.isChromeCast()) && !_this.embedPlayer.isInSequence() ){
+					_this.getComponent().removeClass("icon-play").addClass("icon-pause");
 					_this.show();
 				}
 			});
@@ -62,7 +57,7 @@
 				if( newState == 'load' || newState == 'play' ){
 					_this.hide(true);
 				}
-				if( newState == 'pause' && _this.getPlayer().isPauseLoading ){
+				if( newState == 'pause' && _this.getPlayer().isPauseLoading && !mw.isChromeCast()){
 					_this.hide();
 				}
 			});
