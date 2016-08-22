@@ -24,7 +24,7 @@
 
 		isCastLabsNeeded: function () {
 			return (mw.isChrome() && !mw.isMobileDevice()) || //for smoothStream over dash
-				((this.isOldIE() || mw.isDesktopSafari()) && this.getPlayer().getKalturaConfig("multiDrm", "forceDASH"));  //for dash over silverLight
+				((this.isOldIE() || mw.isDesktopSafari()) && this.getConfig("forceDASH"));  //for dash over silverLight
 		},
 
 		isOldIE: function () {
@@ -56,7 +56,7 @@
 
 				var multiDRMProtocols = ["video/ism", "video/playreadySmooth"];
 				if ((_this.isOldIE() || mw.isDesktopSafari()) &&
-					_this.getPlayer().getKalturaConfig("multiDrm", "forceDASH")){
+					_this.getConfig("forceDASH")) {
 					multiDRMProtocols.push("application/dash+xml");
 				}
 
