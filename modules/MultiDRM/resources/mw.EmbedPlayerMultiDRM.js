@@ -1,7 +1,7 @@
 /*
  * The "kaltura player" embedPlayer interface for multi DRM
  */
-(function (mw, $, videojs) {
+(function (mw, $) {
 	"use strict";
 
 	mw.EmbedPlayerMultiDRM = {
@@ -233,7 +233,7 @@
 			if (!this.dashPlayerInitialized) {
 				var _this = this;
 				this.dashPlayerInitialized = true;
-				this.playerElement = videojs( this.pid, {
+				this.playerElement = mw.dash.player( this.pid, {
 					autoplay: false,
 					controls: false,
 					preload: "none",
@@ -1387,4 +1387,4 @@
 			}
 		}
 	};
-})(mediaWiki, jQuery, window.videojs);
+})(mediaWiki, jQuery);
