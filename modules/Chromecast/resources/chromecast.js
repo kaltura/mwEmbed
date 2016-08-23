@@ -57,7 +57,6 @@
 		replay: false,
 		inSequence: false,
 		adDuration: null,
-		sendPlayerReady: false, // after changing media we need to send the playerReady event to the chromecast receiver as it doesn't reload the player there
 		supportedPlugins: ['doubleClick', 'youbora', 'kAnalony', 'related', 'comScoreStreamingTag', 'watermark', 'heartbeat'],
 		chromeLib: null,
 
@@ -139,7 +138,6 @@
 				_this.savedPosition = 0;
 				_this.pendingReplay = false;
 				_this.pendingRelated = false;
-				_this.sendPlayerReady = true;
 			});
 
 			$( this.embedPlayer).bind('onAdSkip', function(e){
@@ -163,9 +161,6 @@
 			});
 
 			$(this.embedPlayer).bind('playerReady', function(e) {
-				if (_this.sendPlayerReady){
-					_this.sendMessage({'type': 'notification','event': e.type});
-				}
 				if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
 					// send application ID to native app
 					_this.embedPlayer.getPlayerElement().attr( 'chromecastAppId', _this.getConfig( 'applicationID' ));
@@ -496,10 +491,9 @@
 			// switch to Chromecast player
 			var chromeCastSource = this.getChromecastSource();
 			if (chromeCastSource){
-				// pause the current player if playing
-				this.embedPlayer.pause();
 				// save player, current volume and current position
 				if (this.savedPlayer === null){
+					this.embedPlayer.pause(); // pause the current player if playing
 					this.savedPlayer = this.embedPlayer.selectedPlayer;
 				}
 				// we want to save the position only if we are no in an ad
@@ -562,7 +556,7 @@
 		},
 
 		pauseMedia: function(){
-			if( !this.currentMediaSession ){
+			if( !this.currentMediaSession || (this.currentMediaSession.idleReason && this.currentMediaSession.idleReason == "FINISHED")){
 				return;
 			}
 			this.currentMediaSession.pause(null,
@@ -579,6 +573,9 @@
 		},
 
 		seekMedia: function(pos) {
+			if( !this.currentMediaSession ) {
+				return;
+			}
 			this.log('Seeking ' + this.currentMediaSession.sessionId + ':' +
 					this.currentMediaSession.mediaSessionId + ' to ' + pos + "%");
 			var request = new this.chromeLib.cast.media.SeekRequest();
@@ -758,8 +755,10 @@
 			// stop casting
 			this.session.stop(this.onStopAppSuccess, this.onError);
 			// restore native player
-			this.embedPlayer.selectPlayer(this.savedPlayer);
-			this.savedPlayer = null;
+			if (this.savedPlayer){
+				this.embedPlayer.selectPlayer(this.savedPlayer);
+				this.savedPlayer = null;
+			}
 			this.embedPlayer.disablePlayer();
 			this.embedPlayer.updatePlaybackInterface();
 			this.embedPlayer.enablePlayControls();
