@@ -1,7 +1,8 @@
 ( function( mw, $ , Hls ) {"use strict";
 
 	//Currently use native support when available, e.g. Safari desktop
-	if (Hls.isSupported() && !mw.isDesktopSafari() && !mw.getConfig("disableHLSOnJs")) {
+	if (Hls.isSupported() && !mw.isDesktopSafari() &&
+			(mw.getConfig("LeadWithHLSOnJs")||kWidgetSupport.isLive(kalturaIframePackageData.entryResult))) {
 		// Add HLS Logic player:
 		//Force HLS streamer type
 		mw.setConfig("streamerType", "hls");
