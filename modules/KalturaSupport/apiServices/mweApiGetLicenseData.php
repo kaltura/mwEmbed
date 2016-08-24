@@ -71,7 +71,9 @@ class mweApiGetLicenseData {
             $rawData = $this->getRawData();
 
             $flavorData = $rawData['flavorData'];
-            if (isset($flavorData[$flavorId])) {
+            if (($flavorId == "-1") && (count($flavorData) > 0)){
+                $licenseData = reset($flavorData);
+            } elseif (isset($flavorData[$flavorId])) {
                 $licenseData = $flavorData[$flavorId];
             } else {
                 throw new Exception('flavorId "' . $flavorId . '" not found');
