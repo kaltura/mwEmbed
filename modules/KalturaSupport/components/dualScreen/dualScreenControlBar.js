@@ -45,7 +45,22 @@
 		},
 
         setStreams: function(streams){
-            streams = streams;
+            this.streams = streams;
+            this.renderStreams();
+        },
+
+        renderStreams: function () {
+            this.getComponent().find('.ds-streams')
+                .empty()
+                .append($.map(this.streams || [], function (stream, index) {
+                    return $('<div/>', {
+                        'class': 'ds-stream',
+                        'data-stream-index': index
+                    }).append($('<img/>', {
+                        src: stream.thumbnailUrl,
+                        'class': 'ds-stream__thumb'
+                    }));
+                }));
         },
 
 		getComponent: function ( ) {
@@ -102,15 +117,24 @@
 
 			//Attach control bar action handlers
 			_this.getComponent()
-				.on( 'click' + this.postFix + ' touchstart' + this.postFix, 'li > span', function (e) {
-					e.stopPropagation();
-					e.preventDefault();
-
+				.on( 'click' + this.postFix + ' touchstart' + this.postFix, '.displayControlGroup > .controlBarBtn', function (e) {
 					_this.changeButtonsStyles(this.id, true); // pass clicked indicator in order to open subMenu if needed
 
 					var btn = _this.controlBarComponents[this.id];
 					if (btn && btn.event){
 						_this.embedPlayer.triggerHelper("dualScreenStateChange", {action : btn.event, invoker : 'dualScreenControlBar'});
+					}
+
+					return false;
+				} )
+				.on('click' + this.postFix + ' touchstart' + this.postFix + ' contextmenu' + this.postFix, '.ds-streams > .ds-stream', function (e) {
+					var selectedStream = _this.streams[Number($(this).attr('data-stream-index'))];
+					if (selectedStream) {
+						_this.embedPlayer.triggerHelper('dualScreenStreamChange', {
+							target: e.type === 'contextmenu' ? 'master' : 'slave',
+							stream: selectedStream,
+							invoker: 'dualScreenControlBar'
+						});
 					}
 
 					return false;
@@ -164,7 +188,7 @@
 		changeButtonsStyles : function(activeButtonId, clicked)
 		{
 			var _this = this;
-			var buttons = _this.getComponent().find( "span" );
+			var buttons = _this.getComponent().find(".controlBarBtn");
 			var switchBtn = buttons.filter('[data-type="switch"]');
             var stateButtons = buttons.filter('[data-type="state"]');
             var contentBtn = buttons.filter('[data-type="contentSelection"]');
@@ -174,13 +198,16 @@
             //Change state button disabled state
             if (obj.data("type") === "state" && clicked ) {
                 //show state buttons if selected state was clicked
-                if (obj.hasClass("stateSelected")) {
+                if (obj.hasClass("stateSelected") && !obj.hasClass("subMenuVisible")) {
                     stateButtons.removeClass( "subMenuHidden" );
                     stateButtons.addClass( "subMenuVisible" );
                 }else {
                     stateButtons.removeClass("stateSelected subMenuVisible");
                     stateButtons.addClass("subMenuHidden");
-                    obj.addClass("stateSelected subMenuVisible").removeClass("subMenuHidden");
+
+                    obj
+                        .removeClass("subMenuHidden")
+                        .addClass("stateSelected");
                 }
             }
             if (mw.isNativeApp()){

@@ -79,6 +79,26 @@
             this.url = url;
         },
 
+        changeStream: function (videoUrl, thumbnailUrl) {
+            this.setUrl(videoUrl);
+            this.setPoster(thumbnailUrl);
+
+            if (this.videoSync) {
+                this.videoSync.destroy();
+                this.videoSync = null;
+            }
+
+            var $prevEl = this.$el;
+            this.initPlayerElement();
+            $prevEl.replaceWith(this.$el);
+
+            // var _this = this;
+            // this.$el.on('canplay', function onCanPlay() {
+            //   _this.removeVideoPoster();
+            //   _this.$el.off('canplay', onCanPlay);
+            // });
+        },
+
         getComponent: function () {
             if (!this.$el) {
                 this.initPlayerElement();
@@ -211,7 +231,7 @@
             if (!this.videoSync) {
                 this.videoSync = new mw.dualScreen.videoSync(this.getPlayer(), function () {
                 }, "videoSync");
-                this.videoSync.setMediaGroups([this.$el]);
+                this.videoSync.setMediaGroups([this.$el[0]]);
             }
         },
 
@@ -281,6 +301,7 @@
         updatePosterHTML: function () {
             mw.log('DualScreen :: second screen :: updatePosterHTML ' + this.poster);
             if(this.hasPoster){
+	        $('#secondScreen').find('.playerPoster').attr('src', this.poster);
                 return;
             }
             this.hasPoster = true;
@@ -322,6 +343,10 @@
 
         destroy: function ( ) {
             this.getComponent().remove();
+            if (this.videoSync) {
+                this.videoSync.destroy();
+                this.videoSync = null;
+            }
         }
     });
 })( window.mw, window.jQuery );

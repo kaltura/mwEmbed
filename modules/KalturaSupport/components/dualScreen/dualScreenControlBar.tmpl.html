@@ -1,30 +1,44 @@
-<div id="displayControlBar">
-    <ul class="inline">
-        <li>
-            <span id="switchView" class="controlBarBtn dualScreen-switchView tooltipBelow" data-type="switch" title="<%=buttons.switchView.title%>"></span>
-        </li>
-        <li>
-            <span id="placeHolder" class="controlBarBtn dualScreen-separator"></span>
-            <span id="separator" class="controlBarBtn dualScreen-separator subMenuHidden separator" data-type="state"></span>
+<div id="displayControlBar" class="displayControlBar">
+    <div class="displayControlGroup">
+        <span
+            id="switchView"
+            class="controlBarBtn dualScreen-switchView tooltipBelow"
+            data-type="switch"
+            title="<%=buttons.switchView.title%>"
+        ></span>
+    </div>
 
-            <span id="pip" class="controlBarBtn dualScreen-pip stateSelected tooltipBelow" data-type="state" title="<%=buttons.pip.title%>"></span>
-            <span id="sideBySide" class="controlBarBtn dualScreen-sidebyside subMenuHidden tooltipBelow" data-type="state" title="<%=buttons.sideBySide.title%>"></span>
-            <span id="singleView" class="controlBarBtn dualScreen-singleView subMenuHidden tooltipBelow" data-type="state" title="<%=buttons.singleView.title%>"></span>
-        </li>
-        <!--
-        <li>
-            <span id="chooseStream" class="controlBarBtn dualScreen-contentSelection contentSelection tooltipBelow" data-type="contentSelection" title="<%=buttons.contentSelection.title%>"></span>
+    <div class="displayControlGroup">
+        <!-- placeholder -->
+        <span class="controlBarBtn dualScreen-pip subMenuHidden"></span>
+        <span
+            id="pip"
+            class="controlBarBtn dualScreen-pip stateSelected tooltipBelow"
+            data-type="state"
+            title="<%=buttons.pip.title%>"
+        ></span>
+        <span
+            id="sideBySide"
+            class="controlBarBtn dualScreen-sidebyside subMenuHidden tooltipBelow"
+            data-type="state"
+            title="<%=buttons.sideBySide.title%>"
+        ></span>
+        <span
+            id="singleView"
+            class="controlBarBtn dualScreen-singleView subMenuHidden tooltipBelow"
+            data-type="state"
+            title="<%=buttons.singleView.title%>"
+        ></span>
+    </div>
 
-            <span id="separatorStreams" class="controlBarBtn dualScreen-separator subMenuHidden separator" data-type="state"></span>
+    <div class="displayControlGroup">
+        <span
+            id="chooseStream"
+            class="controlBarBtn dualScreen-contentSelection contentSelection tooltipBelow closed"
+            data-type="contentSelection"
+            title="<%=buttons.contentSelection.title%>"
+        ></span>
 
-            <span>
-                <img class="streamBtn" title="" src="http://cdnsecakmi.kaltura.com/p/959472/sp/95947200/thumbnail/entry_id/0_peh6469l/version/100000/acv/222">
-            </span>
-
-            <span>
-                <img class="streamBtn" title="" src="http://cdnsecakmi.kaltura.com/p/959472/sp/95947200/thumbnail/entry_id/0_mc4bu29f/version/100000/acv/282">
-            </span>
-        </li>
-        -->
-    </ul>
+        <div class="ds-streams"></div>
+    </div>
 </div>

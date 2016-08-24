@@ -117,9 +117,14 @@
 		},
 		addBinding: function(){
 			var _this = this;
-			this.bind( 'playerReady', function (  ) {
-				_this.initializeCuePointsManager();
-			});
+
+			if (this.getPlayer().playerReadyFlag) {
+				this.initializeCuePointsManager();
+			} else {
+				this.bind('playerReady', function () {
+					_this.initializeCuePointsManager();
+				});
+			}
 
 			this.bind('seeked',function()
 			{
@@ -363,6 +368,7 @@
 
         destroy: function ( ) {
             this.getComponent().remove();
+            this.destroyCuePointsManager();
         }
 	} );
 }
