@@ -114,12 +114,19 @@ class mweApiGetLicenseData {
             throw new Exception($resultObject['error']);
         }
         $pluginData = $resultObject['contextData']->pluginData;
+        if (!isset($pluginData['KalturaDrmEntryContextPluginData'])) {
+            throw new Exception("Entry does not have DRM data");
+        }
 		$drmPluginData = (array)$pluginData['KalturaDrmEntryContextPluginData'];
         if (isset($pluginData['KalturaFairplayEntryContextPluginData'])) {
             $fpsPluginData = (array)$pluginData['KalturaFairplayEntryContextPluginData'];
             $fpsCertificate = $fpsPluginData['publicCertificate'];
         } else {
             $fpsCertificate = null;
+        }
+        
+        if (!isset($drmPluginData['flavorData'])) {
+            throw new Exception("Entry does not have DRM flavor data");
         }
 
         $response = array(
