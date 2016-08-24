@@ -71,8 +71,11 @@ class mweApiGetLicenseData {
             $rawData = $this->getRawData();
 
             $flavorData = $rawData['flavorData'];
-            if (($flavorId == "-1") && (count($flavorData) > 0)){
-                $licenseData = reset($flavorData);
+            if (($flavorId == "") && (count($flavorData) > 0)){
+                 reset($flavorData);
+                 $data = each($flavorData);
+                 $flavorId = $data[0];
+                 $licenseData = $data[1];
             } elseif (isset($flavorData[$flavorId])) {
                 $licenseData = $flavorData[$flavorId];
             } else {
