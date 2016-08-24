@@ -75,7 +75,6 @@
                 'service': 'baseEntry',
                 'action': 'list',
                 'filter:objectType': 'KalturaBaseEntryFilter',
-                'filter:typeEqual': 1,
                 'filter:parentEntryIdEqual': this.getPlayer().kentryid
             });
 
