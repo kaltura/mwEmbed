@@ -8,6 +8,28 @@
     },
 
     streamSelectorPromise: null,
+    playerReadyFlag: false,
+
+    setup: function setup() {
+      this.addBindings();
+    },
+
+    addBindings: function addBindings() {
+      var _this = this;
+
+      this.bind('playerReady', function onPlayerReady() {
+        _this.playerReadyFlag = true;
+      });
+
+      this.bind('onChangeMedia', function onChangeMedia() {
+        if (!_this.getStreamSelector().then(function (streamSelector) {
+          if (!streamSelector.streamChanging) {
+            _this.log('resetting playerReadyFlag');
+            _this.playerReadyFlag = false;
+          }
+        }));
+      });
+    },
 
     setStream: function setStream(stream) {
       return this.getStreamSelector().then(function (streamSelector) {
@@ -182,14 +204,16 @@
 
       if (this.getPlayer().getError()) {
         deferred.reject();
+      } else if (this.playerReadyFlag) {
+        deferred.resolve(this.getPlayer());
       } else {
-        this.bind('playerReady', function () {
+        this.bind('playerReady', function  oncePlayerReady() {
           if (_this.getPlayer().getError()) {
             deferred.reject();
           } else {
             deferred.resolve(_this.getPlayer());
           }
-        });
+        }, true);
       }
 
       return deferred.promise();

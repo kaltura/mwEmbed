@@ -132,7 +132,6 @@
                         return;
                     }
 
-                    _this.playerReadyFlag = true;
                     if( _this.resetSecondPlayer ){
                         mw.log('DualScreen - playerReady :: reset second player');
                         _this.resetSecondPlayer = false;
@@ -305,7 +304,6 @@
                     //channel play list
                     if( _this.isPlaylistPersistent() ) {
                         mw.log('DualScreen - onChangeMedia :: play list case - reset flag on');
-                        _this.playerReadyFlag = false;
                         _this.secondScreen = null;
 						_this.abrSourcesLoaded = false;
                         _this.resetSecondPlayer = true;
@@ -753,10 +751,10 @@
 							var screenWidthHeightRatio = _this.getConfig('secondScreen').widthHeightRatio;
 							var screenTop = secondScreenProps.top.replace('px', '');
 							var screenLeft = secondScreenProps.left.replace('px', '');
-							var newWidth = _this.roundPercisionFloat((screenWidth * widthRatio), -2);
-							var newHeight = _this.roundPercisionFloat(screenWidthHeightRatio * newWidth, -2);
-							var topOffset = _this.roundPercisionFloat((screenTop * heightRatio), -2);
-							var leftOffset = _this.roundPercisionFloat((screenLeft * widthRatio), -2);
+							var newWidth = _this.roundPrecisionFloat((screenWidth * widthRatio), -2);
+							var newHeight = _this.roundPrecisionFloat(screenWidthHeightRatio * newWidth, -2);
+							var topOffset = _this.roundPrecisionFloat((screenTop * heightRatio), -2);
+							var leftOffset = _this.roundPrecisionFloat((screenLeft * widthRatio), -2);
 							var screenProps = {
 								height: newHeight + "px",
 								width: newWidth + "px",
@@ -811,7 +809,7 @@
 				);
 			},
 			//Utils
-			roundPercisionFloat: function(value, exp){
+			roundPrecisionFloat: function(value, exp){
 				// If the exp is undefined or zero...
 				if (typeof exp === 'undefined' || +exp === 0) {
 					return Math.round(value);
@@ -850,21 +848,6 @@
                     });
 			},
 
-            waitForPlayerReady: function () {
-                var _this = this;
-                var deferred = $.Deferred();
-                this.bind( 'playerReady.dsPlayerReady', function (  ) {
-                    _this.unbind('playerReady.dsPlayerReady');
-                    if ( _this.getPlayer().instanceOf !== 'Silverlight' ) {
-                        deferred.resolve(_this.getPlayer());
-                    } else {
-                        deferred.reject();
-                    }
-                });
-
-                return deferred.promise();
-            },
-
             loadSecondScreenImage: function(){
                 // check if entry has cue-points (PPT presentation has been recorded)
                 var hasCuePoints = this.hasSlides();
@@ -902,8 +885,9 @@
             },
 
             loadSecondScreenVideo: function(){
-                return $.when(this.getUtils().getPlayableStreamsForSecondPlayer(this.secondPlayer), this.waitForPlayerReady())
-                    .then(function (playableStreams, player) {
+                var player = this.getPlayer();
+                return this.getUtils().getPlayableStreamsForSecondPlayer(this.secondPlayer)
+                    .then(function (playableStreams) {
                         return playableStreams.length ? new mw.dualScreen.videoPlayer(player, function () {
                             var stream = playableStreams[0];
                             this.setUrl(stream.url);
@@ -916,13 +900,15 @@
             handleABR: function ( ) {
                 if ( this.getPlayer().getVideoDisplay().attr('data-display-rule') === 'primary' ) {
                     mw.log("DualScreen :: handleABR :: set kplayer to ABR AUTO and secondPlayer to lowest bitrate");
-                    this.getPlayer().switchSrc(-1);
+                    this.getPlayer().mediaElement.autoSelectSource();
+                    // this.getPlayer().switchSrc(-1);
 					if( this.secondPlayer instanceof mw.dualScreen.videoPlayer && this.secondPlayer.isABR() ) {
 						this.secondPlayer.switchSrc(0);
 					}
                 } else {
                     mw.log("DualScreen :: handleABR :: set secondPlayer to ABR AUTO and kplayer to lowest bitrate");
-                    this.getPlayer().switchSrc(0);
+                    this.getPlayer().switchSrc(this.getPlayer().getSources()[0]);
+                    // this.getPlayer().switchSrc(0);
 					if( this.secondPlayer instanceof mw.dualScreen.videoPlayer && this.secondPlayer.isABR() ) {
 						this.secondPlayer.switchSrc(-1);
 					}
