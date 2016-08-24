@@ -153,7 +153,6 @@
 				function () {
 					mw.log("EmbedPlayerNativeComponent::resolveSrcURL get failed");
 					_this.setSrcAttribute( _this.getSrc() );
-					readyCallback();
 				}
 			);
 		},
