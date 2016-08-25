@@ -131,7 +131,7 @@ Poll (shared)
     -moz-border-radius:3px;
     border-radius:3px;
     overflow:hidden;
-    background:rgba(241,241,241,0.4);
+    background: #8a8a8a;
     text-align: left;
     border : rgba(255,255,255,0.1) solid 1px;
     vertical-align: middle;
@@ -178,13 +178,17 @@ Poll (shared)
     bottom:-4px;
     left:-1px;
     width:0%;
-    background: #4B7418;
+    background: #8ab15f;
     border-radius: 0 6px 6px 0;
     box-shadow: 2px 0 2px 0 rgba(0, 0, 0, 0.25);
     -webkit-transition: width 500ms;
     -moz-transition: width 500ms;
     -o-transition: width 500ms;
     transition: width 500ms ;
+}
+
+.webcastPolls.producer-view .poll .answer .answer-result {
+    background: #8ab15f;
 }
 
 .webcastPolls .poll .answer .answer-text {
@@ -258,7 +262,7 @@ Poll (shared)
 }
 
 .webcastPolls.producer-view .poll .answer.popular .answer-result {
-    background: #4B7418;
+    background: #8ab15f;
 }
 
 .webcastPolls .poll .answer .answer-result-text {
@@ -311,6 +315,10 @@ Poll (shared)
     width: 0;
 }
 
+.webcastPolls.allow-voting .poll .answer .answer-result {
+    background: #7ed321;
+}
+
 /*****************************
 Poll (small)
 *****************************/
@@ -353,7 +361,7 @@ Poll (medium)
 .webcastPolls  .medium-layout .poll-container .question-only-container .text {
     width:524px;
     font-family: Lato;
-    font-family:bold;
+    font-weight: bold;
     font-size: 21px;
     letter-spacing: 0.5px;
     color: #ffffff;
@@ -417,7 +425,7 @@ Poll (medium)
 .webcastPolls .medium-layout .poll .question{
     font-family: Lato;
     font-weight: Bold;
-    font-size: 16px;
+    font-size: 19px;
     letter-spacing: 0.2px;
     color: #ffffff;
 }
@@ -452,7 +460,7 @@ Poll (medium)
 
 .webcastPolls .medium-layout .poll .responds-widget .statistics-icon {
     color: #ffffff;
-    font-size: 103px;
+    font-size: 130px;
     margin-bottom: 5px;
     padding-top: 26.6px;
 }
@@ -466,20 +474,19 @@ Poll (medium)
     height: 34px;
     font-family: Lato;
     font-weight: Bold;
-    font-size: 28.7px;
-    letter-spacing: 2.4px;
+    font-size: 39.9px;
+    letter-spacing: 3.3px;
     text-align: center;
     color: #ffffff;
     margin: auto;
 }
 
 .webcastPolls .medium-layout .poll .responds-widget .responds-text {
-    width: 76.3px;
     height: 13px;
     font-family: Lato;
     font-weight: normal;
-    font-size: 11.1px;
-    letter-spacing: 2.6px;
+    font-size: 15.4px;
+    letter-spacing: 3.6px;
     text-align: center;
     color: #ffffff;
     margin: auto;
@@ -491,7 +498,7 @@ Poll (medium)
 
 .webcastPolls .medium-layout .poll .answer.popular {
     left : -2.5%;
-    height: 53px !important;
+    height: 66px !important;
     line-height: normal !important;
     box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.5);
     border: solid 2.3px #7ed321;
@@ -504,7 +511,7 @@ Poll (medium)
     vertical-align: middle;
     width: 73% !important;
     box-shadow: none;
-    background:rgba(241,241,241,0.4);
+    background: #8a8a8a;
 }
 
 .webcastPolls.producer-view.allow-voting .medium-layout .poll .answer.popular {
@@ -538,7 +545,7 @@ Poll (medium)
     display: inline-block;
     position:relative;
     line-height: normal;
-    height:48px;
+    height: 60px;
 }
 
 
@@ -551,7 +558,7 @@ Poll (medium)
     opacity: 0.8;
     font-family: Lato;
     font-weight: bold;
-    font-size: 13px;
+    font-size: 16px;
     letter-spacing: 0.1px;
     color: #000000;
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.44);
@@ -754,4 +761,3 @@ Poll (large)
 .webcastPolls .large-layout .poll .answer .answer-row {
     clear:both;
 }
-
