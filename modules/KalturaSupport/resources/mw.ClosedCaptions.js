@@ -28,7 +28,7 @@
 			"smartContainer": "qualitySettings",
 			'smartContainerCloseEvent': 'changedClosedCaptions',
 			"forceWebVTT": false, // force using webvtt on-the-fly. only for kalturaAPI captions
-			"enableOptionsMenu": true,
+			"enableOptionsMenu": false,
 			"sortCaptionsAlphabetically": false
 		},
 
