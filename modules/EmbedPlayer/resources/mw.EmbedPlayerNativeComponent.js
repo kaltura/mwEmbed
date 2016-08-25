@@ -311,7 +311,7 @@
 					}
 					_this.updatePosterHTML();
 				}
-				if ( _this.autoplay && mw.isMobileDevice()) {
+				if ( _this.autoplay && mw.isMobileDevice() && !_this.casting) {
 					mw.log("Autoplay = true in Mobile");
 					_this.play();
 					_this.updatePosterHTML();

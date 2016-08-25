@@ -179,6 +179,8 @@ onload = function () {
 									kdp.kBind("SourceSelected", function (source) {
 										mimeType = source.mimeType;
 										src = source.src;
+									});
+									kdp.kBind("widgetLoaded layoutReady", function () {
 										var msg = "readyForMedia";
 										msg = msg + "|" + src + "|" + mimeType;
 										messageBus.broadcast(msg);
