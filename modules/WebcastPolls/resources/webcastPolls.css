@@ -475,6 +475,10 @@ Poll (medium)
     border: solid 2.3px #7ed321;
 }
 
+.webcastPolls .medium-layout .poll .answer.popular .answer-text{
+    width: 79%;
+}
+
 .webcastPolls.producer-view .medium-layout .poll .answer.popular {
     left: 0 !important;
     height:48px !important;
