@@ -1672,11 +1672,11 @@
 		destroy:function(){
 			// remove any old bindings:
 			var _this = this;
-			if ( this.getConfig("adTagUrl") || this.currentAdSlotType === "postroll" ){
+			if ( this.adTagUrl || this.currentAdSlotType === "postroll" ){
 				this.embedPlayer.unbindHelper( this.bindPostfix );
 			}
 			if (!this.isChromeless){
-				if ( this.getConfig("adTagUrl") && this.playingLinearAd ) {
+				if ( this.adTagUrl && this.playingLinearAd ) {
 					this.restorePlayer(true);
 				}
 				$(".ad-skip-btn").remove(); // remove skip button from the DOM
