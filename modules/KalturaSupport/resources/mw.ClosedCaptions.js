@@ -949,41 +949,27 @@
 
 			this.getPlayer().triggerHelper('captionsMenuEmpty');
 
-			//add styles menu as first button
-			if(this.getConfig('enableOptionsMenu')){
-				_this.addOptionsButton(this.optionsMenu.addOptionsBtn());
-			}
+            //add styles menu as first button
+            if (this.getConfig('enableOptionsMenu')) {
+                this.addOptionsButton(this.optionsMenu.addOptionsBtn());
+            }
 
-			// Add Off item as first element
-			if( this.getConfig('showOffButton') && this.getConfig('offButtonPosition') == 'first' ) {
-				this.addOffButton();
-			}
+            // Add Off item as first element
+            if (this.getConfig('showOffButton') && this.getConfig('offButtonPosition') == 'first') {
+                this.addOffButton();
+            }
 
-			var items = [];
-			// Add text sources
-			$.each(sources, function( idx, source ){
-				_this.getMenu().addItem({
-					'label': source.label,
-					'callback': function(){
-						// If this caption is the same as current caption, toggle off captions
-						if( _this.getConfig('toggleActiveCaption') && _this.selectedSource === source ) {
-							_this.selectedSource = null;
-							_this.setConfig('displayCaptions', false);
-						} else {
-							_this.setTextSource( source );
-							_this.embedPlayer.triggerHelper("selectClosedCaptions", source.label);
-							_this.getActiveCaption();
-						}
-					},
-					'active': ( _this.selectedSource === source && _this.getConfig( "displayCaptions" )  )
-				});
-				items.push({'label':source.label, 'value':source.label});
-				if (_this.embedPlayer.isMobileSkin() && _this.selectedSource === source){
-					_this.getMenu().setActive(idx+1);
-				}
-			});
+            var items = [];
+
+            // Add text sources
+            for (var j = 0; j < sources.length; j++) {
+                var src = sources[j];
+                this.addSourceButton(src);
+                items.push({'label': src.label, 'value': src.label});
+            }
 
 			this.getActiveCaption();
+
 			// Add Off item as last element
 			if( this.getConfig('showOffButton') && this.getConfig('offButtonPosition') == 'last' ) {
 				this.addOffButton();
@@ -993,12 +979,42 @@
 				items.unshift({'label':'Off', 'value':'Off'});
 			}
 
+			// If it's a mobile skin we need to set the active caption in the mobile menu
+            if (this.embedPlayer.isMobileSkin()) {
+                var activeText = this.getMenu().$el.find('.active').text();
+                var activeIndex = this.getMenu().mobileMenu.find('option[value="' + activeText + '"]').index();
+                this.getMenu().setActive(activeIndex);
+            }
+
 			// dispatch event to be used by a master plugin if defined
-			this.getPlayer().triggerHelper("updatePropertyEvent",{"plugin": this.pluginName, "property": "captions", "items": items, "selectedItem": this.getMenu().$el.find('.active a').text()});
+            this.getPlayer().triggerHelper("updatePropertyEvent", {
+                "plugin": this.pluginName,
+                "property": "captions",
+                "items": items,
+                "selectedItem": this.getMenu().$el.find('.active a').text()
+            });
 
 			// Allow plugins to integrate with captions menu
 			this.getPlayer().triggerHelper('captionsMenuReady');
 		},
+        addSourceButton: function (src) {
+            var _this = this;
+            _this.getMenu().addItem({
+                'label': src.label,
+                'callback': function () {
+                    // If this caption is the same as current caption, toggle off captions
+                    if (_this.getConfig('toggleActiveCaption') && _this.selectedSource === src) {
+                        _this.selectedSource = null;
+                        _this.setConfig('displayCaptions', false);
+                    } else {
+                        _this.setTextSource(src);
+                        _this.embedPlayer.triggerHelper("selectClosedCaptions", src.label);
+                        _this.getActiveCaption();
+                    }
+                },
+                'active': ( _this.selectedSource === src && _this.getConfig("displayCaptions")  )
+            });
+        },
 		addOffButton: function() {
 			var _this = this;
 			this.getMenu().addItem({
