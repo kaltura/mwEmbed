@@ -57,7 +57,7 @@
 				if( newState == 'load' || newState == 'play' ){
 					_this.hide(true);
 				}
-				if( newState == 'pause' && _this.getPlayer().isPauseLoading && !mw.isChromeCast()){
+				if( newState == 'pause' && _this.getPlayer().isPauseLoading){
 					_this.hide();
 				}
 			});

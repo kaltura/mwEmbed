@@ -188,6 +188,9 @@
 		},
 		// override these functions so embedPlayer won't try to sync time
 		syncCurrentTime: function(){
+			if (this.isPauseLoading && this.currentTime !== this.getPlayerElementTime()){
+				this.isPauseLoading = false;
+			}
 			this.currentTime = this.getPlayerElementTime();
 		},
 
