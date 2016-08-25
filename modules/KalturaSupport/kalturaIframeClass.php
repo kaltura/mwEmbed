@@ -659,10 +659,9 @@ HTML;
 
 		function outputCustomCss(){
     		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
-    		$customStyle = 'false';
     		if (isset($playerConfig['plugins']['theme'])){
     			$theme = $playerConfig['plugins']['theme'];
-    		    $customStyle = '"';
+    			$customStyle = '<style type="text/css">';
     			if (isset($theme['buttonsSize'])){
     				$customStyle = $customStyle . '.mwPlayerContainer:not(.mobileSkin) .controlsContainer, .topBarContainer {font-size: ' . $theme['buttonsSize'] . 'px}';
     			}
@@ -702,9 +701,9 @@ HTML;
                 if (isset($theme['buttonsIconColorDropShadow']) && isset($theme['dropShadowColor'])){
                     $customStyle = $customStyle . '.btn {text-shadow: ' . $theme['dropShadowColor'] . '!important}';
                 }
-    			$customStyle =  $customStyle . '"';
+    			$customStyle =  $customStyle . '</style>' . "\n";
+    			return $customStyle;
     		}
-    		return $customStyle;
     	}
 
 	function getPath() {
@@ -1313,6 +1312,13 @@ HTML;
     <?php $customCss = $this->outputCustomCss(); ?>
 
 	<script type="text/javascript">
+	    if (window['kWidget'] && !window['kWidget'].isMobileDevice()){
+            var head = document.head || document.getElementsByTagName('head')[0];
+            head.appendChild(<?php $customCss ?>);
+	    }
+	</script>
+
+	<script type="text/javascript">
 		(function (document) {
 			if (document.documentMode && document.documentMode <= 9) {
 				var tag = document.createElement('script');
@@ -1325,22 +1331,6 @@ HTML;
 </head>
 <body>
 <?php echo $this->getKalturaIframeScripts(); ?>
-
-<script type="text/javascript">
-    var customCSS = <?php echo $customCss ?>;
-    if (['kWidget'] && !window['kWidget'].isMobileDevice() && customCSS){
-        var head = document.head || document.getElementsByTagName('head')[0];
-        var customStyle = document.createElement('style');
-        customStyle.type = 'text/css';
-        if (customStyle.styleSheet){
-          customStyle.styleSheet.cssText = customCSS;
-        } else {
-          customStyle.appendChild(document.createTextNode(customCSS));
-        }
-        head.appendChild(customStyle);
-    }
-</script>
-
 <?php
 	// wrap in a top level playlist in the iframe to avoid javascript base .wrap call that breaks video playback in iOS
 	if( $this->getUiConfResult()->isPlaylist() ){
