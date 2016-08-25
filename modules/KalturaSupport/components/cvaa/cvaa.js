@@ -332,7 +332,7 @@
 				.map(function(element){
 					var sliderHolder = $( "#" + element.selector );
 					sliderHolder.slider({
-						value:	_this.cvaaSavedSettings[element.default],
+						value:	_this.cvaaSavedSettings[element["default"]],
 						min:	element.min,
 						max:	element.max,
 						slide: function( event, ui ) {
@@ -447,7 +447,7 @@
 			};
 		},
 		isSafeEnviornment: function() {
-			!mw.isIphone();
+			return !mw.isIphone() && !mw.isIE8();
 		}
 	});
 

@@ -53,6 +53,10 @@
 			if(_this.getConfig("enableOptionsMenu")){
 				this.optionsMenu = new mw.closedCaptions.cvaa(this.getPlayer(), function () {
 				}, "cvaa");
+
+				if(!this.optionsMenu.isSafeEnviornment()){
+					this.setConfig('enableOptionsMenu', false );
+				}
 			}
 
 			if( (this.embedPlayer.isOverlayControls() && !this.embedPlayer.getInterface().find( '.controlBarContainer' ).is( ':hidden' )) || this.embedPlayer.useNativePlayerControls() ){
