@@ -52,6 +52,7 @@
 			$(this).bind('layoutBuildDone', function(){
 				this.getVideoHolder().find('video').remove();
 			});
+			this.setPlayerElement(parent.document.getElementById('receiverVideoElement'));
 			this.addBindings();
 			readyCallback();
 		},
@@ -66,7 +67,7 @@
 
 			});
 			this.bindHelper("loadstart", function(){
-				_this.setPlayerElement(parent.document.getElementById('receiverVideoElement'));
+
 				_this.applyMediaElementBindings();
 				mw.log('EmbedPlayerChromecastReceiver:: Setup. Video element: '+_this.getPlayerElement().toString());
 				_this._propagateEvents = true;
