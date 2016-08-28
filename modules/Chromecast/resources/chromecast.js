@@ -741,6 +741,9 @@
 		},
 
 		stopApp: function() {
+			if (!this.casting){
+				return;
+			}
 			clearInterval(this.monitorInterval);
 			var _this = this;
 			this.getComponent().css("color","white");
