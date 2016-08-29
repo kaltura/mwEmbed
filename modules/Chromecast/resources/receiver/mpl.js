@@ -155,6 +155,9 @@ onload = function () {
 							},
 							"chromecast": {
 								'plugin': false
+							},
+							"playlistAPI":{
+								'plugin': false
 							}
 						};
 						fv = extend(fv, payload['flashVars']);
