@@ -3,7 +3,6 @@
     mw.dualScreen = mw.dualScreen || {};
 
     mw.dualScreen.videoSync = mw.KBasePlugin.extend({
-
         isSyncDelay: false,
         skipSyncDelay: false,
         eventListeners: {},
@@ -16,8 +15,15 @@
         },
         addBinding: function(){
             var _this = this;
-            this.bind('playerReady', function(){
-                //_this.setMediaGroups();
+
+            this.bind("bufferStartEvent", function () {
+                _this.log("bufferStartEvent");
+                //start timer. if buffering is more than a second -> pause the slave video
+            });
+
+            this.bind("bufferEndEvent", function () {
+                _this.log("bufferEndEvent");
+                //kill the timer (if exists and resume the slave video
             });
         },
         setMediaGroups: function(groups){
@@ -79,17 +85,12 @@
                 return;
             }
 
-            this.mediaGroupSyncEvents( controller, slaves );
-            if (!controller.paused) {
-                slaves.forEach(slave => slave.play());
-            }
-
             // Declare context sensitive `canplay` handler
             var canPlay = function canPlay() {
-                if ( ++ready === elements.length ) {
-                    // Now that it is safe to play the video, remove the handlers
-                    elements.forEach(function( elem ) {
-                        elem.removeEventListener( "canplay", canPlay, false );
+                if ( ++ready >= slaves.length ) {
+                    // Now that it is safe to play the video
+                    slaves.forEach(function (slave) {
+                        controller.isPlaying() ? slave.play() : slave.pause();
                     });
 
                     this.mediaGroupSync(controller, slaves);
@@ -104,30 +105,22 @@
                 // Set the actual element IDL property `kMediaGroup`
                 //Currently we don't support native mediaGroups. In the future, when native mediaGroups will be fully implemented in the browsers, our custom implementation might be removed
                 elem.kMediaGroup = elem.getAttribute( "kMediaGroup" );
-
-                $(elem).on( "canplay", canPlay, false );
+                $(elem).one('canplay', canPlay);
             });
+
+            this.mediaGroupSyncEvents( controller, slaves );
         },
-        mediaGroupSyncEvents: function (controller, slaves) {
+        mediaGroupSyncEvents: function(controller, slaves){
             var lastSync = 0;
             var synchInterval = 1000;
+            var bufferTimerId;
             var eventsMap = {
                 onplay: function () {
-                    console.info('onplay');
-                    var _this = this;
                     slaves.forEach(function (slave) {
                         mw.log("DualScreen :: videoSync :: onplay :: slave.play");
                         slave.play();
-                        if (slave.isFlashHLS) {
-                            if(_this.skipSyncDelay) {
-                                _this.skipSyncDelay = false;
-                                return;
-                            } else {
-                                _this.triggerDelay();
-                            }
-                        }
                     });
-                }.bind(this),
+                },
                 onpause: function () {
                     slaves.forEach(function(slave){
                         mw.log("DualScreen :: videoSync :: onpause :: slave.pause");
@@ -136,6 +129,7 @@
                 },
                 timeupdate: function () {
                     if (this.isSyncDelay) {
+                        console.info('skipping timeupdate', this.getMasterCurrentTime(controller));
                         return;
                     }
 
@@ -146,24 +140,33 @@
                     }
                 }.bind(this),
                 seeking: function () {
+                    console.info('master seeking', controller.currentSeekTargetTime);
                     var _this = this;
                     slaves.forEach(function(slave){
                         mw.log("DualScreen :: videoSync :: seeking :: slave.pause (FLASH ONLY -> isSyncDelay = true)");
                         slave.pause();
-                        if ( slave.isFlashHLS ) {
+                        if ( slave.isFlash ) {
                             _this.isSyncDelay = true; // manually trigger syncDelay, so we won't sync the slave till the master will fire seeked
                         }
                     });
                 }.bind(this),
                 seeked: function () {
+                    controller.flashCurrentTime = this.getMasterCurrentTime(controller);
+                    controller.updatePlayheadStatus();
+                    console.info('master seeked', this.getMasterCurrentTime(controller));
                     var _this = this;
-                    this.mediaGroupSync(controller, slaves);
+                    // this.mediaGroupSync(controller, slaves);
+
+                    slaves.forEach(function (slave) {
+                        mw.log("DualScreen :: videoSync :: seeked :: slave.play (FLASH ONLY -> isSyncDelay = false)");
+                        if (slave.isFlash) {
+                            _this.isSyncDelay = false; // manually reset syncDelay
+                        }
+                    });
+
                     if ( !controller.paused ) {
                         slaves.forEach(function (slave) {
-                            mw.log("DualScreen :: videoSync :: seeked :: slave.play (FLASH ONLY -> isSyncDelay = false)");
                             slave.play();
-                            _this.isSyncDelay = false; // manually reset syncDelay
-                            _this.skipSyncDelay = true;
                         });
                     }
                 }.bind(this),
@@ -174,35 +177,48 @@
                         slave.pause();
                         slave.setCurrentTime(0.01);
                     });
-                }.bind(this)
+                }.bind(this),
+                bufferStartEvent: function () {
+                    if (controller.seeking || !controller.isPlaying()) {
+                        return;
+                    }
+
+                    console.info('buffer start');
+                    clearTimeout(bufferTimerId);
+
+                    bufferTimerId = setTimeout(function () {
+                        slaves.forEach(function (slave) {
+                            slave.pause();
+                        });
+
+                        bufferTimerId = -1;
+                    }, 1000);
+                },
+                bufferEndEvent: function () {
+                    if (controller.seeking) {
+                        return;
+                    }
+
+                    console.info('buffer end');
+
+                    clearTimeout(bufferTimerId);
+                    if (bufferTimerId < 0 && controller.isPlaying()) {
+                        slaves.forEach(function (slave) {
+                            slave.play();
+                        });
+                    }
+
+                    bufferTimerId = null;
+                }
             };
 
             $(controller).on(eventsMap);
             this.eventListeners[controller.kMediaGroup] = eventsMap;
         },
-        triggerDelay: function ( ) {
-            if( this.syncInterval ) {
-                this.clearSyncIntervat();
-            }
-            var _this = this;
-            this.isSyncDelay = true;
-            mw.log("DualScreen :: videoSync :: isSyncDelay = true");
-
-            this.syncInterval = setInterval(function () {
-                _this.isSyncDelay = false;
-                mw.log("DualScreen :: videoSync :: isSyncDelay = false");
-                _this.clearSyncIntervat();
-            }, 1000);
-        },
-        clearSyncIntervat: function ( ) {
-            clearInterval(this.syncInterval);
-            this.syncInterval = null;
-        },
         mediaGroupSync: function( controller, slaves ) {
             if ( this.isSyncDelay ) {
                 return;
             }
-
             var synchDelayThresholdPositive = 0.05;
             var synchDelayThresholdNegative = (-0.05);
             var maxGap = 4;
@@ -210,9 +226,11 @@
 
             if ( slaves.length ) {
                 slaves.forEach(function( slave ) {
-                    if ( slave.isFlashHLS && slave.isSeeking() ) {
+                    if ( slave.isFlash && slave.isSeeking() ) {
+                        console.info('slave seeking');
                         return;
                     }
+
                     this.log("Check slave sync");
 
                     var doSeek = false;
@@ -227,7 +245,7 @@
                     }
 
                     if (!slave.supportsPlaybackrate) {
-                        if ( slave.isFlashHLS ){
+                        if ( slave.isFlash ){
                             doSeek = (Math.abs(synchDelay) > 1);
                         } else {
                             doSeek = (Math.abs(synchDelay) > 0.5);
@@ -258,17 +276,87 @@
 
                     // if marked for seeking
                     if (doSeek) {
-                        this.log("DualScreen :: videoSync :: mediaGroupSync :: Seeking slave to " + (controller.currentTime + seekAhead));
-                        slave.setCurrentTime(controller.currentTime + seekAhead);
-                        if ( slave.isFlashHLS ) {
-                            this.triggerDelay();
-                        }
+                        this.log("DualScreen :: videoSync :: mediaGroupSync :: Seeking slave to " + (this.getMasterCurrentTime(controller) + seekAhead));
+                        this.seekSlave(slave, controller, this.getMasterCurrentTime(controller), !slave.isABR() ? seekAhead : 0);
+                        // slave.setCurrentTime(controller.currentTime + seekAhead);
                     }
+
                 }.bind(this));
             }
         },
+        seekSlave: function (slave, player, seekTime, aheadTime) {
+            seekTime = seekTime < 0 ? 0 : seekTime;
+            console.info('slave seeking', seekTime, aheadTime);
+
+            var _this = this;
+            var playing = player.isPlaying();
+
+            if (slave.isFlash) {
+                $(slave).one('seeked', function (event, value) {
+                    console.info('slave seeked', value);
+                    clearTimeout(seekTimeoutId);
+                    if (!seekTimeoutId) {
+                        // it can happen that slave seeks not exactly to the
+                        // required seek time. that's why we have to play slave
+                        // and wait up till current times are in sync
+                        var diff = value - seekTime;
+                        if (diff < 0 && Math.abs(diff) > aheadTime) {
+                            console.info('diff > aheadTime. syncing.', diff, aheadTime);
+                            $(slave).on('timeupdate', function onTimeUpdate(event, newTime) {
+                                var newDiff = newTime - seekTime;
+                                if (newDiff > 0 || Math.abs(newDiff) <= aheadTime) {
+                                    console.info('slave timeupdate', newTime, newDiff);
+                                    $(this).off('timeupdate', onTimeUpdate);
+                                    player.hideSpinner();
+                                    player.enablePlayControls();
+                                    player.triggerHelper('dualScreenEnableView');
+                                    _this.isSyncDelay = false;
+                                    playing && player.play();
+                                    !playing && slave.pause();
+                                }
+                            });
+
+                            slave.stopAfterSeek = false;
+                            slave.stopPlayAfterSeek = true;
+                            slave.play();
+                            _this.isSyncDelay = true;
+                        } else {
+                            player.hideSpinner();
+                            player.enablePlayControls();
+                            player.triggerHelper('dualScreenEnableView');
+                            playing && player.play();
+                        }
+                    }
+                });
+
+                var seekTimeoutId = setTimeout(haltMasterAndWaitForSlaves, aheadTime * 1000);
+            }
+
+            slave.setCurrentTime(seekTime + aheadTime);
+
+            function haltMasterAndWaitForSlaves() {
+                if (slave.isSeeking()) {
+                    console.info('halting master');
+                    if (playing) {
+                        console.info('pausing', _this.getMasterCurrentTime(player));
+                        player.pause();
+                        slave.isABR() && slave.play();
+                    }
+
+                    player.addPlayerSpinner();
+                    player.disablePlayControls();
+                    player.triggerHelper('dualScreenDisableView');
+                    seekTimeoutId = null;
+                }
+            }
+        },
+        getMasterCurrentTime: function (controller) {
+            return controller.getPlayerElement().getCurrentTime ?
+                controller.getPlayerElement().getCurrentTime() :
+                controller.getPlayerElement().currentTime;
+        },
         getSyncDelay: function(controller, slave) {
-            var ctMaster = controller.currentTime; // current time in seconds
+            var ctMaster = this.getMasterCurrentTime(controller); // current time in seconds
             var ct = slave.getCurrentTime(); // current time in seconds
             var syncGap = 0; // s
             if ((ctMaster != -1) && (ct != -1) && !this.isInInterval(ct, ctMaster - syncGap, ctMaster)) {

@@ -13,68 +13,69 @@
 				'minimumSequenceDuration': 2
 			}
 		},
-
 		cuePointsManager : null,
 		cuePoints: [],
 		syncEnabled: true,
 		slidesCuePointTypes : null,
-
-		setup: function () {
+		setup: function() {
 			this.addBinding();
+
 			this.initializeSlidesCuePointTypes();
 		},
-
-		initializeSlidesCuePointTypes: function () {
+		initializeSlidesCuePointTypes : function()
+		{
 			// This function takes the filter configuration and map it to relevent structure (backward competability issues)
 			var cuePointTypes = this.getConfig("cuePointType");
 			var slidesCuePointTypes = [];
 
-			if (cuePointTypes && cuePointTypes.length > 0) {
+			if (cuePointTypes && cuePointTypes.length > 0)
+			{
 				$.each(cuePointTypes, function (index, cuePointType) {
 					if (cuePointType.sub && cuePointType.sub.length > 0) {
-						$.each(cuePointType.sub, function (sindex, subType) {
-							slidesCuePointTypes.push({
-								main: cuePointType.main,
-								sub: subType
-						  });
+						$.each(cuePointType.sub,function(sindex, subType)
+						{
+							slidesCuePointTypes.push({main : cuePointType.main, sub : subType});
 						});
 					}
 				});
 			}
 
-			if (slidesCuePointTypes.length > 0) {
+			if (slidesCuePointTypes.length > 0)
+			{
 				this.slidesCuePointTypes = slidesCuePointTypes;
-			} else {
+			}else {
 				this.slidesCuePointTypes = null;
 			}
 		},
 
-		initializeCuePointsManager: function () {
+		initializeCuePointsManager:function()
+		{
 			var _this = this;
-			var player = this.getPlayer();
 
-			// handle cue points only if either live or we have cue points loaded from the server
-			if ((player.isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints")) || player.kCuePoints) {
-				setTimeout(function () {
+			if ((_this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints")) || _this.getPlayer().kCuePoints) {
+				// handle cue points only if either live or we have cue points loaded from the server
+				setTimeout(function()
+				{
 					if (!_this.cuePointsManager) {
-						_this.cuePointsManager = new mw.dualScreen.CuePointsManager(player, $.noop, "imagePlayerCuePointsManager");
+						_this.cuePointsManager = new mw.dualScreen.CuePointsManager(_this.getPlayer(), function () {
+						}, "imagePlayerCuePointsManager");
+
 						_this.cuePointsManager.onCuePointsReached = function (args) {
 							_this.cuePointsReached(args);
 						};
 					}
-				}, 1000);
+				},1000);
 			}
 		},
-
-		destroyCuePointsManager: function () {
+		destroyCuePointsManager:function()
+		{
 			if (this.cuePointsManager) {
 				mw.log("imagePlayer.destroyCuePointsManager(): removing existing instance of cue points manager");
 				this.cuePointsManager.destroy();
 				this.cuePointsManager = null;
 			}
 		},
-
-		cuePointsReached: function (context) {
+		cuePointsReached : function(context) {
 			var cuePoints = context.filter({tags: ['remove-selected-thumb']});
 			cuePoints = cuePoints.concat(context.filter({types: this.slidesCuePointTypes}));
 
@@ -94,11 +95,12 @@
 		canRender: function () {
 			var cuePoints = this.getCuePoints();
 			var cuePointsExist = (cuePoints.length > 0);
-			var player = this.getPlayer();
-
-			return (!player.useNativePlayerControls() &&
-				((player.isLive() && player.isDvrSupported() && mw.getConfig("EmbedPlayer.LiveCuepoints")) ||
-					(!player.isLive() && cuePointsExist)));
+			return (!this.getPlayer().useNativePlayerControls() &&
+				(
+					( this.getPlayer().isLive() && this.getPlayer().isDvrSupported() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) ||
+					( !this.getPlayer().isLive() && cuePointsExist )
+				)
+			);
 		},
 		syncByReachedCuePoints : function()
 		{
@@ -113,27 +115,31 @@
 
 			return false;
 		},
-
 		addBinding: function(){
 			var _this = this;
 
-			this.bind('playerReady', function () {
-				_this.initializeCuePointsManager();
-			});
+			if (this.getPlayer().playerReadyFlag) {
+				this.initializeCuePointsManager();
+			} else {
+				this.bind('playerReady', function () {
+					_this.initializeCuePointsManager();
+				});
+			}
 
-			this.bind('seeked',function () {
+			this.bind('seeked',function()
+			{
 				// Checking if we are pausing, if we do then we need to handle sync from 'seeked' event. otherwise the 'onplay' event will handle the sync
-				if (!_this.getPlayer().isPlaying()) {
+				if (!_this.getPlayer().isPlaying())
+				{
 					_this.syncByReachedCuePoints();
 				}
 			});
-
-			this.bind('onplay', function () {
+			this.bind( 'onplay', function () {
 				_this.loadAdditionalAssets();
 				_this.syncByReachedCuePoints();
-			});
+			} );
 
-			this.bind("onChangeMedia", function () {
+			this.bind("onChangeMedia", function(){
 				if (_this.syncEnabled) {
 					_this.destroyCuePointsManager();
 
@@ -141,12 +147,10 @@
 					_this.getComponent().attr("src", "");
 				}
 			});
-
-			this.bind("onChangeStream", function () {
+			this.bind("onChangeStream", function(){
 				_this.syncEnabled = false;
 			});
-
-			this.bind("onChangeStreamDone", function () {
+			this.bind("onChangeStreamDone", function(){
 				_this.syncEnabled = true;
 				_this.syncByReachedCuePoints();
 			});
@@ -176,24 +180,21 @@
 				$img.removeClass('fill-width fill-height').addClass(pClass);
 			}
 		},
-		getCuePoints: function () {
-			var _this = this;
+		getCuePoints: function(){
 			var cuePoints = [];
-			var kCuePoints = this.getPlayer().kCuePoints;
-
-			if (kCuePoints) {
-				$.each(_this.getConfig('cuePointType'), function (i, cuePointType) {
-					$.each(cuePointType.sub, function (j, cuePointSubType) {
-						var filteredCuePoints = kCuePoints.getCuePointsByType(cuePointType.main, cuePointSubType);
-						cuePoints = cuePoints.concat(filteredCuePoints);
-					});
-				});
+			var _this = this;
+			if ( this.getPlayer().kCuePoints ) {
+				$.each( _this.getConfig("cuePointType"), function ( i, cuePointType ) {
+					$.each( cuePointType.sub, function ( j, cuePointSubType ) {
+						var filteredCuePoints = _this.getPlayer().kCuePoints.getCuePointsByType( cuePointType.main, cuePointSubType );
+						cuePoints = cuePoints.concat( filteredCuePoints );
+					} );
+				} );
 			}
 
 			cuePoints.sort(function (a, b) {
 				return a.startTime - b.startTime;
 			});
-
 			return cuePoints;
 		},
 		sync: function(cuePoint){
@@ -367,6 +368,7 @@
 
         destroy: function ( ) {
             this.getComponent().remove();
+            this.destroyCuePointsManager();
         }
 	} );
 }

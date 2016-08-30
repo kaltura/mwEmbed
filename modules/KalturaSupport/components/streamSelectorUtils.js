@@ -6,7 +6,8 @@
 
         defaultConfig: {
             "defaultStream": 1,
-            "maxNumOfStream": 4
+            "maxNumOfStream": 4,
+            "ignoreTag": null
         },
 
         streams: [],
@@ -105,8 +106,10 @@
             var subStreams = data[0].objects;
             var subStreamsData = data.slice(1);
             if (subStreams && subStreams.length > 0) {
+                var ignoreTag = this.getConfig('ignoreTag');
                 $.each( subStreams, function ( i, subStream ) {
-                    if (subStreamsData[i]) {
+                    if (subStreamsData[i] &&
+                        !(ignoreTag && subStream.tags && subStream.tags.indexOf(ignoreTag) > -1)) {
                         _this.streams.push( {
                             id: subStream.id,
                             data: {
@@ -238,9 +241,17 @@
                             _this.streamChanging = false;
                             embedPlayer.triggerHelper('onChangeStreamDone', [_this.currentStream.id]);
                         });
+
                         //Add black screen before seek to avoid flashing of video
                         embedPlayer.addBlackScreen();
-                        embedPlayer.seek(currentTime, false);
+
+                        if (embedPlayer.instanceOf === 'Kplayer' && embedPlayer.streamerType === 'hls') {
+                            _this.bind('playing', function () {
+                                embedPlayer.seek(currentTime, false);
+                            }, true);
+                        } else {
+                            embedPlayer.seek(currentTime, false);
+                        }
                     } else {
                         //Return poster to allow display of poster on clip done
                         mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
