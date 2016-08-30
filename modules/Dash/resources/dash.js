@@ -236,7 +236,7 @@
 						return abrTrack.id === source.getAssetId();
 					})[0];
 					if (selectedAbrTrack) {
-						player.selectTrack(selectedAbrTrack, true);
+						player.selectTrack(selectedAbrTrack, false);
 						this.getPlayer().triggerHelper('bitrateChange', source.getBitrate());
 						mw.log("switchSrc to ", selectedAbrTrack);
 					}
