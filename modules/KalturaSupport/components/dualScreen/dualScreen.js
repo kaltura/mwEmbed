@@ -194,14 +194,11 @@
 					if (target === 'slave') {
 						if (stream.type === 'video') {
 							if (_this.secondPlayer instanceof mw.dualScreen.videoPlayer) {
-								_this.secondPlayer.changeStream(stream.url, stream.thumbnailUrl);
-								_this.secondPlayer.currentStream = stream;
+								_this.secondPlayer.setStream(stream);
 							} else if (_this.secondPlayer instanceof mw.dualScreen.imagePlayer) {
 								// TODO: switch image to video
 								var newVideoPlayer = new mw.dualScreen.videoPlayer(_this.getPlayer(), function () {
-									this.setUrl(stream.url);
-									this.setPoster(stream.thumbnailUrl);
-									this.currentStream = stream;
+									this.setStream(stream);
 								}, 'videoPlayer');
 								_this.secondPlayer.getComponent().replaceWith(newVideoPlayer.getComponent());
 								_this.destroySecondScreen();
@@ -221,7 +218,7 @@
 						} else if (stream.type === 'image') {
 							_this.fsm.consumeEvent('switchView');
 							_this.getPlayer().pause();
-							_this.getUtils().setStream(_this.secondPlayer.currentStream);
+							_this.getUtils().setStream(_this.secondPlayer.stream);
 							_this.getPlayer().restoreEventPropagation();
 							_this.loadSecondScreenImage().then(function (imagePlayer) {
 								_this.secondPlayer.getComponent().replaceWith(imagePlayer.getComponent());
@@ -890,9 +887,7 @@
                     .then(function (playableStreams) {
                         return playableStreams.length ? new mw.dualScreen.videoPlayer(player, function () {
                             var stream = playableStreams[0];
-                            this.setUrl(stream.url);
-                            this.setPoster(stream.thumbnailUrl);
-                            this.currentStream = stream;
+                            this.setStream(stream);
                         }, 'videoPlayer') : $.Deferred().reject();
                     });
             },
@@ -902,15 +897,15 @@
                     mw.log("DualScreen :: handleABR :: set kplayer to ABR AUTO and secondPlayer to lowest bitrate");
                     this.getPlayer().mediaElement.autoSelectSource();
                     // this.getPlayer().switchSrc(-1);
-					if( this.secondPlayer instanceof mw.dualScreen.videoPlayer && this.secondPlayer.isABR() ) {
-						this.secondPlayer.switchSrc(0);
+					if( this.secondPlayer instanceof mw.dualScreen.videoPlayer && this.secondPlayer.playerElement.isABR() ) {
+						this.secondPlayer.playerElement.switchSrc(0);
 					}
                 } else {
                     mw.log("DualScreen :: handleABR :: set secondPlayer to ABR AUTO and kplayer to lowest bitrate");
                     this.getPlayer().switchSrc(this.getPlayer().getSources()[0]);
                     // this.getPlayer().switchSrc(0);
-					if( this.secondPlayer instanceof mw.dualScreen.videoPlayer && this.secondPlayer.isABR() ) {
-						this.secondPlayer.switchSrc(-1);
+					if( this.secondPlayer instanceof mw.dualScreen.videoPlayer && this.secondPlayer.playerElement.isABR() ) {
+						this.secondPlayer.playerElement.switchSrc(-1);
 					}
                 }
             },
