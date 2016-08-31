@@ -260,6 +260,12 @@
 				}
 			},
 
+			/**
+			 * Override player method for loading the video element
+			 */
+			load: function () {
+			},
+
 			onSwitchAudioTrack: function (event, data) {
 				var selectedAudioTracks = this.getTracksByType("audio")[data.index];
 				player.configure({
@@ -314,8 +320,10 @@
 			overridePlayerMethods: function () {
 				this.orig_switchSrc = this.getPlayer().switchSrc;
 				this.orig_playerSwitchSource = this.getPlayer().playerSwitchSource;
+				this.orig_load = this.getPlayer().load;
 				this.getPlayer().switchSrc = this.switchSrc.bind(this);
 				this.getPlayer().playerSwitchSource = this.playerSwitchSource.bind(this);
+				this.getPlayer().load = this.load.bind(this);
 			},
 			/**
 			 * Disable override player methods for Dash playback
@@ -323,6 +331,7 @@
 			restorePlayerMethods: function () {
 				this.getPlayer().switchSrc = this.orig_switchSrc;
 				this.getPlayer().playerSwitchSource = this.orig_playerSwitchSource;
+				this.getPlayer().load = this.orig_load;
 			}
 
 		});
