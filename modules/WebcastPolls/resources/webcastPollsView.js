@@ -207,18 +207,17 @@
                                 }
                                 $totalsContainer.find("[name='value']").text(label);
                                 $totalsContainer.find("[name='text']").text(totalVotersAsNumber === 1 ? 'Response' : 'Responses');
-                                $totalsContainer.css('opacity', '1');
                             }else {
-                                $totalsContainer.css('opacity', '0');
+                                $totalsContainer.find("[name='text']").text('Responses');
                                 $totalsContainer.find("[name='value']").text('0'); // we are setting a filler value so the UI will not jump once we later update it
                             }
                         } else {
-                            $totalsContainer.css('opacity', '0');
+                            $totalsContainer.find("[name='text']").text('Responses');
                             $totalsContainer.find("[name='value']").text('0'); // we are setting a filler value so the UI will not jump once we later update it
                         }
                     }else
                     {
-                        $totalsContainer.css('opacity', '0');
+                        $totalsContainer.find("[name='text']").text('Responses');
                         $totalsContainer.find("[name='value']").text('0'); // we are setting a filler value so the UI will not jump once we later update it
                         updateAnswerResult(1, false);
                         updateAnswerResult(2, false);
