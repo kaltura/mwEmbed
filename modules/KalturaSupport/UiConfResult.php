@@ -229,7 +229,7 @@ class UiConfResult {
             //On IE8 and below disable hlsjs if added
             if (isset($playerConfig['plugins']) &&
                 isset($playerConfig['plugins']["hlsjs"])){
-                $playerConfig['plugins']["hlsjs"]["plugin"] = 0;
+                unset ($playerConfig['plugins']["hlsjs"]);
             }
         } else {
             //Add hlsjs by default to bundle if above IE8
