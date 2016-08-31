@@ -31,7 +31,7 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	// Flag to store controls status (disabled/enabled)
 	controlsDisabled: false,
-	
+
 	// binding postfix
 	bindPostfix: '.layoutBuilder',
 
@@ -130,7 +130,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			// clear out base style
 			embedPlayer.style.cssText = '';
 		}
-		return this.$interface;		
+		return this.$interface;
 	},
 	checkViewPort: function(){
 		if ( mw.isMobileDevice() && mw.getConfig('EmbedPlayer.IsFriendlyIframe') ) {
@@ -211,7 +211,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		if( mw.hasMouseEvents() ){
 			this.initToolTips();
 		}
-		
+
 		// Supports CSS3 on IE8/IE9
 		if( mw.isIE8() || mw.isIE9() ){
 			this.embedPlayer.bindHelper( 'layoutBuildDone', function(){
@@ -367,89 +367,107 @@ mw.PlayerLayoutBuilder.prototype = {
 		$(this.embedPlayer ).trigger( 'updateComponentsVisibilityDone' )
 	},
 
-	updateContainerCompsByAvailableSpace: function( $container ){
-		if( !$container.length ) return;
-		
+	updateContainerCompsByAvailableSpace: function ($container) {
+		if (!$container.length) return;
+
 		var _this = this;
 		var containerWidth = $container.width();
 
 		var hideOneByImportance = function () {
-			$.each(_this.importanceSet, function (i, importance) {
-				var $s = $container.find('.display-' + importance + ':visible');
+			for (var i = 0; i < _this.importanceSet.length; i++) {
+				var $s = $container.find('.display-' + _this.importanceSet[i] + ':visible');
 				if ($s.length) {
 					$s.first().hide();
-					// break;
-					return false;
+					return _this.getComponentWidth($s.first());
 				}
-			});
+			}
 		};
+
 		var showOneByImportance = function () {
-			$.each(_this.importanceSet.slice(0).reverse(), function (i, importance) {
-				var $s = $container.find('.display-' + importance + ':hidden');
-				if ($s.length) {
-					var $first = $s.first();
-					if ( !$first.data('forceHide') ) {
-						$s.first().show();
-						//break;
-						return false;
-					}
+			var reversedImportanceSet = _this.importanceSet.slice(0).reverse();
+			for (var i = 0; i < reversedImportanceSet.length; i++) {
+				var $comp = getNextComponentToShow(reversedImportanceSet[i]);
+				if ($comp) {
+					$comp.show();
+					return _this.getComponentWidth($comp);
 				}
-			});
+			}
 		};
+
+		var getNextComponentToShow = function (importanceLevel) {
+			var $s = $container.children('.display-' + importanceLevel + ':hidden');
+			while ($s.length) {
+				var $first = $s.first();
+				if ($first.data('forceHide')) {
+					$s = $s.slice(1);
+				} else {
+					return $s.first();
+				}
+			}
+		};
+
 		var getNextShowWidth = function () {
 			var nextWidth = 0;
-			$.each(_this.importanceSet.slice(0).reverse(), function (i, importance) {
-				var $s = $container.find('.display-' + importance + ':hidden');
-				if ($s.length) {
-					// we have to draw to get true outerWidth:
-					var $first = $s.first();
-					if ( !$first.data( 'forceHide' ) ) {
-						var $comp = $first.show();
-						nextWidth = _this.getComponentWidth( $comp );
-						if( mw.getConfig('EmbedPlayer.IsFriendlyIframe') ) {
-							$comp.hide();
-						}
-						//break;
-						return false;
+			var reversedImportanceSet = _this.importanceSet.slice(0).reverse();
+			for (var i = 0; i < reversedImportanceSet.length; i++) {
+				var $comp = getNextComponentToShow(reversedImportanceSet[i]);
+				if ($comp) {
+					$comp.show();
+					nextWidth = _this.getComponentWidth($comp);
+					if (mw.getConfig('EmbedPlayer.IsFriendlyIframe')) {
+						$comp.hide();
 					}
+					break;
 				}
-			});
+			}
 			return nextWidth;
 		};
-		// add a failsafe for while loops on DOM
-		var i=0;
-		// Hide till fit
-		if (containerWidth < this.getComponentsWidthForContainer( $container )
-			&& this.canHideShowContainerComponents( $container, true ) ) {
 
-			while ( i++ < 30 && containerWidth < this.getComponentsWidthForContainer( $container ) 
-				&& this.canHideShowContainerComponents( $container, true ) ) {
-				mw.log("hideOneByImportance: " + containerWidth + ' < ' + this.getComponentsWidthForContainer( $container ));
-				hideOneByImportance();
+		// add a fail safe for while loops on DOM
+		var i = 0;
+		var componentsWidthForContainer = this.getComponentsWidthForContainer($container);
+
+		// Hide till fit
+		if (containerWidth < componentsWidthForContainer && this.canHideShowContainerComponents($container, true)) {
+			while (i++ < 30
+			&& componentsWidthForContainer
+			&& containerWidth < componentsWidthForContainer
+			&& this.canHideShowContainerComponents($container, true)) {
+				// Log to console
+				mw.log("hideOneByImportance: " + containerWidth + ' < ' + componentsWidthForContainer);
+				// Hide first by importance and return his length
+				var lengthHided = hideOneByImportance();
+				// If a component is being hide, update the components width, else finish iterate
+				componentsWidthForContainer = lengthHided ? (componentsWidthForContainer - lengthHided) : undefined;
 			}
-			// break ( only hide or show in one pass ) 
+			// break ( only hide or show in one pass )
 			return;
-		};
+		}
+
 		// Show till full
-		while ( i++ < 30 && $container.find('.comp:hidden').length 
-			&& this.canHideShowContainerComponents( $container, false )
-			&& containerWidth > (this.getComponentsWidthForContainer( $container ) + getNextShowWidth())) {
-			//mw.log("showOneByImportance: " + containerWidth + ' > ' + (this.getComponentsWidthForContainer( $container ) + ' ' + getNextShowWidth()));
-			showOneByImportance();
+		while (i++ < 30
+		&& $container.find('.comp:hidden').length
+		&& this.canHideShowContainerComponents($container, false)
+		&& componentsWidthForContainer
+		&& containerWidth > (componentsWidthForContainer + getNextShowWidth())) {
+			// Show first by importance and return his length
+			var lengthShowed = showOneByImportance();
+			// If a component is being showed, update the components width, else finish iterate
+			componentsWidthForContainer = lengthShowed ? (componentsWidthForContainer + lengthShowed) : undefined;
 		}
 	},
 
-	canHideShowContainerComponents: function( $container, visible ) {
+	canHideShowContainerComponents: function ($container, visible) {
 		var state = (visible) ? 'visible' : 'hidden';
 		var found = false;
-		$.each(this.importanceSet, function (i, importance) {
-			var $s = $container.find('.display-' + importance + ':' + state);
+		// Much faster then $.each loop
+		for (var i = 0; i < this.importanceSet.length; i++) {
+			var $s = $container.find('.display-' + this.importanceSet[i] + ':' + state);
 			if ($s.length) {
 				found = true;
-				// break;
-				return false;
+				break;
 			}
-		});
+		}
 		return found;
 	},
 
@@ -548,7 +566,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	*/
 	addControlBindings: function( ) {
 		// Set up local pointer to the embedPlayer
-		var _this = this;		
+		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		var $interface = this.getInterface();
 		var adPlaybackState = 'adplay-state';
@@ -909,9 +927,9 @@ mw.PlayerLayoutBuilder.prototype = {
 				_this.playingFlag = false;
 			},1000);
 		});
-		// check for drag: 
-		
-		
+		// check for drag:
+
+
 		// Check for click
 		$( embedPlayer ).bind( "click" + _this.bindPostfix, function() {
 			if ( mw.isMobileDevice() )  {
@@ -1154,7 +1172,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		$overlay.fadeOut( "slow", function() {
 			$overlay.remove();
 		} );
-		
+
 		// Make sure overlay was removed
 		$overlay.remove();
 
@@ -1331,7 +1349,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		if ( alertObj.isError ) {
 			$message.addClass( 'error' );
 		}
-		
+
 		if ( alertObj.props ) {
 
 			if ( alertObj.props.customAlertContainerCssClass ) {
