@@ -171,7 +171,7 @@
 	};
 	
 	mw.isIOSAbove7 = function () {
-		return mw.isIOS8() || mw.isIOS9() || mw.isIOS10;
+		return mw.isIOS8() || mw.isIOS9() || mw.isIOS10();
 	};
 
 	mw.isSilk = function () {
