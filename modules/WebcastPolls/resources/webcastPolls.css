@@ -281,8 +281,31 @@ Poll (shared)
     cursor: pointer;
 }
 
-.webcastPolls.allow-voting .poll .answer:hover, .webcastPolls.allow-voting .poll .answer.selected {
+.webcastPolls.allow-voting .poll .answer.selected {
     background-color: #ffffff;
+}
+
+.webcastPolls.allow-voting .poll .answer:hover{
+    background-color: #ffffff;
+    box-shadow: 0 0px 0px 3px #7ed321;
+}
+
+.webcastPolls.allow-voting.producer-view .poll .answer:hover{
+    background-color: #f1f1f1;
+    border : rgba(255,255,255,0.2) solid 1px;
+    box-shadow: none;
+    cursor: auto;
+}
+
+.webcastPolls.allow-voting .poll .answer.not-selected:hover{
+    background-color: #ffffff;
+    box-shadow: 0 0px 0px 3px #7ed321;
+}
+
+.webcastPolls.allow-voting.producer-view .poll .answer.not-selected:hover {
+    background-color: #cccccc;
+    box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.5);
+    cursor: auto;
 }
 
 .webcastPolls.allow-voting .poll .answer.not-selected {
