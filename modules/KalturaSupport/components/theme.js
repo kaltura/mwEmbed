@@ -31,7 +31,7 @@
 					_this.onConfigChange(prop, _this.getConfig(prop));
 				}
 				if ( mw.isIE() ){
-					$(".btn").not(".playHead").css({'margin-left': 1+'px','margin-right': 1+'px'});
+					$(".btn").not(".playHead").css({'margin-left': 0.2 + 'px','margin-right': 0.2 + 'px'});
 				}
 			});
 		},
