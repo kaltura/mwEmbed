@@ -142,26 +142,28 @@
 
 				//Consume view state events
 				this.bind( 'dualScreenStateChange', function(e, state){
-					//update view mode lock state if needed
-					var currentLockState = _this.isViewModeLocked;
-					if(typeof e === 'object' && state.lockState) {
-						switch (state.lockState){
-							case mw.dualScreen.display.STATE.LOCKED:
-								_this.isViewModeLocked = true;
-								_this.controlBar.hide();
-								_this.controlBar.disable();
-								break;
-							case mw.dualScreen.display.STATE.UNLOCKED:
-								_this.isViewModeLocked = false;
-								_this.controlBar.enable();
-								_this.controlBar.show();
-								break;
+					if(!_this.disabled && _this.controlBar && !_this.getPlayer().isAudio()) {
+						//update view mode lock state if needed
+						var currentLockState = _this.isViewModeLocked;
+						if(typeof e === 'object' && state.lockState) {
+							switch (state.lockState){
+								case mw.dualScreen.display.STATE.LOCKED:
+									_this.isViewModeLocked = true;
+									_this.controlBar.hide();
+									_this.controlBar.disable();
+									break;
+								case mw.dualScreen.display.STATE.UNLOCKED:
+									_this.isViewModeLocked = false;
+									_this.controlBar.enable();
+									_this.controlBar.show();
+									break;
+							}
 						}
-					}
-					//consume event if view state is not locked.
-					//also consume events with locked state if previous state was unlocked
-					if(!_this.isViewModeLocked || !currentLockState) {
-						_this.fsm.consumeEvent( state );
+						//consume event if view state is not locked.
+						//also consume events with locked state if previous state was unlocked
+						if(!_this.isViewModeLocked || !currentLockState) {
+							_this.fsm.consumeEvent( state );
+						}
 					}
 				});
 				//Listen to events which affect controls view state
