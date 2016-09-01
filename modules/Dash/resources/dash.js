@@ -245,7 +245,8 @@
 							var selectedAudioTrack = _this.getTracksByType("audio").filter(function(track){
 								return track.active;
 							})[0];
-							if(stats.streamBandwidth === source.bandwidth + selectedAudioTrack.bandwidth){
+							var audioBandwidth = selectedAudioTrack ? selectedAudioTrack.bandwidth : 0;
+							if(stats.streamBandwidth === source.bandwidth + audioBandwidth){
 								_this.getPlayer().triggerHelper("sourceSwitchingEnd", _this.getPlayer().currentBitrate);
 								clearInterval(interval);
 							}
