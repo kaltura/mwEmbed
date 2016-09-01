@@ -238,6 +238,18 @@
 					if (selectedAbrTrack) {
 						player.selectTrack(selectedAbrTrack, false);
 						this.getPlayer().triggerHelper('bitrateChange', source.getBitrate());
+						this.getPlayer().triggerHelper("sourceSwitchingStarted");
+						var _this = this;
+						var interval = setInterval(function(){
+							var stats = player.getStats();
+							var selectedAudioTrack = _this.getTracksByType("audio").filter(function(track){
+								return track.active;
+							})[0];
+							if(stats.streamBandwidth === source.bandwidth + selectedAudioTrack.bandwidth){
+								_this.getPlayer().triggerHelper("sourceSwitchingEnd", _this.getPlayer().currentBitrate);
+								clearInterval(interval);
+							}
+						},1000);
 						mw.log("switchSrc to ", selectedAbrTrack);
 					}
 				} else { // "Auto" option is selected
