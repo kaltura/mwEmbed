@@ -1869,7 +1869,8 @@ mw.KWidgetSupport.prototype = {
 	},
 	removeAdaptiveFlavors: function( sources ){
 		for( var i =0 ; i < sources.length; i++ ){
-			if( sources[i].type == 'application/vnd.apple.mpegurl' ){
+			if( sources[i].type == 'application/vnd.apple.mpegurl' ||
+				sources[i].type == "application/dash+xml"){
 				// Remove the current source:
 				sources.splice( i, 1 );
 				i--;
