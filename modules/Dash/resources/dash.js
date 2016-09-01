@@ -240,16 +240,8 @@
 						this.getPlayer().triggerHelper('bitrateChange', source.getBitrate());
 						this.getPlayer().triggerHelper("sourceSwitchingStarted");
 						var _this = this;
-						var interval = setInterval(function(){
-							var stats = player.getStats();
-							var selectedAudioTrack = _this.getTracksByType("audio").filter(function(track){
-								return track.active;
-							})[0];
-							var audioBandwidth = selectedAudioTrack ? selectedAudioTrack.bandwidth : 0;
-							if(stats.streamBandwidth === source.bandwidth + audioBandwidth){
-								_this.getPlayer().triggerHelper("sourceSwitchingEnd", _this.getPlayer().currentBitrate);
-								clearInterval(interval);
-							}
+						setTimeout(function(){
+							_this.getPlayer().triggerHelper("sourceSwitchingEnd", _this.getPlayer().currentBitrate);
 						},1000);
 						mw.log("switchSrc to ", selectedAbrTrack);
 					}
