@@ -170,7 +170,7 @@
                     "action": "add",
                     "cuePoint:objectType": "KalturaAnnotation",
                     "cuePoint:entryId": _this.getPlayer().kentryid,
-                    "cuePoint:isPublic": 1,
+                    "cuePoint:isPublic": 0,
                     "cuePoint:tags": ('id:' + pollId)
                 };
 

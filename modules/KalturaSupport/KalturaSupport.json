@@ -277,14 +277,21 @@
 		"templates": "components/nativeCallout/nativeCallout.tmpl.html"
 	},
 	"closedCaptions": {
-		"scripts": "resources/mw.ClosedCaptions.js",
+		"scripts": [
+			"resources/mw.ClosedCaptions.js",
+			"components/cvaa/cvaa.js"
+		],
 		"dependencies": [
 			"mw.KBaseComponent",
+			"mw.KBaseScreen",
 			"mw.TextSource",
 			"mw.Language.names"
 		],
 		"kalturaPluginName": "closedCaptions",
+		"styles": "components/cvaa/cvaa.css",
+		"templates": "components/cvaa/cvaa.tmpl.html",
 		"messageFile": "../TimedText/TimedText.i18n.json"
+
 	},
 	"infoScreen": {
 		"scripts": "components/info/info.js",

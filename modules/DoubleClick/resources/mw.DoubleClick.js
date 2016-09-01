@@ -936,7 +936,7 @@
 			mw.log( 'DoubleClick:: onAdsManagerLoaded' );
 
 			var adsRenderingSettings = new google.ima.AdsRenderingSettings();
-			if (!this.getConfig("adTagUrl")){
+			if (!this.adTagUrl){
 				adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true; // for manual VAST, get the SDK to restore the player
 			}
 			if ( this.getConfig( 'enableCountDown' ) === true){
@@ -1592,7 +1592,7 @@
 			if (this.adsManager && $.isFunction( this.adsManager.unload ) ) {
 				this.adsManager.unload();
 			}
-			if (this.embedPlayer.isInSequence()){
+			if (this.embedPlayer.isInSequence() || this.embedPlayer.autoplay){
 				this.restorePlayer(this.contentDoneFlag);
 				this.embedPlayer.play();
 			}else{
@@ -1672,11 +1672,11 @@
 		destroy:function(){
 			// remove any old bindings:
 			var _this = this;
-			if ( this.getConfig("adTagUrl") || this.currentAdSlotType === "postroll" ){
+			if ( this.adTagUrl || this.currentAdSlotType === "postroll" ){
 				this.embedPlayer.unbindHelper( this.bindPostfix );
 			}
 			if (!this.isChromeless){
-				if ( this.getConfig("adTagUrl") && this.playingLinearAd ) {
+				if ( this.adTagUrl && this.playingLinearAd ) {
 					this.restorePlayer(true);
 				}
 				$(".ad-skip-btn").remove(); // remove skip button from the DOM

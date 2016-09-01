@@ -13,7 +13,10 @@
             "../WebcastPolls/resources/webcastPolls-medium.tmpl.html",
             "../WebcastPolls/resources/webcastPolls-small.tmpl.html"
         ],
-        "styles": "resources/webcastPolls.css",
+        "styles": [
+            "resources/webcastPolls.css",
+            "resources/polls-fonts.css"
+        ],
         "messageFile": "WebcastPolls.i18n.json"
     }
 }

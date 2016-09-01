@@ -37,7 +37,19 @@
         "mwe-timedtext-request-subs-desc": "Add a request for this video file to be transcribed",
         "mwe-timedtext-request-subs-done": "Transcription request added. [$1 See all transcribe requests]",
         "mwe-timedtext-request-subs-fail": "Failed to add transcription request. Are you logged in?",
-        "mwe-timedtext-request-already-done": "A transcription of this video has already been requested. [$1 See all transcribe requests]"
+        "mwe-timedtext-request-already-done": "A transcription of this video has already been requested. [$1 See all transcribe requests]",
+        "mwe-cvaa-options": 			"Options",
+        "mwe-cvaa-reset": 				"Reset",
+        "mwe-cvaa-fontFamily": 			"Font Family",
+        "mwe-cvaa-fontColor": 			"Font Color",
+        "mwe-cvaa-fontSize": 			"Font size",
+        "mwe-cvaa-fontOpacity": 		"Font Opacity",
+        "mwe-cvaa-backgroundColor": 	"Background Color",
+        "mwe-cvaa-backgroundOpacity": 	"Background Opacity",
+        "mwe-cvaa-windowColor": 		"Window Color",
+        "mwe-cvaa-windowOpacity": 		"Window Opacity",
+        "mwe-cvaa-edgeStyle": 			"Character Edge Style",
+        "mwe-cvaa-previewText":			"Captions Preview"
     },
     "qqq": {
         "mwe-timedtext-stage-transcribe": "Unused at this time.",

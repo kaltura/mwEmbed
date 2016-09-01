@@ -661,11 +661,6 @@
 				settings.readyCallback = function (playerId) {
 					// issue a play ( since we already clicked the play button )
 					var kdp = document.getElementById(playerId);
-					kdp.kBind('mediaReady', function () {
-						setTimeout(function () {
-							kdp.sendNotification('doPlay');
-						}, 100);
-					});
 					if (typeof orgEmbedCallback == 'function') {
 						orgEmbedCallback(playerId);
 					}
