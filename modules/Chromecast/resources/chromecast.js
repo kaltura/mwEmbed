@@ -49,7 +49,6 @@
 		stopCastTitle: gM( 'mwe-chromecast-stopcast' ),
 
 		receiverName: '',
-		drmConfig: null,
 		MESSAGE_NAMESPACE: 'urn:x-cast:com.kaltura.cast.player',
 
 		isNativeSDK: false, //flag for using native mobile IMA SDK
@@ -58,8 +57,8 @@
 		replay: false,
 		inSequence: false,
 		adDuration: null,
-		sendPlayerReady: false, // after changing media we need to send the playerReady event to the chromecast receiver as it doesn't reload the player there
 		supportedPlugins: ['doubleClick', 'youbora', 'kAnalony', 'related', 'comScoreStreamingTag', 'watermark', 'heartbeat'],
+		chromeLib: null,
 
 		setup: function( embedPlayer ) {
 			var _this = this;
@@ -67,10 +66,31 @@
 			this.isNativeSDK  = mw.getConfig( "EmbedPlayer.ForceNativeComponent");
 
 			if (!this.isNativeSDK) {
+				var loadScriptInFrame = function(){
+					kWidget.appendScriptUrl("https://www.gstatic.com/cv/js/sender/v1/cast_sender.js", function(){
+						_this.chromeLib = window.chrome;
+					});
+				}
+				if (mw.getConfig('EmbedPlayer.IsFriendlyIframe')){
+					try{
+						kWidget.appendScriptUrl("https://www.gstatic.com/cv/js/sender/v1/cast_sender.js", function(){
+							try{
+								_this.chromeLib = window.top.chrome;
+							}catch(e){
+								loadScriptInFrame();
+							}
+						}, top.document);
+					}catch(e){
+						loadScriptInFrame();
+					}
+				}else{
+					loadScriptInFrame();
+				}
+
 				var ticks = 0;
 				var intervalID = setInterval(function () {
 					ticks++;
-					if (typeof chrome !== "undefined" && typeof chrome.cast !== "undefined" && typeof chrome.cast.SessionRequest !== "undefined") {
+					if (_this.chromeLib !== null && typeof _this.chromeLib !== "undefined" && typeof _this.chromeLib.cast !== "undefined" && _this.chromeLib.cast.isAvailable) {
 						_this.initializeCastApi();
 						clearInterval(intervalID);
 					} else {
@@ -86,7 +106,6 @@
 			var _this = this;
 			this.bind('chromecastPlay', function(){_this.playMedia();});
 			this.bind('chromecastPause', function(){_this.pauseMedia();});
-			this.bind('chromecastSwitchMedia', function(e, url, mime){_this.loadMedia(url, mime);});
 			this.bind('chromecastGetCurrentTime', function(){_this.getCurrentTime();});
 			this.bind('chromecastSetVolume', function(e, percent){_this.setVolume(e,percent);});
 			this.bind('chromecastSeek', function(e, percent){_this.seekMedia(percent);});
@@ -114,15 +133,11 @@
 				_this.updateScreen();
 			});
 
-			$( this.embedPlayer).bind('updateDashContextData', function(e, drmConfig){
-				_this.drmConfig = drmConfig;
-			});
-
 			$( this.embedPlayer).bind('onChangeMedia', function(e){
+				_this.sendMessage({'type': 'changeMedia', 'entryId': _this.embedPlayer.kentryid});
 				_this.savedPosition = 0;
 				_this.pendingReplay = false;
 				_this.pendingRelated = false;
-				_this.sendPlayerReady = true;
 			});
 
 			$( this.embedPlayer).bind('onAdSkip', function(e){
@@ -146,9 +161,6 @@
 			});
 
 			$(this.embedPlayer).bind('playerReady', function(e) {
-				if (_this.sendPlayerReady){
-					_this.sendMessage({'type': 'notification','event': e.type});
-				}
 				if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
 					// send application ID to native app
 					_this.embedPlayer.getPlayerElement().attr( 'chromecastAppId', _this.getConfig( 'applicationID' ));
@@ -243,15 +255,14 @@
 				// launch app
 				this.showConnectingMessage();
 				this.embedPlayer.disablePlayControls(["chromecast"]);
-				var sessionRequest = new chrome.cast.SessionRequest(this.getConfig("applicationID").toString(), [chrome.cast.Capability.VIDEO_OUT], 60000);
-				chrome.cast.requestSession(
+
+				this.chromeLib.cast.requestSession(
 					function(e){
 						_this.onRequestSessionSuccess(e);
 					},
 					function(error){
 						_this.onLaunchError(error);
-					},
-					sessionRequest
+					}
 				);
 			}else{
 				// stop casting
@@ -285,13 +296,9 @@
 			if (this.embedPlayer.isLive()){
 				this.sendMessage({'type': 'live', 'value': true});
 			}
-			// add DRM support
-			if (this.drmConfig){
-				this.sendMessage({'type': 'license', 'value': this.drmConfig.contextData.widevineLicenseServerURL});
-				this.log("set license URL to: " + this.drmConfig.contextData.widevineLicenseServerURL);
-			}
-			if (this.isNativeSDK){
-				var licenseUrl = this.embedPlayer.buildUdrmLicenseUri("application/dash+xml");
+
+			var licenseUrl = this.buildUdrmLicenseUri("application/dash+xml");
+			if (licenseUrl) {
 				this.sendMessage({'type': 'license', 'value': licenseUrl});
 				this.log("set license URL to: " + licenseUrl);
 			}
@@ -410,16 +417,24 @@
 
 		initializeCastApi: function() {
 			var _this = this;
-			var sessionRequest = new chrome.cast.SessionRequest(this.getConfig("applicationID").toString()); // 'Castv2Player'
-			var apiConfig = new chrome.cast.ApiConfig(sessionRequest,
+
+			var autoJoinPolicyArray = [
+				this.chromeLib.cast.AutoJoinPolicy.PAGE_SCOPED,
+				this.chromeLib.cast.AutoJoinPolicy.TAB_AND_ORIGIN_SCOPED,
+				this.chromeLib.cast.AutoJoinPolicy.ORIGIN_SCOPED
+			];
+			var sessionRequest = new this.chromeLib.cast.SessionRequest(this.getConfig("applicationID").toString(), [this.chromeLib.cast.Capability.VIDEO_OUT], 60000);
+
+			var apiConfig = new this.chromeLib.cast.ApiConfig(sessionRequest,
 				function(event){
 					_this.sessionListener(event);
 				},
 				function(event){
 					_this.receiverListener(event);
-				}
+				},
+				autoJoinPolicyArray[1]
 			);
-			chrome.cast.initialize(apiConfig,
+			this.chromeLib.cast.initialize(apiConfig,
 				function(){
 					_this.onInitSuccess();
 				},
@@ -476,10 +491,9 @@
 			// switch to Chromecast player
 			var chromeCastSource = this.getChromecastSource();
 			if (chromeCastSource){
-				// pause the current player if playing
-				this.embedPlayer.pause();
 				// save player, current volume and current position
 				if (this.savedPlayer === null){
+					this.embedPlayer.pause(); // pause the current player if playing
 					this.savedPlayer = this.embedPlayer.selectedPlayer;
 				}
 				// we want to save the position only if we are no in an ad
@@ -542,7 +556,7 @@
 		},
 
 		pauseMedia: function(){
-			if( !this.currentMediaSession ){
+			if( !this.currentMediaSession || (this.currentMediaSession.idleReason && this.currentMediaSession.idleReason == "FINISHED")){
 				return;
 			}
 			this.currentMediaSession.pause(null,
@@ -559,9 +573,12 @@
 		},
 
 		seekMedia: function(pos) {
+			if( !this.currentMediaSession ) {
+				return;
+			}
 			this.log('Seeking ' + this.currentMediaSession.sessionId + ':' +
 					this.currentMediaSession.mediaSessionId + ' to ' + pos + "%");
-			var request = new chrome.cast.media.SeekRequest();
+			var request = new this.chromeLib.cast.media.SeekRequest();
 			request.currentTime = pos * this.currentMediaSession.media.duration / 100;
 			this.currentMediaSession.seek( request,
 				this.onSeekSuccess.bind(
@@ -582,7 +599,33 @@
 			return this.mediaCurrentTime;
 		},
 
+		buildUdrmLicenseUri: function(mimeType) {
+			var licenseServer = mw.getConfig('Kaltura.UdrmServerURL');
+			var licenseParams = this.getPlayer().mediaElement.getLicenseUriComponent();
+			var licenseUri = null;
 
+			if (licenseServer && licenseParams) {
+				// Build licenseUri by mimeType.
+				switch (mimeType) {
+					case "video/wvm":
+						// widevine classic
+						licenseUri = licenseServer + "/widevine/license?" + licenseParams;
+						break;
+					case "application/dash+xml":
+						// widevine modular, because we don't have any other dash DRM right now.
+						licenseUri = licenseServer + "/cenc/widevine/license?" + licenseParams;
+						break;
+					case "application/vnd.apple.mpegurl":
+						// fps
+						licenseUri = licenseServer + "/fps/license?" + licenseParams;
+						break;
+					default:
+						break;
+				}
+			}
+
+			return licenseUri;
+		},
 
 		setVolume: function(e, percent){
 			if( !this.currentMediaSession ) {
@@ -590,10 +633,10 @@
 			}
 
 			this.embedPlayer.volume = percent;
-			var volume = new chrome.cast.Volume();
+			var volume = new this.chromeLib.cast.Volume();
 			volume.level = percent;
 			volume.muted = (percent === 0);
-			var request = new chrome.cast.media.VolumeRequest();
+			var request = new this.chromeLib.cast.media.VolumeRequest();
 			request.volume = volume;
 			this.currentMediaSession.setVolume( request,
 				this.mediaCommandSuccessCallback.bind(
@@ -658,10 +701,10 @@
 				})
 				.then( function(currentMediaURL ){
 						_this.log("loading..." + currentMediaURL);
-						var mediaInfo = new chrome.cast.media.MediaInfo( currentMediaURL );
+						var mediaInfo = new _this.chromeLib.cast.media.MediaInfo( currentMediaURL );
 						mediaInfo.contentType = mimeType;
-						_this.request = new chrome.cast.media.LoadRequest( mediaInfo );
-						_this.request.autoplay = false;
+						_this.request = new _this.chromeLib.cast.media.LoadRequest( mediaInfo );
+						_this.request.autoplay = true;
 						_this.request.currentTime = 0;
 
 						var payload = {
@@ -698,6 +741,9 @@
 		},
 
 		stopApp: function() {
+			if (!this.casting){
+				return;
+			}
 			clearInterval(this.monitorInterval);
 			var _this = this;
 			this.getComponent().css("color","white");
@@ -712,8 +758,10 @@
 			// stop casting
 			this.session.stop(this.onStopAppSuccess, this.onError);
 			// restore native player
-			this.embedPlayer.selectPlayer(this.savedPlayer);
-			this.savedPlayer = null;
+			if (this.savedPlayer){
+				this.embedPlayer.selectPlayer(this.savedPlayer);
+				this.savedPlayer = null;
+			}
 			this.embedPlayer.disablePlayer();
 			this.embedPlayer.updatePlaybackInterface();
 			this.embedPlayer.enablePlayControls();

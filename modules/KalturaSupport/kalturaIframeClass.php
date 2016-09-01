@@ -170,9 +170,11 @@ class kalturaIframeClass {
 		// NOTE: special persistentNativePlayer class will prevent the video from being swapped
 		// so that overlays work on the iPad.
 		$o = "\n\n\t" .'<video class="persistentNativePlayer" ';
-        $userAgent = $_SERVER['HTTP_USER_AGENT'];
-        if (strpos($userAgent, 'kalturaNativeCordovaPlayer') !== false) {
-             $o.= 'poster="' . htmlspecialchars( "data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%01%00%00%00%01%08%02%00%00%00%90wS%DE%00%00%00%01sRGB%00%AE%CE%1C%E9%00%00%00%09pHYs%00%00%0B%13%00%00%0B%13%01%00%9A%9C%18%00%00%00%07tIME%07%DB%0B%0A%17%041%80%9B%E7%F2%00%00%00%19tEXtComment%00Created%20with%20GIMPW%81%0E%17%00%00%00%0CIDAT%08%D7c%60%60%60%00%00%00%04%00%01'4'%0A%00%00%00%00IEND%AEB%60%82" ) . '" ';
+        if (!empty($_SERVER['HTTP_USER_AGENT'])){
+            $userAgent = $_SERVER['HTTP_USER_AGENT'];
+            if (strpos($userAgent, 'kalturaNativeCordovaPlayer') !== false) {
+                 $o.= 'poster="' . htmlspecialchars( "data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%01%00%00%00%01%08%02%00%00%00%90wS%DE%00%00%00%01sRGB%00%AE%CE%1C%E9%00%00%00%09pHYs%00%00%0B%13%00%00%0B%13%01%00%9A%9C%18%00%00%00%07tIME%07%DB%0B%0A%17%041%80%9B%E7%F2%00%00%00%19tEXtComment%00Created%20with%20GIMPW%81%0E%17%00%00%00%0CIDAT%08%D7c%60%60%60%00%00%00%04%00%01'4'%0A%00%00%00%00IEND%AEB%60%82" ) . '" ';
+            }
         }
 		//$o.= '  crossorigin="anonymous" poster="' . htmlspecialchars( "data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%01%00%00%00%01%08%02%00%00%00%90wS%DE%00%00%00%01sRGB%00%AE%CE%1C%E9%00%00%00%09pHYs%00%00%0B%13%00%00%0B%13%01%00%9A%9C%18%00%00%00%07tIME%07%DB%0B%0A%17%041%80%9B%E7%F2%00%00%00%19tEXtComment%00Created%20with%20GIMPW%81%0E%17%00%00%00%0CIDAT%08%D7c%60%60%60%00%00%00%04%00%01'4'%0A%00%00%00%00IEND%AEB%60%82" ) . '" ';
 		$o.= 'id="' . htmlspecialchars( $this->getIframeId() ) . '" ';
@@ -657,9 +659,10 @@ HTML;
 
 		function outputCustomCss(){
     		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
+    		$customStyle = 'false';
     		if (isset($playerConfig['plugins']['theme'])){
     			$theme = $playerConfig['plugins']['theme'];
-    			$customStyle = '<style type="text/css">';
+    		    $customStyle = '"';
     			if (isset($theme['buttonsSize'])){
     				$customStyle = $customStyle . '.mwPlayerContainer:not(.mobileSkin) .controlsContainer, .topBarContainer {font-size: ' . $theme['buttonsSize'] . 'px}';
     			}
@@ -699,9 +702,9 @@ HTML;
                 if (isset($theme['buttonsIconColorDropShadow']) && isset($theme['dropShadowColor'])){
                     $customStyle = $customStyle . '.btn {text-shadow: ' . $theme['dropShadowColor'] . '!important}';
                 }
-    			$customStyle =  $customStyle . '</style>' . "\n";
-    			return $customStyle;
+    			$customStyle =  $customStyle . '"';
     		}
+    		return $customStyle;
     	}
 
 	function getPath() {
@@ -1310,13 +1313,6 @@ HTML;
     <?php $customCss = $this->outputCustomCss(); ?>
 
 	<script type="text/javascript">
-	    if (window['kWidget'] && !window['kWidget'].isMobileDevice()){
-            var head = document.head || document.getElementsByTagName('head')[0];
-            head.appendChild(<?php $customCss ?>);
-	    }
-	</script>
-
-	<script type="text/javascript">
 		(function (document) {
 			if (document.documentMode && document.documentMode <= 9) {
 				var tag = document.createElement('script');
@@ -1329,6 +1325,22 @@ HTML;
 </head>
 <body>
 <?php echo $this->getKalturaIframeScripts(); ?>
+
+<script type="text/javascript">
+    var customCSS = <?php echo $customCss ?>;
+    if (['kWidget'] && !window['kWidget'].isMobileDevice() && customCSS){
+        var head = document.head || document.getElementsByTagName('head')[0];
+        var customStyle = document.createElement('style');
+        customStyle.type = 'text/css';
+        if (customStyle.styleSheet){
+          customStyle.styleSheet.cssText = customCSS;
+        } else {
+          customStyle.appendChild(document.createTextNode(customCSS));
+        }
+        head.appendChild(customStyle);
+    }
+</script>
+
 <?php
 	// wrap in a top level playlist in the iframe to avoid javascript base .wrap call that breaks video playback in iOS
 	if( $this->getUiConfResult()->isPlaylist() ){

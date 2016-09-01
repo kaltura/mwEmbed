@@ -460,7 +460,7 @@
                 'protocol' : protocol,
                 'partnerId': embedPlayer.kpartnerid
             };
-            if ( mw.isIOS8_9() ) {
+            if ( mw.isIOSAbove7() ) {
                 requestObj.rnd = Math.random();
             }
 			_this.getKalturaClient().doRequest( requestObj, function( data ) {
@@ -490,7 +490,7 @@
 		},
 
 		isNativeHLS: function() {
-			if ( mw.isIOS() || mw.isDesktopSafari() || mw.isAndroid() ) {
+			if ( mw.isIOS() || mw.isDesktopSafari() || mw.isAndroid() || mw.isEdge()) {
 				return true;
 			}
 			return false;
