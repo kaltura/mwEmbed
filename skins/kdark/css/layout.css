@@ -66,7 +66,7 @@ body {
 .mobileSkin.pluginsScreenOpened .topBarContainer {
     display: none !important;
 }
-.mobileSkin.start-state .topBarContainer, .mobileSkin.start-state .controlBarContainer{
+.mobileSkin.start-state .topBarContainer{
     display: none;
 }
 .sideBarContainerReminder{
@@ -246,7 +246,10 @@ body {
 .controlBarContainer.open {
 	bottom: 0;
 }
-
+.mobileSkin.start-state .controlBarContainer{
+	display: none;
+	bottom: -4.2em;
+}
 
 .btn {
 	display: inline-block;
