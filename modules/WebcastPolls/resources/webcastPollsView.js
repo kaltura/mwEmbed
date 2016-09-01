@@ -77,7 +77,7 @@
             var result = '';
             if (pollViewPortHeight < 375 || pollViewPortWidth < 670) {
                 result = 'small';
-            } else if (pollViewPortHeight < 576) {
+            } else if (pollViewPortHeight < 576 || pollViewPortWidth < 1025) {
                 result = 'medium';
             } else {
                 result = 'large';
@@ -160,7 +160,7 @@
             }
 
             if (_this.$webcastPoll) {
-                var $totalsContainer = _this.$webcastPoll.find("[name='totals']");
+                var $totalsContainer = _this.$webcastPoll.find("[name='respondsWidget']");
 
                 if ($totalsContainer) {
                     var pollResults = _this.parent.pollData.pollResults;
@@ -207,18 +207,17 @@
                                 }
                                 $totalsContainer.find("[name='value']").text(label);
                                 $totalsContainer.find("[name='text']").text(totalVotersAsNumber === 1 ? 'Response' : 'Responses');
-                                $totalsContainer.css('opacity', '1');
                             }else {
-                                $totalsContainer.css('opacity', '0');
+                                $totalsContainer.find("[name='text']").text('Responses');
                                 $totalsContainer.find("[name='value']").text('0'); // we are setting a filler value so the UI will not jump once we later update it
                             }
                         } else {
-                            $totalsContainer.css('opacity', '0');
+                            $totalsContainer.find("[name='text']").text('Responses');
                             $totalsContainer.find("[name='value']").text('0'); // we are setting a filler value so the UI will not jump once we later update it
                         }
                     }else
                     {
-                        $totalsContainer.css('opacity', '0');
+                        $totalsContainer.find("[name='text']").text('Responses');
                         $totalsContainer.find("[name='value']").text('0'); // we are setting a filler value so the UI will not jump once we later update it
                         updateAnswerResult(1, false);
                         updateAnswerResult(2, false);
@@ -230,18 +229,38 @@
                 }
             }
         },
+        syncDOMViewState: function () {
+            var _this = this;
+            if (_this.$webcastPoll) {
+                if (_this.parent.getViewConfig() === 'producerOnly') {
+                    _this.$webcastPoll.addClass('producer-view');
+                } else {
+                    _this.$webcastPoll.removeClass('producer-view');
+                }
+            }
+        },
         syncDOMUserVoting: function () {
             var _this = this;
             if (_this.$webcastPoll) {
                 var pollContent = _this.parent.pollData.content;
 
                 if (pollContent) {
-                    var selectedAnswerSelector = '[name="answer' + _this.parent.userVote.answer + '"]';
 
-                    _this.$webcastPoll.find('.answer').not('.answer>' + selectedAnswerSelector).removeClass('selected');
+                    if(_this.parent.getViewConfig() !== 'producerOnly') {
+                        var selectedAnswerSelector = '[name="answer' + _this.parent.userVote.answer + '"]';
 
-                    if (_this.parent.userVote.answer) {
-                        _this.$webcastPoll.find(selectedAnswerSelector).closest('.answer').addClass('selected');
+                        if (_this.parent.userVote.answer) {
+
+                            _this.$webcastPoll.find('.answer')
+                                .not('.answer>' + selectedAnswerSelector)
+                                .removeClass('selected')
+                                .addClass('not-selected');
+                            
+                            _this.$webcastPoll.find(selectedAnswerSelector)
+                                .closest('.answer')
+                                .addClass('selected')
+                                .removeClass('not-selected');
+                        }
                     }
 
                     if (_this.parent.canUserVote()) {
@@ -273,8 +292,9 @@
                 if (answerContent) {
                     _this.$webcastPoll.find('[name="answer' + answerIndex + '"]').text(answerContent).closest('.answer').show();
                 } else {
-                    _this.$webcastPoll.find('[name="answer' + answerIndex + '"]').closest('.answer').hide();
-                }
+                    _this.$webcastPoll.find('[name="answer' + answerIndex + '"]').closest('.answers-widget-row').hide();
+                    //supporting large layout
+                    _this.$webcastPoll.find('[name="answer' + answerIndex + '"]').closest('.answer').hide();                }
             }
 
             if (_this.parent.pollData.pollId) {
@@ -313,7 +333,8 @@
                         _this.$webcastPoll.find('[name="question"],[name="answer1"],[name="answer2"],[name="answer3"],[name="answer4"],[name="answer5"]').text('');
                         _this.showPollDOMLoader();
                     }
-
+                    
+                    _this.syncDOMViewState();
                     _this.syncDOMPollResults();
                     _this.syncDOMUserVoting();
                 }
