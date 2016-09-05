@@ -62,59 +62,10 @@
 				this.initDisplays();
 				this.initFSM();
 				this.addBindings();
+				this.tryInitSecondPlayer();
 			},
 			isSafeEnviornment: function () {
-                if ( mw.isIE7() || mw.isIE8() ) {
-                    return false;
-                }
-                var _this = this;
-                var mobileTag = this.getConfig('mobileTag');
-                var isMobileDevice = mobileTag && mw.isMobileDevice();
-
-                if (mobileTag) {
-                    this.getUtils().setConfig({
-                        streamSelectorConfig: {
-                            ignoreTag: mobileTag
-                        }
-                    });
-                }
-
-                if (isMobileDevice) {
-                    var player = this.getPlayer();
-
-                    this.getUtils().filterStreamsByTag(mobileTag)
-                        .then(function (streams) {
-                            var mobileStream = streams[0];
-
-                            if (mobileStream) {
-                                player.sendNotification('changeMedia', {
-                                    entryId: mobileStream.id
-                                });
-
-                                _this.bind('onChangeMediaDone', function () {
-                                    player.pause();
-                                }, true);
-                            }
-                        });
-
-                    return false;
-                } else {
-                    return this.initSecondPlayer()
-                        .then(function () {
-                            mw.log('DualScreen - isSafeEnviornment = true');
-                            return true;
-                        }, function () {
-                            mw.log('DualScreen - isSafeEnviornment :: url for second screen not found or not valid');
-                            if (_this.isPlaylistPersistent()) {
-                                mw.log('DualScreen - isSafeEnviornment :: playList case :: set plugin to disable');
-                                // dual screen disabled for non LC entries in channel playlist
-                                _this.disabled = true;
-                                return true;
-                            }
-
-                            return false;
-                        });
-                }
+                return !(mw.isIE7() || mw.isIE8() || this.getPlayer().instanceOf === 'Silverlight');
 			},
 			isPlaylistPersistent: function(){
 				return (this.getPlayer().playerConfig &&
@@ -136,7 +87,7 @@
                         mw.log('DualScreen - playerReady :: reset second player');
                         _this.resetSecondPlayer = false;
                         _this.reset();
-                    } else {
+                    } else if (!_this.disabled) {
                         if ( _this.secondPlayer ) {
                             _this.renderDualScreenView();
                         } else {
@@ -301,12 +252,11 @@
                     //channel play list
                     if( _this.isPlaylistPersistent() ) {
                         mw.log('DualScreen - onChangeMedia :: play list case - reset flag on');
-                        _this.secondScreen = null;
 						_this.abrSourcesLoaded = false;
                         _this.resetSecondPlayer = true;
                         _this.cuePoints = null;
-                        _this.streamUtils = null;
-
+                        _this.destroyUtils();
+                        _this.destroySecondScreen();
                     }
 				});
 				this.bind("onChangeStream", function(){
@@ -325,11 +275,12 @@
 
             reset: function ( ) {
                 var _this = this;
-                this.initSecondPlayer().then(function(){
+                this.tryInitSecondPlayer().then(function(){
                     mw.log('DualScreen - reset :: second screen loaded');
                     _this.renderDualScreenView();
                 }, function () { //url for second screen not found or not valid
                     mw.log('DualScreen - reset :: url for second screen not found or not valid');
+                    _this.minimizeView('disabledScreen');
                     _this.disabled = true; //dual screen disabled for non LC entries in channel playlist
                 });
             },
@@ -375,6 +326,7 @@
                             _this.checkRenderConditions();
                             if (_this.disabled){
                                 _this.disabled = false;
+                                _this.enableView();
                                 _this.restoreView("disabledScreen");
                             }
                             _this.setInitialView();
@@ -548,6 +500,8 @@
 
 					//Set initial position of the secondary/Aux screen
 					this.positionSecondDisplay();
+				} else if (this.secondPlayer && !$.contains(this.displays.getSecondary().obj[0], this.secondPlayer.getComponent())) {
+					this.displays.getSecondary().obj.prepend(this.secondPlayer.getComponent());
 				}
 
 				//dualScreen components are set on z-index 1-3, so set all other components to zIndex 4 or above
@@ -768,7 +722,7 @@
 							var secondScreen = _this.displays.getAuxDisplay();
 							secondScreen.repaint(screenProps);
 							//TODO: move to image player
-							_this.secondPlayer.applyIntrinsicAspect();
+							_this.secondPlayer && _this.secondPlayer.applyIntrinsicAspect();
 							if (!_this.disabled && _this.render) {
 								//Show display and control bar after resizing
 								_this.enableView();
@@ -831,10 +785,10 @@
 
                 //load second screen as imagePlayer
                 return this.loadSecondScreenImage()
-                    .then(null, function () {
+                    .then(null, function (imagePlayer) {
                         // unable to load image player
                         // load second screen as video player
-                        _this.destroySecondScreen();
+                        imagePlayer && imagePlayer.destroy();
                         return _this.loadSecondScreenVideo();
                     })
                     .then(function (res) {
@@ -857,7 +811,7 @@
                     this.setConfig(passthroughConfig);
                 }, "imagePlayer");
 
-                return $.when(hasCuePoints ? imagePlayer : $.Deferred().reject());
+                return $.when(hasCuePoints ? imagePlayer : $.Deferred().reject(imagePlayer));
             },
 
             destroyControlBar: function ( ) {
@@ -868,17 +822,18 @@
             },
 
             destroySecondScreen: function ( ) {
-              if ( this.secondPlayer ) {
-                  this.secondPlayer.destroy();
-                  this.secondPlayer = null;
-              }
+                if ( this.secondPlayer ) {
+                    this.secondPlayer.destroy();
+                    this.secondPlayer = null;
+                }
             },
 
             destroy: function ( ) {
                 this.destroySecondScreen();
-                this.getUtils().destroy();
+                this.destroyUtils();
                 this.destroyControlBar();
                 this.getComponent().remove();
+            	this._super();
             },
 
             loadSecondScreenVideo: function(){
@@ -953,7 +908,44 @@
 			},
 
 			// service methods
-			getCuePoints: function () {
+			tryInitSecondPlayer: function () {
+				var _this = this;
+				var mobileTag = this.getConfig('mobileTag');
+				var promise;
+
+				if (mobileTag && mw.isMobileDevice()) {
+					var utils = this.getUtils();
+
+					utils.filterStreamsByTag(mobileTag)
+						.then(function (streams) {
+							utils.setStream(streams[0], true);
+						});
+
+					promise = $.Deferred().reject();
+				} else {
+					if (mobileTag) {
+						this.getUtils().setConfig({
+							streamSelectorConfig: {
+								ignoreTag: mobileTag
+							}
+						});
+					}
+
+					promise = this.initSecondPlayer();
+				}
+
+				return promise.fail(function () {
+					if (_this.isPlaylistPersistent()) {
+						console.info('playlist case. disabling and destroying second player');
+						_this.destroySecondScreen();
+						_this.disabled = true;
+					} else {
+						console.info('destroying itself!');
+						_this.destroy();
+					}
+				});
+			},
+			getSupportedCuePoints: function () {
 				if (!this.cuePoints) {
 					var cuePoints = [];
 					var kCuePoints = this.getPlayer().kCuePoints;
@@ -979,7 +971,11 @@
 			hasSlides: function () {
 				var player = this.getPlayer();
 				return (player.isLive() && mw.getConfig('EmbedPlayer.LiveCuepoints')) ||
-					this.getCuePoints().length;
+					this.getSupportedCuePoints().length;
+			},
+			destroyUtils: function () {
+				this.streamUtils && this.streamUtils.destroy();
+				this.streamUtils = null;
 			},
 			getUtils: function () {
 				return this.streamUtils ||

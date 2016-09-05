@@ -87,13 +87,14 @@
 
             // Declare context sensitive `canplay` handler
             var canPlay = function canPlay() {
-                if ( ++ready >= slaves.length ) {
+                if ( ++ready >= slaves.length && !controller.buffering ) {
                     // Now that it is safe to play the video
+                    var isPlaying = controller.isPlaying();
                     slaves.forEach(function (slave) {
-                        controller.isPlaying() ? slave.play() : slave.pause();
+                        isPlaying ? slave.play() : slave.pause();
                     });
 
-                    this.mediaGroupSync(controller, slaves);
+                    // this.mediaGroupSync(controller, slaves);
                 }
             }.bind(this);
 
@@ -338,7 +339,6 @@
                 if (slave.isSeeking()) {
                     console.info('halting master');
                     if (playing) {
-                        console.info('pausing', _this.getMasterCurrentTime(player));
                         player.pause();
                         slave.isABR() && slave.play();
                     }
@@ -375,6 +375,8 @@
             $.each(this.eventListeners, function (mediaGroupId, events) {
                 $('[kmediagroup="' + mediaGroupId + '"]').off(events);
             });
+
+            this._super();
         }
     });
 })(window.mw, window.jQuery);

@@ -31,10 +31,10 @@
             });
         },
 
-        setStream: function setStream(stream) {
-            return this.getStreamSelector().then(function (streamSelector) {
-                return streamSelector.setStream(stream);
-            });
+        setStream: function setStream(stream, pauseAfterwards) {
+            return $.when(stream && this.getStreamSelector().then(function (streamSelector) {
+                return streamSelector.setStream(stream, pauseAfterwards);
+            }));
         },
 
         filterStreamsByTag: function filterStreamsByTag(tag, not) {
@@ -94,11 +94,7 @@
         },
 
         getStreamSelector: function getStreamSelector() {
-            if (this.streamSelectorPromise) {
-                return this.streamSelectorPromise;
-            }
-
-            return (this.streamSelectorPromise = this.loadStreamSelector());
+            return this.streamSelectorPromise || (this.streamSelectorPromise = this.loadStreamSelector());
         },
 
         loadStreamSelector: function loadStreamSelector() {
@@ -234,6 +230,8 @@
             this.streamSelectorPromise && this.getStreamSelector().then(function (streamSelector) {
                 streamSelector.destroy();
             });
+
+            this._super();
         }
     });
 })(window.mw, window.jQuery);

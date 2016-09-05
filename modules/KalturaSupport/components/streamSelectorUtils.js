@@ -10,13 +10,16 @@
             "ignoreTag": null
         },
 
-        streams: [],
+        streams: null,
         streamsReady: null,
         streamEnded: false,
         readyAndHasStreams: null,
 		streamChanging: false,
 
         setup: function () {
+            // we have to manually reset streams array because
+            // class.js copies the value by reference from prototype
+            this.streams = [];
             this.addBindings();
             this.readyAndHasStreams = $.Deferred();
         },
@@ -173,7 +176,7 @@
                 this.log("Error - invalid stream id");
             }
         },
-        setStream: function (stream) {
+        setStream: function (stream, pauseAfterwards) {
             this.log("set stream");
             if (this.currentStream !== stream) {
                 var _this = this;
@@ -240,6 +243,10 @@
                             mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
                             _this.streamChanging = false;
                             embedPlayer.triggerHelper('onChangeStreamDone', [_this.currentStream.id]);
+
+                            if (pauseAfterwards) {
+                                embedPlayer.pause();
+                            }
                         });
 
                         //Add black screen before seek to avoid flashing of video
@@ -257,6 +264,10 @@
                         mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
                         embedPlayer.triggerHelper( "onPlayerStateChange", ["play"] );
                         embedPlayer.triggerHelper('onChangeStreamDone', [_this.currentStream.id]);
+
+                        if (pauseAfterwards) {
+                            embedPlayer.pause();
+                        }
                     }
                 };
                 embedPlayer.changeMedia(changeMediaCallback, checkPlayerSourcesFunction, false);

@@ -62,6 +62,7 @@
 
             var currentTime = parseFloat(this.getCurrentTime()).toFixed(2);
             if (Math.abs(currentTime - seekTime) < mw.getConfig("EmbedPlayer.SeekTargetThreshold", 0.1)) {
+                this.seeking = false;
                 this.trigger('seeked', [currentTime]);
                 return;
             }
@@ -277,9 +278,6 @@
                     flavorId: this.stream.url.split('/flavorId/')[1].split('/')[0]
                 });
             }
-
-            console.info('session id', this.embedPlayer.evaluate('{configProxy.sessionId}'));
-            console.info('slave vars', flashVars);
 
             return flashVars;
         },

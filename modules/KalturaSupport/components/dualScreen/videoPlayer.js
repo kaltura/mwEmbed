@@ -73,8 +73,9 @@
         },
 
         destroy: function ( ) {
-            this.getComponent().remove();
             this.destroyVideoSync();
+            this.getComponent().remove();
+            this._super();
         }
     });
 })( window.mw, window.jQuery );

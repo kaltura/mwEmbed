@@ -369,6 +369,7 @@
         destroy: function ( ) {
             this.getComponent().remove();
             this.destroyCuePointsManager();
+            this._super();
         }
 	} );
 }
