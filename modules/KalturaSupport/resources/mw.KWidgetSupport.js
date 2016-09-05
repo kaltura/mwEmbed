@@ -1870,6 +1870,7 @@ mw.KWidgetSupport.prototype = {
 	removeAdaptiveFlavors: function( sources ){
 		this.removeHlsFlavor(sources);
 		this.removeDashFlavor(sources);
+		this.removedAdaptiveFlavors = true;
 		return sources;
 	},
 
@@ -1881,7 +1882,6 @@ mw.KWidgetSupport.prototype = {
 				i--;
 			}
 		}
-		this.removedAdaptiveFlavors = true;
 		return sources;
 	},
 
@@ -1893,7 +1893,6 @@ mw.KWidgetSupport.prototype = {
 				i--;
 			}
 		}
-		this.removedAdaptiveFlavors = true;
 		return sources;
 	},
 
