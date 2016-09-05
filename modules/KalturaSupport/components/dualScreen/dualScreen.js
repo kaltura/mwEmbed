@@ -168,18 +168,17 @@
 				});
 				//Listen to events which affect controls view state
 				this.bind( 'showPlayerControls' , function(){
-						if (!_this.disabled && !_this.isViewModeLocked) {
+						if (_this.canManipulateControlViews()) {
 							_this.controlBar.show();
 						}
 				});
 				this.bind( 'onplay', function () {
-						if (!_this.disabled && !_this.getPlayer().isAudio() && !_this.isViewModeLocked) {
+						if (_this.canManipulateControlViews()) {
 							_this.controlBar.enable();
 						}
 				} );
 				this.bind( 'onpause ended playerReady', function () {
-						if (!_this.disabled && _this.controlBar &&
-							!_this.getPlayer().isAudio() && !_this.isViewModeLocked) {
+						if (_this.canManipulateControlViews()) {
 							_this.controlBar.show();
 							_this.controlBar.disable();
 						}
@@ -233,6 +232,13 @@
 					});
 				}
 			},
+
+			canManipulateControlViews : function()
+			{
+				var _this = this;
+				return !_this.disabled && _this.controlBar && !_this.getPlayer().isAudio() && !_this.isViewModeLocked;
+			},
+
 			addKeyboardShortcuts: function (addKeyCallback) {
 				var _this = this;
 				// Add q Sign for next state
@@ -287,7 +293,7 @@
 					_this.bind("displayTransitionEnded", function ( ) {
 						if ( transitionHandlerSet ) {
 							transitionHandlerSet = false;
-							if (!_this.disabled && !_this.getPlayer().isAudio() && !_this.isViewModeLocked) {
+							if (_this.canManipulateControlViews()) {
 								_this.controlBar.show();
 							}
 							_this.displays.disableTransitions();
@@ -460,23 +466,25 @@
 				this.controlBar.disable();
 			},
 			enableView: function(){
-				this.displays.getMainDisplay().obj.css("visibility", "");
-				this.displays.getAuxDisplay().obj.css("visibility", "");
-				if (!this.getPlayer().isAudio() && !this.isViewModeLocked) {
-					this.controlBar.enable();
-                    this.controlBar.show();
+				var _this = this;
+				_this.displays.getMainDisplay().obj.css("visibility", "");
+				_this.displays.getAuxDisplay().obj.css("visibility", "");
+				if (_this.canManipulateControlViews()) {
+					_this.controlBar.enable();
+                    _this.controlBar.show();
 				}
 			},
 			minimizeView: function(screenName){
-				this.screenShown = true;
-				if (this.render) {
-					this.currentScreenNameShown = screenName;
-					if (!this.disabled && !this.getPlayer().isAudio() && !this.isViewModeLocked) {
-						this.controlBar.enable();
-						this.controlBar.hide();
-						this.controlBar.disable();
+				var _this = this;
+				_this.screenShown = true;
+				if (_this.render) {
+					_this.currentScreenNameShown = screenName;
+					if (_this.canManipulateControlViews()) {
+						_this.controlBar.enable();
+						_this.controlBar.hide();
+						_this.controlBar.disable();
 					}
-					this.minimizeSecondDisplay();
+					_this.minimizeSecondDisplay();
 				}
 			},
 			restoreView: function(screenName){
@@ -489,8 +497,7 @@
 					//only then preShowScreen
 					var _this = this;
 					setTimeout(function(){
-						if (!_this.screenShown && !_this.disabled &&
-							!_this.getPlayer().isAudio() && !_this.isViewModeLocked) {
+						if (_this.canManipulateControlViews()) {
 							_this.controlBar.enable();
                             _this.controlBar.show();
 						}
