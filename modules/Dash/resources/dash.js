@@ -238,6 +238,11 @@
 					if (selectedAbrTrack) {
 						player.selectTrack(selectedAbrTrack, false);
 						this.getPlayer().triggerHelper('bitrateChange', source.getBitrate());
+						this.getPlayer().triggerHelper("sourceSwitchingStarted");
+						var _this = this;
+						setTimeout(function(){
+							_this.getPlayer().triggerHelper("sourceSwitchingEnd", _this.getPlayer().currentBitrate);
+						},1000);
 						mw.log("switchSrc to ", selectedAbrTrack);
 					}
 				} else { // "Auto" option is selected
