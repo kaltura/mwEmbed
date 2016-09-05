@@ -1751,7 +1751,7 @@ mw.KWidgetSupport.prototype = {
 				(mw.isAndroid() && !mw.isNativeApp()) &&
 				hasH264Flavor &&
 				!mw.getConfig( 'Kaltura.LeadHLSOnAndroid' ) ) {
-			deviceSources = this.removeAdaptiveFlavors( deviceSources );
+			deviceSources = this.removeHlsFlavor( deviceSources );
 		}
 
 		// PRemove adaptive sources on Windows Phone
@@ -1765,7 +1765,7 @@ mw.KWidgetSupport.prototype = {
 			this.originalStreamerType &&
 			this.originalStreamerType !== "hls" &&
 			 mw.getConfig("LeadWithHLSOnFlash") === null 	){
-			    deviceSources = this.removeAdaptiveFlavors( deviceSources );
+			    deviceSources = this.removeHlsFlavor( deviceSources );
 		}
 
 		//TODO: Remove duplicate webm and h264 flavors
@@ -1868,9 +1868,14 @@ mw.KWidgetSupport.prototype = {
 		return value.replace(/\+/g, "-").replace(/\//g, "_");
 	},
 	removeAdaptiveFlavors: function( sources ){
+		this.removeHlsFlavor(sources);
+		this.removeDashFlavor(sources);
+		return sources;
+	},
+
+	removeHlsFlavor: function( sources ){
 		for( var i =0 ; i < sources.length; i++ ){
-			if( sources[i].type == 'application/vnd.apple.mpegurl' ||
-				sources[i].type == "application/dash+xml"){
+			if( sources[i].type == 'application/vnd.apple.mpegurl' ){
 				// Remove the current source:
 				sources.splice( i, 1 );
 				i--;
@@ -1879,6 +1884,19 @@ mw.KWidgetSupport.prototype = {
 		this.removedAdaptiveFlavors = true;
 		return sources;
 	},
+
+	removeDashFlavor: function( sources ){
+		for( var i =0 ; i < sources.length; i++ ){
+			if(	sources[i].type == "application/dash+xml" ){
+				// Remove the current source:
+				sources.splice( i, 1 );
+				i--;
+			}
+		}
+		this.removedAdaptiveFlavors = true;
+		return sources;
+	},
+
 	getValidAspect: function( sources ){
 		var _this = this;
 		for( var i=0; i < sources.length; i++ ){
