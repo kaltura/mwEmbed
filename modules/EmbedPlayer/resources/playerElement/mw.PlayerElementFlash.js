@@ -28,14 +28,11 @@
 		 * @param readyCallback to run when player is ready
 		 * @returns {*}
 		 */
-		init: function( containerId , playerId , elementFlashvars, target, readyCallback, failCallback, jsReadyFunName ){
+		init: function( containerId , playerId , elementFlashvars, target, readyCallback, failCallback ){
             var _this = this;
             this.element = this;
             this.id = playerId;
             this.targetObj = target;
-            if(jsReadyFunName){
-                this.jsReadyFunName = jsReadyFunName;
-            }
 
             var flashvars = {};
             flashvars.jsCallBackReadyFunc = this.jsReadyFunName;
@@ -71,7 +68,7 @@
                 }, 500);
             }
 
-            window[_this.jsReadyFunName] = function( playerId ){
+            window[this.jsReadyFunName] = function( playerId ){
                 if (!_this.initialized) {
                     _this.initialized = true;
 
@@ -260,7 +257,7 @@
 				};
 			}(gKdpCallbackName, this);
 			// Remove the listener ( if it exists already )
-            this.playerElement.removeJsListener(bindName, gKdpCallbackName);
+			this.playerElement.removeJsListener( bindName, gKdpCallbackName );
 			// Add the listener to the KDP flash player:
 			this.playerElement.addJsListener( bindName, gKdpCallbackName);
 		},

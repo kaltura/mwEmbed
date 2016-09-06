@@ -385,6 +385,12 @@
 				settings.flashvars = {};
 			}
 
+			if (this.isMobileDevice()){
+				if (settings.flashvars['layout']){
+					settings.flashvars.layout['skin'] = "kdark";
+				}
+			}
+
 			if ( document.URL.indexOf('forceKalturaNativeComponentPlayer') !== -1 ||
 				document.URL.indexOf('forceKalturaNative') !== -1) {
 				settings.flashvars["nativeCallout"] = { plugin: true }
@@ -655,11 +661,6 @@
 				settings.readyCallback = function (playerId) {
 					// issue a play ( since we already clicked the play button )
 					var kdp = document.getElementById(playerId);
-					kdp.kBind('mediaReady', function () {
-						setTimeout(function () {
-							kdp.sendNotification('doPlay');
-						}, 100);
-					});
 					if (typeof orgEmbedCallback == 'function') {
 						orgEmbedCallback(playerId);
 					}
@@ -1827,9 +1828,11 @@
 		 * Checks for mobile devices
 		 **/
 		isMobileDevice: function () {
-			return (this.isIOS() || this.isAndroid() || this.isWindowsDevice() || mw.getConfig("EmbedPlayer.ForceNativeComponent"));
+			return (this.isIOS() || this.isAndroid() || this.isWindowsDevice() || mw.getConfig("EmbedPlayer.ForceNativeComponent")  || mw.getConfig("EmbedPlayer.SimulateMobile") === true );
 		},
-
+		isChromeCast: function(){
+			return (/CrKey/.test(navigator.userAgent));
+		},
 		/**
 		 * Checks if a given uiconf_id is html5 or not
 		 * @param {string} uiconf_id The uiconf id to check against user player agent rules

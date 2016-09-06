@@ -19,6 +19,9 @@
 		nextTitle: gM( 'mwe-embedplayer-next_clip' ),
 		prevTitle: gM( 'mwe-embedplayer-prev_clip' ),
 
+		isSafeEnviornment: function(){
+			return !mw.isChromeCast();
+		},
 		setup: function() {
 			if (this.embedPlayer.isMobileSkin()){
 				this.setConfig('parent','videoHolder');
@@ -54,13 +57,22 @@
 					_this.show();
 				}
 			});
+			this.bind( 'playlistFirstEntry playlistLastEntry playlistMiddleEntry', function(e){
+				_this.getComponent().find(".btn").removeClass("disabled");
+				if (e.type === "playlistFirstEntry"){
+					_this.getComponent().find(".icon-prev").addClass("disabled");
+				}
+				if (e.type === "playlistLastEntry"){
+					_this.getComponent().find(".icon-next").addClass("disabled");
+				}
+			});
 		},
 		show: function(){
-			if ( !this.isDisabled ) {
+			if ( !this.isDisabled && !this.embedPlayer.layoutBuilder.displayOptionsMenuFlag ) {
 				if (this.embedPlayer.isMobileSkin() && (this.embedPlayer.changeMediaStarted || this.embedPlayer.buffering)){
 					return; // prevent
 				}
-				this.getComponent().show();
+				this.getComponent().fadeIn('fast');
 			}
 		},
 		hide: function( force ){
@@ -83,7 +95,7 @@
 					});
 				var $prevBtn = $( '<button />' )
 					.attr( 'title', this.prevTitle )
-					.addClass( "btn btnNarrow icon-prev" )
+					.addClass( "btn btnNarrow icon-prev disabled" )
 					.on(eventName, function(e) {
 						e.stopPropagation();
 						e.preventDefault();

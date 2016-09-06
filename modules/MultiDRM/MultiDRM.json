@@ -1,11 +1,24 @@
 {
-    "mw.EmbedPlayerMultiDRM": {
-        "scripts": "resources/mw.EmbedPlayerMultiDRM.js",
-        "styles": "resources/mw.EmbedPlayerMultiDRM.css",
-        "messageFile": "MultiDRM.i18n.json"
+    "multiDrm": {
+      "scripts": "resources/mw.MultiDRM.js",
+      "dependencies": ["mw.KBasePlugin", "dash"],
+      "kalturaPluginName": "multiDrm"
     },
     "mw.FPS": {
         "scripts": "resources/mw.FPS.js",
         "dependencies": ["mw.KBasePlugin"]
+    },
+    "mw.EmbedPlayerMultiDRM": {
+      "scripts": "resources/mw.EmbedPlayerMultiDRM.js",
+      "styles": "resources/mw.EmbedPlayerMultiDRM.css",
+      "messageFile": "MultiDRM.i18n.json",
+      "dependencies" : "castLabs"
+    },
+    "castLabs":{
+        "scripts" : "../../node_modules/mwEmbed-Dash-Everywhere/cldasheverywhere.min.js",
+        "dependencies" : "videojs"
+    },
+    "videojs": {
+        "scripts" : "../../node_modules/mwEmbed-Dash-Everywhere/video.js"
     }
 }

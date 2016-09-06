@@ -21,7 +21,7 @@
 			this.bind("hidePlayerControls", function(){
 				_this.manualControl = false;
 			});
-			this.bind("playerReady sourcesReplaced" , function(){
+			this.bind("playerReady" , function(){
 				_this.getPlayer().layoutBuilder.removePlayerClickBindings();
 				var player = _this.getPlayer();
 				var video = player.getPlayerElement();

@@ -449,7 +449,6 @@
 						rotatorUrl: thumbnailRotatorUrl
 					},
 					startTime: item.startTime / 1000,
-					startTimeDisplay: _this.formatTimeDisplayValue(mw.seconds2npt(item.startTime / 1000)),
 					endTime: null,
 					durationDisplay: null
 
