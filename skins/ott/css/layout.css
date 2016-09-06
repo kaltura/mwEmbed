@@ -1452,15 +1452,6 @@ button::-moz-focus-inner {
 .blackBackground{
 	background-color: #000000;
 }
-/* closed captions overwrite */
-.ttmlStyled {
-	color: white !important;
-	font-size: 22px !important;
-	text-shadow: 0px 1px 5px #000000 !important;
-	text-align: center !important;
-	line-height: 26px !important;
-	background: none !important;
-}
 @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
 @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
 @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
