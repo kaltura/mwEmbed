@@ -193,7 +193,7 @@
 				}
 			});
 
-			this.bind( 'onCloseFullScreen onOpenFullScreen', function(){
+			this.bind( 'updateLayout', function(){
 				if (_this.getConfig("displayCaptions") == true){
 					_this.updateTextSize();
 				}
@@ -847,51 +847,97 @@
 			if( textSize < 95 ){
 				textSize = 95;
 			}
-			if( textSize > 150 ){
-				textSize = 150;
+			if( textSize > 200 ){
+				textSize = 200;
 			}
 			return textSize;
-		},		
+		},
 		getCaptionCss: function() {
-			var style = {'display': 'inline'};
+			var style;
 
-			if(!this.customStyle) {
-				if (this.getConfig('bg')) {
-					style["background-color"] = mw.getHexColor(this.getConfig('bg'));
-				}
-				if (this.getConfig('fontColor')) {
-					style["color"] = mw.getHexColor(this.getConfig('fontColor'));
-				}
-				if (this.getConfig('fontFamily')) {
-					style["font-family"] = this.getConfig('fontFamily');
-				}
-				if (this.getConfig('fontsize')) {
-					// Translate to em size so that font-size parent percentage
-					// base on http://pxtoem.com/
-					var emFontMap = {
-						'6': .5, '7': .583, '8': .666, '9': .75, '10': .833, '11': .916,
-						'12': 1, '13': 1.083, '14': 1.166, '15': 1.25, '16': 1.333, '17': 1.416, '18': 1.5, '19': 1.583,
-						'20': 1.666, '21': 1.75, '22': 1.833, '23': 1.916, '24': 2
-					};
-					// Make sure its an int:
-					var fontsize = parseInt(this.getConfig('fontsize'));
-					style["font-size"] = ( emFontMap[fontsize] ) ?
-					emFontMap[fontsize] + 'em' :
-						(  fontsize > 24 ) ? emFontMap[24] + 'em' : emFontMap[6];
-				}
-				if (this.getConfig('useGlow') && this.getConfig('glowBlur') && this.getConfig('glowColor')) {
-					var hShadow = this.getConfig('hShadow') ? this.getConfig('hShadow') : 0;
-					var vShadow = this.getConfig('vShadow') ? this.getConfig('vShadow') : 0;
-					style["text-shadow"] = hShadow + 'px ' + vShadow + 'px ' + this.getConfig('glowBlur') + 'px ' + mw.getHexColor(this.getConfig('glowColor'));
-				}
+			if (this.customStyle) {
+				style = this.getCustomCaptionCss();
+			} else if (this.embedPlayer.playerConfig.layout.skin === "ott"){
+				style = this.getOttCaptionCss();
 			} else {
-				style["font-family"] = this.customStyle.fontFamily;
-				style["color"] = this.customStyle.fontColor;
-				style["font-size"] = this.customStyle.fontSize;
-				style["background-color"] = this.customStyle.backgroundColor;
-				style["text-shadow"] = this.customStyle.edgeStyle;
+				style = this.getDefaultCaptionCss();
+			}
+
+			return style;
+		},
+		getOttCaptionCss: function(){
+			var style = {};
+			style["display"] = "inline";
+			style["color"] = "white";
+			style["font-size"] = this.getEmFromFontSize(22);
+			style["text-shadow"] = "0px 1px 5px #000000";
+			style["text-align"] = "center";
+			style["background"] = "none";
+			return style;
+		},
+		getDefaultCaptionCss: function(){
+			var style = {};
+			style["display"] = "inline";
+			if (this.getConfig('bg')) {
+				style["background-color"] = mw.getHexColor(this.getConfig('bg'));
+			}
+			if (this.getConfig('fontColor')) {
+				style["color"] = mw.getHexColor(this.getConfig('fontColor'));
+			}
+			if (this.getConfig('fontFamily')) {
+				style["font-family"] = this.getConfig('fontFamily');
+			}
+			if (this.getConfig('fontsize')) {
+				// Translate to em size so that font-size parent percentage
+				// base on http://pxtoem.com/
+
+				// Make sure its an int:
+				var fontsize = parseInt(this.getConfig('fontsize'));
+				style["font-size"] = this.getEmFromFontSize(fontsize);
+			}
+			if (this.getConfig('useGlow') && this.getConfig('glowBlur') && this.getConfig('glowColor')) {
+				var hShadow = this.getConfig('hShadow') ? this.getConfig('hShadow') : 0;
+				var vShadow = this.getConfig('vShadow') ? this.getConfig('vShadow') : 0;
+				style["text-shadow"] = hShadow + 'px ' + vShadow + 'px ' + this.getConfig('glowBlur') + 'px ' + mw.getHexColor(this.getConfig('glowColor'));
 			}
 			return style;
+		},
+		getCustomCaptionCss: function(){
+			var style = {};
+			style["display"] = "inline";
+			style["font-family"] = this.customStyle.fontFamily;
+			style["color"] = this.customStyle.fontColor;
+			style["font-size"] = this.customStyle.fontSize;
+			style["background-color"] = this.customStyle.backgroundColor;
+			style["text-shadow"] = this.customStyle.edgeStyle;
+			return style;
+		},
+		getEmFromFontSize: function(fontsize){
+			var emFontMap = {
+				'6': .5,
+				'7': .583,
+				'8': .666,
+				'9': .75,
+				'10': .833,
+				'11': .916,
+				'12': 1,
+				'13': 1.083,
+				'14': 1.166,
+				'15': 1.25,
+				'16': 1.333,
+				'17': 1.416,
+				'18': 1.5,
+				'19': 1.583,
+				'20': 1.666,
+				'21': 1.75,
+				'22': 1.833,
+				'23': 1.916,
+				'24': 2
+			};
+			var calculatedEm = ( emFontMap[fontsize] ) ? emFontMap[fontsize] :
+				(  fontsize > 24 ) ? emFontMap[24] : emFontMap[6];
+			return (calculatedEm+ 'em');
+
 		},
 		getDefaultStyle: function(){
 			var baseCss =  {
