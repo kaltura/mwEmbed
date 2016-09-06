@@ -23,7 +23,7 @@
 			 * @returns {boolean}
 			 */
 			isSafeEnviornment: function () {
-				return shaka.Player.isBrowserSupported();
+				return shaka.Player.isBrowserSupported() && !mw.getConfig( "EmbedPlayer.ForceNativeComponent");
 			},
 			/**
 			 * Setup the shaka playback engine wrapper with supplied config options
