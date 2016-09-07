@@ -616,7 +616,6 @@
 		 * All the other kWidget settings are invoked during playback.
 		 */
 		thumbEmbed: function (targetId, settings, forceDownload) {
-			var _this = this;
 			if (this.isDownloadLinkPlayer()) {
 				forceDownload = true;
 			}
