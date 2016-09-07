@@ -616,6 +616,7 @@
 		 * All the other kWidget settings are invoked during playback.
 		 */
 		thumbEmbed: function (targetId, settings, forceDownload) {
+			var _this = this;
 			if (this.isDownloadLinkPlayer()) {
 				forceDownload = true;
 			}
@@ -661,6 +662,14 @@
 				settings.readyCallback = function (playerId) {
 					// issue a play ( since we already clicked the play button )
 					var kdp = document.getElementById(playerId);
+					kdp.kBind('mediaReady', function () {
+						setTimeout(function () {
+							if (_this.isMobileDevice()) {
+								kdp.sendNotification('doPlay');
+							}
+						}, 0);
+					});
+
 					if (typeof orgEmbedCallback == 'function') {
 						orgEmbedCallback(playerId);
 					}
