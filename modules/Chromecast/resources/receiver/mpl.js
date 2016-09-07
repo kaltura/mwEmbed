@@ -682,6 +682,10 @@ function setCastReceiverManagerEvents() {
 			JSON.stringify(event));
 
 		senders = castReceiverManager.getSenders();
+		if ((senders.length === 0) &&
+			(event.reason == cast.receiver.system.DisconnectReason.REQUESTED_BY_SENDER)) {
+			castReceiverManager.stop();
+		}
 		setDebugMessage('senderCount', '' + senders.length);
 	};
 
