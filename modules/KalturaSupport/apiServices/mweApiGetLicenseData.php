@@ -99,7 +99,7 @@ class mweApiGetLicenseData {
             );
         }     
         
-		echo json_encode($response, JSON_FORCE_OBJECT);
+		echo json_encode($response, JSON_FORCE_OBJECT | JSON_UNESCAPED_SLASHES);
 	}
 	
 	function sendHeaders() {
@@ -118,10 +118,20 @@ class mweApiGetLicenseData {
         if (isset($resultObject['error'])) {
             throw new Exception($resultObject['error']);
         }
+        $contextData = $resultObject['contextData'];
+        // If there's an error, $contextData is an array with ["message"]
+        if (is_array($contextData)) {
+            if (isset($contextData['message'])) {
+                throw new Exception($contextData['message']);
+            }
+            throw new Exception('unexpected error');
+        }
+        
         $pluginData = $resultObject['contextData']->pluginData;
         if (!isset($pluginData['KalturaDrmEntryContextPluginData'])) {
             throw new Exception("Entry does not have DRM data");
         }
+        
 		$drmPluginData = (array)$pluginData['KalturaDrmEntryContextPluginData'];
         if (isset($pluginData['KalturaFairplayEntryContextPluginData'])) {
             $fpsPluginData = (array)$pluginData['KalturaFairplayEntryContextPluginData'];
