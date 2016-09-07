@@ -150,6 +150,9 @@ onload = function () {
 							"multiDrm": {
 								'plugin': false
 							},
+							"dash": {
+								'plugin': false
+							},
 							"embedPlayerChromecastReceiver": {
 								'plugin': true
 							},
