@@ -40,6 +40,7 @@
 		repaint: function(screenProps){
 			this.prop = screenProps;
 			this.obj.css( screenProps );
+			this.getPlayer().triggerHelper('displayRepainted');
 		},
 		getProperties: function(){
 			return this.prop;
@@ -247,6 +248,25 @@
 				}
 
 			}
+		},
+		disableDroppable: function () {
+			var parent = this.obj.parent();
+			this.obj.data('droppable') && this.obj.droppable('destroy').data('droppable', false);
+			parent.data('droppable') && parent.droppable('destroy').data('droppable', false);
+		},
+		enableDroppable: function (useParentAsTarget) {
+			var target = useParentAsTarget ? this.obj.parent() : this.obj;
+
+			target.droppable({
+				accept: '.ds-stream',
+				hoverClass: 'ui-state-hover',
+				activeClass: 'ui-state-active',
+				greedy: !useParentAsTarget,
+				drop: $.proxy(this.onDrop, this)
+			}).data('droppable', true);
+		},
+		onDrop: function (event, ui) {
+			this.getPlayer().triggerHelper('displayDropped', [this, ui.draggable]);
 		}
 	});
 

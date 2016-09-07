@@ -59,7 +59,9 @@
                     }).append($('<img/>', {
                         src: stream.thumbnailUrl,
                         'class': 'ds-stream__thumb'
-                    }));
+                    })).draggable({
+                        revert: true
+                    }).data('stream', stream);
                 }));
         },
 

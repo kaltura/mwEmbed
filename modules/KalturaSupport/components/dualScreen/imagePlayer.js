@@ -154,6 +154,10 @@
 				_this.syncEnabled = true;
 				_this.syncByReachedCuePoints();
 			});
+
+			this.bind( 'postDualScreenTransition displayRepainted', function () {
+				_this.applyIntrinsicAspect();
+			});
 		},
 		getComponent: function() {
 			if (!this.$el) {
@@ -211,7 +215,7 @@
 					};
 					if (cuePoint) {
 						var myImg = this.getComponent();
-						if (cuePoint.thumbnailUrl) {
+						if (cuePoint.loaded && cuePoint.thumbnailUrl) {
 							myImg.attr('src', cuePoint.thumbnailUrl);
 							callCallback();
 						} else {

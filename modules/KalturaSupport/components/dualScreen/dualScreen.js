@@ -100,13 +100,6 @@
                     }
 				} );
 
-				this.bind( 'postDualScreenTransition', function () {
-					//TODO: move to imagePlayer
-                    if( _this.secondPlayer ) {
-                        _this.secondPlayer.applyIntrinsicAspect();
-                    }
-				});
-
 				//Handle layout changes due to layout update(resize and orientation change)
 				this.bind( 'updateLayout', function(e){
 					_this.updateSecondScreenLayout(e);
@@ -136,57 +129,59 @@
 				} );
 
 				this.bind('dualScreenStreamChange', function (e, data) {
-					if (!_this.secondPlayer) {
-						return;
-					}
-
 					var target = data.target;
 					var stream = data.stream;
-					if (target === 'slave') {
-						if (stream.type === 'video') {
-							if (_this.secondPlayer instanceof mw.dualScreen.videoPlayer) {
-								_this.secondPlayer.setStream(stream);
-							} else if (_this.secondPlayer instanceof mw.dualScreen.imagePlayer) {
-								// TODO: switch image to video
-								var newVideoPlayer = new mw.dualScreen.videoPlayer(_this.getPlayer(), function () {
-									this.setStream(stream);
-								}, 'videoPlayer');
-								_this.secondPlayer.getComponent().replaceWith(newVideoPlayer.getComponent());
-								_this.destroySecondScreen();
-								_this.secondPlayer = newVideoPlayer;
-							}
-						} else if (stream.type === 'image') {
-							_this.loadSecondScreenImage().then(function (imagePlayer) {
-								_this.secondPlayer.getComponent().replaceWith(imagePlayer.getComponent());
-								_this.destroySecondScreen();
-								_this.secondPlayer = imagePlayer;
-							});
-						}
-					} else if (target === 'master') {
-						if (stream.type === 'video') {
-							_this.getUtils().setStream(stream);
-							_this.getPlayer().restoreEventPropagation();
-						} else if (stream.type === 'image') {
-							_this.fsm.consumeEvent('switchView');
-							_this.getPlayer().pause();
-							_this.getUtils().setStream(_this.secondPlayer.stream);
-							_this.getPlayer().restoreEventPropagation();
-							_this.loadSecondScreenImage().then(function (imagePlayer) {
-								_this.secondPlayer.getComponent().replaceWith(imagePlayer.getComponent());
-								_this.destroySecondScreen();
-								_this.secondPlayer = imagePlayer;
-							});
-						}
-					}
+					_this.changeStream(target, stream);
+				});
 
-					_this.controlBar && _this.getSwitchingStreams().then(function (streams) {
-						_this.controlBar.setStreams(streams);
-					});
+				this.bind('dualScreenDisableView', function () {
+					_this.displays.disableUserActions();
+					if (_this.controlBar) {
+						wasDisabled = _this.controlBar.disabled;
+						_this.controlBar.enable();
+						_this.controlBar.hide();
+						_this.controlBar.disable();
+					}
+				});
+
+				this.bind('dualScreenEnableView', function () {
+					_this.displays.enableUserActions();
+					if (_this.controlBar) {
+						_this.controlBar.enable();
+						_this.controlBar.show();
+						wasDisabled && _this.controlBar.disable();
+					}
 				});
 
 				//Consume view state events
 				this.bind( 'dualScreenStateChange', function(e, state){
                     _this.fsm.consumeEvent( state );
+				});
+
+				this.bind('postDualScreenTransition', function () {
+                    var currentState = _this.fsm.currentState.name;
+                    var primary = _this.displays.getPrimary();
+                    var secondary = _this.displays.getSecondary();
+                    var main = _this.displays.getMainDisplay();
+
+                	primary.disableDroppable();
+                	secondary.disableDroppable();
+
+                    if (currentState === 'SbS') {
+                    	primary.enableDroppable();
+                    	secondary.enableDroppable();
+                    } else if (currentState === 'PiP') {
+                    	primary.enableDroppable(primary === main);
+                    	secondary.enableDroppable(secondary === main);
+                    } else {
+                    	main.enableDroppable();
+                    }
+				});
+
+				this.bind('displayDropped', function (event, display, draggable) {
+					var target = _this.displays.getPrimary() === display ? 'master' : 'slave';
+					var stream = draggable.data('stream');
+					_this.changeStream(target, stream);
 				});
 
                 this.bind( 'dualScreenDisplaysSwitched sourcesReplaced', function(e){
@@ -442,7 +437,7 @@
 					if (!(_this.secondPlayer instanceof mw.dualScreen.imagePlayer) && _this.hasSlides()) {
 						streams.push({
 							type: 'image',
-							thumbnailUrl: 'https://placeholdit.imgix.net/~text?txtsize=64&txt=ATTACHED%20SLIDES&w=320&h=180'
+							thumbnailUrl: _this.getSupportedCuePoints()[0].thumbnailUrl
 						});
 					}
 
@@ -721,8 +716,6 @@
 
 							var secondScreen = _this.displays.getAuxDisplay();
 							secondScreen.repaint(screenProps);
-							//TODO: move to image player
-							_this.secondPlayer && _this.secondPlayer.applyIntrinsicAspect();
 							if (!_this.disabled && _this.render) {
 								//Show display and control bar after resizing
 								_this.enableView();
@@ -908,6 +901,52 @@
 			},
 
 			// service methods
+			changeStream: function (target, stream) {
+				if (!this.secondPlayer || !this.syncEnabled) {
+					return;
+				}
+
+				var _this = this;
+				if (target === 'slave') {
+					if (stream.type === 'video') {
+						if (this.secondPlayer instanceof mw.dualScreen.videoPlayer) {
+						this.secondPlayer.setStream(stream);
+						} else if (this.secondPlayer instanceof mw.dualScreen.imagePlayer) {
+							var newVideoPlayer = new mw.dualScreen.videoPlayer(this.getPlayer(), function () {
+								this.setStream(stream);
+							}, 'videoPlayer');
+							this.secondPlayer.getComponent().replaceWith(newVideoPlayer.getComponent());
+							this.destroySecondScreen();
+							this.secondPlayer = newVideoPlayer;
+						}
+					} else if (stream.type === 'image') {
+						this.loadSecondScreenImage().then(function (imagePlayer) {
+							_this.secondPlayer.getComponent().replaceWith(imagePlayer.getComponent());
+							_this.destroySecondScreen();
+							_this.secondPlayer = imagePlayer;
+						});
+					}
+				} else if (target === 'master') {
+					if (stream.type === 'video') {
+						this.getUtils().setStream(stream);
+						this.getPlayer().restoreEventPropagation();
+					} else if (stream.type === 'image') {
+						this.fsm.consumeEvent('switchView');
+						this.getPlayer().pause();
+						this.getUtils().setStream(this.secondPlayer.stream);
+						this.getPlayer().restoreEventPropagation();
+						this.loadSecondScreenImage().then(function (imagePlayer) {
+							_this.secondPlayer.getComponent().replaceWith(imagePlayer.getComponent());
+							_this.destroySecondScreen();
+							_this.secondPlayer = imagePlayer;
+						});
+					}
+				}
+
+				this.controlBar && this.getSwitchingStreams().then(function (streams) {
+					_this.controlBar.setStreams(streams);
+				});
+			},
 			tryInitSecondPlayer: function () {
 				var _this = this;
 				var mobileTag = this.getConfig('mobileTag');
@@ -936,11 +975,11 @@
 
 				return promise.fail(function () {
 					if (_this.isPlaylistPersistent()) {
-						console.info('playlist case. disabling and destroying second player');
+						_this.log('tryInitSecondPlayer :: failed => playlist case => disable and destroy second player');
 						_this.destroySecondScreen();
 						_this.disabled = true;
 					} else {
-						console.info('destroying itself!');
+						_this.log('tryInitSecondPlayer :: failed => not playlist case => destroy self');
 						_this.destroy();
 					}
 				});
