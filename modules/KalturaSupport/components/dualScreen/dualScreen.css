@@ -83,6 +83,19 @@
 .dualScreen > .ui-resizable-se{
     cursor: nwse-resize;
 }
+.ui-state-active:after{
+    content: '';
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+.ui-state-active.ui-state-hover:after {
+    background-color: rgba(0, 0, 0, 0.2);
+}
 /*Custom UI corner position handlers for second screen*/
 .cornerHandle{
     position: absolute;

@@ -27,7 +27,9 @@
 			"title": gM( 'mwe-embedplayer-timed_text'),
 			"smartContainer": "qualitySettings",
 			'smartContainerCloseEvent': 'changedClosedCaptions',
-			"forceWebVTT": false // force using webvtt on-the-fly. only for kalturaAPI captions
+			"forceWebVTT": false, // force using webvtt on-the-fly. only for kalturaAPI captions
+			"enableOptionsMenu": false,
+			"sortCaptionsAlphabetically": false
 		},
 
 		textSources: [],
@@ -48,6 +50,15 @@
 				this.setConfig('displayCaptions', false );
 			}
 
+			if(_this.getConfig("enableOptionsMenu")){
+				this.optionsMenu = new mw.closedCaptions.cvaa(this.getPlayer(), function () {
+				}, "cvaa");
+
+				if(!this.optionsMenu.isSafeEnviornment()){
+					this.setConfig('enableOptionsMenu', false );
+				}
+			}
+
 			if( (this.embedPlayer.isOverlayControls() && !this.embedPlayer.getInterface().find( '.controlBarContainer' ).is( ':hidden' )) || this.embedPlayer.useNativePlayerControls() ){
 				if( this.embedPlayer.layoutBuilder ) {
 					this.defaultBottom += this.embedPlayer.layoutBuilder.getHeight();
@@ -57,7 +68,7 @@
 			this.embedPlayer.bindHelper("propertyChangedEvent", function(event, data){
 				if ( data.plugin === _this.pluginName ){
 					if ( data.property === "captions" ){
-						_this.getMenu().$el.find("li a")[data.value].click();
+						_this.getMenu().$el.find("li a[title="+data.value+"]").click();
 					}
 				}
 			});
@@ -182,7 +193,7 @@
 				}
 			});
 
-			this.bind( 'onCloseFullScreen onOpenFullScreen', function(){
+			this.bind( 'updateLayout', function(){
 				if (_this.getConfig("displayCaptions") == true){
 					_this.updateTextSize();
 				}
@@ -216,6 +227,9 @@
 			});
 			this.bind( 'onDisableInterfaceComponents', function(e, arg ){
 				_this.getMenu().close();
+			});
+			this.bind( 'newCaptionsStyles', function (e, stylesObj){
+				_this.customStyle = stylesObj;
 			});
 		},
 		addTextSource: function(captionData){
@@ -441,9 +455,21 @@
 					_this.captionURLs = captionsURLs;
 					// Done adding source issue callback
 					mw.log( 'mw.ClosedCaptions:: loadCaptionsURLsFromApi> total captions count: ' + captions.length );
+					// Check if we need to sort captions array Alphabetically
+					if( _this.getConfig("sortCaptionsAlphabetically")) {
+						captions = _this.sortByKey( captions, 'language' );
+						callback( captions );
+					}
 					callback( captions );
 				} );
 			}
+		},
+		sortByKey: function ( array, key ) {
+			return array.sort( function( a, b ) {
+				var x = a[key];
+				var y = b[key];
+				return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+			});
 		},
 		getTextSourceFromDB: function( dbTextSource ) {
 			var _this = this;
@@ -562,10 +588,12 @@
 			}
 		},
 		selectSourceByLangKey: function( langKey ){
+			var _this = this;
 			var selectedSource = null;
 			$.each(this.textSources, function(idx, source){
 				if( source.srclang && langKey == source.srclang.toLowerCase() ){
 					selectedSource = source;
+					_this.embedPlayer.triggerHelper("sourceSelectedByLangKey",[selectedSource.label]);
 					return false;
 				}
 			});
@@ -623,6 +651,7 @@
 				.html($(caption.content)
 					.addClass('caption')
 					.css('pointer-events', 'auto')
+					.css("background-color", (this.customStyle && this.customStyle.windowColor) ? this.customStyle.windowColor : "none")
 				);
 
 			this.displayTextTarget($textTarget);
@@ -646,10 +675,16 @@
 				.attr('data-capId', capId)
 				.hide();
 
+			var $windowTarget = $('<div />')
+				.css("background-color", (this.customStyle && this.customStyle.windowColor) ? this.customStyle.windowColor : "none")
+				.addClass('trackWindow');
+
 			// Update text ( use "html" instead of "text" so that subtitle format can
 			// include html formating
 			// TOOD we should scrub this for non-formating html
+
 			$textTarget.append(
+				$windowTarget.append(
 				$('<span />')
 					.addClass('ttmlStyled')
 					.css('pointer-events', 'auto')
@@ -661,6 +696,7 @@
 							.css('position', 'relative')
 							.html(caption.content)
 					)
+				)
 			);
 
 			// Add/update the lang option
@@ -724,6 +760,7 @@
 			} else {
 				this.log("Possible Error, layout mode not recognized: " + this.getConfig('layout') );
 			}
+			embedPlayer.triggerHelper("captionsUpdated",$textTarget.html());
 		},
 		getInterfaceSizeTextCss: function( size ) {
 			//mw.log(' win size is: ' + $( window ).width() + ' ts: ' + textSize );
@@ -810,41 +847,97 @@
 			if( textSize < 95 ){
 				textSize = 95;
 			}
-			if( textSize > 150 ){
-				textSize = 150;
+			if( textSize > 200 ){
+				textSize = 200;
 			}
 			return textSize;
-		},		
+		},
 		getCaptionCss: function() {
-			var style = {'display': 'inline'};
+			var style;
 
-			if( this.getConfig( 'bg' ) ) {
-				style[ "background-color" ] = mw.getHexColor( this.getConfig( 'bg' ) );
+			if (this.customStyle) {
+				style = this.getCustomCaptionCss();
+			} else if (this.embedPlayer.playerConfig.layout.skin === "ott"){
+				style = this.getOttCaptionCss();
+			} else {
+				style = this.getDefaultCaptionCss();
 			}
-			if( this.getConfig( 'fontColor' ) ) {
-				style[ "color" ] = mw.getHexColor( this.getConfig( 'fontColor' ) );
+
+			return style;
+		},
+		getOttCaptionCss: function(){
+			var style = {};
+			style["display"] = "inline";
+			style["color"] = "white";
+			style["font-size"] = this.getEmFromFontSize(22);
+			style["text-shadow"] = "0px 1px 5px #000000";
+			style["text-align"] = "center";
+			style["background"] = "none";
+			return style;
+		},
+		getDefaultCaptionCss: function(){
+			var style = {};
+			style["display"] = "inline";
+			if (this.getConfig('bg')) {
+				style["background-color"] = mw.getHexColor(this.getConfig('bg'));
 			}
-			if( this.getConfig( 'fontFamily' ) ) {
-				style[ "font-family" ] = this.getConfig( 'fontFamily' );
+			if (this.getConfig('fontColor')) {
+				style["color"] = mw.getHexColor(this.getConfig('fontColor'));
 			}
-			if( this.getConfig( 'fontsize' ) ) {
+			if (this.getConfig('fontFamily')) {
+				style["font-family"] = this.getConfig('fontFamily');
+			}
+			if (this.getConfig('fontsize')) {
 				// Translate to em size so that font-size parent percentage
 				// base on http://pxtoem.com/
-				var emFontMap = { '6': .5, '7': .583, '8': .666, '9': .75, '10': .833, '11': .916,
-						'12': 1, '13': 1.083, '14': 1.166, '15': 1.25, '16': 1.333, '17': 1.416, '18': 1.5, '19': 1.583,
-						'20': 1.666, '21': 1.75, '22': 1.833, '23': 1.916, '24': 2 };
+
 				// Make sure its an int:
-				var fontsize = parseInt( this.getConfig( 'fontsize' ) );
-				style[ "font-size" ] = ( emFontMap[ fontsize ] ) ?
-						emFontMap[ fontsize ] +'em' :
-						(  fontsize > 24 )?  emFontMap[ 24 ]+'em' : emFontMap[ 6 ];
+				var fontsize = parseInt(this.getConfig('fontsize'));
+				style["font-size"] = this.getEmFromFontSize(fontsize);
 			}
-			if( this.getConfig( 'useGlow' ) && this.getConfig( 'glowBlur' ) && this.getConfig( 'glowColor' ) ) {
-				var hShadow = this.getConfig( 'hShadow' ) ? this.getConfig( 'hShadow' ) : 0;
-				var vShadow = this.getConfig( 'vShadow' ) ? this.getConfig( 'vShadow' ) : 0;
-				style[ "text-shadow" ] = hShadow + 'px ' + vShadow + 'px ' + this.getConfig( 'glowBlur' ) + 'px ' + mw.getHexColor( this.getConfig( 'glowColor' ) );
+			if (this.getConfig('useGlow') && this.getConfig('glowBlur') && this.getConfig('glowColor')) {
+				var hShadow = this.getConfig('hShadow') ? this.getConfig('hShadow') : 0;
+				var vShadow = this.getConfig('vShadow') ? this.getConfig('vShadow') : 0;
+				style["text-shadow"] = hShadow + 'px ' + vShadow + 'px ' + this.getConfig('glowBlur') + 'px ' + mw.getHexColor(this.getConfig('glowColor'));
 			}
 			return style;
+		},
+		getCustomCaptionCss: function(){
+			var style = {};
+			style["display"] = "inline";
+			style["font-family"] = this.customStyle.fontFamily;
+			style["color"] = this.customStyle.fontColor;
+			style["font-size"] = this.customStyle.fontSize;
+			style["background-color"] = this.customStyle.backgroundColor;
+			style["text-shadow"] = this.customStyle.edgeStyle;
+			return style;
+		},
+		getEmFromFontSize: function(fontsize){
+			var emFontMap = {
+				'6': .5,
+				'7': .583,
+				'8': .666,
+				'9': .75,
+				'10': .833,
+				'11': .916,
+				'12': 1,
+				'13': 1.083,
+				'14': 1.166,
+				'15': 1.25,
+				'16': 1.333,
+				'17': 1.416,
+				'18': 1.5,
+				'19': 1.583,
+				'20': 1.666,
+				'21': 1.75,
+				'22': 1.833,
+				'23': 1.916,
+				'24': 2
+			};
+			var calculatedEm = ( emFontMap[fontsize] ) ? emFontMap[fontsize] :
+				(  fontsize > 24 ) ? emFontMap[24] : emFontMap[6];
+			return (calculatedEm+ 'em');
+
 		},
 		getDefaultStyle: function(){
 			var baseCss =  {
@@ -896,42 +989,37 @@
 				if( this.getConfig('hideWhenEmpty') == true && !this.embedPlayer.isMobileSkin()){
 					this.setConfig('visible', true)
 				}
-				this.getBtn().show();
+				if (this.getConfig("parent") !== "smartContainer"){
+					this.getComponent().show();
+				}
 				this.embedPlayer.triggerHelper("updateComponentsVisibilityDone");
 				// show new timed captions text if exists
 				this.showCaptions();
 			}
 
-			// Add Off item as first element
-			if( this.getConfig('showOffButton') && this.getConfig('offButtonPosition') == 'first' ) {
-				this.addOffButton();
-			}
+			this.getPlayer().triggerHelper('captionsMenuEmpty');
 
-			var items = [];
-			// Add text sources
-			$.each(sources, function( idx, source ){
-				_this.getMenu().addItem({
-					'label': source.label,
-					'callback': function(){
-						// If this caption is the same as current caption, toggle off captions
-						if( _this.getConfig('toggleActiveCaption') && _this.selectedSource === source ) {
-							_this.selectedSource = null;
-							_this.setConfig('displayCaptions', false);
-						} else {
-							_this.setTextSource( source );
-							_this.embedPlayer.triggerHelper("selectClosedCaptions", source.label);
-							_this.getActiveCaption();
-						}
-					},
-					'active': ( _this.selectedSource === source && _this.getConfig( "displayCaptions" )  )
-				});
-				items.push({'label':source.label, 'value':source.label});
-				if (_this.embedPlayer.isMobileSkin() && _this.selectedSource === source){
-					_this.getMenu().setActive(idx+1);
-				}
-			});
+            //add styles menu as first button
+            if (this.getConfig('enableOptionsMenu')) {
+                this.addOptionsButton(this.optionsMenu.addOptionsBtn());
+            }
+
+            // Add Off item as first element
+            if (this.getConfig('showOffButton') && this.getConfig('offButtonPosition') == 'first') {
+                this.addOffButton();
+            }
+
+            var items = [];
+
+            // Add text sources
+            for (var j = 0; j < sources.length; j++) {
+                var src = sources[j];
+                this.addSourceButton(src);
+                items.push({'label': src.label, 'value': src.label});
+            }
 
 			this.getActiveCaption();
+
 			// Add Off item as last element
 			if( this.getConfig('showOffButton') && this.getConfig('offButtonPosition') == 'last' ) {
 				this.addOffButton();
@@ -941,12 +1029,42 @@
 				items.unshift({'label':'Off', 'value':'Off'});
 			}
 
+			// If it's a mobile skin we need to set the active caption in the mobile menu
+            if (this.embedPlayer.isMobileSkin()) {
+                var activeText = this.getMenu().$el.find('.active').text();
+                var activeIndex = this.getMenu().mobileMenu.find('option[value="' + activeText + '"]').index();
+                this.getMenu().setActive(activeIndex);
+            }
+
 			// dispatch event to be used by a master plugin if defined
-			this.getPlayer().triggerHelper("updatePropertyEvent",{"plugin": this.pluginName, "property": "captions", "items": items, "selectedItem": this.getMenu().$el.find('.active a').text()});
+            this.getPlayer().triggerHelper("updatePropertyEvent", {
+                "plugin": this.pluginName,
+                "property": "captions",
+                "items": items,
+                "selectedItem": this.getMenu().$el.find('.active a').text()
+            });
 
 			// Allow plugins to integrate with captions menu
 			this.getPlayer().triggerHelper('captionsMenuReady');
 		},
+        addSourceButton: function (src) {
+            var _this = this;
+            _this.getMenu().addItem({
+                'label': src.label,
+                'callback': function () {
+                    // If this caption is the same as current caption, toggle off captions
+                    if (_this.getConfig('toggleActiveCaption') && _this.selectedSource === src) {
+                        _this.selectedSource = null;
+                        _this.setConfig('displayCaptions', false);
+                    } else {
+                        _this.setTextSource(src);
+                        _this.embedPlayer.triggerHelper("selectClosedCaptions", src.label);
+                        _this.getActiveCaption();
+                    }
+                },
+                'active': ( _this.selectedSource === src && _this.getConfig("displayCaptions")  )
+            });
+        },
 		addOffButton: function() {
 			var _this = this;
 			this.getMenu().addItem({
@@ -963,6 +1081,19 @@
 					_this.getPlayer().setCookie( _this.cookieName, 'None' );
 				},
 				'active': ! _this.getConfig( "displayCaptions" ) 
+			});
+		},
+		addOptionsButton: function(btnOptions) {
+			var _this = this;
+			this.getMenu().addItem({
+				'label': btnOptions.optionsLabel,
+				'attributes': {
+					'class': "cvaaOptions"
+				},
+				'callback': function(){
+					_this.getPlayer().triggerHelper(btnOptions.optionsEvent);
+				},
+				'active': false
 			});
 		},
 		setTextSource: function( source, setCookie ){

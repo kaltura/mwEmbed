@@ -58,11 +58,9 @@
 }
 .icon-play:before {
 	content: "\e607";
-	margin-left: 2px;
 }
 .icon-replay:before {
 	content: "\e607";
-	margin-left: 2px;
 }
 .icon-contract:before {
 	content: "\e601";

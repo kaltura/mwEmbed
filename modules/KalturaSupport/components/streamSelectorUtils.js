@@ -6,16 +6,20 @@
 
         defaultConfig: {
             "defaultStream": 1,
-            "maxNumOfStream": 4
+            "maxNumOfStream": 4,
+            "ignoreTag": null
         },
 
-        streams: [],
+        streams: null,
         streamsReady: null,
         streamEnded: false,
         readyAndHasStreams: null,
 		streamChanging: false,
 
         setup: function () {
+            // we have to manually reset streams array because
+            // class.js copies the value by reference from prototype
+            this.streams = [];
             this.addBindings();
             this.readyAndHasStreams = $.Deferred();
         },
@@ -105,8 +109,10 @@
             var subStreams = data[0].objects;
             var subStreamsData = data.slice(1);
             if (subStreams && subStreams.length > 0) {
+                var ignoreTag = this.getConfig('ignoreTag');
                 $.each( subStreams, function ( i, subStream ) {
-                    if (subStreamsData[i]) {
+                    if (subStreamsData[i] &&
+                        !(ignoreTag && subStream.tags && subStream.tags.indexOf(ignoreTag) > -1)) {
                         _this.streams.push( {
                             id: subStream.id,
                             data: {
@@ -170,7 +176,7 @@
                 this.log("Error - invalid stream id");
             }
         },
-        setStream: function (stream) {
+        setStream: function (stream, pauseAfterwards) {
             this.log("set stream");
             if (this.currentStream !== stream) {
                 var _this = this;
@@ -237,15 +243,31 @@
                             mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
                             _this.streamChanging = false;
                             embedPlayer.triggerHelper('onChangeStreamDone', [_this.currentStream.id]);
+
+                            if (pauseAfterwards) {
+                                embedPlayer.pause();
+                            }
                         });
+
                         //Add black screen before seek to avoid flashing of video
                         embedPlayer.addBlackScreen();
-                        embedPlayer.seek(currentTime, false);
+
+                        if (embedPlayer.instanceOf === 'Kplayer' && embedPlayer.streamerType === 'hls') {
+                            _this.bind('playing', function () {
+                                embedPlayer.seek(currentTime, false);
+                            }, true);
+                        } else {
+                            embedPlayer.seek(currentTime, false);
+                        }
                     } else {
                         //Return poster to allow display of poster on clip done
                         mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
                         embedPlayer.triggerHelper( "onPlayerStateChange", ["play"] );
                         embedPlayer.triggerHelper('onChangeStreamDone', [_this.currentStream.id]);
+
+                        if (pauseAfterwards) {
+                            embedPlayer.pause();
+                        }
                     }
                 };
                 embedPlayer.changeMedia(changeMediaCallback, checkPlayerSourcesFunction, false);

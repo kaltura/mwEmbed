@@ -15,7 +15,7 @@
             "hideSource": false,
 			"title": gM( 'mwe-embedplayer-select_source' ),
 			'smartContainer': 'qualitySettings',
-			'smartContainerCloseEvent': 'SourceChange'
+			'smartContainerCloseEvent': 'newSourceSelected'
 		},
 
 		isDisabled: false,
@@ -253,7 +253,14 @@
 				this.addAutoToMenu();
 				return true;
 			}
-			//HLS, HDS
+
+	        //Dash
+	        if( ( this.getPlayer().streamerType === "dash" ) ){
+		        this.addAutoToMenu();
+		        return true;
+	        }
+
+	        //HLS, HDS
             if (mw.isNativeApp()) {
             	this.sourcesList = [];
                 this.addAutoToMenu();
@@ -265,7 +272,10 @@
                     return true;
                 }
                 this.addAutoToMenu();
-                return false;
+	            if ( this.getPlayer().streamerType == "hls" ) {
+		            return true;
+	            }
+	            return false;
             }
 
 			if ( this.getPlayer().streamerType == "http" && mw.isDesktopSafari() ){

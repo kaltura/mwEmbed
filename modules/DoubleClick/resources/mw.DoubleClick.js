@@ -92,6 +92,10 @@
 		chromelessAdManagerLoadedId: null,
 
 		init: function( embedPlayer, callback, pluginName ){
+			if (embedPlayer.casting){
+				callback();
+				return;
+			}
 			var _this = this;
 			if (mw.getConfig( 'localizationCode' )){
 				_this.localizationCode = mw.getConfig( 'localizationCode' );
@@ -515,6 +519,11 @@
 				}
 			});
 
+			_this.embedPlayer.bindHelper('casting' + this.bindPostfix, function () {
+				_this.embedPlayer.adTimeline.restorePlayer( null, true);
+				_this.destroy();
+			});
+
 			_this.embedPlayer.bindHelper('AdSupport_StartAdPlayback' + this.bindPostfix, function (event) {
 				if (_this.isChromeless){
 					_this.embedPlayer.getPlayerElement().sendNotification("hideContent");
@@ -661,6 +670,15 @@
 			// Set the content element to player element:
 			return this.embedPlayer.getPlayerElement();
 		},
+		addCountdownNotice: function () {
+			if (this.getConfig('countdownText') && this.embedPlayer.getInterface().find(".ad-notice-label").length == 0) {
+				// Add the notice target:
+				this.embedPlayer.getVideoHolder().append(
+					$('<span />')
+						.addClass('ad-component ad-notice-label')
+				);
+			}
+		},
 		getAdContainer: function(){
 			if( !$('#' + this.getAdContainerId() ).length ){
 				this.embedPlayer.getVideoHolder().after(
@@ -672,14 +690,7 @@
 							'left' : '0px'
 						})
 				);
-				if ( this.getConfig( 'countdownText' )){
-					this.embedPlayer.getInterface().find("#"+this.getAdContainerId()).append(
-						$('<span />')
-							.addClass( 'ad-component ad-notice-label' )
-							.css({"position": "fixed","margin-bottom": 36+"px"})
-							.hide()
-					)
-				}
+				this.addCountdownNotice();
 			}
 			return $('#' + this.getAdContainerId() ).get(0);
 		},
@@ -728,9 +739,6 @@
 							if ( _this.isChromeless ){
 								_this.embedPlayer.getPlayerElement().sendNotification( 'skipAd' );
 							}else{
-								if (_this.adPaused){
-									_this.resumeAd(true);
-								}
 								_this.adsManager.stop();
 								if (_this.currentAdSlotType === "postroll" && _this.getConfig( 'adTagUrl' ) ){
 									_this.restorePlayer(true);
@@ -873,7 +881,7 @@
 				adsRequest.adTagUrl = encodeURIComponent(adsRequest.adTagUrl);
 				this.embedPlayer.getPlayerElement().sendNotification( 'requestAds', adsRequest );
 				mw.log( "DoubleClick::requestAds: Chromeless player request ad from KDP plugin");
-				var timeout = this.getConfig("adsManagerLoadedTimeout") || 5000;
+				var timeout = this.getConfig("adsManagerLoadedTimeout") || (mw.isChromeCast() ? 15000 : 5000);
 				this.chromelessAdManagerLoadedId = setTimeout(function(){
 					mw.log( "DoubleClick::Error: AdsManager failed to load by Flash plugin after " + timeout + " seconds.");
 					_this.restorePlayer(true);
@@ -928,7 +936,7 @@
 			mw.log( 'DoubleClick:: onAdsManagerLoaded' );
 
 			var adsRenderingSettings = new google.ima.AdsRenderingSettings();
-			if (!this.getConfig("adTagUrl")){
+			if (!this.adTagUrl){
 				adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true; // for manual VAST, get the SDK to restore the player
 			}
 			if ( this.getConfig( 'enableCountDown' ) === true){
@@ -1287,13 +1295,7 @@
 						if (_this.isChromeless) {
 							$(".mwEmbedPlayer").hide();
 						}
-						if (_this.getConfig('countdownText') && _this.embedPlayer.getInterface().find(".ad-notice-label").length == 0) {
-							// Add the notice target:
-							_this.embedPlayer.getVideoHolder().append(
-								$('<span />')
-									.addClass('ad-component ad-notice-label')
-							);
-						}
+						_this.addCountdownNotice();
 						// Send a notification to trigger associated events and update ui
 						_this.embedPlayer.paused = false;
 					}else{
@@ -1502,10 +1504,11 @@
 							$( embedPlayer ).trigger( "onPlayerStateChange", ["pause", embedPlayer.currentState] );
 							break;
 						case 'doPlay':
+							embedPlayer.paused = false;
+							embedPlayer.stopped = false;
 							if (_this.adPaused){
 								_this.adPaused = false;
 								_this.adsManager.resume();
-								embedPlayer.paused = false;
 								$( embedPlayer ).trigger( 'onplay' );
 								$( embedPlayer ).trigger( "onPlayerStateChange", ["play", embedPlayer.currentState] );
 								_this.monitorAdProgress();
@@ -1589,7 +1592,7 @@
 			if (this.adsManager && $.isFunction( this.adsManager.unload ) ) {
 				this.adsManager.unload();
 			}
-			if (this.embedPlayer.isInSequence()){
+			if (this.embedPlayer.isInSequence() || this.embedPlayer.autoplay){
 				this.restorePlayer(this.contentDoneFlag);
 				this.embedPlayer.play();
 			}else{
@@ -1603,11 +1606,11 @@
 			mw.log("DoubleClick::restorePlayer: content complete:" + onContentComplete);
 			var _this = this;
 			this.adActive = false;
+			this.embedPlayer.getInterface().find(".ad-notice-label").remove();
 			if (this.isChromeless){
 				if (_this.isLinear || _this.adLoaderErrorFlag){
 					$(".mwEmbedPlayer").show();
 				}
-				this.embedPlayer.getInterface().find(".ad-notice-label").remove();
 				this.embedPlayer.getPlayerElement().redrawObject(50);
 			}else{
 				if (_this.isLinear !== false || _this.adLoaderErrorFlag){
@@ -1669,11 +1672,11 @@
 		destroy:function(){
 			// remove any old bindings:
 			var _this = this;
-			if ( this.getConfig("adTagUrl") || this.currentAdSlotType === "postroll" ){
+			if ( this.adTagUrl || this.currentAdSlotType === "postroll" ){
 				this.embedPlayer.unbindHelper( this.bindPostfix );
 			}
 			if (!this.isChromeless){
-				if ( this.getConfig("adTagUrl") && this.playingLinearAd ) {
+				if ( this.adTagUrl && this.playingLinearAd ) {
 					this.restorePlayer(true);
 				}
 				$(".ad-skip-btn").remove(); // remove skip button from the DOM

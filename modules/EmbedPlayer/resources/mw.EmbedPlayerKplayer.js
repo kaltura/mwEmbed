@@ -119,8 +119,9 @@
                     if (mw.getConfig("hlsMaxBufferTime")) {
                         hlsPluginConfiguration["maxBufferTime"] = mw.getConfig("hlsMaxBufferTime");
                     }
-                    if( mw.getConfig("preferedBitrate") ) {
-                        hlsPluginConfiguration["prefBitrate"] = mw.getConfig("preferedBitrate");
+                    var preferedBitRate = _this.evaluate( '{mediaProxy.preferedFlavorBR}' );
+                    if( preferedBitRate ) {
+                        hlsPluginConfiguration["prefBitrate"] = preferedBitRate;
                         flashvars.disableAutoDynamicStreamSwitch = true; // disable autoDynamicStreamSwitch logic inside KDP (while playing + if player.isDynamicStream turn autoSwitch on)
                     }
                     if( mw.getConfig("maxBitrate") ) {
@@ -785,13 +786,10 @@
 		},
 
 		onBufferChange: function (buffering) {
-			//vod buffer is already being monitored by EmbedPlayer.js
-			if (this.isLive()) {
-				if (buffering) {
-					this.bufferStart();
-				} else {
-					this.bufferEnd();
-				}
+			if (buffering) {
+				this.bufferStart();
+			} else {
+				this.bufferEnd();
 			}
 		},
 
@@ -961,8 +959,8 @@
 				});
 				return;
 			}
-            var sourceIndex = source; //-1 for autoDynamicStreamSwitch = true :: adaptive bitrate (Auto), 0 for lowest bitrate
-            if( typeof source !== "number" ){
+            var sourceIndex = -1; //autoDynamicStreamSwitch = true for adaptive bitrate (Auto)
+            if( source !== -1 ){
                 sourceIndex = this.getSourceIndex(source);
             }
 			this.playerObject.sendNotification('doSwitch', { flavorIndex: sourceIndex });
@@ -1049,7 +1047,12 @@
 		},
         getCurrentBufferLength: function(){
             return parseInt(this.playerObject.getCurrentBufferLength()); //return buffer length in seconds
-        }
+        },
+
+		bufferHandling: function(){
+			// Nothing here, only overwrite the super bufferHandling method.
+			// The buffer handling here made by Flash itself, by listening to "bufferChange" event.
+		}
 	};
 
 })(mediaWiki, jQuery);

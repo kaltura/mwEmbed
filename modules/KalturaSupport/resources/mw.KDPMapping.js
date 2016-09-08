@@ -1255,6 +1255,7 @@
 						}
 
 						// Update the proxy data
+						embedPlayer.setKalturaConfig("proxyData", notificationData.proxyData);
 						embedPlayer.setKalturaConfig("proxyData", "data", notificationData.proxyData);
 
 						// Clear player & entry meta
@@ -1295,6 +1296,12 @@
 					} else {
 					embedPlayer.disablePlayControls();
 					}
+					break;
+				case 'addBlackScreen':
+					embedPlayer.addBlackScreen();
+					break;
+				case 'removeBlackScreen':
+					embedPlayer.removeBlackScreen();
 					break;
 				default: 
 					// custom notification
