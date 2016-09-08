@@ -229,8 +229,8 @@
 				});
 
 				this.bind("onChangeMedia", function(){
-                    this.log('onChangeMedia');
-                    if ( _this.syncEnabled && !_this.disabled){
+					this.log('onChangeMedia');
+					if ( _this.syncEnabled && !_this.disabled){
 						//Reset the displays view
 						if (_this.fsm.getStatus() !== "PiP") {
 							_this.fsm.consumeEvent('PiP');
@@ -244,15 +244,16 @@
 						//Reset the control bar
 						_this.destroyControlBar();
 					}
-                    //channel play list
-                    if( _this.isPlaylistPersistent() ) {
-                        mw.log('DualScreen - onChangeMedia :: play list case - reset flag on');
+
+					//channel play list
+					if( _this.syncEnabled && _this.isPlaylistPersistent() ) {
+						mw.log('DualScreen - onChangeMedia :: play list case - reset flag on');
 						_this.abrSourcesLoaded = false;
-                        _this.resetSecondPlayer = true;
-                        _this.cuePoints = null;
-                        _this.destroyUtils();
-                        _this.destroySecondScreen();
-                    }
+						_this.resetSecondPlayer = true;
+						_this.cuePoints = null;
+						_this.destroyUtils();
+						_this.destroySecondScreen();
+					}
 				});
 				this.bind("onChangeStream", function(){
 					_this.syncEnabled = false;
