@@ -857,13 +857,12 @@
 						if (_this.useNativePlayerControls() && $(_this).find('video ').length == 0) {
 							$(_this).hide();
 						}
-						// if it's iOS8 the player won't play
-						if (!mw.isIOSAbove7()) {
-							// update the preload attribute to auto
-							$(_this.getPlayerElement()).attr('preload', "auto");
-						}
+
+						// update the preload attribute to auto
+						$(_this.getPlayerElement()).attr('preload', "auto");
+
 						// issue a play request
-						if ( !_this.playing ) {
+						if (!_this.playing) {
 							vid.play();
 						}
 						_this.mobilePlayed = true;
