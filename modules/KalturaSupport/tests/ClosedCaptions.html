@@ -108,10 +108,17 @@ kdp.sendNotification( 'showHideClosedCaptions');
 				$('#' + playerId )[0].sendNotification('changeMedia', { 'entryId': $(this).attr('data-entryId') });
 				return false;
 			})
-			$('#changeMediaCaptions')
+			$('.forceLoad').click(function(){
+				$('#' + playerId )[0].sendNotification('forceLoadCaptions', "es");
+				return false;
+			})
+
 		}
 	});
 </script>
+<a class="forceLoad"  href="#">force 999999</a>
+
+
 <a class="changeMeda" data-entryId="1_of7rxwqy" href="#">Change media</a> to entry without captions -- will hide button if <b>hideWhenEmpty</b> is set to true<br>
 <a class="changeMeda" data-entryId="1_23pqn2nu" href="#">Change media</a> to entry with captions -- will restore caption button if hidden.
 <br>

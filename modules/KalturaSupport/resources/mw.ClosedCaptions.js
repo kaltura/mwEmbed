@@ -153,6 +153,10 @@
                 })
             }
 
+			//expose the ability to force load caption file by external plugin
+			this.bind( 'forceLoadCaptions', function(event,language){
+				_this.forceLoadLanguage(language);
+			});
 			this.bind( 'onplay', function(){
 				_this.playbackStarted = true;
 				_this.getMenu().close();
@@ -182,7 +186,7 @@
 				}
 			});
 
-			this.bind( 'updateLayout', function(){
+			this.bind( 'onCloseFullScreen onOpenFullScreen', function(){
 				if (_this.getConfig("displayCaptions") == true){
 					_this.updateTextSize();
 				}
@@ -255,12 +259,12 @@
 				// Get the text size scale then set it to control bar height + TimedText.BottomPadding;
 				'bottom': textOffset + 'px'
 			});
-			// check if below caption location, and update container size 
+			// check if below caption location, and update container size
 			if( this.getConfig('layout') == 'below' ){
 				var _this = this;
-				// give time for the dom to update: 
+				// give time for the dom to update:
 				setTimeout(function(){
-					_this.updateBelowVideoCaptionContainer();	
+					_this.updateBelowVideoCaptionContainer();
 				},50)
 			}
 		},
@@ -314,7 +318,7 @@
 		getCaptionURL: function( captionId ){
 			if( this.captionURLs && this.captionURLs[ captionId ] ){
 				return this.captionURLs[ captionId ];
-			} 
+			}
 			return null;
 		},
 		updateTimeOffset: function(){
@@ -419,7 +423,7 @@
 				captionIds = [];
 			// Generate multi-request for captions URLs
 			$.each( captions, function( inx, caption ) {
-				multiRequest.push({ 
+				multiRequest.push({
 					'service' : 'caption_captionasset',
 					'action' : 'getUrl',
 					'id' : caption.id
@@ -494,10 +498,13 @@
 			// Return a "textSource" object:
 			return new mw.TextSource( embedSource, _this.embedPlayer );
 		},
-		forceLoadLanguage: function(){
-			var lang = this.getConfig('forceLoadLanguage');
+		forceLoadLanguage: function(language){
+			var lang = this.getConfig('forceLoadLanguage') ? this.getConfig('forceLoadLanguage') : language;
 			var source = this.selectSourceByLangKey( lang );
-			// Found caption
+			//fallback - failed to find a matching asset - fallback to first found if exist
+			if(source == null && this.textSources.length){
+				source = this.textSources[0];
+			}
 			if( source && !source.loaded ) {
 				source.load($.proxy(function(){
 					this.getPlayer().triggerHelper('forcedCaptionLoaded', source);
@@ -534,7 +541,7 @@
 					this.selectedSource = source;
 					this.embedPlayer.getInterface().find( '[srclang='+ defaultLangKey +']').attr("default", "true");
 					return ;
-				}				
+				}
 			}
             // Get source by "default" property
             if ( !this.selectedSource ) {
@@ -789,10 +796,10 @@
 				'height' : _this.embedPlayer.getInterface().height()
 			}) / 100 ) *  mw.getConfig( 'TimedText.BelowVideoBlackBoxHeight' );
 			$cc.css( 'height',  height + 'px')
-			
+
 			// update embedPlayer layout per updated caption container size.
 			 _this.embedPlayer.doUpdateLayout();
-		},		
+		},
 		/**
 		 * Gets a text size percent relative to about 30 columns of text for 400
 		 * pixel wide player, at 100% text size.
@@ -810,85 +817,41 @@
 			if( textSize < 95 ){
 				textSize = 95;
 			}
-			if( textSize > 200 ){
-				textSize = 200;
+			if( textSize > 150 ){
+				textSize = 150;
 			}
 			return textSize;
 		},
 		getCaptionCss: function() {
-			var style;
+			var style = {'display': 'inline'};
 
-			var playerConfig = this.embedPlayer.playerConfig;
-			if (playerConfig.layout && (playerConfig.layout.skin === "ott")){
-				style = this.getOttCaptionCss();
-			} else {
-				style = this.getDefaultCaptionCss();
+			if( this.getConfig( 'bg' ) ) {
+				style[ "background-color" ] = mw.getHexColor( this.getConfig( 'bg' ) );
 			}
-
-			return style;
-		},
-		getOttCaptionCss: function(){
-			var style = {};
-			style["display"] = "inline";
-			style["color"] = "white";
-			style["font-size"] = this.getEmFromFontSize(22);
-			style["text-shadow"] = "0px 1px 5px #000000";
-			style["text-align"] = "center";
-			style["background"] = "none";
-			return style;
-		},
-		getDefaultCaptionCss: function(){
-			var style = {};
-			style["display"] = "inline";
-			if (this.getConfig('bg')) {
-				style["background-color"] = mw.getHexColor(this.getConfig('bg'));
+			if( this.getConfig( 'fontColor' ) ) {
+				style[ "color" ] = mw.getHexColor( this.getConfig( 'fontColor' ) );
 			}
-			if (this.getConfig('fontColor')) {
-				style["color"] = mw.getHexColor(this.getConfig('fontColor'));
+			if( this.getConfig( 'fontFamily' ) ) {
+				style[ "font-family" ] = this.getConfig( 'fontFamily' );
 			}
-			if (this.getConfig('fontFamily')) {
-				style["font-family"] = this.getConfig('fontFamily');
-			}
-			if (this.getConfig('fontsize')) {
+			if( this.getConfig( 'fontsize' ) ) {
 				// Translate to em size so that font-size parent percentage
 				// base on http://pxtoem.com/
-
+				var emFontMap = { '6': .5, '7': .583, '8': .666, '9': .75, '10': .833, '11': .916,
+						'12': 1, '13': 1.083, '14': 1.166, '15': 1.25, '16': 1.333, '17': 1.416, '18': 1.5, '19': 1.583,
+						'20': 1.666, '21': 1.75, '22': 1.833, '23': 1.916, '24': 2 };
 				// Make sure its an int:
-				var fontsize = parseInt(this.getConfig('fontsize'));
-				style["font-size"] = this.getEmFromFontSize(fontsize);
+				var fontsize = parseInt( this.getConfig( 'fontsize' ) );
+				style[ "font-size" ] = ( emFontMap[ fontsize ] ) ?
+						emFontMap[ fontsize ] +'em' :
+						(  fontsize > 24 )?  emFontMap[ 24 ]+'em' : emFontMap[ 6 ];
 			}
-			if (this.getConfig('useGlow') && this.getConfig('glowBlur') && this.getConfig('glowColor')) {
-				var hShadow = this.getConfig('hShadow') ? this.getConfig('hShadow') : 0;
-				var vShadow = this.getConfig('vShadow') ? this.getConfig('vShadow') : 0;
-				style["text-shadow"] = hShadow + 'px ' + vShadow + 'px ' + this.getConfig('glowBlur') + 'px ' + mw.getHexColor(this.getConfig('glowColor'));
+			if( this.getConfig( 'useGlow' ) && this.getConfig( 'glowBlur' ) && this.getConfig( 'glowColor' ) ) {
+				var hShadow = this.getConfig( 'hShadow' ) ? this.getConfig( 'hShadow' ) : 0;
+				var vShadow = this.getConfig( 'vShadow' ) ? this.getConfig( 'vShadow' ) : 0;
+				style[ "text-shadow" ] = hShadow + 'px ' + vShadow + 'px ' + this.getConfig( 'glowBlur' ) + 'px ' + mw.getHexColor( this.getConfig( 'glowColor' ) );
 			}
 			return style;
-		},
-		getEmFromFontSize: function(fontsize){
-			var emFontMap = {
-				'6': .5,
-				'7': .583,
-				'8': .666,
-				'9': .75,
-				'10': .833,
-				'11': .916,
-				'12': 1,
-				'13': 1.083,
-				'14': 1.166,
-				'15': 1.25,
-				'16': 1.333,
-				'17': 1.416,
-				'18': 1.5,
-				'19': 1.583,
-				'20': 1.666,
-				'21': 1.75,
-				'22': 1.833,
-				'23': 1.916,
-				'24': 2
-			};
-			var calculatedEm = ( emFontMap[fontsize] ) ? emFontMap[fontsize] :
-				(  fontsize > 24 ) ? emFontMap[24] : emFontMap[6];
-			return (calculatedEm + 'em');
 		},
 		getDefaultStyle: function(){
 			var baseCss =  {
