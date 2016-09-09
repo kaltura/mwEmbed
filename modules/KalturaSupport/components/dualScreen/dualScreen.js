@@ -438,7 +438,8 @@
 					if (!(_this.secondPlayer instanceof mw.dualScreen.imagePlayer) && _this.hasSlides()) {
 						streams.push({
 							type: 'image',
-							thumbnailUrl: _this.getSupportedCuePoints()[0].thumbnailUrl
+							thumbnailUrl: !(_this.getPlayer().isLive() && mw.getConfig('EmbedPlayer.LiveCuepoints')) &&
+								_this.getSupportedCuePoints()[0].thumbnailUrl
 						});
 					}
 

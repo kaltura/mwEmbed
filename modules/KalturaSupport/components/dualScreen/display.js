@@ -266,7 +266,7 @@
 			}).data('droppable', true);
 		},
 		onDrop: function (event, ui) {
-			this.getPlayer().triggerHelper('displayDropped', [this, ui.draggable]);
+			!ui.draggable.data('wasDropped') && this.getPlayer().triggerHelper('displayDropped', [this, ui.draggable]);
 		}
 	});
 

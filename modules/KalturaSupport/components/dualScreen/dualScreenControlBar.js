@@ -50,7 +50,8 @@
         },
 
         renderStreams: function () {
-            this.getComponent().find('.ds-streams')
+        	var streamsContainer = this.getComponent().find('.ds-streams');
+            streamsContainer
                 .empty()
                 .append($.map(this.streams || [], function (stream, index) {
                     return $('<div/>', {
@@ -60,9 +61,28 @@
                         src: stream.thumbnailUrl,
                         'class': 'ds-stream__thumb'
                     })).draggable({
-                        revert: true
+                        revert: true,
+                        helper: 'clone',
+                        containment: '.videoHolder',
+                        start: function (event, ui) {
+                        	$(ui.helper).addClass('ds-stream--helper');
+                        	$(this).addClass('ds-stream--dragging').data('wasDropped', false);
+                        	streamsContainer.addClass('ds-streams--dragging');
+                        },
+                        stop: function () {
+                        	$(this).removeClass('ds-stream--dragging');
+                        	streamsContainer.removeClass('ds-streams--dragging');
+                        }
                     }).data('stream', stream);
-                }));
+                }))
+                .droppable({
+                	greedy: true,
+                	accept: '.ds-stream',
+					hoverClass: 'ui-state-hover',
+        			drop: function (e, ui) {
+        				ui.draggable.data('wasDropped', true);
+        			}
+                });
         },
 
 		getComponent: function ( ) {
@@ -119,24 +139,23 @@
 
 			//Attach control bar action handlers
 			_this.getComponent()
-				.on( 'click' + this.postFix + ' touchstart' + this.postFix, '.displayControlGroup > .controlBarBtn', function (e) {
-					_this.changeButtonsStyles(this.id, true); // pass clicked indicator in order to open subMenu if needed
-
+				.on( 'click' + this.postFix + ' touchstart' + this.postFix, '.displayControlGroup > .controlBarBtn', function () {
+					var group = $(this).parent('.displayControlGroup');
+					var isCollapsible = group.hasClass('ds-collapsible');
+					var wasOpen = group.hasClass('ds-open');
 					var btn = _this.controlBarComponents[this.id];
-					if (btn && btn.event){
-						_this.embedPlayer.triggerHelper("dualScreenStateChange", {action : btn.event, invoker : 'dualScreenControlBar'});
+
+					if (wasOpen || !isCollapsible) {
+						$('.displayControlGroup').removeClass('ds-blur ds-open');
+					} else {
+						$('.displayControlGroup').removeClass('ds-open').addClass('ds-blur');
+						group.removeClass('ds-blur').addClass('ds-open');
 					}
 
-					return false;
-				} )
-				.on('click' + this.postFix + ' touchstart' + this.postFix + ' contextmenu' + this.postFix, '.ds-streams > .ds-stream', function (e) {
-					var selectedStream = _this.streams[Number($(this).attr('data-stream-index'))];
-					if (selectedStream) {
-						_this.embedPlayer.triggerHelper('dualScreenStreamChange', {
-							target: e.type === 'contextmenu' ? 'master' : 'slave',
-							stream: selectedStream,
-							invoker: 'dualScreenControlBar'
-						});
+					_this.changeButtonsStyles(this.id, true); // pass clicked indicator in order to open subMenu if needed
+
+					if (btn && btn.event){
+						_this.embedPlayer.triggerHelper("dualScreenStateChange", {action : btn.event, invoker : 'dualScreenControlBar'});
 					}
 
 					return false;
@@ -193,25 +212,16 @@
 			var buttons = _this.getComponent().find(".controlBarBtn");
 			var switchBtn = buttons.filter('[data-type="switch"]');
             var stateButtons = buttons.filter('[data-type="state"]');
-            var contentBtn = buttons.filter('[data-type="contentSelection"]');
 
             var obj = $(_this.getComponent().find('#' + activeButtonId)[0]);
 
             //Change state button disabled state
             if (obj.data("type") === "state" && clicked ) {
                 //show state buttons if selected state was clicked
-                if (obj.hasClass("stateSelected") && !obj.hasClass("subMenuVisible")) {
-                    stateButtons.removeClass( "subMenuHidden" );
-                    stateButtons.addClass( "subMenuVisible" );
-                }else {
-                    stateButtons.removeClass("stateSelected subMenuVisible");
-                    stateButtons.addClass("subMenuHidden");
-
-                    obj
-                        .removeClass("subMenuHidden")
-                        .addClass("stateSelected");
-                }
+                stateButtons.removeClass('stateSelected').addClass('ds-collapsible-content');
+                obj.addClass('stateSelected').removeClass('ds-collapsible-content');
             }
+
             if (mw.isNativeApp()){
                 if (this.id === _this.controlBarComponents.pip.id){
                     switchBtn
