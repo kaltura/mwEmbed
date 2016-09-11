@@ -282,14 +282,10 @@ class EntryResult
             // count the number of missing objects
             $countDiff = $resultObject['entryCuePoints']->totalCount - count($resultObject['entryCuePoints']->objects);
             if ($countDiff > 0) {
-                try {
-                    $remainingPagesObject = $this->doCuePointsMultiPageRequest($client, $resultObject);
-                } catch (Exception $e) {
-                    // Update the Exception and pass it upward
-                    throw new Exception(KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage());
-                    return array();
+                $remainingPagesObject = $this->doCuePointsMultiPageRequest($client, $resultObject);
+                if (is_array($remainingPagesObject) && count($remainingPagesObject)) {
+                    $resultObject['entryCuePoints'] = $this->mergeAllCuePointsPages($resultObject, $remainingPagesObject);
                 }
-                $resultObject['entryCuePoints'] = $this->mergeAllCuePointsPages($resultObject, $remainingPagesObject);
             } else {
                 $resultObject['entryCuePoints'] = $resultObject['entryCuePoints']->objects;
             }
@@ -307,34 +303,40 @@ class EntryResult
 
     private function doCuePointsMultiPageRequest($client, $resultObject)
     {
-        // we define the number of objects retrieved in the original response as page size
-        $pageSize = count($resultObject['entryCuePoints']->objects);
-        // count the number of missing objects
-        $countDiff = $resultObject['entryCuePoints']->totalCount - $pageSize;
-        // create new multi request
-        $params = array();
-        $extraPagesObject = array();
-        if ($this->request->noCache) {
-            $client->addParam($params, "nocache", true);
+        try {
+            // we define the number of objects retrieved in the original response as page size
+            $pageSize = count($resultObject['entryCuePoints']->objects);
+            // count the number of missing objects
+            $countDiff = $resultObject['entryCuePoints']->totalCount - $pageSize;
+            // create new multi request
+            $params = array();
+            $extraPagesObject = array();
+            if ($this->request->noCache) {
+                $client->addParam($params, "nocache", true);
+            }
+            $pagesMultiRequest = new KalturaNamedMultiRequest($client, $params);
+            // retrieve the number of missing pages.
+            // for example: 700 / 500 = ceil(1.4) = 2 pages (500 from the first and 200 from the second)
+            $missingPages = ceil($countDiff / $pageSize);
+            for ($i = 0; $i < $missingPages; $i++) {
+                // we added 2 to the requested page since we already have the first page.
+                // for example: i=0 -> page 2, i=1 -> page 3 and so on...
+                $requestedPage = $i + 2;
+                $filter = new KalturaCuePointFilter();
+                $filter->orderBy = KalturaAdCuePointOrderBy::START_TIME_ASC;
+                $filter->entryIdEqual = $this->request->getEntryId();
+                $pager = new KalturaFilterPager();
+                $pager->pageSize = $pageSize;
+                $pager->pageIndex = $requestedPage;
+                $pageParams = array('filter' => $filter, 'pager' => $pager);
+                $pagesMultiRequest->addNamedRequest('entryCuePoints_page' . $requestedPage, "cuepoint_cuepoint", "list", $pageParams);
+            }
+            return $pagesMultiRequest->doQueue();
+        } catch (Exception $e) {
+            // Update the Exception and pass it upward
+            throw new Exception(KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage());
+            return array();
         }
-        $pagesMultiRequest = new KalturaNamedMultiRequest($client, $params);
-        // retrieve the number of missing pages.
-        // for example: 700 / 500 = ceil(1.4) = 2 pages (500 from the first and 200 from the second)
-        $missingPages = ceil($countDiff / $pageSize);
-        for ($i = 0; $i < $missingPages; $i++) {
-            // we added 2 to the requested page since we already have the first page.
-            // for example: i=0 -> page 2, i=1 -> page 3 and so on...
-            $requestedPage = $i + 2;
-            $filter = new KalturaCuePointFilter();
-            $filter->orderBy = KalturaAdCuePointOrderBy::START_TIME_ASC;
-            $filter->entryIdEqual = $this->request->getEntryId();
-            $pager = new KalturaFilterPager();
-            $pager->pageSize = $pageSize;
-            $pager->pageIndex = $requestedPage;
-            $pageParams = array('filter' => $filter, 'pager' => $pager);
-            $pagesMultiRequest->addNamedRequest('entryCuePoints_page' . $requestedPage, "cuepoint_cuepoint", "list", $pageParams);
-        }
-        return $pagesMultiRequest->doQueue();
     }
 
     private function mergeAllCuePointsPages($firstPage, $remainingPages)
