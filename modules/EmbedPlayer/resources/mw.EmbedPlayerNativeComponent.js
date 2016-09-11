@@ -145,16 +145,23 @@
 			if (this.startTime && !this.supportsURLTimeEncoding()) {
 				this.setStartTimeAttribute(this.startTime);
 			}
-			this.resolveSrcURL(this.getSrc()).then(
-				function (resolvedSrc) {
-					mw.log("EmbedPlayerNativeComponent::resolveSrcURL get succeeded");
-					_this.setSrcAttribute( resolvedSrc );
-				},
-				function () {
-					mw.log("EmbedPlayerNativeComponent::resolveSrcURL get failed");
-					_this.setSrcAttribute( _this.getSrc() );
-				}
-			);
+            
+            var selectedSource = this.getSrc();
+            if (!selectedSource && mw.getConfig("EmbedPlayer.PreloadNativeComponent")) {
+                readyCallback();
+
+            } else {
+                this.resolveSrcURL(selectedSource).then(
+                    function (resolvedSrc) {
+                        mw.log("EmbedPlayerNativeComponent::resolveSrcURL get succeeded");
+                        _this.setSrcAttribute( resolvedSrc );
+                    },
+                    function () {
+                        mw.log("EmbedPlayerNativeComponent::resolveSrcURL get failed");
+                        _this.setSrcAttribute( selectedSource );
+                    }
+                );
+            }
 		},
 
 		embedPlayerHTML: function () {

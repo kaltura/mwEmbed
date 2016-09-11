@@ -833,6 +833,13 @@
 			};
 			this.mediaElement.autoSelectSource(baseTimeOptions);
 
+            // Allow the native SDK to prefetch player resources
+            if (!this.mediaElement.selectedSource && mw.getConfig("EmbedPlayer.PreloadNativeComponent")) {
+                this.selectPlayer(mw.EmbedTypes.getNativeComponentPlayerVideo());
+                this.updatePlaybackInterface();
+                return;
+            }
+            
 			// Auto select player based on default order
 			if (this.mediaElement.selectedSource) {
 
