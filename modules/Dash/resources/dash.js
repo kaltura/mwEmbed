@@ -250,13 +250,10 @@
 					})[0];
 					if (selectedAbrTrack) {
 						player.selectTrack(selectedAbrTrack, false);
-						var currentBitrate = source.getBitrate();
-						this.embedPlayer.currentBitrate = currentBitrate;
-						this.embedPlayer.triggerHelper('bitrateChange', currentBitrate);
-						this.embedPlayer.triggerHelper("sourceSwitchingStarted");
+						this.getPlayer().triggerHelper("sourceSwitchingStarted");
 						var _this = this;
 						setTimeout(function(){
-							_this.embedPlayer.triggerHelper("sourceSwitchingEnd", currentBitrate);
+							_this.getPlayer().triggerHelper("sourceSwitchingEnd", source.getBitrate());
 						},1000);
 						mw.log("switchSrc to ", selectedAbrTrack);
 					}
@@ -347,10 +344,10 @@
 				})[0];
 				if(selectedAbrTrack){
 					var currentBitrate = selectedAbrTrack.bandwidth / 1024;
-					this.embedPlayer.currentBitrate = currentBitrate;
 					if(this.currentBitrate !== currentBitrate){
 						this.currentBitrate = currentBitrate;
 						this.embedPlayer.triggerHelper('bitrateChange', currentBitrate);
+						this.log('The bitrate has changed to ' + currentBitrate)
 					}
 				}
 			},
