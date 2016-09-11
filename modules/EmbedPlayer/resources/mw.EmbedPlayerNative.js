@@ -448,9 +448,6 @@
 							vid.play();
 							_this.parseTracks();
 						}
-					}else {
-						vid.load();
-						vid.play();
 					}
 				}
 				// Try to seek for 15 seconds:

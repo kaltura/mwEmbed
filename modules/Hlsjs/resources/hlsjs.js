@@ -66,6 +66,7 @@
 			addBindings: function () {
 				this.bind("SourceChange", this.isNeeded.bind(this));
 				this.bind("playerReady", this.initHls.bind(this));
+				this.bind("seeking", this.onSeekBeforePlay.bind(this));
 				this.bind("onChangeMedia", this.clean.bind(this));
 				this.bind("onLiveOffSynchChanged", this.onLiveOffSyncChanged.bind(this));
 				if (mw.getConfig("hlsLogs")) {
@@ -78,8 +79,6 @@
 			isNeeded: function () {
 				if (this.getPlayer().mediaElement.selectedSource.mimeType === "application/vnd.apple.mpegurl") {
 					this.LoadHLS = true;
-					//Set streamerType to hls
-					this.embedPlayer.streamerType = 'hls';
 				} else {
 					this.LoadHLS = false;
 				}
@@ -105,6 +104,8 @@
 			initHls: function () {
 				if (this.LoadHLS && !this.loaded) {
 					this.log("Init");
+					//Set streamerType to hls
+					this.embedPlayer.streamerType = 'hls';
 					//Init the HLS playback engine
 					this.hls = new Hls(this.getConfig("options"));
 
@@ -117,17 +118,10 @@
 					this.registerHlsEvents();
 					this.overridePlayerMethods();
 
-					//Attach video tag to HLS engine
-					//IE ignores preload and loads source right away so defer attaching to first play event
-					//But in case this is live then play comes early so attach as well
-					if (!mw.isIE() || (mw.isIE() && this.getPlayer().isLive())) {
+					this.bind("firstPlay", function () {
+						this.unbind("seeking");
 						this.hls.attachMedia(this.getPlayer().getPlayerElement());
-					} else {
-						this.bind("firstPlay", function () {
-							this.hls.attachMedia(this.getPlayer().getPlayerElement());
-						}.bind(this));
-
-					}
+					}.bind(this));
 				}
 			},
 			/**
@@ -510,6 +504,12 @@
 						break;
 				}
 				mw.log("HLS.JS ERROR: " + errorTxt);
+			},
+
+			onSeekBeforePlay: function(){
+				this.unbind("seeking");
+				this.unbind("firstPlay");
+				this.hls.attachMedia(this.getPlayer().getPlayerElement());
 			},
 
 			handleMediaError: function () {
