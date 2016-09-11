@@ -82,8 +82,7 @@
 					// vtt.js override the VTTCue to wrong format for shaka, so set the original VTTCue
 					window.VTTCue = this.getPlayer().getOriginalVTTCue();
 
-					// Listen for error events.
-					player.addEventListener('error', this.onErrorEvent.bind(this));
+					this.registerShakaEvents();
 
 					this.bind("firstPlay", function(){
 						this.unbind("seeking");
@@ -129,6 +128,11 @@
 					licenseData: licenseData
 				};
 				return drmConfig;
+			},
+
+			registerShakaEvents: function(){
+				player.addEventListener('error', this.onErrorEvent.bind(this));
+				player.addEventListener('adaptation', this.onAdaptation.bind(this));
 			},
 
 			loadManifest: function () {
@@ -246,11 +250,13 @@
 					})[0];
 					if (selectedAbrTrack) {
 						player.selectTrack(selectedAbrTrack, false);
-						this.getPlayer().triggerHelper('bitrateChange', source.getBitrate());
-						this.getPlayer().triggerHelper("sourceSwitchingStarted");
+						var currentBitrate = source.getBitrate();
+						this.embedPlayer.currentBitrate = currentBitrate;
+						this.embedPlayer.triggerHelper('bitrateChange', currentBitrate);
+						this.embedPlayer.triggerHelper("sourceSwitchingStarted");
 						var _this = this;
 						setTimeout(function(){
-							_this.getPlayer().triggerHelper("sourceSwitchingEnd", _this.getPlayer().currentBitrate);
+							_this.embedPlayer.triggerHelper("sourceSwitchingEnd", currentBitrate);
 						},1000);
 						mw.log("switchSrc to ", selectedAbrTrack);
 					}
@@ -332,6 +338,20 @@
 					this.loaded = false;
 					player.destroy();
 					this.restorePlayerMethods();
+				}
+			},
+
+			onAdaptation: function(){
+				var selectedAbrTrack = this.getTracksByType("video").filter(function (abrTrack) {
+					return abrTrack.active;
+				})[0];
+				if(selectedAbrTrack){
+					var currentBitrate = selectedAbrTrack.bandwidth / 1024;
+					this.embedPlayer.currentBitrate = currentBitrate;
+					if(this.currentBitrate !== currentBitrate){
+						this.currentBitrate = currentBitrate;
+						this.embedPlayer.triggerHelper('bitrateChange', currentBitrate);
+					}
 				}
 			},
 
