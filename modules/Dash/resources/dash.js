@@ -80,7 +80,7 @@
 					// Attach player to the window to make it easy to access in the JS console.
 					window.player = player;
 					// vtt.js override the VTTCue to wrong format for shaka, so set the original VTTCue
-					window.VTTCue = this.getPlayer().getOriginalVTTCue();
+					//window.VTTCue = this.getPlayer().getOriginalVTTCue();
 
 					// Listen for error events.
 					player.addEventListener('error', this.onErrorEvent.bind(this));
@@ -319,7 +319,7 @@
 			 */
 			onError: function (event, data) {
 				var errorData = data ? data.type + ", " + data.details : event;
-				console.error("Dash::Error: " + errorData);
+				mw.log("Dash: " , errorData);
 			},
 
 			/**
