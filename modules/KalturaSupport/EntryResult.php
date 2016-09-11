@@ -283,7 +283,7 @@ class EntryResult
             $countDiff = $resultObject['entryCuePoints']->totalCount - count($resultObject['entryCuePoints']->objects);
             if ($countDiff > 0) {
                 $remainingPagesObject = $this->doCuePointsMultiPageRequest($client, $resultObject);
-                if (is_array($remainingPagesObject) && count($remainingPagesObject)) {
+                if (is_array($remainingPagesObject) && count($remainingPagesObject) > 0) {
                     $resultObject['entryCuePoints'] = $this->mergeAllCuePointsPages($resultObject, $remainingPagesObject);
                 }
             } else {
