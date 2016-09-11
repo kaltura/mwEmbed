@@ -37,6 +37,7 @@
 			addBindings: function () {
 				this.bind("SourceChange", this.isNeeded.bind(this));
 				this.bind("playerReady", this.initShaka.bind(this));
+				this.bind("seeking", this.onSeekBeforePlay.bind(this));
 				this.bind("switchAudioTrack", this.onSwitchAudioTrack.bind(this));
 				this.bind("selectClosedCaptions", this.onSwitchTextTrack.bind(this));
 				this.bind("onChangeMedia", this.clean.bind(this));
@@ -48,19 +49,20 @@
 			isNeeded: function () {
 				if (this.getPlayer().mediaElement.selectedSource.mimeType === "application/dash+xml") {
 					this.LoadShaka = true;
-					//Set streamerType to dash
-					this.embedPlayer.streamerType = 'dash';
 				} else {
 					this.LoadShaka = false;
 				}
 			},
+
 			/**
 			 * Register the playback events and attach the playback engine to the video element
 			 */
 			initShaka: function () {
 				if (this.LoadShaka && !this.loaded) {
 					this.log("Init shaka");
-					var _this = this;
+
+					//Set streamerType to dash
+					this.embedPlayer.streamerType = 'dash';
 
 					this.loaded = true;
 
@@ -78,26 +80,15 @@
 					// Attach player to the window to make it easy to access in the JS console.
 					window.player = player;
 					// vtt.js override the VTTCue to wrong format for shaka, so set the original VTTCue
-					window.VTTCue = this.getPlayer().getOriginalVTTCue();
+					//window.VTTCue = this.getPlayer().getOriginalVTTCue();
 
 					// Listen for error events.
 					player.addEventListener('error', this.onErrorEvent.bind(this));
 
-					var selectedSource = this.getPlayer().getSrc();
-
-					this.getPlayer().resolveSrcURL(selectedSource)
-						.done(function (manifestSrc) {  // success
-							selectedSource = manifestSrc;
-						})
-						.always(function () {  // both success or error
-								//// Try to load a manifest.
-								player.load(selectedSource).then(function () {
-									// This runs if the asynchronous load is successful.
-									_this.log('The video has now been loaded!');
-									_this.addTracks();
-								}).catch(_this.onError.bind(_this));  // onError is executed if the asynchronous load fails.
-							}
-						);
+					this.bind("firstPlay", function(){
+						this.unbind("seeking");
+						this.loadManifest();
+					}.bind(this));
 				}
 			},
 
@@ -138,6 +129,24 @@
 					licenseData: licenseData
 				};
 				return drmConfig;
+			},
+
+			loadManifest: function () {
+				var _this = this;
+				var selectedSource = this.getPlayer().getSrc();
+				this.getPlayer().resolveSrcURL(selectedSource)
+					.done(function (manifestSrc) {  // success
+						selectedSource = manifestSrc;
+					})
+					.always(function () {  // both success or error
+							// Try to load a manifest.
+							player.load(selectedSource).then(function () {
+								// This runs if the asynchronous load is successful.
+								_this.log('The video has now been loaded!');
+								_this.addTracks();
+							}).catch(_this.onError.bind(_this));  // onError is executed if the asynchronous load fails.
+						}
+					);
 			},
 
 			addTracks: function () {
@@ -291,6 +300,13 @@
 				}
 			},
 
+			onSeekBeforePlay: function(){
+				this.unbind("seeking");
+				this.unbind("firstPlay");
+				this.loadManifest();
+			},
+
+
 			onErrorEvent: function (event) {
 				// Extract the shaka.util.Error object from the event.
 				this.onError(event.detail);
@@ -303,7 +319,7 @@
 			 */
 			onError: function (event, data) {
 				var errorData = data ? data.type + ", " + data.details : event;
-				this.log("Error: " + errorData);
+				mw.log("Dash: " , errorData);
 			},
 
 			/**
