@@ -121,7 +121,7 @@ onload = function () {
 		} else if (payload['type'] === 'setLogo') {
 			document.getElementById('logo').style.backgroundImage = "url(" + payload['logo'] + ")";
 		} else if (payload['type'] === 'changeMedia') {
-			kdp.sendNotification('changeMedia', {"entryId": payload['entryId']});
+			kdp.sendNotification('changeMedia', payload.data);
 		} else if (payload['type'] === 'embed') {
 			if (!playerInitialized) {
 				var playerLib = payload['lib'] + "mwEmbedLoader.php";

@@ -134,7 +134,17 @@
 			});
 
 			$( this.embedPlayer).bind('onChangeMedia', function(e){
-				_this.sendMessage({'type': 'changeMedia', 'entryId': _this.embedPlayer.kentryid});
+				var changeMediaMsg = {
+					'type': 'changeMedia',
+					'data': {
+						'entryId': _this.embedPlayer.kentryid
+					}
+				};
+				var proxyData = _this.embedPlayer.getKalturaConfig("proxyData");
+				if (proxyData && proxyData.data){
+					changeMediaMsg.data.proxyData = proxyData.data;
+				}
+				_this.sendMessage(changeMediaMsg);
 				_this.savedPosition = 0;
 				_this.pendingReplay = false;
 				_this.pendingRelated = false;
