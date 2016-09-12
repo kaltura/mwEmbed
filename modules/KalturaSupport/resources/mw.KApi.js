@@ -191,7 +191,7 @@ mw.KApi.prototype = {
 			serviceUrl = mw.getConfig( 'Kaltura.LiveStatsServiceUrl' );
 		}
 		if( serviceType && serviceType == 'analytics' &&  mw.getConfig( 'Kaltura.AnalyticsUrl' ) ) {
-			serviceUrl = mw.getConfig( 'Kaltura.AnalyticsUrl' );
+			serviceUrl = 'http://analytics.kaltura.com';
 		}
 		return serviceUrl + mw.getConfig( 'Kaltura.ServiceBase' ) + serviceType;
 	},
