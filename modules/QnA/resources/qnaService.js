@@ -334,8 +334,6 @@ DAL for Q&A Module
                 };
 
                 // mw.log("Submitting a new question: " + question);
-                var serviceUrl =  _this.getKClient().serviceUrl;
-                _this.getKClient().serviceUrl = 'http://analytics.kaltura.com';
                 _this.getKClient().doRequest([createCuePointRequest, addMetadataRequest, updateCuePointRequestAddQnaTag], function (result) {
 
                         var endTime = new Date();
@@ -365,7 +363,6 @@ DAL for Q&A Module
                     function (err) {
                         mw.log("Error: " + this.bindPostfix + " could not add cue point. Error: " + err);
                     });
-                _this.getKClient().serviceUrl = serviceUrl;
 
             });
 
@@ -787,6 +784,10 @@ DAL for Q&A Module
             this.eventIndex += 1;
             this.embedPlayer.triggerHelper( 'analyticsEvent' , statsEvent);
             // this.log("Trigger analyticsEvent type = "+statsEvent.eventType);
+
+            var serviceUrl =  _this.getKClient().serviceUrl;
+            this.kClient.serviceUrl = 'http://analytics.kaltura.com';
+
             this.kClient.doRequest( eventRequest, function(data){
                 try {
                     if (!_this.startTime ) {
@@ -796,6 +797,7 @@ DAL for Q&A Module
                     mw.log("Failed sync time from server");
                 }
             }, true );
+            this.kClient.serviceUrl = serviceUrl;
         },
 
         //Currently there is no notification, so we poll the API
