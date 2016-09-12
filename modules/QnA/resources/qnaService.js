@@ -761,15 +761,15 @@ DAL for Q&A Module
                 $.extend(statsEvent, additionalData);
             }
 
-            // add custom vars
-            var config = this.getConfig();
-            for (var key in config){
-                if (key.indexOf("customVar") !== -1){
-                    var customVarObj = {};
-                    customVarObj[key] = config[key];
-                    $.extend(statsEvent, customVarObj);
-                }
-            }
+            // // add custom vars
+            // var config = this.getConfig();
+            // for (var key in config){
+            //     if (key.indexOf("customVar") !== -1){
+            //         var customVarObj = {};
+            //         customVarObj[key] = config[key];
+            //         $.extend(statsEvent, customVarObj);
+            //     }
+            // }
 
             // add playbackContext
             if (mw.getConfig("playbackContext")){
