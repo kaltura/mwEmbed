@@ -710,7 +710,7 @@ DAL for Q&A Module
 
         sendAnalytics : function(eventType, additionalData){
             var _this = this;
-            this.calculateBuffer(true);
+            //this.calculateBuffer(true);
             this.kClient = mw.kApiGetPartnerClient( this.embedPlayer.kwidgetid );
             if ( this.embedPlayer.isMulticast && $.isFunction( this.embedPlayer.getMulticastBitrate ) ) {
                 this.currentBitRate = this.embedPlayer.getMulticastBitrate();
