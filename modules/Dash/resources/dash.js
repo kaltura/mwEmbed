@@ -250,10 +250,10 @@
 					})[0];
 					if (selectedAbrTrack) {
 						player.selectTrack(selectedAbrTrack, false);
-						this.getPlayer().triggerHelper("sourceSwitchingStarted");
+						this.getPlayer().triggerHelper("sourceSwitchingStarted", this.currentBitrate);
 						var _this = this;
 						setTimeout(function(){
-							_this.getPlayer().triggerHelper("sourceSwitchingEnd", source.getBitrate());
+							_this.getPlayer().triggerHelper("sourceSwitchingEnd", Math.round(source.getBitrate()));
 						},1000);
 						mw.log("switchSrc to ", selectedAbrTrack);
 					}
@@ -343,7 +343,7 @@
 					return abrTrack.active;
 				})[0];
 				if(selectedAbrTrack){
-					var currentBitrate = selectedAbrTrack.bandwidth / 1024;
+					var currentBitrate = Math.round(selectedAbrTrack.bandwidth / 1024);
 					if(this.currentBitrate !== currentBitrate){
 						this.currentBitrate = currentBitrate;
 						this.embedPlayer.triggerHelper('bitrateChange', currentBitrate);

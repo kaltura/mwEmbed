@@ -273,11 +273,12 @@
 				//Set and report bitrate change
 				var source = this.hls.levels[data.level];
 				var currentBitrate = source.bitrate / 1024;
+				var previousBitrate = this.getPlayer().currentBitrate;
 				this.getPlayer().currentBitrate = currentBitrate;
 				this.getPlayer().triggerHelper('bitrateChange', currentBitrate);
 				//Notify sourceSwitchingStarted
 				if (this.isLevelSwitching && this.levelIndex == data.level) {
-					this.getPlayer().triggerHelper("sourceSwitchingStarted");
+					this.getPlayer().triggerHelper("sourceSwitchingStarted", previousBitrate);
 				}
 				//fire debug info
 				this.getPlayer().triggerHelper('hlsCurrentBitrate', currentBitrate);
