@@ -50,7 +50,6 @@ mw.KApi.prototype = {
 		return this.widgetId;
 	},
 	doRequest : function( requestObject, callback ,skipKS, errorCallback ){
-		console.log("i'm here");
 		var _this = this;
 		var param = {};
 		// Convert into a multi-request if no session is set ( ks will be added below )
