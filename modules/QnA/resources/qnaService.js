@@ -334,7 +334,8 @@ DAL for Q&A Module
                 };
 
                 // mw.log("Submitting a new question: " + question);
-
+                var serviceUrl =  _this.getKClient().serviceUrl;
+                _this.getKClient().serviceUrl = 'http://analytics.kaltura.com';
                 _this.getKClient().doRequest([createCuePointRequest, addMetadataRequest, updateCuePointRequestAddQnaTag], function (result) {
 
                         var endTime = new Date();
@@ -364,7 +365,10 @@ DAL for Q&A Module
                     function (err) {
                         mw.log("Error: " + this.bindPostfix + " could not add cue point. Error: " + err);
                     });
+                _this.getKClient().serviceUrl = serviceUrl;
+
             });
+
         },
 
         // item can be either a QnaThread (for an announcement) or a QnaEntry (for a Q&A thread)
