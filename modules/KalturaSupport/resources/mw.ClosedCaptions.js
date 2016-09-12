@@ -152,6 +152,10 @@
                     }
                 })
             }
+			//expose the ability to force load caption file by external plugin
+			this.bind( 'forceLoadCaptions', function(event,language){
+				_this.forceLoadLanguage(language);
+			});
 
 			this.bind( 'onplay', function(){
 				_this.playbackStarted = true;
@@ -494,10 +498,13 @@
 			// Return a "textSource" object:
 			return new mw.TextSource( embedSource, _this.embedPlayer );
 		},
-		forceLoadLanguage: function(){
-			var lang = this.getConfig('forceLoadLanguage');
+		forceLoadLanguage: function(language){
+			var lang = this.getConfig('forceLoadLanguage') ? this.getConfig('forceLoadLanguage') : language;
 			var source = this.selectSourceByLangKey( lang );
-			// Found caption
+			//fallback - failed to find a matching asset - fallback to first found if exist
+			if(source == null && this.textSources.length){
+				source = this.textSources[0];
+			}
 			if( source && !source.loaded ) {
 				source.load($.proxy(function(){
 					this.getPlayer().triggerHelper('forcedCaptionLoaded', source);
