@@ -67,7 +67,7 @@
 						}else{
 							$(".btn").not(".playHead").attr("style","color: " + value + " !important; text-shadow: "+ this.getConfig('dropShadowColor') +" !important");
 							if (!this.embedPlayer.isMobileSkin()){
-								$(".btn").not(".playHead").attr("style","background-color: "+ this.getConfig('buttonsColor') +" !important");
+								$(".btn").not(".playHead").attr("style","background-color: "+ this.getConfig('buttonsColor') +" !important;" +"color: " + value + " !important; text-shadow: "+ this.getConfig('dropShadowColor') +" !important");
 							}
 							if (this.getConfig('applyToLargePlayButton')) {
 								$(".largePlayBtn ").attr("style", "color: " + value + " !important; background-color: " + this.getConfig('buttonsColor') + " !important");
