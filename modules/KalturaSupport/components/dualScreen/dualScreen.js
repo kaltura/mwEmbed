@@ -121,10 +121,10 @@
 				this.bind( "AdSupport_EndAdPlayback", function (e, screenName) {
 					_this.restoreView("disabledScreen");
 				} );
-				this.bind( "preShowScreen", function (e, screenName) {
+				this.bind( "preShowScreen moderationOpen", function (e, screenName) {
 					_this.minimizeView(screenName);
 				} );
-				this.bind( "preHideScreen", function (e, screenName) {
+				this.bind( "preHideScreen closeMenuOverlay", function (e, screenName) {
 					_this.restoreView(screenName);
 				} );
 

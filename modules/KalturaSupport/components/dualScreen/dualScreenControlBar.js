@@ -140,8 +140,9 @@
 			//Attach control bar action handlers
 			_this.getComponent()
 				.on( 'click' + this.postFix + ' touchstart' + this.postFix, '.displayControlGroup > .controlBarBtn', function () {
-					var group = $(this).parent('.displayControlGroup');
-					var isCollapsible = group.hasClass('ds-collapsible');
+                    var $this = $(this);
+					var group = $this.parent('.displayControlGroup');
+					var isCollapsible = $this.hasClass('ds-collapsible-handle') && group.hasClass('ds-collapsible');
 					var wasOpen = group.hasClass('ds-open');
 					var btn = _this.controlBarComponents[this.id];
 
@@ -152,11 +153,13 @@
 						group.removeClass('ds-blur').addClass('ds-open');
 					}
 
-					_this.changeButtonsStyles(this.id, true); // pass clicked indicator in order to open subMenu if needed
+                    if (!isCollapsible) {
+    					_this.changeButtonsStyles(this.id, true); // pass clicked indicator in order to open subMenu if needed
 
-					if (btn && btn.event){
-						_this.embedPlayer.triggerHelper("dualScreenStateChange", {action : btn.event, invoker : 'dualScreenControlBar'});
-					}
+    					if (btn && btn.event){
+    						_this.embedPlayer.triggerHelper("dualScreenStateChange", {action : btn.event, invoker : 'dualScreenControlBar'});
+    					}
+                    }
 
 					return false;
 				} );
@@ -200,6 +203,10 @@
 				}
 
 			});
+
+            _this.bind('displayDropped', function () {
+                $('.displayControlGroup').removeClass('ds-blur ds-open');
+            });
 		},
 		/**
 		 * Changes the style of the buttons according to the selected view mode.
@@ -218,8 +225,8 @@
             //Change state button disabled state
             if (obj.data("type") === "state" && clicked ) {
                 //show state buttons if selected state was clicked
-                stateButtons.removeClass('stateSelected').addClass('ds-collapsible-content');
-                obj.addClass('stateSelected').removeClass('ds-collapsible-content');
+                stateButtons.removeClass('stateSelected ds-collapsible-handle').addClass('ds-collapsible-content');
+                obj.addClass('stateSelected ds-collapsible-handle').removeClass('ds-collapsible-content');
             }
 
             if (mw.isNativeApp()){
