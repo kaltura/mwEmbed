@@ -782,7 +782,7 @@ DAL for Q&A Module
             });
             this.eventIndex += 1;
             this.embedPlayer.triggerHelper( 'analyticsEvent' , statsEvent);
-            this.log("Trigger analyticsEvent type = "+statsEvent.eventType);
+            // this.log("Trigger analyticsEvent type = "+statsEvent.eventType);
             this.kClient.doRequest( eventRequest, function(data){
                 try {
                     if (!_this.startTime ) {
