@@ -855,13 +855,12 @@
 							$(_this).hide();
 						}
 
-						// update the preload attribute to auto
-						$(_this.getPlayerElement()).attr('preload', "auto");
-
 						// issue a play request
 						if (!_this.playing) {
+							vid.load();
 							vid.play();
 						}
+
 						_this.mobilePlayed = true;
 						// re-start the monitor:
 						_this.monitor();
