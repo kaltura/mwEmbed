@@ -912,7 +912,7 @@
 				if (target === 'slave') {
 					if (stream.type === 'video') {
 						if (this.secondPlayer instanceof mw.dualScreen.videoPlayer) {
-						this.secondPlayer.setStream(stream);
+							this.secondPlayer.setStream(stream);
 						} else if (this.secondPlayer instanceof mw.dualScreen.imagePlayer) {
 							var newVideoPlayer = new mw.dualScreen.videoPlayer(this.getPlayer(), function () {
 								this.setStream(stream);
@@ -921,6 +921,8 @@
 							this.destroySecondScreen();
 							this.secondPlayer = newVideoPlayer;
 						}
+
+						this.embedPlayer.play();
 					} else if (stream.type === 'image') {
 						this.loadSecondScreenImage().then(function (imagePlayer) {
 							_this.secondPlayer.getComponent().replaceWith(imagePlayer.getComponent());
