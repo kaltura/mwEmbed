@@ -79,6 +79,7 @@ kWidget.api.prototype = {
 	 * Do an api request and get data in callback
 	 */
 	doRequest: function ( requestObject, callback,skipKS, errorCallback, withProxyData){
+		console.log("i'm there");
 		var _this = this;
 		var param = {};
 		var globalCBName = null;

@@ -350,6 +350,8 @@ DAL for Q&A Module
                                 _this.sortThreads();
                             }
 
+                            _this.sendAnalytics('webcast_qna_question_submit');
+
                             mw.log("added Annotation cue point with id: " + cuePoint.id + " took " + (endTime - startTime) + " ms");
 
                         } else {
@@ -703,6 +705,82 @@ DAL for Q&A Module
                     }
                 );
             });
+        },
+
+        sendAnalytics : function(eventType, additionalData)
+        {
+            var _this = this;
+            this.kClient = mw.kApiGetPartnerClient( this.embedPlayer.kwidgetid );
+            if ( this.embedPlayer.isMulticast && $.isFunction( this.embedPlayer.getMulticastBitrate ) ) {
+                this.currentBitRate = this.embedPlayer.getMulticastBitrate();
+            }
+
+            // set playbackType
+            var playbackType = "vod";
+            if (this.embedPlayer.isLive()){
+                playbackType = this.dvr ? "dvr" : "live";
+            }
+
+            var position = this.embedPlayer.currentTime ? this.embedPlayer.currentTime : 0;
+            if ( this.savedPosition ){
+                position = this.savedPosition;
+            }
+
+            var statsEvent = {
+                'entryId'           : this.embedPlayer.kentryid,
+                'partnerId'         : this.embedPlayer.kpartnerid,
+                'eventType'         : eventType,
+                'sessionId'         : this.embedPlayer.evaluate('{configProxy.sessionId}'),
+                'eventIndex'        : this.eventIndex,
+                'bufferTime'        : this.bufferTime,
+                'actualBitrate'     : this.currentBitRate,
+                'flavourId'         : this.currentFlavourId,
+                'referrer'          : encodeURIComponent( mw.getConfig('EmbedPlayer.IframeParentUrl') ),
+                'deliveryType'      : this.embedPlayer.streamerType,
+                'sessionStartTime'  : this.startTime,
+                'uiConfId'          : this.embedPlayer.kuiconfid,
+                'clientVer'         : mw.getConfig("version"),
+                'position'          : position,
+                'playbackType'      : playbackType
+            };
+
+            // add ks if available
+            var ks = this.kClient.getKs();
+            if (ks){
+                statsEvent["ks"] = ks;
+            }
+
+            // add preferred bitrate if defined by the user
+            if ( this.embedPlayer.getRawKalturaConfig('mediaProxy') && this.embedPlayer.getRawKalturaConfig('mediaProxy').preferedFlavorBR ){
+                statsEvent["expectedQuality"] = this.embedPlayer.getRawKalturaConfig('mediaProxy').preferedFlavorBR;
+            }
+
+            // add specific events data
+            if (additionalData){
+                $.extend(statsEvent, additionalData);
+            }
+
+            // add playbackContext
+            if (mw.getConfig("playbackContext")){
+                statsEvent["playbackContext"] = mw.getConfig("playbackContext");
+            }
+
+            var eventRequest = {'service' : 'analytics', 'action' : 'trackEvent'};
+            $.each(statsEvent , function (event , value) {
+                eventRequest[event] = value;
+            });
+            this.eventIndex += 1;
+            this.embedPlayer.triggerHelper( 'analyticsEvent' , statsEvent);
+
+            _this.getKClient().doRequest( eventRequest, function(data){
+                try {
+                    if (!_this.startTime ) {
+                        _this.startTime = data;
+                    }
+                }catch(e){
+                    mw.log("Failed sync time from server");
+                }
+            }, true );
         },
 
         //Currently there is no notification, so we poll the API
