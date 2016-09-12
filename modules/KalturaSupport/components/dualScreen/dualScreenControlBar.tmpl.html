@@ -8,37 +8,37 @@
         ></span>
     </div>
 
-    <div class="displayControlGroup">
+    <div class="displayControlGroup ds-collapsible">
         <!-- placeholder -->
         <span class="controlBarBtn dualScreen-pip subMenuHidden"></span>
         <span
             id="pip"
-            class="controlBarBtn dualScreen-pip stateSelected tooltipBelow"
+            class="controlBarBtn dualScreen-pip stateSelected tooltipBelow ds-collapsible-handle"
             data-type="state"
             title="<%=buttons.pip.title%>"
         ></span>
         <span
             id="sideBySide"
-            class="controlBarBtn dualScreen-sidebyside subMenuHidden tooltipBelow"
+            class="controlBarBtn dualScreen-sidebyside tooltipBelow ds-collapsible-content"
             data-type="state"
             title="<%=buttons.sideBySide.title%>"
         ></span>
         <span
             id="singleView"
-            class="controlBarBtn dualScreen-singleView subMenuHidden tooltipBelow"
+            class="controlBarBtn dualScreen-singleView tooltipBelow ds-collapsible-content"
             data-type="state"
             title="<%=buttons.singleView.title%>"
         ></span>
     </div>
 
-    <div class="displayControlGroup">
+    <div class="displayControlGroup ds-collapsible">
         <span
             id="chooseStream"
-            class="controlBarBtn dualScreen-contentSelection contentSelection tooltipBelow closed"
+            class="controlBarBtn dualScreen-contentSelection tooltipBelow ds-collapsible-handle"
             data-type="contentSelection"
             title="<%=buttons.contentSelection.title%>"
         ></span>
 
-        <div class="ds-streams"></div>
+        <div class="ds-streams ds-collapsible-content"></div>
     </div>
 </div>
