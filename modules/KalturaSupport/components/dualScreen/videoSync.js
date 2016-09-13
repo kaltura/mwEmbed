@@ -99,13 +99,16 @@
             var lastSync = 0;
             var synchInterval = 1000;
             var bufferTimerId;
+            var adRunning = false;
             var _this = this;
             var eventsMap = {
                 onplay: function () {
-                    slaves.forEach(function (slave) {
-                        _this.log("onplay :: slave.play");
-                        slave.play();
-                    });
+                    if (!adRunning) {
+                        slaves.forEach(function (slave) {
+                            _this.log("onplay :: slave.play");
+                            slave.play();
+                        });
+                    }
                 },
                 onpause: function () {
                     slaves.forEach(function(slave){
@@ -114,7 +117,7 @@
                     });
                 },
                 timeupdate: function () {
-                    if (this.isSyncDelay) {
+                    if (adRunning || this.isSyncDelay) {
                         this.log('timeupdate :: skip, master time: ' + this.getMasterCurrentTime(controller));
                         return;
                     }
@@ -193,6 +196,15 @@
                     }
 
                     bufferTimerId = null;
+                },
+                AdSupport_StartAdPlayback: function () {
+                    _this.log('AdSupport_StartAdPlayback :: master');
+                    adRunning = true;
+                    eventsMap.onpause();
+                },
+                AdSupport_EndAdPlayback: function () {
+                    _this.log('AdSupport_EndAdPlayback :: master');
+                    adRunning = false;
                 }
             };
 
