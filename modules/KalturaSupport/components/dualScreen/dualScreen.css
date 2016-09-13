@@ -70,6 +70,9 @@
 .screenTransition{
     transition: 0.3s;
 }
+.disabledScreen{
+    z-index: 0 !important;
+}
 /*Override jquery UI resizable cursor handlers*/
 .dualScreen > .ui-resizable-ne{
     cursor: nesw-resize;

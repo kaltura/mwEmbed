@@ -597,9 +597,9 @@
 						this.controlBar.hide();
 						this.controlBar.disable();
 					}
-                    if ( screenName === 'disabledScreen' ) {
-                        this.minimizeSecondDisplay();
-                    }
+					if ( screenName === 'disabledScreen' ) {
+						this.minimizeSecondDisplay();
+					}
 				}
 			},
 			restoreView: function(screenName){
@@ -635,7 +635,7 @@
 
 						this.fsm.consumeEvent( 'hide' );
 					}
-					this.displays.getPrimary().obj.css( {'top': '', 'left': '', 'width': '', 'height': ''} ).removeClass( 'firstScreen' );
+					this.displays.getPrimary().obj.css( {'top': '', 'left': '', 'width': '', 'height': ''} ).removeClass( 'firstScreen' ).addClass( 'disabledScreen' );
 					$.each( this.zIndexObjs, function ( i, obj ) {
 						var zIndex = $( obj ).css( 'z-index' );
 						$( obj ).css( "z-index", zIndex - 4 );
@@ -646,7 +646,7 @@
 				var _this = this;
 		        if (this.auxScreenMinimized) {
 					this.auxScreenMinimized = false;
-					this.displays.getPrimary().obj.addClass( 'firstScreen' );
+					this.displays.getPrimary().obj.removeClass( 'disabledScreen' ).addClass( 'firstScreen' );
 					$.each(this.fsmState, function(i, state){
 						_this.fsm.consumeEvent( state );
 					});
