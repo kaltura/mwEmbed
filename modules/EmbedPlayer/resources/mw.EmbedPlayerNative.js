@@ -857,7 +857,7 @@
 
 						//If media not loaded yet(loadedmetadata event not reached yet) issue a load on video tag
 						if (!_this.mediaLoadedFlag){
-							vid.load();
+							_this.load();
 						}
 
 						// issue a play request
