@@ -157,11 +157,6 @@
 				this.addAbrFlavors();
 				this.addAudioTracks();
 				this.addSubtitleTracks();
-				if (mw.isEdge() || mw.isIE()) {
-					// Shaka handles the tracks by itself,
-					// so the native player doesn't need to handle them on 'firstPlay'
-					this.getPlayer().unbindHelper('firstPlay');
-				}
 			},
 
 			getTracksByType: function (trackType) {
@@ -255,7 +250,7 @@
 						setTimeout(function(){
 							_this.getPlayer().triggerHelper("sourceSwitchingEnd", Math.round(source.getBitrate()));
 						},1000);
-						mw.log("switchSrc to ", selectedAbrTrack);
+						mw.log("Dash::switchSrc to ", selectedAbrTrack);
 					}
 				} else { // "Auto" option is selected
 					player.configure({
@@ -283,12 +278,24 @@
 			load: function () {
 			},
 
+			/**
+			 * Override player method for parsing tracks
+			 */
+			parseTracks: function () {
+			},
+
+			/**
+			 * Override player method for switching audio track tracks
+			 */
+			switchAudioTrack: function () {
+			},
+
 			onSwitchAudioTrack: function (event, data) {
 				var selectedAudioTracks = this.getTracksByType("audio")[data.index];
 				player.configure({
 					preferredAudioLanguage: selectedAudioTracks.language
 				});
-				mw.log("onSwitchAudioTrack switch to ", selectedAudioTracks);
+				mw.log("Dash::onSwitchAudioTrack switch to ", selectedAudioTracks);
 			},
 
 			onSwitchTextTrack: function (event, data) {
@@ -347,7 +354,7 @@
 					if(this.currentBitrate !== currentBitrate){
 						this.currentBitrate = currentBitrate;
 						this.embedPlayer.triggerHelper('bitrateChange', currentBitrate);
-						this.log('The bitrate has changed to ' + currentBitrate)
+						this.log('The bitrate has changed to ' + currentBitrate);
 					}
 				}
 			},
@@ -359,9 +366,13 @@
 				this.orig_switchSrc = this.getPlayer().switchSrc;
 				this.orig_playerSwitchSource = this.getPlayer().playerSwitchSource;
 				this.orig_load = this.getPlayer().load;
+				this.orig_parseTracks = this.getPlayer().parseTracks;
+				this.orig_switchAudioTrack = this.getPlayer().switchAudioTrack;
 				this.getPlayer().switchSrc = this.switchSrc.bind(this);
 				this.getPlayer().playerSwitchSource = this.playerSwitchSource.bind(this);
 				this.getPlayer().load = this.load.bind(this);
+				this.getPlayer().parseTracks = this.parseTracks.bind(this);
+				this.getPlayer().switchAudioTrack = this.switchAudioTrack.bind(this);
 			},
 			/**
 			 * Disable override player methods for Dash playback
@@ -370,6 +381,8 @@
 				this.getPlayer().switchSrc = this.orig_switchSrc;
 				this.getPlayer().playerSwitchSource = this.orig_playerSwitchSource;
 				this.getPlayer().load = this.orig_load;
+				this.getPlayer().parseTracks = this.orig_parseTracks;
+				this.getPlayer().switchAudioTrack = this.orig_switchAudioTrack;
 			}
 
 		});
