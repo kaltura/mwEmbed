@@ -555,6 +555,12 @@
 				_this.destroy();
 			});
 
+			_this.embedPlayer.bindHelper('onChangeMedia' + this.bindPostfix, function (event) {
+				mw.log( "DoubleClick::changeMedia event called." );
+				_this.destroy();
+			});
+
+
 			if (_this.embedPlayer.isMobileSkin()){
 				_this.embedPlayer.bindHelper('onShowControlBar' + this.bindPostfix, function (event) {
 					if ( !_this.isLinear ){
