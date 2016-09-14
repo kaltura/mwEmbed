@@ -26,7 +26,8 @@
 			'debugKalturaPlayer': false,
 			'uiconfid':null,
 			'defaultConfig':true,
-			'disableSenderUI':false
+			'disableSenderUI':false,
+			'defaultThumbnail': ''
 
 		},
 		isDisabled: false,
@@ -880,10 +881,11 @@
 		},
 
 		getPlayingScreen: function(){
+			var thumbnail = this.getConfig('defaultThumbnail') !== "" ? this.getConfig('defaultThumbnail') : this.embedPlayer.poster;
 			return '<div class="chromecastScreen" style="background-color: rgba(0,0,0,0.7); width: 100%; height: 100%; font-family: Arial; position: absolute">' +
 				'<div class="chromecastPlayback">' +
 				'<div class="chromecastThumbBorder">' +
-				'<img class="chromecastThumb" src="' + this.embedPlayer.poster + '"></img></div> ' +
+				'<img class="chromecastThumb" src="' + thumbnail + '"></img></div> ' +
 				'<div class="titleHolder">' +
 				'<span class="chromecastTitle"></span><br>' +
 				'<div><i class="icon-chromecast chromecastPlayingIcon chromecastPlaying"></i>' +
