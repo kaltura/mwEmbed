@@ -92,11 +92,13 @@
 			'overlays': true
 		},
 
-		canPlay: function(readyCallback){
+		canPlay: function(callback){
 			var deferred =  $.Deferred();
-			this.bindHelper("canplay", function () {
-				readyCallback();
-				return deferred.resolve();
+			this.bindOnceHelper("canplay", function () {
+				if (callback) {
+					callback();
+				}
+				deferred.resolve();
 			});
 
 			return deferred;
@@ -238,7 +240,7 @@
 		playerSwitchSource: function (source, switchCallback, doneCallback) {
 			mw.log("NativeComponent:: playerSwitchSource");
 			var _this = this;
-			this.canPlayPromise = this.canPlay(switchCallback);
+
 			var vid = this.getPlayerElement();
 			var src = source.getSrc();
 			var switchBindPostfix = '.playerSwitchSource';
@@ -255,6 +257,14 @@
 				return;
 			}
 
+			var switchCallbackCalled = false;
+			var switchCallbackWrapper = function(){
+				if (!switchCallbackCalled) {
+					switchCallbackCalled = true;
+					switchCallback();
+				}
+			};
+			this.canPlayPromise = this.canPlay(switchCallbackWrapper);
 
 			// remove old binding:
 			$(vid).unbind(switchBindPostfix);
@@ -275,7 +285,7 @@
 			if ($.isFunction(switchCallback)) {
 				$(vid).bind('durationchange' + switchBindPostfix, function () {
 					$( vid ).unbind( 'durationchange' + switchBindPostfix );
-					switchCallback( vid );
+					switchCallbackWrapper();
 				} );
 			}
 
@@ -440,6 +450,7 @@
 
 		// verify that we didn't get play right after pause or vise versa when user multiple clicks the device
 		checkPlayPauseTime: function(){
+			return true;
 			if(mw.getConfig('disableKalturaControls') === true) {
 				return true;
 			}
