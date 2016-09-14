@@ -212,7 +212,9 @@
 								// Restore duration:
 								embedPlayer.setDuration( orgDuration );
 								// Continue playback
-								embedPlayer.play();
+								if (playedAnAdFlag){
+									embedPlayer.play();
+								}
 							};
 							// Check if the src does not match original src if
 							// so switch back and restore original bindings
