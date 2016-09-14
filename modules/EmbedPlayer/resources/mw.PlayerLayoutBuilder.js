@@ -56,7 +56,9 @@ mw.PlayerLayoutBuilder.prototype = {
 		mw.setConfig( 'EmbedPlayer.AnimationSupported', animationSupported );
 		this.addUserAgentCssClass();
 		$(document.body).append($('<div style="display: block" class="cssChecker"></div>'));
-		this.checkViewPort();
+		if (_this.embedPlayer.isMobileSkin()) {
+			this.checkViewPort();
+		}
 		// Return the layoutBuilder Object:
 		return this;
 	},
