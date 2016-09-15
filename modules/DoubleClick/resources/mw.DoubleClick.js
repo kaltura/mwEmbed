@@ -557,7 +557,9 @@
 
 			_this.embedPlayer.bindHelper('onChangeMedia' + this.bindPostfix, function (event) {
 				mw.log( "DoubleClick::changeMedia event called." );
-				_this.destroy();
+				if(_this.embedPlayer.isInSequence()){
+					_this.destroy();
+				}
 			});
 
 
