@@ -14,17 +14,20 @@
         playerObject: null,
         autoBitrate: false,
         isFlash: true,
-        b64Referrer: base64_encode(kWidgetSupport.getHostPageUrl()),
+        b64Referrer: null,
 
         firstPlay: true,
         paused: false,
         seeking: false,
-        stopped: false,
         streamerType: 'http',
+        ended: false,
+        duration: 0,
 
         init: function init(stream, embedPlayer, readyCallback) {
             this.stream = stream;
             this.embedPlayer = embedPlayer;
+            this.duration = this.stream.data.meta.duration || 0;
+            this.b64Referrer = base64_encode(kWidgetSupport.getHostPageUrl());
             this.initPlayerElement(readyCallback);
             this.updatePoster();
             return this;
@@ -49,13 +52,19 @@
         },
 
         seek: function seek(seekTime, stopAfterSeek) {
-            if (seekTime < 0) {
-                seekTime = 0;
-            }
-
             seekTime = parseFloat(parseFloat(seekTime).toFixed(2));
             this.stopAfterSeek =
                 $.type(stopAfterSeek) === 'undefined' ? stopAfterSeek : !this.isPlaying();
+
+            if (!seekTime || seekTime < 0) {
+                seekTime = 0;
+            }
+
+            var isSeekOutOfBound = this.duration && (Math.ceil(seekTime) > this.duration);
+            if (isSeekOutOfBound) {
+                seekTime = this.duration;
+                this.stopAfterSeek = true;
+            }
 
             this.seeking = true;
             this.trigger('seeking', [seekTime]);
@@ -68,13 +77,9 @@
             }
 
             this.seekStarted = true;
-            if (this.firstPlay) {
-                if (this.streamerType === 'http') {
-                    this.playerObject.seek(seekTime);
-                } else {
-                    this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', seekTime);
-                    this.playerObject.play();
-                }
+            if (this.firstPlay && this.streamerType !== 'http') {
+                this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', seekTime);
+                this.playerObject.play();
             } else {
                 this.playerObject.seek(seekTime);
             }
@@ -89,7 +94,7 @@
         },
 
         isPlaying: function isPlaying() {
-            return !this.stopped && !this.paused;
+            return !this.ended && !this.paused;
         },
 
         isSeeking: function isSeeking() {
@@ -162,7 +167,7 @@
 
         onPlaybackComplete: function onPlaybackComplete() {
             this.paused = false;
-            this.stopped = true;
+            this.ended = true;
             this.trigger('ended');
         },
 
@@ -175,6 +180,7 @@
             this.firstPlay && this.removePoster();
             this.firstPlay = false;
             this.paused = false;
+            this.ended = false;
             this.trigger('playing');
         },
 
@@ -211,7 +217,7 @@
                 playerPaused: 'onPlayerPaused',
                 playerSeekEnd: 'onPlayerSeekEnd',
                 playbackComplete: 'onPlaybackComplete',
-                'playerUpdatePlayhead': 'onUpdatePlayhead'
+                playerUpdatePlayhead: 'onUpdatePlayhead'
             };
 
             $.each(bindEventsMap, function (bindName, localMethod) {
@@ -242,12 +248,13 @@
         },
 
         makeFlashVars: function makeFlashVars() {
+            console.info(this.stream.url);
             var flashVars = {
                 autoMute: true,
                 entryUrl: encodeURIComponent(this.stream.url),
                 isLive: false,
                 stretchVideo: false,
-                entryDuration: this.stream.data.meta.duration,
+                entryDuration: this.duration,
                 serviceUrl: mw.getConfig('Kaltura.ServiceUrl'),
                 partnerId: this.embedPlayer.kpartnerid,
                 widgetId: '_' + this.embedPlayer.kpartnerid,

@@ -251,19 +251,27 @@
 		},
 		disableDroppable: function () {
 			var parent = this.obj.parent();
-			this.obj.data('droppable') && this.obj.droppable('destroy').data('droppable', false);
-			parent.data('droppable') && parent.droppable('destroy').data('droppable', false);
+			this.obj.data('droppable') && this.obj.droppable('disable');
+			parent.data('droppable') && parent.droppable('disable');
 		},
 		enableDroppable: function (useParentAsTarget) {
 			var target = useParentAsTarget ? this.obj.parent() : this.obj;
 
-			target.droppable({
-				accept: '.ds-stream',
-				hoverClass: 'ui-state-hover',
-				activeClass: 'ui-state-active',
-				greedy: !useParentAsTarget,
-				drop: $.proxy(this.onDrop, this)
-			}).data('droppable', true);
+			if (target.data('droppable')) {
+				target
+					.droppable('enable')
+					.droppable('option', 'greedy', !useParentAsTarget);
+			} else {
+				target
+					.data('droppable', true)
+					.droppable({
+						accept: '.ds-stream',
+						hoverClass: 'ui-state-hover',
+						activeClass: 'ui-state-active',
+						greedy: !useParentAsTarget,
+						drop: $.proxy(this.onDrop, this)
+					});
+			}
 		},
 		onDrop: function (event, ui) {
 			!ui.draggable.data('wasDropped') && this.getPlayer().triggerHelper('displayDropped', [this, ui.draggable]);

@@ -4,7 +4,7 @@
 
     mw.dualScreen.videoSync = mw.KBasePlugin.extend({
         isSyncDelay: false,
-        skipSyncDelay: false,
+        shouldSyncState: true,
         eventListeners: {},
 
         isSafeEnviornment: function () {
@@ -32,7 +32,7 @@
             // Filter for groupnames
             mediagroups = elements.map(function( elem ) {
                 return elem.getAttribute( "kMediaGroup" );
-            }).filter(function( val, i, array ) {
+            }).filter(function( val ) {
                 if ( !filtereds[ val ] ) {
                     filtereds[ val ] = elements.filter(function( elem ) {
                         return elem.getAttribute( "kMediaGroup" ) === val;
@@ -70,7 +70,7 @@
             }
 
             // Declare context sensitive `canplay` handler
-            var canPlay = function canPlay() {
+            function canPlay() {
                 if ( ++ready >= slaves.length && !controller.buffering ) {
                     // Now that it is safe to play the video
                     var isPlaying = controller.isPlaying();
@@ -80,7 +80,7 @@
 
                     // this.mediaGroupSync(controller, slaves);
                 }
-            }.bind(this);
+            }
 
             // Iterate all elements in mediagroup set
             // Add `canplay` event listener, this ensures that setting currentTime
@@ -99,72 +99,74 @@
             var lastSync = 0;
             var synchInterval = 1000;
             var bufferTimerId;
-            var adRunning = false;
             var _this = this;
             var eventsMap = {
-                onplay: function () {
-                    if (!adRunning) {
+                onplay: function (suppressLog) {
+                    if (_this.shouldSyncState /*&& controller.isPlaying()*/) {
+                        !suppressLog && _this.log("onplay :: slave.play");
                         slaves.forEach(function (slave) {
-                            _this.log("onplay :: slave.play");
                             slave.play();
                         });
                     }
                 },
-                onpause: function () {
-                    slaves.forEach(function(slave){
-                        _this.log("onpause :: slave.pause");
-                        slave.pause();
-                    });
+                onpause: function (suppressLog) {
+                    if (_this.shouldSyncState) {
+                        !suppressLog && _this.log("onpause :: slave.pause");
+                        slaves.forEach(function(slave){
+                            slave.pause();
+                        });
+                    }
                 },
                 timeupdate: function () {
-                    if (adRunning || this.isSyncDelay) {
-                        this.log('timeupdate :: skip, master time: ' + this.getMasterCurrentTime(controller));
-                        return;
-                    }
+                    if (!this.isSyncDelay && this.shouldSyncState) {
+                        var now = Date.now();
 
-                    var now = Date.now();
-                    if (((now - lastSync) > synchInterval) || controller.paused) {
-                        lastSync = now;
-                        this.mediaGroupSync(controller, slaves);
+                        if (((now - lastSync) > synchInterval) || controller.paused) {
+                            lastSync = now;
+                            this.mediaGroupSync(controller, slaves);
+                        }
+                    } else {
+                        this.log('timeupdate :: skip, master time: ' + this.getMasterCurrentTime(controller));
                     }
                 }.bind(this),
                 seeking: function () {
                     this.log('seeking :: master to ' + controller.currentSeekTargetTime);
-                    slaves.forEach(function(slave){
-                        _this.log("seeking :: slave.pause (FLASH ONLY -> isSyncDelay = true)");
-                        slave.pause();
+                    eventsMap.onpause(true);
+                    slaves.some(function(slave){
                         if ( slave.isFlash ) {
+                            _this.log("seeking :: slave.pause (FLASH ONLY -> isSyncDelay = true)");
                             _this.isSyncDelay = true; // manually trigger syncDelay, so we won't sync the slave till the master will fire seeked
                         }
+
+                        return slave.isFlash;
                     });
                 }.bind(this),
                 seeked: function () {
+                    // fix issue when playhead is not updated after seek
+                    // reproduces only with Flash progressive player
                     controller.flashCurrentTime = this.getMasterCurrentTime(controller);
                     controller.updatePlayheadStatus();
                     this.log('seeked :: master to ' + this.getMasterCurrentTime(controller));
                     // this.mediaGroupSync(controller, slaves);
 
-                    slaves.forEach(function (slave) {
-                        _this.log("seeked :: slave.play (FLASH ONLY -> isSyncDelay = false)");
+                    slaves.some(function (slave) {
                         if (slave.isFlash) {
+                            _this.log("seeked :: slave.play (FLASH ONLY -> isSyncDelay = false)");
                             _this.isSyncDelay = false; // manually reset syncDelay
                         }
+
+                        return slave.isFlash;
                     });
 
-                    if ( !controller.paused ) {
-                        slaves.forEach(function (slave) {
-                            slave.play();
-                        });
-                    }
+                    eventsMap.onplay(true);
                 }.bind(this),
                 ended: function () {
-                    this.mediaGroupSync(controller, slaves);
                     slaves.forEach(function(slave){
                         _this.log("ended :: slave.pause + seek to 0.01");
                         slave.pause();
-                        slave.setCurrentTime(0.01);
+                        _this.seekSlave(slave, controller, 0, 0.01);
                     });
-                }.bind(this),
+                },
                 bufferStartEvent: function () {
                     if (controller.seeking || !controller.isPlaying()) {
                         return;
@@ -174,10 +176,7 @@
                     clearTimeout(bufferTimerId);
 
                     bufferTimerId = setTimeout(function () {
-                        slaves.forEach(function (slave) {
-                            slave.pause();
-                        });
-
+                        eventsMap.onpause(true);
                         bufferTimerId = -1;
                     }, 1000);
                 },
@@ -189,22 +188,21 @@
                     _this.log('bufferEndEvent :: master');
 
                     clearTimeout(bufferTimerId);
-                    if (bufferTimerId < 0 && controller.isPlaying()) {
-                        slaves.forEach(function (slave) {
-                            slave.play();
-                        });
+                    if (bufferTimerId < 0) {
+                        eventsMap.onplay(true);
                     }
 
                     bufferTimerId = null;
                 },
                 AdSupport_StartAdPlayback: function () {
                     _this.log('AdSupport_StartAdPlayback :: master');
-                    adRunning = true;
-                    eventsMap.onpause();
+                    eventsMap.onpause(true);
+                    _this.shouldSyncState = false;
                 },
                 AdSupport_EndAdPlayback: function () {
                     _this.log('AdSupport_EndAdPlayback :: master');
-                    adRunning = false;
+                    _this.shouldSyncState = true;
+                    eventsMap.onplay(true);
                 }
             };
 
@@ -212,7 +210,7 @@
             this.eventListeners[controller.kMediaGroup] = eventsMap;
         },
         mediaGroupSync: function( controller, slaves ) {
-            if ( this.isSyncDelay ) {
+            if ( this.isSyncDelay || controller.stopped ) {
                 return;
             }
             var synchDelayThresholdPositive = 0.05;
@@ -270,7 +268,7 @@
 
                     // if marked for seeking
                     if (doSeek) {
-                        this.log("DualScreen :: videoSync :: mediaGroupSync :: Seeking slave to " + (this.getMasterCurrentTime(controller) + seekAhead));
+                        this.log("mediaGroupSync :: Seeking slave to " + (this.getMasterCurrentTime(controller) + seekAhead));
                         this.seekSlave(slave, controller, this.getMasterCurrentTime(controller), !slave.isABR() ? seekAhead : 0);
                         // slave.setCurrentTime(controller.currentTime + seekAhead);
                     }
@@ -280,6 +278,14 @@
         },
         seekSlave: function (slave, player, seekTime, aheadTime) {
             seekTime = seekTime < 0 ? 0 : seekTime;
+            if (slave.ended && slave.duration && Math.ceil(seekTime) > slave.duration) {
+                // trying to seek out of bounds after slave already ended
+                // pause slave
+                this.log('seekSlave :: seekTime ' + seekTime + ' is out of bounds 0..' + slave.duration + '. pause slave');
+                slave.pause();
+                return;
+            }
+
             this.log('seekSlave :: seeking to=' + seekTime + ', ahead=' + aheadTime);
 
             var _this = this;
@@ -296,13 +302,14 @@
                         var diff = value - seekTime;
                         if (diff < 0 && Math.abs(diff) > aheadTime) {
                             _this.log('seekSlave :: diff > aheadTime, have to sync. diff=' + diff + ', ahead = ' + aheadTime);
-                            $(slave).on('timeupdate', function onTimeUpdate(event, newTime) {
+                            $(slave).on('timeupdate ended', function onTimeUpdate(event, newTime) {
                                 var newDiff = newTime - seekTime;
-                                if (newDiff > 0 || Math.abs(newDiff) <= aheadTime) {
-                                    _this.log('seekSlave :: slave timeupdate ' + newTime + ', new diff=' + newDiff);
-                                    $(this).off('timeupdate', onTimeUpdate);
+                                var ended = event.type === 'ended';
+                                if (ended || (newDiff > 0 || Math.abs(newDiff) <= aheadTime)) {
+                                    _this.log('seekSlave :: slave' + (ended ? 'ended' : (' timeupdate ' + newTime + ', new diff=' + newDiff)));
+                                    $(this).off('timeupdate ended', onTimeUpdate);
                                     _this.isSyncDelay = false;
-                                    !playing && slave.pause();
+                                    (!playing || ended) && slave.pause();
                                     _this.restoreMaster(player, playing);
                                 }
                             });
