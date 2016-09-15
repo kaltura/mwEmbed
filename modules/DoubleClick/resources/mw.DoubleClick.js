@@ -556,8 +556,8 @@
 			});
 
 			_this.embedPlayer.bindHelper('onChangeMedia' + this.bindPostfix, function (event) {
-				mw.log( "DoubleClick::changeMedia event called." );
 				if(_this.embedPlayer.isInSequence()){
+					mw.log( "DoubleClick::changeMedia event called. Calling Destroy." );
 					_this.destroy();
 				}
 			});
