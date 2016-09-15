@@ -426,7 +426,6 @@
 				this.getPlayer().load = this.orig_load;
 				this.getPlayer()._onerror = this.orig_onerror;
 				this.getPlayer()._ontimeupdate = this.orig_ontimeupdate;
-				mw.supportsFlash = orig_supportsFlash;
 			},
 			//Overidable player methods, "this" is bound to HLS plugin instance!
 			/**
