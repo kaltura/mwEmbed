@@ -207,13 +207,14 @@
                 //FlashMode only - take care of flash obj (seek through hidden flash player will be very slow, so we need to bring at least several pixels inside the visible area of the player frame)
                 var _this = this;
                 this.disableTransition();
-                this.obj.removeClass('hidden10pxScreen');
-                this.obj.css(this.hiddenProp);
+                // jQuery had bug - https://bugs.jquery.com/ticket/14906
+                // so we have to check the hiddenProp for undefined
+                this.hiddenProp && this.obj.css(this.hiddenProp);
                 this.hiddenProp = null;
                 this.obj.removeClass('componentOff').addClass('componentOn');
                 this.enableTransition();
                 setTimeout(function () {
-                    _this.obj.removeClass('hiddenScreen');
+                    _this.obj.removeClass('hidden10pxScreen hiddenScreen');
                 }, 500); //it takes time to update width/height/top/left css properties and this is the reason for half second delly.
             }
 		},
