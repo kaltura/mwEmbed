@@ -248,7 +248,6 @@
         },
 
         makeFlashVars: function makeFlashVars() {
-            console.info(this.stream.url);
             var flashVars = {
                 autoMute: true,
                 entryUrl: encodeURIComponent(this.stream.url),

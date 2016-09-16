@@ -222,6 +222,14 @@
             return deferred.promise();
         },
 
+        isAutoBitrate: function isAutoBitrate() {
+            var streamerType = mw.getConfig('streamerType');
+
+            return this.getSource().then(function (source) {
+                return (source && source.src.indexOf('m3u8') > 0) || (streamerType && streamerType !== 'http');
+            });
+        },
+
         log: function log(msg) {
             mw.log('DualScreen :: streamUtils :: ' + msg);
         },

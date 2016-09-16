@@ -843,21 +843,28 @@
             },
 
             handleABR: function ( ) {
-                if ( this.getPlayer().getVideoDisplay().attr('data-display-rule') === 'primary' ) {
-                    mw.log("DualScreen :: handleABR :: set kplayer to ABR AUTO and secondPlayer to lowest bitrate");
-                    this.getPlayer().mediaElement.autoSelectSource();
-                    // this.getPlayer().switchSrc(-1);
-					if( this.secondPlayer instanceof mw.dualScreen.videoPlayer && this.secondPlayer.playerElement.isABR() ) {
-						this.secondPlayer.playerElement.switchSrc(0);
-					}
-                } else {
-                    mw.log("DualScreen :: handleABR :: set secondPlayer to ABR AUTO and kplayer to lowest bitrate");
-                    this.getPlayer().switchSrc(this.getPlayer().getSources()[0]);
-                    // this.getPlayer().switchSrc(0);
-					if( this.secondPlayer instanceof mw.dualScreen.videoPlayer && this.secondPlayer.playerElement.isABR() ) {
-						this.secondPlayer.playerElement.switchSrc(-1);
-					}
-                }
+                var player = this.getPlayer();
+                var secondPlayer = this.secondPlayer;
+                var isSecondPlayerABR = secondPlayer instanceof mw.dualScreen.videoPlayer && secondPlayer.playerElement.isABR();
+                player.instanceOf === 'Kplayer' && this.getUtils().isAutoBitrate().then(function (res) {
+                    if (!res) {
+                        return;
+                    }
+
+                    if ( player.getVideoDisplay().attr('data-display-rule') === 'primary' ) {
+                        mw.log("DualScreen :: handleABR :: set kplayer to ABR AUTO and secondPlayer to lowest bitrate");
+                        player.switchSrc(-1);
+                        if( isSecondPlayerABR ) {
+                            secondPlayer.playerElement.switchSrc(0);
+                        }
+                    } else {
+                        mw.log("DualScreen :: handleABR :: set secondPlayer to ABR AUTO and kplayer to lowest bitrate");
+                        player.switchSrc(0);
+                        if( isSecondPlayerABR ) {
+                            secondPlayer.playerElement.switchSrc(-1);
+                        }
+                    }
+                });
             },
 
 			//Display

@@ -223,6 +223,21 @@
                     callback();
                 };
 
+                var onSeeked = function () {
+                    //Unfreeze scrubber and time labels after transition between streams
+                    embedPlayer.triggerHelper("freezeTimeIndicators", [false]);
+                    //emove the black screen afteer seek has ended
+                    embedPlayer.removeBlackScreen();
+                    //Return poster to allow display of poster on clip done
+                    mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
+                    _this.streamChanging = false;
+                    embedPlayer.triggerHelper('onChangeStreamDone', [_this.currentStream.id]);
+
+                    if (pauseAfterwards) {
+                        embedPlayer.pause();
+                    }
+                };
+
                 var changeMediaCallback = function () {
                     //Return autoplay state to original
                     embedPlayer.autoplay = origAutoplay;
@@ -233,30 +248,24 @@
                     embedPlayer.restoreEventPropagation();
                     // issue a seek
                     if (currentTime > 0) {
-                        _this.bind("seeked", function () {
-                            _this.unbind("seeked");
-                            //Unfreeze scrubber and time labels after transition between streams
-                            embedPlayer.triggerHelper("freezeTimeIndicators", [false]);
-                            //emove the black screen afteer seek has ended
-                            embedPlayer.removeBlackScreen();
-                            //Return poster to allow display of poster on clip done
-                            mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
-                            _this.streamChanging = false;
-                            embedPlayer.triggerHelper('onChangeStreamDone', [_this.currentStream.id]);
-
-                            if (pauseAfterwards) {
-                                embedPlayer.pause();
-                            }
-                        });
-
                         //Add black screen before seek to avoid flashing of video
                         embedPlayer.addBlackScreen();
 
+                        var postFix = '.streamSelectorUtilsChangeMedia';
                         if (embedPlayer.instanceOf === 'Kplayer' && embedPlayer.streamerType === 'hls') {
-                            _this.bind('playing', function () {
+                            embedPlayer.unbindHelper('playing' + postFix).bindOnceHelper('playing' + postFix, function () {
+                                embedPlayer.unbindHelper('seeked' + postFix).bindOnceHelper('seeked' + postFix, onSeeked);
                                 embedPlayer.seek(currentTime, false);
                             }, true);
+                        } else if (embedPlayer.isFlavorSwitching) {
+                            // wait until flavor is changed
+                            // TODO: create special event for EmbedPlayer::playerSwitchSource callback
+                            embedPlayer.unbindHelper('seeked' + postFix + '1').bindOnceHelper('seeked' + postFix + '1', function () {
+                                embedPlayer.unbindHelper('seeked' + postFix).bindOnceHelper('seeked' + postFix, onSeeked);
+                                embedPlayer.seek(currentTime, false);
+                            });
                         } else {
+                            embedPlayer.unbindHelper('seeked' + postFix).bindOnceHelper('seeked' + postFix, onSeeked);
                             embedPlayer.seek(currentTime, false);
                         }
                     } else {
