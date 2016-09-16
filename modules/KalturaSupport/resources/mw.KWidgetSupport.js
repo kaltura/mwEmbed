@@ -1826,7 +1826,7 @@ mw.KWidgetSupport.prototype = {
 	},
 	getFairplayCert: function(playerData){
 		var publicCertificate = null;
-		if (playerData.contextData.pluginData &&
+		if (playerData && playerData.contextData && playerData.contextData.pluginData &&
 			playerData.contextData.pluginData.KalturaFairplayEntryContextPluginData &&
 			playerData.contextData.pluginData.KalturaFairplayEntryContextPluginData.publicCertificate){
 			publicCertificate = playerData.contextData.pluginData.KalturaFairplayEntryContextPluginData.publicCertificate;

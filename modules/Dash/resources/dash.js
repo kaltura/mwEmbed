@@ -3,7 +3,10 @@
 	if (!window.Promise) {
 		shaka.polyfill.installAll();
 	}
-	if (shaka.Player.isBrowserSupported() && !mw.isDesktopSafari()) {
+	if (shaka.Player.isBrowserSupported() &&
+		!mw.getConfig( "EmbedPlayer.ForceNativeComponent" ) &&
+		!mw.isDesktopSafari() &&
+		!mw.isAndroid()) {
 		$(mw).bind('EmbedPlayerUpdateMediaPlayers', function (event, mediaPlayers) {
 			mw.log("Dash::Register shaka player for application/dash+xml mime type");
 			var shakaPlayer = new mw.MediaPlayer('shakaPlayer', ['application/dash+xml'], 'Native');
@@ -23,7 +26,7 @@
 			 * @returns {boolean}
 			 */
 			isSafeEnviornment: function () {
-				return shaka.Player.isBrowserSupported() && !mw.getConfig( "EmbedPlayer.ForceNativeComponent");
+				return shaka.Player.isBrowserSupported();
 			},
 			/**
 			 * Setup the shaka playback engine wrapper with supplied config options
@@ -37,6 +40,7 @@
 			addBindings: function () {
 				this.bind("SourceChange", this.isNeeded.bind(this));
 				this.bind("playerReady", this.initShaka.bind(this));
+				this.bind("seeking", this.onSeekBeforePlay.bind(this));
 				this.bind("switchAudioTrack", this.onSwitchAudioTrack.bind(this));
 				this.bind("selectClosedCaptions", this.onSwitchTextTrack.bind(this));
 				this.bind("onChangeMedia", this.clean.bind(this));
@@ -48,19 +52,20 @@
 			isNeeded: function () {
 				if (this.getPlayer().mediaElement.selectedSource.mimeType === "application/dash+xml") {
 					this.LoadShaka = true;
-					//Set streamerType to dash
-					this.embedPlayer.streamerType = 'dash';
 				} else {
 					this.LoadShaka = false;
 				}
 			},
+
 			/**
 			 * Register the playback events and attach the playback engine to the video element
 			 */
 			initShaka: function () {
 				if (this.LoadShaka && !this.loaded) {
 					this.log("Init shaka");
-					var _this = this;
+
+					//Set streamerType to dash
+					this.embedPlayer.streamerType = 'dash';
 
 					this.loaded = true;
 
@@ -80,24 +85,12 @@
 					// vtt.js override the VTTCue to wrong format for shaka, so set the original VTTCue
 					window.VTTCue = this.getPlayer().getOriginalVTTCue();
 
-					// Listen for error events.
-					player.addEventListener('error', this.onErrorEvent.bind(this));
+					this.registerShakaEvents();
 
-					var selectedSource = this.getPlayer().getSrc();
-
-					this.getPlayer().resolveSrcURL(selectedSource)
-						.done(function (manifestSrc) {  // success
-							selectedSource = manifestSrc;
-						})
-						.always(function () {  // both success or error
-								//// Try to load a manifest.
-								player.load(selectedSource).then(function () {
-									// This runs if the asynchronous load is successful.
-									_this.log('The video has now been loaded!');
-									_this.addTracks();
-								}).catch(_this.onError.bind(_this));  // onError is executed if the asynchronous load fails.
-							}
-						);
+					this.bind("firstPlay", function(){
+						this.unbind("seeking");
+						this.loadManifest();
+					}.bind(this));
 				}
 			},
 
@@ -140,15 +133,33 @@
 				return drmConfig;
 			},
 
+			registerShakaEvents: function(){
+				player.addEventListener('error', this.onErrorEvent.bind(this));
+				player.addEventListener('adaptation', this.onAdaptation.bind(this));
+			},
+
+			loadManifest: function () {
+				var _this = this;
+				var selectedSource = this.getPlayer().getSrc();
+				this.getPlayer().resolveSrcURL(selectedSource)
+					.done(function (manifestSrc) {  // success
+						selectedSource = manifestSrc;
+					})
+					.always(function () {  // both success or error
+							// Try to load a manifest.
+							player.load(selectedSource).then(function () {
+								// This runs if the asynchronous load is successful.
+								_this.log('The video has now been loaded!');
+								_this.addTracks();
+							}).catch(_this.onError.bind(_this));  // onError is executed if the asynchronous load fails.
+						}
+					);
+			},
+
 			addTracks: function () {
 				this.addAbrFlavors();
 				this.addAudioTracks();
 				this.addSubtitleTracks();
-				if (mw.isEdge() || mw.isIE()) {
-					// Shaka handles the tracks by itself,
-					// so the native player doesn't need to handle them on 'firstPlay'
-					this.getPlayer().unbindHelper('firstPlay');
-				}
 			},
 
 			getTracksByType: function (trackType) {
@@ -237,13 +248,12 @@
 					})[0];
 					if (selectedAbrTrack) {
 						player.selectTrack(selectedAbrTrack, false);
-						this.getPlayer().triggerHelper('bitrateChange', source.getBitrate());
-						this.getPlayer().triggerHelper("sourceSwitchingStarted");
+						this.getPlayer().triggerHelper("sourceSwitchingStarted", this.currentBitrate);
 						var _this = this;
 						setTimeout(function(){
-							_this.getPlayer().triggerHelper("sourceSwitchingEnd", _this.getPlayer().currentBitrate);
+							_this.getPlayer().triggerHelper("sourceSwitchingEnd", Math.round(source.getBitrate()));
 						},1000);
-						mw.log("switchSrc to ", selectedAbrTrack);
+						mw.log("Dash::switchSrc to ", selectedAbrTrack);
 					}
 				} else { // "Auto" option is selected
 					player.configure({
@@ -271,12 +281,24 @@
 			load: function () {
 			},
 
+			/**
+			 * Override player method for parsing tracks
+			 */
+			parseTracks: function () {
+			},
+
+			/**
+			 * Override player method for switching audio track tracks
+			 */
+			switchAudioTrack: function () {
+			},
+
 			onSwitchAudioTrack: function (event, data) {
 				var selectedAudioTracks = this.getTracksByType("audio")[data.index];
 				player.configure({
 					preferredAudioLanguage: selectedAudioTracks.language
 				});
-				mw.log("onSwitchAudioTrack switch to ", selectedAudioTracks);
+				mw.log("Dash::onSwitchAudioTrack switch to ", selectedAudioTracks);
 			},
 
 			onSwitchTextTrack: function (event, data) {
@@ -291,6 +313,13 @@
 				}
 			},
 
+			onSeekBeforePlay: function(){
+				this.unbind("seeking");
+				this.unbind("firstPlay");
+				this.loadManifest();
+			},
+
+
 			onErrorEvent: function (event) {
 				// Extract the shaka.util.Error object from the event.
 				this.onError(event.detail);
@@ -303,7 +332,7 @@
 			 */
 			onError: function (event, data) {
 				var errorData = data ? data.type + ", " + data.details : event;
-				this.log("Error: " + errorData);
+				mw.log("Dash: " , errorData);
 			},
 
 			/**
@@ -319,6 +348,20 @@
 				}
 			},
 
+			onAdaptation: function(){
+				var selectedAbrTrack = this.getTracksByType("video").filter(function (abrTrack) {
+					return abrTrack.active;
+				})[0];
+				if(selectedAbrTrack){
+					var currentBitrate = Math.round(selectedAbrTrack.bandwidth / 1024);
+					if(this.currentBitrate !== currentBitrate){
+						this.currentBitrate = currentBitrate;
+						this.embedPlayer.triggerHelper('bitrateChange', currentBitrate);
+						this.log('The bitrate has changed to ' + currentBitrate);
+					}
+				}
+			},
+
 			/**
 			 * Enable override player methods for Dash playback
 			 */
@@ -326,9 +369,13 @@
 				this.orig_switchSrc = this.getPlayer().switchSrc;
 				this.orig_playerSwitchSource = this.getPlayer().playerSwitchSource;
 				this.orig_load = this.getPlayer().load;
+				this.orig_parseTracks = this.getPlayer().parseTracks;
+				this.orig_switchAudioTrack = this.getPlayer().switchAudioTrack;
 				this.getPlayer().switchSrc = this.switchSrc.bind(this);
 				this.getPlayer().playerSwitchSource = this.playerSwitchSource.bind(this);
 				this.getPlayer().load = this.load.bind(this);
+				this.getPlayer().parseTracks = this.parseTracks.bind(this);
+				this.getPlayer().switchAudioTrack = this.switchAudioTrack.bind(this);
 			},
 			/**
 			 * Disable override player methods for Dash playback
@@ -337,6 +384,8 @@
 				this.getPlayer().switchSrc = this.orig_switchSrc;
 				this.getPlayer().playerSwitchSource = this.orig_playerSwitchSource;
 				this.getPlayer().load = this.orig_load;
+				this.getPlayer().parseTracks = this.orig_parseTracks;
+				this.getPlayer().switchAudioTrack = this.orig_switchAudioTrack;
 			}
 
 		});

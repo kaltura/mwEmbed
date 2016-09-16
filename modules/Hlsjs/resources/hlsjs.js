@@ -45,6 +45,9 @@
 			levelIndex: -1,
 			version: "v0.5.23",
 
+			/** type {Object} */
+			ptsID3Data: {},
+
 			/**
 			 * Check is HLS is supported
 			 * @returns {boolean}
@@ -66,6 +69,7 @@
 			addBindings: function () {
 				this.bind("SourceChange", this.isNeeded.bind(this));
 				this.bind("playerReady", this.initHls.bind(this));
+				this.bind("seeking", this.onSeekBeforePlay.bind(this));
 				this.bind("onChangeMedia", this.clean.bind(this));
 				this.bind("onLiveOffSynchChanged", this.onLiveOffSyncChanged.bind(this));
 				if (mw.getConfig("hlsLogs")) {
@@ -78,8 +82,6 @@
 			isNeeded: function () {
 				if (this.getPlayer().mediaElement.selectedSource.mimeType === "application/vnd.apple.mpegurl") {
 					this.LoadHLS = true;
-					//Set streamerType to hls
-					this.embedPlayer.streamerType = 'hls';
 				} else {
 					this.LoadHLS = false;
 				}
@@ -105,6 +107,8 @@
 			initHls: function () {
 				if (this.LoadHLS && !this.loaded) {
 					this.log("Init");
+					//Set streamerType to hls
+					this.embedPlayer.streamerType = 'hls';
 					//Init the HLS playback engine
 					this.hls = new Hls(this.getConfig("options"));
 
@@ -117,17 +121,10 @@
 					this.registerHlsEvents();
 					this.overridePlayerMethods();
 
-					//Attach video tag to HLS engine
-					//IE ignores preload and loads source right away so defer attaching to first play event
-					//But in case this is live then play comes early so attach as well
-					if (!mw.isIE() || (mw.isIE() && this.getPlayer().isLive())) {
+					this.bind("firstPlay", function () {
+						this.unbind("seeking");
 						this.hls.attachMedia(this.getPlayer().getPlayerElement());
-					} else {
-						this.bind("firstPlay", function () {
-							this.hls.attachMedia(this.getPlayer().getPlayerElement());
-						}.bind(this));
-
-					}
+					}.bind(this));
 				}
 			},
 			/**
@@ -223,15 +220,16 @@
 			},
 			onFragParsingMetadata: function (e, data) {
 				//data: { samples : [ id3 pes - pts and dts timestamp are relative, values are in seconds]}
-
-				//Get the data from the event + Unicode transform
-				var id3TagData = String.fromCharCode.apply(null, new Uint8Array(data.samples[data.samples.length - 1].data));
-				//Get the JSON substring
-				var id3TagString = id3TagData.substring(id3TagData.indexOf("{"), id3TagData.lastIndexOf("}") + 1);
-				//Parse JSON
-				var id3Tag = JSON.parse(id3TagString);
-
-				this.getPlayer().triggerHelper('onId3Tag', id3Tag);
+				data.samples.forEach(function(sample){
+					//Get the data from the event + Unicode transform
+					var sampleData = String.fromCharCode.apply(null, new Uint8Array(sample.data));
+					//Get the JSON substring
+					var sampleString = sampleData.substring(sampleData.indexOf("{"), sampleData.lastIndexOf("}") + 1);
+					//Parse JSON
+					var id3Tag = JSON.parse(sampleString);
+					//store ID3 data, use rounded pts value
+					this.ptsID3Data[Math.round(sample.pts)] = id3Tag;
+				}.bind(this));
 			},
 			onFragParsingData: function (e, data) {
 				//fired when moof/mdat have been extracted from fragment
@@ -279,11 +277,12 @@
 				//Set and report bitrate change
 				var source = this.hls.levels[data.level];
 				var currentBitrate = source.bitrate / 1024;
+				var previousBitrate = this.getPlayer().currentBitrate;
 				this.getPlayer().currentBitrate = currentBitrate;
 				this.getPlayer().triggerHelper('bitrateChange', currentBitrate);
 				//Notify sourceSwitchingStarted
 				if (this.isLevelSwitching && this.levelIndex == data.level) {
-					this.getPlayer().triggerHelper("sourceSwitchingStarted");
+					this.getPlayer().triggerHelper("sourceSwitchingStarted", previousBitrate);
 				}
 				//fire debug info
 				this.getPlayer().triggerHelper('hlsCurrentBitrate', currentBitrate);
@@ -297,16 +296,20 @@
 			onFragChanged: function (event, data) {
 				//fired when fragment matching with current video position is changing
 				//data: { frag : fragment object }
-				if (data && data.frag && data.frag.duration) {
-					this.fragmentDuration = data.frag.duration;
+				if (data && data.frag) {
+					if (data.frag.duration) {
+						this.fragmentDuration = data.frag.duration;
+					}
+
+					if (this.isLevelSwitching &&
+						( this.levelIndex == data.frag.level)) {
+						this.isLevelSwitching = false;
+						this.getPlayer().triggerHelper("sourceSwitchingEnd", this.getPlayer().currentBitrate);
+					}
+
+					this.getPlayer().triggerHelper('hlsFragChanged', data.frag);
+					//mw.log("hlsjs :: onFragChanged | startPTS = " + mw.seconds2npt(data.frag.startPTS) + " >> endPTS = " + mw.seconds2npt(data.frag.endPTS) + " | url = " + data.frag.url);
 				}
-				if (this.isLevelSwitching &&
-					(data && data.frag && (this.levelIndex == data.frag.level))) {
-					this.isLevelSwitching = false;
-					this.getPlayer().triggerHelper("sourceSwitchingEnd", this.getPlayer().currentBitrate);
-				}
-				this.getPlayer().triggerHelper('hlsFragChanged', data.frag);
-				//mw.log("hlsjs :: onFragChanged | startPTS = " + mw.seconds2npt(data.frag.startPTS) + " >> endPTS = " + mw.seconds2npt(data.frag.endPTS) + " | url = " + data.frag.url);
 			},
 			/**
 			 * Error handler
@@ -405,11 +408,13 @@
 				this.orig_playerSwitchSource = this.getPlayer().playerSwitchSource;
 				this.orig_load = this.getPlayer().load;
 				this.orig_onerror = this.getPlayer()._onerror;
+				this.orig_ontimeupdate = this.getPlayer()._ontimeupdate;
 				this.getPlayer().backToLive = this.backToLive.bind(this);
 				this.getPlayer().switchSrc = this.switchSrc.bind(this);
 				this.getPlayer().playerSwitchSource = this.playerSwitchSource.bind(this);
 				this.getPlayer().load = this.load.bind(this);
 				this.getPlayer()._onerror = this._onerror.bind(this);
+				this.getPlayer()._ontimeupdate = this._ontimeupdate.bind(this);
 			},
 			/**
 			 * Disable override player methods for HLS playback
@@ -420,6 +425,7 @@
 				this.getPlayer().playerSwitchSource = this.orig_playerSwitchSource;
 				this.getPlayer().load = this.orig_load;
 				this.getPlayer()._onerror = this.orig_onerror;
+				this.getPlayer()._ontimeupdate = this.orig_ontimeupdate;
 				mw.supportsFlash = orig_supportsFlash;
 			},
 			//Overidable player methods, "this" is bound to HLS plugin instance!
@@ -510,6 +516,19 @@
 						break;
 				}
 				mw.log("HLS.JS ERROR: " + errorTxt);
+			},
+
+			_ontimeupdate: function(e){
+				var time = Math.round(e.currentTarget.currentTime);
+				if (this.ptsID3Data[time]){
+					this.getPlayer().triggerHelper('onId3Tag', this.ptsID3Data[time]);
+				}
+			},
+
+			onSeekBeforePlay: function(){
+				this.unbind("seeking");
+				this.unbind("firstPlay");
+				this.hls.attachMedia(this.getPlayer().getPlayerElement());
 			},
 
 			handleMediaError: function () {

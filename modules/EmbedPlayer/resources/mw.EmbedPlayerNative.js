@@ -448,9 +448,6 @@
 							vid.play();
 							_this.parseTracks();
 						}
-					}else {
-						vid.load();
-						vid.play();
 					}
 				}
 				// Try to seek for 15 seconds:
@@ -858,13 +855,16 @@
 							$(_this).hide();
 						}
 
-						// update the preload attribute to auto
-						$(_this.getPlayerElement()).attr('preload', "auto");
+						//If media not loaded yet(loadedmetadata event not reached yet) issue a load on video tag
+						if (!_this.mediaLoadedFlag){
+							_this.load();
+						}
 
 						// issue a play request
 						if (!_this.playing) {
 							vid.play();
 						}
+
 						_this.mobilePlayed = true;
 						// re-start the monitor:
 						_this.monitor();

@@ -278,7 +278,7 @@
 	            return false;
             }
 
-			if ( this.getPlayer().streamerType == "http" && mw.isDesktopSafari() ){
+			if ( this.getPlayer().streamerType == "http" ){
 				this.addAutoToMenu();
 				return false;
 			}
