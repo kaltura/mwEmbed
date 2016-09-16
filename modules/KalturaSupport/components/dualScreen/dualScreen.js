@@ -426,7 +426,7 @@
 				if ( !this.controlBar && !this.getPlayer().isAudio()) {
                     var _this = this;
                     this.loadControlBar();
-                    this.getSwitchingStreams().then(function (streams) {
+                    this.getSwitchingStreams().always(function (streams) {
                         _this.controlBar.setStreams(streams);
                     });
 				}
@@ -954,7 +954,7 @@
 					}
 				}
 
-				this.controlBar && this.getSwitchingStreams().then(function (streams) {
+				this.controlBar && this.getSwitchingStreams().always(function (streams) {
 					_this.controlBar.setStreams(streams);
 				});
 			},

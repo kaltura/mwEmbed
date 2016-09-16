@@ -50,39 +50,45 @@
         },
 
         renderStreams: function () {
-        	var streamsContainer = this.getComponent().find('.ds-streams');
-            streamsContainer
-                .empty()
-                .append($.map(this.streams || [], function (stream, index) {
-                    return $('<div/>', {
-                        'class': 'ds-stream',
-                        'data-stream-index': index
-                    }).append($('<img/>', {
-                        src: stream.thumbnailUrl,
-                        'class': 'ds-stream__thumb'
-                    })).draggable({
-                        revert: true,
-                        helper: 'clone',
-                        containment: '.videoHolder',
-                        start: function (event, ui) {
-                        	$(ui.helper).addClass('ds-stream--helper');
-                        	$(this).addClass('ds-stream--dragging').data('wasDropped', false);
-                        	streamsContainer.addClass('ds-streams--dragging');
-                        },
-                        stop: function () {
-                        	$(this).removeClass('ds-stream--dragging');
-                        	streamsContainer.removeClass('ds-streams--dragging');
+            var streamsContainer = this.getComponent().find('.ds-streams').empty();
+            var contentSelectionGroup = this.getComponent().find('.displayControlGroup-contentSelection');
+            if (this.streams && this.streams.length) {
+                streamsContainer
+                    .append($.map(this.streams, function (stream, index) {
+                        return $('<div/>', {
+                            'class': 'ds-stream',
+                            'data-stream-index': index
+                        }).append($('<img/>', {
+                            src: stream.thumbnailUrl,
+                            'class': 'ds-stream__thumb'
+                        })).draggable({
+                            revert: true,
+                            helper: 'clone',
+                            containment: '.videoHolder',
+                            start: function (event, ui) {
+                                $(ui.helper).addClass('ds-stream--helper');
+                                $(this).addClass('ds-stream--dragging').data('wasDropped', false);
+                                streamsContainer.addClass('ds-streams--dragging');
+                            },
+                            stop: function () {
+                                $(this).removeClass('ds-stream--dragging');
+                                streamsContainer.removeClass('ds-streams--dragging');
+                            }
+                        }).data('stream', stream);
+                    }))
+                    .droppable({
+                        greedy: true,
+                        accept: '.ds-stream',
+                        hoverClass: 'ui-state-hover',
+                        drop: function (e, ui) {
+                            ui.draggable.data('wasDropped', true);
                         }
-                    }).data('stream', stream);
-                }))
-                .droppable({
-                	greedy: true,
-                	accept: '.ds-stream',
-					hoverClass: 'ui-state-hover',
-        			drop: function (e, ui) {
-        				ui.draggable.data('wasDropped', true);
-        			}
-                });
+                    });
+
+                contentSelectionGroup.show();
+            } else {
+                contentSelectionGroup.hide();
+            }
         },
 
 		getComponent: function ( ) {
