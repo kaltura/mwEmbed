@@ -252,14 +252,17 @@ Poll (shared)
 
 .webcastPolls .poll .answer.popular .answer-result {
     background: rgb(126, 211,33);
+    box-shadow: 2px 0 0px 0 rgba(126,211,33, 1);
 }
 
 .webcastPolls.producer-view.allow-voting .poll .answer.popular .answer-result {
-    background: rgb(126, 211,33);;
+    background: rgb(126, 211,33);
+    box-shadow: 2px 0 0px 0 rgba(126,211,33, 1);
 }
 
 .webcastPolls.producer-view .poll .answer.popular .answer-result {
     background: #8ab15f;
+    box-shadow: 2px 0 0px 0 rgba(138, 177, 95, 1);
 }
 
 .webcastPolls .poll .answer .answer-result-text {
