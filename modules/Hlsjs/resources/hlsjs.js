@@ -2,8 +2,7 @@
 	"use strict";
 
 	//Currently use native support when available, e.g. Safari desktop
-	if (Hls.isSupported() && !mw.isDesktopSafari() &&
-		(mw.getConfig("LeadWithHLSOnJs")||kWidgetSupport.isLive(kalturaIframePackageData.entryResult))) {
+	if (Hls.isSupported() && !mw.isDesktopSafari() && !mw.getConfig("disableHLSOnJs")) {
 		var orig_supportsFlash = mw.supportsFlash;
 		mw.supportsFlash = function () {
 			return false;
