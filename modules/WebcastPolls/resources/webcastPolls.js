@@ -307,6 +307,11 @@
                         try {
                             _this.log("got updated results and/or total voters for current poll  - syncing current poll accordingly");
                             var pollResults = JSON.parse(pollResultsCuePoint.partnerData);
+                            //make sure to update polls' total voters number only if greater than the one currently displayed
+                            if(_this._canCompareTotalVoters(pollResults) && (_this.pollData.pollResults.totalVoters > pollResults.totalVoters)) {
+                                //assign current total voters
+                                pollResults.totalVoters = _this.pollData.pollResults.totalVoters;
+                            }
                             _this.pollData.pollResults = pollResults;
                         } catch (e) {
                             _this.log("invalid poll results structure - ignoring current result");
@@ -644,6 +649,11 @@
 
             }
 
+        },
+
+        _canCompareTotalVoters: function (newPollResults) {
+            var _this = this;
+            return _this.pollData && _this.pollData.pollResults && _this.pollData.pollResults.totalVoters && newPollResults.totalVoters;
         }
     }));
 
