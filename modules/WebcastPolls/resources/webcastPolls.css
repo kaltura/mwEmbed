@@ -598,7 +598,7 @@ Poll (large)
 
 .webcastPolls .large-layout .poll .question{
     width: 543px;
-    height: 48px;
+    height: auto;
     line-height: 1.3;
     letter-spacing: 0.5px;
     text-align: left;
@@ -624,7 +624,7 @@ Poll (large)
 
 /**** question only elements ****/
 .webcastPolls  .large-layout .poll-container .question-only-container .text {
-    height: 48px;
+    height: auto;
     font-size: 19px;
     line-height: 1.3;
     text-align: left;
