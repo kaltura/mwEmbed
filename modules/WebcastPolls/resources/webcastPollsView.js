@@ -260,6 +260,11 @@
                                 .closest('.answer')
                                 .addClass('selected')
                                 .removeClass('not-selected');
+                        } else {
+
+                            _this.$webcastPoll.find('.answer')
+                                .removeClass('selected')
+                                .addClass('not-selected');
                         }
                     }
 
@@ -291,10 +296,12 @@
                 var answerContent = pollData.answers[answerIndex + ''];
                 if (answerContent) {
                     _this.$webcastPoll.find('[name="answer' + answerIndex + '"]').text(answerContent).closest('.answer').show();
+                    _this.$webcastPoll.find('[name="answer' + answerIndex + '"]').closest('.answers-widget-row').show();
                 } else {
                     _this.$webcastPoll.find('[name="answer' + answerIndex + '"]').closest('.answers-widget-row').hide();
                     //supporting large layout
-                    _this.$webcastPoll.find('[name="answer' + answerIndex + '"]').closest('.answer').hide();                }
+                    _this.$webcastPoll.find('[name="answer' + answerIndex + '"]').closest('.answer').hide();
+                }
             }
 
             if (_this.parent.pollData.pollId) {
