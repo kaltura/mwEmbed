@@ -525,9 +525,11 @@
 			},
 
 			onSeekBeforePlay: function(){
-				this.unbind("seeking");
-				this.unbind("firstPlay");
-				this.hls.attachMedia(this.getPlayer().getPlayerElement());
+				if(this.LoadHLS){
+					this.unbind("seeking");
+					this.unbind("firstPlay");
+					this.hls.attachMedia(this.getPlayer().getPlayerElement());
+				}
 			},
 
 			handleMediaError: function () {
