@@ -21,6 +21,10 @@
 			/** type {boolean} */
 			LoadShaka: false,
 
+			/** type {boolean} */
+			manifestLoadingStart: false,
+
+			currentBitrate: null,
 			/**
 			 * Check is shaka is supported
 			 * @returns {boolean}
@@ -141,19 +145,23 @@
 			loadManifest: function () {
 				var _this = this;
 				var selectedSource = this.getPlayer().getSrc();
-				this.getPlayer().resolveSrcURL(selectedSource)
-					.done(function (manifestSrc) {  // success
-						selectedSource = manifestSrc;
-					})
-					.always(function () {  // both success or error
-							// Try to load a manifest.
-							player.load(selectedSource).then(function () {
-								// This runs if the asynchronous load is successful.
-								_this.log('The video has now been loaded!');
-								_this.addTracks();
-							}).catch(_this.onError.bind(_this));  // onError is executed if the asynchronous load fails.
-						}
-					);
+				if(!this.manifestLoadingStart){
+					this.manifestLoadingStart = true;
+					this.log('Loading manifest started');
+					this.getPlayer().resolveSrcURL(selectedSource)
+						.done(function (manifestSrc) {  // success
+							selectedSource = manifestSrc;
+						})
+						.always(function () {  // both success or error
+								// Try to load a manifest.
+								player.load(selectedSource).then(function () {
+									// This runs if the asynchronous load is successful.
+									_this.log('Loading manifest ended');
+									_this.addTracks();
+								}).catch(_this.onError.bind(_this));  // onError is executed if the asynchronous load fails.
+							}
+						);
+				}
 			},
 
 			addTracks: function () {
@@ -332,7 +340,7 @@
 			 */
 			onError: function (event, data) {
 				var errorData = data ? data.type + ", " + data.details : event;
-				mw.log("Dash: " , errorData);
+				mw.log("Dash::Error: " , errorData);
 			},
 
 			/**
@@ -343,6 +351,8 @@
 					this.log("Clean");
 					this.LoadShaka = false;
 					this.loaded = false;
+					this.currentBitrate = null;
+					this.manifestLoadingStart = false;
 					player.destroy();
 					this.restorePlayerMethods();
 				}
@@ -392,6 +402,7 @@
 
 		mw.PluginManager.add('Dash', dash);
 
+		// register dash plugin by default
 		var playerConfig = window.kalturaIframePackageData.playerConfig;
 		if (playerConfig && playerConfig.plugins && !playerConfig.plugins["dash"]) {
 			playerConfig.plugins["dash"] = {
