@@ -232,7 +232,7 @@
             var obj = $(_this.getComponent().find('#' + activeButtonId)[0]);
 
             //Change state button disabled state
-            if (obj.data("type") === "state" && clicked ) {
+            if (obj.data("type") === "state") {
                 //show state buttons if selected state was clicked
                 stateButtons.removeClass('stateSelected ds-collapsible-handle').addClass('ds-collapsible-content');
                 obj.addClass('stateSelected ds-collapsible-handle').removeClass('ds-collapsible-content');
