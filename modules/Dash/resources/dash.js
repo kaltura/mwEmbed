@@ -24,6 +24,8 @@
 			/** type {boolean} */
 			manifestLoaded: false,
 
+			destroyPromise: null,
+
 			currentBitrate: null,
 			/**
 			 * Check is shaka is supported
@@ -79,22 +81,19 @@
 
 					this.setEmbedPlayerConfig(this.getPlayer());
 
-					// Create a Player instance.
-					var player = new shaka.Player(this.getPlayer().getPlayerElement());
-
-					player.configure(this.getConfig("shakaConfig"));
-
-					// Attach player to the window to make it easy to access in the JS console.
-					window.player = player;
 					// vtt.js override the VTTCue to wrong format for shaka, so set the original VTTCue
 					window.VTTCue = this.getPlayer().getOriginalVTTCue();
 
-					this.registerShakaEvents();
-
-					this.bind("firstPlay", function(){
-						this.unbind("seeking");
-						this.loadManifest();
-					}.bind(this));
+					if(this.destroyPromise){
+						// after change media we should wait till the destroy promise will be resolved
+						this.destroyPromise.then(function(){
+							this.log("The player has been destroyed");
+							this.manifestLoaded = false;
+							this.createPlayer();
+						}.bind(this));
+					} else {
+						this.createPlayer();
+					}
 				}
 			},
 
@@ -137,6 +136,23 @@
 				return drmConfig;
 			},
 
+			createPlayer: function(){
+				// Create a Player instance.
+				var player = new shaka.Player(this.getPlayer().getPlayerElement());
+
+				player.configure(this.getConfig("shakaConfig"));
+
+				// Attach player to the window to make it easy to access in the JS console.
+				window.player = player;
+
+				this.registerShakaEvents();
+
+				this.bind("firstPlay", function(){
+					this.unbind("seeking");
+					this.loadManifest();
+				}.bind(this));
+			},
+
 			registerShakaEvents: function(){
 				player.addEventListener('error', this.onErrorEvent.bind(this));
 				player.addEventListener('adaptation', this.onAdaptation.bind(this));
@@ -147,7 +163,7 @@
 				var selectedSource = this.getPlayer().getSrc();
 				if(!this.manifestLoaded){
 					this.manifestLoaded = true;
-					this.log('Loading manifest started');
+					this.log('Loading manifest...');
 					this.getPlayer().resolveSrcURL(selectedSource)
 						.done(function (manifestSrc) {  // success
 							selectedSource = manifestSrc;
@@ -156,7 +172,7 @@
 								// Try to load a manifest.
 								player.load(selectedSource).then(function () {
 									// This runs if the asynchronous load is successful.
-									_this.log('Loading manifest ended');
+									_this.log('The manifest has been loaded');
 									_this.addTracks();
 								}).catch(_this.onError.bind(_this));  // onError is executed if the asynchronous load fails.
 							}
@@ -352,8 +368,7 @@
 					this.LoadShaka = false;
 					this.loaded = false;
 					this.currentBitrate = null;
-					this.manifestLoaded = false;
-					player.destroy();
+					this.destroyPromise = player.destroy();
 					this.restorePlayerMethods();
 				}
 			},
