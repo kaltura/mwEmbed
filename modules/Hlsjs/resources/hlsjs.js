@@ -482,7 +482,9 @@
 			 * Override player method for loading the video element
 			 */
 			load: function () {
-				this.hls.startLoad();
+				if(!this.getPlayer().isInSequence()){
+					this.hls.startLoad();
+				}
 			},
 			/**
 			 * Override player callback after changing media
