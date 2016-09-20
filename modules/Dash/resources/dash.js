@@ -88,6 +88,7 @@
 						// after change media we should wait till the destroy promise will be resolved
 						this.destroyPromise.then(function(){
 							this.log("The player has been destroyed");
+							this.destroyPromise = null;
 							this.manifestLoaded = false;
 							this.createPlayer();
 						}.bind(this));
