@@ -115,16 +115,34 @@
 				});
 
 				//Disable/enable plugin view on screen plugins and ads actions
-				this.bind( "AdSupport_StartAdPlayback", function (e, screenName) {
+				this.bind( "AdSupport_StartAdPlayback", function () {
 					_this.minimizeView("disabledScreen");
 				} );
-				this.bind( "AdSupport_EndAdPlayback", function (e, screenName) {
+				this.bind( "AdSupport_EndAdPlayback", function () {
 					_this.restoreView("disabledScreen");
 				} );
-				this.bind( "preShowScreen moderationOpen", function (e, screenName) {
+
+				// moderation plugin doesn't send standard KBaseScreen events
+				// so we have to handle it separately
+				var isModerationOpen = false;
+				this.bind("moderationOpen", function () {
+					isModerationOpen = true;
+					_this.getPlayer().triggerHelper('preShowScreen', ['moderation']);
+				});
+				this.bind("closeMenuOverlay", function () {
+					if (isModerationOpen) {
+						isModerationOpen = false;
+						_this.getPlayer().triggerHelper('hideScreen', ['moderation']);
+					}
+				});
+
+				var isOverlayScreenOpen = false;
+				this.bind( "preShowScreen", function (e, screenName) {
+					isOverlayScreenOpen = true;
 					_this.minimizeView(screenName);
 				} );
-				this.bind( "preHideScreen closeMenuOverlay", function (e, screenName) {
+				this.bind( "hideScreen", function (e, screenName) {
+					isOverlayScreenOpen = false;
 					_this.restoreView(screenName);
 				} );
 
@@ -200,12 +218,12 @@
 						}
 				});
 				this.bind( 'onplay', function () {
-						if ( _this.controlBar && !_this.disabled && !_this.getPlayer().isAudio() ) {
+						if ( _this.controlBar && !isOverlayScreenOpen && !_this.disabled && !_this.getPlayer().isAudio() ) {
 							_this.controlBar.enable();
 						}
 				} );
 				this.bind( 'onpause ended playerReady', function () {
-						if ( _this.controlBar && !_this.disabled && !_this.getPlayer().isAudio() ) {
+						if ( _this.controlBar && !isOverlayScreenOpen && !_this.disabled && !_this.getPlayer().isAudio() ) {
 							_this.controlBar.show();
 							_this.controlBar.disable();
 						}
