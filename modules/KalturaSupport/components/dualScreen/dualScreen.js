@@ -164,17 +164,17 @@
                     var secondary = _this.displays.getSecondary();
                     var main = _this.displays.getMainDisplay();
 
-                	primary.disableDroppable();
-                	secondary.disableDroppable();
+                    primary.disableDroppable();
+                    secondary.disableDroppable();
 
                     if (currentState === 'SbS') {
-                    	primary.enableDroppable();
-                    	secondary.enableDroppable();
+                        primary.enableDroppable();
+                        secondary.enableDroppable();
                     } else if (currentState === 'PiP') {
-                    	primary.enableDroppable(primary === main);
-                    	secondary.enableDroppable(secondary === main);
+                        primary.enableDroppable(primary === main);
+                        secondary.enableDroppable(secondary === main);
                     } else {
-                    	main.enableDroppable();
+                        main.enableDroppable();
                     }
 				});
 
@@ -399,7 +399,6 @@
 			initExternalControlManager : function()
 			{
 				this.log("initExternalControlManager(): creating new instance of external control manager");
-				var _this = this;
                 this.externalControlManager = new mw.dualScreen.externalControlManager(this.getPlayer(), function () {
                 }, "dualScreenExternalControlManager");
 			},
@@ -426,7 +425,7 @@
 				if ( !this.controlBar && !this.getPlayer().isAudio()) {
                     var _this = this;
                     this.loadControlBar();
-                    this.getSwitchingStreams().always(function (streams) {
+                    !mw.isMobileDevice() && this.getSwitchingStreams().then(function (streams) {
                         _this.controlBar.setStreams(streams);
                     });
 				}
@@ -954,7 +953,7 @@
 					}
 				}
 
-				this.controlBar && this.getSwitchingStreams().always(function (streams) {
+				this.controlBar && this.getSwitchingStreams().then(function (streams) {
 					_this.controlBar.setStreams(streams);
 				});
 			},

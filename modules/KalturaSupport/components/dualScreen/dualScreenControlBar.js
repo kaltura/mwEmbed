@@ -42,6 +42,9 @@
 		setup: function() {
 			this.postFix = "." + this.pluginName;
 			this.addBindings();
+
+            // hide content selection by default
+            this.getComponent().find('.displayControlGroup-contentSelection').hide();
 		},
 
         setStreams: function(streams){
