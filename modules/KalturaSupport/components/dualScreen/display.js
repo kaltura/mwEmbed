@@ -185,7 +185,9 @@
             this.obj.removeClass('hiddenScreen' ).addClass('firstScreen' );
         },
 		hide: function (isFlashMode) {
+            var xOffset = this.getPlayer().getWidth() - (parseInt(this.obj.css('left')) || 0) + (parseInt(this.obj.width()) || 0);
             this.obj.addClass( 'hiddenScreen' );
+            this.obj.css('transform', 'translate(' + xOffset + 'px, 0)');
             //take care of flash obj (seek through hidden flash player will be very slow, so we need to bring at least several pixels inside the visible area of the player frame)
             if ( isFlashMode ) {
                 var _this = this;
@@ -202,6 +204,7 @@
 		},
 		show: function (isFlashMode) {
             if ( !isFlashMode ) {
+                this.obj.css('transform', '');
                 this.obj.removeClass('hiddenScreen');
             } else {
                 //FlashMode only - take care of flash obj (seek through hidden flash player will be very slow, so we need to bring at least several pixels inside the visible area of the player frame)
