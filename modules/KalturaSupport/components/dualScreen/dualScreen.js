@@ -775,7 +775,7 @@
 			},
 
 			//player controllers
-			initSecondPlayer: function(preventSecondVideoLoad){
+			initSecondPlayer: function(){
                 var _this = this;
 
                 //load second screen as imagePlayer
@@ -784,7 +784,7 @@
                         // unable to load image player
                         // load second screen as video player
                         imagePlayer && imagePlayer.destroy();
-                        return preventSecondVideoLoad ? $.Deferred().reject() : _this.loadSecondScreenVideo();
+                        return _this.loadSecondScreenVideo();
                     })
                     .then(function (res) {
                         return (_this.secondPlayer = res);
@@ -959,25 +959,22 @@
 				});
 			},
 			tryInitSecondPlayer: function () {
-				var mobileTag = this.getConfig('mobileTag');
-				var utils = this.getUtils();
 				var _this = this;
+				var mobileTag = this.getConfig('mobileTag');
 				var promise;
 
-				console.error('wtf?');
-				if (mw.isMobileDevice()) {
-					promise = this.initSecondPlayer(true)
-						.then(null, function () {
-							return mobileTag ?
-								utils.filterStreamsByTag(mobileTag)
-									.then(function (streams) {
-										utils.setStream(streams[0], true);
-									}) :
-								$.Deferred().reject();
+				if (mobileTag && mw.isMobileDevice()) {
+					var utils = this.getUtils();
+
+					utils.filterStreamsByTag(mobileTag)
+						.then(function (streams) {
+							utils.setStream(streams[0], true);
 						});
+
+					promise = $.Deferred().reject();
 				} else {
 					if (mobileTag) {
-						utils.setConfig({
+						this.getUtils().setConfig({
 							streamSelectorConfig: {
 								ignoreTag: mobileTag
 							}
