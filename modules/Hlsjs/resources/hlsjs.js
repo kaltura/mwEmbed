@@ -275,7 +275,7 @@
 			onLevelSwitch: function (event, data) {
 				//Set and report bitrate change
 				var source = this.hls.levels[data.level];
-				var currentBitrate = source.bitrate / 1024;
+				var currentBitrate = Math.round(source.bitrate / 1024);
 				var previousBitrate = this.getPlayer().currentBitrate;
 				this.getPlayer().currentBitrate = currentBitrate;
 				this.getPlayer().triggerHelper('bitrateChange', currentBitrate);
