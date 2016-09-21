@@ -173,27 +173,34 @@
 
 				//Consume view state events
 				this.bind( 'dualScreenStateChange', function(e, state){
-                    _this.fsm.consumeEvent( state );
+					_this.fsm.consumeEvent( state );
 				});
 
-				this.bind('postDualScreenTransition', function () {
-                    var currentState = _this.fsm.currentState.name;
-                    var primary = _this.displays.getPrimary();
-                    var secondary = _this.displays.getSecondary();
-                    var main = _this.displays.getMainDisplay();
+				// disable drag & drop for mobile devices
+				if (!mw.isMobileDevice()) {
+					this.bind('postDualScreenTransition', function () {
+						var currentState = _this.fsm.currentState.name;
+						var primary = _this.displays.getPrimary();
+						var secondary = _this.displays.getSecondary();
+						var main = _this.displays.getMainDisplay();
 
-                    primary.disableDroppable();
-                    secondary.disableDroppable();
+						primary.disableDroppable();
+						secondary.disableDroppable();
 
-                    if (currentState === 'SbS') {
-                        primary.enableDroppable();
-                        secondary.enableDroppable();
-                    } else if (currentState === 'PiP') {
-                        primary.enableDroppable(primary === main);
-                        secondary.enableDroppable(secondary === main);
-                    } else {
-                        main.enableDroppable();
-                    }
+						if (currentState === 'SbS') {
+							primary.enableDroppable();
+							secondary.enableDroppable();
+						} else if (currentState === 'PiP') {
+							primary.enableDroppable(primary === main);
+							secondary.enableDroppable(secondary === main);
+						} else {
+							main.enableDroppable();
+						}
+					});
+				}
+
+				this.bind('dualScreenChangeMasterStream', function (event, stream) {
+					_this.changeStream('master', stream);
 				});
 
 				this.bind('displayDropped', function (event, display, draggable) {
@@ -443,7 +450,7 @@
 				if ( !this.controlBar && !this.getPlayer().isAudio()) {
                     var _this = this;
                     this.loadControlBar();
-                    !mw.isMobileDevice() && this.getSwitchingStreams().then(function (streams) {
+                    this.getSwitchingStreams().then(function (streams) {
                         _this.controlBar.setStreams(streams);
                     });
 				}
@@ -467,6 +474,7 @@
                 var _this = this;
                 this.controlBar = new mw.dualScreen.dualScreenControlBar(_this.getPlayer(), function(){
                     this.setConfig('menuFadeout', _this.getConfig('menuFadeout'));
+                    this.setConfig('disableDragDrop', mw.isMobileDevice());
                 }, 'dualScreenControlBar');
                 if (this.getPlayer().isAudio()) {
                     this.controlBar.hide();

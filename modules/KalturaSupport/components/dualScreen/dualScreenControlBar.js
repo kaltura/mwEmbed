@@ -5,6 +5,7 @@
 	mw.dualScreen.dualScreenControlBar = mw.KBaseComponent.extend({
 		defaultConfig: {
 			'templatePath': 'dualScreenControlBar',
+			'disableDragDrop': false,
 			'menuFadeout': 5000
 		},
 		"controlBarComponents": {
@@ -43,8 +44,8 @@
 			this.postFix = "." + this.pluginName;
 			this.addBindings();
 
-            // hide content selection by default
-            this.getComponent().find('.displayControlGroup-contentSelection').hide();
+			// hide content selection by default
+			this.getComponent().find('.displayControlGroup-contentSelection').hide();
 		},
 
         setStreams: function(streams){
@@ -55,16 +56,19 @@
         renderStreams: function () {
             var streamsContainer = this.getComponent().find('.ds-streams').empty();
             var contentSelectionGroup = this.getComponent().find('.displayControlGroup-contentSelection');
+            var dragDropEnabled = !this.getConfig('disableDragDrop');
             if (this.streams && this.streams.length) {
-                streamsContainer
-                    .append($.map(this.streams, function (stream, index) {
-                        return $('<div/>', {
-                            'class': 'ds-stream',
-                            'data-stream-index': index
-                        }).append($('<img/>', {
-                            src: stream.thumbnailUrl,
-                            'class': 'ds-stream__thumb'
-                        })).draggable({
+                streamsContainer.append($.map(this.streams, function (stream, index) {
+                    var $stream = $('<div/>', {
+                        'class': 'ds-stream',
+                        'data-stream-index': index
+                    }).append($('<img/>', {
+                        src: stream.thumbnailUrl,
+                        'class': 'ds-stream__thumb'
+                    })).data('stream', stream)
+
+                    if (dragDropEnabled) {
+                        $stream.draggable({
                             revert: true,
                             helper: 'clone',
                             containment: '.videoHolder',
@@ -77,9 +81,14 @@
                                 $(this).removeClass('ds-stream--dragging');
                                 streamsContainer.removeClass('ds-streams--dragging');
                             }
-                        }).data('stream', stream);
-                    }))
-                    .droppable({
+                        });
+                    }
+
+                    return $stream;
+                }));
+
+                if (dragDropEnabled) {
+                    streamsContainer.droppable({
                         greedy: true,
                         accept: '.ds-stream',
                         hoverClass: 'ui-state-hover',
@@ -87,6 +96,7 @@
                             ui.draggable.data('wasDropped', true);
                         }
                     });
+                }
 
                 contentSelectionGroup.show();
             } else {
@@ -149,7 +159,7 @@
 			//Attach control bar action handlers
 			_this.getComponent()
 				.on( 'click' + this.postFix + ' touchstart' + this.postFix, '.displayControlGroup > .controlBarBtn', function () {
-                    var $this = $(this);
+					var $this = $(this);
 					var group = $this.parent('.displayControlGroup');
 					var isCollapsible = $this.hasClass('ds-collapsible-handle') && group.hasClass('ds-collapsible');
 					var wasOpen = group.hasClass('ds-open');
@@ -162,15 +172,21 @@
 						group.removeClass('ds-blur').addClass('ds-open');
 					}
 
-                    if (!isCollapsible) {
-    					_this.changeButtonsStyles(this.id, true); // pass clicked indicator in order to open subMenu if needed
+					if (!isCollapsible) {
+						_this.changeButtonsStyles(this.id, true); // pass clicked indicator in order to open subMenu if needed
 
-    					if (btn && btn.event){
-    						_this.embedPlayer.triggerHelper("dualScreenStateChange", {action : btn.event, invoker : 'dualScreenControlBar'});
-    					}
-                    }
+						if (btn && btn.event){
+							_this.embedPlayer.triggerHelper("dualScreenStateChange", {action : btn.event, invoker : 'dualScreenControlBar'});
+						}
+					}
 
 					return false;
+				} )
+				.on( 'click' + this.postFix + ' touchstart' + this.postFix, '.ds-streams > .ds-stream', function () {
+					if (_this.getConfig('disableDragDrop')) {
+						_this.embedPlayer.triggerHelper('dualScreenChangeMasterStream', [$(this).data('stream')]);
+						return false;
+					}
 				} );
 
 			if (mw.isNativeApp()){
@@ -213,9 +229,9 @@
 
 			});
 
-            _this.bind('displayDropped', function () {
-                $('.displayControlGroup').removeClass('ds-blur ds-open');
-            });
+			_this.bind('displayDropped dualScreenChangeMasterStream', function () {
+				$('.displayControlGroup').removeClass('ds-blur ds-open');
+			});
 		},
 		/**
 		 * Changes the style of the buttons according to the selected view mode.
