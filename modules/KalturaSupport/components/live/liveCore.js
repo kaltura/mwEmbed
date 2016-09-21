@@ -209,7 +209,9 @@
 
 					if ( !_this.isNativeHLS() ) {
 						embedPlayer.bindHelper( 'ended', function() {
-							embedPlayer.getPlayerElement().seek( 0 );
+							if(embedPlayer.getPlayerElement().seek){
+								embedPlayer.getPlayerElement().seek( 0 );
+							}
 						});
 					}
 				}
