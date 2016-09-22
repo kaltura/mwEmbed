@@ -764,6 +764,11 @@
 			});
 		},
 		showSkipBtn: function(){
+			var offset = this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' ) || 15;
+			if ( this.duration < offset ){
+				return
+			}
+
 			if( this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' ) ){
 				$(".ad-skip-label").show();
 				this.skipTimeoutId = setTimeout(function(){
