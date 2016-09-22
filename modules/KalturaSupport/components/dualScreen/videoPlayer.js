@@ -53,8 +53,10 @@
                     throw "Player of type '" + player.instanceOf + "'' is not supported!";
             }
 
-            this.playerElement = new playerConstructor(this.stream, this.getPlayer());
-            this.$el = $(this.playerElement).one('loadstart', this.sync.bind(this));
+            this.playerElement = new playerConstructor(this.stream, this.getPlayer(), function (player) {
+                $(player).one('loadstart', this.sync.bind(this));
+            }.bind(this));
+            this.$el = $(this.playerElement);
         },
 
         sync: function () {

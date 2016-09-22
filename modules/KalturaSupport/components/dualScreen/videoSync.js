@@ -269,8 +269,7 @@
                     // if marked for seeking
                     if (doSeek) {
                         this.log("mediaGroupSync :: Seeking slave to " + (this.getMasterCurrentTime(controller) + seekAhead));
-                        this.seekSlave(slave, controller, this.getMasterCurrentTime(controller), !slave.isABR() ? seekAhead : 0);
-                        // slave.setCurrentTime(controller.currentTime + seekAhead);
+                        this.seekSlave(slave, controller, this.getMasterCurrentTime(controller), (slave.isFlash && slave.isABR()) ? 0 : seekAhead);
                     }
 
                 }.bind(this));
