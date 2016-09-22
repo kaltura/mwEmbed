@@ -1680,7 +1680,7 @@
 		destroy:function(){
 			// remove any old bindings:
 			var _this = this;
-			clearTimeout(_this.skipTimeoutId);
+			this.hideSkipBtn();
 			if ( this.adTagUrl || this.currentAdSlotType === "postroll" ){
 				this.embedPlayer.unbindHelper( this.bindPostfix );
 			}
