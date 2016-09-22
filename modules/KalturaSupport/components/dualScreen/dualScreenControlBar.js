@@ -281,8 +281,11 @@
 					this.isVisible = false;
 
 					if ( mw.getConfig( 'EmbedPlayer.AnimationSupported') ) {
+						var _this = this;
 						component.one( 'transitionend webkitTransitionEnd', function () {
-							component.hide();
+							if (!_this.isVisible) {
+								component.hide();
+							}
 						} );
 					} else {
 						component.hide();
