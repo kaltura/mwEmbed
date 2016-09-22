@@ -275,9 +275,18 @@
 			if ( !this.disabled ) {
 				this.embedPlayer.triggerHelper( 'clearTooltip' );
 				if ( this.isVisible ) {
-					this.getComponent().addClass( 'componentOff componentAnimation' ).removeClass( 'componentOn' );
+					var component = this.getComponent();
+					component.addClass( 'componentOff componentAnimation' ).removeClass( 'componentOn' );
 					this.embedPlayer.getVideoHolder().find( ".controlBarShadow" ).addClass( 'componentOff componentAnimation' ).removeClass( 'componentOn' );
 					this.isVisible = false;
+
+					if ( mw.getConfig( 'EmbedPlayer.AnimationSupported') ) {
+						component.one( 'transitionend webkitTransitionEnd', function () {
+							component.hide();
+						} );
+					} else {
+						component.hide();
+					}
 				}
 			}
 		},
@@ -287,6 +296,7 @@
                     //show only vertical main buttons (ignore sub-menus)
                     //this.getComponent().find("span").filter(".dualScreen-switchView, .stateSelected, .dualScreen-contentSelection").removeClass( 'componentAnimation' ).addClass( 'componentOn' ).removeClass( 'componentOff' );
 
+                    this.getComponent().show();
                     this.getComponent().removeClass( 'componentAnimation' ).addClass( 'componentOn' ).removeClass( 'componentOff' );
 					this.isVisible = true;
 					this.embedPlayer.getVideoHolder().find( ".controlBarShadow" ).removeClass( 'componentAnimation' ).addClass( 'componentOn' ).removeClass( 'componentOff' );
