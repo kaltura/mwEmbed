@@ -21,6 +21,12 @@
 			/** type {boolean} */
 			LoadShaka: false,
 
+			/** type {boolean} */
+			manifestLoaded: false,
+
+			destroyPromise: null,
+
+			currentBitrate: null,
 			/**
 			 * Check is shaka is supported
 			 * @returns {boolean}
@@ -75,22 +81,20 @@
 
 					this.setEmbedPlayerConfig(this.getPlayer());
 
-					// Create a Player instance.
-					var player = new shaka.Player(this.getPlayer().getPlayerElement());
-
-					player.configure(this.getConfig("shakaConfig"));
-
-					// Attach player to the window to make it easy to access in the JS console.
-					window.player = player;
 					// vtt.js override the VTTCue to wrong format for shaka, so set the original VTTCue
 					window.VTTCue = this.getPlayer().getOriginalVTTCue();
 
-					this.registerShakaEvents();
-
-					this.bind("firstPlay", function(){
-						this.unbind("seeking");
-						this.loadManifest();
-					}.bind(this));
+					if(this.destroyPromise){
+						// after change media we should wait till the destroy promise will be resolved
+						this.destroyPromise.then(function(){
+							this.log("The player has been destroyed");
+							this.destroyPromise = null;
+							this.manifestLoaded = false;
+							this.createPlayer();
+						}.bind(this));
+					} else {
+						this.createPlayer();
+					}
 				}
 			},
 
@@ -133,6 +137,23 @@
 				return drmConfig;
 			},
 
+			createPlayer: function(){
+				// Create a Player instance.
+				var player = new shaka.Player(this.getPlayer().getPlayerElement());
+
+				player.configure(this.getConfig("shakaConfig"));
+
+				// Attach player to the window to make it easy to access in the JS console.
+				window.player = player;
+
+				this.registerShakaEvents();
+
+				this.bind("firstPlay", function(){
+					this.unbind("seeking");
+					this.loadManifest();
+				}.bind(this));
+			},
+
 			registerShakaEvents: function(){
 				player.addEventListener('error', this.onErrorEvent.bind(this));
 				player.addEventListener('adaptation', this.onAdaptation.bind(this));
@@ -141,19 +162,23 @@
 			loadManifest: function () {
 				var _this = this;
 				var selectedSource = this.getPlayer().getSrc();
-				this.getPlayer().resolveSrcURL(selectedSource)
-					.done(function (manifestSrc) {  // success
-						selectedSource = manifestSrc;
-					})
-					.always(function () {  // both success or error
-							// Try to load a manifest.
-							player.load(selectedSource).then(function () {
-								// This runs if the asynchronous load is successful.
-								_this.log('The video has now been loaded!');
-								_this.addTracks();
-							}).catch(_this.onError.bind(_this));  // onError is executed if the asynchronous load fails.
-						}
-					);
+				if(!this.manifestLoaded){
+					this.manifestLoaded = true;
+					this.log('Loading manifest...');
+					this.getPlayer().resolveSrcURL(selectedSource)
+						.done(function (manifestSrc) {  // success
+							selectedSource = manifestSrc;
+						})
+						.always(function () {  // both success or error
+								// Try to load a manifest.
+								player.load(selectedSource).then(function () {
+									// This runs if the asynchronous load is successful.
+									_this.log('The manifest has been loaded');
+									_this.addTracks();
+								}).catch(_this.onError.bind(_this));  // onError is executed if the asynchronous load fails.
+							}
+						);
+				}
 			},
 
 			addTracks: function () {
@@ -332,7 +357,7 @@
 			 */
 			onError: function (event, data) {
 				var errorData = data ? data.type + ", " + data.details : event;
-				mw.log("Dash: " , errorData);
+				mw.log("Dash::Error: " , errorData);
 			},
 
 			/**
@@ -343,7 +368,8 @@
 					this.log("Clean");
 					this.LoadShaka = false;
 					this.loaded = false;
-					player.destroy();
+					this.currentBitrate = null;
+					this.destroyPromise = player.destroy();
 					this.restorePlayerMethods();
 				}
 			},
@@ -392,6 +418,7 @@
 
 		mw.PluginManager.add('Dash', dash);
 
+		// register dash plugin by default
 		var playerConfig = window.kalturaIframePackageData.playerConfig;
 		if (playerConfig && playerConfig.plugins && !playerConfig.plugins["dash"]) {
 			playerConfig.plugins["dash"] = {

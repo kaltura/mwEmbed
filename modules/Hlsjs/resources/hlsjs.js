@@ -2,8 +2,7 @@
 	"use strict";
 
 	//Currently use native support when available, e.g. Safari desktop
-	if (Hls.isSupported() && !mw.isDesktopSafari() &&
-		(mw.getConfig("LeadWithHLSOnJs")||kWidgetSupport.isLive(kalturaIframePackageData.entryResult))) {
+	if (Hls.isSupported() && !mw.isDesktopSafari() && !mw.getConfig("disableHLSOnJs")) {
 		var orig_supportsFlash = mw.supportsFlash;
 		mw.supportsFlash = function () {
 			return false;
@@ -276,7 +275,7 @@
 			onLevelSwitch: function (event, data) {
 				//Set and report bitrate change
 				var source = this.hls.levels[data.level];
-				var currentBitrate = source.bitrate / 1024;
+				var currentBitrate = Math.round(source.bitrate / 1024);
 				var previousBitrate = this.getPlayer().currentBitrate;
 				this.getPlayer().currentBitrate = currentBitrate;
 				this.getPlayer().triggerHelper('bitrateChange', currentBitrate);
@@ -483,7 +482,9 @@
 			 * Override player method for loading the video element
 			 */
 			load: function () {
-				this.hls.startLoad();
+				if(!this.getPlayer().isInSequence()){
+					this.hls.startLoad();
+				}
 			},
 			/**
 			 * Override player callback after changing media
@@ -518,6 +519,7 @@
 			},
 
 			_ontimeupdate: function(e){
+				this.getPlayer().triggerHelper(e.type, e);
 				var time = Math.round(e.currentTarget.currentTime);
 				if (this.ptsID3Data[time]){
 					this.getPlayer().triggerHelper('onId3Tag', this.ptsID3Data[time]);
@@ -525,9 +527,11 @@
 			},
 
 			onSeekBeforePlay: function(){
-				this.unbind("seeking");
-				this.unbind("firstPlay");
-				this.hls.attachMedia(this.getPlayer().getPlayerElement());
+				if(this.LoadHLS){
+					this.unbind("seeking");
+					this.unbind("firstPlay");
+					this.hls.attachMedia(this.getPlayer().getPlayerElement());
+				}
 			},
 
 			handleMediaError: function () {
