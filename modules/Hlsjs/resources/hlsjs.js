@@ -40,6 +40,8 @@
 			loaded: false,
 			/** type {boolean} */
 			isLevelSwitching: false,
+			/** type {boolean} */
+			afterInitialSeeking: false,
 			/** type {Number} */
 			levelIndex: -1,
 			version: "v0.5.23",
@@ -119,6 +121,11 @@
 
 					this.registerHlsEvents();
 					this.overridePlayerMethods();
+
+					$(this.getPlayer().getPlayerElement()).one("canplay", function(){
+						// The initial seeking to the live edge has finished.
+						this.afterInitialSeeking = true;
+					}.bind(this));
 
 					this.bind("firstPlay", function () {
 						this.unbind("seeking");
@@ -408,12 +415,16 @@
 				this.orig_load = this.getPlayer().load;
 				this.orig_onerror = this.getPlayer()._onerror;
 				this.orig_ontimeupdate = this.getPlayer()._ontimeupdate;
+				this.orig_onseeking = this.getPlayer()._onseeking.bind(this.getPlayer());
+				this.orig_onseeked = this.getPlayer()._onseeked.bind(this.getPlayer());
 				this.getPlayer().backToLive = this.backToLive.bind(this);
 				this.getPlayer().switchSrc = this.switchSrc.bind(this);
 				this.getPlayer().playerSwitchSource = this.playerSwitchSource.bind(this);
 				this.getPlayer().load = this.load.bind(this);
 				this.getPlayer()._onerror = this._onerror.bind(this);
 				this.getPlayer()._ontimeupdate = this._ontimeupdate.bind(this);
+				this.getPlayer()._onseeking = this._onseeking.bind(this);
+				this.getPlayer()._onseeked = this._onseeked.bind(this);
 			},
 			/**
 			 * Disable override player methods for HLS playback
@@ -425,6 +436,8 @@
 				this.getPlayer().load = this.orig_load;
 				this.getPlayer()._onerror = this.orig_onerror;
 				this.getPlayer()._ontimeupdate = this.orig_ontimeupdate;
+				this.getPlayer()._onseeking = this.orig_onseeking;
+				this.getPlayer()._onseeked = this.orig_onseeked;
 			},
 			//Overidable player methods, "this" is bound to HLS plugin instance!
 			/**
@@ -523,6 +536,20 @@
 				var time = Math.round(e.currentTarget.currentTime);
 				if (this.ptsID3Data[time]){
 					this.getPlayer().triggerHelper('onId3Tag', this.ptsID3Data[time]);
+				}
+			},
+
+			_onseeking: function(){
+				// if this is the initial seeking which hls performs to the live edge - do nothing
+				if(this.afterInitialSeeking){
+					this.orig_onseeking();
+				}
+			},
+
+			_onseeked: function () {
+				// if this is the initial seeking which hls performs to the live edge - do nothing
+				if(this.afterInitialSeeking){
+					this.orig_onseeked();
 				}
 			},
 
