@@ -275,7 +275,7 @@
 			onLevelSwitch: function (event, data) {
 				//Set and report bitrate change
 				var source = this.hls.levels[data.level];
-				var currentBitrate = source.bitrate / 1024;
+				var currentBitrate = Math.round(source.bitrate / 1024);
 				var previousBitrate = this.getPlayer().currentBitrate;
 				this.getPlayer().currentBitrate = currentBitrate;
 				this.getPlayer().triggerHelper('bitrateChange', currentBitrate);
@@ -482,7 +482,9 @@
 			 * Override player method for loading the video element
 			 */
 			load: function () {
-				this.hls.startLoad();
+				if(!this.getPlayer().isInSequence()){
+					this.hls.startLoad();
+				}
 			},
 			/**
 			 * Override player callback after changing media
@@ -525,9 +527,11 @@
 			},
 
 			onSeekBeforePlay: function(){
-				this.unbind("seeking");
-				this.unbind("firstPlay");
-				this.hls.attachMedia(this.getPlayer().getPlayerElement());
+				if(this.LoadHLS){
+					this.unbind("seeking");
+					this.unbind("firstPlay");
+					this.hls.attachMedia(this.getPlayer().getPlayerElement());
+				}
 			},
 
 			handleMediaError: function () {
