@@ -70,7 +70,6 @@
 			addBindings: function () {
 				this.bind("SourceChange", this.isNeeded.bind(this));
 				this.bind("playerReady", this.initHls.bind(this));
-				this.bind("seeking", this.onSeekBeforePlay.bind(this));
 				this.bind("onChangeMedia", this.clean.bind(this));
 				this.bind("onLiveOffSynchChanged", this.onLiveOffSyncChanged.bind(this));
 				if (mw.getConfig("hlsLogs")) {
@@ -126,7 +125,7 @@
 						// The initial seeking to the live edge has finished.
 						this.afterInitialSeeking = true;
 					}.bind(this));
-
+					this.bind("seeking", this.onSeekBeforePlay.bind(this));
 					this.bind("firstPlay", function () {
 						this.unbind("seeking");
 						this.hls.attachMedia(this.getPlayer().getPlayerElement());
