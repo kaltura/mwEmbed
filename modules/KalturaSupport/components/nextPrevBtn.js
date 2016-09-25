@@ -19,6 +19,9 @@
 		nextTitle: gM( 'mwe-embedplayer-next_clip' ),
 		prevTitle: gM( 'mwe-embedplayer-prev_clip' ),
 
+		isSafeEnviornment: function(){
+			return !mw.isChromeCast();
+		},
 		setup: function() {
 			if (this.embedPlayer.isMobileSkin()){
 				this.setConfig('parent','videoHolder');

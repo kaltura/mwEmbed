@@ -5,7 +5,9 @@
  */
 (function (mw, $) {
 	"use strict";
-	
+
+	var originalVTTCue = window.VTTCue;
+
 	mw.EmbedPlayerNative = {
 
 		//Instance Name
@@ -333,7 +335,7 @@
 				return;
 			}
 			$.each(_this.nativeEvents, function (inx, eventName) {
-				if (mw.isIOS8_9() && mw.isIphone() && eventName === "seeking") {
+				if (mw.isIOSAbove7() && mw.isIphone() && eventName === "seeking") {
 					return;
 				}
 				$(vid).unbind(eventName + '.embedPlayerNative').bind(eventName + '.embedPlayerNative', function () {
@@ -381,7 +383,7 @@
 				this.hidePlayerOffScreen();
 			}
 
-			if ( seekTime === 0 && this.isLive() && mw.isIpad() && !mw.isIOS8_9() ) {
+			if ( seekTime === 0 && this.isLive() && mw.isIpad() && !mw.isIOSAbove7() ) {
 				//seek to 0 doesn't work well on live on iOS < 8
 				seekTime = 0.01;
 				this.log( "doSeek: fix seekTime to 0.01" );
@@ -412,7 +414,7 @@
 				$(vid).attr('preload', 'auto');
 			}
 
-			var videoReadyState = mw.isIOS8_9() ? 2 : 1; // on iOS8 wait for video state 1 (dataloaded) instead of 1 (metadataloaded)
+			var videoReadyState = mw.isIOSAbove7() ? 2 : 1; // on iOS8 wait for video state 1 (dataloaded) instead of 1 (metadataloaded)
 			if ( (vid.readyState < videoReadyState) || (this.getDuration() === 0)) {
 				// if on the first call ( and video not ready issue load, play
 				if (callbackCount == 0 && vid.paused) {
@@ -446,9 +448,6 @@
 							vid.play();
 							_this.parseTracks();
 						}
-					}else {
-						vid.load();
-						vid.play();
 					}
 				}
 				// Try to seek for 15 seconds:
@@ -855,15 +854,17 @@
 						if (_this.useNativePlayerControls() && $(_this).find('video ').length == 0) {
 							$(_this).hide();
 						}
-						// if it's iOS8 the player won't play
-						if (!mw.isIOS8_9()) {
-							// update the preload attribute to auto
-							$(_this.getPlayerElement()).attr('preload', "auto");
+
+						//If media not loaded yet(loadedmetadata event not reached yet) issue a load on video tag
+						if (!_this.mediaLoadedFlag){
+							_this.load();
 						}
+
 						// issue a play request
-						if ( !_this.playing ) {
+						if (!_this.playing) {
 							vid.play();
 						}
+
 						_this.mobilePlayed = true;
 						// re-start the monitor:
 						_this.monitor();
@@ -1066,7 +1067,7 @@
 			// we don't want to trigger the seek event for these "fake" onseeked triggers
 			if ((this.mediaElement.selectedSource.getMIMEType() === 'application/vnd.apple.mpegurl') &&
 				( ( Math.abs(this.currentSeekTargetTime - this.getPlayerElement().currentTime) > 2) ||
-				( this.currentSeekTargetTime > 0.01 && ( mw.isIpad() && !mw.isIOS8_9() ) ) ) ) {
+				( this.currentSeekTargetTime > 0.01 && ( mw.isIpad() && !mw.isIOSAbove7() ) ) ) ) {
 
 				this.log( "Error: seeked triggred with time mismatch: target:" +
 					this.currentSeekTargetTime + ' actual:' + this.getPlayerElement().currentTime );
@@ -1205,7 +1206,7 @@
 			}
 
 			// Check if in "playing" state and we are _propagateEvents events and continue to playback:
-			if (!this.paused && this._propagateEvents) {
+			if (!this.paused && !this.isInSequence() && this._propagateEvents) {
 				this.getPlayerElement().play();
 			}
 
@@ -1367,7 +1368,7 @@
 				if (newSource) {
 					this.switchSrc(newSource);
 				}
-				if (mw.isIOS8_9()){
+				if (mw.isIOSAbove7()){
 					this.play();
 				}
 			} else {
@@ -1461,8 +1462,8 @@
 		switchAudioTrack: function(audioTrackIndex){
 			var vid  = this.getPlayerElement();
 			var audioTracks = vid.audioTracks;
-			if(audioTracks[audioTrackIndex] && !audioTracks[audioTrackIndex].enabled) {
-			if(mw.isEdge()){
+			if(audioTracks && audioTracks[audioTrackIndex] && !audioTracks[audioTrackIndex].enabled) {
+				if(mw.isEdge()){
 
 				// Edge has a problem to switch audio track at playback time, so as a workaround - pause before the switching.
 				// When this issue will be fixed we can remove the entire code for Edge.
@@ -1493,6 +1494,9 @@
 				return parseInt(this.playerElement.buffered.end(this.playerElement.buffered.length-1) - this.playerElement.currentTime); //return buffer length in seconds
             }
             return 0;
-        }
+        },
+		getOriginalVTTCue: function(){
+			return originalVTTCue;
+		}
 	};
 })(mediaWiki, jQuery);

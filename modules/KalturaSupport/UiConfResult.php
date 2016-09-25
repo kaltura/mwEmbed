@@ -224,6 +224,18 @@ class UiConfResult {
 			//"playersJsReceiver" => array()
 		);
 
+		if(preg_match('/(?i)msie [5-8]/',$_SERVER['HTTP_USER_AGENT']))
+        {
+            //On IE8 and below disable hlsjs if added
+            if (isset($playerConfig['plugins']) &&
+                isset($playerConfig['plugins']["hlsjs"])){
+                unset ($playerConfig['plugins']["hlsjs"]);
+            }
+        } else {
+            //Add hlsjs by default to bundle if above IE8
+            $basePlugins["hlsjs"] = array();
+        }
+
 		$playerConfig['plugins'] = array_merge_recursive($playerConfig['plugins'], $basePlugins);
 
 		//scan the plugins attributes and replace tokens
@@ -556,7 +568,8 @@ class UiConfResult {
 			"id3Tag" => array(),
 			"liveCore" => array(),
 			"liveStatus" => array(),
-			"reportError" => array()
+			"reportError" => array(),
+            "hlsjs"=>array()
 		);
 
 		$closedCaptionPlugin = array(

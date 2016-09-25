@@ -323,6 +323,9 @@
 			_this.viewEventInterval = null;
 		},
 		startViewTracking :function(){
+			if (this.viewEventInterval){
+				this.stopViewTracking();
+			}
 			var _this = this;
 			var playerEvent = this.PlayerEvent;
 			_this.startTime = null;

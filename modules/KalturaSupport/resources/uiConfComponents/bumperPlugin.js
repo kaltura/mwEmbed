@@ -44,6 +44,9 @@
 
 				var clickUrl = bumperConfig.clickUrl ? bumperConfig.clickUrl : bumperConfig.clickurl;
 
+				// Remove adaptive sources since KAdPlayer works with the video tag directly without MSE
+				kWidgetSupport.removeAdaptiveFlavors(sources);
+
 				// Load adSupport for player timeline:
 				var adConf =  {
 					'ads': [

@@ -19,6 +19,9 @@
 	mw.isIE = function () {
 		return (/msie/.test(userAgent.toLowerCase()) || /trident/.test(userAgent.toLowerCase()));
 	};
+	mw.isChromeCast = function(){
+		return (/CrKey/.test(userAgent));
+	};
 	mw.isIE7 = function () {
 		return (/msie 7/.test(userAgent.toLowerCase()));
 	};
@@ -35,7 +38,7 @@
         return (/edge/.test(userAgent.toLowerCase()));
     };
 	mw.isDesktopSafari = function () {
-		return (/safari/).test(userAgent.toLowerCase()) && !mw.isMobileDevice() && !mw.isChrome();
+		return mw.isSafari() && !mw.isMobileDevice();
 	};
 	mw.isSafari = function () {
 		return (/safari/).test(userAgent.toLowerCase()) && !mw.isChrome() && !mw.isEdge();
@@ -152,8 +155,13 @@
 		return ( /OS 8_/.test(userAgent) || /Version\/8/.test(userAgent) ) && mw.isIOS();
 	};
 	mw.isIOS9 = function () {
-		// Known Limitation - It will return false for iOS8 Simulator
+		// Known Limitation - It will return false for iOS9 Simulator
 		return ( /OS 9_/.test(userAgent) || /Version\/9/.test(userAgent) ) && mw.isIOS();
+	};
+
+	mw.isIOS10 = function () {
+		// Known Limitation - It will return false for iOS10 Simulator
+		return ( /OS 10_/.test(userAgent) || /Version\/10/.test(userAgent) ) && mw.isIOS();
 	};
 
 	mw.isIOSBelow9 = function () {
@@ -162,8 +170,8 @@
 		return mw.isIOS() && (mw.isIOS3() || mw.isIOS4() || mw.isIOS5() || mw.isIOS6() || mw.isIOS7() || mw.isIOS8());
 	};
 	
-	mw.isIOS8_9 = function () {
-		return mw.isIOS8() || mw.isIOS9();
+	mw.isIOSAbove7 = function () {
+		return mw.isIOS8() || mw.isIOS9() || mw.isIOS10();
 	};
 
 	mw.isSilk = function () {
@@ -185,7 +193,7 @@
 	};
 
 	mw.isTouchDevice = function () {
-		return !!('ontouchstart' in window);
+		return !!('ontouchstart' in window)  || ( mw.getConfig("EmbedPlayer.EnableMobileSkin") === true && mw.getConfig("EmbedPlayer.SimulateMobile") === true);
 	};
 	/**
 	 * platform detection

@@ -31,7 +31,7 @@
 					_this.onConfigChange(prop, _this.getConfig(prop));
 				}
 				if ( mw.isIE() ){
-					$(".btn").not(".playHead").css({'margin-left': 1+'px','margin-right': 1+'px'});
+					$(".btn").not(".playHead").css({'margin-left': 0.2 + 'px','margin-right': 0.2 + 'px'});
 				}
 			});
 		},
@@ -67,7 +67,7 @@
 						}else{
 							$(".btn").not(".playHead").attr("style","color: " + value + " !important; text-shadow: "+ this.getConfig('dropShadowColor') +" !important");
 							if (!this.embedPlayer.isMobileSkin()){
-								$(".btn").not(".playHead").attr("style","background-color: "+ this.getConfig('buttonsColor') +" !important");
+								$(".btn").not(".playHead").attr("style","background-color: "+ this.getConfig('buttonsColor') +" !important;" +"color: " + value + " !important; text-shadow: "+ this.getConfig('dropShadowColor') +" !important");
 							}
 							if (this.getConfig('applyToLargePlayButton')) {
 								$(".largePlayBtn ").attr("style", "color: " + value + " !important; background-color: " + this.getConfig('buttonsColor') + " !important");

@@ -48,19 +48,12 @@
 		],
 
 		setup: function( readyCallback ) {
+			$(this).trigger("chromecastReceiverLoaded");
 			$(this).bind('layoutBuildDone', function(){
 				this.getVideoHolder().find('video').remove();
 			});
-
 			this.setPlayerElement(parent.document.getElementById('receiverVideoElement'));
 			this.addBindings();
-			this.applyMediaElementBindings();
-			mw.log('EmbedPlayerChromecastReceiver:: Setup. Video element: '+this.getPlayerElement().toString());
-			this.getPlayerElement().src = '';
-			$(this).trigger("chromecastReceiverLoaded");
-			this._propagateEvents = true;
-			$(this.getPlayerElement()).css('position', 'absolute');
-			this.stopped = false;
 			readyCallback();
 		},
 		/**
@@ -68,9 +61,26 @@
 		 */
 		addBindings: function(){
 			var _this = this;
+			this.bindHelper("layoutBuildDone", function(){
+				_this.getVideoHolder().css("backgroundColor","transparent");
+				$("body").css("backgroundColor","transparent");
+
+			});
+			this.bindHelper("loadstart", function(){
+
+				_this.applyMediaElementBindings();
+				mw.log('EmbedPlayerChromecastReceiver:: Setup. Video element: '+_this.getPlayerElement().toString());
+				_this._propagateEvents = true;
+				$(_this.getPlayerElement()).css('position', 'absolute');
+				_this.stopped = false;
+			});
 			this.bindHelper("replay", function(){
 				_this.triggerReplayEvent = true;
 				_this.triggerHelper("playerReady"); // since we reload the media for replay, trigger playerReady to reset Analytics
+			});
+			this.bindHelper("postEnded", function(){
+				_this.currentTime = _this.getPlayerElement().duration;
+				_this.updatePlayheadStatus();
 			});
 			this.bindHelper("onAdOpen", function(event, id, system, type){
 				_this.triggerHelper("broadcastToSender", ["chromecastReceiverAdOpen"]);
@@ -81,6 +91,10 @@
 			this.bindHelper("onAdComplete", function(){
 				_this.triggerHelper("broadcastToSender", ["chromecastReceiverAdComplete"]);
 				_this.triggerHelper("cancelAllAds");
+			});
+			this.bindHelper("ccSelectClosedCaptions sourceSelectedByLangKey", function(e, label){
+				_this.triggerHelper("propertyChangedEvent", {"plugin": "closedCaptions", "property":"captions", "value": typeof label === "string" ? label : label[0]});
+				$(parent.document.getElementById('captionsOverlay')).empty();
 			});
 		},
 		/**
@@ -119,21 +133,35 @@
 			$(this).trigger('onPlayerStateChange', [ "pause", "play" ]);
 
 		},
-
+		_onplaying:function(){
+			this.hideSpinner();
+			this.triggerHelper("playing");
+			this.triggerHelper( 'hidePlayerControls' );
+		},
 		/**
 		 * Handle the native play event
 		 */
 		_onplay: function () {
-			this.play();
 			this.restoreEventPropagation();
-			$(this).trigger('onPlayerStateChange', [ "play", "pause" ]);
+			if (this.currentState === "pause" || this.currentState === "start"){
+				this.play();
+				this.triggerHelper('onPlayerStateChange', [ "play", this.currentState ]);
+			}
 			if (this.triggerReplayEvent){
-				$(this).trigger('replayEvent');
+				this.triggerHelper('replayEvent');
 				this.triggerReplayEvent = false;
 			}
+			this.triggerHelper( 'hidePlayerControls' );
+
+		},
+		replay: function(){
+			var _this = this;
+			this.restoreEventPropagation();
+			this.restoreComponentsHover();
 		},
 
 		_onseeking: function () {
+			this.triggerHelper( 'hidePlayerControls' );
 			if (!this.seeking) {
 				this.seeking = true;
 				if ( this._propagateEvents && !this.isLive() ) {
@@ -147,10 +175,18 @@
 				this.seeking = false;
 				if (this._propagateEvents && !this.isLive()) {
 					this.triggerHelper('seeked', [this.getPlayerElementTime()]);
+					this.triggerHelper("onComponentsHoverEnabled");
+					this.syncCurrentTime();
+					this.updatePlayheadStatus();
 				}
 			}
 		},
-
+		changeMediaCallback: function (callback) {
+			this.changeMediaStarted = false;
+			if (callback){
+				callback();
+			}
+		},
 		// override these functions so embedPlayer won't try to sync time
 		syncCurrentTime: function(){
 			this.currentTime = this.getPlayerElementTime();

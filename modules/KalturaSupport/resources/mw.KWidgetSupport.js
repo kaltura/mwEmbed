@@ -174,32 +174,33 @@ mw.KWidgetSupport.prototype = {
 		});
 
 		// Example how to override embedPlayerError handler
-
-		embedPlayer.shouldHandlePlayerError = false;
-		embedPlayer.bindHelper( 'embedPlayerError' , function ( event , data , doneCallback ) {
-			var displayedAcError = false;
-			// check for AC error:
-			if ( mw.getConfig("manualProvider") ) {
-				embedPlayer.shouldHandlePlayerError = true;
-				embedPlayer.handlePlayerError(data);
-				return;
-			}
-			_this.getEntryIdSourcesFromApi( embedPlayer , embedPlayer.kentryid , function ( sources ) {
-				// no sources, or access control error.
-				if ( !sources || sources.message ) {
-					embedPlayer.showErrorMsg( sources );
-					displayedAcError = true;
-					doneCallback();
-				}
-			} );
-			// give the above access control message 3 seconds to resolve; else show default network error
-			setTimeout( function () {
-				if ( displayedAcError ) {
+		if (!this.isEmbedServicesEnabled(kalturaIframePackageData.entryResult)){
+			embedPlayer.shouldHandlePlayerError = false;
+			embedPlayer.bindHelper( 'embedPlayerError' , function ( event , data , doneCallback ) {
+				var displayedAcError = false;
+				// check for AC error:
+				if ( mw.getConfig( "manualProvider" ) ) {
+					embedPlayer.shouldHandlePlayerError = true;
+					embedPlayer.handlePlayerError( data );
 					return;
 				}
-				embedPlayer.handlePlayerError( data , true );
-			} , 3000 );
-		} );
+				_this.getEntryIdSourcesFromApi( embedPlayer , embedPlayer.kentryid , function ( sources ) {
+					// no sources, or access control error.
+					if ( !sources || sources.message ) {
+						embedPlayer.showErrorMsg( sources );
+						displayedAcError = true;
+						doneCallback();
+					}
+				} );
+				// give the above access control message 3 seconds to resolve; else show default network error
+				setTimeout( function () {
+					if ( displayedAcError ) {
+						return;
+					}
+					embedPlayer.handlePlayerError( data , true );
+				} , 3000 );
+			} );
+		}
 
 		// Support mediaPlayFrom, mediaPlayTo properties
 		embedPlayer.bindHelper( 'Kaltura_SetKDPAttribute', function(e, componentName, property, value){
@@ -504,7 +505,7 @@ mw.KWidgetSupport.prototype = {
 			playerData.meta.partnerData["isLive"] == "true" ) {
 			embedPlayer.setLive( true );
 		}
-
+		embedPlayer.setKalturaConfig('originalProxyData', embedPlayer.getKalturaConfig('proxyData'));
 		//Set proxyData response data
 		embedPlayer.setKalturaConfig( 'proxyData', playerData.meta.partnerData);
 	},
@@ -1664,9 +1665,11 @@ mw.KWidgetSupport.prototype = {
 				} else if (lowResolutionDevice){
 					//iPhone
 					targetFlavors = iphoneAdaptiveFlavors;
-				} else {
+				} else if (mw.isMobileDevice() || dashAdaptiveFlavors.length == 0){
 					//iPad
 					targetFlavors = ipadAdaptiveFlavors;
+				}  else {
+					targetFlavors = dashAdaptiveFlavors;
 				}
 				var assetId = targetFlavors[0];
 
@@ -1690,8 +1693,7 @@ mw.KWidgetSupport.prototype = {
 
 		}
 
-		//Only support ABR on-the-fly for DRM protected entries
-		if( mw.getConfig('Kaltura.UseFlavorIdsUrls') && !$.isEmptyObject(flavorDrmData)) {
+		if( mw.getConfig('Kaltura.UseFlavorIdsUrls') ) {
 			var validClipAspect = this.getValidAspect(deviceSources);
 			//Only add mpeg dash CENC on the fly if dash sources exist
 			if (dashAdaptiveFlavors.length) {
@@ -1711,7 +1713,8 @@ mw.KWidgetSupport.prototype = {
 			}
 			//Only add playready on the fly if pre-encrypted doesn't exist
 			if ((iphoneAdaptiveFlavors.length || ipadAdaptiveFlavors.length) &&
-				this.getSourcesByAttribute(deviceSources, "type", "video/playreadySmooth").length === 0) {
+				this.getSourcesByAttribute(deviceSources, "type", "video/playreadySmooth").length === 0  &&
+				!$.isEmptyObject(flavorDrmData)) {
 				var targetFlavors = ipadAdaptiveFlavors.length ? ipadAdaptiveFlavors : iphoneAdaptiveFlavors;
 				var assetId = targetFlavors[0];
 				var ismSource = this.generateAbrSource({
@@ -1748,7 +1751,7 @@ mw.KWidgetSupport.prototype = {
 				(mw.isAndroid() && !mw.isNativeApp()) &&
 				hasH264Flavor &&
 				!mw.getConfig( 'Kaltura.LeadHLSOnAndroid' ) ) {
-			deviceSources = this.removeAdaptiveFlavors( deviceSources );
+			deviceSources = this.removeHlsFlavor( deviceSources );
 		}
 
 		// PRemove adaptive sources on Windows Phone
@@ -1762,7 +1765,7 @@ mw.KWidgetSupport.prototype = {
 			this.originalStreamerType &&
 			this.originalStreamerType !== "hls" &&
 			 mw.getConfig("LeadWithHLSOnFlash") === null 	){
-			    deviceSources = this.removeAdaptiveFlavors( deviceSources );
+			    deviceSources = this.removeHlsFlavor( deviceSources );
 		}
 
 		//TODO: Remove duplicate webm and h264 flavors
@@ -1823,7 +1826,7 @@ mw.KWidgetSupport.prototype = {
 	},
 	getFairplayCert: function(playerData){
 		var publicCertificate = null;
-		if (playerData.contextData.pluginData &&
+		if (playerData && playerData.contextData && playerData.contextData.pluginData &&
 			playerData.contextData.pluginData.KalturaFairplayEntryContextPluginData &&
 			playerData.contextData.pluginData.KalturaFairplayEntryContextPluginData.publicCertificate){
 			publicCertificate = playerData.contextData.pluginData.KalturaFairplayEntryContextPluginData.publicCertificate;
@@ -1865,6 +1868,13 @@ mw.KWidgetSupport.prototype = {
 		return value.replace(/\+/g, "-").replace(/\//g, "_");
 	},
 	removeAdaptiveFlavors: function( sources ){
+		this.removeHlsFlavor(sources);
+		this.removeDashFlavor(sources);
+		this.removedAdaptiveFlavors = true;
+		return sources;
+	},
+
+	removeHlsFlavor: function( sources ){
 		for( var i =0 ; i < sources.length; i++ ){
 			if( sources[i].type == 'application/vnd.apple.mpegurl' ){
 				// Remove the current source:
@@ -1872,9 +1882,20 @@ mw.KWidgetSupport.prototype = {
 				i--;
 			}
 		}
-		this.removedAdaptiveFlavors = true;
 		return sources;
 	},
+
+	removeDashFlavor: function( sources ){
+		for( var i =0 ; i < sources.length; i++ ){
+			if(	sources[i].type == "application/dash+xml" ){
+				// Remove the current source:
+				sources.splice( i, 1 );
+				i--;
+			}
+		}
+		return sources;
+	},
+
 	getValidAspect: function( sources ){
 		var _this = this;
 		for( var i=0; i < sources.length; i++ ){

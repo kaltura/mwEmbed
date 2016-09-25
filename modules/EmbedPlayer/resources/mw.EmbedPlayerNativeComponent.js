@@ -139,27 +139,29 @@
 				mw.log("EmbedPlayerNativeComponent:: sendCCRecieverMessage::");
 				_this.getPlayerElement().sendCCRecieverMessage(msg);
 			});
-			this.bindHelper("loadReceiverMedia", function (e,url, mime) {
-				mw.log("EmbedPlayerNativeComponent:: loadReceiverMedia::");
-				_this.getPlayerElement().loadReceiverMedia(url, mime);
-			});
 			this.bindHelper("onEndedDone", function () {
 				_this.playbackDone = true;
 			});
 			if (this.startTime && !this.supportsURLTimeEncoding()) {
 				this.setStartTimeAttribute(this.startTime);
 			}
-			this.resolveSrcURL(this.getSrc()).then(
-				function (resolvedSrc) {
-					mw.log("EmbedPlayerNativeComponent::resolveSrcURL get succeeded");
-					_this.setSrcAttribute( resolvedSrc );
-				},
-				function () {
-					mw.log("EmbedPlayerNativeComponent::resolveSrcURL get failed");
-					_this.setSrcAttribute( _this.getSrc() );
-					readyCallback();
-				}
-			);
+            
+            var selectedSource = this.getSrc();
+            if (!selectedSource && mw.getConfig("EmbedPlayer.PreloadNativeComponent")) {
+                readyCallback();
+
+            } else {
+                this.resolveSrcURL(selectedSource).then(
+                    function (resolvedSrc) {
+                        mw.log("EmbedPlayerNativeComponent::resolveSrcURL get succeeded");
+                        _this.setSrcAttribute( resolvedSrc );
+                    },
+                    function () {
+                        mw.log("EmbedPlayerNativeComponent::resolveSrcURL get failed");
+                        _this.setSrcAttribute( selectedSource );
+                    }
+                );
+            }
 		},
 
 		embedPlayerHTML: function () {
@@ -305,7 +307,8 @@
 			// If switching a Persistent native player update the source:
 			// ( stop and play won't refresh the source  )
 			_this.switchPlaySource(this.getSource(), function () {
-				if (!_this.autoplay  || ( _this.autoplay && mw.isMobileDevice()) ) {
+				if (!_this.autoplay) {
+					mw.log("AutoPlay = false in Mobile");
 					// pause is need to keep pause state, while
 					// switch source calls .play() that some browsers require.
 					// to reflect source switches. Playlists handle pause state so no need to pause in playlist
@@ -313,6 +316,11 @@
 					if ( !_this.playlist ){
 						_this.pause();
 					}
+					_this.updatePosterHTML();
+				}
+				if ( _this.autoplay && mw.isMobileDevice() && !_this.casting) {
+					mw.log("Autoplay = true in Mobile");
+					_this.play();
 					_this.updatePosterHTML();
 				}
 				callback();
@@ -400,7 +408,7 @@
 			});
 
 			var doPlay = function(){
-				if (_this.parent_play()) {
+				if (_this.parent_play() || _this.casting) {
 					if (_this.getPlayerElement()) { // update player
 						_this.getPlayerElement().play();
 					}
@@ -442,6 +450,9 @@
 				executeCommand = true;
 			}
 			this.lastPlayPauseTime = t;
+			if (this.currentState == "end") {
+				this.lastPlayPauseTime = 0
+			}
 			return executeCommand;
 		},
 

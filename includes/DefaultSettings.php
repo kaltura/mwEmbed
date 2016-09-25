@@ -20,7 +20,7 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '2.45.1';
+$wgMwEmbedVersion = '2.48';
 
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {
@@ -38,14 +38,7 @@ $wgServerPort = (($_SERVER['SERVER_PORT']) != '80' && $_SERVER['SERVER_PORT'] !=
 $wgServer = $wgHTTPProtocol . '://' . $_SERVER['SERVER_NAME'] .$wgServerPort. dirname( dirname( $_SERVER['SCRIPT_NAME'] ) ) .'/';
 
 $psRelativePath = '../kwidget-ps/';
-if( isset( $_GET['pskwidgetpath'] ) ){
-	$psRelativePath = htmlspecialchars( $_GET['pskwidgetpath'] );
-}
-// The html5-ps settings file path
-$wgKalturaPSHtml5SettingsPath =  realpath( dirname( __FILE__ ) ) . '/../' . $psRelativePath . '/includes/DefaultSettings.php';
 
-// The html5-ps modules dir
-$wgKalturaPSHtml5ModulesDir =  realpath(realpath( dirname( __FILE__ ) ) . '/../' . $psRelativePath . '/ps/modules');
 
 // By default set $wgScriptPath to empty
 $wgScriptPath = basename(dirname($_SERVER['SCRIPT_NAME'])) . '/';
@@ -68,17 +61,6 @@ while (false !== ($entry = $d->read())) {
 	if( substr( $entry, 0, 1 ) != '.' && !in_array( $entry , $wgMwEmbedEnabledModules ) ){
 		$wgMwEmbedEnabledModules[] = $entry;
 	}
-}
-
-// Enable every module in the "ps/modules" folder of kwidget-ps
-$wgKwidgetPsEnabledModules = array();
-if (!empty($wgKalturaPSHtml5ModulesDir)){
-    $dPs = dir( $wgKalturaPSHtml5ModulesDir );
-    while (false !== ($entryPs = $dPs->read())) {
-        if( substr( $entryPs, 0, 1 ) != '.' && !in_array( $entryPs , $wgKwidgetPsEnabledModules ) ){
-            $wgKwidgetPsEnabledModules[] = $entryPs;
-        }
-    }
 }
 
 // Default debug mode
@@ -269,6 +251,27 @@ $wgLocalSettingsFile = realpath( dirname( __FILE__ ) ) . '/../LocalSettings.php'
 if( is_file( $wgLocalSettingsFile ) ){
 	require_once( $wgLocalSettingsFile );
 }
+
+if( isset( $_GET['pskwidgetpath'] ) ){
+	$psRelativePath = htmlspecialchars( $_GET['pskwidgetpath'] );
+}
+// The html5-ps settings file path
+$wgKalturaPSHtml5SettingsPath =  realpath( dirname( __FILE__ ) ) . '/../' . $psRelativePath . '/includes/DefaultSettings.php';
+
+// The html5-ps modules dir
+$wgKalturaPSHtml5ModulesDir =  realpath(realpath( dirname( __FILE__ ) ) . '/../' . $psRelativePath . '/ps/modules');
+
+// Enable every module in the "ps/modules" folder of kwidget-ps
+$wgKwidgetPsEnabledModules = array();
+if (!empty($wgKalturaPSHtml5ModulesDir)){
+    $dPs = dir( $wgKalturaPSHtml5ModulesDir );
+    while (false !== ($entryPs = $dPs->read())) {
+        if( substr( $entryPs, 0, 1 ) != '.' && !in_array( $entryPs , $wgKwidgetPsEnabledModules ) ){
+            $wgKwidgetPsEnabledModules[] = $entryPs;
+        }
+    }
+}
+
 
 //Set global configs into $wgMwEmbedModuleConfig in order to enable
 //resource loader to output the config in the response

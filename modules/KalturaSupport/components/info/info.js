@@ -49,6 +49,7 @@ mw.PluginManager.add( 'infoScreen', mw.KBaseScreen.extend({
 		this.bind('preHideScreen', function (event, screenName) {
 			if ( screenName === "infoScreen" ){
 				embedPlayer.enablePlayControls();
+				embedPlayer.triggerHelper("showLargePlayBtn");
 				if (_this.getPlayer().getPlayerElement()) {
 					$( "#" + _this.getPlayer().getPlayerElement().id ).removeClass( "blur" );
 					_this.getPlayer().getPlayerPoster().removeClass( "blur" );
