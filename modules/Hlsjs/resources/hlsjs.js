@@ -3,7 +3,7 @@
 
 	//Currently use native support when available, e.g. Safari desktop
 	if (Hls.isSupported() && !mw.isDesktopSafari() && !mw.getConfig("disableHLSOnJs")) {
-		var orig_supportsFlash = mw.supportsFlash;
+		var orig_supportsFlash = mw.supportsFlash.bind(mw);
 		mw.supportsFlash = function () {
 			return false;
 		};
@@ -24,6 +24,7 @@
 					liveSyncDurationCount: 3,
 					liveMaxLatencyDurationCount: 6
 				},
+				maxErrorRetryCount: 5,
 				hlsLogs: false
 			},
 
@@ -326,7 +327,11 @@
 			 * @param data
 			 */
 			onError: function (event, data) {
+				this.log("error - ", JSON.stringify(data));
 				//TODO: Need to decide when we dispatch player bug to be shown to viewer
+				if (this.mediaErrorRecoveryCounter > this.getConfig("maxErrorRetryCount")){
+					this.handleUnRecoverableError();
+				}
 				if (data.fatal) {
 					switch (data.type) {
 						case Hls.ErrorTypes.NETWORK_ERROR:
@@ -346,15 +351,7 @@
 							break;
 						default:
 							// cannot recover
-							this.log("fatal media error encountered, cannot recover");
-							this.clean();
-							if (mw.supportsFlash()) {
-								this.log("Try flash fallback");
-								this.fallbackToFlash();
-							} else {
-								mw.log("MediaError error code: " + error);
-								this.triggerHelper('embedPlayerError', [data]);
-							}
+							this.handleUnRecoverableError();
 							break;
 					}
 				} else {
@@ -365,6 +362,17 @@
 					}
 					//If not fatal then log issue, we can switch case errors for specific issues
 					this.log("Error: " + data.type + ", " + data.details);
+				}
+			},
+			handleUnRecoverableError: function(){
+				this.log("fatal media error encountered, cannot recover");
+				this.clean();
+				if (orig_supportsFlash()) {
+					this.log("Try flash fallback");
+					this.fallbackToFlash();
+				} else {
+					mw.log("MediaError error code: " + error);
+					this.triggerHelper('embedPlayerError', [data]);
 				}
 			},
 			fallbackToFlash: function () {
