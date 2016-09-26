@@ -440,6 +440,11 @@
                 "type": "boolean",
                 "initvalue": false
             },
+            "hideSource": {
+                "doc": "Hide the source from the selection list.",
+                "type": "boolean",
+                "initvalue": false
+            },
             "simpleFormat": {
                 "doc": "Use simple format to restrict to two sources only per named size, and not list content type.",
                 "type": "boolean",
