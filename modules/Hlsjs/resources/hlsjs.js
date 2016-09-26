@@ -40,6 +40,8 @@
 			/** type {boolean} */
 			loaded: false,
 			/** type {boolean} */
+			mediaAttached: false,
+			/** type {boolean} */
 			isLevelSwitching: false,
 			/** type {boolean} */
 			afterInitialSeeking: false,
@@ -98,6 +100,7 @@
 					this.unRegisterHlsEvents();
 					this.restorePlayerMethods();
 					this.hls.detachMedia();
+					this.mediaAttached = false;
 					this.hls.destroy();
 					this.hls = null;
 				}
@@ -197,6 +200,7 @@
 			onMediaAttached: function () {
 				this.log("Media attached");
 				//Once media is attached load the manifest
+				this.mediaAttached = true;
 				var selectedSource = this.getPlayer().getSrc();
 				if (selectedSource) {
 					this.getPlayer().resolveSrcURL(selectedSource).then(
@@ -556,6 +560,9 @@
 			 * Override player callback after changing media
 			 */
 			playerSwitchSource: function (src, switchCallback, doneCallback) {
+				if (!this.mediaAttached){
+					this.hls.attachMedia(this.getPlayer().getPlayerElement());
+				}
 				this.getPlayer().play();
 				if ($.isFunction(switchCallback)) {
 					switchCallback();
