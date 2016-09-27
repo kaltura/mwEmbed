@@ -325,6 +325,13 @@
                 });
 
                 var seekTimeoutId = setTimeout(haltMasterAndWaitForSlaves, aheadTime * 1000);
+            } else {
+                $(slave).off('seeked.seekSlave').one('seeked.seekSlave', function () {
+                    _this.log('seekSlave :: slave seeked (html5 case)');
+                    if (!player.isPlaying()) {
+                        slave.pause();
+                    }
+                });
             }
 
             slave.setCurrentTime(seekTime + aheadTime);
