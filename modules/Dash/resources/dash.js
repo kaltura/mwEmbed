@@ -45,7 +45,6 @@
 			addBindings: function () {
 				this.bind("SourceChange", this.isNeeded.bind(this));
 				this.bind("playerReady", this.initShaka.bind(this));
-				this.bind("seeking", this.onSeekBeforePlay.bind(this));
 				this.bind("switchAudioTrack", this.onSwitchAudioTrack.bind(this));
 				this.bind("selectClosedCaptions", this.onSwitchTextTrack.bind(this));
 				this.bind("onChangeMedia", this.clean.bind(this));
@@ -147,8 +146,8 @@
 
 				this.registerShakaEvents();
 
-				this.bind("firstPlay", function(){
-					this.unbind("seeking");
+				this.bind("firstPlay seeking", function(){
+					this.unbind("firstPlay seeking");
 					this.loadManifest();
 				}.bind(this));
 			},
@@ -293,6 +292,10 @@
 			 * Override player callback after changing media
 			 */
 			playerSwitchSource: function (src, switchCallback, doneCallback) {
+				if(!this.manifestLoaded){
+					this.unbind("firstPlay seeking");
+					this.loadManifest();
+				}
 				this.getPlayer().play();
 				if ($.isFunction(switchCallback)) {
 					switchCallback();
@@ -336,13 +339,6 @@
 					this.log("onSwitchTextTrack switch to " + data);
 				}
 			},
-
-			onSeekBeforePlay: function(){
-				this.unbind("seeking");
-				this.unbind("firstPlay");
-				this.loadManifest();
-			},
-
 
 			onErrorEvent: function (event) {
 				// Extract the shaka.util.Error object from the event.
