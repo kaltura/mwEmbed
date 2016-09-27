@@ -71,7 +71,6 @@
 			addBindings: function () {
 				this.bind("SourceChange", this.isNeeded.bind(this));
 				this.bind("playerReady", this.initHls.bind(this));
-				this.bind("seeking", this.onSeekBeforePlay.bind(this));
 				this.bind("onChangeMedia", this.clean.bind(this));
 				this.bind("onLiveOffSynchChanged", this.onLiveOffSyncChanged.bind(this));
 				if (mw.getConfig("hlsLogs")) {
