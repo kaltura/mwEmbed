@@ -126,6 +126,7 @@
 						// The initial seeking to the live edge has finished.
 						this.afterInitialSeeking = true;
 					}.bind(this));
+					this.bind("seeking", this.onSeekBeforePlay.bind(this));
 					this.bind("firstPlay", function () {
 						this.unbind("seeking");
 						this.hls.attachMedia(this.getPlayer().getPlayerElement());
