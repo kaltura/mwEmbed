@@ -1434,7 +1434,7 @@
         },
         parseAudioTracks: function(vid, counter){
             var _this = this;
-            setTimeout (function() {
+	        this.parseAudioTracksTimeout = setTimeout (function() {
                 if( vid.audioTracks && vid.audioTracks.length > 0 ) {
                     var data ={'languages':[]};
                     for (var i = 0; i < vid.audioTracks.length; i++) {
@@ -1497,6 +1497,9 @@
         },
 		getOriginalVTTCue: function(){
 			return originalVTTCue;
+		},
+		clean:function(){
+			clearTimeout(this.parseAudioTracksTimeout);
 		}
 	};
 })(mediaWiki, jQuery);
