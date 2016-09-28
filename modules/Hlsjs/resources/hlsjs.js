@@ -130,7 +130,7 @@
 					}.bind(this));
 					this.bind("seeking", this.onSeekBeforePlay.bind(this));
 					this.bind("firstPlay", function () {
-						this.unbind("seeking");
+						this.unbind("firstPlay seeking");
 						this.hls.attachMedia(this.getPlayer().getPlayerElement());
 					}.bind(this));
 				}
@@ -338,6 +338,7 @@
 							// try to recover network error
 							this.log("fatal network error encountered, try to recover");
 							this.hls.startLoad();
+							this.mediaErrorRecoveryCounter += 1;
 						} else {
 							//Fallback to flash if there's network error and we detect protocol mismatch
 							//which is probably causing Mixed content warning in the browser
@@ -357,6 +358,7 @@
 							}
 							this.log("fatal media error encountered, try to recover");
 							this.hls.recoverMediaError();
+							this.mediaErrorRecoveryCounter += 1;
 						} else {
 							switch (data.details) {
 								case Hls.ErrorDetails.BUFFER_STALLED_ERROR:
@@ -373,7 +375,6 @@
 						}
 						break;
 				}
-				this.mediaErrorRecoveryCounter += 1;
 			},
 			isProtocolMismatch: function(data) {
 				var protocolMismatch = false;
@@ -561,6 +562,7 @@
 			 */
 			playerSwitchSource: function (src, switchCallback, doneCallback) {
 				if (!this.mediaAttached){
+					this.unbind("firstPlay seeking");
 					this.hls.attachMedia(this.getPlayer().getPlayerElement());
 				}
 				this.getPlayer().play();
@@ -615,8 +617,7 @@
 
 			onSeekBeforePlay: function(){
 				if(this.LoadHLS){
-					this.unbind("seeking");
-					this.unbind("firstPlay");
+					this.unbind("firstPlay seeking");
 					this.hls.attachMedia(this.getPlayer().getPlayerElement());
 				}
 			},
