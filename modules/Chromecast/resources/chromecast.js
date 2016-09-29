@@ -142,8 +142,8 @@
 					}
 				};
 				var proxyData = _this.getProxyData();
-				if (proxyData && proxyData.data){
-					changeMediaMsg.data.proxyData = proxyData.data;
+				if (proxyData){
+					changeMediaMsg.data.proxyData = proxyData;
 				}
 				_this.sendMessage(changeMediaMsg);
 				_this.savedPosition = 0;
