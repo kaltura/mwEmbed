@@ -79,6 +79,9 @@
 						_this.hasEnded = true;
 						break;
 					case YT.PlayerState.PLAYING:
+						//hide the poster
+						$(".playerPoster").hide();
+						$('.blackBoxHide').hide();
 						if (_this.hasEnded){
 							_this.hasEnded = false;
 							return;
@@ -92,9 +95,6 @@
 						// hide the player container so that youtube click through work
 						$(_this).width("100%");
 						$(_this).hide();
-						//hide the poster
-						$(".playerPoster").hide();
-						$('.blackBoxHide').hide();
 						stateName = "playing";
 						// update duraiton
 						_this.setDuration();

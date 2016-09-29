@@ -1600,7 +1600,7 @@
 			if (this.adsManager && $.isFunction( this.adsManager.unload ) ) {
 				this.adsManager.unload();
 			}
-			if (this.embedPlayer.isInSequence() || this.embedPlayer.autoplay){
+			if (this.embedPlayer.isInSequence() || (this.embedPlayer.autoplay && this.embedPlayer.canAutoPlay())){
 				this.restorePlayer(this.contentDoneFlag);
 				this.embedPlayer.play();
 			}else{
