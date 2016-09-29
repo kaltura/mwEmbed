@@ -28,8 +28,15 @@
             return this;
         },
 
-        setCurrentTime: function setCurrentTime(newTime) {
+        setCurrentTime: function setCurrentTime(newTime, stopAfterSeek) {
             this.currentTime = newTime;
+            $(this).off('seeked.nativePlayer').one('seeked.nativePlayer', function () {
+                if (stopAfterSeek) {
+                    this.pause();
+                } else {
+                    this.play();
+                }
+            });
         },
 
         getCurrentTime: function getCurrentTime() {

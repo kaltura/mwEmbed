@@ -54,7 +54,7 @@
         seek: function seek(seekTime, stopAfterSeek) {
             seekTime = parseFloat(parseFloat(seekTime).toFixed(2));
             this.stopAfterSeek =
-                $.type(stopAfterSeek) === 'undefined' ? stopAfterSeek : !this.isPlaying();
+                $.type(stopAfterSeek) !== 'undefined' ? stopAfterSeek : !this.isPlaying();
 
             if (!seekTime || seekTime < 0) {
                 seekTime = 0;
@@ -89,8 +89,8 @@
             return this.playerObject.getCurrentTime();
         },
 
-        setCurrentTime: function setCurrentTime(newTime) {
-            this.seek(newTime);
+        setCurrentTime: function setCurrentTime(newTime, stopAfterSeek) {
+            this.seek(newTime, stopAfterSeek);
         },
 
         isPlaying: function isPlaying() {
@@ -157,7 +157,7 @@
                     setTimeout(function () {
                         _this.pause();
                     }, 0);
-                } else if (!this.stopPlayAfterSeek) {
+                } else {
                     setTimeout(function () {
                         _this.play();
                     }, 0);
