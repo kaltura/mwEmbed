@@ -1231,6 +1231,7 @@
 			if (!this.isStopped()) {
 				// set the "stopped" flag:
 				this.stopped = true;
+				this.isPauseLoading = false;
 
 				// TOOD we should improve the end event flow
 				// First end event for ads or current clip ended bindings
