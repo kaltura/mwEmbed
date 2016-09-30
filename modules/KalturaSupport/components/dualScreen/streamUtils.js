@@ -26,15 +26,27 @@
                     if (!streamSelector.streamChanging) {
                         _this.log('resetting playerReadyFlag');
                         _this.playerReadyFlag = false;
+                        _this.embedPlayer.unbindHelper('.streamUtilsSetStream');
                     }
                 });
             });
         },
 
-        setStream: function setStream(stream, pauseAfterwards) {
-            return $.when(stream && this.getStreamSelector().then(function (streamSelector) {
-                return streamSelector.setStream(stream, pauseAfterwards);
-            }));
+        setStream: function setStream(stream, pauseAfterwards, afterFirstPlay) {
+            if (afterFirstPlay) {
+                var player = this.getPlayer();
+                var _this = this;
+                stream && player.bindHelper('firstPlay.streamUtilsSetStream', function () {
+                    player.unbindHelper('.streamUtilsSetStream');
+                    $.when(_this.getStreamSelector().then(function (streamSelector) {
+                        return streamSelector.setStream(stream, pauseAfterwards);
+                    }));
+                });
+            } else {
+                return $.when(stream && this.getStreamSelector().then(function (streamSelector) {
+                    return streamSelector.setStream(stream, pauseAfterwards);
+                }));
+            }
         },
 
         filterStreamsByTag: function filterStreamsByTag(tag, not) {
@@ -240,6 +252,7 @@
             });
 
             this._super();
+            this.embedPlayer.unbindHelper('.streamUtilsSetStream');
         }
     });
 })(window.mw, window.jQuery);

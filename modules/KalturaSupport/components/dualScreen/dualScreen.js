@@ -617,7 +617,7 @@
 				this.screenShown = true;
 				if (this.render) {
 					this.currentScreenNameShown = screenName;
-					if (!this.disabled && !this.getPlayer().isAudio()) {
+					if (!this.disabled && !this.getPlayer().isAudio() && this.controlBar) {
 						this.controlBar.enable();
 						this.controlBar.hide();
 						this.controlBar.disable();
@@ -645,7 +645,7 @@
 				}
 			},
 			minimizeSecondDisplay: function(){
-			    if (!this.auxScreenMinimized) {
+			    if (!this.auxScreenMinimized && this.displays.isInitialized()) {
 					this.auxScreenMinimized = true;
 				    var primaryIsMain = (this.displays.getPrimary() === this.displays.getMainDisplay());
 					if (!(primaryIsMain && this.fsm.getStatus() === "hide")) {
@@ -991,11 +991,25 @@
 
 				if (mw.isMobileDevice()) {
 					promise = this.initSecondPlayer(true)
-						.then(null, function () {
+						.then(function (res) {
+							if (mobileTag) {
+								utils.setConfig({
+									streamSelectorConfig: {
+										ignoreTag: mobileTag
+									}
+								});
+
+								_this.controlBar && _this.getSwitchingStreams().then(function (streams) {
+									_this.controlBar.setStreams(streams);
+								});
+							}
+
+							return res;
+						}, function () {
 							return mobileTag ?
 								utils.filterStreamsByTag(mobileTag)
 									.then(function (streams) {
-										utils.setStream(streams[0], true);
+										utils.setStream(streams[0], false, true);
 									}) :
 								$.Deferred().reject();
 						});

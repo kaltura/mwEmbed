@@ -114,6 +114,10 @@
 
             setFlashMode: function (val) {
                 this.isFlashMode = val;
+            },
+
+            isInitialized: function () {
+                return this.getPrimary().obj && this.getSecondary().obj;
             }
         });
     }
