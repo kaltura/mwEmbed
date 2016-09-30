@@ -36,7 +36,7 @@
             if (afterFirstPlay) {
                 var player = this.getPlayer();
                 var _this = this;
-                stream && player.bindHelper('firstPlay.streamUtilsSetStream', function () {
+                stream && player.bindHelper('firstPlay.streamUtilsSetStream AdSupport_preSequenceComplete.streamUtilsSetStream', function () {
                     player.unbindHelper('.streamUtilsSetStream');
                     $.when(_this.getStreamSelector().then(function (streamSelector) {
                         return streamSelector.setStream(stream, pauseAfterwards);
