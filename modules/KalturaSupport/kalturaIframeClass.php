@@ -1299,9 +1299,7 @@ HTML;
         }
         $v = $_SERVER['HTTP_USER_AGENT'];
 	?>
-	<script type="text/javascript"> <?php echo 'XXXXX1'  ?> </script>
 	<script type="text/javascript"> <?php echo 'console.info("'. $v . '");'  ?> </script>
-	<script type="text/javascript"> <?php echo 'XXXXX2'  ?> </script>
 	<script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ </script>
 	<?php if($wgRemoteWebInspector && $wgEnableScriptDebug){
 		echo '<script src="' . $wgRemoteWebInspector . '"></script>';
