@@ -881,7 +881,7 @@
 		},
 
 		getPlayingScreen: function(){
-			var thumbnail = this.getConfig('defaultThumbnail') !== "" ? this.getConfig('defaultThumbnail') : this.embedPlayer.poster;
+			var thumbnail = (this.getConfig('defaultThumbnail') != null && this.getConfig('defaultThumbnail') !== "")  ? this.getConfig('defaultThumbnail') : this.embedPlayer.poster;
 			return '<div class="chromecastScreen" style="background-color: rgba(0,0,0,0.7); width: 100%; height: 100%; font-family: Arial; position: absolute">' +
 				'<div class="chromecastPlayback">' +
 				'<div class="chromecastThumbBorder">' +
