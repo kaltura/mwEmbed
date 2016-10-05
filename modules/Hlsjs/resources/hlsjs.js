@@ -2,7 +2,7 @@
 	"use strict";
 
 	//Currently use native support when available, e.g. Safari desktop
-	if (Hls.isSupported() && !mw.isDesktopSafari() && !mw.getConfig("disableHLSOnJs")) {
+	if (Hls.isSupported() && !mw.isNativeApp() && !mw.isDesktopSafari() && !mw.getConfig("disableHLSOnJs")) {
 		var orig_supportsFlash = mw.supportsFlash.bind(mw);
 		mw.supportsFlash = function () {
 			return false;
