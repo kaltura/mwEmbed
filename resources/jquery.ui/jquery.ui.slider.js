@@ -168,15 +168,19 @@ $.widget( "ui.slider", $.ui.mouse, {
 		}
 
 		var outerWidth = this.element.outerWidth();
-			//IE11 iframe fullscreen fix (KMS-4606)
-		if( !mw.getConfig('EmbedPlayer.IsFriendlyIframe') && window["resizeScrubberIE11"] === true ){
-			outerWidth =  $(window).width();
+		var elemOffset = this.element.offset();
+		//IE11 iframe fullscreen fix (KMS-4606)
+		if( !mw.getConfig('EmbedPlayer.IsFriendlyIframe') && window["resizeScrubberIE11"] === true ) {
+			outerWidth = this.element.get(0).clientWidth;
+			var ieOffsetTop = this.element.offset().top * 100;
+			var ieOffsetLeft = this.element.offset().left * 100;
+			elemOffset = {left: ieOffsetLeft, top: ieOffsetTop};
 		}
 		this.elementSize = {
 			width:  outerWidth,
 			height: this.element.outerHeight()
 		};
-		this.elementOffset = this.element.offset();
+		this.elementOffset = elemOffset;
 
 		position = { x: event.pageX, y: event.pageY };
 		normValue = this._normValueFromMouse( position );
