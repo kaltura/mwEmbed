@@ -224,7 +224,9 @@ class UiConfResult {
 			//"playersJsReceiver" => array()
 		);
 
-		if(preg_match('/(?i)msie [5-8]/',$_SERVER['HTTP_USER_AGENT']))
+		$userAgent = $this->request->getUserAgent();
+
+		if(preg_match('/(?i)msie [5-8]/', $userAgent))
         {
             //On IE8 and below disable hlsjs if added
             if (isset($playerConfig['plugins']) &&

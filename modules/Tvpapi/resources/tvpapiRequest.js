@@ -5,7 +5,8 @@
 
         defaultConfig: {
             "restMethod": "",
-            "restApiBaseUrl": ""
+            "restApiBaseUrl": "",
+            "proxyData":null
         },
 
         restMethod: null,
@@ -21,10 +22,17 @@
         },
 
         getProxyConfig: function( attr, raw ) {
-            if( raw ){
-                return this.embedPlayer.getRawKalturaConfig( "proxyData", attr );
+            if ( this.getConfig( "proxyData" ) ) {
+                var data = this.getConfig( "proxyData" );
+                if ( attr ) {
+                    return data[attr];
+                }
+                return data;
             }
-            return this.embedPlayer.getKalturaConfig( "proxyData", attr );
+            if ( raw ) {
+                return this.embedPlayer.getRawKalturaConfig( "proxyData" , attr );
+            }
+            return this.embedPlayer.getKalturaConfig( "proxyData" , attr );
         },
 
         getInitObj: function( attr, raw ) {

@@ -555,6 +555,14 @@
 				_this.destroy();
 			});
 
+			_this.embedPlayer.bindHelper('onChangeMedia' + this.bindPostfix, function (event) {
+				if(_this.embedPlayer.isInSequence()){
+					mw.log( "DoubleClick::changeMedia event called. Calling Destroy." );
+					_this.destroy();
+				}
+			});
+
+
 			if (_this.embedPlayer.isMobileSkin()){
 				_this.embedPlayer.bindHelper('onShowControlBar' + this.bindPostfix, function (event) {
 					if ( !_this.isLinear ){
@@ -1672,6 +1680,7 @@
 		destroy:function(){
 			// remove any old bindings:
 			var _this = this;
+			this.hideSkipBtn();
 			if ( this.adTagUrl || this.currentAdSlotType === "postroll" ){
 				this.embedPlayer.unbindHelper( this.bindPostfix );
 			}
