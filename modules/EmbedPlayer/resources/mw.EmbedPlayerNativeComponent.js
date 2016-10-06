@@ -434,6 +434,10 @@
 		 */
 		pause: function () {
 			mw.log("EmbedPlayerNativeComponent:: pause::");
+			if (this.paused === false) {
+				//If we are pausing during seek make sure to indicate this to the seek handler
+				this.stopPlayAfterSeek = true;
+				this.stopAfterSeek = true;
 			}
 			this.parent_pause(); // update interface
 			if (this.getPlayerElement()) { // update player
