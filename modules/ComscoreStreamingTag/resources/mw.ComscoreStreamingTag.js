@@ -11,7 +11,7 @@
 
 	mw.ComscoreStreamingTag.prototype = {
 
-		pluginVersion: "1.1.3",
+		pluginVersion: "1.1.4",
 		reportingPluginName: "kaltura",
 		playerVersion: mw.getConfig('version'),
 
@@ -434,7 +434,7 @@
 				// _this.isPlaybackIntended = false; // No longer needed.
 				_this.playing = false;
 
-				if ((_this.getCurrentPosition() + 500) >= _this.getDuration() && !this.isLiveStream() && _this.getDuration() != 0)
+				if ((_this.getCurrentPosition() + 500) >= _this.getDuration() && !_this.isLiveStream() && _this.getDuration() != 0)
 					_this.onPlaybackEnded();
 				else
 					_this.onPlaybackInactive();
