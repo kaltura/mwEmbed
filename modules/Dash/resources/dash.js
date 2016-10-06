@@ -66,7 +66,7 @@
 			 */
 			initShaka: function () {
 				if (this.LoadShaka && !this.loaded) {
-					this.log("Init shaka");
+					this.log("Init shaka version " + shaka.Player.version);
 
 					//Set streamerType to dash
 					this.embedPlayer.streamerType = 'dash';
@@ -78,9 +78,6 @@
 					this.overridePlayerMethods();
 
 					this.setEmbedPlayerConfig(this.getPlayer());
-
-					// vtt.js override the VTTCue to wrong format for shaka, so set the original VTTCue
-					window.VTTCue = this.getPlayer().getOriginalVTTCue();
 
 					if(this.destroyPromise){
 						// after change media we should wait till the destroy promise will be resolved
