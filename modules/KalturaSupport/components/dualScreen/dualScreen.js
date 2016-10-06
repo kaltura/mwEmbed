@@ -199,8 +199,9 @@
 					});
 				}
 
-				this.bind('dualScreenChangeMasterStream', function (event, stream) {
-					_this.changeStream('master', stream);
+				this.bind('dualScreenChangeMainDisplayStream', function (event, stream) {
+					var primaryIsMain = mw.isMobileDevice() || (_this.displays.getPrimary() === _this.displays.getMainDisplay());
+					_this.changeStream(primaryIsMain ? 'master' : 'slave', stream);
 				});
 
 				this.bind('displayDropped', function (event, display, draggable) {
@@ -990,7 +991,8 @@
 				var promise;
 
 				if (mw.isMobileDevice()) {
-					promise = this.initSecondPlayer(true)
+					var forceMosaic = mw.isIOS() && (navigator.userAgent.indexOf('iPad') === -1);
+					promise = (forceMosaic ? $.Deferred().reject() : this.initSecondPlayer(true))
 						.then(function (res) {
 							if (mobileTag) {
 								utils.setConfig({
@@ -1006,12 +1008,11 @@
 
 							return res;
 						}, function () {
-							return mobileTag ?
-								utils.filterStreamsByTag(mobileTag)
-									.then(function (streams) {
-										utils.setStream(streams[0], false, true);
-									}) :
-								$.Deferred().reject();
+							mobileTag && utils.filterStreamsByTag(mobileTag).then(function (streams) {
+								utils.setStream(streams[0], forceMosaic, true);
+							});
+
+							return $.Deferred().reject();
 						});
 				} else {
 					if (mobileTag) {

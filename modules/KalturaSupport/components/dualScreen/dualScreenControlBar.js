@@ -183,10 +183,8 @@
 					return false;
 				} )
 				.on( 'click' + this.postFix + ' touchstart' + this.postFix, '.ds-streams > .ds-stream', function () {
-					if (_this.getConfig('disableDragDrop')) {
-						_this.embedPlayer.triggerHelper('dualScreenChangeMasterStream', [$(this).data('stream')]);
-						return false;
-					}
+					_this.embedPlayer.triggerHelper('dualScreenChangeMainDisplayStream', [$(this).data('stream')]);
+					return false;
 				} );
 
 			if (mw.isNativeApp()){
@@ -229,7 +227,7 @@
 
 			});
 
-			_this.bind('displayDropped dualScreenChangeMasterStream', function () {
+			_this.bind('displayDropped dualScreenChangeMainDisplayStream', function () {
 				$('.displayControlGroup').removeClass('ds-blur ds-open');
 			});
 		},
