@@ -407,10 +407,6 @@
 		play: function () {
 			var _this = this;
 			mw.log("EmbedPlayerNativeComponent:: play::");
-			if (!this.checkPlayPauseTime()){
-				mw.log("EmbedPlayerNativeComponent:: received play right after pause: aborting play command");
-				return;
-			}
 			this.playbackDone = false;
 
 			this.unbindHelper('replayEvent').bindHelper('replayEvent',function(){
@@ -438,33 +434,11 @@
 		 */
 		pause: function () {
 			mw.log("EmbedPlayerNativeComponent:: pause::");
-			if (!this.checkPlayPauseTime()){
-				mw.log("EmbedPlayerNativeComponent:: received pause right after play: aborting pause command");
-				return;
 			}
 			this.parent_pause(); // update interface
 			if (this.getPlayerElement()) { // update player
 				this.getPlayerElement().pause();
 			}
-		},
-
-		// verify that we didn't get play right after pause or vise versa when user multiple clicks the device
-		checkPlayPauseTime: function(){
-			return true;
-			if(mw.getConfig('disableKalturaControls') === true) {
-				return true;
-			}
-			var d = new Date();
-			var t = d.getTime();
-			var executeCommand = false;
-			if (this.lastPlayPauseTime === 0 || (t - this.lastPlayPauseTime) > 1000){
-				executeCommand = true;
-			}
-			this.lastPlayPauseTime = t;
-			if (this.currentState == "end") {
-				this.lastPlayPauseTime = 0
-			}
-			return executeCommand;
 		},
 
 		doSeek: function (seekTime) {
