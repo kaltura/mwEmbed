@@ -141,9 +141,9 @@
 						'entryId': _this.embedPlayer.kentryid
 					}
 				};
-				var proxyData = _this.embedPlayer.getKalturaConfig("proxyData");
-				if (proxyData && proxyData.data){
-					changeMediaMsg.data.proxyData = proxyData.data;
+				var proxyData = _this.getProxyData();
+				if (proxyData){
+					changeMediaMsg.data.proxyData = proxyData;
 				}
 				_this.sendMessage(changeMediaMsg);
 				_this.savedPosition = 0;
@@ -383,26 +383,9 @@
 				}
 			} );
 			// add support for custom proxyData for OTT app developers
-			var proxyData = this.getConfig( 'proxyData' );
-			if ( proxyData ) {
-				var recursiveIteration = function ( object ) {
-					for ( var property in object ) {
-						if ( object.hasOwnProperty( property ) ) {
-							if ( typeof object[property] == "object" ) {
-								recursiveIteration( object[property] );
-							} else {
-								object[property] = _this.embedPlayer.evaluate( object[property] );
-							}
-						}
-					}
-				}
-				recursiveIteration( proxyData );
+			var proxyData = this.getProxyData();
+			if(proxyData){
 				fv['proxyData'] = proxyData;
-			} else {
-				var data  = _this.embedPlayer.getKalturaConfig('originalProxyData');
-				if (!$.isEmptyObject(data)) {
-					fv['proxyData'] = data;
-				}
 			}
 
 			// add support for passing ks
@@ -418,6 +401,31 @@
 				fv['largePlayBtn'] = {plugin: true};
 			}
 			return fv;
+		},
+
+		getProxyData: function(){
+			var proxyData = this.getConfig( 'proxyData' );
+			if ( proxyData ) {
+				var _this = this;
+				var recursiveIteration = function ( object ) {
+					for ( var property in object ) {
+						if ( object.hasOwnProperty( property ) ) {
+							if ( typeof object[property] == "object" ) {
+								recursiveIteration( object[property] );
+							} else {
+								object[property] = _this.embedPlayer.evaluate( object[property] );
+							}
+						}
+					}
+				};
+				recursiveIteration( proxyData );
+				return proxyData;
+			} else {
+				var data  = this.embedPlayer.getKalturaConfig('originalProxyData');
+				if (!$.isEmptyObject(data)) {
+					return data;
+				}
+			}
 		},
 
 		onLaunchError: function(error) {
