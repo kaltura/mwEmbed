@@ -170,11 +170,15 @@ class kalturaIframeClass {
 		// NOTE: special persistentNativePlayer class will prevent the video from being swapped
 		// so that overlays work on the iPad.
 		$o = "\n\n\t" .'<video class="persistentNativePlayer" ';
-        if (!empty($_SERVER['HTTP_USER_AGENT'])){
-            $userAgent = $_SERVER['HTTP_USER_AGENT'];
-            if (strpos($userAgent, 'kalturaNativeCordovaPlayer') !== false) {
-                 $o.= 'poster="' . htmlspecialchars( "data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%01%00%00%00%01%08%02%00%00%00%90wS%DE%00%00%00%01sRGB%00%AE%CE%1C%E9%00%00%00%09pHYs%00%00%0B%13%00%00%0B%13%01%00%9A%9C%18%00%00%00%07tIME%07%DB%0B%0A%17%041%80%9B%E7%F2%00%00%00%19tEXtComment%00Created%20with%20GIMPW%81%0E%17%00%00%00%0CIDAT%08%D7c%60%60%60%00%00%00%04%00%01'4'%0A%00%00%00%00IEND%AEB%60%82" ) . '" ';
-            }
+        $flashvars = $this->request->getFlashVars();
+        $videoBlackPixelPoster = "false";
+        if (isset($flashvars["videoBlackPixelPoster"])){
+            $videoBlackPixelPoster = $flashvars["videoBlackPixelPoster"];
+        }
+        $userAgent = $_SERVER['HTTP_USER_AGENT'];
+        if (($videoBlackPixelPoster == "true") ||
+            (!empty($userAgent) && (preg_match('/kalturaNativeCordovaPlayer/', $userAgent)))){
+            $o.= 'poster="' . htmlspecialchars( "data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%01%00%00%00%01%08%02%00%00%00%90wS%DE%00%00%00%01sRGB%00%AE%CE%1C%E9%00%00%00%09pHYs%00%00%0B%13%00%00%0B%13%01%00%9A%9C%18%00%00%00%07tIME%07%DB%0B%0A%17%041%80%9B%E7%F2%00%00%00%19tEXtComment%00Created%20with%20GIMPW%81%0E%17%00%00%00%0CIDAT%08%D7c%60%60%60%00%00%00%04%00%01'4'%0A%00%00%00%00IEND%AEB%60%82" ) . '" ';
         }
 		//$o.= '  crossorigin="anonymous" poster="' . htmlspecialchars( "data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%01%00%00%00%01%08%02%00%00%00%90wS%DE%00%00%00%01sRGB%00%AE%CE%1C%E9%00%00%00%09pHYs%00%00%0B%13%00%00%0B%13%01%00%9A%9C%18%00%00%00%07tIME%07%DB%0B%0A%17%041%80%9B%E7%F2%00%00%00%19tEXtComment%00Created%20with%20GIMPW%81%0E%17%00%00%00%0CIDAT%08%D7c%60%60%60%00%00%00%04%00%01'4'%0A%00%00%00%00IEND%AEB%60%82" ) . '" ';
 		$o.= 'id="' . htmlspecialchars( $this->getIframeId() ) . '" ';
@@ -1293,7 +1297,11 @@ HTML;
         } else {
             echo '<meta http-equiv="X-UA-Compatible" content="IE=edge"/>';
         }
+        $v = $_SERVER['HTTP_USER_AGENT'];
 	?>
+	<script type="text/javascript"> <?php echo 'XXXXX1'  ?> </script>
+	<script type="text/javascript"> <?php echo 'console.info("'. $v . '");'  ?> </script>
+	<script type="text/javascript"> <?php echo 'XXXXX2'  ?> </script>
 	<script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ </script>
 	<?php if($wgRemoteWebInspector && $wgEnableScriptDebug){
 		echo '<script src="' . $wgRemoteWebInspector . '"></script>';
