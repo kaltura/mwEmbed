@@ -6,7 +6,7 @@
 (function (mw, $) {
 	"use strict";
 
-	var originalVTTCue = window.VTTCue;
+	window.originalVTTCue = window.VTTCue;
 
 	mw.EmbedPlayerNative = {
 
@@ -1495,9 +1495,7 @@
             }
             return 0;
         },
-		getOriginalVTTCue: function(){
-			return originalVTTCue;
-		},
+
 		clean:function(){
 			clearTimeout(this.parseAudioTracksTimeout);
 		}
