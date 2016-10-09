@@ -189,6 +189,7 @@
 			if (callback){
 				callback();
 			}
+			this.play();
 		},
 		// override these functions so embedPlayer won't try to sync time
 		syncCurrentTime: function(){
