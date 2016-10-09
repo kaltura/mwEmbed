@@ -196,7 +196,7 @@
 			$(this.embedPlayer).bind('userInitiatedPlay', function(e) {
 				_this.sendMessage({'type': 'notification','event': e.type});
 				if (_this.replay){
-					_this.loadMedia();
+					_this.loadMedia(null, null, true);
 				}
 			});
 
@@ -359,9 +359,13 @@
 						this.inSequence = true;
 						break;
 					case "chromecastReceiverAdComplete":
-						this.embedPlayer.enablePlayControls();
-						this.embedPlayer.triggerHelper("chromecastReceiverAdComplete");
-						this.loadMedia();
+						if (this.inSequence) {
+							this.embedPlayer.enablePlayControls();
+							this.embedPlayer.triggerHelper("chromecastReceiverAdComplete");
+							this.inSequence = false;
+							this.embedPlayer.layoutBuilder.closeAlert();
+							this.playMedia();
+						}
 						break;
 					case "chromecastReceiverAdDuration":
 						this.adDuration = parseInt(message.split('|')[1]);
@@ -400,6 +404,7 @@
 				fv['scrubber'] = {plugin: true};
 				fv['largePlayBtn'] = {plugin: true};
 			}
+			fv.autoPlay = true;
 			return fv;
 		},
 
@@ -479,8 +484,9 @@
 
 		onMediaDiscovered: function(how, mediaSession) {
 			var _this = this;
-			this.embedPlayer.layoutBuilder.closeAlert();
-			this.inSequence = false;
+			if (!this.inSequence) {
+				this.embedPlayer.layoutBuilder.closeAlert();
+			}
 			// if page reloaded and in playlist - select the currently playing clip
 			if ( how === 'onRequestSessionSuccess_' && this.embedPlayer.playlist){
 				this.stopApp();
@@ -588,6 +594,10 @@
 		},
 
 		monitor: function(){
+			var mediaDuration = this.getDuration();
+			if (mediaDuration !== this.getPlayer().getDuration()){
+				this.embedPlayer.mediaLoaded(this.currentMediaSession);
+			}
 			this.embedPlayer.updatePlayhead( this.getCurrentTime(), this.inSequence ? this.adDuration : this.mediaDuration );
 		},
 
@@ -613,6 +623,13 @@
 			this.embedPlayer.onPlayerSeekEnd();
 		},
 
+		getDuration: function(){
+			this.mediaDuration = 0;
+			if (this.currentMediaSession){
+				this.mediaDuration = this.currentMediaSession.media.duration;
+			}
+			return this.mediaDuration;
+		},
 		getCurrentTime: function(){
 			this.mediaCurrentTime = this.currentMediaSession.getEstimatedTime();
 			return this.mediaCurrentTime;
@@ -696,7 +713,7 @@
 			}
 		},
 
-		loadMedia: function(url, mime) {
+		loadMedia: function(url, mime, replay) {
 			if (this.isNativeSDK){
 				$( this.embedPlayer ).trigger( 'loadReceiverMedia', [url, mime] );
 				return;
@@ -732,7 +749,8 @@
 						};
 
 						var json = {
-							"payload" : payload
+							"payload" : payload,
+							"replay": replay
 						};
 
 						_this.request.customData = json;
