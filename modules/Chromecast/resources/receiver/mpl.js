@@ -932,8 +932,10 @@ function setDebugMessage(elementId, message) {
  */
 function getPlayerState() {
 	if (mediaPlayer){
-		var playerState = mediaPlayer.getState();
-		setDebugMessage('mediaPlayerState', 'underflow: ' + playerState['underflow']);
+		try {
+			var playerState = mediaPlayer.getState();
+			setDebugMessage('mediaPlayerState', 'underflow: ' + playerState['underflow']);
+		}catch(e){}
 	}
 }
 function extend(a, b){
