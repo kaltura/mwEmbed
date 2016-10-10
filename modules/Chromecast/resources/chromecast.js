@@ -151,6 +151,14 @@
 				_this.pendingRelated = false;
 			});
 
+			$( this.embedPlayer).bind('SourceSelected', function(e){
+				var licenseUrl = _this.buildUdrmLicenseUri("application/dash+xml");
+				if (licenseUrl) {
+					_this.sendMessage({'type': 'license', 'value': licenseUrl});
+					_this.log("set license URL to: " + licenseUrl);
+				}
+			});
+
 			$( this.embedPlayer).bind('onAdSkip', function(e){
 				_this.sendMessage({'type': 'notification','event': 'cancelAllAds'});
 				_this.embedPlayer.enablePlayControls();
