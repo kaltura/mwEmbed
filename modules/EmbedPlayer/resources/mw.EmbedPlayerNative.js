@@ -6,8 +6,6 @@
 (function (mw, $) {
 	"use strict";
 
-	window.originalVTTCue = window.VTTCue;
-
 	mw.EmbedPlayerNative = {
 
 		//Instance Name
