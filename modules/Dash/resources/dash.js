@@ -3,10 +3,7 @@
 	if (!window.Promise) {
 		shaka.polyfill.installAll();
 	}
-	if (shaka.Player.isBrowserSupported() &&
-		!mw.getConfig( "EmbedPlayer.ForceNativeComponent" ) &&
-		!mw.isDesktopSafari() &&
-		!mw.isAndroid()) {
+	if (shaka.Player.isBrowserSupported() && !mw.getConfig("EmbedPlayer.ForceNativeComponent") && !mw.isDesktopSafari()) {
 		$(mw).bind('EmbedPlayerUpdateMediaPlayers', function (event, mediaPlayers) {
 			mw.log("Dash::Register shaka player for application/dash+xml mime type");
 			var shakaPlayer = new mw.MediaPlayer('shakaPlayer', ['application/dash+xml'], 'Native');
@@ -46,7 +43,6 @@
 			addBindings: function () {
 				this.bind("SourceChange", this.isNeeded.bind(this));
 				this.bind("playerReady", this.initShaka.bind(this));
-				this.bind("seeking", this.onSeekBeforePlay.bind(this));
 				this.bind("switchAudioTrack", this.onSwitchAudioTrack.bind(this));
 				this.bind("selectClosedCaptions", this.onSwitchTextTrack.bind(this));
 				this.bind("onChangeMedia", this.clean.bind(this));
@@ -68,7 +64,7 @@
 			 */
 			initShaka: function () {
 				if (this.LoadShaka && !this.loaded) {
-					this.log("Init shaka");
+					this.log("Init shaka version " + shaka.Player.version);
 
 					//Set streamerType to dash
 					this.embedPlayer.streamerType = 'dash';
@@ -81,12 +77,9 @@
 
 					this.setEmbedPlayerConfig(this.getPlayer());
 
-					// vtt.js override the VTTCue to wrong format for shaka, so set the original VTTCue
-					window.VTTCue = this.getPlayer().getOriginalVTTCue();
-
-					if(this.destroyPromise){
+					if (this.destroyPromise) {
 						// after change media we should wait till the destroy promise will be resolved
-						this.destroyPromise.then(function(){
+						this.destroyPromise.then(function () {
 							this.log("The player has been destroyed");
 							this.destroyPromise = null;
 							this.manifestLoaded = false;
@@ -137,7 +130,7 @@
 				return drmConfig;
 			},
 
-			createPlayer: function(){
+			createPlayer: function () {
 				// Create a Player instance.
 				var player = new shaka.Player(this.getPlayer().getPlayerElement());
 
@@ -148,13 +141,13 @@
 
 				this.registerShakaEvents();
 
-				this.bind("firstPlay", function(){
-					this.unbind("seeking");
+				this.bind("firstPlay seeking", function () {
+					this.unbind("firstPlay seeking");
 					this.loadManifest();
 				}.bind(this));
 			},
 
-			registerShakaEvents: function(){
+			registerShakaEvents: function () {
 				player.addEventListener('error', this.onErrorEvent.bind(this));
 				player.addEventListener('adaptation', this.onAdaptation.bind(this));
 			},
@@ -162,7 +155,7 @@
 			loadManifest: function () {
 				var _this = this;
 				var selectedSource = this.getPlayer().getSrc();
-				if(!this.manifestLoaded){
+				if (!this.manifestLoaded) {
 					this.manifestLoaded = true;
 					this.log('Loading manifest...');
 					this.getPlayer().resolveSrcURL(selectedSource)
@@ -170,8 +163,9 @@
 							selectedSource = manifestSrc;
 						})
 						.always(function () {  // both success or error
-								// Try to load a manifest.
-								player.load(selectedSource).then(function () {
+							player.configure(_this.getDefaultDashConfig()["shakaConfig"]);
+							// Try to load a manifest.
+							player.load(selectedSource).then(function () {
 									// This runs if the asynchronous load is successful.
 									_this.log('The manifest has been loaded');
 									_this.addTracks();
@@ -275,9 +269,9 @@
 						player.selectTrack(selectedAbrTrack, false);
 						this.getPlayer().triggerHelper("sourceSwitchingStarted", this.currentBitrate);
 						var _this = this;
-						setTimeout(function(){
+						setTimeout(function () {
 							_this.getPlayer().triggerHelper("sourceSwitchingEnd", Math.round(source.getBitrate()));
-						},1000);
+						}, 1000);
 						mw.log("Dash::switchSrc to ", selectedAbrTrack);
 					}
 				} else { // "Auto" option is selected
@@ -294,9 +288,21 @@
 			 * Override player callback after changing media
 			 */
 			playerSwitchSource: function (src, switchCallback, doneCallback) {
-				this.getPlayer().play();
-				if ($.isFunction(switchCallback)) {
-					switchCallback();
+				var loadManifestAfterSwitchSource = function () {
+					this.unbind("firstPlay seeking");
+					this.loadManifest();
+					this.getPlayer().play();
+					if ($.isFunction(switchCallback)) {
+						switchCallback();
+					}
+				}.bind(this);
+
+				if (this.destroyPromise) {
+					this.destroyPromise.then(function () {
+						loadManifestAfterSwitchSource();
+					}.bind(this));
+				} else {
+					loadManifestAfterSwitchSource();
 				}
 			},
 
@@ -338,13 +344,6 @@
 				}
 			},
 
-			onSeekBeforePlay: function(){
-				this.unbind("seeking");
-				this.unbind("firstPlay");
-				this.loadManifest();
-			},
-
-
 			onErrorEvent: function (event) {
 				// Extract the shaka.util.Error object from the event.
 				this.onError(event.detail);
@@ -357,7 +356,7 @@
 			 */
 			onError: function (event, data) {
 				var errorData = data ? data.type + ", " + data.details : event;
-				mw.log("Dash::Error: " , errorData);
+				mw.log("Dash::Error: ", errorData);
 			},
 
 			/**
@@ -374,13 +373,13 @@
 				}
 			},
 
-			onAdaptation: function(){
+			onAdaptation: function () {
 				var selectedAbrTrack = this.getTracksByType("video").filter(function (abrTrack) {
 					return abrTrack.active;
 				})[0];
-				if(selectedAbrTrack){
+				if (selectedAbrTrack) {
 					var currentBitrate = Math.round(selectedAbrTrack.bandwidth / 1024);
-					if(this.currentBitrate !== currentBitrate){
+					if (this.currentBitrate !== currentBitrate) {
 						this.currentBitrate = currentBitrate;
 						this.embedPlayer.triggerHelper('bitrateChange', currentBitrate);
 						this.log('The bitrate has changed to ' + currentBitrate);
@@ -422,7 +421,7 @@
 		var playerConfig = window.kalturaIframePackageData.playerConfig;
 		if (playerConfig && playerConfig.plugins && !playerConfig.plugins["dash"]) {
 			playerConfig.plugins["dash"] = {
-				plugin : true
+				plugin: true
 			};
 			mw.setConfig('KalturaSupport.PlayerConfig', playerConfig);
 		}
