@@ -92,7 +92,7 @@
 		chromelessAdManagerLoadedId: null,
 
 		init: function( embedPlayer, callback, pluginName ){
-			if (embedPlayer.casting){
+			if (embedPlayer.casting || mw.getConfig("EmbedPlayer.UseExternalAdPlayer") === true){
 				callback();
 				return;
 			}
