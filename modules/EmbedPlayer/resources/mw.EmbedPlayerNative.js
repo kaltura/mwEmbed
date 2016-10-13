@@ -96,6 +96,9 @@
 		setup: function (readyCallback) {
 			var _this = this;
 			this._propagateEvents = true;
+			if (mw.isIpad()) {
+				this.getPlayerElement().removeAttribute("poster");
+			}
 			$(this.getPlayerElement()).css('position', 'absolute');
 			if (this.inline) {
 				$(this.getPlayerElement()).attr('webkit-playsinline', '');
