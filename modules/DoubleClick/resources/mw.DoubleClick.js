@@ -390,7 +390,7 @@
 		loadIma:function( successCB, failureCB ){
 			var _this = this;
 			var isLoaded = false;
-			var timeoutVal = _this.getConfig("adsManagerLoadedTimeout") || (mw.isChromeCast() ? 15000 : 5000);
+			var timeoutVal = _this.getConfig("adsManagerLoadedTimeout") || (mw.isChromeCast() ? 60000 : 5000);
 			mw.log( "DoubleClick::loadIma: start timer for adsManager loading check: " + timeoutVal + "ms");
 			setTimeout(function(){
 				if ( !isLoaded ){
@@ -889,7 +889,7 @@
 				adsRequest.adTagUrl = encodeURIComponent(adsRequest.adTagUrl);
 				this.embedPlayer.getPlayerElement().sendNotification( 'requestAds', adsRequest );
 				mw.log( "DoubleClick::requestAds: Chromeless player request ad from KDP plugin");
-				var timeout = this.getConfig("adsManagerLoadedTimeout") || (mw.isChromeCast() ? 15000 : 5000);
+				var timeout = this.getConfig("adsManagerLoadedTimeout") || (mw.isChromeCast() ? 60000 : 5000);
 				this.chromelessAdManagerLoadedId = setTimeout(function(){
 					mw.log( "DoubleClick::Error: AdsManager failed to load by Flash plugin after " + timeout + " seconds.");
 					_this.restorePlayer(true);

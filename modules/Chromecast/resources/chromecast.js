@@ -60,6 +60,8 @@
 		adDuration: null,
 		supportedPlugins: ['doubleClick', 'youbora', 'kAnalony', 'related', 'comScoreStreamingTag', 'watermark', 'heartbeat'],
 		chromeLib: null,
+		disableDoubleclick: false,
+		restoreDoubleclick: false,
 
 		setup: function( embedPlayer ) {
 			var _this = this;
@@ -117,7 +119,10 @@
 					}
 			});
 
-			$( this.embedPlayer).bind('chromecastDeviceConnected', function(){
+			$( this.embedPlayer).bind('chromecastDeviceConnected', function(e, proxyEvent, startTime){
+				if (startTime && startTime > 0.01){
+					_this.disableDoubleclick = true;
+				}
 				_this.onRequestSessionSuccess();
 			});
 			$( this.embedPlayer).bind('chromecastDeviceDisConnected', function(){
@@ -141,6 +146,10 @@
 						'entryId': _this.embedPlayer.kentryid
 					}
 				};
+				if (_this.restoreDoubleclick){
+					_this.sendMessage({'type': 'setKDPAttribute', 'plugin': 'doubleClick', 'property': 'plugin', 'value': true});
+					_this.restoreDoubleclick = false;
+				}
 				var proxyData = _this.getProxyData();
 				if (proxyData){
 					changeMediaMsg.data.proxyData = proxyData;
@@ -412,6 +421,10 @@
 				fv['scrubber'] = {plugin: true};
 				fv['largePlayBtn'] = {plugin: true};
 			}
+			 if (this.disableDoubleclick && typeof fv['doubleClick'] !== "undefined"){
+				 fv['doubleClick']['plugin'] = false;
+				 this.restoreDoubleclick = true;
+			 }
 			fv.autoPlay = true;
 			return fv;
 		},

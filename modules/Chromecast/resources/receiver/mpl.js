@@ -123,6 +123,8 @@ onload = function () {
 			kdp.sendNotification(payload['event'], [payload['data']]); // pass notification event to the player
 		} else if (payload['type'] === 'setLogo') {
 			document.getElementById('logo').style.backgroundImage = "url(" + payload['logo'] + ")";
+		} else if (payload['type'] === 'setKDPAttribute') {
+			kdp.setKDPAttribute(payload['plugin'], payload['property'], payload['value']);
 		} else if (payload['type'] === 'changeMedia') {
 			kdp.sendNotification('changeMedia', payload.data);
 		} else if (payload['type'] === 'embed') {
