@@ -1255,10 +1255,6 @@
 						}
 
 						// Update the proxy data
-						if (embedPlayer.playerConfig['plugins'] && embedPlayer.playerConfig['plugins']['proxyData'] && embedPlayer.playerConfig['plugins']['proxyData']['data']) {
-							embedPlayer.playerConfig['plugins']['proxyData']['data'] = null;
-							delete embedPlayer.playerConfig['plugins']['proxyData']['data'];
-						}
 						embedPlayer.setKalturaConfig("proxyData", notificationData.proxyData);
 						embedPlayer.setKalturaConfig("proxyData", "data", notificationData.proxyData);
 						//Needed for changeMedia to keep base proxyData before server response is mixed into the object

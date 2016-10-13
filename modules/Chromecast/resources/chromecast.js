@@ -434,9 +434,13 @@
 				recursiveIteration( proxyData );
 				return proxyData;
 			} else {
-				var data  = this.embedPlayer.getKalturaConfig('originalProxyData');
-				if (!$.isEmptyObject(data)) {
-					return data;
+				var proxyData  = this.embedPlayer.getKalturaConfig('originalProxyData');
+				if (!$.isEmptyObject(proxyData)) {
+					if(proxyData.data){
+						return proxyData.data;
+					} else {
+						return proxyData;
+					}
 				}
 			}
 		},

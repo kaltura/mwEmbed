@@ -505,12 +505,7 @@ mw.KWidgetSupport.prototype = {
 			playerData.meta.partnerData["isLive"] == "true" ) {
 			embedPlayer.setLive( true );
 		}
-		if (embedPlayer.getKalturaConfig('proxyData' , 'data')) {
-			embedPlayer.setKalturaConfig('originalProxyData', embedPlayer.getKalturaConfig('proxyData', 'data'));
-		} else {
-			embedPlayer.setKalturaConfig('originalProxyData', embedPlayer.getKalturaConfig('proxyData'));
-
-		}
+		embedPlayer.setKalturaConfig('originalProxyData', embedPlayer.getKalturaConfig('proxyData'));
 		//Set proxyData response data
 		embedPlayer.setKalturaConfig( 'proxyData', playerData.meta.partnerData);
 	},
