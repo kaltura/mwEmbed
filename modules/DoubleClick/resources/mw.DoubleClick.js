@@ -730,7 +730,7 @@
 		},
 		addSkipSupport: function(){
 			var _this = this;
-			if ( this.embedPlayer.getRawKalturaConfig('skipBtn') && this.embedPlayer.getVideoHolder().find(".ad-skip-btn").length === 0){
+			if ( this.embedPlayer.getRawKalturaConfig('skipBtn') && this.embedPlayer.getRawKalturaConfig('skipBtn', 'plugin') && this.embedPlayer.getVideoHolder().find(".ad-skip-btn").length === 0){
 				var label = "Skip Ad";
 				if( this.embedPlayer.getKalturaConfig( 'skipBtn', 'label' ) ){
 					label = this.embedPlayer.getKalturaConfig( 'skipBtn', 'label' );
