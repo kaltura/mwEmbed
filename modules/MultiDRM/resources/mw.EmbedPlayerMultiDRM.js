@@ -794,7 +794,11 @@
 					vid.pause();
 
 					// dissable seeking ( if we were in a seeking state before the switch )
-					_this.seeking = false;
+					if (_this.isFlavorSwitching) {
+						_this.seeking = true;
+					} else {
+						_this.seeking = false;
+					}
 
 					// Workaround for 'changeMedia' on Android & iOS
 					// When changing media and not playing entry before spinner is stuck on black screen
@@ -1299,6 +1303,7 @@
 				var _this = this;
 				this.waitForSeekTarget().then(function(){
 					_this.seeking = false;
+					_this.isFlavorSwitching = false;
 					if (_this._propagateEvents) {
 						_this.log(" trigger: seeked");
 						_this.triggerHelper('seeked', [_this.currentTime]);
