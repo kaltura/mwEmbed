@@ -130,7 +130,8 @@
 					}.bind(this));
 					this.bind("seeking", this.onSeekBeforePlay.bind(this));
 					this.bind("firstPlay", function () {
-						this.unbind("firstPlay seeking");
+						this.unbind("firstPlay");
+						this.unbind("seeking");
 						this.hls.attachMedia(this.getPlayer().getPlayerElement());
 					}.bind(this));
 				}
@@ -562,7 +563,8 @@
 			 */
 			playerSwitchSource: function (src, switchCallback, doneCallback) {
 				if (!this.mediaAttached){
-					this.unbind("firstPlay seeking");
+					this.unbind("firstPlay");
+					this.unbind("seeking");
 					this.hls.attachMedia(this.getPlayer().getPlayerElement());
 				}
 				this.getPlayer().play();
@@ -617,7 +619,8 @@
 
 			onSeekBeforePlay: function(){
 				if(this.LoadHLS){
-					this.unbind("firstPlay seeking");
+					this.unbind("firstPlay");
+					this.unbind("seeking");
 					this.hls.attachMedia(this.getPlayer().getPlayerElement());
 				}
 			},
