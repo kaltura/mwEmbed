@@ -568,6 +568,7 @@
 			_this.embedPlayer.bindHelper('onChangeMedia' + this.bindPostfix, function (event) {
 				if(_this.embedPlayer.isInSequence()){
 					mw.log( "DoubleClick::changeMedia event called. Calling Destroy." );
+					_this.isdestroy = true;
 					_this.destroy();
 				}
 			});
@@ -1619,7 +1620,7 @@
 			}
 		},
 		restorePlayer: function( onContentComplete, adPlayed ){
-			if (this.isdestroy && this.getConfig("adTagUrl")){ // DFP trafficed and already destroyed
+			if (this.isdestroy && this.adTagUrl){ // DFP trafficed and already destroyed
 				return;
 			}
 			mw.log("DoubleClick::restorePlayer: content complete:" + onContentComplete);
