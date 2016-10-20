@@ -141,8 +141,15 @@
 
 				this.registerShakaEvents();
 
-				this.bind("firstPlay seeking", function () {
-					this.unbind("firstPlay seeking");
+				this.bind("firstPlay", function () {
+					this.unbind("firstPlay");
+					this.unbind("seeking");
+					this.loadManifest();
+				}.bind(this));
+
+				this.bind("seeking", function () {
+					this.unbind("firstPlay");
+					this.unbind("seeking");
 					this.loadManifest();
 				}.bind(this));
 			},
@@ -289,7 +296,8 @@
 			 */
 			playerSwitchSource: function (src, switchCallback, doneCallback) {
 				var loadManifestAfterSwitchSource = function () {
-					this.unbind("firstPlay seeking");
+					this.unbind("firstPlay");
+					this.unbind("seeking");
 					this.loadManifest();
 					this.getPlayer().play();
 					if ($.isFunction(switchCallback)) {
