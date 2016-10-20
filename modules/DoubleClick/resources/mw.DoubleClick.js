@@ -1082,7 +1082,7 @@
 				var currentAdSlotType = _this.isLinear ? _this.currentAdSlotType : "overlay";
 				$("#" + _this.getAdContainerId()).show();
 				// dispatch adOpen event
-				$( _this.embedPlayer).trigger( 'onAdOpen',[adData.adId, adData.adSystem, currentAdSlotType, adData.adPodInfo ? adData.adPodInfo.adPosition : 0] );
+				$( _this.embedPlayer).trigger( 'onAdOpen',[adData.adId, adData.adSystem, currentAdSlotType, adData.adPodInfo ? adData.adPodInfo.adPosition : 0, adData.linear] );
 
 				_this.duration= _this.adsManager.getRemainingTime();
 				if (_this.duration >= 0) {
