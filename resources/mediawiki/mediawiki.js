@@ -1324,7 +1324,7 @@ var mw = ( function ( $, undefined ) {
 					// an array of unrelated modules, whereas the modules passed to
 					// using() are related and must all be loaded.
 
-					if (document.documentMode && document.documentMode === 8) {
+					if (isIELessThan9) {
 						var hlsPos = -1;
 						var hlsjs = "Hlsjs";
 						for (var i = 0; i < modules.length; i++) {
