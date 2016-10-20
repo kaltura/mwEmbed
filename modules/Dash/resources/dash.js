@@ -141,17 +141,19 @@
 
 				this.registerShakaEvents();
 
-				this.bind("firstPlay", function () {
+				var unbindAndLoadManifest = function() {
 					this.unbind("firstPlay");
 					this.unbind("seeking");
 					this.loadManifest();
-				}.bind(this));
+				}.bind(this);
+
+				this.bind("firstPlay", function () {
+					unbindAndLoadManifest();
+				});
 
 				this.bind("seeking", function () {
-					this.unbind("firstPlay");
-					this.unbind("seeking");
-					this.loadManifest();
-				}.bind(this));
+					unbindAndLoadManifest();
+				});
 			},
 
 			registerShakaEvents: function () {
