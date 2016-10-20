@@ -28,7 +28,7 @@
 			});
 			
 			this.bind('onChangeMediaDone playerReady onpause onEndedDone onRemovePlayerSpinner showPlayerControls showLargePlayBtn', function(e){
-				if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() ){
+				if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() && !_this.embedPlayer.isPauseLoading ){
 					_this.getComponent().removeClass("icon-pause").addClass("icon-play");
 					_this.show();
 				}
@@ -40,8 +40,11 @@
 					_this.show();
 				}
 			});
-			this.bind('playing AdSupport_StartAdPlayback onAddPlayerSpinner onHideControlBar onChangeMedia', function(e){
+			this.bind('playing AdSupport_StartAdPlayback onHideControlBar onChangeMedia', function(e){
 				_this.hide();
+			});
+			this.bind('onAddPlayerSpinner showScreen', function(e){
+				_this.hide(true);
 			});
 			this.bind('onPlayerStateChange', function(e, newState, oldState){
 				if( newState == 'load' || newState == 'play' ){
@@ -51,7 +54,7 @@
 					_this.hide();
 				}
 			});
-			this.bind( 'hideScreen', function(){
+			this.bind( 'hideScreen closeMenuOverlay', function(){
 				if (mw.isMobileDevice() && _this.getPlayer().paused){
 					_this.show();
 				}
@@ -63,8 +66,20 @@
             });
 		},
 		show: function(){
-			if ( !this.isDisabled && !this.embedPlayer.changeMediaStarted ) {
-				this.getComponent().show();
+			if ( !this.isDisabled && !this.embedPlayer.layoutBuilder.displayOptionsMenuFlag ) {
+				if (this.embedPlayer.isMobileSkin() && (this.embedPlayer.changeMediaStarted || this.embedPlayer.buffering)){
+					return; // prevent showing large play button on top of the spinner when using mobile skin and changing media
+				}
+
+				if (this.embedPlayer.isMobileSkin()){
+					if (mw.isIOS8()){
+						this.getComponent().fadeIn('fast').css('display', "-webkit-flex");
+					}else{
+						this.getComponent().fadeIn('fast').css('display', "flex");
+					}
+				} else {
+					this.getComponent().css('display', "block");
+				}
 			}
 			this.shouldShow = true;
 		},
@@ -88,10 +103,10 @@
 			event.preventDefault();
 			event.stopPropagation();
 			if ( this.getConfig("togglePause") && this.getPlayer().isPlaying() ){
-				this.getPlayer().sendNotification('doPause');
+				this.getPlayer().sendNotification('doPause',{'userInitiated': true});
 			}else{
 				this.getPlayer().triggerHelper( 'goingtoplay' );
-				this.getPlayer().sendNotification('doPlay');
+				this.getPlayer().sendNotification('doPlay',{'userInitiated': true});
 			}
 		},
 		onEnable: function(){

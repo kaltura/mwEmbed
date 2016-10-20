@@ -102,7 +102,8 @@ $container['client_helper'] = $container->share(function ($c) {
 		$config['Logger'] = $c['logger'];
 	}
 	// Set KS from our request or generate a new KS
-	if( $request->hasKS() ) {
+	global $wgForceCache;
+	if( $wgForceCache || $request->hasKS() ) {
 		$config['KS'] = $request->getKS();
 	} else {
 		$config['WidgetId'] = $request->getWidgetId();

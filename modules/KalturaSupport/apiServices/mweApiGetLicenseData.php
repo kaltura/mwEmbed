@@ -1,19 +1,15 @@
 <?php
 
 /*
-	Returns json with license acquisition data. 
+	Returns json with license acquisition uri. 
 	Required parameters:
-		wid, uiconf_id, entry_id, ks, drm (wvclassic|wvcenc)
-	Optional parameter:
-		flavor_ids  (comma-separated list)
+		uiconf_id, entry_id, flavor_id, drm (wvclassic|wvcenc)
+    Other parameters are required depending on system setup.
 		
 	Return value:
 	{
-        "licenseUri": {
-            "flavor1": "https://udrm.kaltura.com/widevine/license?custom_data=xyz123&signature=sxyz123",
-            "flavor2": "https://udrm.kaltura.com/widevine/license?custom_data=abc456&signature=sabc456"
-        }
-	}
+        "licenseUri": "https://udrm.kaltura.com/widevine/license?custom_data=xyz123&signature=sxyz123&files=sdhu3R"
+    }
 	
 	OR, if there's an error:
 	{
@@ -42,12 +38,11 @@ class mweApiGetLicenseData {
 		
 		$response = array();
 		
-		$missingParams = $this->getMissingParams();
-		
-        // strip possible ending slash
-        $udrmBaseURL = preg_replace('/(.+)\/$/', '\\1', $wgKalturaUdrmLicenseServerUrl);
+        // Trim possible ending slash
+        $udrmBaseURL = rtrim($wgKalturaUdrmLicenseServerUrl, '/');
         
         try {
+            $missingParams = array_diff(array('drm', 'flavor_id', 'entry_id', 'uiconf_id'), array_keys($_REQUEST));
             if ($missingParams) {
                 throw new Exception('Missing mandatory parameter(s): ' . implode(', ', $missingParams));
             }
@@ -64,19 +59,20 @@ class mweApiGetLicenseData {
                     throw new Exception('Unknown DRM scheme ' . $drm);
             }
 
-            // EntryResult throws an exception when something's wrong
-            $flavorData = $this->getRawFlavorData();
-            $licenseUris = array();
-            foreach ($flavorData as $flavorId => $flavorCustomDataSig) {
-                $custom_data = $flavorCustomDataSig['custom_data'];
-                $signature = $flavorCustomDataSig['signature'];
-                $url = sprintf('%s/%s?custom_data=%s&signature=%s', 
-                        $udrmBaseURL, $licensePath, $custom_data, $signature);
-                $licenseUris[$flavorId] = $url;
-            }
-            $licenseUris = $this->filterByRequestedFlavors($licenseUris);
+            $flavorId = $_REQUEST['flavor_id'];
             
-            $response = array('licenseUri' => $licenseUris);
+            $flavorData = $this->getRawFlavorData();
+            if (isset($flavorData[$flavorId])) {
+                $licenseData = $flavorData[$flavorId];
+            } else {
+                throw new Exception('flavorId "' . $flavorId . '" not found');
+            }
+            $custom_data = $licenseData['custom_data'];
+            $signature = $licenseData['signature'];
+            $licenseUri = sprintf('%s/%s?custom_data=%s&signature=%s&files=%s', 
+                    $udrmBaseURL, $licensePath, $custom_data, $signature, urlencode(base64_encode($flavorId)));
+            
+            $response = array('licenseUri' => $licenseUri);
             
         } catch (Exception $e) {
             $response = array(
@@ -89,34 +85,6 @@ class mweApiGetLicenseData {
 		echo json_encode($response, JSON_FORCE_OBJECT);
 	}
 	
-	function filterByRequestedFlavors($fullFlavorData) {
-        if (isset($_REQUEST['flavor_ids'])) {
-    		$flavorIds = $_REQUEST['flavor_ids'];
-			$responseFlavorData = array();
-			$flavorList = explode(',', $flavorIds);
-			foreach ($flavorList as $flavorId) {
-                if (isset($fullFlavorData[$flavorId])) {
-    				$responseFlavorData[$flavorId] = $fullFlavorData[$flavorId];
-                }
-			}
-		} else {
-			$responseFlavorData = $fullFlavorData;
-		}
-		return $responseFlavorData;
-	}
-	
-	function getMissingParams() {
-		// Check mandatory parameters (wid, uiconf_id, entry_id, ks)
-		$mandatory = array('wid', 'uiconf_id', 'entry_id', 'ks', 'drm');
-		$missing = array();
-		foreach ($mandatory as $param) {
-			if (!isset($_REQUEST[$param])) {
-				$missing[] = $param;
-			}
-		}
-		return $missing;
-	}
-
 	function sendHeaders() {
 		// Set content type
 		header('Content-type: application/json');
@@ -134,6 +102,7 @@ class mweApiGetLicenseData {
             throw new Exception($resultObject['error']);
         }
 		$drmPluginData = (array)$resultObject['contextData']->pluginData['KalturaDrmEntryContextPluginData'];
-		return $drmPluginData['flavorData'];
+        // Convert the result to array.
+        return json_decode(json_encode($drmPluginData['flavorData']), true);
 	}
 }

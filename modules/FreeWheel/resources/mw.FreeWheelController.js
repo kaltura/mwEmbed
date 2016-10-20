@@ -331,7 +331,7 @@ mw.FreeWheelController.prototype = {
 		var adMetaData = this.getFwAdMetaData( slot );
 
         //send ad start event for analytics tracking
-        $(_this.embedPlayer).trigger("onAdPlay",[adMetaData.ID, adMetaData.name, adMetaData.type, 1, adMetaData.duration, adMetaData.title]);
+        $(_this.embedPlayer).trigger("onAdPlay",[adMetaData.ID, adMetaData.name, adMetaData.type, 0, adMetaData.duration, null, null, adMetaData.title]);
 
 
         // Update ad Meta data:

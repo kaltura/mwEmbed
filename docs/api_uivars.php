@@ -328,6 +328,12 @@ $uiVars = array(
 				'default' => 'false',
 				'example' => ''
 			),
+			'loadThumbnailWithReferrer' => array(
+				'type' => 'Boolean',
+				'desc' => 'Flag indicating whether the KDP should append the referrer to the thumbnail serve request. Default value "false" to take advantage of caching.',
+				'default' => 'false',
+				'example' => ''
+			),
 			'noThumbnail' => array(
 				'type' => 'Boolean',
 				'desc' => 'Flag indicating whether the KDP should forgo loading the thumbnail',
@@ -858,8 +864,7 @@ $uiVars = array(
 			),
 			'mediaProxy.preferedFlavorBR' => array(
 					'type' => 'Integer',
-					'desc' => 'A prefered bitrate for selecting the flavor to be played. '.
-						'In the case of HLS, this param is passed to the manifest chaning the flavor list with prefered bitrate flavor first. '. 
+					'desc' => 'A prefered bitrate for selecting the flavor to be played (progressive download and RTMP). '.
 						'In case of an RTMP adaptive mbr, a -1 value will force an auto switching as opposed to manual one. Will be affective only if the "disableBitrateCookie=true" Flashvar is sent.',
 					'default' => '1000',
 					'example' => '../modules/KalturaSupport/tests/FlavorSelector.preferedFlavorBR.qunit.html'

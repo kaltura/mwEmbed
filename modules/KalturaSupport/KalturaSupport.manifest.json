@@ -308,6 +308,11 @@
                 "type": "boolean",
                 "initvalue": true
             },
+	        "includeHeader": {
+                "doc": "Display playlist header, including title, number of clips and playlist controls.",
+                "type": "boolean",
+                "initvalue": true
+            },
             "autoContinue": {
                 "doc": "If the playlist should autocontinue.",
                 "type": "boolean"
@@ -1702,6 +1707,47 @@
                 "doc": "Truncate long titles to fit in one line. Truncated titles get a tooltip and 3 dots at the end of the truncated text.",
                 "type": "boolean",
                 "initvalue": true
+            }
+        }
+    },
+    "dualScreen": {
+        "label": "Dual Screen",
+        "description": "The Kaltura Player is the front-end interface used to view captured videos and/or presentations. The Kaltura Player provides you with multiple interactive viewing options, such as Picture-in-Picture, Side-by-Side, and other displays",
+        "attributes": {
+            "defaultDualScreenViewId": {
+                "label": "Default Layout",
+                "doc": "Default Layout",
+                "type": "enum",
+                "enum": [
+                    "sbs-parent-in-right",
+                    "sbs-parent-in-left",
+                    "pip-parent-in-small",
+                    "pip-parent-in-large",
+                    "parent-only",
+                    "no-parent"
+                ],
+                "initvalue": "pip-parent-in-small",
+                "options": [
+                    {
+                        "label": "Side by Side / parent in right",
+                        "value": "sbs-parent-in-right"
+                    },{
+                        "label": "Side by Side / parent in left",
+                        "value": "sbs-parent-in-left"
+                    },{
+                        "label": "Picture in Picture / parent in small view",
+                        "value": "pip-parent-in-small"
+                    },{
+                        "label": "Picture in Picture / parent in large view",
+                        "value": "pip-parent-in-large"
+                    },{
+                        "label": "Parent Only",
+                        "value": "parent-only"
+                    },{
+                        "label": "No Parent",
+                        "value": "no-parent"
+                    }
+                ]
             }
         }
     },

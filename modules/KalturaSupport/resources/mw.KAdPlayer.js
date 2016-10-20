@@ -352,6 +352,14 @@ mw.KAdPlayer.prototype = {
 		// hide any ad overlay
 		$( '#' + this.getOverlayId() ).hide();
 
+		// collect POD parameters is exists (adSlot.sequencedAds = POD)
+		var podPosition = null;
+		var podStartTime = null;
+		if(adSlot.sequencedAds) {
+			podPosition = adConf.sequence;
+			podStartTime = _this.podStartTime;
+		}
+
 		// Play the ad as sibling to the current video element.
 		if( _this.isVideoSiblingEnabled( targetSource ) ) {
 
@@ -365,14 +373,7 @@ mw.KAdPlayer.prototype = {
 					_this.waitingForLoadedData = true;
 					$(vid).on("loadeddata", function(){
 						if(_this.waitingForLoadedData){
-							// collect POD parameters is exists (adSlot.sequencedAds = POD)
-							var podPosition;
-							var podStartTime;
-							if(adSlot.sequencedAds) {
-								podPosition = adConf.sequence;
-								podStartTime = _this.podStartTime;
-							}
-							$(_this.embedPlayer).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex+1, vid.duration, vid.currentSrc, podPosition, podStartTime]);
+							$(_this.embedPlayer).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex, vid.duration, podPosition, podStartTime, adConf.title]);
 							_this.waitingForLoadedData = false;
 						}
 					});
@@ -390,6 +391,8 @@ mw.KAdPlayer.prototype = {
 				targetSource,
 				function( vid ) {
 					_this.addAdBindings( vid, adSlot, adConf );
+					vid.play();
+					$(_this.embedPlayer).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex, vid.duration, podPosition, podStartTime, adConf.title]);
 				},
 				function(){
 					adSlot.playbackDone();
@@ -519,8 +522,7 @@ mw.KAdPlayer.prototype = {
 			} else {
 				$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
 			}
-			this.embedPlayer.enablePlayControls(["scrubber"]);
-			this.embedPlayer.enablePlayControls();
+			this.embedPlayer.enablePlayControls(["scrubber","share","infoScreen","related","playlistAPI","nextPrevBtn","sourceSelector"]);
 		}
 	},
 	resumeAd: function(){
@@ -970,7 +972,7 @@ mw.KAdPlayer.prototype = {
 		if (nonLinearConf.width === undefined){
 			waitForNonLinear();
 		}
-		$( this.embedPlayer ).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex+1]);
+		$( this.embedPlayer ).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex, adConf.duration, null, null, adConf.title]); // nulls for adPod position and time
 		this.setImgSrc(nonLinearConf, 'overlayAd');
 
 		// Show the overlay update its position and content
@@ -1510,7 +1512,7 @@ mw.KAdPlayer.prototype = {
 
 				VPAIDObj.subscribe( function ( message ) {
 					_this.sendVASTBeacon( adConf.trackingEvents, 'start' );
-					$(_this.embedPlayer).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex+1, VPAIDObj.duration, VPAIDObj.id]);
+					$(_this.embedPlayer).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex, VPAIDObj.duration, null, null, adConf.title]);
 				}, 'AdVideoStart' );
 
 				VPAIDObj.subscribe( function ( message ) {

@@ -139,13 +139,22 @@
 
 		//Screen view state handlers
 		toggleMain: function (props) {
-			this.setConfig("isMain", !this.getConfig("isMain"));
-			this.obj.attr( 'data-display-rule', this.getConfig("isMain") ? mw.dualScreen.display.TYPE.PRIMARY : mw.dualScreen.display.TYPE.SECONDARY );
-			this.obj.toggleClass( 'firstScreen secondScreen' );
-			if (!this.getConfig("isMain")){
-				this.repaint(props);
-			}
+            this.toggleMainConfig();
+            this.obj.toggleClass('secondScreen firstScreen');
+			this.repaint(props);
 		},
+        toggleSecondary: function (callback) {
+            var _this = this;
+            this.toggleMainConfig();
+            this.obj.toggleClass( 'secondScreen hiddenScreen');
+            setTimeout(function(){
+                callback();
+            }, 100);
+        },
+        toggleMainConfig: function(){
+            this.setConfig("isMain", !this.getConfig("isMain"));
+            this.obj.attr( 'data-display-rule', this.getConfig("isMain") ? mw.dualScreen.display.TYPE.PRIMARY : mw.dualScreen.display.TYPE.SECONDARY );
+        },
 		enableSideBySideView: function () {
 			var toClass = this.getConfig("isMain")? "sideBySideLeft" : "sideBySideRight";
 			this.obj.addClass( toClass );
@@ -156,12 +165,31 @@
 		disableSideBySideView: function () {
 			this.obj.removeClass( 'sideBySideRight sideBySideLeft' );
 		},
-		hide: function ( ) {
+        disableMain: function () {
+            this.obj.removeClass('firstScreen').addClass('secondScreen');
+            this.bringToFront();
+        },
+        enableMain: function () {
+            this.obj.removeClass('secondScreen').addClass('firstScreen');
+            this.sendToBack();
+        },
+        toggleHiddenToMain: function () {
+            this.obj.removeClass('hiddenScreen' ).addClass('firstScreen' );
+        },
+		hide: function () {
 			this.obj.addClass( 'hiddenScreen' );
+			this.obj.removeClass( 'componentOn').addClass( 'componentOff' );
 		},
-		show: function ( ) {
+		show: function () {
+			this.obj.removeClass( 'componentOff').addClass( 'componentOn' );
 			this.obj.removeClass( 'hiddenScreen' );
 		},
+        bringToFront: function ( ) {
+            this.obj.css('z-index',2);
+        },
+        sendToBack: function ( ) {
+            this.obj.css('z-index',1);
+        },
 
 		//Screen animation controller
 		enableTransition: function () {

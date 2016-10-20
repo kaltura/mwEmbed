@@ -48,6 +48,9 @@
 	left: 0;
 	background-color: transparent;
 }
+.mobileSkin.start-state .mwEmbedPlayer img{
+    opacity: 0.6;
+}
 .mwEmbedPlayerTransparent{
 	background-color: black;
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
@@ -78,7 +81,9 @@
 	max-width: 100%;
 	max-height: 100%;
 }
-
+.mobileSkin.pluginsScreenOpened .playerPoster {
+    opacity: 0.3;
+}
 .blackPlayer {
 	position: absolute;
 	top: 0; left: 0; right: 0; bottom: 0;

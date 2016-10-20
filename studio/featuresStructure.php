@@ -132,6 +132,7 @@ return array(
 			"share" => "",
 			"playersJsReceiver" => "",
 			"related" => "",
+			"dualScreen" => "",
 			"playlistAPI" => "",
 			"nextPrevBtn" => ""
 		)
@@ -149,6 +150,7 @@ return array(
 			"nielsenCombined" => "",
 			"omnitureOnPage" => "",
 			"statistics" => "",
+			"youbora" => ""
 		)
 	),
 	"monetization"=> array(
@@ -186,11 +188,9 @@ return array(
 			"moderation" => "",
 			"playbackRateSelector" => "",
 			"restrictUserAgent" => "",
-			"widevine" => "",
 			"multiDrm" => "",
 			"sourceSelector" => "",
 			"download" => "",
-			"nativeCallout" => "",
 			"strings" => "",
 			"uiVars" => ""
 		)

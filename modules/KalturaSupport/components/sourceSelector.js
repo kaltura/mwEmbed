@@ -15,7 +15,7 @@
             "hideSource": false,
 			"title": gM( 'mwe-embedplayer-select_source' ),
 			'smartContainer': 'qualitySettings',
-			'smartContainerCloseEvent': 'SourceChange'
+			'smartContainerCloseEvent': 'newSourceSelected'
 		},
 
 		isDisabled: false,
@@ -26,7 +26,6 @@
 		saveBackgroundColor: null, // used to save background color upon disable and rotate and return it when enabled again to prevent rotating box around the icon when custom style is applied
 
         sourcesList: [],
-        firstPlay:false,
 
 		setup: function(){
 			var _this = this;
@@ -34,10 +33,6 @@
 			this.bind( 'playerReady sourcesReplaced', function(){
 				_this.buildMenu();
 			});
-
-            this.bind( 'firstPlay', function(){
-                _this.firstPlay = true;
-            });
 
 			this.bind( 'SourceChange', function(){
 				var selectedSrc = _this.getPlayer().mediaElement.selectedSource;
@@ -83,8 +78,8 @@
 			});
 
 			// Check for switch on resize option
-			if( this.getConfig( 'switchOnResize' ) ){
-				this.bind( 'updateLayout', function(){
+			if( this.getConfig( 'switchOnResize' ) && !_this.embedPlayer.isLive() ){
+				this.bind( 'resizeEvent', function(){
 					// workaround to avoid the amount of 'updateLayout' events
 					// !seeking will avoid getting current time equal to 0
 					if ( !_this.inUpdateLayout && !_this.embedPlayer.seeking ){
@@ -125,6 +120,7 @@
 
 			// Destroy old menu
 			this.getMenu().destroy();
+			this.sourcesList = [];
 
 			var sources = this.getSources().slice(0);
 
@@ -252,30 +248,33 @@
 				);
 		},
         handleAdaptiveBitrateAndContinue: function (){
-            //Silverlight smoothStream
-            if( ( this.getPlayer().streamerType === "smoothStream" ) ){
-                this.addAutoToMenu();
-                return true;
-            }
-
-            //HLS, HDS
+			//Silverlight smoothStream
+			if( ( this.getPlayer().streamerType === "smoothStream" ) ){
+				this.addAutoToMenu();
+				return true;
+			}
+			//HLS, HDS
             if (mw.isNativeApp()) {
             	this.sourcesList = [];
                 this.addAutoToMenu();
                 return true;
             }
 
-            if ( this.getPlayer().streamerType != "http" && !this.getPlayer().isPlaying() ){
-                if(this.getPlayer().streamerType !== "hls" && !mw.EmbedTypes.getMediaPlayers().isSupportedPlayer('kplayer')){ //If flash disabled, player fallback to http progressive, but the streamerType might still be hdnetwork
+            if ( this.getPlayer().streamerType != "http" && !this.getPlayer().isPlaying() && !this.getPlayer().isInSequence() ){
+				if(this.getPlayer().streamerType !== "hls" && !mw.EmbedTypes.getMediaPlayers().isSupportedPlayer('kplayer')){ //If flash disabled, player fallback to http progressive, but the streamerType might still be hdnetwork
                     return true;
                 }
                 this.addAutoToMenu();
                 return false;
             }
 
-            if( this.getPlayer().streamerType != "http" && this.firstPlay ){ //add and select Auto for adaptive bitrate
+			if ( this.getPlayer().streamerType == "http" && mw.isDesktopSafari() ){
+				this.addAutoToMenu();
+				return false;
+			}
+
+			if( this.getPlayer().streamerType != "http" ){ //add and select Auto for adaptive bitrate
                 this.addAutoToMenu();
-                this.firstPlay = false;
             }
             return true;
         },
@@ -303,6 +302,7 @@
                         'id': source.getAssetId()
                     },
                     'callback': function () {
+	                    _this.getPlayer().triggerHelper("newSourceSelected", source.getAssetId());
                         _this.getPlayer().switchSrc(source);
                     },
                     'active': _this.isSourceSelected(source)
@@ -310,7 +310,9 @@
             }
 		},
         getSourceSizeName: function( source ){
-			if( source.getHeight() < 255 ){
+			if( source.getHeight() == 0 ){
+				return gM( 'mwe-embedplayer-audio_source' ) + ( this.getConfig( 'displayMode' ) == 'sizebitrate' ? "" : this.getSourceTitleBitrate(source) );
+			} else if( source.getHeight() < 255 ){
 				return '240P';
 			} else if( source.getHeight() < 370 ){
 				return '360P';
@@ -367,10 +369,10 @@
         },
         getSourceTitleSizeBitrate: function( source ){
             var title = '';
-            if( source.getHeight() ){
+            if ( source.getHeight() ){
                 title = this.getSourceSizeName( source ) + ' ';
             }
-            title += this.getSourceTitleBitrate(source);
+			title += this.getSourceTitleBitrate(source);
             return title;
         },
 		toggleMenu: function(){

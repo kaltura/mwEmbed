@@ -192,10 +192,7 @@
 			$( this ).trigger( 'seeking' );
 		},
 		load: function(){
-			if ( this.src ) {
-				this.playerProxy.setSrc(this.src);
-				this.playerProxy.loadMedia();
-			}
+			this.playerProxy.loadMedia();
 		},
 		changeVolume: function( volume ){
 			this.playerProxy.setVolume(  volume );

@@ -110,13 +110,22 @@
 					_this.layoutBuilder.closeAlert();
 				}
 			});
-            $(this).bind('firstPlay', this.parseTextTracks());
+            this.addBindings();
+		},
+        addBindings: function(){
+            var _this = this;
+            this.bindHelper('firstPlay', function(){
+                _this.parseTracks();
+            });
+            this.bindHelper('switchAudioTrack', function (e, data) {
+                _this.switchAudioTrack(data.index);
+            });
             this.bindHelper('liveOnline', function(){
-                if( this.isLive() && !this.isDVR() ) {
-                    this.resetSrc = true;
+                if( _this.isLive() && !_this.isDVR() ) {
+                    _this.resetSrc = true;
                 }
             });
-		},
+        },
 		/**
 		 * Updates the supported features given the "type of player"
 		 */
@@ -131,7 +140,7 @@
 				this.supports.volumeControl = false;
 			}
 			// Check if we already have a selected source and a player in the page,
-			if (this.getPlayerElement() && this.getSrc() && !mw.isIE()) {
+			if (this.getPlayerElement() && this.getSrc() && !mw.isIE() && !mw.isEdge()) {
 				$(this.getPlayerElement()).attr('src', this.getSrc());
 			}
 			// Check if we already have a video element an apply bindings ( for native interfaces )
@@ -160,10 +169,9 @@
 					// switch source calls .play() that some browsers require.
 					// to reflect source switches. Playlists handle pause state so no need to pause in playlist
 					_this.ignoreNextNativeEvent = true;
-					if ( !_this.playlist ){
-						_this.pause();
+					if ( !_this.isPlaying() ) {
+						_this.updatePosterHTML();
 					}
-					_this.updatePosterHTML();
 				}
 				callback();
 			});
@@ -270,8 +278,10 @@
 				return;
 			}
 			// Update the player source ( if needed )
-			if ($(vid).attr('src') != this.getSrc(this.currentTime) && !mw.isIE()) {
-				$(vid).attr('src', this.getSrc(this.currentTime));
+			if (!this.skipUpdateSource) {
+				if ( $( vid ).attr( 'src' ) != this.getSrc( this.currentTime ) && !mw.isIE() && !mw.isEdge() ) {
+					$( vid ).attr( 'src' , this.getSrc( this.currentTime ) );
+				}
 			}
 
 			if (this.muted) {
@@ -397,11 +407,9 @@
 			}
 
 			// some initial calls to prime the seek:
-			if (vid.currentTime === 0 && callbackCount === 0) {
+			if ( ( vid.currentTime === 0 && callbackCount === 0 ) && vid.readyState === 0 ) { //load video again if not loaded yet (vid.readyState === 0)
 				// when seeking turn off preload none and issue a load call.
-				$(vid)
-					.attr('preload', 'auto')
-					[0].load();
+				$(vid).attr('preload', 'auto');
 			}
 
 			var videoReadyState = mw.isIOS8_9() ? 2 : 1; // on iOS8 wait for video state 1 (dataloaded) instead of 1 (metadataloaded)
@@ -431,8 +439,17 @@
 						_this._onloadedmetadata();
 					});
 					this.log("player can't seek - try to init video element ready state");
-					vid.load();
-					vid.play();
+					if (!_this.skipUpdateSource) {
+						if ( $( vid ).attr( 'src' ) != _this.getSrc() ) { //relevant for IE and EDGE
+							$( vid ).attr( 'src' , _this.getSrc() ); //attach source before triggering play
+							vid.load();
+							vid.play();
+							_this.parseTracks();
+						}
+					}else {
+						vid.load();
+						vid.play();
+					}
 				}
 				// Try to seek for 15 seconds:
 				if (callbackCount >= 15) {
@@ -493,7 +510,7 @@
 				return false;
 			}
             if( this.isLive() && !this.isDVR() ){
-                return this.LiveCurrentTime;
+                return this.LiveCurrentTime ? this.LiveCurrentTime : 0;
             }
 			var ct = this.playerElement.currentTime;
 			// Return 0 or a positive number:
@@ -599,11 +616,7 @@
 					vid.removeAttribute('controls');
 
 					// dissable seeking ( if we were in a seeking state before the switch )
-					if (_this.isFlavorSwitching) {
-						_this.seeking = true;
-					} else {
-						_this.seeking = false;
-					}
+					_this.seeking = false;
 
 					// Workaround for 'changeMedia' on Android & iOS
 					// When changing media and not playing entry before spinner is stuck on black screen
@@ -649,12 +662,6 @@
 						} else {
 							_this.removeBlackScreen();
 						}
-					});
-
-					$(vid).bind('pause' + switchBindPostfix, function () {
-						_this.log("playerSwitchSource> received pause during switching, issue play to continue source switching!")
-						$(vid).unbind('pause' + switchBindPostfix);
-						vid.play();
 					});
 
 					var handleSwitchCallback = function () {
@@ -706,11 +713,6 @@
 							// issue the doneCallback
 							doneCallback();
 
-							// Support loop for older iOS
-							// Temporarily disabled pending more testing or refactor into a better place.
-							//if ( _this.loop ) {
-							//	vid.play();
-							//}
 							return false;
 						});
 
@@ -740,7 +742,14 @@
 					}
 
 					// issue the play request:
-					vid.play();
+					if (_this.isInSequence()){
+						vid.play();
+					}else{
+						if ( !( _this.playlist && mw.isAndroid() ) ){
+							_this.play();
+						}
+
+					}
 					if (mw.isMobileDevice()) {
 						setTimeout(function () {
 							handleSwitchCallback();
@@ -779,8 +788,9 @@
 				return;
 			}
 			// Remove any poster div ( that would overlay the player )
-			if (!this.isAudioPlayer && !mw.getConfig("EmbedPlayer.KeepPoster") === true)
-				$(this).find('.playerPoster').remove();
+			if (!this.isAudioPlayer && !mw.getConfig("EmbedPlayer.KeepPoster") === true) {
+                this.removePoster();
+            }
 			// Restore video pos before calling sync syze
 			$(vid).css({
 				'left': '0px',
@@ -821,16 +831,18 @@
 					if (_this.getPlayerElement() && _this.getPlayerElement().play) {
 						_this.log(" issue native play call:");
 						// make sure the source is set:
-						if ( $(vid).attr('src') != _this.getSrc() || _this.resetSrc ) {
-							$(vid).attr('src', _this.getSrc());
-                            //trigger play again for iPad and El Capitan
-                            setTimeout( function () {
-                                if ( !_this.playing ) {
-                                    vid.play();
-                                    _this.parseTextTracks();
-                                }
-                            }, 300 );
-                            _this.resetSrc = false;
+						if (!_this.skipUpdateSource) {
+							if ( $( vid ).attr( 'src' ) != _this.getSrc() || _this.resetSrc ) {
+								$( vid ).attr( 'src' , _this.getSrc() );
+								//trigger play again for iPad and El Capitan
+								setTimeout( function () {
+									if ( !_this.playing ) {
+										vid.play();
+										_this.parseTracks();
+									}
+								} , 300 );
+								_this.resetSrc = false;
+							}
 						}
 						_this.hideSpinnerOncePlaying();
 						// make sure the video tag is displayed:
@@ -853,6 +865,8 @@
 							vid.play();
 						}
 						_this.mobilePlayed = true;
+						// re-start the monitor:
+						_this.monitor();
 					}
 				} else {
 					_this.log(" parent play returned false, don't issue play on native element");
@@ -910,9 +924,8 @@
 		setPlayerElementVolume: function (percent) {
 			if (this.getPlayerElement()) {
 				// Disable mute if positive volume
-				if (percent != 0) {
-					this.playerElement.muted = false;
-				}
+				this.playerElement.muted = ( percent === 0 );
+
 				this.playerElement.volume = percent;
 			}
 		},
@@ -1008,9 +1021,11 @@
 				this.layoutBuilder.onSeek();
 
 				// Trigger the html5 "seeking" trigger
-				this.log("seeking:trigger:: " + this.seeking);
-				if (this._propagateEvents) {
-					this.triggerHelper('seeking');
+				if( !this.isLive() || ( this.isLive() && this.isDVR() ) ) {
+					this.log("seeking:trigger:: " + this.seeking);
+					if (this._propagateEvents) {
+						this.triggerHelper('seeking');
+					}
 				}
 			}else if (this.useNativePlayerControls()) {
 				//In native controls the seek event is fired every time the scrubber is moved, even if user didn't
@@ -1030,10 +1045,11 @@
 				var _this = this;
 				this.waitForSeekTarget().then(function(){
 					_this.seeking = false;
-					_this.isFlavorSwitching = false;
 					if (_this._propagateEvents) {
-						_this.log(" trigger: seeked");
-						_this.triggerHelper('seeked', [_this.currentTime]);
+						if( !_this.isLive() || ( _this.isLive() && _this.isDVR() ) ) {
+							_this.log(" trigger: seeked");
+							_this.triggerHelper('seeked', [_this.currentTime]);
+						}
 					}
 					_this.hideSpinner();
 				});
@@ -1069,7 +1085,7 @@
 							if ( (Math.abs( _this.currentSeekTargetTime - _this.getPlayerElement().currentTime ) > 2) &&
 								callbackCount <= 15 ) {
 								setTimeout( function () {
-									timeupdateCallback( callbackCount++ );
+									timeupdateCallback( ++callbackCount );
 								}, 100 );
 							} else {
 								if ( callbackCount > 15 ) {
@@ -1175,7 +1191,6 @@
 		 */
 		_onloadedmetadata: function () {
 			this.getPlayerElement();
-
 			// only update duration if we don't have one: ( some browsers give bad duration )
 			// like Android 4 default browser
 			if (!this.duration
@@ -1220,6 +1235,10 @@
 			if (e && e.loaded && e.total) {
 				this.updateBufferStatus(e.loaded / e.total);
 				this.progressEventData = e.loaded;
+			}
+
+			if ( this.isLive() && this.buffering ){
+				this.bufferEnd();
 			}
 		},
 
@@ -1317,10 +1336,13 @@
 		},
 
 		backToLive: function () {
-			this.triggerHelper('movingBackToLive');
+            var _this = this;
 			var vid = this.getPlayerElement();
 			vid.load();
 			vid.play();
+            setTimeout( function() {
+                _this.triggerHelper('movingBackToLive'); //for some reason on Mac the isLive client response is a little bit delayed, so in order to get update liveUI properly, we need to delay "movingBackToLive" helper
+            }, 1000 );
 		},
 		isVideoSiblingEnabled: function () {
 			if (mw.isIphone() || mw.isAndroid2() || mw.isWindowsPhone() || mw.isAndroid40() || mw.isMobileChrome()
@@ -1360,36 +1382,117 @@
 		setInline: function ( state ) {
 			this.getPlayerElement().attr('webkit-playsinline', '');
 		},
-        parseTextTracks: function(){
+        parseTracks: function(){
             var vid = this.getPlayerElement();
+            this.parseAudioTracks(vid, 0); //0 is for a setTimer counter. Try to catch audioTracks, give up after 5 seconds
+            if(this.isLive() && !this.isDVR()) {
+                //right now we parse metadata textTrack in order to read id3Tag only for live without DVR
+                this.parseTextTracks(vid, 0); //0 is for a setTimer counter. Try to catch textTracks.kind === "metadata, give up after 10 seconds
+            }
+        },
+        parseTextTracks: function(vid, counter){
             var _this = this;
-            var interval = setInterval(function() {
-                for (var i = 0; i < vid.textTracks.length; i++) {
-                    //TODO: add audio support
-
-                    //if Live + No DVR add id3 tags support
-                    if (vid.textTracks[i].kind === "metadata" && _this.isLive() && !_this.isDVR()) {
-                        _this.id3Tag(vid.textTracks[i]);
-                        clearInterval(interval);
-                        vid.textTracks[i].mode = "hidden";
+            setTimeout(function() {
+                if( vid.textTracks.length > 0 ) {
+                    for (var i = 0; i < vid.textTracks.length; i++) {
+                        if (vid.textTracks[i].kind === "metadata") {
+                            //add id3 tags support (for now only if Live + no DVR)
+                            _this.id3Tag(vid.textTracks[i]);
+                            vid.textTracks[i].mode = "hidden";
+                        }
+                    }
+                }else{
+                    //try to catch textTracks.kind === "metadata, give up after 10 seconds
+                    if( counter < 10 ){
+                        _this.parseTextTracks(vid, ++counter);
                     }
                 }
-            }, 500);
+            }, 1000);
         },
         id3Tag: function(metadataTrack){
             var _this = this;
             metadataTrack.addEventListener("cuechange", function (evt) {
                 try {
-                    var id3Tag = evt.currentTarget.cues[evt.currentTarget.cues.length - 1].value.data;
-                    _this.triggerHelper('onId3Tag', id3Tag);
+					var id3Tag;
+					if ( mw.isEdge() ){
+						//Get the data from the event + Unicode transform
+						var id3TagData = String.fromCharCode.apply(null, new Uint8Array(evt.currentTarget.cues[evt.currentTarget.cues.length - 1].data));
+						//Get the JSON substring
+						var id3TagString = id3TagData.substring(id3TagData.indexOf("{"), id3TagData.lastIndexOf("}")+1);
+						//Parse JSON
+						id3Tag = JSON.parse(id3TagString);
+					} else {
+						id3Tag = JSON.parse(evt.currentTarget.cues[evt.currentTarget.cues.length - 1].value.data);
+					}
+					_this.triggerHelper('onId3Tag', id3Tag);
                 }
                 catch (e) {
                     mw.log("Native player :: id3Tag :: ERROR :: "+e);
                 }
             }, false);
         },
+        parseAudioTracks: function(vid, counter){
+            var _this = this;
+            setTimeout (function() {
+                if( vid.audioTracks && vid.audioTracks.length > 0 ) {
+                    var data ={'languages':[]};
+                    for (var i = 0; i < vid.audioTracks.length; i++) {
+						var audioTrack = vid.audioTracks[i];
+						//Edge doesn't parse "NAME" field to label attribute for some reason, use "LANGUAGE" instead
+						var label = audioTrack.label || audioTrack.language;
+                        if( label !== "" ) {
+                            var lang = {};
+                            lang.index = i;
+                            lang.label = label;
+                            data.languages.push(lang);
+                        }
+                    }
+                    if( data.languages.length > 0 ) {
+                        _this.triggerHelper('audioTracksReceived', data);
+                    }
+                }else{
+                    //try to catch audioTracks, give up after 5 seconds
+                    if( counter < 5 ){
+                        _this.parseAudioTracks(vid, ++counter);
+                    }
+                }
+            }, 1000);
+        },
+		switchAudioTrack: function(audioTrackIndex){
+			var vid  = this.getPlayerElement();
+			var audioTracks = vid.audioTracks;
+			if(audioTracks[audioTrackIndex] && !audioTracks[audioTrackIndex].enabled) {
+			if(mw.isEdge()){
+
+				// Edge has a problem to switch audio track at playback time, so as a workaround - pause before the switching.
+				// When this issue will be fixed we can remove the entire code for Edge.
+		        // This issue should be fixed in Windows 10 build #14366.
+		        // See here: https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/7871229/
+
+					var _this = this;
+					var currentValue = this._propagateEvents;
+					this._propagateEvents = false; // prevent to appear the big play/pause button
+					vid.pause();
+					this.addPlayerSpinner();
+
+					audioTracks[audioTrackIndex].enabled = true;
+
+					setTimeout(function(){
+						vid.play();
+						_this.hideSpinner();
+						_this._propagateEvents = currentValue;
+
+					},200);
+				} else {
+					audioTracks[audioTrackIndex].enabled = true;
+				}
+			}
+		},
         getCurrentBufferLength: function(){
-            return parseInt(this.playerElement.buffered.end(0) - this.playerElement.currentTime); //return buffer length in seconds
+            if ( this.playerElement.buffered.length > 0 ) {
+				return parseInt(this.playerElement.buffered.end(this.playerElement.buffered.length-1) - this.playerElement.currentTime); //return buffer length in seconds
+            }
+            return 0;
         }
 	};
 })(mediaWiki, jQuery);

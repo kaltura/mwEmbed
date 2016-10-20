@@ -1,10 +1,11 @@
 (function (mw, $) {
 	"use strict";
 
-	mw.PluginManager.add( 'tvpapiAnalytics', mw.KBasePlugin.extend({
+	var tvpapiAnalytics = mw.tvpapiRequest.extend({
 
 		defaultConfig: {
-			mediaHitInterval: 30
+			mediaHitInterval: 30,
+			startTime:null
 		},
 
 		isPlaying: false,
@@ -14,6 +15,10 @@
 		mediaHitInterval: null,
 
 		setup: function() {
+			if (this.getConfig("startTime")){
+				this.continueTime = this.getConfig("startTime");
+				this.playFromContinue = true;
+			}
 			this.bindEvents();
 			this.bindContinueToTime();
 		},
@@ -77,6 +82,7 @@
 			this.mediaHitInterval = setInterval(function(){
 				if( _this.isPlaying ) {
 					_this.sendMediaHit();
+					_this.playFromContinue = false;
 				}
 			}, this.getConfig('mediaHitInterval') * 1000 );
 		},
@@ -89,7 +95,7 @@
 		sendMediaMark: function( action ) {
 			var params = this.getBaseParams();
 			params['Action'] = action;
-			this.sendPostRequest('MediaMark', params);
+			this.report('MediaMark', params);
 		},
 
 		sendMediaHit: function() {
@@ -97,11 +103,7 @@
 			if(this.concurrentFlag || this.getPlayer().getPlayerElementTime() === 0 ){
 				return;
 			}
-			this.sendPostRequest('MediaHit', this.getBaseParams());
-		},
-
-		getProxyData: function( key ) {
-			return this.getPlayer().getKalturaConfig('proxyData', key);
+			this.report('MediaHit', this.getBaseParams());
 		},
 
 		getCurrentTime: function() {
@@ -116,45 +118,45 @@
 
 		getBaseParams: function() {
 			return {
-				"initObj": this.getProxyData('initObj'),
+				"initObj": this.getInitObj(),
 				"mediaType": 0,
-				"iMediaID": this.getProxyData('MediaID'),
+				"iMediaID": this.getProxyConfig('MediaID'),
 				"iFileID": this.fileId,
 				"iLocation": this.getCurrentTime()
 			};
 		},
 
-		sendPostRequest: function( service, params ) {
+		report: function(service, data){
 			// Do not send requests during ad playback
 			if( !this.getPlayer().isInSequence() ) {
-				this.getPlayer().triggerHelper(service, [service, params]);
+				var printableData =  JSON.stringify(data, null, '\t');
+				//Emit the report API event
+				this.getPlayer().triggerHelper(service, data);
+				this.log('report: ' + service + ": " + printableData);
+				this.restMethod = service;
+				var url = this.getRequestUrl();
+				if (url) {
 
-				this.log('sendPostRequest: request: ' + service, params);
-				var _this = this;
-				var TVPAPIBaseUrl = this.getPlayer().getFlashvars('TVPAPIBaseUrl');
-				if (TVPAPIBaseUrl) {
-					$.ajax({
-						url: TVPAPIBaseUrl + service,
-						data: JSON.stringify(params),
-						crossDomain: true,
-						type: 'POST',
-						dataType: 'text',
-						success: function (data) {
-							_this.log('sendPostRequest: response for ' + service + ': ' + data);
-							if (data == '"Concurrent"') {
-								_this.concurrentFlag = true;
-								_this.getPlayer().triggerHelper('tvpapiShowConcurrent');
-							}
-						},
-						error: function (xhr, textStatus, errorThrown) {
-							_this.log('sendPostRequest error', errorThrown);
-						}
-					});
-				} else {
-					this.log('sendPostRequest error - can\'t find TVPAPI base url');
+					var _this = this;
+
+					this.doRequest(url, data).then(
+							function (data) {
+								_this.log('response for ' + service + ': ' + data);
+								if (data == 'Concurrent') {
+									_this.concurrentFlag = true;
+									_this.getPlayer().triggerHelper('tvpapiShowConcurrent');
+								}
+							},
+							function (xmlHttpRequest, status, errorThrown) {
+								_this.log('sendPostRequest error: ' + errorThrown);
+							},
+							null
+					);
 				}
 			}
-		}
 
-	}));
+			return false;
+		}
+	});
+	mw.PluginManager.add( 'tvpapiAnalytics', tvpapiAnalytics);
 })(window.mw, window.jQuery);

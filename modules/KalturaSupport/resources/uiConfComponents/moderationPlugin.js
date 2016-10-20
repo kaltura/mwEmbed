@@ -74,7 +74,9 @@
 						});
 					}) )
 			);
-
+			if (mw.isAndroid()){
+				$moderationMessage.find(".icon-toggle").remove();
+			}
 			var $moderationScreen = $( '<div />' ).append($header, $moderationMessage );
 
 			var closeCallback = function() {
@@ -94,6 +96,7 @@
 			this.getPlayer().layoutBuilder.displayMenuOverlay( screen, closeCallback );
 			$(this.getPlayer().getPlayerElement()).addClass("blur");
 			this.getPlayer().getPlayerPoster().addClass("blur");
+			this.getPlayer().triggerHelper( 'moderationOpen' );
 		},
 		closeModal: function(){
 			this.getPlayer().enablePlayControls();
@@ -103,6 +106,7 @@
 		},
 		submitFlag: function(flagObj) {
 			var _this = this;
+			this.getPlayer().triggerHelper( 'moderationSubmit', flagObj.flagType );
 			this.getPlayer().addPlayerSpinner();
 			this.getKalturaClient().doRequest( {
 				'service' : 'baseentry',

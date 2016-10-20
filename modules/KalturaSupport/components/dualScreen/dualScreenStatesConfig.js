@@ -52,7 +52,7 @@
 					name: 'SbS',
 					action: function () {
 						this.toggleSideBySideView();
-						this.toggleMainDisplay();
+                        this.toggleMainConfig();
 					}
 				}
 			}

@@ -9,29 +9,41 @@
         updatedTime: 0,
         intervalCounter: 4, //default interval counter will be 4 (updateTimeInterval = 1 second / this.embedPlayer.monitorRate = 250 milliseconds)
         counter: 0,
+        bindPostfix: '.id3Tag',
 
         isSafeEnviornment: function () {
-            if( this.getPlayer().isLive() && !this.getPlayer().isDVR() ){
-                return true;
-            }
-            return false;
+            return true;
         },
 
 		setup: function() {
+            var _this = this;
             this.timeIntervalSec = this.getConfig('updateTimeIntervalSec');
             this.intervalCounter = this.timeIntervalSec / (this.embedPlayer.monitorRate/1000);
-            this.addBinding();
+
+            this.bind( 'playerReady', function() {
+                 if( _this.getPlayer().isLive() && !_this.getPlayer().isDVR() ) {
+                    _this.addBinding();
+                 }
+            });
+            this.bind( 'onChangeMedia', function() {
+                _this.removeBindings();
+            });
         },
+
+        removeBindings: function(){
+            this.unbind(  this.bindPostfix );
+        },
+
         addBinding: function () {
 			var _this = this;
 
-            this.bind('monitorEvent', function() {
+            this.bind('monitorEvent' + _this.bindPostfix, function() {
                 if( _this.updatedTime > 0 ){
                     _this.updateTime();
                 }
             });
 
-			this.bind('onId3Tag', function(e, tag){
+			this.bind('onId3Tag' + _this.bindPostfix, function(e, tag){
                 _this.parseTag(tag);
 			});
 		},
@@ -48,20 +60,10 @@
 
         parseTag: function(tag){
             var time;
-            switch(this.getPlayer().instanceOf){
-                case "Native":
-                    time = JSON.parse(tag).timestamp / 1000;
-                    break;
-                case "Kplayer":
-                case "Silverlight":
-                    //id3 tag: {"id":"ac1d4fd80c79bf7807f6c33061833a784ff5ce62","timestamp":1.447225650123E12,"offset":1431918.0,"objectType":"KalturaSyncPoint"}
-                    try{
-                        var timestamp = tag.match(/timestamp\"\:([0-9|\.|A-F]+)/);
-                        time = parseFloat(timestamp[1]) / 1000;
-                    }catch(e){
-                        mw.log("id3Tag plugin :: ERROR parsing tag : " + tag);
-                    }
-                    break;
+            if ( tag ) {
+                time = tag.timestamp / 1000;
+            } else {
+                mw.log("id3Tag plugin :: ERROR parsing tag.");
             }
             if(time) {
                 this.updatedTime = time;
@@ -72,20 +74,19 @@
         },
 
         sendTrackEventMonitor: function(time, isId3TagTime) {
-            var traceString = "id3Tag plugin :: ";
+            var traceString = "id3Tag plugin :: id3 tag time = ";
             if(isId3TagTime) {
-                traceString = traceString + "id3 tag time = ";
-            }else{
-                traceString = traceString + "updated monitor time = ";
-            }
-            mw.log(traceString + time);
-            // Send the id3Tag info to the trackEventMonitor
-            if( this.getConfig( 'trackEventMonitor' ) ) {
-                try {
-                    window.parent[this.getConfig('trackEventMonitor')](
-                        traceString + time
-                    );
-                } catch (e) {}
+                mw.log(traceString + time);
+
+                // Send the id3Tag info to the trackEventMonitor
+                if (this.getConfig('trackEventMonitor')) {
+                    try {
+                        window.parent[this.getConfig('trackEventMonitor')](
+                            traceString + time
+                        );
+                    } catch (e) {
+                    }
+                }
             }
         }
 	}));

@@ -52,8 +52,10 @@
 					_this.hide();
 				});
 				this.bind( 'onComponentsHoverDisabled', function(){
-					_this.keepOnScreen = true;
-					_this.show();
+					if (!_this.embedPlayer.layoutBuilder.displayOptionsMenuFlag){
+						_this.keepOnScreen = true;
+						_this.show();
+					}
 				});
 				this.bind( 'hideScreen closeMenuOverlay', function(){
 					if (!_this.embedPlayer.paused){
@@ -75,6 +77,17 @@
 				});
 			} else {
 				this.getPlayer().isControlsVisible = true;
+			}
+		},
+		onConfigChange: function( property, value ){
+			switch( property ) {
+				case 'visible':
+					if( value ) {
+						this.getComponent().show();
+					} else {
+						this.getComponent().hide();
+					}
+					break;
 			}
 		},
 		show: function(){

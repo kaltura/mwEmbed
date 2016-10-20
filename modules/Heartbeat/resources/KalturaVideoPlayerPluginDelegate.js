@@ -21,6 +21,26 @@
         _this.initVideoInfo = function(){
             _this.videoInfo = new ADB.va.plugins.videoplayer.VideoInfo();
             _this.videoInfo.playerName = _this.config.playerPlayerName || _this.player.kuiconfid;
+            var duration = -1;
+            if(_this.player.evaluate('{mediaProxy.entry}')) {
+                var id = _this.player.evaluate('{mediaProxy.entry}').id ? _this.player.evaluate('{mediaProxy.entry}').id : _this.player.evaluate('{mediaProxy.entry}').name;
+                if ( !_this.player.isLive() && ( _this.player.evaluate('{mediaProxy.entry}').duration || _this.player.duration ) ){
+                    duration = _this.player.evaluate('{mediaProxy.entry}').duration ? _this.player.evaluate('{mediaProxy.entry}').duration : _this.player.duration;
+                }
+                _this.videoInfo.id = _this.config.playerId || id;
+                _this.videoInfo.name = _this.config.playerName || _this.player.evaluate('{mediaProxy.entry}').name;
+                _this.videoInfo.length = _this.config.playerLength || duration;
+            } else {
+                _this.videoInfo.id = _this.config.playerId || _this.player.playerConfig.widgetId;
+                _this.videoInfo.name = _this.config.playerName || _this.player.playerConfig.widgetId;
+                _this.videoInfo.length = _this.config.playerLength || _this.player.duration || duration;
+            }
+
+            if ( _this.config.playerStreamType ) {
+                _this.videoInfo.streamType = _this.config.playerStreamType;
+            }else {
+                _this.videoInfo.streamType = _this.player.isLive() ? ADB.va.plugins.videoplayer.AssetType.ASSET_TYPE_LIVE : ADB.va.plugins.videoplayer.AssetType.ASSET_TYPE_VOD;
+            }
         };
 
         _this.initadBreakInfo = function(){
@@ -100,15 +120,8 @@
         if( !_this.videoInfo ) {
             _this.initVideoInfo();
         }
-        if(_this.player.evaluate('{mediaProxy.entry}')) {
-            _this.videoInfo.id = _this.config.playerId || _this.player.evaluate('{mediaProxy.entry}').id;
-            _this.videoInfo.name = _this.config.playerName || _this.player.evaluate('{mediaProxy.entry}').name;
-            _this.videoInfo.length = _this.config.playerLength || _this.player.evaluate('{mediaProxy.entry}').duration;
-        }
-        if ( _this.config.playerStreamType ) {
-            _this.videoInfo.streamType = _this.config.playerStreamType;
-        }else {
-            _this.videoInfo.streamType = _this.player.isLive() ? ADB.va.plugins.videoplayer.AssetType.ASSET_TYPE_LIVE : ADB.va.plugins.videoplayer.AssetType.ASSET_TYPE_VOD;
+        if ( !_this.player.isLive() && _this.player.duration ){
+            _this.videoInfo.length = _this.player.duration;
         }
         _this.videoInfo.playhead = _this.player.getPlayerElementTime();
 

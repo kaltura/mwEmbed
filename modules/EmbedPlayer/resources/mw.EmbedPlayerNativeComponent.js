@@ -49,6 +49,8 @@
 
 		playingSource: undefined,
 
+		lastPlayPauseTime: 0,
+
 		// All the native events per:
 		// http://www.w3.org/TR/html5/video.html#mediaevents
 		nativeEvents: [
@@ -69,12 +71,14 @@
 			'enterfullscreen',
 			'exitfullscreen',
 			'chromecastDeviceConnected',
+			'hideConnectingMessage',
 			'chromecastDeviceDisConnected',
 			'textTracksReceived',
 			'loadEmbeddedCaptions',
 			'flavorsListChanged',
 			'sourceSwitchingStarted',
-			'sourceSwitchingEnd'
+			'sourceSwitchingEnd',
+			'audioTracksReceived'
 		],
 
 		// Native player supported feature set
@@ -112,7 +116,7 @@
 			this.proxyElement = divElement;
 			try {
 				if (NativeBridge.videoPlayer) {
-					NativeBridge.videoPlayer.registePlayer(this.getPlayerElement());
+					NativeBridge.videoPlayer.registerPlayer(this.getPlayerElement());
 					NativeBridge.videoPlayer.registerEmbedPlayer(this);
 				}
 			}
@@ -131,10 +135,20 @@
 				mw.log("EmbedPlayerNativeComponent:: showChromecastDeviceList::");
 				_this.getPlayerElement().showChromecastDeviceList();
 			});
+			this.bindHelper("sendCCRecieverMessage", function (e,msg) {
+				mw.log("EmbedPlayerNativeComponent:: sendCCRecieverMessage::");
+				_this.getPlayerElement().sendCCRecieverMessage(msg);
+			});
+			this.bindHelper("loadReceiverMedia", function (e,url, mime) {
+				mw.log("EmbedPlayerNativeComponent:: loadReceiverMedia::");
+				_this.getPlayerElement().loadReceiverMedia(url, mime);
+			});
 			this.bindHelper("onEndedDone", function () {
 				_this.playbackDone = true;
 			});
-
+			if (this.startTime && !this.supportsURLTimeEncoding()) {
+				this.setStartTimeAttribute(this.startTime);
+			}
 			this.resolveSrcURL(this.getSrc()).then(
 				function (resolvedSrc) {
 					mw.log("EmbedPlayerNativeComponent::resolveSrcURL get succeeded");
@@ -151,16 +165,14 @@
 		embedPlayerHTML: function () {
 		},
 
-		// Build the licenseUri (if needed) and send it to the native component as the "licenseUri" attribute.
-		pushLicenseUri: function () {
-			var licenseServer = mw.getConfig('Kaltura.UdrmServerURL');
+        buildUdrmLicenseUri: function(mimeType) {
+            var licenseServer = mw.getConfig('Kaltura.UdrmServerURL');
 			var licenseParams = this.mediaElement.getLicenseUriComponent();
+            var licenseUri = null;
 
 			if (licenseServer && licenseParams) {
-				var licenseUri;
 				// Build licenseUri by mimeType.
-				var sourceMimeType = this.mediaElement.selectedSource && this.mediaElement.selectedSource.mimeType;
-				switch (sourceMimeType) {
+				switch (mimeType) {
 					case "video/wvm":
 						// widevine classic
 						licenseUri = licenseServer + "/widevine/license?" + licenseParams;
@@ -169,18 +181,55 @@
 						// widevine modular, because we don't have any other dash DRM right now.
 						licenseUri = licenseServer + "/cenc/widevine/license?" + licenseParams;
 						break;
+					case "application/vnd.apple.mpegurl":
+						// fps
+						licenseUri = licenseServer + "/fps/license?" + licenseParams;
+						break;
 					default:
 						break;
-				}
-				if (licenseUri) {
-					this.getPlayerElement().attr('licenseUri', licenseUri);
-				}
+				}   
 			}
+            
+            return licenseUri;
+        },
+        
+		// Build the licenseUri (if needed) and send it to the native component as the "licenseUri" attribute.
+		pushLicenseUri: function () {
+            var selectedSource = this.mediaElement.selectedSource;
+            if (!selectedSource) {
+                return;
+            }
+            
+            var mimeType = selectedSource.mimeType;
+
+            var overrideDrmServerURL = mw.getConfig('Kaltura.overrideDrmServerURL');
+            var licenseUri = overrideDrmServerURL ? overrideDrmServerURL : this.buildUdrmLicenseUri(mimeType);
+            
+            if (licenseUri) {
+                var playerElement = this.getPlayerElement();
+                
+                // Push the license uri
+                playerElement.attr('licenseUri', licenseUri);
+                
+                // If the source has an FPS certificate, push it as well
+                if (selectedSource.fpsCertificate) {
+                    playerElement.attr('fpsCertificate', selectedSource.fpsCertificate);
+                }                
+            }
+		},
+
+		addStartTimeCheck: function () {
+			//nothing here, just override embedPlayer.js function
 		},
 
 		setSrcAttribute: function( source ) {
 			this.getPlayerElement().attr('src', source);
 			this.playingSource =  source;
+			this.pushLicenseUri();
+		},
+
+		setStartTimeAttribute : function(startTime){
+			this.getPlayerElement().attr('startTime', startTime);
 			this.pushLicenseUri();
 		},
 
@@ -340,6 +389,10 @@
 		play: function () {
 			var _this = this;
 			mw.log("EmbedPlayerNativeComponent:: play::");
+			if (!this.checkPlayPauseTime()){
+				mw.log("EmbedPlayerNativeComponent:: received play right after pause: aborting play command");
+				return;
+			}
 			this.playbackDone = false;
 
 			this.unbindHelper('replayEvent').bindHelper('replayEvent',function(){
@@ -367,15 +420,41 @@
 		 */
 		pause: function () {
 			mw.log("EmbedPlayerNativeComponent:: pause::");
+			if (!this.checkPlayPauseTime()){
+				mw.log("EmbedPlayerNativeComponent:: received pause right after play: aborting pause command");
+				return;
+			}
 			this.parent_pause(); // update interface
 			if (this.getPlayerElement()) { // update player
 				this.getPlayerElement().pause();
 			}
 		},
 
+		// verify that we didn't get play right after pause or vise versa when user multiple clicks the device
+		checkPlayPauseTime: function(){
+			if(mw.getConfig('disableKalturaControls') === true) {
+				return true;
+			}
+			var d = new Date();
+			var t = d.getTime();
+			var executeCommand = false;
+			if (this.lastPlayPauseTime === 0 || (t - this.lastPlayPauseTime) > 1000){
+				executeCommand = true;
+			}
+			this.lastPlayPauseTime = t;
+			return executeCommand;
+		},
+
 		doSeek: function (seekTime) {
 			mw.log("EmbedPlayerNativeComponent:: seek::");
 			this.getPlayerElement().attr('currentTime', seekTime);
+		},
+		seek: function (seekTime, stopAfterSeek) {
+			if (seekTime === 0){
+				seekTime = 0.01;
+			}
+			this.parent_seek(seekTime, stopAfterSeek);
+
 		},
 
 		/**
@@ -389,6 +468,9 @@
 		setCurrentTime: function( seekTime , callback ) {
 			seekTime = parseFloat( seekTime );
 			mw.log( "EmbedPlayerNativeComponent:: setCurrentTime to " + seekTime );
+			if (seekTime === 0){
+				seekTime = 0.01;
+			}
 			this.getPlayerElement().attr('currentTime', seekTime);
 			if ($.isFunction(callback)) {
 				callback();
@@ -422,22 +504,24 @@
 //			mw.log("_onFlavorsListChanged", event, data);
 
 			// Build an array with this format:
-			// [{"assetid":0,"bandwidth":517120,"type":"video/mp4","height":0},{"assetid":1,"bandwidth":727040,"type":"video/mp4","height":0},{"assetid":2,"bandwidth":1041408,"type":"video/mp4","height":0}]
+			//{"tracks" : [{"assetid":0,"originalIndex":0,"bandwidth":517120,"type":"video/mp4","height":0},{"assetid":1,"originalIndex":1,"bandwidth":727040,"type":"video/mp4","height":0},{"assetid":2,"originalIndex":2,"bandwidth":1041408,"type":"video/mp4","height":0}]}
 			//
-
+			var _this = this;
 			var flavorsList = [];
 			$.each(data.tracks, function(idx, obj) {
 				var flavor = {
-					assetid: obj.originalIndex,
+					assetid: obj.assetid,
 					originalIndex: obj.originalIndex,
-					bandwidth: obj.bitrate,
+					bandwidth: obj.bandwidth,
 					height: obj.height,
 					width: obj.width,
-					type: "video/mp4" // not sure about that
+					type: "video/mp4"//obj.type  //"video/mp4 for example"
 				};
 				flavorsList.push(flavor);
 			});
-
+			setTimeout(function(){
+				_this.setKDPAttribute('sourceSelector', 'visible', true);
+			},100);
 			this.onFlavorsListChanged(flavorsList);
 		},
 
@@ -582,6 +666,14 @@
 			this.triggerHelper('embedPlayerError', data);
 		},
 
+		_onbufferchange: function (event , isBuffering) {
+			if (isBuffering === "true") {
+				this.bufferStart();
+			} else {
+				this.bufferEnd();
+			}
+		},
+
 		/**
 		 * buffer progress
 		 * @param event
@@ -606,11 +698,21 @@
 
 			}
 		},
-
-		_ontextTracksReceived: function (event, data) {
-			this.unbindHelper('changedClosedCaptions').bindHelper('changedClosedCaptions',function(event, selection){
-				this.getPlayerElement().attr('textTrackSelected', selection);
+		_onaudioTracksReceived:function(event,data){
+			var _this = this;
+			this.unbindHelper('switchAudioTrack').bindHelper('switchAudioTrack',function(event, selection){
+				_this.getPlayerElement().attr('audioTrackSelected', selection.index.toString());
 			});
+
+			this.triggerHelper("audioTracksReceived",data);
+		},
+		_ontextTracksReceived: function (event, data) {
+			var _this = this;
+
+			this.unbindHelper('selectClosedCaptions').bindHelper('selectClosedCaptions',function(event, selection){
+				_this.getPlayerElement().attr('textTrackSelected', selection);
+			});
+
 			this.triggerHelper('textTracksReceived', data);
 		},
 		/*
@@ -639,6 +741,7 @@
 		 * Passes a fullscreen request to the layoutBuilder interface
 		 */
 		toggleFullscreen: function () {
+			this.parent_toggleFullscreen();
 			this.getPlayerElement().toggleFullscreen();
 		},
 
@@ -678,32 +781,16 @@
 			return true;
 		},
 
-		getSources: function(){
-			// check if manifest defined flavors have been defined:
-			if( this.manifestAdaptiveFlavors.length ){
-				return this.manifestAdaptiveFlavors;
-			}
-			return this.parent_getSources();
-		},
-		getSourceIndex: function (source) {
-			var sourceIndex = null;
-			$.each( this.getSources(), function( currentIndex, currentSource ) {
-				if (source.getAssetId() == currentSource.getAssetId()) {
-					sourceIndex = currentIndex;
-					return false;
-				}
-			});
-			// check for null, a zero index would evaluate false
-			if( sourceIndex == null ){
-				this.log("Error could not find source: " + source.getSrc());
-			}
-			return sourceIndex;
-		},
 		switchSrc: function (source) {
 			var sourceIndex = (source === -1) ? -1 : source.assetid;
 			this.getPlayerElement().switchFlavor(sourceIndex);
-		}
+		},
 
+		checkClipDoneCondition: function() {
+			if ( mw.isAndroid() ) {
+				this.parent_checkClipDoneCondition();
+			}
+		}
 	};
 })(mediaWiki, jQuery);
 

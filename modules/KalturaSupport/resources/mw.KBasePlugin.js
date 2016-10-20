@@ -9,6 +9,7 @@ mw.KBasePlugin = Class.extend({
 		this.embedPlayer = embedPlayer;
 		this.initCompleteCallback = callback;
 		this.pluginName = pluginName;
+		this.safe = true;
 
 		this.bindPostFix = '.' + pluginName;
 
@@ -21,10 +22,12 @@ mw.KBasePlugin = Class.extend({
 		if( typeof safeEnviornment == 'object' && safeEnviornment.promise ){
 			safeEnviornment.done(function(isSafe){
 				if( !isSafe ){
+					_this.safe = false;
 					_this.destroy();
 				}
 			});
 		} else if( typeof safeEnviornment == 'boolean' && ! safeEnviornment ) {
+			this.safe = false;
 			this.initCompleteCallback();
 			return false;
 		}
@@ -163,7 +166,10 @@ mw.KBasePlugin = Class.extend({
 
 		return false;
 	},
-	bind: function( eventName, callback ){
+	once: function(eventName,callback) {
+		return this.bind( eventName , callback , true );
+	},
+	bind: function( eventName, callback , once ){
 		var bindEventsString = '',
 			events = eventName.split(" "),
 			totalEvents = events.length,
@@ -175,6 +181,9 @@ mw.KBasePlugin = Class.extend({
 				space = '';
 			}
 			bindEventsString += events[ i ] + this.bindPostFix + space;
+		}
+		if (once){
+			return this.embedPlayer.bindOnceHelper( bindEventsString, callback);
 		}
 		return this.embedPlayer.bindHelper( bindEventsString, callback);
 	},

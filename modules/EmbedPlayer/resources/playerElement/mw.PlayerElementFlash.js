@@ -73,7 +73,7 @@
                     _this.initialized = true;
 
                     _this.flashDetected = true; // used in order to clear detectFlash interval
-                    clearInterval(_this.detectFlashInterval); // stop trying to detect flash
+                    _this.cleanInterval(_this.detectFlashInterval); // stop trying to detect flash
 
                     // We wrap everything in setTimeout to avoid Firefox race condition with empty cache
                     setTimeout( function () {
@@ -138,12 +138,18 @@
         detectFlash: function(failCallback){
             mw.log("PlayerElementFlash::detectFlash::detect loop " + this.detectFlashIntervalLoops);
 
-            if(!this.flashDetected && this.detectFlashIntervalLoops==0 ){
-                mw.log("PlayerElementFlash::detectFlash::failed to detecting Flash Player");
-                clearInterval(this.detectFlashInterval); // stop trying to detect flash
-                failCallback(); //trigger fail callback -> goes to the EmbeadPlayerKplayer in order to displayAlert with ks-FLASH-BLOCKED message
+            if( this.detectFlashIntervalLoops === 0 ){
+                if ( !this.flashDetected ) {
+                    mw.log("PlayerElementFlash::detectFlash::failed to detecting Flash Player");
+                    failCallback(); //trigger fail callback -> goes to the EmbeadPlayerKplayer in order to displayAlert with ks-FLASH-BLOCKED message
+                }
+                this.cleanInterval(this.detectFlashInterval); //stop trying to detect Flash
             }
             this.detectFlashIntervalLoops--;
+        },
+        cleanInterval: function (interval) {
+            clearInterval(interval);
+            interval = null;
         },
 		play: function(){
 			this.sendNotification( 'doPlay' );

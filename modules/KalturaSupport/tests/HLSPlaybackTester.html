@@ -7,7 +7,7 @@
 	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 	<style>
-		#url, #urlthumb, #playingSeg, #downloadingSeg, #processedSeg  { width: 400px; vertical-align: middle;}
+		#url, #urlthumb, #playingSeg, #downloadingSeg, #processedSeg  { min-width: 400px; vertical-align: middle; }
         th, td {text-align: left; padding: 0px 10px; border: 1px solid darkgray; height: 28px}
         td input {margin: 0 !important; border:0 !important;}
 
@@ -19,7 +19,7 @@
 
 <div class="form-group">
     <label for="url">HLS URL</label>
-    <input type="email" class="form-control" id="url" value="http://cdnapi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_sf5ovm7u/flavorIds/1_jl7y56al/format/applehttp/protocol/http/a.m3u8">
+    <input type="email" class="form-control" id="url" value="http://cdnapi.kaltura.com/p/1878761/sp/187876100/playManifest/entryId/1_usagz19w/flavorIds/1_5spqkazq,1_nslowvhp,1_boih5aji,1_qahc37ag/format/applehttp/protocol/http/a.m3u8">
   </div>
   
   <div class="form-group">
@@ -27,6 +27,11 @@
     <input type="email" class="form-control" id="urlthumb" value="http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_sf5ovm7u/version/100003/width/640">
   </div>
 
+<div>
+    Engine:<br>
+    <label class="radio inline"><input type="radio" name="engine" id="engine-js" checked="checked">JS</label>
+    <label class="radio inline"><input type="radio" name="engine" id="engine-flash">Flash</label>
+</div>
 <div>
  Stream Type:<br>
 <label class="radio inline"><input type="radio" name="streamtype" id="streamtype-vod" checked="checked">VOD</label>
@@ -74,13 +79,14 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
 <table>
     <tr>
         <th>Buffer length (in seconds)</th>
-        <th>Dropped frames</th>
+        <th colspan=2>Dropped frames</th>
         <th>Current bitrate</th>
         <th>Current FPS</th>
     </tr>
     <tr>
         <td><label id="bufferLen"/></td>
         <td><label id="droppedFrames"/></td>
+        <td><label id="droppedFPS"/></td>
         <td><label id="currentBitrate"/></td>
         <td><label id="currentFPS"/></td>
     </tr>
@@ -102,13 +108,24 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
     </tr>
     </tbody>
 </table>
+<br/>
+<table>
+    <tr>
+        <th>Processing info</th>
+    </tr>
+    <tr>
+        <td><label id="pts_dts"/></td>
+    </tr>
+</table>
 
 <script>
     // update form based on hash values if present:
 	try{
 		var vals = JSON.parse( decodeURIComponent( window.location.hash ).substr(1)  );
 		if( vals ){
-			$('#streamtype-vod').attr('checked', vals.stvod );
+            $('#engine-js').attr('checked', vals.engine );
+            $('#engine-flash').attr('checked', !vals.engine );
+            $('#streamtype-vod').attr('checked', vals.stvod );
 			$('#streamtype-live').attr('checked', !vals.stvod );
 			$('#nativeCallout-web').attr('checked', vals.ncweb );
 			$('#nativeCallout-native').attr('checked', !vals.ncweb );
@@ -141,14 +158,23 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
         $('#droppedFrames').text("");
         $('#currentBitrate').text("");
         $('#bufferLen').text("");
+        $('#bufferLen2').text("");
         $('#playingSeg').text("");
         $('#processedSeg').text("");
         $('#downloadingSeg').text("");
         $('#currentFPS').text("");
+        $('#pts_dts').text("");
+
+        if( $('#engine-js').is(':checked') ) {
+            $('#droppedFPS').text("FPS_DROP"); //relevant only for hls.js
+        } else {
+            $('#droppedFPS').text("not supported");
+        }
 
 		// poulate hash url 
 		window.location.hash = encodeURIComponent( JSON.stringify( {
-			'stvod':$('#streamtype-vod').is(':checked'),
+			'engine': $('#engine-js').is(':checked'),
+            'stvod':$('#streamtype-vod').is(':checked'),
 			'ncweb':$('#nativeCallout-web').is(':checked'),
 			'url': $('#url').val(),
 			'thumb':  $('#urlthumb').val(),
@@ -156,18 +182,42 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
             'hlsInitialBufferTime': parseInt($('#iniBuffer').val()),
             'hlsExpandedBufferTime': parseInt($('#exBuffer').val()),
             'hlsMaxBufferTime': parseInt($('#maxBuffer').val()),
+            'hlsLogs': $('#engine-js').is(':checked'),
             'dvr':  $('#dvr').is(':checked')
 
         }));
 		
 		var settings = {
-			"LeadWithHLSOnFlash": true,
+            "LeadWithHLSOnJs": $('#engine-js').is(':checked'),
+			"LeadWithHLSOnFlash": !$('#engine-js').is(':checked'),
+            "hlsjs": {
+              'plugin': $('#engine-js').is(':checked')
+            },
+            'hlsLogs': $('#engine-js').is(':checked'),
             "hlsLiveSegmentBuffer": parseInt($('#segBuffer').val()),
             "hlsInitialBufferTime": parseInt($('#iniBuffer').val()),
             "hlsExpandedBufferTime": parseInt($('#exBuffer').val()),
             "hlsMaxBufferTime": parseInt($('#maxBuffer').val()),
 
+            'heartbeat': {
+                'plugin' : true,
+                'trackEventMonitor': 'heartbeatTrackingLog',
+
+                'visitorId': '9A32525A5492AE7C0A4C98C6@AdobeOrg',
+                'visitorTrackingServer': 'ovppartners.d1.sc.omtrdc.net',
+
+                'appMeasurementAccount': 'ovppkaltura',
+                'appMeasurementTrackingServer': 'ovppartners.d1.sc.omtrdc.net',
+                'appMeasurementPageName': 'Kaltura Test Page',
+                'appMeasurementCharSet': 'UTF-8',
+                'appMeasurementVisitorID': 'test-vid',
+
+                'heartbeatTrackingServer': 'heartbeats.omtrdc.net',
+                'heartbeatPublisher': 'ovpkaltura'
+            },
+
             "sourceSelector.plugin" : true,
+            "sourceSelector.displayMode" : "sizebitrate",
             "closedCaptions.showEmbeddedCaptions" : true,
             'debugInfo': {
                 'plugin': true
@@ -228,33 +278,74 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
 
         kWidget.addReadyCallback(function( playerId ){
             var kdp = document.getElementById( playerId );
+
+            //HLS-JS debug info
+            kdp.kBind("hlsCurrentBuffer", function( data ){
+                $('#bufferLen').text(data);
+            });
+            kdp.kBind("hlsDroppedFrames", function( data ){
+                $('#droppedFrames').text(data);
+            });
+            kdp.kBind("hlsDropFPS", function( data ){
+                $('#droppedFPS').text("FPS_DROP: "+data);
+            });
+            kdp.kBind("hlsCurrentBitrate", function( data ){
+                $('#currentBitrate').text(data);
+            });
+            kdp.kBind("hlsFPS", function( data ){
+                $('#currentFPS').text(data);
+            });
+
+            kdp.kBind("hlsFragLoading", function( data ){
+                $('#downloadingSeg').text(data);
+            });
+            kdp.kBind("hlsFragBuffered", function( data ){
+                $('#processedSeg').text(data);
+            });
+            kdp.kBind("hlsFragChanged", function( data ){
+                $('#playingSeg').html(data.url+"<br>"+"startPTS: "+kWidget.seconds2npt(data.startPTS)+" | endPTS: "+kWidget.seconds2npt(data.endPTS));
+            });
+
+            kdp.kBind("hlsFragParsingData", function( data ){
+                if(data.type === 'video') {
+                    var txt = "startPTS: "+kWidget.seconds2npt(data.startPTS)+" | endPTS: "+kWidget.seconds2npt(data.endPTS)+"<br>startDTS: "+kWidget.seconds2npt(data.startDTS)+" | endDTS: "+kWidget.seconds2npt(data.endDTS);
+                    if( $('#pts_dts').html() === ''){
+                        $('#pts_dts').html(txt);
+                    }else {
+                        $('#pts_dts').html($('#pts_dts').html() + "<br><br>" +txt);
+                    }
+                }
+            });
+
+            //HLS-OSMF debug info
             kdp.kBind("debugInfoReceived", function( data ){
-                var ts;
-                if( data.uri ){
-                    var url = data.uri.split('.');
-                    ts = url[url.length-2] + ".ts";
-                }
-                if( data.info && data.info == "Playing segment"){
-                    $('#playingSeg').text( ts );
-                }
-                if( data.info && data.info == "Downloading segment"){
-                    $('#downloadingSeg').text( ts);
-                }
-                if( data.info && data.info == "Finished processing segment"){
-                    $('#processedSeg').text( ts );
-                }
-                if( data.bufferLength ){
-                    $('#bufferLen').text( data.bufferLength );
-                }
-                if( data.droppedFrames ){
-                    $('#droppedFrames').text( data.droppedFrames );
-                }
-                if( data.currentBitrate ){
-                    $('#currentBitrate').text( data.currentBitrate );
-                }
-                if( data.FPS ){
-                    $('#currentFPS').text( data.FPS );
-                }
+                    var ts;
+                    if (data.uri) {
+                        var url = data.uri.split('.');
+                        ts = url[url.length - 2] + ".ts";
+                    }
+                    if (data.info && data.info == "Playing segment") {
+                        $('#playingSeg').text(ts);
+                    }
+                    if (data.info && data.info == "Downloading segment") {
+                        $('#downloadingSeg').text(ts);
+                    }
+                    if (data.info && data.info == "Finished processing segment") {
+                        $('#processedSeg').text(ts);
+                    }
+                    if (data.bufferLength) {
+                        $('#bufferLen').text(data.bufferLength);
+                    }
+                    if (data.droppedFrames) {
+                        $('#droppedFrames').text(data.droppedFrames);
+                    }
+                    if (data.currentBitrate) {
+                        $('#currentBitrate').text(data.currentBitrate);
+                    }
+                    if (data.FPS) {
+                        $('#currentFPS').text(data.FPS);
+                    }
+
             });
         });
 	});

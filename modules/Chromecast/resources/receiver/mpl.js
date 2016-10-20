@@ -20,8 +20,10 @@ var mediaHost = null;  // an instance of cast.player.api.Host
 var mediaProtocol = null;  // an instance of cast.player.api.Protocol
 var mediaPlayer = null;  // an instance of cast.player.api.Player
 var playerInitialized = false;
+var isInSequence = false;
 
 onload = function () {
+	var kdp;
 	cast.receiver.logger.setLevelValue(cast.receiver.LoggerLevel.DEBUG);
 	cast.player.api.setLoggerLevel(cast.player.api.LoggerLevel.DEBUG);
 
@@ -106,64 +108,93 @@ onload = function () {
 			customData = payload['value'];
 			setDebugMessage('customData', customData);
 		} else if (payload['type'] === 'load') {
-			mediaElement = document.getElementById('receiverVideoElement');
-			mediaElement.autoplay = false;
-			setMediaElementEvents(mediaElement);
-			mediaManager.setMediaElement(mediaElement);
 			setMediaManagerEvents();
+		} else if (payload['type'] === 'notification') {
+			kdp.sendNotification(payload['event']); // pass notification event to the player
+		} else if (payload['type'] === 'setLogo') {
+			document.getElementById('logo').style.backgroundImage = "url(" + payload['logo'] + ")";
 		} else if (payload['type'] === 'embed' && !playerInitialized) {
-			var publisherID = payload['publisherID'];
-			var uiconfID = payload['uiconfID'];
-			var entryID = payload['entryID'];
-			mw.setConfig("EmbedPlayer.HidePosterOnStart", true);
-			if (payload['debugKalturaPlayer'] == true){
-				mw.setConfig("debug", true);
-				mw.setConfig("debugTarget", "kdebug");
-				//mw.setConfig("debugFilter", "---");
-				mw.setConfig("autoScrollDebugTarget", true);
-				document.getElementById('kdebug').style.display = 'block';
-			}
-			mw.setConfig("chromecastReceiver", true);
-			mw.setConfig("Kaltura.ExcludedModules", "chromecast");
-			kWidget.embed({
-				"targetId": "kaltura_player",
-				"wid": "_" + publisherID,
-				"uiconf_id": uiconfID,
-				"readyCallback": function (playerId) {
-					if (!playerInitialized){
-						playerInitialized = true;
-						var kdp = document.getElementById(playerId);
-						kdp.kBind("chromecastReceiverLoaded", function( video ){
-							while(video.attributes.length > 0){
-								video.removeAttribute(video.attributes[0].name);
+
+			var playerLib = payload['lib'] + "mwEmbedLoader.php?v=" + Date.now();
+			var s = document.createElement("script");
+			s.type = "text/javascript";
+			s.src = playerLib;
+			document.head.appendChild(s);
+
+			var intervalID = setInterval(function(){
+				if (typeof mw !== "undefined"){
+					clearInterval(intervalID);
+					var publisherID = payload['publisherID'];
+					var uiconfID = payload['uiconfID'];
+					var entryID = payload['entryID'];
+					mw.setConfig("EmbedPlayer.HidePosterOnStart", true);
+					if (payload['debugKalturaPlayer'] == true){
+						mw.setConfig("debug", true);
+						mw.setConfig("debugTarget", "kdebug");
+						//mw.setConfig("debugFilter", "---");
+						mw.setConfig("autoScrollDebugTarget", true);
+						document.getElementById('kdebug').style.display = 'block';
+					}
+					mw.setConfig("chromecastReceiver", true);
+					mw.setConfig("Kaltura.ExcludedModules", "chromecast");
+					var fv = {
+						"multiDrm": {
+							'plugin': false
+						},
+						"embedPlayerChromecastReceiver": {
+							'plugin': true
+						},
+						"chromecast": {
+							'plugin': false
+						}
+					};
+					fv = extend(fv, payload['flashVars']);
+
+					var mimeType = null;
+					var src = null;
+
+					kWidget.embed({
+						"targetId": "kaltura_player",
+						"wid": "_" + publisherID,
+						"uiconf_id": uiconfID,
+						"readyCallback": function (playerId) {
+							if (!playerInitialized){
+								playerInitialized = true;
+								kdp = document.getElementById(playerId);
+								kdp.kBind("broadcastToSender", function(msg){
+									messageBus.broadcast(msg);
+									isInSequence = ( msg == "chromecastReceiverAdOpen" );
+								});
+								kdp.kBind("chromecastReceiverLoaded", function(){
+									setMediaManagerEvents();
+									var msg = "readyForMedia";
+									if (mimeType && src){
+										msg = msg + "|" + src + "|" + mimeType;
+									}
+									messageBus.broadcast(msg);
+								});
+								kdp.kBind("waterMarkLoaded", function(waterMarkElement){
+									var css = getCss(waterMarkElement);
+									document.getElementById("videoHolder").appendChild(waterMarkElement);
+									for (var property in css) {
+										if (css.hasOwnProperty(property)) {
+											waterMarkElement.style[property] = css[property];
+										}
+									}
+								});
+								kdp.kBind("SourceSelected", function(source){
+									mimeType = source.mimeType;
+									src = source.src;
+								});
 							}
-							mediaElement = video;// document.getElementById('vid');
-							mediaElement.autoplay = false;
-							setMediaElementEvents(mediaElement);
-							mediaManager.setMediaElement(mediaElement);
-							setMediaManagerEvents();
-							messageBus.broadcast("readyForMedia");
-						});
-					}
-				},
-				"flashvars": {
-					'controlBarContainer': {
-						'plugin': true,
-						"hover": true
-					},
-					"multiDrm": {
-						'plugin': false
-					},
-					"embedPlayerChromecastReceiver": {
-						'plugin': true
-					},
-					"chromecast": {
-						'plugin': true
-					}
-				},
-				"cache_st": 1438601385,
-				"entry_id": entryID
-			});
+						},
+						"flashvars": fv,
+						"cache_st": 1438601385,
+						"entry_id": entryID
+					});
+				}
+			}, 100);
+
 		} else {
 			licenseUrl = null;
 		}
@@ -184,8 +215,9 @@ function setMediaManagerEvents() {
 	 */
 	mediaManager.onEnded = function () {
 		setDebugMessage('mediaManagerMessage', 'ENDED');
-
-		mediaManager['onEndedOrig']();
+		if (!isInSequence){
+			mediaManager['onEndedOrig']();
+		}
 	};
 
 	/**
@@ -447,10 +479,10 @@ function setMediaManagerEvents() {
 				mediaHost.licenseUrl = licenseUrl;
 			}
 
-			if (customData) {
-				mediaHost.licenseCustomData = customData;
-				console.log('### customData: ' + customData);
-			}
+//			if (customData) {
+//				mediaHost.licenseCustomData = customData;
+//				console.log('### customData: ' + customData);
+//			}
 
 			if ((videoQualityIndex != -1 && streamVideoBitrates &&
 				videoQualityIndex < streamVideoBitrates.length) ||
@@ -543,7 +575,9 @@ function initApp() {
 	 * 10 minutes for testing, use default 10sec in prod by not setting this value
 	 **/
 	appConfig.maxInactivity = 600;
-
+	castReceiverManager.onShutdown = function(){
+		messageBus.broadcast("shutdown"); // receiver was shut down by the browser Chromecast icon - send message to the player to stop the app
+	}
 	/**
 	 * Initializes the system manager. The application should call this method when
 	 * it is ready to start receiving messages, typically after registering
@@ -667,6 +701,9 @@ function setMediaElementEvents(mediaElement) {
 
 	});
 	mediaElement.addEventListener('loadeddata', function (e) {
+		if (protocol === null){
+			return;
+		}
 		console.log('######### MEDIA ELEMENT DATA LOADED');
 		setDebugMessage('mediaElementState', 'Data Loaded');
 		messageBus.broadcast("mediaElement:Data Loaded");
@@ -821,6 +858,41 @@ function setDebugMessage(elementId, message) {
  * get media player state
  */
 function getPlayerState() {
-	var playerState = mediaPlayer.getState();
-	setDebugMessage('mediaPlayerState', 'underflow: ' + playerState['underflow']);
+	if (mediaPlayer){
+		var playerState = mediaPlayer.getState();
+		setDebugMessage('mediaPlayerState', 'underflow: ' + playerState['underflow']);
+	}
+}
+function extend(a, b){
+	for(var key in b)
+		if(b.hasOwnProperty(key))
+			a[key] = b[key];
+	return a;
+}
+/*
+ * get DOM element css properties
+ */
+function getCss(dom){
+	var style;
+	var returns = {};
+	if(window.getComputedStyle){
+		var camelize = function(a,b){
+			return b.toUpperCase();
+		};
+		style = window.getComputedStyle(dom, null);
+		for(var i = 0, l = style.length; i < l; i++){
+			var prop = style[i];
+			var camel = prop.replace(/\-([a-z])/g, camelize);
+			var val = style.getPropertyValue(prop);
+			returns[camel] = val;
+		};
+		return returns;
+	};
+	if(style = dom.currentStyle){
+		for(var prop in style){
+			returns[prop] = style[prop];
+		};
+		return returns;
+	};
+	return this.css();
 }

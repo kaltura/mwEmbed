@@ -1,0 +1,37 @@
+@startuml
+
+(*) --> wait for 'KalturaSupport_CuePointsReady' event
+note left: (function 'init')
+--> "add cue points from 'embedPlayer.rawCuePoints'\nto 'midCuePointsArray'"
+note left
+the cue points don't
+being proccessed by ''
+endnote
+if _this.embedPlayer.isLive()\n&& mw.getConfig("EmbedPlayer.LiveCuepoints") then
+--> [true] "fix mid cuepoint array using 'fixLiveCuePointArray'"
+note left
+1. cuePoint.startTime = cuePoint.createdAt*1000.
+2. sort by createdAt
+end note
+--> update the 'associativeCuePoints' array
+--> invoke 'requestLiveCuepoints' every ~10sec
+note left
+1. upon 'liveOffline' stop invoke after ~10sec
+2. upon 'liveOnline' restart invoke after ~10sec
+   and run once immediately
+end note
+partition "every ~10sec do:" {
+--> run api call with created at filter
+--> run result through 'fixLiveCuePointArray' manipulation
+--> for each new cue point check if found in 'associativeCuePoints' then ignore
+note left: function 'updateCuePoints'
+--> merge into 'cuePoints' and 'midCuePointsArray' arrays
+note left: function 'updateCuePoints'
+
+--> raise 'KalturaSupport_CuePointsUpdated' event with total of updates
+}
+--> (*)
+else
+--> (*)
+end if
+@enduml

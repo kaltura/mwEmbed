@@ -36,6 +36,7 @@
 		isMulticast: false ,
 		isError: false ,
 		readyFuncs: [] ,
+		isOnline: true,
 		// Create our player element
 		setup: function ( readyCallback ) {
 			var _this = this;
@@ -69,6 +70,7 @@
 
 			this.bindHelper( 'switchAudioTrack' , function ( e , data ) {
 				if ( _this.playerObject ) {
+					_this.requestedAudioIndex = data.index;
 					_this.playerObject.selectAudioTrack( data.index );
 				}
 			} );
@@ -203,47 +205,59 @@
 				}
 			}
 
-
 			var onKESResponse = function ( response ) {
 
-				mw.log( 'EmbedPlayerSPlayer got multicast details from KES: ' + JSON.stringify( response ) );
+				if(_this.isOnline){
+
+					mw.log('EmbedPlayerSPlayer got multicast details from KES: ' + JSON.stringify(response));
 
 
-				//verify we got a valid response from KES
-				if ( response && response.multicastAddress && response.multicastPort && response.hls ) {
+					//verify we got a valid response from KES
+					if (response && response.multicastAddress && response.multicastPort && response.hls) {
 
-					var multicastAddress = response.multicastAddress + ":" + response.multicastPort;
-					mw.log( 'multicastAddress: ' + multicastAddress + ' KES: ' + response.multicastSourceAddress);
+						var multicastAddress = response.multicastAddress + ":" + response.multicastPort;
+						mw.log('multicastAddress: ' + multicastAddress + ' KES: ' + response.multicastSourceAddress);
 
-					//first time
-					if ( !_this.multicastAddress ||
-						_this.multicastAddress !== multicastAddress ||
-						_this.multicastSessionId !== response.id ) {
+						//first time
+						if (!_this.multicastAddress ||
+							_this.multicastAddress !== multicastAddress ||
+							_this.multicastSessionId !== response.id) {
 
-						var firstTime = ( _this.multicastAddress == null);
-						_this.multicastAddress = multicastAddress;
-						_this.multicastSourceAddress = response.multicastSourceAddress;
-						_this.multicastPolicyOverMulticastEnabled = response.multicastPolicyOverMulticastEnabled;
-						_this.multicastSessionId = response.id;
+							var firstTime = ( _this.multicastAddress == null);
+							_this.multicastAddress = multicastAddress;
+							_this.multicastSourceAddress = response.multicastSourceAddress;
+							_this.multicastPolicyOverMulticastEnabled = response.multicastPolicyOverMulticastEnabled;
+							_this.multicastSessionId = response.id;
 
-						if (firstTime) {
-							doEmbedFunc(multicastAddress);
-						} else {
-							_this.refreshSilverlightMulticastParams();
+							if (firstTime) {
+								doEmbedFunc(multicastAddress);
+							} else {
+								_this.refreshSilverlightMulticastParams();
+							}
+
 						}
+					} else {
+						//if we got a response from KES that it's still loading, don't do anything
+						if (response && response.state === "Loading") {
 
+							mw.log('KES still loading, retrying later');
+						} else {
+							mw.log('Got error from KES, switch to another one and keep trying');
+							_this.selectNextKES();
+						}
 					}
 				} else {
-					//if we got a response from KES that it's still loading, don't do anything
-					if (response && response.state==="Loading") {
-
-						mw.log('KES still loading, retrying later');
-					} else {
-						mw.log('Got error from KES, switch to another one and keep trying');
-						_this.selectNextKES();
-					}
+					mw.log( 'EmbedPlayerSPlayer got multicast details from KES while offline' );
 				}
-				startConnectToKESTimer();
+			};
+
+			var onKESErrorResponce = function (){
+				if(_this.isOnline){
+					mw.log('no response from KES... switch KES and retry');
+					_this.selectNextKES();
+				} else {
+					mw.log( 'EmbedPlayerSPlayer got error from KES while offline' );
+				}
 			};
 
 			var startConnectToKESTimer = function () {
@@ -255,24 +269,25 @@
 
 				var retryTime= _this.getKalturaConfig( null , 'multicastKESStartInterval' ) || _this.defaultMulticastKESStartInterval;
 
-				if (_this.multicastSessionId)
+				if (_this.isOnline && _this.multicastSessionId)
 					retryTime=_this.getKalturaConfig( null , 'multicastKeepAliveInterval' ) || _this.defaultMulticastKeepAliveInterval;
 
 				_this.keepAliveMCTimeout = setTimeout( function () {
 					try {
-						_this.connectToKES( _this.multiastServerUrl ).then( onKESResponse ,
-							function() {
-								mw.log( 'no response from KES... switch KES and retry' );
-								_this.selectNextKES();
-								startConnectToKESTimer();
-							}
-						);
+						if(_this.isOnline)
+						{
+							_this.connectToKES(_this.multiastServerUrl)	.then(onKESResponse, onKESErrorResponce)
+								.always(startConnectToKESTimer);
+						} else {
+							startConnectToKESTimer();
+						}
 					}
-					catch ( e ) {
+					catch(e){
 						mw.log( 'connectToKES failed ' + e.message + ' ' + e.stack );
 						startConnectToKESTimer();
 					}
 				} , retryTime );
+
 			};
 
 
@@ -284,25 +299,25 @@
 
 			this.isError = true;
 
-            if ( this.playerObject ) {
-                this.playerObject.stop();
-            }
-            this.stopped = true;
+			if ( this.playerObject ) {
+				this.playerObject.stop();
+			}
+			this.stopped = true;
 
 			var disableMulticastFallback = _this.getKalturaConfig( null , 'disableMulticastFallback' ) || _this.defaultDisableMulticastFallback;
 			if ( !disableMulticastFallback ) {
 				mw.log( 'fallbackToUnicast: try unicast' );
-                //remove current source to fallback to unicast if multicast failed
+				//remove current source to fallback to unicast if multicast failed
 				for ( var i = 0 ; i < _this.mediaElement.sources.length ; i++ ) {
 					if ( _this.mediaElement.sources[i] == _this.mediaElement.selectedSource ) {
-                        _this.mediaElement.sources.splice(i, 1);
-                        break;
-                    }
+						_this.mediaElement.sources.splice(i, 1);
+						break;
+					}
 				}
-                _this.bindHelper("playerReady", function(){
-                    _this.firstPlay = true; //resume live playback when the new player is ready
-                });
-                _this.setupSourcePlayer(); //switch player
+				_this.bindHelper("playerReady", function(){
+					_this.firstPlay = true; //resume live playback when the new player is ready
+				});
+				_this.setupSourcePlayer(); //switch player
 			} else {
 				mw.log( "fallbackToUnicast: stop here since we don't allow multicast failver" );
 				var errorObj = {message: gM( 'ks-LIVE-STREAM-NOT-SUPPORTED' ) , title: gM( 'ks-ERROR' )};
@@ -318,18 +333,18 @@
 				var startSilverlight = function () {
 					_this.resolveSrcURL(_this.getSrc()).then(function (result) {
 
-						if (_this.isMulticast) {
-							_this.handleMulticastPlayManifest(result, doEmbedFunc);
-						} else {
-							doEmbedFunc(result);
-						}
-					},
-					function() { //play manifest retunred error
-						if (_this.isMulticast) {
-							mw.log("got error from resolveSrcURL doing fallbackToUnicast");
-							_this.fallbackToUnicast();
-						}
-					});
+							if (_this.isMulticast) {
+								_this.handleMulticastPlayManifest(result, doEmbedFunc);
+							} else {
+								doEmbedFunc(result);
+							}
+						},
+						function() { //play manifest retunred error
+							if (_this.isMulticast) {
+								mw.log("got error from resolveSrcURL doing fallbackToUnicast");
+								_this.fallbackToUnicast();
+							}
+						});
 				}
 				if ( onAirStatus ) {
 					startSilverlight();
@@ -406,6 +421,11 @@
 						//Encode URL so it can be passed via HTML tag
 						flashvars.licenseURL = encodeURIComponent(licenseUrl);
 
+						//Default audio track config to allow setting it on silverlight init, if doesn't exist then
+						if (_this.audioTrack && _this.audioTrack.defaultTrack) {
+							flashvars.defaultAudioTrack = _this.audioTrack.defaultTrack;
+						}
+
 						var customData = {
 							partnerId: _this.kpartnerid ,
 							ks: _this.getFlashvars( 'ks' ) ,
@@ -430,11 +450,18 @@
 					}
 				} else if ( isMimeType( "video/multicast" ) ) {
 
+
 					_this.bindHelper( "liveOffline" , function () {
 						//if stream became offline
+						mw.log('PlayerSilverlight. went offline');
 						if ( _this.playerObject ) {
 							_this.playerObject.stop();
 						}
+						_this.isOnline = false;
+					} );
+					_this.bindHelper( "liveOnline" , function () {
+						mw.log('PlayerSilverlight. went online');
+						_this.isOnline = true;
 					} );
 
 					flashvars.multicastPlayer = true;
@@ -455,7 +482,6 @@
 					} , timeout );
 				}
 				_this.autoplay = _this.autoplay || _this.isMulticast;
-				flashvars.autoplay = _this.autoplay;
 				flashvars.isLive = _this.isLive();
 				flashvars.isDVR = ( _this.isDVR() == 1 );
 				_this.durationReceived = false;
@@ -467,6 +493,7 @@
 						'durationChange': 'onDurationChange' ,
 						'playerPlayEnd': 'onClipDone' ,
 						'playerUpdatePlayhead': 'onUpdatePlayhead' ,
+						'buffering': 'onBuffering' ,
 						'bytesTotalChange': 'onBytesTotalChange' ,
 						'bytesDownloadedChange': 'onBytesDownloadedChange' ,
 						'playerSeekEnd': 'onPlayerSeekEnd' ,
@@ -574,7 +601,6 @@
 		 */
 		onPause: function () {
 			this.updatePlayhead();
-			$( this ).trigger( "onpause" );
 		} ,
 
 		/**
@@ -594,6 +620,10 @@
 				this.hideSpinner();
 				this.stopped = this.paused = false;
 			}
+			if (this.buffering){
+				this.bufferEnd();
+			}
+			this.removePoster();
 		} ,
 
 		callReadyFunc: function () {
@@ -614,7 +644,6 @@
 				this.getPlayerContainer().css( 'visibility' , 'hidden' );
 				this.durationReceived = true;
 				if ( !this.isError ) {
-					this.callReadyFunc();
 
 					//in silverlight we have unusual situation where "Start" is sent after "playing", this workaround fixes the controls state
 					if ( this.autoplay ) {
@@ -693,13 +722,14 @@
 		 * play method calls parent_play to update the interface
 		 */
 		play: function () {
-			mw.log( 'EmbedPlayerSPlayer::play' + this.isMulticast + ""+this.durationReceived);
+			mw.log( 'EmbedPlayerSPlayer::play ' + this.isMulticast + " " + this.durationReceived);
 			var _this = this;
 			if ( (!this.isMulticast || this.durationReceived) && this.parent_play() ) {
 				//TODO:: Currently SL player initializes before actual volume is read from cookie, so we set it on play
 				//need to refactor the volume logic and remove this.
 				this.setPlayerElementVolume( this.volume );
 				//bring back the player
+				this.removePoster();
 				this.getPlayerContainer().css( 'visibility' , 'visible' );
 				_this.playerObject.play();
 				this.monitor();
@@ -727,6 +757,14 @@
 			}
 			this.parent_pause();
 		} ,
+		/**
+		 * load method calls parent_load to start fetching media from server, in case of DRM the license request will be handled as well
+		 */
+		load: function () {
+			if ( this.streamerType !== "smoothStream" ){
+				this.playerObject.load();
+			}
+		},
 		/**
 		 * playerSwitchSource switches the player source working around a few bugs in browsers
 		 *
@@ -821,6 +859,13 @@
 		} ,
 
 		/**
+		 * function called by silverlight on buffering start
+		 */
+		onBuffering: function () {
+			this.bufferStart();
+		} ,
+
+		/**
 		 * function called by flash when the total media size changes
 		 */
 		onBytesTotalChange: function ( data , id ) {
@@ -851,6 +896,14 @@
 
 		onSwitchingChangeComplete: function ( data , id ) {
 			var value = JSON.parse( data );
+
+			var sources = this.getSources();
+			if (sources && (sources.length >= value.newIndex)){
+				var source = sources[value.newIndex];
+				this.triggerHelper('bitrateChange', source.getBitrate());
+				this.currentBitrate = source.getBitrate();
+			}
+
 			//fix a bug that old switching process finished before the user switching request and the UI was misleading
 			if ( this.requestedSrcIndex !== null && value.newIndex !== this.requestedSrcIndex ) {
 				return;
@@ -864,8 +917,7 @@
 			var values = JSON.parse( data );
 			this.parent_onFlavorsListChanged( values.flavors );
 
-		} ,
-
+		},
 		onEnableGui: function ( data , id ) {
 			if ( data.guiEnabled === false ) {
 				this.disablePlayControls();
@@ -883,8 +935,15 @@
 
 		onAudioTrackSelected: function ( data ) {
 			var _this = this;
+			var audioTrack = JSON.parse( data );
+			//TODO: we always get the previous audio track index here, need to fix in silverlight player.
+			//As we don't have adaptive audio bitrate, only audio tracks for languages then this bug is not critical as
+			//the actual change in UI is made from the audio selector side
+			if ( this.requestedAudioIndex !== null && audioTrack.index !== this.requestedAudioIndex ) {
+				return;
+			}
 			this.callIfReady( function () {
-				_this.triggerHelper( 'audioTrackIndexChanged' , JSON.parse( data ) );
+				_this.triggerHelper( 'audioTrackIndexChanged' , audioTrack );
 			} );
 		} ,
 
@@ -924,32 +983,19 @@
 			return $( '#' + this.containerId );
 		} ,
 
-		/*
-		 * get the source index for a given source
-		 */
-		getSourceIndex: function ( source ) {
-			var sourceIndex = null;
-			$.each( this.mediaElement.getPlayableSources() , function ( currentIndex , currentSource ) {
-				if ( source.getBitrate() == currentSource.getBitrate() ) {
-					sourceIndex = currentIndex;
-					return false;
-				}
-			} );
-			if ( sourceIndex == null ) {
-				mw.log( "EmbedPlayerSPlayer:: Error could not find source: " + source.getSrc() );
-			}
-			return sourceIndex;
-		} ,
 		switchSrc: function ( source ) {
-			if ( this.playerObject && this.mediaElement.getPlayableSources().length > 1 ) {
+			if ( this.playerObject && this.getSources().length > 1 ) {
 				var trackIndex = -1;
 				if ( source !== -1 ) {
 					trackIndex = this.getSourceIndex( source );
+					mw.log("EmbedPlayerSPlayer:: switch to track index: " + trackIndex);
+					var bitrate = source.getBitrate();
+					$(this).trigger('sourceSwitchingStarted', [
+						{currentBitrate: bitrate}
+					]);
+					this.currentBitrate = bitrate;
+					this.triggerHelper('bitrateChange', bitrate);
 				}
-				mw.log( "EmbedPlayerSPlayer:: switch to track index: " + trackIndex );
-				$( this ).trigger( 'sourceSwitchingStarted' , [
-					{currentBitrate: source.getBitrate()}
-				] );
 				this.requestedSrcIndex = trackIndex;
 				this.playerObject.selectTrack( trackIndex );
 			}
@@ -985,6 +1031,11 @@
 				ttml: captionData.ttml
 			};
 			this.triggerHelper( 'onEmbeddedData' , caption );
+		},
+
+		bufferHandling: function(){
+			// Nothing here, only overwrite the super bufferHandling method.
+			// The buffer handling here made by SilverLight itself, by listening to "buffering" event.
 		}
 
 	}

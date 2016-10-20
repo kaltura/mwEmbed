@@ -280,6 +280,9 @@ mw.KWidgetSupport.prototype = {
 	},
 	updatePlayerContextData: function(embedPlayer, playerData){
 		if( playerData.contextData ){
+			if ( playerData.contextData.msDuration) {
+				embedPlayer.kalturaPlayerMetaData.duration = Math.floor(playerData.contextData.msDuration / 1000);
+			}
 			embedPlayer.kalturaContextData = playerData.contextData;
 			if (playerData.contextData &&
 				$.isArray(playerData.contextData.accessControlActions)) {
@@ -293,7 +296,7 @@ mw.KWidgetSupport.prototype = {
 
 					if (action.pattern && action.replacement) {
 						var regExp=new RegExp(action.pattern, "i");
-						var urlsToModify = ['Kaltura.ServiceUrl','Kaltura.StatsServiceUrl','Kaltura.ServiceBase','Kaltura.LiveStatsServiceUrl'];
+						var urlsToModify = ['Kaltura.ServiceUrl','Kaltura.StatsServiceUrl','Kaltura.ServiceBase','Kaltura.LiveStatsServiceUrl','Kaltura.AnalyticsUrl'];
 						urlsToModify.forEach(function (key) {
 							var serviceUrl = mw.config.get(key);
 							var match = serviceUrl.match( regExp );
@@ -475,7 +478,7 @@ mw.KWidgetSupport.prototype = {
 			if (flavorPartnerData.url != "") {
 				var flavorAssetObj = {
 					"data-assetid": flavorAsset.id,
-					src: flavorPartnerData.url,
+					src: _this.addSessionIdToSrc(flavorPartnerData.url),
 					type: flavorPartnerData.type,
 					"data-width": flavorAsset.width,
 					"data-height": flavorAsset.height,
@@ -487,8 +490,11 @@ mw.KWidgetSupport.prototype = {
 				if (flavorPartnerData["default"] === "true"){
 					flavorAssetObj["default"] = true;
 				}
-				var drmData = _this.getFlavorAssetDrmData(flavorAsset.id, flavorDrmData);
-				$.extend(flavorAssetObj, drmData);
+
+				_this.attachFlavorAssetDrmData(flavorAssetObj, flavorAsset.id, flavorDrmData);
+				if (flavorAssetObj.type === "application/vnd.apple.mpegurl") {
+					flavorAssetObj.fpsCertificate = _this.getFairplayCert(playerData);
+				}
 				flavorAssets.push( flavorAssetObj );
 			}
 		} );
@@ -501,6 +507,15 @@ mw.KWidgetSupport.prototype = {
 
 		//Set proxyData response data
 		embedPlayer.setKalturaConfig( 'proxyData', playerData.meta.partnerData);
+	},
+
+	addSessionIdToSrc: function(srcURL){
+		if (srcURL && srcURL.toLowerCase().indexOf("playmanifest") === -1){
+			return srcURL;
+		}
+
+		var qp = ( srcURL.indexOf('?') === -1) ? '?' : '&';
+		return srcURL + qp + 'playSessionId=' + this.getGUID();
 	},
 	updateVodPlayerData: function(embedPlayer, playerData){
 		embedPlayer.setLive( false );
@@ -1088,6 +1103,11 @@ mw.KWidgetSupport.prototype = {
 			playerRequest.entry_id =  embedPlayer.kentryid;
 		}
 
+		var proxyData = embedPlayer.getKalturaConfig('proxyData', 'data');
+		if(proxyData){
+			playerRequest.proxyData = proxyData;
+		}
+
 		// Add the flashvars
 		playerRequest.flashvars = embedPlayer.getFlashvars();
 
@@ -1119,16 +1139,17 @@ mw.KWidgetSupport.prototype = {
 				var entryResult =  window.kalturaIframePackageData.entryResult;
 				_this.handlePlayerData( embedPlayer, entryResult );
 				//if we dont have special widgetID or the KS is defined continue as usual
-				if ( "_" + embedPlayer.kpartnerid == playerRequest.widget_id || _this.kClient.getKs() ) {
+				var kpartnerid = embedPlayer.kpartnerid ? embedPlayer.kpartnerid : "";
+				if ( this.isEmbedServicesEnabled(entryResult) || "_" + kpartnerid == playerRequest.widget_id || _this.kClient.getKs() ) {
 					callback( entryResult );
 				}else{
 					//if we have special widgetID and we dont have a KS - ask for KS before continue the process
 					this.kClient.forceKs(playerRequest.widget_id,function(ks) {
 						_this.kClient.setKs( ks );
-						if ( window.kalturaIframePackageData.playerConfig && !window.kalturaIframePackageData.playerConfig.vars ) {
-							window.kalturaIframePackageData.playerConfig.vars = {};
+						if ( embedPlayer.playerConfig && !embedPlayer.playerConfig.vars ) {
+							embedPlayer.playerConfig.vars = {};
 						}
-						window.kalturaIframePackageData.playerConfig.vars.ks = ks;
+						embedPlayer.playerConfig.vars.ks = ks;
 						callback( entryResult );
 					},function(){
 						mw.log("Error occur while trying to create widget KS");
@@ -1197,9 +1218,6 @@ mw.KWidgetSupport.prototype = {
 	 * 		false if the media should not be played.
 	 */
 	getAccessControlStatus: function( ac, embedPlayer ){
-		if( ac.isAdmin ){
-			return true;
-		}
 		if( ac.isCountryRestricted ){
 			return embedPlayer.getKalturaMsgObject( 'UNAUTHORIZED_COUNTRY' );
 		}
@@ -1663,6 +1681,8 @@ mw.KWidgetSupport.prototype = {
 					protocol: protocol,
 					clipAspect: validClipAspect
 				});
+				this.attachFlavorAssetDrmData(hlsSource, targetFlavors[0], flavorDrmData);
+				hlsSource.fpsCertificate = this.getFairplayCert(playerData);
 				deviceSources.push(hlsSource);
 				addedHlsStream = true;
 			}
@@ -1800,6 +1820,15 @@ mw.KWidgetSupport.prototype = {
 		var assetDrmData = this.getFlavorAssetDrmData(assetId, flavorDrmData);
 		$.extend(source, assetDrmData);
 		return source;
+	},
+	getFairplayCert: function(playerData){
+		var publicCertificate = null;
+		if (playerData.contextData.pluginData &&
+			playerData.contextData.pluginData.KalturaFairplayEntryContextPluginData &&
+			playerData.contextData.pluginData.KalturaFairplayEntryContextPluginData.publicCertificate){
+			publicCertificate = playerData.contextData.pluginData.KalturaFairplayEntryContextPluginData.publicCertificate;
+		}
+		return publicCertificate;
 	},
 	getFlavorAssetsDrmData: function(playerData){
 		var flavorDrmData = {};

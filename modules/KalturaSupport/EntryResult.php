@@ -107,9 +107,20 @@ class EntryResult {
 			!$this->request->hasKS();
 	}
 	function getCacheKey(){
+		global $wgForceCache;
 		$key = '';
-		if ($this->request->isEmbedServicesEnabled() && $this->request->isEmbedServicesRequest()){
-			$key.= md5( serialize( $this->request->getEmbedServicesRequest() ) );
+		if ( $this->request->isEmbedServicesEnabled() && $this->request->isEmbedServicesRequest() ) {
+			if ( $wgForceCache ) {
+				$data = $this->request->getEmbedServicesRequest();
+				$config = "none";
+				if ( isset( $data->config ) ){
+					$config = serialize($data->config);
+				}
+				$cacheKey = $data->MediaID .'_'.$config;
+				$key.= md5( serialize( $cacheKey ) );
+			}
+			else
+				$key.= md5( serialize( $this->request->getEmbedServicesRequest() ) );
 		}
 		if( $this->request->getEntryId() ){
 			$key.= $this->request->getEntryId();
@@ -310,11 +321,6 @@ class EntryResult {
 			// errors we have seen so far: 
 				//$accessControl['code'] == 'MISSING_MANDATORY_PARAMETER'
 				//$accessControl['code'] == 'INTERNAL_SERVERL_ERROR'  
-			return true;
-		}
-
-		// Checks if admin
-		if( isset( $accessControl['isAdmin'] ) && $accessControl['isAdmin']) {
 			return true;
 		}
 

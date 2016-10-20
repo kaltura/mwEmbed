@@ -65,7 +65,7 @@
 	margin-bottom: 19px;
 }
 .share .share-container{
-    margin-top: 30px;
+    margin-top: 18px;
 }
 .share .share-offset{
 	width: 70px;
@@ -152,12 +152,12 @@
 	-ms-filter: "FlipH";
 	width: 14px;
 	position: absolute;
-	margin-top: 36px;
+	margin-top: 28px;
+    margin-left: -26px;
 	cursor: pointer;
 	display: none;
 }
 .mobile .share .back-btn{
-    margin-top: 36px;
     font-size: 1em;
 }
 .share .back-btn:hover{
@@ -166,53 +166,45 @@
 .share .next-btn{
 	width: 14px;
 	position: absolute;
-	margin-top: 36px;
+	margin-top: 28px;
 	cursor: pointer;
-	margin-left: 375px;
+	margin-left: 350px;
 	display: none;
 }
 .share .next-btn:hover{
 	text-shadow: 0px 0px 10px #fff;
 }
 .mobile .share .next-btn{
-    margin-top: 36px;
     font-size: 1em;
 }
 /* icon placeholder */
 .share .share-icons-scroller{
-	width: 400px;
+	width: 344px;
 	height: 58px;
 	margin: 0 auto;
-	margin-bottom: 12px;
 }
 .share .share-icons-container{
-    height: 88px;
-    width: 332px;
-    margin-left: 20px;
+    height: 64px;
+    width: 334px;
     overflow: hidden;
     white-space: nowrap;
-    text-align: left;
-    margin-bottom: 20px;
+    text-align: center;
 }
 .share .icon-border{
 	position: relative;
 	border-radius: 28px 28px 28px 28px;
 	-moz-border-radius: 28px 28px 28px 28px;
 	-webkit-border-radius: 28px 28px 28px 28px;
-	/*border: 1px solid white;
-	border: 1px solid rgba(255,255,255,0.5);*/
-	width: 56px;
+	width: 64px;
 	height: 56px;
-	/*font-size: 2em;*/
-	margin-right: 6px;
+    padding-top: 6px;
 	display: inline-block;
-
     border: 0px;
     opacity: 0.7;
     font-size: 4em;
 }
 .mobile .small.share .share-input-container{
-   margin-top: 24px;
+   margin-top: 2em;
 }
 
 .mobile .share .icon-border{
@@ -221,12 +213,9 @@
     font-size: 4em;
 }
 .mobile .share.semiTransparentBkg{
-    background-color: rgb(0, 0, 0);
-    opacity: 0.8;
+    background-color: rgba(0, 0, 0, 0.2);
 }
 .share .share-network{
-	margin-top: 15px;
-	margin-left: 15px;
 	display: table;
 	width: 100%;
 	height: 100%;
@@ -295,6 +284,9 @@
 	width: 34px;
 	height: 32px;
 }
+.mobile .small.share .icon-border{
+	width: 40px;
+}
 .small.share .share-icons-scroller{
 	width: 270px;
 	height: 32px;
@@ -304,6 +296,9 @@
 }
 .small.share .share-icons-container{
 	width: 222px;
+}
+.mobile .small.share .share-icons-container{
+	width: 250px;
 }
 .small.share .share-network{
 	font-size: 0.7em;

@@ -826,6 +826,9 @@
 					b( 'playerReady', function(){
 						callback( 'ready', embedPlayer.id );
 					});
+					b( 'bufferStartEvent', function(){
+						callback( 'buffering', embedPlayer.id );
+					});
 					b( 'onpause', function(){
 						callback( 'paused', embedPlayer.id );
 					});
@@ -1161,6 +1164,9 @@
 						})
 						return;
 					}
+					if ( notificationData && notificationData.userInitiated ){
+						embedPlayer.triggerHelper( 'userInitiatedPlay' );
+					}
 					embedPlayer.play();
 					break;
 				case 'doPause':
@@ -1168,6 +1174,9 @@
 					if( embedPlayer.sequenceProxy && embedPlayer.sequenceProxy.isInSequence ) {
 						embedPlayer.triggerHelper( 'doPause' );
 						break;
+					}
+					if ( notificationData && notificationData.userInitiated ){
+						embedPlayer.triggerHelper( 'userInitiatedPause' );
 					}
 					embedPlayer.pause();
 					break;
@@ -1244,6 +1253,11 @@
 						if (notificationData.referenceId){
 							embedPlayer.referenceId = notificationData.referenceId;
 						}
+
+						// Update the proxy data
+						embedPlayer.setKalturaConfig("proxyData", notificationData.proxyData);
+						embedPlayer.setKalturaConfig("proxyData", "data", notificationData.proxyData);
+
 						// Clear player & entry meta
 						embedPlayer.kalturaPlayerMetaData = null;
 						embedPlayer.kalturaEntryMetaData = null;
@@ -1282,6 +1296,12 @@
 					} else {
 					embedPlayer.disablePlayControls();
 					}
+					break;
+				case 'addBlackScreen':
+					embedPlayer.addBlackScreen();
+					break;
+				case 'removeBlackScreen':
+					embedPlayer.removeBlackScreen();
 					break;
 				default: 
 					// custom notification

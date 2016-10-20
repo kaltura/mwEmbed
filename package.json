@@ -1,7 +1,7 @@
 {
   "name": "mwEmbed",
   "description": "Kaltura's HTML5 Media Library enables you leverage a unified configuration and development API for both HTML5 and Flash. It enables delivery of rich on page and in player experiences backed by robust metadata and per device asset delivery of the kaltura platform. It supports a wide range of features, an external and internal plugin model, advanced html5 player, and custom skins.",
-  "version": "2.34.0",
+  "version": "2.44.0",
   "repository": "https://github.com/kaltura/mwEmbed.git",
   "license": "AGPL-3.0",
   "keywords": [
@@ -11,7 +11,7 @@
     "mediaWiki"
   ],
   "dependencies": {
-    "mwEmbed-Dash-Everywhere": "git+ssh://git@github.com:kaltura/mwEmbed-Dash-Everywhere.git#v3.2.0-silverlight"
+    "mwEmbed-Dash-Everywhere": "git+ssh://git@github.com:kaltura/mwEmbed-Dash-Everywhere.git#v4.1.1"
   },
   "homepage": "https://github.com/kaltura/mwEmbed/"
 }

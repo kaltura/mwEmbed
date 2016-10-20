@@ -11,12 +11,12 @@
 		
 		contentDuration: 0,
 
+		isSafeEnviornment: function(){
+			return !this.embedPlayer.isMobileSkin();
+		},
+
 		setup: function(){
 			var _this = this;
-			if ( this.embedPlayer.isMobileSkin() ){
-				this.setConfig("prefix","");
-				this.getComponent().data("width",0.1);
-			}
 			this.bind( 'durationChange', function(event, duration){
 				if( !_this.getPlayer().isInSequence() ){
 					_this.contentDuration = duration;

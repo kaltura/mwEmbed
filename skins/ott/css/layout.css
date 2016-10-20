@@ -3,6 +3,7 @@ body {
 	/*Disable the default behavior of an Anchor in jQuery Mobile (iOS)*/
 	-webkit-touch-callout: none ; /* disable the iOS popup when long-press on a link */
 	-webkit-user-select: none ; /* disable selection/copy of UIWebView */
+	-webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 }
 .topBarContainer {
 	position: absolute;
@@ -168,7 +169,7 @@ body {
 	transition: bottom 0.2s ease-in;
 }
 .mobile .controlBarContainer {
-	height: 42px !important;
+	height: 48px !important;
 }
 .mobile.fullscreen .controlBarContainer {
 	height: 64px !important;
@@ -266,9 +267,7 @@ button::-moz-focus-inner {
 .end-state .largePlayBtn:before {
 	content: "\e605" !important;
 }
-.mobile.start-state .largePlayBtn {
-	display: block !important;
-}
+
 .mobile.pause-state .largePlayBtn {
 	display: block !important;
 }
@@ -282,16 +281,19 @@ button::-moz-focus-inner {
 .mobile.seeking-state .largePlayBtn {
 	display: none !important;
 }
+.mobile.start-state .largePlayBtn {
+    display: block !important;
+}
 .scrubber {
 	position: relative;
-	height: 3px;
+	height: 6px;
 	border-radius: 1.5px;
 	background-color: rgba(255,255,255,0.3);
 	cursor: pointer;
 	margin-left: 10px;
 	margin-right: 8px;
 	display: inline-block !important;
-	top: -7px;
+	top: -4px;
 }
 .scrubber div{
 	border-radius: 2px;
@@ -314,9 +316,9 @@ button::-moz-focus-inner {
 }
 .sliderPreview {
 	position: absolute !important;
-	width: 36px !important;
 	height: 24px !important;
 	padding-left: 12px !important;
+	padding-right: 6px !important;
 	margin-left: -10px !important;
 	z-index: 9999999999 !important;
 	background-color: #ffffff !important;
@@ -361,7 +363,7 @@ button::-moz-focus-inner {
 	z-index: 100;
 	position: absolute;
 	left: 0;
-	top: -6px;
+	top: -5px;
 	width: 28px;
 	height: 28px;
 	border-radius: 50%;
@@ -547,9 +549,14 @@ button::-moz-focus-inner {
 }
 .mobile .smartContainerMenu .pluginIcon{
 	display: block;
-	font-size: 78px;
-	padding-left: 30px;
-	padding-right: 30px;
+	font-size: 5em;
+	padding-left: 1em;
+	padding-right: 1em;
+}
+.mobile.size-small .smartContainerMenu .pluginIcon{
+	font-size: 3em;
+	padding-left: 0.75em;
+	padding-right: 0.75em;
 }
 .mobile .smartContainerMenu .pluginPropertyLabel{
 	display: none;
@@ -657,7 +664,7 @@ button::-moz-focus-inner {
 	font-size: 12px;
 	display: inline;
 	font-family: Helvetica,Arial;
-	top: -5px;
+	top: -3px;
 }
 /* specific FireFox CSS fixes */
 @-moz-document url-prefix(){
@@ -989,7 +996,11 @@ button::-moz-focus-inner {
 }
 
 .btn:focus {
-	outline: 1px dotted #999;
+	outline: 1px solid #66CCFF;
+}
+
+.mobile .btn:focus {
+	outline: none;
 }
 
 .scrubber.disabled {

@@ -19,7 +19,9 @@
             quizSubmitted: false,
             intrVal: null,
             quizEndFlow: false,
-            isQKDPReady:false,
+            bindPostfix: '.quizPlugin',
+            reviewMode:false,
+            isKPlaylist:false,
 
             init: function (embedPlayer,quizPlugin) {
                 var _this = this;
@@ -33,9 +35,8 @@
             },
 
             setupQuiz:function(){
-                var _this = this;
-
-                this.embedPlayer.disableComponentsHover();
+                var _this = this,
+                    deferred = $.Deferred();
 
                 _this.KIVQApi.getUserEntryIdAndQuizParams( function(data) {
                     if (!_this.checkApiResponse('User Entry err-->', data[0])) {
@@ -44,6 +45,10 @@
                     if (!_this.checkApiResponse('Quiz Params err-->', data[1])) {
                         return false;
                     }
+                    if ( !("uiAttributes" in data[1])) {
+                        deferred.reject(data, 'quiz is empty');
+                        return deferred;
+                    }
                     else {
                         $.quizParams = data[1];
                         $.grep($.quizParams.uiAttributes, function (e) {
@@ -51,7 +56,6 @@
                                 _this.canSkip = (e.value.toLowerCase() === 'true');
                             }
                         });
-
                         if (data[0].totalCount > 0) {
                             switch (String(data[0].objects[0].status)) {
                                 case 'quiz.3':
@@ -69,11 +73,24 @@
                             }
                         }
                     }
+
+                    if(_this.isKPlaylist){
+                        if (_this.quizSubmitted){
+                            mw.log("Quiz: Playlist Auto Continue When Submitted");
+                            _this.embedPlayer.setKDPAttribute('playlistAPI','autoContinue',true);
+                        }else{
+                            mw.log("Quiz: Playlist Don't Auto Continue");
+                            _this.embedPlayer.setKDPAttribute('playlistAPI','autoContinue',false);
+                        }
+                    }
+
                     _this.setUserEntryId(data);
                     _this.checkUserEntryIdReady(function(){
                         _this.getQuestionsAndAnswers(_this.populateCpObject);
+                        deferred.resolve(data);
                     });
                 });
+                return deferred;
             },
 
             getQuestionsAndAnswers: function (callback) {
@@ -92,6 +109,7 @@
             setUserEntryId:function(data){
                 var _this = this;
                 if (data[0].totalCount > 0 &&  !$.isEmptyObject(data[0].objects[0])) {
+                    mw.log('Quiz: Set user entry id');
                     _this.kQuizUserEntryId = data[0].objects[0].id;
                 }
                 else{
@@ -100,6 +118,7 @@
                             return false;
                         }
                         else{
+                            mw.log('Quiz: create user entry id');
                             _this.kQuizUserEntryId = userData.id;
                         }
                     });
@@ -123,10 +142,10 @@
                             _this.quizSubmitted = true;
                         });
                         _this.sendIVQMesageToListener();
-
                     }
                 });
             },
+
             getIvqPDF:function(entryId){
                 var _this = this;
                 _this.KIVQApi.downloadIvqPDF(entryId, function(data){
@@ -199,7 +218,7 @@
                 else{
                     var anUnswered = _this.getUnansweredQuestNrs();
                     if (!anUnswered){
-                        _this.quizPlugin.reviewMode = true;
+                        _this.reviewMode = true;
                     }
                     if (($.cpObject.cpArray.length - 1) === questionNr){
                         _this.quizEndFlow = true;
@@ -217,18 +236,16 @@
                             _this.embedPlayer.stopPlayAfterSeek = false;
                         }
                     }
+                    mw.log("Quiz: Continue Play  ");
                     _this.embedPlayer.play();
                     _this.quizPlugin.selectedAnswer = null;
                 }
             },
             gotoScrubberPos: function (questionNr) {
                 var _this = this,seekTo;
-                if (_this.embedPlayer.isPlaying()){
-                    _this.embedPlayer.pause();
-                }
-                _this.embedPlayer.stopPlayAfterSeek = true;
-                seekTo = (($.cpObject.cpArray[questionNr].startTime) /1000)+0.5;
-                _this.embedPlayer.seek(seekTo,true);
+                seekTo = (($.cpObject.cpArray[questionNr].startTime) /1000)-0.5;
+                mw.log("Quiz: seekTo: " + seekTo);
+                _this.embedPlayer.seek(seekTo,false);
             },
             cuePointReachedHandler: function (e, cuePointObj) {
                 var _this = this;
@@ -240,19 +257,6 @@
                         _this.quizPlugin.ssSetCurrentQuestion(key,false);
                     }
                 });
-            },
-            checkQKDPReady:function(callback){
-                var _this = this;
-                if (_this.intrVal){
-                    _this.intrVal = false;
-                }
-                _this.intrVal = setInterval(function () {
-                    if (_this.isQKDPReady){
-                        clearInterval(_this.intrVal);
-                        _this.intrVal = false;
-                        callback()
-                    }
-                }, 500);
             },
 
             checkUserEntryIdReady:function(callback){
@@ -269,14 +273,9 @@
                 }, 500);
             },
             checkCuepointsReady:function(callback){
-                var _this = this;
-                if (_this.intrVal){
-                    _this.intrVal = false;
-                }
-                _this.intrVal = setInterval(function () {
-                    if ($.cpObject.cpArray){
-                        clearInterval(_this.intrVal);
-                        _this.intrVal = false;
+                var interVal = setInterval(function () {
+                    if ($.cpObject.cpArray && $.quizParams ){
+                        clearInterval(interVal);
                         callback()
                     }
                 }, 500);
@@ -318,10 +317,10 @@
                     }
                 })
             },
-            bubbleSizeSelector: function (inFullScreen) {
+            bubbleSizeSelector: function (isFullScreen) {
                 var _this = this, buObj = {bubbleAnsSize: "", bubbleUnAnsSize: ""};
                 if (_this.quizEndFlow) {
-                    if (inFullScreen) {
+                    if (isFullScreen) {
                         buObj.bubbleAnsSize = "bubble-fullscreen";
                         buObj.bubbleUnAnsSize = "bubble-window-quizEndFlow";
                     }
@@ -331,7 +330,7 @@
                     }
                 }
                 else {
-                    if (inFullScreen) {
+                    if (isFullScreen) {
                         buObj.bubbleAnsSize = "bubble-fullscreen";
                         buObj.bubbleUnAnsSize = "bubble-fullscreen";
                     }
@@ -368,11 +367,11 @@
                 _this.embedPlayer.getInterface().find(".display-all-container").hide().fadeIn(400);
 
                 if((_this.embedPlayer.getInterface().find(".second-row").length) == 0 ){
-                    _this.embedPlayer.getInterface().find(".display-all-container").addClass("margin-top7");
+                    _this.embedPlayer.getInterface().find(".display-all-container").addClass("margin-top5");
                     _this.embedPlayer.getInterface().find(".left-arrow").addClass("margin-top4");
                 }
                 else{
-                    _this.embedPlayer.getInterface().find(".display-all-container").removeClass("margin-top7");
+                    _this.embedPlayer.getInterface().find(".display-all-container").removeClass("margin-top5");
                     _this.embedPlayer.getInterface().find(".left-arrow").removeClass("margin-top4");
 
 
@@ -502,8 +501,10 @@
             },
             showQuizOnScrubber:function(){
                 var _this = this;
+                mw.log("Quiz: Show Quiz on Scrubber");
                 _this.quizPlugin.displayBubbles();
-                if (_this.quizEndFlow){
+                //!_this.quizSubmitted for IOS9 Android5 &&
+                if (_this.quizEndFlow && !_this.quizSubmitted){
                     _this.showQuizEndOnScrubber();
                 }
             },
@@ -516,7 +517,7 @@
             showQuizEndOnScrubber:function(){
                 var _this = this;
                 _this.hideQuizEndOnScrubber();
-                _this.quizPlugin.displayQuizEnd();
+                _this.quizPlugin.displayQuizEndMarker();
             },
             hideQuizEndOnScrubber:function(embedPlayer){
                 this.embedPlayer.getInterface().find(".quizDone-cont").empty().remove();
@@ -533,7 +534,10 @@
             },
             sendIVQMesageToListener:function(){
                 try {
-                    window.parent.postMessage("QuizSubmitted", "*");
+                    var _this = this;
+                    window.kdp = document.getElementById( _this.embedPlayer.id );
+                    window.kdp.sendNotification("QuizSubmitted", _this.kQuizUserEntryId);
+                    mw.log('Quiz: QuizSubmitted sent to kdp');
                 } catch (e) {
                     mw.log('postMessage listener of parent is undefined: ', e);
                 }
@@ -554,8 +558,16 @@
                 var _this = this;
                 clearInterval(_this.intrVal);
                 _this.intrVal = null;
-            }
-
+            },
+            unloadQuizPlugin:function(embedPlayer){
+              var _this = this;
+                $.cpObject = {};
+                $.quizParams = {};
+                $(this.embedPlayer).unbind(_this.bindPostfix);
+                embedPlayer.unbindHelper(_this.bindPostfix);
+                embedPlayer.removeJsListener(_this.bindPostfix);
+                _this.hideQuizOnScrubber();
+                mw.log("Quiz: Plugin Unloaded");            }
         })) {
     }
 })(window.mw, window.jQuery );
