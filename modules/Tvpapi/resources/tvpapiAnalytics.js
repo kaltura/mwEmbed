@@ -64,6 +64,10 @@
 				if(!_this.didFirstPlay) return;
 				_this.sendMediaMark('bitrate_change');
 			});
+
+			this.bind('onChangeMedia', function(){
+				_this.didFirstPlay = false;
+			});
 		},
 
 		bindContinueToTime: function() {

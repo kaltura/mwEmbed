@@ -96,6 +96,9 @@
 		setup: function (readyCallback) {
 			var _this = this;
 			this._propagateEvents = true;
+			if (mw.isIpad()) {
+				this.getPlayerElement().removeAttribute("poster");
+			}
 			$(this.getPlayerElement()).css('position', 'absolute');
 			if (this.inline) {
 				$(this.getPlayerElement()).attr('webkit-playsinline', '');
@@ -613,8 +616,11 @@
 					vid.removeAttribute('controls');
 
 					// dissable seeking ( if we were in a seeking state before the switch )
-					_this.seeking = false;
-
+					if (_this.isFlavorSwitching) {
+						_this.seeking = true;
+					} else {
+						_this.seeking = false;
+					}
 					// Workaround for 'changeMedia' on Android & iOS
 					// When changing media and not playing entry before spinner is stuck on black screen
 					if (!_this.firstPlay) {
@@ -1044,6 +1050,7 @@
 				var _this = this;
 				this.waitForSeekTarget().then(function(){
 					_this.seeking = false;
+					_this.isFlavorSwitching = false;
 					if (_this._propagateEvents) {
 						if( !_this.isLive() || ( _this.isLive() && _this.isDVR() ) ) {
 							_this.log(" trigger: seeked");
@@ -1391,7 +1398,7 @@
         },
         parseTextTracks: function(vid, counter){
             var _this = this;
-            setTimeout(function() {
+	        this.parseTextTracksTimeout = setTimeout(function() {
                 if( vid.textTracks.length > 0 ) {
                     for (var i = 0; i < vid.textTracks.length; i++) {
                         if (vid.textTracks[i].kind === "metadata") {
@@ -1496,6 +1503,7 @@
 
 		clean:function(){
 			clearTimeout(this.parseAudioTracksTimeout);
+			clearTimeout(this.parseTextTracksTimeout);
 		}
 	};
 })(mediaWiki, jQuery);

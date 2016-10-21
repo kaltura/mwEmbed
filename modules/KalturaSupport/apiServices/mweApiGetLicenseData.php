@@ -120,7 +120,11 @@ class mweApiGetLicenseData {
             );
         }     
         
-		echo json_encode($response, JSON_FORCE_OBJECT | JSON_UNESCAPED_SLASHES);
+        $encode_flags = JSON_FORCE_OBJECT;
+        if (defined("JSON_UNESCAPED_SLASHES")) {
+            $encode_flags |= JSON_UNESCAPED_SLASHES;
+        }
+		echo json_encode($response, $encode_flags);
 	}
 	
 	function sendHeaders() {
