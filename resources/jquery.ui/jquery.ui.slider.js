@@ -169,18 +169,28 @@ $.widget( "ui.slider", $.ui.mouse, {
 
 		var outerWidth = this.element.outerWidth();
 		var elemOffset = this.element.offset();
-		//IE11 iframe fullscreen fix (KMS-4606)
-		if( !mw.getConfig('EmbedPlayer.IsFriendlyIframe') && window["resizeScrubberIE11"] === true ) {
-			outerWidth = this.element.get(0).clientWidth;
-			var ieOffsetTop = elemOffset.top * 100;
-			var ieOffsetLeft = elemOffset.left * 100;
-			elemOffset = {left: ieOffsetLeft, top: ieOffsetTop};
+		//IE11 iframe fullscreen fix (SUP-8939)
+		var userOS = mw.userOS();
+		if ( userOS === 'Windows 8.1' ) {
+			if ( !mw.getConfig('EmbedPlayer.IsFriendlyIframe' ) && window["resizeScrubberIE11"] === true ) {
+				outerWidth = this.element.get(0).clientWidth;
+				var ieOffsetTop = elemOffset.top * 100;
+				var ieOffsetLeft = elemOffset.left * 100;
+				elemOffset = {left: ieOffsetLeft, top: ieOffsetTop};
+			}
+			this.elementSize = {
+				width:  outerWidth,
+				height: this.element.outerHeight()
+			};
+			this.elementOffset = elemOffset;
 		}
-		this.elementSize = {
-			width:  outerWidth,
-			height: this.element.outerHeight()
-		};
-		this.elementOffset = elemOffset;
+		else {
+			this.elementSize = {
+				width:  this.element.outerWidth(),
+				height: this.element.outerHeight()
+			};
+			this.elementOffset = this.element.offset();
+		}
 
 		position = { x: event.pageX, y: event.pageY };
 		normValue = this._normValueFromMouse( position );
