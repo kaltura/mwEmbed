@@ -263,7 +263,10 @@
 			if (target.data('droppable')) {
 				target
 					.droppable('enable')
-					.droppable('option', 'greedy', !useParentAsTarget);
+					.droppable('option', {
+						greedy: !useParentAsTarget,
+						drop: $.proxy(this.onDrop, this)
+					});
 			} else {
 				target
 					.data('droppable', true)

@@ -182,8 +182,11 @@
         },
 
         findClosestPlayableFlavor: function (source, stream) {
+            var sourceTags = source.tags.split(',');
             var relevantFlavors = stream.data.contextData.flavorAssets.filter(function (flavor) {
-                return flavor.tags === source.tags;
+                return sourceTags.every(function (tag) {
+                    return flavor.tags.split(',').indexOf(tag) !== -1;
+                });
             });
 
             if (!relevantFlavors.length) {
