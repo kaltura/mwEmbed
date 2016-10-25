@@ -101,7 +101,8 @@ mw.KAnalytics.prototype = {
 		this._p100Once = false;
 		this.hasSeeked = false;
 		this.lastSeek = 0;
-	},
+        this.histroyEvent = {};
+    },
 	/**
 	 * Get the current report set
 	 *
