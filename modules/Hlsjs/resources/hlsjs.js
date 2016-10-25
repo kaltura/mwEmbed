@@ -19,6 +19,7 @@
 		var hlsjs = mw.KBasePlugin.extend({
 
 			defaultConfig: {
+				withCredentials : false,
 				options: {
 					//debug:true
 					liveSyncDurationCount: 3,
@@ -113,8 +114,16 @@
 					this.log("Init");
 					//Set streamerType to hls
 					this.embedPlayer.streamerType = 'hls';
+					
+					var hlsConfig = this.getConfig("options");
+					//Apply withCredentials if set to true
+					if(this.getConfig("withCredentials")){
+						hlsConfig.xhrSetup = function(xhr, url) {
+							xhr.withCredentials = true;
+						}
+					}
 					//Init the HLS playback engine
-					this.hls = new Hls(this.getConfig("options"));
+					this.hls = new Hls(hlsConfig);
 
 					this.loaded = true;
 					//Reset the error recovery counter
