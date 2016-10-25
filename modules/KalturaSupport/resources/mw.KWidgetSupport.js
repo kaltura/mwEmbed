@@ -514,9 +514,11 @@ mw.KWidgetSupport.prototype = {
 		if (srcURL && srcURL.toLowerCase().indexOf("playmanifest") === -1){
 			return srcURL;
 		}
-
+        var nativeVersion = mw.getConfig("nativeVersion");
+        nativeVersion = (nativeVersion != null && nativeVersion.length > 0) ? '_' + nativeVersion : '';
+        var clientTag = 'html5:v' + window[ 'MWEMBED_VERSION' ] + nativeVersion;
 		var qp = ( srcURL.indexOf('?') === -1) ? '?' : '&';
-		return srcURL + qp + 'playSessionId=' + this.getGUID();
+		return srcURL + qp + 'playSessionId=' + this.getGUID() + '&clientTag=' + clientTag;
 	},
 	updateVodPlayerData: function(embedPlayer, playerData){
 		embedPlayer.setLive( false );
