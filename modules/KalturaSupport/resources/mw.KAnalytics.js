@@ -35,6 +35,7 @@ mw.KAnalytics.prototype = {
 	//delay the stats call in x sec
 	delay:0,
 
+    histroyEvent : {},
 	kEventTypes : {
 		'WIDGET_LOADED' : 1,
 		'MEDIA_LOADED' : 2,
@@ -117,7 +118,6 @@ mw.KAnalytics.prototype = {
 
 		// get the id for the given event:
 		var eventKeyId = this.kEventTypes[ KalturaStatsEventKey ];
-
 		// Generate the status event
 		var eventSet = {
 			'eventType'			: eventKeyId,
@@ -146,7 +146,14 @@ mw.KAnalytics.prototype = {
 			eventSet[ 'entryId' ] = this.embedPlayer.getSrc();
 		}
 
-		// Set the 'event:uiconfId'
+        if (this.histroyEvent[eventSet[ 'entryId' ]]   == null)
+        {
+            this.histroyEvent[eventSet[ 'entryId' ]] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+        }
+        this.histroyEvent[eventSet[ 'entryId' ]][eventKeyId - 1] = 1;
+
+        eventSet[ 'historyEvents' ] = this.histroyEvent[eventSet[ 'entryId' ]].join('');
+        // Set the 'event:uiconfId'
 		if( this.embedPlayer.kuiconfid ) {
 			eventSet[ 'uiconfId' ] = this.embedPlayer.kuiconfid;
 		}
