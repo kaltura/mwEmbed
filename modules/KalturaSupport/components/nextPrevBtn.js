@@ -27,12 +27,12 @@
             setup: function () {
                 if (this.embedPlayer.isMobileSkin()) {
                     this.setConfig('parent', 'videoHolder');
-                    this.addBindings();
+                    this.addMobileBindings();
                 }
-                this.addEnableDisableBinding();
+                this.addBindings();
             },
 
-            addBindings: function () {
+            addMobileBindings: function () {
                 var _this = this;
                 this.bind('onChangeMediaDone playerReady onpause onEndedDone onRemovePlayerSpinner showPlayerControls hideScreen', function () {
                     if (!_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() && !_this.embedPlayer.changeMediaStarted) {
@@ -63,10 +63,9 @@
                 });
             },
 
-            addEnableDisableBinding: function () {
+            addBindings: function () {
                 var _this = this;
                 this.bind('playlistFirstEntry playlistLastEntry playlistMiddleEntry', function (e) {
-                    _this.getComponent().find(".btn").removeClass("disabled");
                     if (e.type === "playlistFirstEntry") {
                         _this.getComponent().find(".icon-prev").addClass("disabled");
                     }
