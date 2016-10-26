@@ -983,7 +983,11 @@
 						var companionAds = [];
 
 						try {
-							companionAds = ad.getCompanionAds(adSlotWidth, adSlotHeight, {resourceType: google.ima.CompanionAdSelectionSettings.ResourceType.STATIC, creativeType: google.ima.CompanionAdSelectionSettings.CreativeType.IMAGE});
+							var selectionCriteria = new google.ima.CompanionAdSelectionSettings();
+							selectionCriteria.resourceType = google.ima.CompanionAdSelectionSettings.ResourceType.STATIC;
+							selectionCriteria.creativeType = google.ima.CompanionAdSelectionSettings.CreativeType.IMAGE;
+							selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.IGNORE;
+							companionAds = ad.getCompanionAds(adSlotWidth, adSlotHeight, selectionCriteria);
 						} catch(e) {
 							mw.log("Error: DoubleClick could not access getCompanionAds");
 						}
