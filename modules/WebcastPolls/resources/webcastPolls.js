@@ -529,13 +529,21 @@
         },
         /**
          * Indicates if a user can vote
-         * note: product decision - allow user to vote even if current voting is inProgress (better ux, although a racing problem can happen)
          * @returns {*|null|boolean} true if the user can vote, false otherwise
          */
         canUserVote: function ()
         {
             var _this = this;
             return this.embedPlayer.isLive() && _this.pollData.pollId && _this.globals.votingProfileId && _this.userVote.canUserVote && _this.userVote.isReady;
+        },
+        /**
+         * Indicates if vote is being processed and sent to server
+         * @returns {boolean} true if vote is being submitted to server
+         */
+        voteInProgress: function ()
+        {
+            var _this = this;
+            return _this.userVote.inProgress;
         },
         /**
          * returns current poll view configuration
@@ -554,7 +562,7 @@
         {
             var _this = this;
 
-            if (!_this.canUserVote()) {
+            if (!_this.canUserVote() || _this.voteInProgress()) {
                 _this.log('user cannot vote at the moment - ignoring request');
                 return;
             }
