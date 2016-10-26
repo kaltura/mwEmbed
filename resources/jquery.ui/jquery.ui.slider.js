@@ -170,7 +170,7 @@ $.widget( "ui.slider", $.ui.mouse, {
 		var outerWidth = this.element.outerWidth();
 		var elemOffset = this.element.offset();
 		//IE11 iframe fullscreen fix (SUP-8939)
-		var userOS = mw.userOS();
+		var userOS = mw.getUserOS();
 		if ( userOS === 'Windows 8.1' ) {
 			if ( !mw.getConfig('EmbedPlayer.IsFriendlyIframe' ) && window["resizeScrubberIE11"] === true ) {
 				outerWidth = this.element.get(0).clientWidth;
