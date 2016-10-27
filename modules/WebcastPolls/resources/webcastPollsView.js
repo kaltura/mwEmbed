@@ -104,6 +104,12 @@
                         }
 
                         var $pollLayout = $(pollRawLayoutHTML);
+                        $pollLayout.find('.answers-widget').addEventListener('touchmove', function(event) {
+                            if (event.targetTouches.length !== 1) {
+                                stopPropagation();
+                                return false;
+                            }
+                        }, false);
                         $pollLayout.find('.answer').click($.proxy(_this.parent.handleAnswerClicked, _this.parent));
                         _this.$webcastPoll.append($pollLayout);
 
