@@ -212,8 +212,7 @@
 				_this.prePlayActionTriggered = true;
 			});
 
-			// Load double click ima per doc:
-			this.loadIma( function(){
+			var onImaLoadSuccess = function(){
 				_this.imaLoaded = true;
 				_this.embedPlayer.unbindHelper('prePlayAction' + _this.bindPostfix);
 				// Determine if we are in managed or kaltura point based mode.
@@ -250,13 +249,22 @@
 						_this.embedPlayer.play();
 					}
 				}
-			}, function( errorCode ){
+			};
+			var onImaLoadFailed = function( errorCode ){
 				mw.log( "Error::DoubleClick Loading Error: " + errorCode );
+				_this.onAdError(errorCode);
 				_this.embedPlayer.unbindHelper('prePlayAction' + _this.bindPostfix);
 				if ( _this.prePlayActionTriggered ){
 					_this.embedPlayer.play();
 				}
-			});
+			};
+
+			if (window.google && window.google.ima){
+				onImaLoadSuccess();
+			} else {
+				// Load double click ima per doc:
+				this.loadIma(onImaLoadSuccess, onImaLoadFailed);
+			}
 
 			var restoreOnInit = function(){
 				_this.destroy();
