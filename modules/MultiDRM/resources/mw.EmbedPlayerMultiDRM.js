@@ -155,7 +155,7 @@
 			return  !( mw.isIpad() || mw.isAndroid() || mw.isMobileChrome() || this.useNativePlayerControls() )
 		},
 		changeMedia: function(){
-			this.clean();
+			this.manifestLoaded = false;
 			this.parent_changeMedia();
 		},
 		changeMediaCallback: function (callback) {
@@ -185,13 +185,24 @@
 		},
 		clean: function ( ) {
 			this.manifestLoaded = false;
+			this.dashPlayerInitialized = false;
 			if ( this.detectPluginInterval ) {
 				this.cleanInterval(this.detectPluginInterval);
 			}
 			if (this.updateStateInterval ) {
 				this.cleanInterval(this.updateStateInterval);
 			}
+			this.removeBindings();
+			videojs(this.pid).safeDispose();
 		},
+
+		removeBindings: function(){
+			this.unbindHelper('switchAudioTrack');
+			this.unbindHelper('changeEmbeddedTextTrack');
+			this.unbindHelper('closedCaptionsDisplayed');
+			this.unbindHelper('closedCaptionsHidden');
+		},
+
 		/**
 		 * Return the embed code
 		 */
