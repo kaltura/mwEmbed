@@ -117,18 +117,25 @@
 		},
         addBindings: function(){
             var _this = this;
-            this.bindHelper('firstPlay', function(){
+            this.bindHelper('firstPlay' + this.bindPostfix, function(){
                 _this.parseTracks();
             });
-            this.bindHelper('switchAudioTrack', function (e, data) {
+            this.bindHelper('switchAudioTrack' + this.bindPostfix, function (e, data) {
                 _this.switchAudioTrack(data.index);
             });
-            this.bindHelper('liveOnline', function(){
+            this.bindHelper('liveOnline' + this.bindPostfix, function(){
                 if( _this.isLive() && !_this.isDVR() ) {
                     _this.resetSrc = true;
                 }
             });
         },
+
+		removeBindings: function(){
+			this.unbindHelper('firstPlay' + this.bindPostfix);
+			this.unbindHelper('switchAudioTrack' + this.bindPostfix);
+			this.unbindHelper('liveOnline' + this.bindPostfix);
+		},
+
 		/**
 		 * Updates the supported features given the "type of player"
 		 */
@@ -210,7 +217,7 @@
 			_this.bufferStartFlag = false;
 			_this.bufferEndFlag = false;
 
-			$(this).html(
+			$(this.getVideoDisplay()).append(
 				_this.getNativePlayerHtml()
 			);
 
@@ -258,7 +265,7 @@
 
 			return    $('<' + tagName + ' />')
 				// Add the special nativeEmbedPlayer to avoid any rewrites of of this video tag.
-				.addClass('nativeEmbedPlayerPid')
+				.addClass('persistentNativePlayer nativeEmbedPlayerPid')
 				.attr(playerAttribtues)
 				.css(cssSet);
 		},
@@ -1502,6 +1509,7 @@
         },
 
 		clean:function(){
+			this.removeBindings();
 			clearTimeout(this.parseAudioTracksTimeout);
 			clearTimeout(this.parseTextTracksTimeout);
 		}
