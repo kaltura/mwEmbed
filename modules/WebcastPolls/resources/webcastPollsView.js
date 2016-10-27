@@ -105,8 +105,9 @@
 
                         var $pollLayout = $(pollRawLayoutHTML);
                         $pollLayout.find('.answers-widget')[0].addEventListener('touchmove', function(event) {
-                            if (event.targetTouches.length !== 1) {
-                                stopPropagation();
+                            if (event.targetTouches.length > 1) {
+                                event.preventDefault();
+                                event.stopPropagation();
                                 return false;
                             }
                         }, false);
