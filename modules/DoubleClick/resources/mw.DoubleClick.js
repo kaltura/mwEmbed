@@ -618,6 +618,7 @@
 			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
 
 			if (isLinear && !this.isNativeSDK) {
+				this.clearSkipTimeout();
 				this.embedPlayer.enablePlayControls(["scrubber","share","infoScreen","related","playlistAPI","nextPrevBtn","sourceSelector","qualitySettings","morePlugins"]);
 			} else {
 				_this.embedPlayer.pause();
@@ -642,6 +643,7 @@
 				$(".adCover").remove();
 				$(this.embedPlayer).trigger("onPlayerStateChange", ["play", this.embedPlayer.currentState]);
 				if (isLinear) {
+					this.resumeSkipSupport();
 					this.embedPlayer.disablePlayControls();
 				} else {
 					_this.embedPlayer.play();
@@ -772,26 +774,38 @@
 				_this.hideSkipBtn();
 			});
 		},
-		showSkipBtn: function(){
-			if( this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' ) ){
-				$(".ad-skip-label").show();
-				this.skipTimeoutId = setTimeout(function(){
-					$(".ad-skip-btn").show();
-					$(".ad-skip-label").hide();
-				},parseFloat(this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' ) * 1000))
-			}else{
-				$(".ad-skip-btn").show();
-				$(".ad-skip-label").hide();
-			}
-		},
-		hideSkipBtn: function(){
-			if( this.skipTimeoutId !== null ){
-				clearTimeout(this.skipTimeoutId);
-				this.skipTimeoutId = null;
-			}
-			$(".ad-skip-btn").hide();
-			$(".ad-skip-label").hide();
-		},
+        resumeSkipSupport: function () {
+            if (this.embedPlayer.getKalturaConfig('skipBtn', 'skipOffset')) {
+                var timePassed = (this.duration - this.adPreviousTimeLeft) * 1000;
+                this.startSkipTimeout((this.embedPlayer.getKalturaConfig('skipBtn', 'skipOffset') * 1000) - timePassed);
+            }
+        },
+        showSkipBtn: function () {
+            if (this.embedPlayer.getKalturaConfig('skipBtn', 'skipOffset')) {
+                $(".ad-skip-label").show();
+                this.startSkipTimeout(parseFloat(this.embedPlayer.getKalturaConfig('skipBtn', 'skipOffset') * 1000));
+            } else {
+                $(".ad-skip-btn").show();
+                $(".ad-skip-label").hide();
+            }
+        },
+        hideSkipBtn: function () {
+            this.clearSkipTimeout();
+            $(".ad-skip-btn").hide();
+            $(".ad-skip-label").hide();
+        },
+        clearSkipTimeout: function () {
+            if (this.skipTimeoutId !== null) {
+                clearTimeout(this.skipTimeoutId);
+                this.skipTimeoutId = null;
+            }
+        },
+        startSkipTimeout: function (time) {
+            this.skipTimeoutId = setTimeout(function () {
+                $(".ad-skip-btn").show();
+                $(".ad-skip-label").hide();
+            }, time);
+        },
 		/**
 		 * Adds custom params to ad url.
 		 */
