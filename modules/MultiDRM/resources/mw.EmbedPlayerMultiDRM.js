@@ -906,6 +906,7 @@
 			} else {
 				if ( this.parent_play() ) {
 					var play = function () {
+						_this.paused = false;
 						_this.getPlayerElement().play();
 						_this.monitor();
 					};
