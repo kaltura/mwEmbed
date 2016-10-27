@@ -305,12 +305,6 @@ Poll (shared)
     box-shadow: 0 0px 0px 3px #7ed321;
 }
 
-.webcastPolls.allow-voting .poll .answer.not-selected:active{
-    background-color: #f1f1f1 !important;
-    border : rgba(255,255,255,0.2) solid 1px !important;
-}
-
-
 .webcastPolls.allow-voting.producer-view .poll .answer.not-selected:hover {
     background-color: #cccccc;
     box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.5);
