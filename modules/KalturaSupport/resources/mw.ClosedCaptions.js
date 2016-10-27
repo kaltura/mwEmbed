@@ -985,8 +985,12 @@
 
 				return this.getMenu();
 			} else {
-				if( this.getConfig('hideWhenEmpty') == true && !this.embedPlayer.isMobileSkin()){
-					this.setConfig('visible', true)
+				if( this.getConfig('hideWhenEmpty') == true ){
+					this.getBtn().show();
+
+					if( !this.embedPlayer.isMobileSkin() ) {
+						this.setConfig('visible', true);
+					}
 				}
 				if (this.getConfig("parent") !== "smartContainer"){
 					this.getComponent().show();
