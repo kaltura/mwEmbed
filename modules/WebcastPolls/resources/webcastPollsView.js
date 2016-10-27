@@ -104,7 +104,7 @@
                         }
 
                         var $pollLayout = $(pollRawLayoutHTML);
-                        $pollLayout.find('.answers-widget').addEventListener('touchmove', function(event) {
+                        $pollLayout.find('.answers-widget')[0].addEventListener('touchmove', function(event) {
                             if (event.targetTouches.length !== 1) {
                                 stopPropagation();
                                 return false;
