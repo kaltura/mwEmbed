@@ -117,13 +117,13 @@
 		},
         addBindings: function(){
             var _this = this;
-            this.bindHelper('firstPlay', function(){
+            this.bindHelper('firstPlay' + this.bindPostfix, function(){
                 _this.parseTracks();
             });
-            this.bindHelper('switchAudioTrack', function (e, data) {
+            this.bindHelper('switchAudioTrack' + this.bindPostfix, function (e, data) {
                 _this.switchAudioTrack(data.index);
             });
-            this.bindHelper('liveOnline', function(){
+            this.bindHelper('liveOnline' + this.bindPostfix, function(){
                 if( _this.isLive() && !_this.isDVR() ) {
                     _this.resetSrc = true;
                 }
@@ -131,9 +131,9 @@
         },
 
 		removeBindings: function(){
-			this.unbindHelper('firstPlay');
-			this.unbindHelper('switchAudioTrack');
-			this.unbindHelper('liveOnline');
+			this.unbindHelper('firstPlay' + this.bindPostfix);
+			this.unbindHelper('switchAudioTrack' + this.bindPostfix);
+			this.unbindHelper('liveOnline' + this.bindPostfix);
 		},
 
 		/**
