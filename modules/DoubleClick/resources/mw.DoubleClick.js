@@ -260,9 +260,11 @@
 			};
 
 			if (window.google && window.google.ima){
+				mw.log("Google IMA lib already loaded");
 				onImaLoadSuccess();
 			} else {
 				// Load double click ima per doc:
+				mw.log("Google IMA lib loading");
 				this.loadIma(onImaLoadSuccess, onImaLoadFailed);
 			}
 
