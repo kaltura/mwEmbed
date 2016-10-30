@@ -457,7 +457,6 @@ button::-moz-focus-inner {
 }
 .volumeControl .sliderContainer {
 	margin-top: -180px;
-	margin-left: 10px;
 	width: 36px;
 	display: none;
 	background: rgba(255,255,255,0.9);
