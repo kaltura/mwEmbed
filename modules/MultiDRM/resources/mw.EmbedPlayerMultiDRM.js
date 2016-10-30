@@ -155,7 +155,7 @@
 			return  !( mw.isIpad() || mw.isAndroid() || mw.isMobileChrome() || this.useNativePlayerControls() )
 		},
 		changeMedia: function(){
-			this.clean();
+			this.manifestLoaded = false;
 			this.parent_changeMedia();
 		},
 		changeMediaCallback: function (callback) {
@@ -185,13 +185,24 @@
 		},
 		clean: function ( ) {
 			this.manifestLoaded = false;
+			this.dashPlayerInitialized = false;
 			if ( this.detectPluginInterval ) {
 				this.cleanInterval(this.detectPluginInterval);
 			}
 			if (this.updateStateInterval ) {
 				this.cleanInterval(this.updateStateInterval);
 			}
+			this.removeBindings();
+			videojs(this.pid).safeDispose();
 		},
+
+		removeBindings: function(){
+			this.unbindHelper('switchAudioTrack' + this.bindPostfix);
+			this.unbindHelper('changeEmbeddedTextTrack' + this.bindPostfix);
+			this.unbindHelper('closedCaptionsDisplayed' + this.bindPostfix);
+			this.unbindHelper('closedCaptionsHidden' + this.bindPostfix);
+		},
+
 		/**
 		 * Return the embed code
 		 */
@@ -274,12 +285,12 @@
 						_this.updateDashContext();
 					}
 				} );
-				this.bindHelper('switchAudioTrack', function (e, data) {
+				this.bindHelper('switchAudioTrack' + this.bindPostfix, function (e, data) {
 					if (_this.getPlayerElement()) {
 						_this.getPlayerElement().setActiveTrack("audio", data.index);
 					}
 				});
-				this.bindHelper('changeEmbeddedTextTrack', function (e, data) {
+				this.bindHelper('changeEmbeddedTextTrack' + this.bindPostfix, function (e, data) {
 					if (_this.getPlayerElement()) {
 						var stats = _this.getPlayerElement().getPlaybackStatistics();
 						if (stats.text.activeTrack != data.index){
@@ -287,10 +298,10 @@
 						}
 					}
 				});
-				this.bindHelper('closedCaptionsDisplayed', function () {
+				this.bindHelper('closedCaptionsDisplayed'+ this.bindPostfix, function () {
 					_this.getPlayerElement().textTrackDisplay.show();
 				});
-				this.bindHelper('closedCaptionsHidden', function () {
+				this.bindHelper('closedCaptionsHidden' + this.bindPostfix, function () {
 					_this.getPlayerElement().textTrackDisplay.hide();
 				});
 			}
@@ -895,6 +906,7 @@
 			} else {
 				if ( this.parent_play() ) {
 					var play = function () {
+						_this.paused = false;
 						_this.getPlayerElement().play();
 						_this.monitor();
 					};
