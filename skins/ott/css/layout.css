@@ -448,8 +448,6 @@ button::-moz-focus-inner {
 	display: block;
 }
 #muteBtn{
-	margin-right: 12px;
-	margin-left: 12px;
 	background-color: transparent;
 	font-size: 26px;
 	width: 36px;
@@ -1061,7 +1059,6 @@ button::-moz-focus-inner {
 
 .durationLabel {
 	color: rgba(255,255,255,0.6);
-	margin-right: 10px;
 }
 .mobile .durationLabel {
 	display: none !important;
@@ -1152,11 +1149,10 @@ button::-moz-focus-inner {
 
 .playPauseBtn{
 	margin-left: 16px;
-	margin-right: 12px;
 }
 .smartContainer{
 	font-size: 26px;
-	margin-top: 2px;
+	margin-left: 5px;
 	width: 46px;
 	background-color: transparent;
 }
@@ -1165,7 +1161,7 @@ button::-moz-focus-inner {
 }
 .fullScreenBtn{
 	font-size: 26px;
-	margin-right: 16px;
+	margin-right: 10px;
 	margin-top: 2px;
     width: 46px;
 	background-color: transparent;
