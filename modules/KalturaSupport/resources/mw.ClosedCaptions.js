@@ -827,7 +827,7 @@
 			$cc.css( 'height',  height + 'px')
 			
 			// update embedPlayer layout per updated caption container size.
-			 _this.embedPlayer.doUpdateLayout();
+			 _this.embedPlayer.doUpdateLayout(true);
 		},		
 		/**
 		 * Gets a text size percent relative to about 30 columns of text for 400
