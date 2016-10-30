@@ -1411,7 +1411,7 @@
 			return false;
 		},
 
-		doUpdateLayout: function (skipTrigger) {
+		doUpdateLayout: function (skipTrigger, data) {
 			// Set window height if in iframe:
 			var containerHeight = this.layoutBuilder.getContainerHeight();
 			var newHeight = containerHeight - this.layoutBuilder.getComponentsHeight();
@@ -1434,7 +1434,7 @@
 
 			if (!skipTrigger && deltaHeight != 1) {
 				mw.log('EmbedPlayer: updateLayout: trigger "updateLayout" ');
-				this.triggerHelper('updateLayout');
+				this.triggerHelper('updateLayout', data);
 			}
 		},
 		/**

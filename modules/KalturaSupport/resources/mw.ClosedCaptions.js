@@ -35,6 +35,7 @@
 		textSources: [],
 		defaultBottom: 15,
 		lastActiveCaption: null,
+		layoutChangeEventPayload: "CLOSED_CAPTIONS_LAYOUT_UPDATE",
 		ended: false,
 
 		setup: function(){
@@ -193,7 +194,11 @@
 				}
 			});
 
-			this.bind( 'updateLayout', function(){
+			this.bind( 'updateLayout', function( event, data ) {
+				if (data === _this.layoutChangeEventPayload) {
+					// avoid infinite loop.
+					return;
+				}
 				if (_this.getConfig("displayCaptions") == true){
 					_this.updateTextSize();
 				}
@@ -827,7 +832,7 @@
 			$cc.css( 'height',  height + 'px')
 			
 			// update embedPlayer layout per updated caption container size.
-			 _this.embedPlayer.doUpdateLayout();
+			 _this.embedPlayer.doUpdateLayout(false, this.layoutChangeEventPayload);
 		},		
 		/**
 		 * Gets a text size percent relative to about 30 columns of text for 400
