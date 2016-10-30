@@ -105,6 +105,14 @@
 
                         var $pollLayout = $(pollRawLayoutHTML);
                         $pollLayout.find('.answer').click($.proxy(_this.parent.handleAnswerClicked, _this.parent));
+                        $pollLayout.find('.answer').hover(
+                            function () {
+                                $(this).addClass('has-hover');
+                            },
+                            function () {
+                                $(this).removeClass('has-hover');
+                            }
+                        );
                         _this.$webcastPoll.append($pollLayout);
 
 
@@ -254,16 +262,19 @@
                             _this.$webcastPoll.find('.answer')
                                 .not('.answer>' + selectedAnswerSelector)
                                 .removeClass('selected')
+                                .removeClass('has-hover')
                                 .addClass('not-selected');
                             
                             _this.$webcastPoll.find(selectedAnswerSelector)
                                 .closest('.answer')
                                 .addClass('selected')
+                                .addClass('has-hover')
                                 .removeClass('not-selected');
                         } else {
 
                             _this.$webcastPoll.find('.answer')
                                 .removeClass('selected')
+                                .removeClass('has-hover')
                                 .addClass('not-selected');
                         }
                     }
