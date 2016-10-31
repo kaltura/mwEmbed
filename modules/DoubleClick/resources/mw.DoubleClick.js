@@ -92,7 +92,7 @@
 		chromelessAdManagerLoadedId: null,
 
 		init: function( embedPlayer, callback, pluginName ){
-			if (embedPlayer.casting){
+			if (embedPlayer.casting || mw.getConfig("EmbedPlayer.UseExternalAdPlayer") === true){
 				callback();
 				return;
 			}
@@ -212,8 +212,7 @@
 				_this.prePlayActionTriggered = true;
 			});
 
-			// Load double click ima per doc:
-			this.loadIma( function(){
+			var onImaLoadSuccess = function(){
 				_this.imaLoaded = true;
 				_this.embedPlayer.unbindHelper('prePlayAction' + _this.bindPostfix);
 				// Determine if we are in managed or kaltura point based mode.
@@ -250,13 +249,24 @@
 						_this.embedPlayer.play();
 					}
 				}
-			}, function( errorCode ){
+			};
+			var onImaLoadFailed = function( errorCode ){
 				mw.log( "Error::DoubleClick Loading Error: " + errorCode );
+				_this.onAdError(errorCode);
 				_this.embedPlayer.unbindHelper('prePlayAction' + _this.bindPostfix);
 				if ( _this.prePlayActionTriggered ){
 					_this.embedPlayer.play();
 				}
-			});
+			};
+
+			if (window.google && window.google.ima){
+				mw.log("Google IMA lib already loaded");
+				onImaLoadSuccess();
+			} else {
+				// Load double click ima per doc:
+				mw.log("Google IMA lib loading");
+				this.loadIma(onImaLoadSuccess, onImaLoadFailed);
+			}
 
 			var restoreOnInit = function(){
 				_this.destroy();
@@ -390,7 +400,7 @@
 		loadIma:function( successCB, failureCB ){
 			var _this = this;
 			var isLoaded = false;
-			var timeoutVal = _this.getConfig("adsManagerLoadedTimeout") || 5000;
+			var timeoutVal = _this.getConfig("adsManagerLoadedTimeout") || (mw.isChromeCast() ? 15000 : 5000);
 			mw.log( "DoubleClick::loadIma: start timer for adsManager loading check: " + timeoutVal + "ms");
 			setTimeout(function(){
 				if ( !isLoaded ){
@@ -555,6 +565,15 @@
 				_this.destroy();
 			});
 
+			_this.embedPlayer.bindHelper('onChangeMedia' + this.bindPostfix, function (event) {
+				if(_this.embedPlayer.isInSequence()){
+					mw.log( "DoubleClick::changeMedia event called. Calling Destroy." );
+					_this.destroy();
+					_this.isdestroy = true;
+				}
+			});
+
+
 			if (_this.embedPlayer.isMobileSkin()){
 				_this.embedPlayer.bindHelper('onShowControlBar' + this.bindPostfix, function (event) {
 					if ( !_this.isLinear ){
@@ -609,6 +628,7 @@
 			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
 
 			if (isLinear && !this.isNativeSDK) {
+				this.clearSkipTimeout();
 				this.embedPlayer.enablePlayControls(["scrubber","share","infoScreen","related","playlistAPI","nextPrevBtn","sourceSelector","qualitySettings","morePlugins"]);
 			} else {
 				_this.embedPlayer.pause();
@@ -633,6 +653,7 @@
 				$(".adCover").remove();
 				$(this.embedPlayer).trigger("onPlayerStateChange", ["play", this.embedPlayer.currentState]);
 				if (isLinear) {
+					this.resumeSkipSupport();
 					this.embedPlayer.disablePlayControls();
 				} else {
 					_this.embedPlayer.play();
@@ -722,7 +743,7 @@
 		},
 		addSkipSupport: function(){
 			var _this = this;
-			if ( this.embedPlayer.getRawKalturaConfig('skipBtn') && this.embedPlayer.getVideoHolder().find(".ad-skip-btn").length === 0){
+			if ( this.embedPlayer.getRawKalturaConfig('skipBtn') && this.embedPlayer.getRawKalturaConfig('skipBtn', 'plugin') && this.embedPlayer.getVideoHolder().find(".ad-skip-btn").length === 0){
 				var label = "Skip Ad";
 				if( this.embedPlayer.getKalturaConfig( 'skipBtn', 'label' ) ){
 					label = this.embedPlayer.getKalturaConfig( 'skipBtn', 'label' );
@@ -763,26 +784,38 @@
 				_this.hideSkipBtn();
 			});
 		},
-		showSkipBtn: function(){
-			if( this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' ) ){
-				$(".ad-skip-label").show();
-				this.skipTimeoutId = setTimeout(function(){
-					$(".ad-skip-btn").show();
-					$(".ad-skip-label").hide();
-				},parseFloat(this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' ) * 1000))
-			}else{
-				$(".ad-skip-btn").show();
-				$(".ad-skip-label").hide();
-			}
-		},
-		hideSkipBtn: function(){
-			if( this.skipTimeoutId !== null ){
-				clearTimeout(this.skipTimeoutId);
-				this.skipTimeoutId = null;
-			}
-			$(".ad-skip-btn").hide();
-			$(".ad-skip-label").hide();
-		},
+        resumeSkipSupport: function () {
+            if (this.embedPlayer.getKalturaConfig('skipBtn', 'skipOffset')) {
+                var timePassed = (this.duration - this.adPreviousTimeLeft) * 1000;
+                this.startSkipTimeout((this.embedPlayer.getKalturaConfig('skipBtn', 'skipOffset') * 1000) - timePassed);
+            }
+        },
+        showSkipBtn: function () {
+            if (this.embedPlayer.getKalturaConfig('skipBtn', 'skipOffset')) {
+                $(".ad-skip-label").show();
+                this.startSkipTimeout(parseFloat(this.embedPlayer.getKalturaConfig('skipBtn', 'skipOffset') * 1000));
+            } else {
+                $(".ad-skip-btn").show();
+                $(".ad-skip-label").hide();
+            }
+        },
+        hideSkipBtn: function () {
+            this.clearSkipTimeout();
+            $(".ad-skip-btn").hide();
+            $(".ad-skip-label").hide();
+        },
+        clearSkipTimeout: function () {
+            if (this.skipTimeoutId !== null) {
+                clearTimeout(this.skipTimeoutId);
+                this.skipTimeoutId = null;
+            }
+        },
+        startSkipTimeout: function (time) {
+            this.skipTimeoutId = setTimeout(function () {
+                $(".ad-skip-btn").show();
+                $(".ad-skip-label").hide();
+            }, time);
+        },
 		/**
 		 * Adds custom params to ad url.
 		 */
@@ -974,7 +1007,11 @@
 						var companionAds = [];
 
 						try {
-							companionAds = ad.getCompanionAds(adSlotWidth, adSlotHeight, {resourceType: google.ima.CompanionAdSelectionSettings.ResourceType.STATIC, creativeType: google.ima.CompanionAdSelectionSettings.CreativeType.IMAGE});
+							var selectionCriteria = new google.ima.CompanionAdSelectionSettings();
+							selectionCriteria.resourceType = google.ima.CompanionAdSelectionSettings.ResourceType.STATIC;
+							selectionCriteria.creativeType = google.ima.CompanionAdSelectionSettings.CreativeType.IMAGE;
+							selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.IGNORE;
+							companionAds = ad.getCompanionAds(adSlotWidth, adSlotHeight, selectionCriteria);
 						} catch(e) {
 							mw.log("Error: DoubleClick could not access getCompanionAds");
 						}
@@ -1074,7 +1111,7 @@
 				var currentAdSlotType = _this.isLinear ? _this.currentAdSlotType : "overlay";
 				$("#" + _this.getAdContainerId()).show();
 				// dispatch adOpen event
-				$( _this.embedPlayer).trigger( 'onAdOpen',[adData.adId, adData.adSystem, currentAdSlotType, adData.adPodInfo ? adData.adPodInfo.adPosition : 0] );
+				$( _this.embedPlayer).trigger( 'onAdOpen',[adData.adId, adData.adSystem, currentAdSlotType, adData.adPodInfo ? adData.adPodInfo.adPosition : 0, adData.linear] );
 
 				_this.duration= _this.adsManager.getRemainingTime();
 				if (_this.duration >= 0) {
@@ -1221,6 +1258,7 @@
 			});
 			// Resume content:
 			adsListener( 'CONTENT_RESUME_REQUESTED', function(){
+				$(_this.embedPlayer).trigger('onContentResumeRequested');
 				_this.playingLinearAd = false;
 				// Update slot type, if a preroll switch to midroll
 				if( _this.currentAdSlotType === 'preroll' ){
@@ -1592,7 +1630,7 @@
 			if (this.adsManager && $.isFunction( this.adsManager.unload ) ) {
 				this.adsManager.unload();
 			}
-			if (this.embedPlayer.isInSequence() || this.embedPlayer.autoplay){
+			if (this.embedPlayer.isInSequence() || (this.embedPlayer.autoplay && this.embedPlayer.canAutoPlay())){
 				this.restorePlayer(this.contentDoneFlag);
 				this.embedPlayer.play();
 			}else{
@@ -1600,7 +1638,7 @@
 			}
 		},
 		restorePlayer: function( onContentComplete, adPlayed ){
-			if (this.isdestroy && this.getConfig("adTagUrl")){ // DFP trafficed and already destroyed
+			if (this.isdestroy && this.adTagUrl){ // DFP trafficed and already destroyed
 				return;
 			}
 			mw.log("DoubleClick::restorePlayer: content complete:" + onContentComplete);
@@ -1672,6 +1710,7 @@
 		destroy:function(){
 			// remove any old bindings:
 			var _this = this;
+			this.hideSkipBtn();
 			if ( this.adTagUrl || this.currentAdSlotType === "postroll" ){
 				this.embedPlayer.unbindHelper( this.bindPostfix );
 			}

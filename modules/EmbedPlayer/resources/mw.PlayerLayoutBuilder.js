@@ -44,23 +44,22 @@
         // Display importance available values
         importanceSet: ['low', 'medium', 'high'],
 
-        /**
-         * Initialization Object for the control builder
-         *
-         * @param {Object} embedPlayer EmbedPlayer interface
-         */
-        init: function (embedPlayer) {
-            var _this = this;
-            this.embedPlayer = embedPlayer;
-            this.fullScreenManager = new mw.FullScreenManager(embedPlayer);
-            var animationSupported = this.checkAnimationSupport();
-            mw.setConfig('EmbedPlayer.AnimationSupported', animationSupported);
-            this.addUserAgentCssClass();
-            $(document.body).append($('<div style="display: block" class="cssChecker"></div>'));
-            this.checkViewPort();
-            // Return the layoutBuilder Object:
-            return this;
-        },
+	/**
+	* Initialization Object for the control builder
+	*
+	* @param {Object} embedPlayer EmbedPlayer interface
+	*/
+	init: function( embedPlayer ) {
+		var _this = this;
+		this.embedPlayer = embedPlayer;
+		this.fullScreenManager = new mw.FullScreenManager( embedPlayer );
+		var animationSupported = this.checkAnimationSupport();
+		mw.setConfig( 'EmbedPlayer.AnimationSupported', animationSupported );
+		this.addUserAgentCssClass();
+		$(document.body).append($('<div style="display: block" class="cssChecker"></div>'));
+		// Return the layoutBuilder Object:
+		return this;
+	},
 
         getInterface: function () {
             if (!this.$interface) {
@@ -128,36 +127,21 @@
                 }
                 this.$interface.addClass(skinName);
 
-                // clear out base style
-                embedPlayer.style.cssText = '';
-            }
-            return this.$interface;
-        },
-        checkViewPort: function () {
-            if (mw.isMobileDevice() && mw.getConfig('EmbedPlayer.IsFriendlyIframe')) {
-                // add viewport meta tag if doesn't exist on the player parent page
-                if (parent.document.querySelector("meta[name=viewport]") == null) {
-                    try {
-                        var metaTag = parent.document.createElement('meta');
-                        metaTag.name = "viewport";
-                        metaTag.content = "width=device-width, initial-scale=1";
-                        parent.document.getElementsByTagName('head')[0].appendChild(metaTag);
-                    } catch (e) {
-                        this.log("can't set viewport meta tag on parent document.");
-                    }
-                }
-            }
-        },
-        isInFullScreen: function () {
-            return this.fullScreenManager.isInFullScreen();
-        },
-        /**
-         * Get the control bar height
-         * @return {Number} control bar height
-         */
-        getHeight: function () {
-            return this.embedPlayer.isMobileSkin() ? mw.getConfig('EmbedPlayer.MobileControlsHeight') : this.height;
-        },
+			// clear out base style
+			embedPlayer.style.cssText = '';
+		}
+		return this.$interface;		
+	},
+	isInFullScreen: function() {
+		return this.fullScreenManager.isInFullScreen();
+	},
+	/**
+	* Get the control bar height
+	* @return {Number} control bar height
+	*/
+	getHeight: function(){
+		return this.embedPlayer.isMobileSkin() ? mw.getConfig( 'EmbedPlayer.MobileControlsHeight' ) : this.height;
+	},
 
         clearInterface: function () {
             this.getInterface().find('.overlay-win').remove();

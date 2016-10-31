@@ -1323,6 +1323,22 @@ var mw = ( function ( $, undefined ) {
 					// Undefined modules are acceptable here in load(), because load() takes
 					// an array of unrelated modules, whereas the modules passed to
 					// using() are related and must all be loaded.
+
+					if (document.documentMode && document.documentMode === 8) {
+						var hlsPos = -1;
+						var hlsjs = "Hlsjs";
+						for (var i = 0; i < modules.length; i++) {
+							if (modules[i] === hlsjs) {
+								hlsPos = i;
+								break;
+							}
+						}
+						if (hlsPos !== -1) {
+							modules.splice(hlsPos, 1);
+							delete registry[hlsjs];
+						}
+					}
+
 					for ( filtered = [], m = 0; m < modules.length; m += 1 ) {
 						if ( registry[modules[m]] !== undefined ) {
 							filtered[filtered.length] = modules[m];

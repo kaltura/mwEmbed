@@ -1231,6 +1231,7 @@
 			if (!this.isStopped()) {
 				// set the "stopped" flag:
 				this.stopped = true;
+				this.isPauseLoading = false;
 
 				// TOOD we should improve the end event flow
 				// First end event for ads or current clip ended bindings
@@ -3203,38 +3204,40 @@
 		 * @param {Object} source asset to switch to
 		 */
 		switchSrc: function( source ){
-			var _this = this;
-			var currentBR = 0;
-			if (this.mediaElement.selectedSource) {
-				currentBR = this.mediaElement.selectedSource.getBitrate();
-			}
+			if (source !== -1) {
+				var _this = this;
+				var currentBR = 0;
+				if (this.mediaElement.selectedSource) {
+					currentBR = this.mediaElement.selectedSource.getBitrate();
+				}
 
-			$(this).trigger('sourceSwitchingStarted', [
-				{ currentBitrate: currentBR }
-			]);
-			this.mediaElement.setSource(source);
-			$(this).trigger('sourceSwitchingEnd', [
-				{ newBitrate: source.getBitrate() }
-			]);
-			if (!this.isStopped()) {
-				this.isFlavorSwitching = true;
-				// Get the exact play time
-				var oldMediaTime = this.currentTime;
-				var oldPaused = this.paused;
-				// Do a live switch
-				this.playerSwitchSource(source, function (vid) {
-					// issue a seek
-					setTimeout(function () {
-						_this.addBlackScreen();
-						_this.hidePlayerOffScreen();
-						_this.unbindHelper("seeked.switchSrc" ).bindOnceHelper("seeked.switchSrc", function () {
-							_this.isFlavorSwitching = false;
-							_this.removeBlackScreen();
-							_this.restorePlayerOnScreen();
-						});
-						_this.seek(oldMediaTime, oldPaused);
-					}, 100);
-				});
+				$(this).trigger('sourceSwitchingStarted', [
+					{currentBitrate: currentBR}
+				]);
+				this.mediaElement.setSource(source);
+				$(this).trigger('sourceSwitchingEnd', [
+					{newBitrate: source.getBitrate()}
+				]);
+				if (!this.isStopped()) {
+					this.isFlavorSwitching = true;
+					// Get the exact play time
+					var oldMediaTime = this.currentTime;
+					var oldPaused = this.paused;
+					// Do a live switch
+					this.playerSwitchSource(source, function (vid) {
+						// issue a seek
+						setTimeout(function () {
+							_this.addBlackScreen();
+							_this.hidePlayerOffScreen();
+							_this.unbindHelper("seeked.switchSrc").bindOnceHelper("seeked.switchSrc", function () {
+								_this.isFlavorSwitching = false;
+								_this.removeBlackScreen();
+								_this.restorePlayerOnScreen();
+							});
+							_this.seek(oldMediaTime, oldPaused);
+						}, 100);
+					});
+				}
 			}
 		},
 		/**

@@ -3,7 +3,7 @@
 /*
 	Returns json with license acquisition uri. 
 	Required parameters:
-		uiconf_id, entry_id, flavor_id, drm (wvclassic|wvcenc)
+		uiconf_id, entry_id, drm (wvclassic|wvcenc|fps)
     Other parameters are required depending on system setup.
 		
 	Return value:
@@ -21,6 +21,10 @@
 			"message": "something is wrong"
 		}
 	}
+    
+    
+    If flavor_id is not set or empty, the first flavor is selected.
+    If flavor_id is not set, the resulting licenseUri will NOT contain the "files" parameter.
 */
 
 
@@ -46,7 +50,7 @@ class mweApiGetLicenseData {
         $udrmBaseURL = rtrim($wgKalturaUdrmLicenseServerUrl, '/');
         
         try {
-            $missingParams = array_diff(array('drm', 'flavor_id', 'entry_id', 'uiconf_id'), array_keys($_REQUEST));
+            $missingParams = array_diff(array('drm', 'entry_id', 'uiconf_id'), array_keys($_REQUEST));
             if ($missingParams) {
                 throw new Exception('Missing mandatory parameter(s): ' . implode(', ', $missingParams));
             }
@@ -65,27 +69,44 @@ class mweApiGetLicenseData {
                 default:
                     throw new Exception('Unknown DRM scheme ' . $drm);
             }
+            
+            
 
-            $flavorId = $_REQUEST['flavor_id'];
+            if (isset($_REQUEST['flavor_id'])) {
+                $flavorId = $_REQUEST['flavor_id'];
+            } else {
+                $flavorId = null;
+            }
             
             $rawData = $this->getRawData();
 
             $flavorData = $rawData['flavorData'];
-            if (($flavorId == "") && (count($flavorData) > 0)){
-                 reset($flavorData);
-                 $data = each($flavorData);
-                 $flavorId = $data[0];
-                 $licenseData = $data[1];
-            } elseif (isset($flavorData[$flavorId])) {
-                $licenseData = $flavorData[$flavorId];
+            
+            if (!empty($flavorId)) {
+                $files = $flavorId;
+                if (isset($flavorData[$flavorId])) {
+                    $licenseData = $flavorData[$flavorId];
+                } else {
+                    throw new Exception('flavorId "' . $flavorId . '" not found');
+                }
+                
+            } elseif (count($flavorData) > 0) {
+                reset($flavorData);
+                $data = each($flavorData);
+                $files = $data[0];
+                $licenseData = $data[1];
             } else {
-                throw new Exception('flavorId "' . $flavorId . '" not found');
+                throw new Exception('flavorData not found');
             }
+
             $custom_data = $licenseData['custom_data'];
             $signature = $licenseData['signature'];
-            $licenseUri = sprintf('%s/%s?custom_data=%s&signature=%s&files=%s', 
-                    $udrmBaseURL, $licensePath, $custom_data, $signature, urlencode(base64_encode($flavorId)));
+            $licenseUri = sprintf('%s/%s?custom_data=%s&signature=%s', $udrmBaseURL, $licensePath, $custom_data, $signature);
             
+            if (!is_null($flavorId)) {
+                $licenseUri .= "&files=" . urlencode(base64_encode($files));
+            }
+                
             $response = array('licenseUri' => $licenseUri);
             if ($drm == 'fps' && isset($rawData['fpsCertificate'])) {
                 $response['fpsCertificate'] = $rawData['fpsCertificate'];
@@ -99,7 +120,11 @@ class mweApiGetLicenseData {
             );
         }     
         
-		echo json_encode($response, JSON_FORCE_OBJECT | JSON_UNESCAPED_SLASHES);
+        $encode_flags = JSON_FORCE_OBJECT;
+        if (defined("JSON_UNESCAPED_SLASHES")) {
+            $encode_flags |= JSON_UNESCAPED_SLASHES;
+        }
+		echo json_encode($response, $encode_flags);
 	}
 	
 	function sendHeaders() {
