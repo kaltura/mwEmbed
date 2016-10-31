@@ -194,7 +194,7 @@
 				}
 			});
 
-			this.bind( 'updateLayout', function( event, data ) {
+			this.bind( 'updateLayout', function() {
 				if (_this.updateLayoutEventFired) {
 					// avoid infinite loop.
 					return;
