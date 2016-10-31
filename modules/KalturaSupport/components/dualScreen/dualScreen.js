@@ -256,7 +256,11 @@
 
 				this.bind("onChangeMedia", function(){
 					this.log('onChangeMedia');
-					if ( _this.syncEnabled && !_this.disabled){
+
+					if ( !_this.syncEnabled && !_this.disabled ) {
+						// stream is currently being changed
+						_this.updateStreams();
+					} else if ( _this.syncEnabled && !_this.disabled){
 						//Reset the displays view
 						if (_this.fsm.getStatus() !== "PiP") {
 							_this.fsm.consumeEvent('PiP');
@@ -445,16 +449,20 @@
 						draggable: _this.getConfig( 'draggable' )
 					});
 					this.initDisplays();
-                }, "dualScreenDisplays");
+				}, "dualScreenDisplays");
 			},
 			initControlBar: function(){
 				if ( !this.controlBar && !this.getPlayer().isAudio()) {
                     var _this = this;
                     this.loadControlBar();
-                    this.getSwitchingStreams().then(function (streams) {
-                        _this.controlBar.setStreams(streams);
-                    });
+                    this.updateStreams();
 				}
+			},
+			updateStreams: function () {
+				var _this = this;
+				this.controlBar && this.getSwitchingStreams().then(function (streams) {
+					_this.controlBar.setStreams(streams);
+				});
 			},
 			getSwitchingStreams: function () {
 				var _this = this;
@@ -963,6 +971,8 @@
 							_this.secondPlayer = imagePlayer;
 						});
 					}
+
+					this.updateStreams();
 				} else if (target === 'master') {
 					if (stream.type === 'video') {
 						this.getUtils().setStream(stream);
@@ -979,10 +989,6 @@
 						});
 					}
 				}
-
-				this.controlBar && this.getSwitchingStreams().then(function (streams) {
-					_this.controlBar.setStreams(streams);
-				});
 			},
 			tryInitSecondPlayer: function () {
 				var mobileTag = this.getConfig('mobileTag');
@@ -1001,9 +1007,7 @@
 									}
 								});
 
-								_this.controlBar && _this.getSwitchingStreams().then(function (streams) {
-									_this.controlBar.setStreams(streams);
-								});
+								_this.updateStreams();
 							}
 
 							return res;
