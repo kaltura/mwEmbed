@@ -35,7 +35,7 @@
 		textSources: [],
 		defaultBottom: 15,
 		lastActiveCaption: null,
-		layoutChangeEventPayload: "CLOSED_CAPTIONS_LAYOUT_UPDATE",
+		updateLayoutEventFired: false,
 		ended: false,
 
 		setup: function(){
@@ -195,7 +195,7 @@
 			});
 
 			this.bind( 'updateLayout', function( event, data ) {
-				if (data === _this.layoutChangeEventPayload) {
+				if (_this.updateLayoutEventFired) {
 					// avoid infinite loop.
 					return;
 				}
@@ -279,7 +279,7 @@
 				var _this = this;
 				// give time for the dom to update: 
 				setTimeout(function(){
-					_this.updateBelowVideoCaptionContainer();	
+					_this.updateBelowVideoCaptionContainer();
 				},50)
 			}
 		},
@@ -829,10 +829,11 @@
 				'width' :  _this.embedPlayer.getInterface().width(),
 				'height' : _this.embedPlayer.getInterface().height()
 			}) / 100 ) *  mw.getConfig( 'TimedText.BelowVideoBlackBoxHeight' );
-			$cc.css( 'height',  height + 'px')
-			
+			$cc.css( 'height',  height + 'px');
 			// update embedPlayer layout per updated caption container size.
-			 _this.embedPlayer.doUpdateLayout(false, this.layoutChangeEventPayload);
+			this.updateLayoutEventFired = true;
+			 _this.embedPlayer.doUpdateLayout();
+			this.updateLayoutEventFired = false;
 		},		
 		/**
 		 * Gets a text size percent relative to about 30 columns of text for 400
