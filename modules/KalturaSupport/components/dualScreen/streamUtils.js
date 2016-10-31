@@ -69,12 +69,15 @@
         getPlayableStreamsForSecondPlayer: function getPlayableStreamsForSecondPlayer(secondPlayer) {
             var _this = this;
 
-            return this.getStreams()
-                .then(function (streams) {
-                    var primaryPlayerStreamId = _this.getPlayer().evaluate('{mediaProxy.entry.id}');
+            return this.getStreamSelector()
+                .then(function (streamSelector) {
+                    var streams = streamSelector.streams;
+                    var primaryPlayerStreamId = streamSelector.currentStream.id || _this.getPlayer().evaluate('{mediaProxy.entry.id}');
                     var secondPlayerStreamId = secondPlayer &&
                         secondPlayer.stream &&
                         secondPlayer.stream.id;
+
+                    console.info(primaryPlayerStreamId, secondPlayerStreamId);
 
                     var filteredStreams = streams
                         .filter(function (stream) {
@@ -130,6 +133,8 @@
             var streamerType = mw.getConfig('streamerType');
 
             return this.getSource().then(function (source) {
+                console.info(source);
+                console.info(stream);
                 if (source.src.indexOf('m3u8') > 0 || (streamerType && streamerType !== 'http')) {
                     return _this.getStreamAdaptiveUrl(source, stream);
                 } else {
