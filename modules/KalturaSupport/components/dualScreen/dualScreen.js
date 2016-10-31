@@ -257,10 +257,7 @@
 				this.bind("onChangeMedia", function(){
 					this.log('onChangeMedia');
 
-					if ( !_this.syncEnabled && !_this.disabled ) {
-						// stream is currently being changed
-						_this.updateStreams();
-					} else if ( _this.syncEnabled && !_this.disabled){
+					if ( _this.syncEnabled && !_this.disabled){
 						//Reset the displays view
 						if (_this.fsm.getStatus() !== "PiP") {
 							_this.fsm.consumeEvent('PiP');
@@ -290,6 +287,7 @@
 				});
 				this.bind("onChangeStreamDone", function(){
 					_this.syncEnabled = true;
+					_this.updateStreams();
 				});
 
 				if (this.getConfig('enableKeyboardShortcuts')) {
