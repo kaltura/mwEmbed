@@ -8,7 +8,9 @@
 			var _this = this;
 			var player = this.getPlayer();
 			var cert = this.getFpsCertificate(player);
-			if (cert && mw.isDesktopSafari()) {
+			if (mw.isNativeApp()){
+				this.setupNativeDrm();
+			} else if (cert && mw.isDesktopSafari()) {
 				mw.log("Loading HLS FPS player");
 				$(mw).bind('EmbedPlayerUpdateMediaPlayers', function (event, mediaPlayers) {
 					mediaPlayers.removeMIMETypePlayers('video/playreadySmooth', 'Silverlight');
@@ -74,6 +76,37 @@
 					}
 					mediaPlayers.defaultPlayers[mimeType] = ['MultiDRM'];
 				});
+			});
+		},
+
+		setupNativeDrm: function(){
+			mw.log("Loading Native SDK DRM");
+			var _this = this;
+			var nativeSdkDRMTypes = window.kNativeSdk && window.kNativeSdk.drmFormats;
+			var nativeSdkAllTypes = window.kNativeSdk && window.kNativeSdk.allFormats;
+			$(mw).bind('EmbedPlayerUpdateMediaPlayers', function (event, mediaPlayers) {
+				$.each(nativeSdkAllTypes, function(i, nativeSdkType){
+					mediaPlayers.removeMIMETypePlayers(nativeSdkType, 'NativeComponent');
+				});
+				$.each(nativeSdkDRMTypes, function(i, nativeSdkDRMType){
+					mediaPlayers.setMIMETypePlayers(nativeSdkDRMType, 'NativeComponent');
+				});
+				if (kWidget.isIOS()) {
+					var sources = _this.getPlayer().getSources();
+					var hlsIndex = sources.findIndex(function(src) {return src.mimeType === "application/vnd.apple.mpegurl";});
+					var wvmIndex = sources.findIndex(function(src) {return src.mimeType === "video/wvm";});
+					if (hlsIndex >= 0) {
+						if (sources[hlsIndex].fpsCertificate) {
+							// FPS is supported and configured, remove WVM
+							if (wvmIndex >= 0) {
+								mediaPlayers.removeMIMETypePlayers("video/wvm", 'NativeComponent');
+							}
+						}
+					} else {
+						// FPS is supported by the platform, but not configured in the backend -- remove it.
+						mediaPlayers.removeMIMETypePlayers("application/vnd.apple.mpegurl", 'NativeComponent');
+					}
+				}
 			});
 		},
 
