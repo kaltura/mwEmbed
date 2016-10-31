@@ -77,13 +77,15 @@
                         secondPlayer.stream &&
                         secondPlayer.stream.id;
 
-                    console.info(primaryPlayerStreamId, secondPlayerStreamId);
+                    console.info(primaryPlayerStreamId, secondPlayerStreamId, streams);
 
                     var filteredStreams = streams
                         .filter(function (stream) {
                             return stream.id !== primaryPlayerStreamId &&
                                 stream.id !== secondPlayerStreamId;
-                        })
+                        });
+
+                    console.info(filteredStreams);
 
                     var videoUrlPromises = filteredStreams
                         .map(function (stream) {
