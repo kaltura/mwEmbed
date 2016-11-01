@@ -68,7 +68,7 @@
 			this.embedPlayer.bindHelper("propertyChangedEvent", function(event, data){
 				if ( data.plugin === _this.pluginName ){
 					if ( data.property === "captions" ){
-						_this.getMenu().$el.find("li a[title="+data.value+"]").click();
+						_this.getMenu().$el.find("li a")[data.value].click();
 					}
 				}
 			});
