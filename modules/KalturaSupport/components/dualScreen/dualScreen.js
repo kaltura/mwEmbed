@@ -256,7 +256,6 @@
 
 				this.bind("onChangeMedia", function(){
 					this.log('onChangeMedia');
-
 					if ( _this.syncEnabled && !_this.disabled){
 						//Reset the displays view
 						if (_this.fsm.getStatus() !== "PiP") {
@@ -451,7 +450,6 @@
 			},
 			initControlBar: function(){
 				if ( !this.controlBar && !this.getPlayer().isAudio()) {
-                    var _this = this;
                     this.loadControlBar();
                     this.updateStreams();
 				}
@@ -969,8 +967,6 @@
 							_this.secondPlayer = imagePlayer;
 						});
 					}
-
-					this.updateStreams();
 				} else if (target === 'master') {
 					if (stream.type === 'video') {
 						this.getUtils().setStream(stream);
@@ -987,6 +983,8 @@
 						});
 					}
 				}
+
+				this.updateStreams();
 			},
 			tryInitSecondPlayer: function () {
 				var mobileTag = this.getConfig('mobileTag');

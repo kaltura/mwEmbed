@@ -9,8 +9,11 @@
 
         streamSelectorPromise: null,
         playerReadyFlag: false,
+        streamChanging: false,
+        streams: null,
 
         setup: function setup() {
+            this.streams = null;
             this.addBindings();
         },
 
@@ -21,14 +24,20 @@
                 _this.playerReadyFlag = true;
             });
 
+            this.bind('onChangeStream', function onChangeStream() {
+                _this.streamChanging = true;
+            });
+
+            this.bind('onChangeStreamDone', function onChangeStreamDone() {
+                _this.streamChanging = false;
+            });
+
             this.bind('onChangeMedia', function onChangeMedia() {
-                _this.getStreamSelector().then(function (streamSelector) {
-                    if (!streamSelector.streamChanging) {
-                        _this.log('resetting playerReadyFlag');
-                        _this.playerReadyFlag = false;
-                        _this.embedPlayer.unbindHelper('.streamUtilsSetStream');
-                    }
-                });
+                if (!_this.streamChanging) {
+                    _this.log('resetting playerReadyFlag');
+                    _this.playerReadyFlag = false;
+                    _this.embedPlayer.unbindHelper('.streamUtilsSetStream');
+                }
             });
         },
 
@@ -60,32 +69,28 @@
         },
 
         getStreams: function getStreams() {
-            return this.getStreamSelector()
+            var _this = this;
+            return $.when(this.streams || this.getStreamSelector()
                 .then(function (streamSelector) {
-                    return streamSelector.streams;
-                });
+                    return (_this.streams = streamSelector.streams);
+                }));
         },
 
         getPlayableStreamsForSecondPlayer: function getPlayableStreamsForSecondPlayer(secondPlayer) {
             var _this = this;
 
-            return this.getStreamSelector()
-                .then(function (streamSelector) {
-                    var streams = streamSelector.streams;
-                    var primaryPlayerStreamId = streamSelector.currentStream.id || _this.getPlayer().evaluate('{mediaProxy.entry.id}');
+            return this.getStreams()
+                .then(function (streams) {
+                    var primaryPlayerStreamId = _this.getPlayer().evaluate('{mediaProxy.entry.id}');
                     var secondPlayerStreamId = secondPlayer &&
                         secondPlayer.stream &&
                         secondPlayer.stream.id;
-
-                    console.info(primaryPlayerStreamId, secondPlayerStreamId, streams);
 
                     var filteredStreams = streams
                         .filter(function (stream) {
                             return stream.id !== primaryPlayerStreamId &&
                                 stream.id !== secondPlayerStreamId;
                         });
-
-                    console.info(filteredStreams);
 
                     var videoUrlPromises = filteredStreams
                         .map(function (stream) {
@@ -135,8 +140,6 @@
             var streamerType = mw.getConfig('streamerType');
 
             return this.getSource().then(function (source) {
-                console.info(source);
-                console.info(stream);
                 if (source.src.indexOf('m3u8') > 0 || (streamerType && streamerType !== 'http')) {
                     return _this.getStreamAdaptiveUrl(source, stream);
                 } else {
