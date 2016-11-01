@@ -1662,10 +1662,24 @@ mw.KWidgetSupport.prototype = {
 				var lowResolutionDevice = (mw.isMobileDevice() && mw.isDeviceLessThan480P() && iphoneAdaptiveFlavors.length);
 				var targetFlavors;
 				if (mw.getConfig('Kaltura.ForceHighResFlavors')){
-					if (mw.isMobileDevice() || dashAdaptiveFlavors.length == 0) {
+					mw.log( 'KWidgetSupport::Forcing High resolution flavours');
+					if (ipadAdaptiveFlavors.length || dashAdaptiveFlavors.length) {
+						mw.log( 'KWidgetSupport::High resolution flavours found');
 						targetFlavors = ipadAdaptiveFlavors;
+						if (dashAdaptiveFlavors.length) {
+							//Concat the dash and ipadNew tags and filter duplicates
+							targetFlavors = targetFlavors.concat(dashAdaptiveFlavors);
+							for(var i=0; i<targetFlavors.length; ++i) {
+								for(var j=i+1; j<targetFlavors.length; ++j) {
+									if(targetFlavors[i] === targetFlavors[j])
+										targetFlavors.splice(j--, 1);
+								}
+							}
+							//targetFlavors = targetFlavors.concat(dashAdaptiveFlavors);
+						}
 					} else {
-						targetFlavors = dashAdaptiveFlavors;
+						mw.log( 'KWidgetSupport::High resolution flavours not found - will use low resolution flavours');
+						targetFlavors = iphoneAdaptiveFlavors;
 					}
 				} else {
 					if (androidNativeAdaptiveFlavors.length && mw.isNativeApp() && mw.isAndroid()) {
