@@ -514,9 +514,11 @@ mw.KWidgetSupport.prototype = {
 		if (srcURL && srcURL.toLowerCase().indexOf("playmanifest") === -1){
 			return srcURL;
 		}
-
+        var nativeVersion = mw.getConfig("nativeVersion");
+        nativeVersion = (nativeVersion != null && nativeVersion.length > 0) ? '_' + nativeVersion : '';
+        var clientTag = 'html5:v' + window[ 'MWEMBED_VERSION' ] + nativeVersion;
 		var qp = ( srcURL.indexOf('?') === -1) ? '?' : '&';
-		return srcURL + qp + 'playSessionId=' + this.getGUID();
+		return srcURL + qp + 'playSessionId=' + this.getGUID() + '&clientTag=' + clientTag;
 	},
 	updateVodPlayerData: function(embedPlayer, playerData){
 		embedPlayer.setLive( false );
@@ -1659,17 +1661,38 @@ mw.KWidgetSupport.prototype = {
 				var validClipAspect = this.getValidAspect(deviceSources);
 				var lowResolutionDevice = (mw.isMobileDevice() && mw.isDeviceLessThan480P() && iphoneAdaptiveFlavors.length);
 				var targetFlavors;
-				if (androidNativeAdaptiveFlavors.length && mw.isNativeApp() && mw.isAndroid()){
-					//Android h264b
-					targetFlavors = androidNativeAdaptiveFlavors;
-				} else if (lowResolutionDevice){
-					//iPhone
-					targetFlavors = iphoneAdaptiveFlavors;
-				} else if (mw.isMobileDevice() || dashAdaptiveFlavors.length == 0){
-					//iPad
-					targetFlavors = ipadAdaptiveFlavors;
-				}  else {
-					targetFlavors = dashAdaptiveFlavors;
+				if (mw.getConfig('Kaltura.ForceHighResFlavors')){
+					mw.log( 'KWidgetSupport::Forcing High resolution flavours');
+					if (ipadAdaptiveFlavors.length || dashAdaptiveFlavors.length) {
+						mw.log( 'KWidgetSupport::High resolution flavours found');
+						targetFlavors = ipadAdaptiveFlavors;
+						if (dashAdaptiveFlavors.length) {
+							//Concat the dash and ipadNew tags and filter duplicates
+							targetFlavors = targetFlavors.concat(dashAdaptiveFlavors);
+							for(var i=0; i<targetFlavors.length; ++i) {
+								for(var j=i+1; j<targetFlavors.length; ++j) {
+									if(targetFlavors[i] === targetFlavors[j])
+										targetFlavors.splice(j--, 1);
+								}
+							}
+						}
+					} else {
+						mw.log( 'KWidgetSupport::High resolution flavours not found - will use low resolution flavours');
+						targetFlavors = iphoneAdaptiveFlavors;
+					}
+				} else {
+					if (androidNativeAdaptiveFlavors.length && mw.isNativeApp() && mw.isAndroid()) {
+						//Android h264b
+						targetFlavors = androidNativeAdaptiveFlavors;
+					} else if (lowResolutionDevice) {
+						//iPhone
+						targetFlavors = iphoneAdaptiveFlavors;
+					} else if (mw.isMobileDevice() || dashAdaptiveFlavors.length == 0) {
+						//iPad
+						targetFlavors = ipadAdaptiveFlavors;
+					} else {
+						targetFlavors = dashAdaptiveFlavors;
+					}
 				}
 				var assetId = targetFlavors[0];
 

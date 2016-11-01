@@ -3,7 +3,10 @@
 	if (!window.Promise) {
 		shaka.polyfill.installAll();
 	}
-	if (shaka.Player.isBrowserSupported() && !mw.getConfig("EmbedPlayer.ForceNativeComponent") && !mw.isDesktopSafari()) {
+	if (shaka.Player.isBrowserSupported() &&
+		!mw.getConfig("EmbedPlayer.ForceNativeComponent") &&
+		!mw.isDesktopSafari() &&
+		!mw.isAndroid()) {
 		$(mw).bind('EmbedPlayerUpdateMediaPlayers', function (event, mediaPlayers) {
 			mw.log("Dash::Register shaka player for application/dash+xml mime type");
 			var shakaPlayer = new mw.MediaPlayer('shakaPlayer', ['application/dash+xml'], 'Native');
@@ -141,7 +144,7 @@
 
 				this.registerShakaEvents();
 
-				var unbindAndLoadManifest = function() {
+				var unbindAndLoadManifest = function () {
 					this.unbind("firstPlay");
 					this.unbind("seeking");
 					this.loadManifest();
@@ -172,9 +175,9 @@
 							selectedSource = manifestSrc;
 						})
 						.always(function () {  // both success or error
-							player.configure(_this.getDefaultDashConfig()["shakaConfig"]);
-							// Try to load a manifest.
-							player.load(selectedSource).then(function () {
+								player.configure(_this.getDefaultDashConfig()["shakaConfig"]);
+								// Try to load a manifest.
+								player.load(selectedSource).then(function () {
 									// This runs if the asynchronous load is successful.
 									_this.log('The manifest has been loaded');
 									_this.addTracks();
@@ -335,22 +338,26 @@
 			},
 
 			onSwitchAudioTrack: function (event, data) {
-				var selectedAudioTracks = this.getTracksByType("audio")[data.index];
-				player.configure({
-					preferredAudioLanguage: selectedAudioTracks.language
-				});
-				mw.log("Dash::onSwitchAudioTrack switch to ", selectedAudioTracks);
+				if (this.loaded) {
+					var selectedAudioTracks = this.getTracksByType("audio")[data.index];
+					player.configure({
+						preferredAudioLanguage: selectedAudioTracks.language
+					});
+					mw.log("Dash::onSwitchAudioTrack switch to ", selectedAudioTracks);
+				}
 			},
 
 			onSwitchTextTrack: function (event, data) {
-				if (data === "Off") {
-					player.setTextTrackVisibility(false);
-					this.log("onSwitchTextTrack disable subtitles");
-				} else {
-					player.configure({
-						preferredTextLanguage: data
-					});
-					this.log("onSwitchTextTrack switch to " + data);
+				if (this.loaded) {
+					if (data === "Off") {
+						player.setTextTrackVisibility(false);
+						this.log("onSwitchTextTrack disable subtitles");
+					} else {
+						player.configure({
+							preferredTextLanguage: data
+						});
+						this.log("onSwitchTextTrack switch to " + data);
+					}
 				}
 			},
 

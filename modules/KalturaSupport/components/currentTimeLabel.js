@@ -28,7 +28,7 @@
 						$('.controlsContainer .scrubber').after(currentTimeLabel);
 						setTimeout(function(){
 							_this.embedPlayer.triggerHelper("updateComponentsVisibilityDone");  // redraw components to calculate their size and location. Set in a timeout so the component width will get updated by CSS rules before calculation
-						},0);
+						}, mw.isChromeCast() ? 200 : 0);
 					}
 				});
 				this.bind('doStop', function () {

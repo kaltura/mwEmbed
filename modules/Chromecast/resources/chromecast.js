@@ -60,6 +60,8 @@
 		adDuration: null,
 		supportedPlugins: ['doubleClick', 'youbora', 'kAnalony', 'related', 'comScoreStreamingTag', 'watermark', 'heartbeat'],
 		chromeLib: null,
+		disableDoubleclick: false,
+		restoreDoubleclick: false,
 
 		setup: function( embedPlayer ) {
 			var _this = this;
@@ -117,7 +119,10 @@
 					}
 			});
 
-			$( this.embedPlayer).bind('chromecastDeviceConnected', function(){
+			$( this.embedPlayer).bind('chromecastDeviceConnected', function(e, proxyEvent, startTime){
+				if (startTime && startTime > 0.01){
+					_this.disableDoubleclick = true;
+				}
 				_this.onRequestSessionSuccess();
 			});
 			$( this.embedPlayer).bind('chromecastDeviceDisConnected', function(){
@@ -141,6 +146,10 @@
 						'entryId': _this.embedPlayer.kentryid
 					}
 				};
+				if (_this.restoreDoubleclick){
+					_this.sendMessage({'type': 'setKDPAttribute', 'plugin': 'doubleClick', 'property': 'plugin', 'value': true});
+					_this.restoreDoubleclick = false;
+				}
 				var proxyData = _this.getProxyData();
 				if (proxyData){
 					changeMediaMsg.data.proxyData = proxyData;
@@ -149,6 +158,14 @@
 				_this.savedPosition = 0;
 				_this.pendingReplay = false;
 				_this.pendingRelated = false;
+			});
+
+			$( this.embedPlayer).bind('SourceSelected', function(e){
+				var licenseUrl = _this.buildUdrmLicenseUri("application/dash+xml");
+				if (licenseUrl) {
+					_this.sendMessage({'type': 'license', 'value': licenseUrl});
+					_this.log("set license URL to: " + licenseUrl);
+				}
 			});
 
 			$( this.embedPlayer).bind('onAdSkip', function(e){
@@ -196,7 +213,7 @@
 			$(this.embedPlayer).bind('userInitiatedPlay', function(e) {
 				_this.sendMessage({'type': 'notification','event': e.type});
 				if (_this.replay){
-					_this.loadMedia();
+					_this.loadMedia(null, null, true);
 				}
 			});
 
@@ -359,9 +376,13 @@
 						this.inSequence = true;
 						break;
 					case "chromecastReceiverAdComplete":
-						this.embedPlayer.enablePlayControls();
-						this.embedPlayer.triggerHelper("chromecastReceiverAdComplete");
-						this.loadMedia();
+						if (this.inSequence) {
+							this.embedPlayer.enablePlayControls();
+							this.embedPlayer.triggerHelper("chromecastReceiverAdComplete");
+							this.inSequence = false;
+							this.embedPlayer.layoutBuilder.closeAlert();
+							this.playMedia();
+						}
 						break;
 					case "chromecastReceiverAdDuration":
 						this.adDuration = parseInt(message.split('|')[1]);
@@ -400,6 +421,11 @@
 				fv['scrubber'] = {plugin: true};
 				fv['largePlayBtn'] = {plugin: true};
 			}
+			 if (this.disableDoubleclick && typeof fv['doubleClick'] !== "undefined"){
+				 fv['doubleClick']['plugin'] = false;
+				 this.restoreDoubleclick = true;
+			 }
+			fv.autoPlay = true;
 			return fv;
 		},
 
@@ -421,9 +447,13 @@
 				recursiveIteration( proxyData );
 				return proxyData;
 			} else {
-				var data  = this.embedPlayer.getKalturaConfig('originalProxyData');
-				if (!$.isEmptyObject(data)) {
-					return data;
+				var proxyData  = this.embedPlayer.getKalturaConfig('originalProxyData');
+				if (!$.isEmptyObject(proxyData)) {
+					if(proxyData.data){
+						return proxyData.data;
+					} else {
+						return proxyData;
+					}
 				}
 			}
 		},
@@ -479,8 +509,9 @@
 
 		onMediaDiscovered: function(how, mediaSession) {
 			var _this = this;
-			this.embedPlayer.layoutBuilder.closeAlert();
-			this.inSequence = false;
+			if (!this.inSequence) {
+				this.embedPlayer.layoutBuilder.closeAlert();
+			}
 			// if page reloaded and in playlist - select the currently playing clip
 			if ( how === 'onRequestSessionSuccess_' && this.embedPlayer.playlist){
 				this.stopApp();
@@ -588,6 +619,10 @@
 		},
 
 		monitor: function(){
+			var mediaDuration = this.getDuration();
+			if (mediaDuration !== this.getPlayer().getDuration()){
+				this.embedPlayer.mediaLoaded(this.currentMediaSession);
+			}
 			this.embedPlayer.updatePlayhead( this.getCurrentTime(), this.inSequence ? this.adDuration : this.mediaDuration );
 		},
 
@@ -613,6 +648,13 @@
 			this.embedPlayer.onPlayerSeekEnd();
 		},
 
+		getDuration: function(){
+			this.mediaDuration = 0;
+			if (this.currentMediaSession){
+				this.mediaDuration = this.currentMediaSession.media.duration;
+			}
+			return this.mediaDuration;
+		},
 		getCurrentTime: function(){
 			this.mediaCurrentTime = this.currentMediaSession.getEstimatedTime();
 			return this.mediaCurrentTime;
@@ -696,7 +738,7 @@
 			}
 		},
 
-		loadMedia: function(url, mime) {
+		loadMedia: function(url, mime, replay) {
 			if (this.isNativeSDK){
 				$( this.embedPlayer ).trigger( 'loadReceiverMedia', [url, mime] );
 				return;
@@ -732,7 +774,8 @@
 						};
 
 						var json = {
-							"payload" : payload
+							"payload" : payload,
+							"replay": replay
 						};
 
 						_this.request.customData = json;
