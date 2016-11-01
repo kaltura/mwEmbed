@@ -1661,17 +1661,25 @@ mw.KWidgetSupport.prototype = {
 				var validClipAspect = this.getValidAspect(deviceSources);
 				var lowResolutionDevice = (mw.isMobileDevice() && mw.isDeviceLessThan480P() && iphoneAdaptiveFlavors.length);
 				var targetFlavors;
-				if (androidNativeAdaptiveFlavors.length && mw.isNativeApp() && mw.isAndroid()){
-					//Android h264b
-					targetFlavors = androidNativeAdaptiveFlavors;
-				} else if (lowResolutionDevice){
-					//iPhone
-					targetFlavors = iphoneAdaptiveFlavors;
-				} else if (mw.isMobileDevice() || dashAdaptiveFlavors.length == 0){
-					//iPad
-					targetFlavors = ipadAdaptiveFlavors;
-				}  else {
-					targetFlavors = dashAdaptiveFlavors;
+				if (mw.getConfig('Kaltura.ForceHighResFlavors')){
+					if (mw.isMobileDevice() || dashAdaptiveFlavors.length == 0) {
+						targetFlavors = ipadAdaptiveFlavors;
+					} else {
+						targetFlavors = dashAdaptiveFlavors;
+					}
+				} else {
+					if (androidNativeAdaptiveFlavors.length && mw.isNativeApp() && mw.isAndroid()) {
+						//Android h264b
+						targetFlavors = androidNativeAdaptiveFlavors;
+					} else if (lowResolutionDevice) {
+						//iPhone
+						targetFlavors = iphoneAdaptiveFlavors;
+					} else if (mw.isMobileDevice() || dashAdaptiveFlavors.length == 0) {
+						//iPad
+						targetFlavors = ipadAdaptiveFlavors;
+					} else {
+						targetFlavors = dashAdaptiveFlavors;
+					}
 				}
 				var assetId = targetFlavors[0];
 
