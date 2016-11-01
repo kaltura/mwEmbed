@@ -1675,7 +1675,6 @@ mw.KWidgetSupport.prototype = {
 										targetFlavors.splice(j--, 1);
 								}
 							}
-							//targetFlavors = targetFlavors.concat(dashAdaptiveFlavors);
 						}
 					} else {
 						mw.log( 'KWidgetSupport::High resolution flavours not found - will use low resolution flavours');
