@@ -3,7 +3,10 @@
 	if (!window.Promise) {
 		shaka.polyfill.installAll();
 	}
-	if (shaka.Player.isBrowserSupported() && !mw.getConfig("EmbedPlayer.ForceNativeComponent") && !mw.isDesktopSafari()) {
+	if (shaka.Player.isBrowserSupported() &&
+		!mw.getConfig("EmbedPlayer.ForceNativeComponent") &&
+		!mw.isDesktopSafari() &&
+		!mw.isAndroid()) {
 		$(mw).bind('EmbedPlayerUpdateMediaPlayers', function (event, mediaPlayers) {
 			mw.log("Dash::Register shaka player for application/dash+xml mime type");
 			var shakaPlayer = new mw.MediaPlayer('shakaPlayer', ['application/dash+xml'], 'Native');
