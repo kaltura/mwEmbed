@@ -103,9 +103,14 @@
 		},
 		addBinding: function(){
 			var _this = this;
-			this.bind( 'playerReady', function (  ) {
-				_this.initializeCuePointsManager();
-			});
+
+			if (this.getPlayer().playerReadyFlag) {
+				this.initializeCuePointsManager();
+			} else {
+				this.bind('playerReady', function () {
+					_this.initializeCuePointsManager();
+				});
+			}
 
 			this.bind( 'onplay', function () {
 				_this.loadAdditionalAssets();
@@ -126,6 +131,10 @@
 
 			this.bind("onChangeStreamDone", function(){
 				_this.syncEnabled = true;
+			});
+
+			this.bind( 'postDualScreenTransition displayRepainted', function () {
+				_this.applyIntrinsicAspect();
 			});
 		},
 		getComponent: function() {
@@ -184,7 +193,7 @@
 					};
 					if (cuePoint) {
 						var myImg = this.getComponent();
-						if (cuePoint.thumbnailUrl) {
+						if (cuePoint.loaded && cuePoint.thumbnailUrl) {
 							myImg.attr('src', cuePoint.thumbnailUrl);
 							callCallback();
 						} else {
@@ -334,7 +343,16 @@
 
 			}
 			return cuePoint;
-		}
+		},
+        getPoster: function(){
+            return this.getCuePoints()[0].thumbnailUrl;
+        },
+
+        destroy: function ( ) {
+            this.getComponent().remove();
+            this.destroyCuePointsManager();
+            this._super();
+        }
 	} );
 }
 

@@ -96,6 +96,11 @@
 		},
 		hideComponent: function( force ) {
 			if( force || !this.isPersistantPlayBtn() ) {
+				//Need to cancel animation if hiding right after showing button in mobile skin
+				//cause in show we use animation in mobile skin
+				if (this.embedPlayer.isMobileSkin()){
+					this.getComponent().stop();
+				}
 				this.getComponent().hide();
 			}
 		},
@@ -127,12 +132,9 @@
 			this.hideComponent();
 		},
 		getComponent: function() {
-			var _this = this;
-			var eventName = 'click';
-			if ( mw.isAndroid() ){
-				eventName += ' touchstart';
-			}
 			if( !this.$el ) {
+				var _this = this;
+				var eventName = 'click';
 				this.$el = $( '<a />' )
 					.attr( {
 						'tabindex': '-1',

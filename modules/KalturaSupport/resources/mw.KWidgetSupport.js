@@ -514,9 +514,11 @@ mw.KWidgetSupport.prototype = {
 		if (srcURL && srcURL.toLowerCase().indexOf("playmanifest") === -1){
 			return srcURL;
 		}
-
+        var nativeVersion = mw.getConfig("nativeVersion");
+        nativeVersion = (nativeVersion != null && nativeVersion.length > 0) ? '_' + nativeVersion : '';
+        var clientTag = 'html5:v' + window[ 'MWEMBED_VERSION' ] + nativeVersion;
 		var qp = ( srcURL.indexOf('?') === -1) ? '?' : '&';
-		return srcURL + qp + 'playSessionId=' + this.getGUID();
+		return srcURL + qp + 'playSessionId=' + this.getGUID() + '&clientTag=' + clientTag;
 	},
 	updateVodPlayerData: function(embedPlayer, playerData){
 		embedPlayer.setLive( false );
@@ -1751,7 +1753,7 @@ mw.KWidgetSupport.prototype = {
 				(mw.isAndroid() && !mw.isNativeApp()) &&
 				hasH264Flavor &&
 				!mw.getConfig( 'Kaltura.LeadHLSOnAndroid' ) ) {
-			deviceSources = this.removeAdaptiveFlavors( deviceSources );
+			deviceSources = this.removeHlsFlavor( deviceSources );
 		}
 
 		// PRemove adaptive sources on Windows Phone
@@ -1765,7 +1767,7 @@ mw.KWidgetSupport.prototype = {
 			this.originalStreamerType &&
 			this.originalStreamerType !== "hls" &&
 			 mw.getConfig("LeadWithHLSOnFlash") === null 	){
-			    deviceSources = this.removeAdaptiveFlavors( deviceSources );
+			    deviceSources = this.removeHlsFlavor( deviceSources );
 		}
 
 		//TODO: Remove duplicate webm and h264 flavors
@@ -1826,7 +1828,7 @@ mw.KWidgetSupport.prototype = {
 	},
 	getFairplayCert: function(playerData){
 		var publicCertificate = null;
-		if (playerData.contextData.pluginData &&
+		if (playerData && playerData.contextData && playerData.contextData.pluginData &&
 			playerData.contextData.pluginData.KalturaFairplayEntryContextPluginData &&
 			playerData.contextData.pluginData.KalturaFairplayEntryContextPluginData.publicCertificate){
 			publicCertificate = playerData.contextData.pluginData.KalturaFairplayEntryContextPluginData.publicCertificate;
@@ -1868,6 +1870,13 @@ mw.KWidgetSupport.prototype = {
 		return value.replace(/\+/g, "-").replace(/\//g, "_");
 	},
 	removeAdaptiveFlavors: function( sources ){
+		this.removeHlsFlavor(sources);
+		this.removeDashFlavor(sources);
+		this.removedAdaptiveFlavors = true;
+		return sources;
+	},
+
+	removeHlsFlavor: function( sources ){
 		for( var i =0 ; i < sources.length; i++ ){
 			if( sources[i].type == 'application/vnd.apple.mpegurl' ){
 				// Remove the current source:
@@ -1875,9 +1884,20 @@ mw.KWidgetSupport.prototype = {
 				i--;
 			}
 		}
-		this.removedAdaptiveFlavors = true;
 		return sources;
 	},
+
+	removeDashFlavor: function( sources ){
+		for( var i =0 ; i < sources.length; i++ ){
+			if(	sources[i].type == "application/dash+xml" ){
+				// Remove the current source:
+				sources.splice( i, 1 );
+				i--;
+			}
+		}
+		return sources;
+	},
+
 	getValidAspect: function( sources ){
 		var _this = this;
 		for( var i=0; i < sources.length; i++ ){
