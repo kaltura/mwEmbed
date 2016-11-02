@@ -259,7 +259,10 @@
 				}
 			};
 
-			if (window.google && window.google.ima){
+			//On chromecast don't reload IMA as it is adding a big lag
+			//We would do it all the time but for some reason http://imasdk.googleapis.com/js/core/bridge3.149.0_en.html
+			//loading is being canceled if done in certain stage - need to figure it out
+			if (mw.isChromeCast() && window.google && window.google.ima){
 				mw.log("Google IMA lib already loaded");
 				onImaLoadSuccess();
 			} else {
