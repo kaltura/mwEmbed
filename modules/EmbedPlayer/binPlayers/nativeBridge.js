@@ -168,8 +168,7 @@
 			} else if (eventName == 'pause') {
 				this.proxyElement['paused'] = true;
 			}
-
-			$(this.proxyElement).trigger(eventName, [jsEventValue]);
+			$(this.proxyElement).triggerHandler(eventName, [jsEventValue]);
 
 			if (this.subscribed[eventName]) {
 				this.subscribed[eventName](jsEventValue);

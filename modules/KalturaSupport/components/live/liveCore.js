@@ -143,7 +143,7 @@
 					if ( !embedPlayer.firstPlay && _this.isDVR() ) {
 						embedPlayer.disablePlayControls();
 						var shouldPause = !embedPlayer.isPlaying();
-						var playingEvtName = "playing.backToLive";
+						var playingEvtName = "seeked.backToLive playing.backToLive";
 						embedPlayer.bindHelper( playingEvtName , function() {
 							embedPlayer.unbindHelper( playingEvtName );
 							setTimeout( function() {
@@ -209,7 +209,9 @@
 
 					if ( !_this.isNativeHLS() ) {
 						embedPlayer.bindHelper( 'ended', function() {
-							embedPlayer.getPlayerElement().seek( 0 );
+							if(embedPlayer.getPlayerElement().seek){
+								embedPlayer.getPlayerElement().seek( 0 );
+							}
 						});
 					}
 				}

@@ -278,6 +278,7 @@ class EntryResult
         if (isset($resultObject['entryCuePoints'])
             && is_object($resultObject['entryCuePoints'])
             && $resultObject['entryCuePoints']->totalCount > 0
+            && count($resultObject['entryCuePoints']->objects) > 0
         ) {
             // count the number of missing objects
             $countDiff = $resultObject['entryCuePoints']->totalCount - count($resultObject['entryCuePoints']->objects);

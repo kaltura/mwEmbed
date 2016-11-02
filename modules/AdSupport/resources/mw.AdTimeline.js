@@ -171,12 +171,18 @@
                     };
                 });
 
-                //Setup a playedAnAdFlag
-                var playedAnAdFlag = false;
-                embedPlayer.bindHelper('AdSupport_StartAdPlayback' + _this.bindPostfix, function () {
-                    mw.log("AdTimeline:: set Played an ad flag to true");
-                    playedAnAdFlag = true;
-                });
+				var playedAnLinearAdFlag = false;
+				embedPlayer.bindHelper('onAdOpen' + _this.bindPostfix, function (e, adId, adSystem, AdSlotType, adPosition, linear) {
+					mw.log("AdTimeline:: set Played an linear ad flag to " + linear);
+					playedAnLinearAdFlag = linear;
+				});
+
+				//Setup a playedAnAdFlag
+				var playedAnAdFlag = false;
+				embedPlayer.bindHelper( 'AdSupport_StartAdPlayback' +  _this.bindPostfix, function(){
+					mw.log("AdTimeline:: set Played an ad flag to true");
+					playedAnAdFlag = true;
+				});
 
                 mw.log("AdTimeline:: load ads, trigger: AdSupport_OnPlayAdLoad");
                 embedPlayer.pauseLoading();
@@ -202,27 +208,27 @@
                                 // trigger the preSequenceComplete event ( always fired )
                                 embedPlayer.triggerHelper('AdSupport_PreSequenceComplete');
 
-                                if (playedAnAdFlag) {
-                                    // reset displaySlotCount:
-                                    _this.displayedSlotCount = 0;
-                                }
-                                // Restore the player only do event trigger if we played an ad
-                                _this.restorePlayer(null, playedAnAdFlag);
-                                // Restore duration:
-                                embedPlayer.setDuration(orgDuration);
-                                // Continue playback
-                                if (playedAnAdFlag) {
-                                    embedPlayer.play();
-                                }
-                            };
-                            // Check if the src does not match original src if
-                            // so switch back and restore original bindings
-                            if (!embedPlayer.isVideoSiblingEnabled()) {
-                                // restore the original source:
-                                embedPlayer.switchPlaySource(_this.originalSource, completeFunc);
-                            } else {
-                                completeFunc();
-                            }
+								if( playedAnAdFlag  ){
+									// reset displaySlotCount:
+									_this.displayedSlotCount=0;
+								}
+								// Restore the player only do event trigger if we played an ad
+								_this.restorePlayer( null, playedAnAdFlag );
+								// Restore duration:
+								embedPlayer.setDuration( orgDuration );
+								// Continue playback
+								if (playedAnAdFlag || !playedAnLinearAdFlag){
+									embedPlayer.play();
+								}
+							};
+							// Check if the src does not match original src if
+							// so switch back and restore original bindings
+							if ( ! embedPlayer.isVideoSiblingEnabled() ) {
+								// restore the original source:
+								embedPlayer.switchPlaySource( _this.originalSource, completeFunc);
+							} else {
+								completeFunc();
+							}
 
                         });
                     });

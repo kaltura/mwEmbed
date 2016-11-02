@@ -103,13 +103,13 @@
 						if (value == true){
 							$(".btn").not(".playHead").attr("style","color: "+ this.getConfig('buttonsIconColor') +" !important; text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8) !important");
 							if (!this.embedPlayer.isMobileSkin()){
-								$(".btn").not(".playHead").attr("style","background-color: "+ this.getConfig('buttonsColor') +" !important");
+								$(".btn").not(".playHead").attr("style","background-color: " + this.getConfig('buttonsColor') + " !important; color: "+ this.getConfig('buttonsIconColor') +" !important; text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8) !important");
 							}
 							this.dropShadowColor = '1px 1px 1px rgba(0, 0, 0, 0.8)';
 						}else{
 							$(".btn").not(".playHead").attr("style","color: "+ this.getConfig('buttonsIconColor') +" !important; text-shadow: 0px 0px 0px rgba(0, 0, 0, 0) !important");
 							if (!this.embedPlayer.isMobileSkin()){
-								$(".btn").not(".playHead").attr("style","background-color: "+ this.getConfig('buttonsColor') +" !important");
+								$(".btn").not(".playHead").attr("style","background-color: " + this.getConfig('buttonsColor') + " !important; color: "+ this.getConfig('buttonsIconColor') +" !important; text-shadow: 0px 0px 0px rgba(0, 0, 0, 0) !important");
 							}
 							this.dropShadowColor = '0px 0px 0px rgba(0, 0, 0, 0)';
 						}
