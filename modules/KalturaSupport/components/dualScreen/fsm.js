@@ -23,7 +23,7 @@
 			{
 				// backward compatibility: the event args action equals 'switchView' which is a special event
 				targetEvents.push(e.action);
-			}else if (typeof e === 'object')
+			}else if (typeof e === 'object' && e.action)
 			{
 				// the event args contains an action and (optionally) main display type
 

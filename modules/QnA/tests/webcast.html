@@ -1,39 +1,43 @@
 <html>
 <head>
-    <title>Q and A Demo</title>
+    <title>Web cast demo</title>
     <script type="text/javascript" src="/html5.kaltura/mwEmbed/tests/qunit/qunit-bootstrap.js"></script>
     <script type="text/javascript" src="/html5.kaltura/mwEmbed/mwEmbedLoader.php"></script>
     <script type="text/javascript" src="/html5.kaltura/mwEmbed/docs/js/doc-bootstrap.js"></script>
+
     <meta charset=UTF-8>
 
     <script type="text/javascript" src="config.js"></script>
 
 </head>
 <body>
-<h1>Q and A Demo</h1>
-<div id="kaltura_player" style="width: 585px; height: 330px;float: left;"></div>
+<div id="kaltura_player" style="width: 1024PX; height: 800PX;float: left;"></div>
 <div id="qnaListHolder" style="width: 300px; height: 330px; float:left; float: left"></div>
-<br style="clear: both;" /><br />
-
 <script>
 
 
     //    mw.setConfig( 'Kaltura.ServiceUrl' , 'http://lbd.kaltura.com' );
     kWidget.featureConfig({
         'targetId': 'kaltura_player',
-        'wid': '_1802381',
-        'uiconf_id' : '25906281',
+        'wid': '_2095431',
+        'uiconf_id' : '35618011',
         'flashvars': {
-            'ks': "djJ8MTgwMjM4MXyLZvKO_KE8zGzEseK07wSOgmqTXM7lydr1gMaA01qOeo7mpTPuMBzuFUFi8Ba5v9o-GSpnESV-GmPYtVC6tXFBMzyZY7FFYLs-p7WkTDSIsj96tl7bqUUHPrKycsvDLnKg4HbgeGiPuiTGhTWksVNDS-WICzWQcxaazBbrJEFmjQ==",
             'qna': qna,
+            'autoPlay' : true,
+            "Share": {
+                plugin: true
+            },
             "chapters": {
                 plugin: true
             }, "dualScreen": {
                 plugin: true
             },
-            "EmbedPlayer.LiveCuepoints" : true
+            "EmbedPlayer.LiveCuepoints" : true,
+            'webcastPolls': {
+                plugin: true
+            }
         },
-        'entry_id': "1_bzr97hax"
+        'entry_id': "1_gbjv9zp5"
 
     });
 

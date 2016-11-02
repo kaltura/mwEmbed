@@ -94,14 +94,15 @@
 			"components/dualScreen/dualScreenControlBar.js",
 			"components/dualScreen/displays.js",
 			"components/dualScreen/display.js",
-			"components/dualScreen/cuePointsManager.js",
 			"components/dualScreen/dualScreenExternalControlManager.js",
 			"components/dualScreen/imagePlayer.js",
 			"components/dualScreen/videoPlayer.js",
 			"components/dualScreen/videoSync.js",
 			"components/dualScreen/fsm.js",
 			"components/dualScreen/dualScreenStatesConfig.js",
+			"resources/webcast/cuePointsManager.js",
 			"components/streamSelectorUtils.js"
+
 		],
 		"styles": [
 			"components/dualScreen/dualScreen.css",
