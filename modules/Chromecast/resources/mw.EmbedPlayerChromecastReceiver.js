@@ -88,7 +88,7 @@
 			this.bindHelper("AdSupport_AdUpdateDuration", function(event, duration){
 				_this.triggerHelper("broadcastToSender", ["chromecastReceiverAdDuration|" + duration]);
 			});
-			this.bindHelper("onAdComplete", function(){
+			this.bindHelper("onContentResumeRequested", function(){
 				_this.triggerHelper("broadcastToSender", ["chromecastReceiverAdComplete"]);
 				_this.triggerHelper("cancelAllAds");
 			});
@@ -124,7 +124,10 @@
 				});
 			});
 		},
-
+		play: function(){
+			this.parent_play();
+			this.hideSpinner();
+		},
 		/**
 		 * Handle the native paused event
 		 */
@@ -186,17 +189,23 @@
 			if (callback){
 				callback();
 			}
+			this.play();
 		},
 		// override these functions so embedPlayer won't try to sync time
 		syncCurrentTime: function(){
 			this.currentTime = this.getPlayerElementTime();
 		},
 
-		isInSequence: function(){return false;},
 		_ondurationchange: function (event, data) {
 			if ( this.playerElement && !isNaN(this.playerElement.duration) && isFinite(this.playerElement.duration) ) {
 				this.setDuration(this.getPlayerElement().duration);
 				return;
+			}
+		},
+
+		_onended: function(){
+			if (this._propagateEvents) {
+				this.onClipDone();
 			}
 		},
 
@@ -213,6 +222,9 @@
 
 		isVideoSiblingEnabled: function() {
 			return false;
+		},
+		canAutoPlay: function () {
+			return true;
 		}
 	};
 	} )( mediaWiki, jQuery );

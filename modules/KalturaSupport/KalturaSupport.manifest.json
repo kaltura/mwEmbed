@@ -48,7 +48,7 @@
             },
             "enableOptionsMenu": {
                 "doc": "Should captions styling menu be enabled.",
-                "initvalue": true,
+                "initvalue": false,
                 "type": "boolean"
             },
             "useCookie": {

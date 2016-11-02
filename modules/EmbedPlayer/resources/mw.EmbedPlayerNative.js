@@ -6,8 +6,6 @@
 (function (mw, $) {
 	"use strict";
 
-	var originalVTTCue = window.VTTCue;
-
 	mw.EmbedPlayerNative = {
 
 		//Instance Name
@@ -98,6 +96,9 @@
 		setup: function (readyCallback) {
 			var _this = this;
 			this._propagateEvents = true;
+			if (mw.isIpad()) {
+				this.getPlayerElement().removeAttribute("poster");
+			}
 			$(this.getPlayerElement()).css('position', 'absolute');
 			if (this.inline) {
 				$(this.getPlayerElement()).attr('webkit-playsinline', '');
@@ -116,18 +117,25 @@
 		},
         addBindings: function(){
             var _this = this;
-            this.bindHelper('firstPlay', function(){
+            this.bindHelper('firstPlay' + this.bindPostfix, function(){
                 _this.parseTracks();
             });
-            this.bindHelper('switchAudioTrack', function (e, data) {
+            this.bindHelper('switchAudioTrack' + this.bindPostfix, function (e, data) {
                 _this.switchAudioTrack(data.index);
             });
-            this.bindHelper('liveOnline', function(){
+            this.bindHelper('liveOnline' + this.bindPostfix, function(){
                 if( _this.isLive() && !_this.isDVR() ) {
                     _this.resetSrc = true;
                 }
             });
         },
+
+		removeBindings: function(){
+			this.unbindHelper('firstPlay' + this.bindPostfix);
+			this.unbindHelper('switchAudioTrack' + this.bindPostfix);
+			this.unbindHelper('liveOnline' + this.bindPostfix);
+		},
+
 		/**
 		 * Updates the supported features given the "type of player"
 		 */
@@ -209,7 +217,7 @@
 			_this.bufferStartFlag = false;
 			_this.bufferEndFlag = false;
 
-			$(this).html(
+			$(this.getVideoDisplay()).append(
 				_this.getNativePlayerHtml()
 			);
 
@@ -257,7 +265,7 @@
 
 			return    $('<' + tagName + ' />')
 				// Add the special nativeEmbedPlayer to avoid any rewrites of of this video tag.
-				.addClass('nativeEmbedPlayerPid')
+				.addClass('persistentNativePlayer nativeEmbedPlayerPid')
 				.attr(playerAttribtues)
 				.css(cssSet);
 		},
@@ -411,7 +419,7 @@
 			// some initial calls to prime the seek:
 			if ( ( vid.currentTime === 0 && callbackCount === 0 ) && vid.readyState === 0 ) { //load video again if not loaded yet (vid.readyState === 0)
 				// when seeking turn off preload none and issue a load call.
-				$(vid).attr('preload', 'auto');
+				$(vid).attr('preload', 'auto')[0].load();
 			}
 
 			var videoReadyState = mw.isIOSAbove7() ? 2 : 1; // on iOS8 wait for video state 1 (dataloaded) instead of 1 (metadataloaded)
@@ -448,9 +456,6 @@
 							vid.play();
 							_this.parseTracks();
 						}
-					}else {
-						vid.load();
-						vid.play();
 					}
 				}
 				// Try to seek for 15 seconds:
@@ -618,8 +623,11 @@
 					vid.removeAttribute('controls');
 
 					// dissable seeking ( if we were in a seeking state before the switch )
-					_this.seeking = false;
-
+					if (_this.isFlavorSwitching) {
+						_this.seeking = true;
+					} else {
+						_this.seeking = false;
+					}
 					// Workaround for 'changeMedia' on Android & iOS
 					// When changing media and not playing entry before spinner is stuck on black screen
 					if (!_this.firstPlay) {
@@ -857,15 +865,17 @@
 						if (_this.useNativePlayerControls() && $(_this).find('video ').length == 0) {
 							$(_this).hide();
 						}
-						// if it's iOS8 the player won't play
-						if (!mw.isIOSAbove7()) {
-							// update the preload attribute to auto
-							$(_this.getPlayerElement()).attr('preload', "auto");
+
+						//If media not loaded yet(loadedmetadata event not reached yet) issue a load on video tag
+						if (!_this.mediaLoadedFlag){
+							_this.load();
 						}
+
 						// issue a play request
-						if ( !_this.playing ) {
+						if (!_this.playing) {
 							vid.play();
 						}
+
 						_this.mobilePlayed = true;
 						// re-start the monitor:
 						_this.monitor();
@@ -1047,6 +1057,7 @@
 				var _this = this;
 				this.waitForSeekTarget().then(function(){
 					_this.seeking = false;
+					_this.isFlavorSwitching = false;
 					if (_this._propagateEvents) {
 						if( !_this.isLive() || ( _this.isLive() && _this.isDVR() ) ) {
 							_this.log(" trigger: seeked");
@@ -1394,7 +1405,7 @@
         },
         parseTextTracks: function(vid, counter){
             var _this = this;
-            setTimeout(function() {
+	        this.parseTextTracksTimeout = setTimeout(function() {
                 if( vid.textTracks.length > 0 ) {
                     for (var i = 0; i < vid.textTracks.length; i++) {
                         if (vid.textTracks[i].kind === "metadata") {
@@ -1435,7 +1446,7 @@
         },
         parseAudioTracks: function(vid, counter){
             var _this = this;
-            setTimeout (function() {
+	        this.parseAudioTracksTimeout = setTimeout (function() {
                 if( vid.audioTracks && vid.audioTracks.length > 0 ) {
                     var data ={'languages':[]};
                     for (var i = 0; i < vid.audioTracks.length; i++) {
@@ -1496,8 +1507,11 @@
             }
             return 0;
         },
-		getOriginalVTTCue: function(){
-			return originalVTTCue;
+
+		clean:function(){
+			this.removeBindings();
+			clearTimeout(this.parseAudioTracksTimeout);
+			clearTimeout(this.parseTextTracksTimeout);
 		}
 	};
 })(mediaWiki, jQuery);
