@@ -129,6 +129,10 @@ onload = function () {
 			var logoElem = document.getElementById('logo');
 			logoElem.style.display = 'block';
 			logoElem.style.opacity = 1;
+			if (mediaPlayer) {
+				mediaPlayer.unload();
+				mediaPlayer = null;
+			}
 			kdp.sendNotification('changeMedia', payload.data);
 		} else if (payload['type'] === 'embed') {
 			if (!playerInitialized) {
