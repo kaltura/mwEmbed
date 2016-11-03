@@ -153,6 +153,12 @@ onload = function () {
 						mw.setConfig("chromecastReceiver", true);
 						mw.setConfig("Kaltura.ExcludedModules", "chromecast");
 						var fv = {
+							"dash":{
+								'plugin': false
+							},
+							"multiDrm":{
+								'plugin': false
+							},
 							"embedPlayerChromecastReceiver": {
 								'plugin': true
 							},
@@ -164,15 +170,6 @@ onload = function () {
 							}
 						};
 						fv = extend(fv, payload['flashVars']);
-						if (fv.dash){
-							delete fv.dash;
-						}
-						if (fv.hlsjs){
-							delete fv.hlsjs;
-						}
-						if (fv.multiDrm){
-							delete fv.multiDrm;
-						}
 						var mimeType = null;
 						var src = null;
 
