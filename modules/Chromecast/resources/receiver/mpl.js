@@ -136,12 +136,6 @@ onload = function () {
 			kdp.sendNotification('changeMedia', payload.data);
 		} else if (payload['type'] === 'embed') {
 			if (!playerInitialized) {
-				var playerLib = payload['lib'] + "mwEmbedLoader.php";
-				var s = document.createElement("script");
-				s.type = "text/javascript";
-				s.src = playerLib;
-				document.head.appendChild(s);
-
 				var intervalID = setInterval(function () {
 					if (typeof mw !== "undefined") {
 						clearInterval(intervalID);
@@ -159,12 +153,6 @@ onload = function () {
 						mw.setConfig("chromecastReceiver", true);
 						mw.setConfig("Kaltura.ExcludedModules", "chromecast");
 						var fv = {
-							"multiDrm": {
-								'plugin': false
-							},
-							"dash": {
-								'plugin': false
-							},
 							"embedPlayerChromecastReceiver": {
 								'plugin': true
 							},
@@ -176,6 +164,15 @@ onload = function () {
 							}
 						};
 						fv = extend(fv, payload['flashVars']);
+						if (fv.dash){
+							delete fv.dash;
+						}
+						if (fv.hlsjs){
+							delete fv.hlsjs;
+						}
+						if (fv.multiDrm){
+							delete fv.multiDrm;
+						}
 						var mimeType = null;
 						var src = null;
 

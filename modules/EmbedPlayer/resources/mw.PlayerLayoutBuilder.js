@@ -462,7 +462,6 @@
         // Special case expandable components (i.e volumeControl)
         getComponentWidth: function ($comp) {
             return $comp.data('width') || $comp.outerWidth(true);
-            ;
         },
 
         getComponentsWidthForContainer: function ($container) {
