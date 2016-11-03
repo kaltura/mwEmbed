@@ -1328,7 +1328,7 @@ var mw = ( function ( $, undefined ) {
                     if ((/CrKey/.test(navigator.userAgent))) {
 						var excludeForChromeCast = ["mw.EmbedPlayerNativeComponent", "mw.EmbedPlayerSilverlight", "mw.EmbedPlayerVlc",
 							"mw.EmbedPlayerYouTube", "mw.EmbedPlayerGeneric", "mw.EmbedPlayerImageOverlay", "mw.EmbedPlayerJava",
-							"mw.EmbedPlayerKplayer", "mw.EmbedPlayerMultiDRM", "multiDrm", "dash", "Hlsjs"];
+							"mw.EmbedPlayerKplayer", "mw.EmbedPlayerMultiDRM"];
 
                         registry["mw.EmbedPlayer"].dependencies = registry["mw.EmbedPlayer"].dependencies.filter(function (dep) {
                             return excludeForChromeCast.indexOf(dep) === -1;
