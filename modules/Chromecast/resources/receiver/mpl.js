@@ -126,6 +126,9 @@ onload = function () {
 		} else if (payload['type'] === 'setKDPAttribute') {
 			kdp.setKDPAttribute(payload['plugin'], payload['property'], payload['value']);
 		} else if (payload['type'] === 'changeMedia') {
+			var logoElem = document.getElementById('logo');
+			logoElem.style.display = 'block';
+			logoElem.style.opacity = 1;
 			kdp.sendNotification('changeMedia', payload.data);
 		} else if (payload['type'] === 'embed') {
 			if (!playerInitialized) {
@@ -201,8 +204,17 @@ onload = function () {
 											mediaElement.addEventListener("durationchange", updateDuration, false);
 										}
 									};
-									kdp.kBind("onContentResumeRequested", function(){loadContent();});
-									kdp.kBind("adErrorEvent", function(){loadContent();});
+									kdp.kBind("firstPlay", function(){
+										document.getElementById('logo').style.display = 'block';
+									});
+									kdp.kBind("onContentResumeRequested", function(){
+										console.info("Ad ended");
+										loadContent();
+									});
+									kdp.kBind("adErrorEvent", function(){
+										console.info("Ad error");
+										loadContent();
+									});
 									kdp.kBind("chromecastReceiverLoaded", function () {
 										setMediaManagerEvents();
 									});
@@ -260,11 +272,11 @@ function setMediaManagerEvents() {
 		if (kdp.evaluate('{sequenceProxy.isInSequence}')) {
 			maskAdEndedIdelState = true;
 		} else {
-			//logoElement.style.opacity = 1;
-			//setTimeout(function() {
-			//	kdp.sendNotification("hidePlayerControls");
-			//	logoElement.style.display = 'block';
-			//},1000);
+			var logoElement =  document.getElementById('logo');
+			logoElement.style.opacity = 1;
+			setTimeout(function() {
+				logoElement.style.display = 'block';
+			},1000);
 			mediaManager['onEndedOrig']();
 		}
 	};
