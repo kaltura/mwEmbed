@@ -258,7 +258,12 @@
 					_this.embedPlayer.play();
 				}
 			};
-
+            try{
+                if (top.google && top.google.ima){
+                    window.google = top.google;
+                }
+            }
+            catch(e){}
 			if (window.google && window.google.ima){
 				mw.log("Google IMA lib already loaded");
 				onImaLoadSuccess();
