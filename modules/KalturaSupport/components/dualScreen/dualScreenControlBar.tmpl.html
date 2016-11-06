@@ -1,44 +1,19 @@
-<div id="displayControlBar" class="displayControlBar">
-    <div class="displayControlGroup">
-        <span
-            id="switchView"
-            class="controlBarBtn dualScreen-switchView tooltipBelow"
-            data-type="switch"
-            title="<%=buttons.switchView.title%>"
-        ></span>
-    </div>
-
-    <div class="displayControlGroup ds-collapsible">
-        <!-- placeholder -->
-        <span class="controlBarBtn dualScreen-pip subMenuHidden"></span>
-        <span
-            id="pip"
-            class="controlBarBtn dualScreen-pip stateSelected tooltipBelow ds-collapsible-handle"
-            data-type="state"
-            title="<%=buttons.pip.title%>"
-        ></span>
-        <span
-            id="sideBySide"
-            class="controlBarBtn dualScreen-sidebyside tooltipBelow ds-collapsible-content"
-            data-type="state"
-            title="<%=buttons.sideBySide.title%>"
-        ></span>
-        <span
-            id="singleView"
-            class="controlBarBtn dualScreen-singleView tooltipBelow ds-collapsible-content"
-            data-type="state"
-            title="<%=buttons.singleView.title%>"
-        ></span>
-    </div>
-
-    <div class="displayControlGroup displayControlGroup-contentSelection ds-collapsible">
-        <span
-            id="chooseStream"
-            class="controlBarBtn dualScreen-contentSelection tooltipBelow ds-collapsible-handle"
-            data-type="contentSelection"
-            title="<%=buttons.contentSelection.title%>"
-        ></span>
-
-        <div class="ds-streams ds-collapsible-content"></div>
-    </div>
+<div id="displayControlBar">
+    <ul class="inline">
+        <li>
+            <span id="pip" class="controlBarBtn dualScreen-pip tooltipBelow disabled" data-type="state" title="<%=buttons.pip.title%>"></span>
+        </li>
+        <li>
+            <span id="sideBySide" class="controlBarBtn dualScreen-sidebyside tooltipBelow" data-type="state" title="<%=buttons.sideBySide.title%>"></span>
+        </li>
+        <li>
+            <span id="singleView" class="controlBarBtn dualScreen-singleView tooltipBelow" data-type="state" title="<%=buttons.singleView.title%>"></span>
+        </li>
+        <li>
+            <span id="seperator" class="controlBarBtn dualScreen-seperator"></span>
+        </li>
+        <li>
+            <span id="switchView" class="controlBarBtn dualScreen-switchView tooltipBelow last" data-type="switch" title="<%=buttons.switchView.title%>"></span>
+        </li>
+    </ul>
 </div>
