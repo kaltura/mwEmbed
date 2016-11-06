@@ -356,6 +356,8 @@
 					doneCallback();
 					return ;
 				}
+				// Update the "sequenceProxy" var
+				_this.embedPlayer.sequenceProxy.isInSequence = true;
 				// Run the sequence proxy function:
 				sequenceProxy[ key ]( function(){
 
