@@ -351,8 +351,6 @@
 			var seqInx = 0;
 			// Run each sequence key in order:
 			var runSequeceProxyInx = function( seqInx ){
-				// Update the "sequenceProxy" var
-				_this.embedPlayer.sequenceProxy.isInSequence = true;
 				var key = keyList[ seqInx ] ;
 				if( !sequenceProxy[key] ){
 					doneCallback();
