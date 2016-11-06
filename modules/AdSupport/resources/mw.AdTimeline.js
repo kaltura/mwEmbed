@@ -355,20 +355,20 @@
                 return;
             }
 
-            // Sort the sequence proxy key list:
-            keyList.sort();
-            var seqInx = 0;
-            // Run each sequence key in order:
-            var runSequeceProxyInx = function (seqInx) {
-                // Update the "sequenceProxy" var
-                _this.embedPlayer.sequenceProxy.isInSequence = true;
-                var key = keyList[seqInx];
-                if (!sequenceProxy[key]) {
-                    doneCallback();
-                    return;
-                }
-                // Run the sequence proxy function:
-                sequenceProxy[key](function () {
+			// Sort the sequence proxy key list:
+			keyList.sort();
+			var seqInx = 0;
+			// Run each sequence key in order:
+			var runSequeceProxyInx = function( seqInx ){
+				var key = keyList[ seqInx ] ;
+				if( !sequenceProxy[key] ){
+					doneCallback();
+					return ;
+				}
+				// Update the "sequenceProxy" var
+				_this.embedPlayer.sequenceProxy.isInSequence = true;
+				// Run the sequence proxy function:
+				sequenceProxy[ key ]( function(){
 
                     // Done with slot increment display slot count
                     _this.displayedSlotCount++;
