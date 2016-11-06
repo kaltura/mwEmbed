@@ -221,6 +221,7 @@ class UiConfResult {
 			"sideBarContainer" => array(),
 			"liveAnalytics"=>array(),
 			"kAnalony"=>array(),
+			"hlsjs"=>array()
 			//"playersJsReceiver" => array()
 		);
 
