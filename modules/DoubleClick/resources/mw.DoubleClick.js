@@ -26,6 +26,9 @@
 		// The monitor interval index:
 		adMonitor: null,
 
+        // Flag to indicate whether the ad is skippable
+        adSkippable: null,
+
 		shouldPausePlaylist: false,
 
 		// store the ad start time
@@ -656,7 +659,9 @@
 				$(".adCover").remove();
 				$(this.embedPlayer).trigger("onPlayerStateChange", ["play", this.embedPlayer.currentState]);
 				if (isLinear) {
-					this.resumeSkipSupport();
+                    if (!_this.adSkippable) {
+                        this.resumeSkipSupport();
+                    }
 					this.embedPlayer.disablePlayControls();
 				} else {
 					_this.embedPlayer.play();
@@ -1188,8 +1193,9 @@
 				// update the last ad start time:
 				lastAdStartTime = new Date().getTime();
 				_this.adActive = true;
+                _this.adSkippable = ad.isSkippable();
 				if (_this.isLinear) {
-					if (!ad.isSkippable()){
+					if (!_this.adSkippable){
 						_this.showSkipBtn();
 					}
 					_this.playingLinearAd = true;
