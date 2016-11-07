@@ -130,6 +130,7 @@ onload = function () {
 			logoElem.style.display = 'block';
 			logoElem.style.opacity = 1;
 			if (mediaPlayer) {
+				mediaElement.pause();
 				mediaPlayer.unload();
 				mediaPlayer = null;
 			}
