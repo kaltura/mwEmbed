@@ -141,10 +141,19 @@
 
 				this.registerShakaEvents();
 
-				this.bind("firstPlay seeking", function () {
-					this.unbind("firstPlay seeking");
+				var unbindAndLoadManifest = function () {
+					this.unbind("firstPlay");
+					this.unbind("seeking");
 					this.loadManifest();
-				}.bind(this));
+				}.bind(this);
+
+				this.bind("firstPlay", function () {
+					unbindAndLoadManifest();
+				});
+
+				this.bind("seeking", function () {
+					unbindAndLoadManifest();
+				});
 			},
 
 			registerShakaEvents: function () {
@@ -163,9 +172,9 @@
 							selectedSource = manifestSrc;
 						})
 						.always(function () {  // both success or error
-							player.configure(_this.getDefaultDashConfig()["shakaConfig"]);
-							// Try to load a manifest.
-							player.load(selectedSource).then(function () {
+								player.configure(_this.getDefaultDashConfig()["shakaConfig"]);
+								// Try to load a manifest.
+								player.load(selectedSource).then(function () {
 									// This runs if the asynchronous load is successful.
 									_this.log('The manifest has been loaded');
 									_this.addTracks();
@@ -289,7 +298,8 @@
 			 */
 			playerSwitchSource: function (src, switchCallback, doneCallback) {
 				var loadManifestAfterSwitchSource = function () {
-					this.unbind("firstPlay seeking");
+					this.unbind("firstPlay");
+					this.unbind("seeking");
 					this.loadManifest();
 					this.getPlayer().play();
 					if ($.isFunction(switchCallback)) {
@@ -325,22 +335,26 @@
 			},
 
 			onSwitchAudioTrack: function (event, data) {
-				var selectedAudioTracks = this.getTracksByType("audio")[data.index];
-				player.configure({
-					preferredAudioLanguage: selectedAudioTracks.language
-				});
-				mw.log("Dash::onSwitchAudioTrack switch to ", selectedAudioTracks);
+				if (this.loaded) {
+					var selectedAudioTracks = this.getTracksByType("audio")[data.index];
+					player.configure({
+						preferredAudioLanguage: selectedAudioTracks.language
+					});
+					mw.log("Dash::onSwitchAudioTrack switch to ", selectedAudioTracks);
+				}
 			},
 
 			onSwitchTextTrack: function (event, data) {
-				if (data === "Off") {
-					player.setTextTrackVisibility(false);
-					this.log("onSwitchTextTrack disable subtitles");
-				} else {
-					player.configure({
-						preferredTextLanguage: data
-					});
-					this.log("onSwitchTextTrack switch to " + data);
+				if (this.loaded) {
+					if (data === "Off") {
+						player.setTextTrackVisibility(false);
+						this.log("onSwitchTextTrack disable subtitles");
+					} else {
+						player.configure({
+							preferredTextLanguage: data
+						});
+						this.log("onSwitchTextTrack switch to " + data);
+					}
 				}
 			},
 

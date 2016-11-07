@@ -628,6 +628,7 @@
 			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
 
 			if (isLinear && !this.isNativeSDK) {
+				this.clearSkipTimeout();
 				this.embedPlayer.enablePlayControls(["scrubber","share","infoScreen","related","playlistAPI","nextPrevBtn","sourceSelector","qualitySettings","morePlugins"]);
 			} else {
 				_this.embedPlayer.pause();
@@ -652,6 +653,7 @@
 				$(".adCover").remove();
 				$(this.embedPlayer).trigger("onPlayerStateChange", ["play", this.embedPlayer.currentState]);
 				if (isLinear) {
+					this.resumeSkipSupport();
 					this.embedPlayer.disablePlayControls();
 				} else {
 					_this.embedPlayer.play();
@@ -741,7 +743,7 @@
 		},
 		addSkipSupport: function(){
 			var _this = this;
-			if ( this.embedPlayer.getRawKalturaConfig('skipBtn') && this.embedPlayer.getVideoHolder().find(".ad-skip-btn").length === 0){
+			if ( this.embedPlayer.getRawKalturaConfig('skipBtn') && this.embedPlayer.getRawKalturaConfig('skipBtn', 'plugin') && this.embedPlayer.getVideoHolder().find(".ad-skip-btn").length === 0){
 				var label = "Skip Ad";
 				if( this.embedPlayer.getKalturaConfig( 'skipBtn', 'label' ) ){
 					label = this.embedPlayer.getKalturaConfig( 'skipBtn', 'label' );
@@ -782,26 +784,38 @@
 				_this.hideSkipBtn();
 			});
 		},
-		showSkipBtn: function(){
-			if( this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' ) ){
-				$(".ad-skip-label").show();
-				this.skipTimeoutId = setTimeout(function(){
-					$(".ad-skip-btn").show();
-					$(".ad-skip-label").hide();
-				},parseFloat(this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' ) * 1000))
-			}else{
-				$(".ad-skip-btn").show();
-				$(".ad-skip-label").hide();
-			}
-		},
-		hideSkipBtn: function(){
-			if( this.skipTimeoutId !== null ){
-				clearTimeout(this.skipTimeoutId);
-				this.skipTimeoutId = null;
-			}
-			$(".ad-skip-btn").hide();
-			$(".ad-skip-label").hide();
-		},
+        resumeSkipSupport: function () {
+            if (this.embedPlayer.getKalturaConfig('skipBtn', 'skipOffset')) {
+                var timePassed = (this.duration - this.adPreviousTimeLeft) * 1000;
+                this.startSkipTimeout((this.embedPlayer.getKalturaConfig('skipBtn', 'skipOffset') * 1000) - timePassed);
+            }
+        },
+        showSkipBtn: function () {
+            if (this.embedPlayer.getKalturaConfig('skipBtn', 'skipOffset')) {
+                $(".ad-skip-label").show();
+                this.startSkipTimeout(parseFloat(this.embedPlayer.getKalturaConfig('skipBtn', 'skipOffset') * 1000));
+            } else {
+                $(".ad-skip-btn").show();
+                $(".ad-skip-label").hide();
+            }
+        },
+        hideSkipBtn: function () {
+            this.clearSkipTimeout();
+            $(".ad-skip-btn").hide();
+            $(".ad-skip-label").hide();
+        },
+        clearSkipTimeout: function () {
+            if (this.skipTimeoutId !== null) {
+                clearTimeout(this.skipTimeoutId);
+                this.skipTimeoutId = null;
+            }
+        },
+        startSkipTimeout: function (time) {
+            this.skipTimeoutId = setTimeout(function () {
+                $(".ad-skip-btn").show();
+                $(".ad-skip-label").hide();
+            }, time);
+        },
 		/**
 		 * Adds custom params to ad url.
 		 */
@@ -993,7 +1007,11 @@
 						var companionAds = [];
 
 						try {
-							companionAds = ad.getCompanionAds(adSlotWidth, adSlotHeight, {resourceType: google.ima.CompanionAdSelectionSettings.ResourceType.STATIC, creativeType: google.ima.CompanionAdSelectionSettings.CreativeType.IMAGE});
+							var selectionCriteria = new google.ima.CompanionAdSelectionSettings();
+							selectionCriteria.resourceType = google.ima.CompanionAdSelectionSettings.ResourceType.STATIC;
+							selectionCriteria.creativeType = google.ima.CompanionAdSelectionSettings.CreativeType.IMAGE;
+							selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.IGNORE;
+							companionAds = ad.getCompanionAds(adSlotWidth, adSlotHeight, selectionCriteria);
 						} catch(e) {
 							mw.log("Error: DoubleClick could not access getCompanionAds");
 						}
@@ -1093,7 +1111,7 @@
 				var currentAdSlotType = _this.isLinear ? _this.currentAdSlotType : "overlay";
 				$("#" + _this.getAdContainerId()).show();
 				// dispatch adOpen event
-				$( _this.embedPlayer).trigger( 'onAdOpen',[adData.adId, adData.adSystem, currentAdSlotType, adData.adPodInfo ? adData.adPodInfo.adPosition : 0] );
+				$( _this.embedPlayer).trigger( 'onAdOpen',[adData.adId, adData.adSystem, currentAdSlotType, adData.adPodInfo ? adData.adPodInfo.adPosition : 0, adData.linear] );
 
 				_this.duration= _this.adsManager.getRemainingTime();
 				if (_this.duration >= 0) {
@@ -1612,7 +1630,7 @@
 			if (this.adsManager && $.isFunction( this.adsManager.unload ) ) {
 				this.adsManager.unload();
 			}
-			if (this.embedPlayer.isInSequence() || this.embedPlayer.autoplay){
+			if (this.embedPlayer.isInSequence() || (this.embedPlayer.autoplay && this.embedPlayer.canAutoPlay())){
 				this.restorePlayer(this.contentDoneFlag);
 				this.embedPlayer.play();
 			}else{

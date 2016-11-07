@@ -19,6 +19,7 @@
 		var hlsjs = mw.KBasePlugin.extend({
 
 			defaultConfig: {
+				withCredentials : false,
 				options: {
 					//debug:true
 					liveSyncDurationCount: 3,
@@ -113,8 +114,16 @@
 					this.log("Init");
 					//Set streamerType to hls
 					this.embedPlayer.streamerType = 'hls';
+					
+					var hlsConfig = this.getConfig("options");
+					//Apply withCredentials if set to true
+					if(this.getConfig("withCredentials")){
+						hlsConfig.xhrSetup = function(xhr, url) {
+							xhr.withCredentials = true;
+						}
+					}
 					//Init the HLS playback engine
-					this.hls = new Hls(this.getConfig("options"));
+					this.hls = new Hls(hlsConfig);
 
 					this.loaded = true;
 					//Reset the error recovery counter
@@ -130,6 +139,7 @@
 					}.bind(this));
 					this.bind("seeking", this.onSeekBeforePlay.bind(this));
 					this.bind("firstPlay", function () {
+						this.unbind("firstPlay");
 						this.unbind("seeking");
 						this.hls.attachMedia(this.getPlayer().getPlayerElement());
 					}.bind(this));
@@ -338,6 +348,7 @@
 							// try to recover network error
 							this.log("fatal network error encountered, try to recover");
 							this.hls.startLoad();
+							this.mediaErrorRecoveryCounter += 1;
 						} else {
 							//Fallback to flash if there's network error and we detect protocol mismatch
 							//which is probably causing Mixed content warning in the browser
@@ -357,6 +368,7 @@
 							}
 							this.log("fatal media error encountered, try to recover");
 							this.hls.recoverMediaError();
+							this.mediaErrorRecoveryCounter += 1;
 						} else {
 							switch (data.details) {
 								case Hls.ErrorDetails.BUFFER_STALLED_ERROR:
@@ -373,7 +385,6 @@
 						}
 						break;
 				}
-				this.mediaErrorRecoveryCounter += 1;
 			},
 			isProtocolMismatch: function(data) {
 				var protocolMismatch = false;
@@ -561,6 +572,8 @@
 			 */
 			playerSwitchSource: function (src, switchCallback, doneCallback) {
 				if (!this.mediaAttached){
+					this.unbind("firstPlay");
+					this.unbind("seeking");
 					this.hls.attachMedia(this.getPlayer().getPlayerElement());
 				}
 				this.getPlayer().play();
@@ -615,8 +628,8 @@
 
 			onSeekBeforePlay: function(){
 				if(this.LoadHLS){
-					this.unbind("seeking");
 					this.unbind("firstPlay");
+					this.unbind("seeking");
 					this.hls.attachMedia(this.getPlayer().getPlayerElement());
 				}
 			},

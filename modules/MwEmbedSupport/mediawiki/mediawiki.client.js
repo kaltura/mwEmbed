@@ -204,6 +204,31 @@
 	mw.isWindows = function() {
 		return navigator.platform.indexOf('Win') > -1
 	};
+	//Returns a strings of the user's OS
+	mw.getUserOS = function() {
+		var os = "";
+		var nAgt = navigator.userAgent;
+		var clientStrings = [
+			{s:'Windows 10', r:/(Windows 10.0|Windows NT 10.0)/},
+			{s:'Windows 8.1', r:/(Windows 8.1|Windows NT 6.3)/},
+			{s:'Windows 8', r:/(Windows 8|Windows NT 6.2)/},
+			{s:'Windows 7', r:/(Windows 7|Windows NT 6.1)/},
+			{s:'Android', r:/Android/},
+			{s:'Linux', r:/(Linux|X11)/},
+			{s:'iOS', r:/(iPhone|iPad|iPod)/},
+			{s:'Mac OS X', r:/Mac OS X/},
+			{s:'Mac OS', r:/(MacPPC|MacIntel|Mac_PowerPC|Macintosh)/},
+		];
+		for (var id in clientStrings) {
+			var cs = clientStrings[id];
+			if (cs.r.test(nAgt)) {
+				os = cs.s;
+				break;
+			}
+		}
+		return os;
+	};
+
 	/**
 	 * Fallforward system by default prefers flash.
 	 *
