@@ -253,7 +253,14 @@
 				this.addAutoToMenu();
 				return true;
 			}
-			//HLS, HDS
+
+	        //Dash
+	        if( ( this.getPlayer().streamerType === "dash" ) ){
+		        this.addAutoToMenu();
+		        return true;
+	        }
+
+	        //HLS, HDS
             if (mw.isNativeApp()) {
             	this.sourcesList = [];
                 this.addAutoToMenu();
@@ -265,10 +272,13 @@
                     return true;
                 }
                 this.addAutoToMenu();
-                return false;
+	            if ( this.getPlayer().streamerType == "hls" ) {
+		            return true;
+	            }
+	            return false;
             }
 
-			if ( this.getPlayer().streamerType == "http" && mw.isDesktopSafari() ){
+			if ( this.getPlayer().streamerType == "http" ){
 				this.addAutoToMenu();
 				return false;
 			}

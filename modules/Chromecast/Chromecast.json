@@ -1,7 +1,6 @@
 {
     "chromecast": {
         "scripts": [
-            "resources/chromecastLib.js",
             "resources/chromecast.js"
         ],
         "dependencies": "mw.KBaseComponent",

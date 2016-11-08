@@ -1,7 +1,7 @@
 /*
  * The "kaltura player" embedPlayer interface for multi DRM
  */
-(function (mw, $) {
+(function (mw, $, videojs) {
 	"use strict";
 
 	mw.EmbedPlayerMultiDRM = {
@@ -155,7 +155,7 @@
 			return  !( mw.isIpad() || mw.isAndroid() || mw.isMobileChrome() || this.useNativePlayerControls() )
 		},
 		changeMedia: function(){
-			this.clean();
+			this.manifestLoaded = false;
 			this.parent_changeMedia();
 		},
 		changeMediaCallback: function (callback) {
@@ -185,13 +185,24 @@
 		},
 		clean: function ( ) {
 			this.manifestLoaded = false;
+			this.dashPlayerInitialized = false;
 			if ( this.detectPluginInterval ) {
 				this.cleanInterval(this.detectPluginInterval);
 			}
 			if (this.updateStateInterval ) {
 				this.cleanInterval(this.updateStateInterval);
 			}
+			this.removeBindings();
+			videojs(this.pid).safeDispose();
 		},
+
+		removeBindings: function(){
+			this.unbindHelper('switchAudioTrack' + this.bindPostfix);
+			this.unbindHelper('changeEmbeddedTextTrack' + this.bindPostfix);
+			this.unbindHelper('closedCaptionsDisplayed' + this.bindPostfix);
+			this.unbindHelper('closedCaptionsHidden' + this.bindPostfix);
+		},
+
 		/**
 		 * Return the embed code
 		 */
@@ -233,7 +244,7 @@
 			if (!this.dashPlayerInitialized) {
 				var _this = this;
 				this.dashPlayerInitialized = true;
-				this.playerElement = mw.dash.player( this.pid, {
+				this.playerElement = videojs( this.pid, {
 					autoplay: false,
 					controls: false,
 					preload: "none",
@@ -274,12 +285,12 @@
 						_this.updateDashContext();
 					}
 				} );
-				this.bindHelper('switchAudioTrack', function (e, data) {
+				this.bindHelper('switchAudioTrack' + this.bindPostfix, function (e, data) {
 					if (_this.getPlayerElement()) {
 						_this.getPlayerElement().setActiveTrack("audio", data.index);
 					}
 				});
-				this.bindHelper('changeEmbeddedTextTrack', function (e, data) {
+				this.bindHelper('changeEmbeddedTextTrack' + this.bindPostfix, function (e, data) {
 					if (_this.getPlayerElement()) {
 						var stats = _this.getPlayerElement().getPlaybackStatistics();
 						if (stats.text.activeTrack != data.index){
@@ -287,10 +298,10 @@
 						}
 					}
 				});
-				this.bindHelper('closedCaptionsDisplayed', function () {
+				this.bindHelper('closedCaptionsDisplayed'+ this.bindPostfix, function () {
 					_this.getPlayerElement().textTrackDisplay.show();
 				});
-				this.bindHelper('closedCaptionsHidden', function () {
+				this.bindHelper('closedCaptionsHidden' + this.bindPostfix, function () {
 					_this.getPlayerElement().textTrackDisplay.hide();
 				});
 			}
@@ -531,7 +542,7 @@
 
 			_this.boundedEventHandler = _this.boundedEventHandler || _this.nativeEventsHandler.bind(this);
 			$.each(_this.nativeEvents, function (inx, eventName) {
-				if (mw.isIOS8_9() && mw.isIphone() && eventName === "seeking") {
+				if (mw.isIOSAbove7() && mw.isIphone() && eventName === "seeking") {
 					return;
 				}
 
@@ -620,7 +631,7 @@
 				this.hidePlayerOffScreen();
 			}
 
-			if ( seekTime === 0 && this.isLive() && mw.isIpad() && !mw.isIOS8_9() ) {
+			if ( seekTime === 0 && this.isLive() && mw.isIpad() && !mw.isIOSAbove7() ) {
 				//seek to 0 doesn't work well on live on iOS < 8
 				seekTime = 0.01;
 				this.log( "doSeek: fix seekTime to 0.01" );
@@ -794,7 +805,11 @@
 					vid.pause();
 
 					// dissable seeking ( if we were in a seeking state before the switch )
-					_this.seeking = false;
+					if (_this.isFlavorSwitching) {
+						_this.seeking = true;
+					} else {
+						_this.seeking = false;
+					}
 
 					// Workaround for 'changeMedia' on Android & iOS
 					// When changing media and not playing entry before spinner is stuck on black screen
@@ -891,6 +906,7 @@
 			} else {
 				if ( this.parent_play() ) {
 					var play = function () {
+						_this.paused = false;
 						_this.getPlayerElement().play();
 						_this.monitor();
 					};
@@ -1299,6 +1315,7 @@
 				var _this = this;
 				this.waitForSeekTarget().then(function(){
 					_this.seeking = false;
+					_this.isFlavorSwitching = false;
 					if (_this._propagateEvents) {
 						_this.log(" trigger: seeked");
 						_this.triggerHelper('seeked', [_this.currentTime]);
@@ -1318,7 +1335,7 @@
 			// we don't want to trigger the seek event for these "fake" onseeked triggers
 			if ((this.mediaElement.selectedSource.getMIMEType() === 'application/vnd.apple.mpegurl') &&
 				( ( Math.abs(this.currentSeekTargetTime - this.getPlayerElement().currentTime) > 2) ||
-					( this.currentSeekTargetTime > 0.01 && ( mw.isIpad() && !mw.isIOS8_9() ) ) ) ) {
+					( this.currentSeekTargetTime > 0.01 && ( mw.isIpad() && !mw.isIOSAbove7() ) ) ) ) {
 
 				this.log( "Error: seeked triggred with time mismatch: target:" +
 					this.currentSeekTargetTime + ' actual:' + this.getPlayerElement().currentTime );
@@ -1387,4 +1404,4 @@
 			}
 		}
 	};
-})(mediaWiki, jQuery);
+})(mediaWiki, jQuery, window.videojs);

@@ -1,0 +1,22 @@
+<html>
+    <meta charset="utf-8">
+    <head>
+        <title>Get License Data</title>
+    </head>
+    <body>
+        <form method="get" action="../../../services.php">
+            <input name="service" value="getLicenseData" type="hidden">
+            <table>
+            <tr><th style="text-align:center" colspan="2">- Required -</th></tr>
+            <tr><td>partner_id:</td><td><input name="partner_id" type="text"></td></tr>
+            <tr><td>entry_id:</td><td><input name="entry_id" type="text"></td></tr>
+            <tr><td>uiconf_id:</td><td><input name="uiconf_id" type="text"></td></tr>
+            <tr><td>drm:</td><td><select name="drm"><option>fps</option><option selected>wvcenc</option><option>wvclassic</option></select></tr>
+            <tr><th style="text-align:center" colspan="2">- Optional -</th></tr>
+            <tr><td>ks:</td><td><input name="ks" type="text"></td></tr>
+            <tr><td>flavor_id:</td><td><input name="flavor_id" type="text"></td></tr>
+            </table>
+            <input type="submit" value="Submit">
+        </form>
+    </body>
+</html>

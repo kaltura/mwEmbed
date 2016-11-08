@@ -12,7 +12,6 @@
 			"showTooltip": true,
 			"labelWidthPercentage": 33,
 			"defaultStream": -1, // -1 is auto
-			"maxNumOfStream": 4,
 			"enableKeyboardShortcuts": true,
 			"smartContainer": "qualitySettings",
 			'smartContainerCloseEvent': 'switchAudioTrack',

@@ -195,6 +195,11 @@ body {
     font-size: 1.5em;
 }
 
+.ua-chromecast.pause-state .titleLabel{
+    display: block !important;
+    display: -webkit-box !important;
+}
+
 .mobileSkin.start-state .titleLabel{
     display: block !important;
     display: -webkit-box !important;
@@ -241,7 +246,10 @@ body {
 .controlBarContainer.open {
 	bottom: 0;
 }
-
+.mobileSkin.start-state .controlBarContainer{
+	display: none;
+	bottom: -4.2em;
+}
 
 .btn {
 	display: inline-block;
@@ -336,6 +344,8 @@ body {
     align-items: center;
     flex-flow: row wrap;
 }
+
+
 /* Smart container icons */
 .mobileSkin .smartContainer.comp4, .mobileSkin .smartContainer.comp5, .mobileSkin .smartContainer.comp6{
     height: 80%;
@@ -362,6 +372,7 @@ body {
     width: 100%;
     font-size: 3.2em;
 }
+
 .mobileSkin .videoHolder .smartContainer.comp2 .btn{
     font-size: 3.6em;
 }
@@ -920,6 +931,18 @@ body {
 .mobileSkin .liveStatus{
     font-family: 'icomoon';
 }
+
+.ua-chromecast .liveStatus{
+    display: none;
+}
+
+.ua-chromecast .topBarContainer .btn{
+    display:none;
+}
+
+.ua-chromecast .controlBarContainer .btn:not (.playHead){
+    display:none;
+}
 .currentTimeLabel {
 	padding-left: 1em;
     color: #e8e8e8;
@@ -1174,7 +1197,9 @@ body {
 	top: auto;
 	bottom: 102%;
 }
-
+.ua-chromecast .closedCaptions{
+    display: none !important;
+}
 .closedCaptions > .dropdown-menu {
 	overflow-y:auto;
 	overflow-x:hidden;
@@ -1491,7 +1516,7 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 .sourceSelector {
 	display: inline-block;
 }
-.mobileSkin .controlBarContainer .sourceSelector {
+.mobileSkin .controlBarContainer .sourceSelector, .mobileSkin .controlBarContainer .streamSelector {
 	margin-top: -5px;
 }
 .mobileSkin .controlBarContainer .closedCaptions {
@@ -1622,7 +1647,7 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
     z-index: 1;
 }
 .adplay-state #touchOverlay{
-    top: 3em;
+    top: 3em !important;
 }
 .clearfix:before,.clearfix:after {
 	content: " ";
@@ -1916,6 +1941,9 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 .mobileSkin.pluginsScreenOpened .videoShadow{
     background: rgba(0,0,0,0.75);
 }
+.mobileSkin.adplay-state  .videoShadow{
+    display: none;
+}
 .closePluginsScreen{
     position: absolute;
     cursor : pointer;
@@ -1963,6 +1991,11 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
     -o-transition: top 0.3s ease-in-out;
     transition: top 0.3s ease-in-out;
 }
+.trackWindow{
+    display: inline-block;
+    padding: 5px;
+    margin: 0 15px 0 15px;
+ }
 /* used to detect when the css file finished loading */
 .cssChecker{
     display: none !important;

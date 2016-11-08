@@ -56,7 +56,6 @@ mw.PlayerLayoutBuilder.prototype = {
 		mw.setConfig( 'EmbedPlayer.AnimationSupported', animationSupported );
 		this.addUserAgentCssClass();
 		$(document.body).append($('<div style="display: block" class="cssChecker"></div>'));
-		this.checkViewPort();
 		// Return the layoutBuilder Object:
 		return this;
 	},
@@ -132,21 +131,6 @@ mw.PlayerLayoutBuilder.prototype = {
 		}
 		return this.$interface;		
 	},
-	checkViewPort: function(){
-		if ( mw.isMobileDevice() && mw.getConfig('EmbedPlayer.IsFriendlyIframe') ) {
-			// add viewport meta tag if doesn't exist on the player parent page
-			if ( parent.document.querySelector("meta[name=viewport]") == null ){
-				try{
-					var metaTag = parent.document.createElement('meta');
-					metaTag.name = "viewport";
-					metaTag.content = "width=device-width, initial-scale=1";
-					parent.document.getElementsByTagName('head')[0].appendChild(metaTag);
-				}catch(e){
-					this.log("can't set viewport meta tag on parent document.");
-				}
-			}
-		}
-	},
 	isInFullScreen: function() {
 		return this.fullScreenManager.isInFullScreen();
 	},
@@ -187,6 +171,8 @@ mw.PlayerLayoutBuilder.prototype = {
 			this.getInterface().addClass( 'ua-safari' );
 		if ( mw.isEdge() )
 			this.getInterface().addClass( 'ua-edge' );
+		if ( mw.isChromeCast() )
+			this.getInterface().addClass( 'ua-chromecast' );
 	},
 	/**
 	* Add the controls HTML to player interface

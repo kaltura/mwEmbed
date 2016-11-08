@@ -87,7 +87,7 @@
 
 		// Mute state
 		"muted": false,
-
+		"isFlavorSwitching": false,
 		/**
 		 * Custom attributes for embedPlayer player: (not part of the html5
 		 * video spec)
@@ -733,7 +733,7 @@
 		getPlayerByStreamerType: function (source) {
 			var targetPlayer;
 			// if currently casting - always return the Chromecast player
-			if ( this.casting ){
+			if ( this.casting && !mw.getConfig('EmbedPlayer.ForceNativeComponent') === true){
 				return mw.EmbedTypes.getMediaPlayers().getPlayerById('chromecast');
 			}
 			//currently only kplayer can handle other streamerTypes
@@ -833,6 +833,13 @@
 			};
 			this.mediaElement.autoSelectSource(baseTimeOptions);
 
+            // Allow the native SDK to prefetch player resources
+            if (!this.mediaElement.selectedSource && mw.getConfig("EmbedPlayer.PreloadNativeComponent")) {
+                this.selectPlayer(mw.EmbedTypes.getNativeComponentPlayerVideo());
+                this.updatePlaybackInterface();
+                return;
+            }
+            
 			// Auto select player based on default order
 			if (this.mediaElement.selectedSource) {
 
@@ -1166,8 +1173,9 @@
 				this.hideSpinner();
 				// pause in a non-blocking call to avoid synchronous playing event
 				setTimeout(function () {
-					_this.updatePlayheadStatus();
 					_this.pause();
+					_this.stopMonitor();
+					_this.updatePlayheadStatus();
 				}, 0);
 			} else {
 				// continue to playback ( in a non-blocking call to avoid synchronous pause event )
@@ -1223,6 +1231,7 @@
 			if (!this.isStopped()) {
 				// set the "stopped" flag:
 				this.stopped = true;
+				this.isPauseLoading = false;
 
 				// TOOD we should improve the end event flow
 				// First end event for ads or current clip ended bindings
@@ -2006,7 +2015,7 @@
 			}
 
 			// Don't overlay controls if in audio mode:
-			if (this.isAudio()) {
+			if (this.isAudio() && !this.isMobileSkin()) {
 				return false;
 			}
 
@@ -2201,8 +2210,8 @@
 
 		isMobileSkin: function(){
 			var skin = this.getRawKalturaConfig("layout") ? this.getRawKalturaConfig("layout").skin : window["kalturaIframePackageData"].playerConfig.layout ? window["kalturaIframePackageData"].playerConfig.layout.skin : "kdark";
-			return ( mw.getConfig("EmbedPlayer.EnableMobileSkin") === true && skin === "kdark" && mw.isMobileDevice() && !mw.isWindowsPhone() );
-		},
+			return (mw.isChromeCast() || ( mw.getConfig("EmbedPlayer.EnableMobileSkin") === true && skin === "kdark" &&
+				mw.isMobileDevice() && !mw.isWindowsPhone() ));		},
 
 		/**
 		 * Will trigger 'preSequence' event
@@ -2711,7 +2720,7 @@
 
 			if (_this._propagateEvents) {
 
-				if (!_this.seeking) {
+				if (!_this.seeking && !_this.isFlavorSwitching) {
 					this.updatePlayheadStatus();
 					this.checkClipDoneCondition();
 				}
@@ -3108,6 +3117,9 @@
 			if (this.kalturaPlayerMetaData && this.kalturaPlayerMetaData[ 'dvrStatus' ]) {
 				return this.kalturaPlayerMetaData[ 'dvrStatus' ];
 			}
+			if (mw.getConfig("forceDVR")){
+				return true;
+			}
 
 			return false;
 
@@ -3192,36 +3204,40 @@
 		 * @param {Object} source asset to switch to
 		 */
 		switchSrc: function( source ){
-			var _this = this;
-			var currentBR = 0;
-			if (this.mediaElement.selectedSource) {
-				currentBR = this.mediaElement.selectedSource.getBitrate();
-			}
+			if (source !== -1) {
+				var _this = this;
+				var currentBR = 0;
+				if (this.mediaElement.selectedSource) {
+					currentBR = this.mediaElement.selectedSource.getBitrate();
+				}
 
-			$(this).trigger('sourceSwitchingStarted', [
-				{ currentBitrate: currentBR }
-			]);
-			this.mediaElement.setSource(source);
-			$(this).trigger('sourceSwitchingEnd', [
-				{ newBitrate: source.getBitrate() }
-			]);
-			if (!this.isStopped()) {
-				// Get the exact play time
-				var oldMediaTime = this.currentTime;
-				var oldPaused = this.paused;
-				// Do a live switch
-				this.playerSwitchSource(source, function (vid) {
-					// issue a seek
-					setTimeout(function () {
-						_this.addBlackScreen();
-						_this.hidePlayerOffScreen();
-						_this.unbindHelper("seeked.switchSrc" ).bindOnceHelper("seeked.switchSrc", function () {
-							_this.removeBlackScreen();
-							_this.restorePlayerOnScreen();
-						});
-						_this.seek(oldMediaTime, oldPaused);
-					}, 100);
-				});
+				$(this).trigger('sourceSwitchingStarted', [
+					{currentBitrate: currentBR}
+				]);
+				this.mediaElement.setSource(source);
+				$(this).trigger('sourceSwitchingEnd', [
+					{newBitrate: source.getBitrate()}
+				]);
+				if (!this.isStopped()) {
+					this.isFlavorSwitching = true;
+					// Get the exact play time
+					var oldMediaTime = this.currentTime;
+					var oldPaused = this.paused;
+					// Do a live switch
+					this.playerSwitchSource(source, function (vid) {
+						// issue a seek
+						setTimeout(function () {
+							_this.addBlackScreen();
+							_this.hidePlayerOffScreen();
+							_this.unbindHelper("seeked.switchSrc").bindOnceHelper("seeked.switchSrc", function () {
+								_this.isFlavorSwitching = false;
+								_this.removeBlackScreen();
+								_this.restorePlayerOnScreen();
+							});
+							_this.seek(oldMediaTime, oldPaused);
+						}, 100);
+					});
+				}
 			}
 		},
 		/**

@@ -5,7 +5,7 @@
  */
 (function (mw, $) {
 	"use strict";
-	
+
 	mw.EmbedPlayerNative = {
 
 		//Instance Name
@@ -96,6 +96,9 @@
 		setup: function (readyCallback) {
 			var _this = this;
 			this._propagateEvents = true;
+			if (mw.isIpad()) {
+				this.getPlayerElement().removeAttribute("poster");
+			}
 			$(this.getPlayerElement()).css('position', 'absolute');
 			if (this.inline) {
 				$(this.getPlayerElement()).attr('webkit-playsinline', '');
@@ -114,18 +117,25 @@
 		},
         addBindings: function(){
             var _this = this;
-            this.bindHelper('firstPlay', function(){
+            this.bindHelper('firstPlay' + this.bindPostfix, function(){
                 _this.parseTracks();
             });
-            this.bindHelper('switchAudioTrack', function (e, data) {
+            this.bindHelper('switchAudioTrack' + this.bindPostfix, function (e, data) {
                 _this.switchAudioTrack(data.index);
             });
-            this.bindHelper('liveOnline', function(){
+            this.bindHelper('liveOnline' + this.bindPostfix, function(){
                 if( _this.isLive() && !_this.isDVR() ) {
                     _this.resetSrc = true;
                 }
             });
         },
+
+		removeBindings: function(){
+			this.unbindHelper('firstPlay' + this.bindPostfix);
+			this.unbindHelper('switchAudioTrack' + this.bindPostfix);
+			this.unbindHelper('liveOnline' + this.bindPostfix);
+		},
+
 		/**
 		 * Updates the supported features given the "type of player"
 		 */
@@ -207,7 +217,7 @@
 			_this.bufferStartFlag = false;
 			_this.bufferEndFlag = false;
 
-			$(this).html(
+			$(this.getVideoDisplay()).append(
 				_this.getNativePlayerHtml()
 			);
 
@@ -255,7 +265,7 @@
 
 			return    $('<' + tagName + ' />')
 				// Add the special nativeEmbedPlayer to avoid any rewrites of of this video tag.
-				.addClass('nativeEmbedPlayerPid')
+				.addClass('persistentNativePlayer nativeEmbedPlayerPid')
 				.attr(playerAttribtues)
 				.css(cssSet);
 		},
@@ -333,7 +343,7 @@
 				return;
 			}
 			$.each(_this.nativeEvents, function (inx, eventName) {
-				if (mw.isIOS8_9() && mw.isIphone() && eventName === "seeking") {
+				if (mw.isIOSAbove7() && mw.isIphone() && eventName === "seeking") {
 					return;
 				}
 				$(vid).unbind(eventName + '.embedPlayerNative').bind(eventName + '.embedPlayerNative', function () {
@@ -381,7 +391,7 @@
 				this.hidePlayerOffScreen();
 			}
 
-			if ( seekTime === 0 && this.isLive() && mw.isIpad() && !mw.isIOS8_9() ) {
+			if ( seekTime === 0 && this.isLive() && mw.isIpad() && !mw.isIOSAbove7() ) {
 				//seek to 0 doesn't work well on live on iOS < 8
 				seekTime = 0.01;
 				this.log( "doSeek: fix seekTime to 0.01" );
@@ -409,10 +419,14 @@
 			// some initial calls to prime the seek:
 			if ( ( vid.currentTime === 0 && callbackCount === 0 ) && vid.readyState === 0 ) { //load video again if not loaded yet (vid.readyState === 0)
 				// when seeking turn off preload none and issue a load call.
-				$(vid).attr('preload', 'auto');
+				if(mw.isIpad()){
+					$(vid).attr('preload', 'auto')[0].load();
+				} else {
+					$(vid).attr('preload', 'auto');
+				}
 			}
 
-			var videoReadyState = mw.isIOS8_9() ? 2 : 1; // on iOS8 wait for video state 1 (dataloaded) instead of 1 (metadataloaded)
+			var videoReadyState = mw.isIOSAbove7() ? 2 : 1; // on iOS8 wait for video state 1 (dataloaded) instead of 1 (metadataloaded)
 			if ( (vid.readyState < videoReadyState) || (this.getDuration() === 0)) {
 				// if on the first call ( and video not ready issue load, play
 				if (callbackCount == 0 && vid.paused) {
@@ -446,9 +460,6 @@
 							vid.play();
 							_this.parseTracks();
 						}
-					}else {
-						vid.load();
-						vid.play();
 					}
 				}
 				// Try to seek for 15 seconds:
@@ -616,8 +627,11 @@
 					vid.removeAttribute('controls');
 
 					// dissable seeking ( if we were in a seeking state before the switch )
-					_this.seeking = false;
-
+					if (_this.isFlavorSwitching) {
+						_this.seeking = true;
+					} else {
+						_this.seeking = false;
+					}
 					// Workaround for 'changeMedia' on Android & iOS
 					// When changing media and not playing entry before spinner is stuck on black screen
 					if (!_this.firstPlay) {
@@ -855,15 +869,17 @@
 						if (_this.useNativePlayerControls() && $(_this).find('video ').length == 0) {
 							$(_this).hide();
 						}
-						// if it's iOS8 the player won't play
-						if (!mw.isIOS8_9()) {
-							// update the preload attribute to auto
-							$(_this.getPlayerElement()).attr('preload', "auto");
+
+						//If media not loaded yet(loadedmetadata event not reached yet) issue a load on video tag
+						if (!_this.mediaLoadedFlag){
+							_this.load();
 						}
+
 						// issue a play request
-						if ( !_this.playing ) {
+						if (!_this.playing) {
 							vid.play();
 						}
+
 						_this.mobilePlayed = true;
 						// re-start the monitor:
 						_this.monitor();
@@ -1045,6 +1061,7 @@
 				var _this = this;
 				this.waitForSeekTarget().then(function(){
 					_this.seeking = false;
+					_this.isFlavorSwitching = false;
 					if (_this._propagateEvents) {
 						if( !_this.isLive() || ( _this.isLive() && _this.isDVR() ) ) {
 							_this.log(" trigger: seeked");
@@ -1066,7 +1083,7 @@
 			// we don't want to trigger the seek event for these "fake" onseeked triggers
 			if ((this.mediaElement.selectedSource.getMIMEType() === 'application/vnd.apple.mpegurl') &&
 				( ( Math.abs(this.currentSeekTargetTime - this.getPlayerElement().currentTime) > 2) ||
-				( this.currentSeekTargetTime > 0.01 && ( mw.isIpad() && !mw.isIOS8_9() ) ) ) ) {
+				( this.currentSeekTargetTime > 0.01 && ( mw.isIpad() && !mw.isIOSAbove7() ) ) ) ) {
 
 				this.log( "Error: seeked triggred with time mismatch: target:" +
 					this.currentSeekTargetTime + ' actual:' + this.getPlayerElement().currentTime );
@@ -1205,7 +1222,7 @@
 			}
 
 			// Check if in "playing" state and we are _propagateEvents events and continue to playback:
-			if (!this.paused && this._propagateEvents) {
+			if (!this.paused && !this.isInSequence() && this._propagateEvents) {
 				this.getPlayerElement().play();
 			}
 
@@ -1367,7 +1384,7 @@
 				if (newSource) {
 					this.switchSrc(newSource);
 				}
-				if (mw.isIOS8_9()){
+				if (mw.isIOSAbove7()){
 					this.play();
 				}
 			} else {
@@ -1392,7 +1409,7 @@
         },
         parseTextTracks: function(vid, counter){
             var _this = this;
-            setTimeout(function() {
+	        this.parseTextTracksTimeout = setTimeout(function() {
                 if( vid.textTracks.length > 0 ) {
                     for (var i = 0; i < vid.textTracks.length; i++) {
                         if (vid.textTracks[i].kind === "metadata") {
@@ -1433,7 +1450,7 @@
         },
         parseAudioTracks: function(vid, counter){
             var _this = this;
-            setTimeout (function() {
+	        this.parseAudioTracksTimeout = setTimeout (function() {
                 if( vid.audioTracks && vid.audioTracks.length > 0 ) {
                     var data ={'languages':[]};
                     for (var i = 0; i < vid.audioTracks.length; i++) {
@@ -1461,8 +1478,8 @@
 		switchAudioTrack: function(audioTrackIndex){
 			var vid  = this.getPlayerElement();
 			var audioTracks = vid.audioTracks;
-			if(audioTracks[audioTrackIndex] && !audioTracks[audioTrackIndex].enabled) {
-			if(mw.isEdge()){
+			if(audioTracks && audioTracks[audioTrackIndex] && !audioTracks[audioTrackIndex].enabled) {
+				if(mw.isEdge()){
 
 				// Edge has a problem to switch audio track at playback time, so as a workaround - pause before the switching.
 				// When this issue will be fixed we can remove the entire code for Edge.
@@ -1493,6 +1510,12 @@
 				return parseInt(this.playerElement.buffered.end(this.playerElement.buffered.length-1) - this.playerElement.currentTime); //return buffer length in seconds
             }
             return 0;
-        }
+        },
+
+		clean:function(){
+			this.removeBindings();
+			clearTimeout(this.parseAudioTracksTimeout);
+			clearTimeout(this.parseTextTracksTimeout);
+		}
 	};
 })(mediaWiki, jQuery);
