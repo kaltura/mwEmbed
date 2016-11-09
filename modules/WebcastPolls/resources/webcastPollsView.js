@@ -329,7 +329,7 @@
                 }else {
                     var pollContent = _this.parent.pollData.content;
 
-                    if (pollContent) {
+                    if (pollContent && pollContent.answers) {
 
                         var numberOfAnswers = 0;
                         $.each(pollContent.answers, function(key, element) {
