@@ -259,7 +259,11 @@
 
                                if (pollId && pollContent) {
                                    _this.log("updated content of poll with id '" + pollId + "'");
-                                   _this.globals.pollsContentMapping[pollId] = pollContent;
+                                   if(_this.globals.pollsContentMapping[pollId]) {
+                                        $.extend(_this.globals.pollsContentMapping[pollId], pollContent);
+                                   }else {
+                                       _this.globals.pollsContentMapping[pollId] = pollContent;
+                                   }
                                }
                            }
 
