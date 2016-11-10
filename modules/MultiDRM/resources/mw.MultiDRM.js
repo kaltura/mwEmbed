@@ -29,7 +29,7 @@
 		},
 
 		isCastLabsNeeded: function () {
-			return (mw.isChrome() && !mw.isMobileDevice()) || //for smoothStream over dash
+			return (mw.isChrome() && !mw.isMobileDevice()) || mw.isEdge() || //for smoothStream over dash
 				((this.isOldIE() || mw.isDesktopSafari()) && this.getConfig("forceDASH"));  //for dash over silverLight
 		},
 
