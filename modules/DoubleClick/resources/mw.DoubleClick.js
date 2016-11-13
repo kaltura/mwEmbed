@@ -982,6 +982,9 @@
 			if ( this.getConfig( 'enableCountDown' ) === true){
 				adsRenderingSettings["uiElements"] = [];
 			}
+			if ( this.getConfig( 'enablePreloading' ) !== false){
+				adsRenderingSettings.enablePreloading = true;
+			}
 			adsRenderingSettings.useStyledNonLinearAds = true;
 			this.adsManager = loadedEvent.getAdsManager( this.embedPlayer, adsRenderingSettings );
 			this.adManagerLoaded = true;
