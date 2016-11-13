@@ -39,7 +39,7 @@
 
 		// flag for using a chromeless player - move control to KDP DoubleClick plugin
 		isChromeless: false,
-		 //flag for using native mobile IMA SDK
+		//flag for using native mobile IMA SDK
 		isNativeSDK: false,
 		// for Chromeless only: save entry duration during midrolls so we can update it when midroll is finished
 		entryDuration: null,
@@ -63,7 +63,6 @@
 		// Flag to enable/ disable timeout for iOS5/ iOS6 when ad is clicked
 		isAdClickTimeoutEnabled: false,
 
-		playerIsReady: false,
 		imaLoaded: false,
 		prePlayActionTriggered: false,
 
@@ -199,14 +198,6 @@
 				_this.adTagUrl = _this.getConfig( 'prerollUrlJS' );
 			}
 
-			this.embedPlayer.bindHelper( 'playerReady' + this.bindPostfix, function(event){
-				_this.playerIsReady = true;
-				if ( _this.imaLoaded ){
-					mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
-					_this.requestAds();
-				}
-			});
-
 			this.embedPlayer.bindHelper('prePlayAction' + this.bindPostfix, function( e, prePlay ){
 				//This code executed only if prePlayAction triggered before imaLoaded (since imaLoaded does unbinding for 'prePlayAction'),
 				//So we should block the player until the ima will loaded.
@@ -215,11 +206,11 @@
 				_this.prePlayActionTriggered = true;
 			});
 
-			var onImaLoadSuccess = function(){
+			var onImaLoadSuccess = function() {
 				_this.imaLoaded = true;
 				_this.embedPlayer.unbindHelper('prePlayAction' + _this.bindPostfix);
 				// Determine if we are in managed or kaltura point based mode.
-				if ( _this.localizationCode ){
+				if (_this.localizationCode) {
 					google.ima.settings.setLocale(_this.localizationCode);
 				}
 				// set player type and version
@@ -229,15 +220,15 @@
 
 				// Set num of redirects for VAST wrapper ads, higher means bigger latency!
 				var numRedirects = _this.getConfig("numRedirects");
-				if(numRedirects) {
+				if (numRedirects) {
 					google.ima.settings.setNumRedirects(numRedirects);
 				}
 
 				// Check for adPattern
-				if ( _this.getConfig( 'adPattern' ) ) {
+				if (_this.getConfig('adPattern')) {
 					var adIndex = _this.getAdPatternIndex();
-					mw.log( "DoubleClick:: adPattern: " + _this.getConfig( 'adPattern' ) + " on index: " + adIndex );
-					if ( adIndex === 'A' ) {
+					mw.log("DoubleClick:: adPattern: " + _this.getConfig('adPattern') + " on index: " + adIndex);
+					if (adIndex === 'A') {
 						// Managed bindings
 						_this.addManagedBinding();
 					}
@@ -246,11 +237,17 @@
 					_this.addManagedBinding();
 				}
 
-				if ( _this.playerIsReady ) {
+				var requestAdsAndPlay = function () {
 					_this.requestAds();
-					if ( _this.prePlayActionTriggered ){
+					if (_this.prePlayActionTriggered) {
 						_this.embedPlayer.play();
 					}
+				};
+
+				if (_this.embedPlayer.changeMediaStarted) {
+					setTimeout(requestAdsAndPlay, 100)
+				} else {
+					requestAdsAndPlay();
 				}
 			};
 			var onImaLoadFailed = function( errorCode ){
@@ -261,11 +258,13 @@
 					_this.embedPlayer.play();
 				}
 			};
-
-			//On chromecast don't reload IMA as it is adding a big lag
-			//We would do it all the time but for some reason http://imasdk.googleapis.com/js/core/bridge3.149.0_en.html
-			//loading is being canceled if done in certain stage - need to figure it out
-			if (mw.isChromeCast() && window.google && window.google.ima){
+			try{
+				if (top.google && top.google.ima){
+					window.google = top.google;
+				}
+			}
+			catch(e){}
+			if (window.google && window.google.ima){
 				mw.log("Google IMA lib already loaded");
 				onImaLoadSuccess();
 			} else {
@@ -983,6 +982,9 @@
 			if ( this.getConfig( 'enableCountDown' ) === true){
 				adsRenderingSettings["uiElements"] = [];
 			}
+			if ( this.getConfig( 'enablePreloading' ) !== false){
+				adsRenderingSettings.enablePreloading = true;
+			}
 			adsRenderingSettings.useStyledNonLinearAds = true;
 			this.adsManager = loadedEvent.getAdsManager( this.embedPlayer, adsRenderingSettings );
 			this.adManagerLoaded = true;
@@ -1178,7 +1180,7 @@
 				// Check for ad Stacking ( two starts in less then 250ms )
 				if( lastAdStartTime !== null &&
 					new Date().getTime() - lastAdStartTime < 250
-					){
+				){
 					mw.log("ERROR:: Stacking Ad STARTED! :" + ( lastAdStartTime - new Date().getTime() ) );
 					// Not sure what we should do here:
 					// 1) we can't unload manager since we have to play back the active ads
