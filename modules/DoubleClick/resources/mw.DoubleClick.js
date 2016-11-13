@@ -60,7 +60,6 @@
 		// Flag to enable/ disable timeout for iOS5/ iOS6 when ad is clicked
 		isAdClickTimeoutEnabled: false,
 
-		//playerIsReady: false,
 		imaLoaded: false,
 		prePlayActionTriggered: false,
 
@@ -978,8 +977,10 @@
 			if ( this.getConfig( 'enableCountDown' ) === true){
 				adsRenderingSettings["uiElements"] = [];
 			}
+			if ( this.getConfig( 'enablePreloading' ) !== false){
+				adsRenderingSettings.enablePreloading = true;
+			}
 			adsRenderingSettings.useStyledNonLinearAds = true;
-			adsRenderingSettings.enablePreloading = true;
 			this.adsManager = loadedEvent.getAdsManager( this.embedPlayer, adsRenderingSettings );
 			this.adManagerLoaded = true;
 
