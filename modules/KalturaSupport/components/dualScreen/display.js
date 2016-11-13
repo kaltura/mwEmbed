@@ -13,12 +13,6 @@
 		dragging: false,
 		resizing: false,
 		setup: function(){
-            var _this = this;
-            this.bind( 'playerReady', function () {
-                //save coordinates for the right bottom corner in order to place there hidden secondary screen (10X10 px), so we'll be able to  seek fast through HLS-OSMF (flash player moves to the low performance once hidden and this is why seek worked very slow in single view mode - FEC-5138)
-                _this.playerRight = _this.getPlayer().getWidth() - 22;
-                _this.playerBottom = _this.getPlayer().getHeight() - _this.getPlayer().getControlBarContainer().height() - 4;
-            });
 		},
 		attachView: function(el){
 			this.obj = el;
@@ -40,7 +34,6 @@
 		repaint: function(screenProps){
 			this.prop = screenProps;
 			this.obj.css( screenProps );
-			this.getPlayer().triggerHelper('displayRepainted');
 		},
 		getProperties: function(){
 			return this.prop;
@@ -171,7 +164,6 @@
 		},
 		disableSideBySideView: function () {
 			this.obj.removeClass( 'sideBySideRight sideBySideLeft' );
-            this.hiddenProp = this.prop;
 		},
         disableMain: function () {
             this.obj.removeClass('firstScreen').addClass('secondScreen');
@@ -184,41 +176,13 @@
         toggleHiddenToMain: function () {
             this.obj.removeClass('hiddenScreen' ).addClass('firstScreen' );
         },
-		hide: function (isFlashMode) {
-            var xOffset = this.getPlayer().getWidth() - (parseInt(this.obj.css('left')) || 0) + (parseInt(this.obj.width()) || 0);
-            this.obj.addClass( 'hiddenScreen' );
-            this.obj.css('transform', 'translate(' + xOffset + 'px, 0)');
-            //take care of flash obj (seek through hidden flash player will be very slow, so we need to bring at least several pixels inside the visible area of the player frame)
-            if ( isFlashMode ) {
-                var _this = this;
-                this.obj.addClass('componentOff');
-                setTimeout(function () {
-                    if (!_this.hiddenProp) {
-                        _this.hiddenProp = _this.obj.css(['top', 'left', 'width', 'height']);
-                    }
-                    _this.obj.css('top', _this.playerBottom);
-                    _this.obj.css('left', _this.playerRight);
-                    _this.obj.removeClass('componentOff').addClass('hidden10pxScreen componentOn');
-                }, 300); //screenTransition (css) length is 0.3 sec
-            }
+		hide: function () {
+			this.obj.addClass( 'hiddenScreen' );
+			this.obj.removeClass( 'componentOn').addClass( 'componentOff' );
 		},
-		show: function (isFlashMode) {
-            if ( !isFlashMode ) {
-                this.obj.css('transform', '').removeClass('hiddenScreen');
-            } else {
-                //FlashMode only - take care of flash obj (seek through hidden flash player will be very slow, so we need to bring at least several pixels inside the visible area of the player frame)
-                var _this = this;
-                this.disableTransition();
-                // jQuery had bug - https://bugs.jquery.com/ticket/14906
-                // so we have to check the hiddenProp for undefined
-                this.hiddenProp && this.obj.css(this.hiddenProp);
-                this.hiddenProp = null;
-                this.obj.removeClass('componentOff').addClass('componentOn');
-                this.enableTransition();
-                setTimeout(function () {
-                    _this.obj.css('transform', '').removeClass('hidden10pxScreen hiddenScreen');
-                }, 500); //it takes time to update width/height/top/left css properties and this is the reason for half second delly.
-            }
+		show: function () {
+			this.obj.removeClass( 'componentOff').addClass( 'componentOn' );
+			this.obj.removeClass( 'hiddenScreen' );
 		},
         bringToFront: function ( ) {
             this.obj.css('z-index',2);
@@ -251,42 +215,16 @@
 				}
 
 			}
-		},
-		disableDroppable: function () {
-			var parent = this.obj.parent();
-			this.obj.data('droppable') && this.obj.droppable('disable');
-			parent.data('droppable') && parent.droppable('disable');
-		},
-		enableDroppable: function (useParentAsTarget) {
-			var target = useParentAsTarget ? this.obj.parent() : this.obj;
-
-			if (target.data('droppable')) {
-				target
-					.droppable('enable')
-					.droppable('option', {
-						greedy: !useParentAsTarget,
-						drop: $.proxy(this.onDrop, this)
-					});
-			} else {
-				target
-					.data('droppable', true)
-					.droppable({
-						accept: '.ds-stream',
-						hoverClass: 'ui-state-hover',
-						activeClass: 'ui-state-active',
-						greedy: !useParentAsTarget,
-						drop: $.proxy(this.onDrop, this)
-					});
-			}
-		},
-		onDrop: function (event, ui) {
-			!ui.draggable.data('wasDropped') && this.getPlayer().triggerHelper('displayDropped', [this, ui.draggable]);
 		}
 	});
 
 	mw.dualScreen.display.TYPE = {
 		PRIMARY: "primary",
 		SECONDARY: "secondary"
+	};
+	mw.dualScreen.display.STATE = {
+		LOCKED: "locked",
+		UNLOCKED: "unlocked"
 	};
 }
 )( window.mw, window.jQuery );

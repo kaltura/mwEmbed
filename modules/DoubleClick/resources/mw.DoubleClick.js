@@ -26,6 +26,9 @@
 		// The monitor interval index:
 		adMonitor: null,
 
+        // Flag to indicate whether the ad is skippable
+        adSkippable: null,
+
 		shouldPausePlaylist: false,
 
 		// store the ad start time
@@ -416,9 +419,9 @@
 				imaURL =  '//s0.2mdn.net/instream/html5/ima3_debug.js';
 			}
 			$.getScript( imaURL , function() {
-					isLoaded = true;
-					successCB();
-				} )
+				isLoaded = true;
+				successCB();
+			} )
 				.fail( function( jqxhr, settings, errorCode ) {
 					isLoaded = true;
 					failureCB( errorCode );
@@ -655,7 +658,9 @@
 				$(".adCover").remove();
 				$(this.embedPlayer).trigger("onPlayerStateChange", ["play", this.embedPlayer.currentState]);
 				if (isLinear) {
-					this.resumeSkipSupport();
+                    if (!_this.adSkippable) {
+                        this.resumeSkipSupport();
+                    }
 					this.embedPlayer.disablePlayControls();
 				} else {
 					_this.embedPlayer.play();
@@ -786,38 +791,38 @@
 				_this.hideSkipBtn();
 			});
 		},
-		resumeSkipSupport: function () {
-			if (this.embedPlayer.getKalturaConfig('skipBtn', 'skipOffset')) {
-				var timePassed = (this.duration - this.adPreviousTimeLeft) * 1000;
-				this.startSkipTimeout((this.embedPlayer.getKalturaConfig('skipBtn', 'skipOffset') * 1000) - timePassed);
-			}
-		},
-		showSkipBtn: function () {
-			if (this.embedPlayer.getKalturaConfig('skipBtn', 'skipOffset')) {
-				$(".ad-skip-label").show();
-				this.startSkipTimeout(parseFloat(this.embedPlayer.getKalturaConfig('skipBtn', 'skipOffset') * 1000));
-			} else {
-				$(".ad-skip-btn").show();
-				$(".ad-skip-label").hide();
-			}
-		},
-		hideSkipBtn: function () {
-			this.clearSkipTimeout();
-			$(".ad-skip-btn").hide();
-			$(".ad-skip-label").hide();
-		},
-		clearSkipTimeout: function () {
-			if (this.skipTimeoutId !== null) {
-				clearTimeout(this.skipTimeoutId);
-				this.skipTimeoutId = null;
-			}
-		},
-		startSkipTimeout: function (time) {
-			this.skipTimeoutId = setTimeout(function () {
-				$(".ad-skip-btn").show();
-				$(".ad-skip-label").hide();
-			}, time);
-		},
+        resumeSkipSupport: function () {
+            if (this.embedPlayer.getKalturaConfig('skipBtn', 'skipOffset')) {
+                var timePassed = (this.duration - this.adPreviousTimeLeft) * 1000;
+                this.startSkipTimeout((this.embedPlayer.getKalturaConfig('skipBtn', 'skipOffset') * 1000) - timePassed);
+            }
+        },
+        showSkipBtn: function () {
+            if (this.embedPlayer.getKalturaConfig('skipBtn', 'skipOffset')) {
+                $(".ad-skip-label").show();
+                this.startSkipTimeout(parseFloat(this.embedPlayer.getKalturaConfig('skipBtn', 'skipOffset') * 1000));
+            } else {
+                $(".ad-skip-btn").show();
+                $(".ad-skip-label").hide();
+            }
+        },
+        hideSkipBtn: function () {
+            this.clearSkipTimeout();
+            $(".ad-skip-btn").hide();
+            $(".ad-skip-label").hide();
+        },
+        clearSkipTimeout: function () {
+            if (this.skipTimeoutId !== null) {
+                clearTimeout(this.skipTimeoutId);
+                this.skipTimeoutId = null;
+            }
+        },
+        startSkipTimeout: function (time) {
+            this.skipTimeoutId = setTimeout(function () {
+                $(".ad-skip-btn").show();
+                $(".ad-skip-label").hide();
+            }, time);
+        },
 		/**
 		 * Adds custom params to ad url.
 		 */
@@ -826,13 +831,13 @@
 			//Use cust_params if available on double click URL, otherwise opt in to use old customParams config if available
 			if( !cust_params ) {
 				postFix = (this.getConfig( 'customParams' )) ?
-				'cust_params=' + encodeURIComponent( this.getConfig( 'customParams' ) ) : '';
+					'cust_params=' + encodeURIComponent( this.getConfig( 'customParams' ) ) : '';
 			} else {
 				postFix = 'cust_params=' + cust_params;
 			}
 			if( postFix ){
 				var paramSeperator = adUrl.indexOf( '?' ) === -1 ? '?' :
-					adUrl[ adUrl.length -1 ] == '&' ? '': '&';
+						adUrl[ adUrl.length -1 ] == '&' ? '': '&';
 
 				return unescape( adUrl ) + paramSeperator + postFix;
 			} else {
@@ -976,9 +981,6 @@
 			}
 			if ( this.getConfig( 'enableCountDown' ) === true){
 				adsRenderingSettings["uiElements"] = [];
-			}
-			if ( this.getConfig( 'enablePreloading' ) !== false){
-				adsRenderingSettings.enablePreloading = true;
 			}
 			adsRenderingSettings.useStyledNonLinearAds = true;
 			this.adsManager = loadedEvent.getAdsManager( this.embedPlayer, adsRenderingSettings );
@@ -1155,20 +1157,20 @@
 						_this.adsManager.stop();
 					}, parseFloat( _this.getConfig("timeout") ) * 1000);
 				}
-				var adPosition =  0;
-				if ( ad.getAdPodInfo() && ad.getAdPodInfo().getAdPosition() ){ adPosition = ad.getAdPodInfo().getAdPosition(); }
+                var adPosition =  0;
+                if ( ad.getAdPodInfo() && ad.getAdPodInfo().getAdPosition() ){ adPosition = ad.getAdPodInfo().getAdPosition(); }
 				if ( _this.isLinear && adPosition === 1){
 					_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
 				}
-				// collect POD parameters is exists (ad.getAdPodInfo().getPodIndex() exists = POD)
-				var podPosition = null;
-				var podStartTime = null;
+                // collect POD parameters is exists (ad.getAdPodInfo().getPodIndex() exists = POD)
+                var podPosition = null;
+                var podStartTime = null;
 
-				if( ad.getAdPodInfo() && ad.getAdPodInfo().getPodIndex() !== -1) {
-					podPosition = ad.getAdPodInfo().getPodIndex();
-					podStartTime = ad.getAdPodInfo().getTimeOffset();
-				}
-				// trigger ad play event
+                if( ad.getAdPodInfo() && ad.getAdPodInfo().getPodIndex() !== -1) {
+                    podPosition = ad.getAdPodInfo().getPodIndex();
+                    podStartTime = ad.getAdPodInfo().getTimeOffset();
+                }
+                // trigger ad play event
 				$(_this.embedPlayer).trigger("onAdPlay",[ad.getAdId(),ad.getAdSystem(),currentAdSlotType,adPosition,ad.getDuration(), podPosition, podStartTime, ad.getTitle(), ad.getTraffickingParameters()]);
 				// This changes player state to the relevant value ( play-state )
 				$(_this.embedPlayer).trigger("playing");
@@ -1190,8 +1192,9 @@
 				// update the last ad start time:
 				lastAdStartTime = new Date().getTime();
 				_this.adActive = true;
+                _this.adSkippable = ad.isSkippable();
 				if (_this.isLinear) {
-					if (!ad.isSkippable()){
+					if (!_this.adSkippable){
 						_this.showSkipBtn();
 					}
 					_this.playingLinearAd = true;

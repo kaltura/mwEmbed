@@ -151,15 +151,6 @@
             "jquery.ui.mouse"
         ]
     },
-    "jquery.ui.droppable": {
-        "scripts": "resources/jquery.ui/jquery.ui.droppable.js",
-        "dependencies": [
-            "jquery.ui.core",
-            "jquery.ui.widget",
-            "jquery.ui.mouse",
-            "jquery.ui.draggable"
-        ]
-    },
     "jquery.ui.resizable": {
         "scripts": "resources/jquery.ui/jquery.ui.resizable.js",
         "dependencies": [
