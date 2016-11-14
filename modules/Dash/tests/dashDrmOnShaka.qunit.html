@@ -37,6 +37,7 @@
 //            },
             "multiDrm": {
                 "plugin": true,
+                "forceDASH":true,
                 "licenseRequestTimeout": 5000,
                 "manifestRequestTimeout": 5000,
                 "fragmentRequestTimeout": 5000,
@@ -70,31 +71,31 @@
 
 
 
-        ,readyCallback: function(videoid){
-            var kdp = document.getElementById(videoid);
-            kdp.kBind( 'playerReady', function () {
-                kdp.sendNotification("loadExternalClosedCaptions", {
-                    languages: [{
-                        "language": "Hebrew",
-                        "languageCode": "he",
-                        "isDefault": true,
-                        "label": "Hebrew",
-                        "type": "vtt",
-                        "src": "http://localhost/test1.vtt",
-                        "fileExt": "vtt"
-                    },{
-                        "language": "English",
-                        "languageCode": "gg",
-                        "isDefault": true,
-                        "label": "English",
-                        "type": "vtt",
-                        "src": "http://localhost/test.vtt",
-                        "fileExt": "vtt"
-
-                    }]
-                });
-            });
-        }
+//        ,readyCallback: function(videoid){
+//            var kdp = document.getElementById(videoid);
+//            kdp.kBind( 'playerReady', function () {
+//                kdp.sendNotification("loadExternalClosedCaptions", {
+//                    languages: [{
+//                        "language": "Hebrew",
+//                        "languageCode": "he",
+//                        "isDefault": true,
+//                        "label": "Hebrew",
+//                        "type": "vtt",
+//                        "src": "http://localhost/test1.vtt",
+//                        "fileExt": "vtt"
+//                    },{
+//                        "language": "English",
+//                        "languageCode": "gg",
+//                        "isDefault": true,
+//                        "label": "English",
+//                        "type": "vtt",
+//                        "src": "http://localhost/test.vtt",
+//                        "fileExt": "vtt"
+//
+//                    }]
+//                });
+//            });
+//        }
     });
 //kWidget.embed({
 //    "targetId": "kaltura_player_1453904613",
