@@ -264,7 +264,7 @@
 				}
 			}
 			catch(e){}
-			if (window.google && window.google.ima){
+			if (this.getConfig("useExternalImaLib") && window.google && window.google.ima){
 				mw.log("Google IMA lib already loaded");
 				onImaLoadSuccess();
 			} else {
