@@ -13,7 +13,7 @@
 <h3> A single player </h3>
 <i>Basic usage</i> of Auto Embed embed looks like this: 
 <pre class="prettyprint linenums">
-&lt;script src=&quot;http://cdnapi.kaltura.com/p/{partnerId}/sp/{partnerId}00/embedIframeJs/uiconf_id/{uiConfId}/partner_id/{partnerId}/entry_id/{entryId}/playerId/{playerId}?autoembed=true&amp;width={width}&amp;height={height}&gt;&lt;/script&gt;</pre>
+&lt;script src=&quot;http://cdnapi.kaltura.com/p/{partnerId}/sp/{partnerId}00/embedIframeJs/uiconf_id/{uiConfId}/partner_id/{partnerId}?autoembed=true&amp;entry_id={entryId}&amp;playerId={playerId}width={width}&amp;height={height}&gt;&lt;/script&gt;</pre>
 <script>
 var startTime = new Date().getTime();
 </script>
@@ -34,14 +34,14 @@ var startTime = new Date().getTime();
 You can include SEO in a target div and still make use of autoEmbed directly preceding the target.
 <pre class="prettyprint linenums">
 &lt;div id=&quot;myVideoContainer&quot; itemprop=&quot;video&quot; itemscope itemtype=&quot;http://schema.org/VideoObject&quot; &gt;<br/>	&lt;div id=&quot;myVideoTarget&quot; style=&quot;width:400px;height:330px;&quot;&gt;<br/>		&lt;!--  SEO and video metadata go here --&gt;<br/>		&lt;span itemprop=&quot;description&quot; content=&quot;test folgers coffe&quot;&gt;&lt;/span&gt;<br/>		&lt;span itemprop=&quot;name&quot; content=&quot;FolgersCoffe.mpeg&quot;&gt;&lt;/span&gt;<br/>		&lt;span itemprop=&quot;width&quot; content=&quot;400&quot;&gt;&lt;/span&gt;<br/>		&lt;span itemprop=&quot;height&quot; content=&quot;300&quot;&gt;&lt;/span&gt;<br/>	&lt;/div&gt;<br/>&lt;/div&gt;
-&lt;script src=&quot;http://cdnapi.kaltura.com/p/{partnerId}/sp/{partnerId}00/embedIframeJs/uiconf_id/{uiConfId}/partner_id/{partnerId}/entry_id/{entryId}/playerId/<b>myVideoTarget</b>?autoembed=true&gt;&lt;/script&gt;
+&lt;script src=&quot;http://cdnapi.kaltura.com/p/{partnerId}/sp/{partnerId}00/embedIframeJs/uiconf_id/{uiConfId}/partner_id/{partnerId}?autoembed=true&amp;entry_id={entryId}&amp;playerId=<b>myVideoTarget</b>&gt;&lt;/script&gt;
 </pre>
 <p><p>
 <h3>Auto Embed with Reference Id </h3>
 Reference Id are an alternative to entry ids, allowing custom media ids. You can auto embed with a Reference id:.
 with a per entry mapping.  
 <pre class="prettyprint linenums">
-&lt;script src=&quot;http://cdnapi.kaltura.com/p/{partnerId}/sp/{partnerId}00/embedIframeJs/uiconf_id/{uiConfId}/partner_id/{partnerId}/playerId/{playerId}?autoembed=true&amp;flashvars[referenceId]=kaltura_promo_video&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;http://cdnapi.kaltura.com/p/{partnerId}/sp/{partnerId}00/embedIframeJs/uiconf_id/{uiConfId}/partner_id/{partnerId}?autoembed=true&amp;playerId={playerId}&amp;flashvars[referenceId]=kaltura_promo_video&quot;&gt;&lt;/script&gt;
 </pre>
 <script src="../../../mwEmbedLoader.php/wid/_243342/uiconf_id/21099702/playerId/refid_player?autoembed=true&flashvars[referenceId]=kaltura_promo_video"></script>
 
