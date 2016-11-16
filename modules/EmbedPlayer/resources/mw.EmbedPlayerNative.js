@@ -1161,7 +1161,7 @@
 				' time since play: ' + timeSincePlay + ' duringSeek:' + this.seeking);
 			// Only trigger parent pause if more than MonitorRate time has gone by.
 			// Some browsers trigger native pause events when they "play" or after a src switch
-			if (!this.seeking && !this.userSlide
+			if ((!this.seeking || this.isInSequence()) && !this.userSlide
 				&&
 				timeSincePlay > mw.getConfig('EmbedPlayer.MonitorRate')
 				) {
