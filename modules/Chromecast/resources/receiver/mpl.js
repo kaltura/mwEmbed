@@ -216,7 +216,8 @@ onload = function () {
 										console.info("Ad ended");
 										loadContent();
 									});
-									kdp.kBind("adErrorEvent", function(){
+									kdp.kBind("adErrorEvent", function(msg){
+										messageBus.broadcast("chromecastReceiverAdError|" + msg);
 										console.info("Ad error");
 										loadContent();
 									});
@@ -751,6 +752,12 @@ function setCastReceiverManagerEvents() {
 
 		senders = castReceiverManager.getSenders();
 		setDebugMessage('senderCount', '' + senders.length);
+
+		if (senders.length > 0) {
+			setTimeout(function() {
+				messageBus.broadcast('chromecastReceiverOnSenderConnected|' + senders.length);
+			},100);
+		}
 	};
 
 	castReceiverManager.onSenderDisconnected = function (event) {
@@ -760,6 +767,7 @@ function setCastReceiverManagerEvents() {
 			JSON.stringify(event));
 
 		senders = castReceiverManager.getSenders();
+		console.log('after disconnect  senderCount', '' + senders.length);
 		if ((senders.length === 0) &&
 			(event.reason == cast.receiver.system.DisconnectReason.REQUESTED_BY_SENDER)) {
 			castReceiverManager.stop();

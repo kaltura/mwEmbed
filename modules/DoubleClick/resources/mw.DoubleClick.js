@@ -1465,7 +1465,7 @@
 					setTimeout(function () {
 						_this.embedPlayer.hideSpinner();
 						_this.adLoaderErrorFlag = true;
-						$(_this.embedPlayer).trigger("adErrorEvent");
+						$(_this.embedPlayer).trigger("adErrorEvent",[adInfo]);
 						_this.onAdError("adsLoadError");
 					}, 100);
 				}, 'adsLoadError', true);
@@ -1632,7 +1632,7 @@
 			var errorMsg = ( typeof errorEvent.getError != 'undefined' ) ? errorEvent.getError() : errorEvent;
 			mw.log('DoubleClick:: onAdError: ' + errorMsg );
 			if (!this.adLoaderErrorFlag){
-				$( this.embedPlayer ).trigger("adErrorEvent");
+				$( this.embedPlayer ).trigger("adErrorEvent", [errorMsg]);
 				this.adLoaderErrorFlag = true;
 			}
 			if (this.adsManager && $.isFunction( this.adsManager.unload ) ) {
