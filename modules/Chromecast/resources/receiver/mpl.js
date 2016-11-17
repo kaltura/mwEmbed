@@ -768,6 +768,10 @@ function setCastReceiverManagerEvents() {
 
 		senders = castReceiverManager.getSenders();
 		console.log('after disconnect  senderCount', '' + senders.length);
+		setTimeout(function() {
+			messageBus.broadcast('chromecastReceiverOnSenderDisconneted|' + senders.length);
+		},100);
+
 		if ((senders.length === 0) &&
 			(event.reason == cast.receiver.system.DisconnectReason.REQUESTED_BY_SENDER)) {
 			castReceiverManager.stop();
