@@ -1957,7 +1957,7 @@
 
 			// Do some device detection devices that don't support overlays
 			// and go into full screen once play is clicked:
-			if ((mw.isAndroidNativeBrowser() || mw.isIphone()) && !mw.isWindowsPhone()) {
+			if ((mw.isAndroidNativeBrowser() || (mw.isIphone() && !this.inline)) && !mw.isWindowsPhone()) {
 				return true;
 			}
 
