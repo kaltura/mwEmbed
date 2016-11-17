@@ -38,7 +38,7 @@
 			var _this = this;
 
             this.bind('monitorEvent' + _this.bindPostfix, function() {
-                if( _this.updatedTime > 0 ){
+                if( _this.updatedTime > 0 && !_this.getPlayer().buffering){
                     _this.updateTime();
                 }
             });
