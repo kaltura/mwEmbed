@@ -198,6 +198,7 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
               'plugin': $('#engine-js').is(':checked'),
               'withCredentials':$('#withCredentials').is(':checked')
             },
+            'disableHLSOnJs':  !$('#engine-js').is(':checked'),
             'hlsLogs': $('#engine-js').is(':checked'),
             "hlsLiveSegmentBuffer": parseInt($('#segBuffer').val()),
             "hlsInitialBufferTime": parseInt($('#iniBuffer').val()),
@@ -225,7 +226,8 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
             "sourceSelector.displayMode" : "sizebitrate",
             "closedCaptions.showEmbeddedCaptions" : true,
             'debugInfo': {
-                'plugin': true
+                'plugin': true,
+                'isVisible': false
             },
             "audioSelector": {
                 "plugin": true
