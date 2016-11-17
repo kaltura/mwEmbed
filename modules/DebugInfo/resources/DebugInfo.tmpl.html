@@ -7,7 +7,7 @@
     <div>mimeType: {{mimeType}}</div>
     <div>currentState: {{currentState}}</div>
     <div ng-show="hls">
-        <div class="mw-debug-info-separator">HLS Information</div>
+        <div class="mw-debug-info-separator">HLS Information ({{hlsEngine}})</div>
         <div ng-show="kesChain">KES: {{kesChain}}</div>
         <span>current:</span><a class="mw-debug-info-a" href="{{hlsCurrentSegment}}">{{hlsCurrentSegment | getFileName}}</a><br>
         <span>downloading:</span><a class="mw-debug-info-a" href="{{hlsDownloadingSegment}}">{{hlsDownloadingSegment | getFileName}}</a><br>
