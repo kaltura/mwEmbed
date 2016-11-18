@@ -78,8 +78,10 @@
 						$(".ui-slider").attr("style","background-color: " + value + " !important");
 						break;
 					case 'controlsBkgColor':
-						$(".mwPlayerContainer:not(.mobileSkin)").find(".controlsContainer").attr("style","background-color: " + value + " !important");
-						$(".mwPlayerContainer:not(.mobileSkin)").find(".controlsContainer").attr("style","background: " + value + " !important");
+						$(".mwPlayerContainer:not(.mobileSkin)").find(".controlsContainer").css({
+							"background": value,
+							"background-color": value,
+						});
 						break;
 					case 'scrubberColor':
 						$(".mwPlayerContainer:not(.mobileSkin)").find(".playHead").attr("style","background-color: " + value + " !important");
