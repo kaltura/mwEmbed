@@ -10,6 +10,7 @@
 		},
 		
 		contentDuration: 0,
+		labelWidth: null,
 
 		isSafeEnviornment: function(){
 			return !this.embedPlayer.isMobileSkin();
@@ -35,6 +36,12 @@
 			var formatTime = mw.seconds2npt( parseFloat( duration ) )
 			var duration = this.getConfig('prefix') !== undefined ? this.getConfig('prefix') + formatTime : formatTime;
 			this.getComponent().text( duration );
+
+			var currentWidth = this.$el.width();
+			if ( currentWidth !== this.labelWidth ){
+				this.embedPlayer.layoutBuilder.updateComponentsVisibility();
+				this.labelWidth = currentWidth;
+			}
 		},
 		getComponent: function() {
 			if( !this.$el ) {
@@ -42,6 +49,7 @@
 				this.$el = $( '<div />' )
 							.addClass ( "timers" + this.getCssClass() )
 							.text( duration );
+				this.labelWidth = this.$el.width();
 			}
 			return this.$el;
 		},
