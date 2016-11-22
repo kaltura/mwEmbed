@@ -425,7 +425,11 @@
 					this.log("Try flash fallback");
 					this.fallbackToFlash();
 				} else {
-					this.getPlayer().triggerHelper('embedPlayerError', [data]);
+					var errorObj = {
+						message : JSON.stringify(data),
+						code : data.type === "networkError" ? "1000" : "3000"
+					};
+					this.getPlayer().triggerHelper('embedPlayerError', errorObj);
 				}
 			},
 			fallbackToFlash: function () {
