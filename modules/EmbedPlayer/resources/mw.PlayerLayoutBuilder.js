@@ -335,19 +335,26 @@
             });
         },
 
-        updateComponentsVisibility: function () {
+        updateComponentsVisibility: function (container) {
             var _this = this;
             // start event, so dynamic space components can resize to take min space
-            $(this.embedPlayer).trigger('updateComponentsVisibilityStart')
-            // Go over containers and update their components
-            $.each(this.layoutContainers, function (containerId, components) {
-                if (containerId == 'videoHolder' || containerId == 'controlBarContainer' || containerId == 'smartContainer') {
-                    return true;
-                }
+            $(this.embedPlayer).trigger('updateComponentsVisibilityStart');
+
+            // Check if specific container was provided otherwise go over all containers and update their components
+            if(container){
                 _this.updateContainerCompsByAvailableSpace(
-                    _this.getInterface().find('.' + containerId)
+                    _this.getInterface().find('.' + container)
                 );
-            });
+            } else {
+                $.each(this.layoutContainers, function (containerId, components) {
+                    if (containerId == 'videoHolder' || containerId == 'controlBarContainer' || containerId == 'smartContainer') {
+                        return true;
+                    }
+                    _this.updateContainerCompsByAvailableSpace(
+                        _this.getInterface().find('.' + containerId)
+                    );
+                });
+            }
 
             // once complete trigger and event ( so dynamic space components can resize to take remaining space )
             $(this.embedPlayer).trigger('updateComponentsVisibilityDone')

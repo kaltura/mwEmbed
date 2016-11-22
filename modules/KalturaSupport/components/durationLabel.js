@@ -33,13 +33,13 @@
 			});
 		},
 		updateUI: function( duration ){
-			var formatTime = mw.seconds2npt( parseFloat( duration ) )
+			var formatTime = mw.seconds2npt( parseFloat( duration ) );
 			var duration = this.getConfig('prefix') !== undefined ? this.getConfig('prefix') + formatTime : formatTime;
 			this.getComponent().text( duration );
 
 			var currentWidth = this.$el.width();
 			if ( currentWidth !== this.labelWidth ){
-				this.embedPlayer.layoutBuilder.updateComponentsVisibility();
+				this.embedPlayer.layoutBuilder.updateComponentsVisibility(this.getConfig('parent'));
 				this.labelWidth = currentWidth;
 			}
 		},
@@ -58,4 +58,4 @@
 		}
 	}));
 
-} )( window.mw, window.jQuery );		
+} )( window.mw, window.jQuery );

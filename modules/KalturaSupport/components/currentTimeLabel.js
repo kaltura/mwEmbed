@@ -105,7 +105,7 @@
 				// check if the time change caused the label width to change (got to 10 minutes or 1 hour) and recalculate components position if needed
 				var currentWidth = this.$el.width();
 				if ( currentWidth !== this.labelWidth ){
-					this.embedPlayer.layoutBuilder.updateComponentsVisibility();
+					this.embedPlayer.layoutBuilder.updateComponentsVisibility(this.getConfig('parent'));
 					this.labelWidth = currentWidth;
 				}
 			}
