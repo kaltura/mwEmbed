@@ -79,6 +79,7 @@ kWidget.api.prototype = {
 	 * Do an api request and get data in callback
 	 */
 	doRequest: function ( requestObject, callback,skipKS, errorCallback, withProxyData){
+		console.log("i'm there");
 		var _this = this;
 		var param = {};
 		var globalCBName = null;
@@ -299,8 +300,8 @@ kWidget.api.prototype = {
 		if( serviceType && serviceType == 'liveStats' &&  mw.getConfig( 'Kaltura.LiveStatsServiceUrl' ) ) {
 			serviceUrl = mw.getConfig( 'Kaltura.LiveStatsServiceUrl' );
 		}
-		if( serviceType && serviceType == 'analytics' &&  mw.getConfig( 'Kaltura.AnalyticsUrl' ) ) {
-			serviceUrl = mw.getConfig( 'Kaltura.AnalyticsUrl' );
+		if( serviceType && serviceType == 'analytics') {
+			serviceUrl = 'http://analytics.kaltura.com';
 		}
 		return serviceUrl + mw.getConfig( 'Kaltura.ServiceBase' ) + serviceType;
 	},
