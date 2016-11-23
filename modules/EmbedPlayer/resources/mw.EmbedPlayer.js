@@ -3346,7 +3346,7 @@
 		},
 
 		getErrorCode: function(data){
-			return data ? data.code : "0000";
+			return data ? data.code : "7000";
 		},
 
 		/**

@@ -427,6 +427,7 @@
 				} else {
 					var errorObj = {
 						message : JSON.stringify(data),
+						// hls fatal error code could be either Network Error (1000) or Media Errors (3000)
 						code : data.type === "networkError" ? "1000" : "3000"
 					};
 					this.getPlayer().triggerHelper('embedPlayerError', errorObj);
