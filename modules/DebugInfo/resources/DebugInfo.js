@@ -65,10 +65,10 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
     },
     bindToHlsEvents:function() {
         var _this = this;
+        var $scope=_this.$scope;
 
 
         this.bind("debugInfoReceived", function( e, data ){
-            var $scope=_this.$scope;
             if (data.uri) {
                 _this.extractKES(data.uri);
             }
@@ -90,6 +90,34 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
             if( data.currentBitrate ){
                 $scope.currentBitrate=data.currentBitrate;
             }
+            $scope.hlsEngine="flash";
+        });
+
+        //HLS-JS debug info
+        var hlsJSeventsMapping={
+            "hlsCurrentBuffer": "bufferLength",
+            "hlsDroppedFrames":"droppedFrames",
+            "hlsDropFPS":"hlsDropFPS",
+            "hlsCurrentBitrate":"currentBitrate",
+            "hlsFPS":"hlsFPS",
+            "hlsFragLoading":"hlsLastProcessedSegment",
+            "hlsFragBuffered":"hlsDownloadingSegment"
+        };
+
+        for (var eventName in hlsJSeventsMapping) {
+            (function(eventName) {
+                if (hlsJSeventsMapping.hasOwnProperty(eventName)) {
+                    _this.bind(eventName, function( e, data ){
+                        $scope[hlsJSeventsMapping[eventName]]=data;
+                    });
+            }})(eventName);
+        }
+
+        this.bind("hlsFragChanged", function( e, data ){
+            $scope.hlsCurrentSegment=data.url;
+            $scope.startPTS=data.startPTS;
+            $scope.endPTS=data.endPTS;
+            $scope.hlsEngine="hls.js";
         });
     },
 
