@@ -369,11 +369,17 @@
 			/**
 			 * Error handler
 			 * @param event
-			 * @param data
 			 */
-			onError: function (event, data) {
-				var errorData = data ? data.type + ", " + data.details : event;
-				mw.log("Dash::Error: ", errorData);
+			onError: function (error) {
+				var errorMessage = error.name === "TypeError" ? error.stack : JSON.stringify(error);
+				var errorObj = {
+					message : errorMessage
+				};
+				if(error.category){
+					errorObj.code = error.category + "000";
+				}
+				this.getPlayer().triggerHelper( 'embedPlayerError' , errorObj );
+				mw.log("Dash::Error: ", error);
 			},
 
 			/**
