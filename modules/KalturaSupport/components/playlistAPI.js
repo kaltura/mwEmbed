@@ -567,7 +567,6 @@
 		setMultiplePlayLists: function () {
 			if ( this.playerIsReady && this.playlistSet.length > 1 ) {
 				var _this = this;
-				var maxClips = parseInt( this.getConfig( 'MaxClips' ) );
 				if ( this.getComponent().find( ".playlistSelector" ).length == 0 ) { // UI wasn't not created yet
 					this.getComponent().find( ".k-vertical" ).find( ".playlistTitle, .playlistDescription" ).addClass( "multiplePlaylists" );
 					this.getComponent().find( ".dropDownIcon" ).on( "click", function () {
