@@ -567,7 +567,6 @@
 		setMultiplePlayLists: function () {
 			if ( this.playerIsReady && this.playlistSet.length > 1 ) {
 				var _this = this;
-				var maxClips = parseInt( this.getConfig( 'MaxClips' ) );
 				if ( this.getComponent().find( ".playlistSelector" ).length == 0 ) { // UI wasn't not created yet
 					this.getComponent().find( ".k-vertical" ).find( ".playlistTitle, .playlistDescription" ).addClass( "multiplePlaylists" );
 					this.getComponent().find( ".dropDownIcon" ).on( "click", function () {
@@ -579,12 +578,10 @@
 					} );
 					this.getMedialistComponent().prepend( '<div class="playlistSelector"></div>' );
 					$.each( this.playlistSet, function ( i, el ) {
-						var numOfClips = el.content.split( "," ).length;
-						numOfClips = numOfClips > maxClips ? maxClips : numOfClips; // support MaxClips Flashvar
 						if ( _this.getLayout() === "vertical" ) {
-							_this.getComponent().find( ".playlistSelector" ).append( '<br><div data-index="' + i + '" class="playlistItem"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription multiplePlaylists">' + numOfClips + ' ' + gM( 'mwe-embedplayer-videos' ) + '</span></div>' );
+							_this.getComponent().find( ".playlistSelector" ).append( '<br><div data-index="' + i + '" class="playlistItem"><span class="k-playlistTitle"> ' + el.name + '</span></div>' );
 						} else {
-							_this.getComponent().find( ".playlistSelector" ).append( '<div data-index="' + i + '" class="playlistItem k-horizontal"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription multiplePlaylists">' + numOfClips + ' ' + gM( 'mwe-embedplayer-videos' ) + '</span></div>' );
+							_this.getComponent().find( ".playlistSelector" ).append( '<div data-index="' + i + '" class="playlistItem k-horizontal"><span class="k-playlistTitle"> ' + el.name + '</span></div>' );
 						}
 					} );
 					this.getComponent().find( ".playlistItem" ).on( "click", function () {
