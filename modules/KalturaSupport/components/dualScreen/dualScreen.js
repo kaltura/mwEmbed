@@ -174,11 +174,9 @@
 				//Consume view state events
 				this.bind( 'dualScreenStateChange', function(e, state){
 					_this.fsm.consumeEvent( state );
-				});
 
-				// disable drag & drop for mobile devices
-				if (!mw.isMobileDevice()) {
-					this.bind('postDualScreenTransition', function () {
+					// disable drag & drop for mobile devices
+					if (!mw.isMobileDevice()) {
 						var currentState = _this.fsm.currentState.name;
 						var primary = _this.displays.getPrimary();
 						var secondary = _this.displays.getSecondary();
@@ -196,8 +194,8 @@
 						} else {
 							main.enableDroppable();
 						}
-					});
-				}
+					}
+				});
 
 				this.bind('dualScreenChangeMainDisplayStream', function (event, stream) {
 					var primaryIsMain = mw.isMobileDevice() || (_this.displays.getPrimary() === _this.displays.getMainDisplay());
