@@ -17,6 +17,10 @@
 		$menu: null,
 		closeMenuTimeoutId: null,
 
+		isSafeEnviornment: function(){
+			return !mw.isMobileDevice();
+		},
+
 		setup: function( embedPlayer ) {
 			if ( $.isEmptyObject(this.getConfig("config")) ){
 				this.setConfig( "visible", false ); // remove plugin if no config was specified
@@ -46,6 +50,7 @@
 				config.plugins.forEach(function (plugin, index) {
 					_this.embedPlayer.setKalturaConfig( plugin.pluginName, "visible", false );
 				});
+				_this.embedPlayer.triggerHelper("updateComponentsVisibilityDone");
 			});
 
 			this.bind( 'onOpenFullScreen onCloseFullScreen onHideControlBar', function(){

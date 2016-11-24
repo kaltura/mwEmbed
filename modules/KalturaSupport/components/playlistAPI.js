@@ -106,7 +106,7 @@
 				}
 
 				// prevent iframe resize layout refresh  on iOS8
-				if ( mw.isIOS8_9() ){
+				if ( mw.isIOSAbove7() ){
 					_this.redrawOnResize = false;
 				}
 
@@ -150,6 +150,9 @@
 						break;
 					case 'playlistPlayPrevious':
 						_this.playPrevious();
+						break;
+					case 'playlistPlayMediaById':
+						_this.playMediaById(notificationData);
 						break;
 				}
 			});
@@ -412,6 +415,16 @@
 			}
 		},
 
+		playMediaById: function(id){
+			var items = this.playlistSet[this.currentPlaylistIndex].items;
+			for ( var i = 0; i < items.length; i++ ) {
+				if ( items[i].id === id ) {
+					this.playMedia( i, false, true );
+					break;
+				}
+			}
+		},
+
 		// play a clip according to the passed index. If autoPlay is set to false - the clip will be loaded but not played
 		playMedia: function (clipIndex, load, autoScrollToMedia) {
 			this.setSelectedMedia(clipIndex);              // this will highlight the selected clip in the UI
@@ -474,7 +487,7 @@
 				_this.loadingEntry = false; // Update the loadingEntry flag//
 
 				// play clip that was selected when autoPlay=false. if autoPlay=true, the embedPlayer will do that for us.
-				if (!_this.getConfig("autoPlay") && mobileAutoPlay && embedPlayer.canAutoPlay()) {
+				if ( (!_this.getConfig("autoPlay") && mobileAutoPlay && embedPlayer.canAutoPlay() && !embedPlayer.isInSequence()) || embedPlayer.casting) {
 					setTimeout(function(){
 						embedPlayer.play();
 					},500); // timeout is required when loading live entries
@@ -678,7 +691,7 @@
 				this.getMedialistHeaderComponent().prepend( '<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist' ) + '"></div>' );
 				this.getMedialistHeaderComponent().height(this.getConfig('horizontalHeaderHeight'));
 			}
-			if ( this.getConfig( 'showControls' ) === true ) {
+			if ( this.getConfig( 'showControls' ) === true && !this.embedPlayer.isMobileSkin() ) {
 				this.getMedialistHeaderComponent().prepend( '<div class="playlistControls k-' + this.getLayout() + '"><div class="prevBtn playlistBtn"></div><div class="nextBtn playlistBtn"></div></div>' );
 				this.getMedialistHeaderComponent().find( ".playlistControls .nextBtn" ).on( "click", function () {
 					_this.playNext(true)

@@ -37,9 +37,11 @@
 		bufferTime : 0,
 		eventIndex : 1,
 		currentBitRate: -1,
+		currentFlavourId: -1,
 		eventType: 1,
 		firstPlay: true,
 		viewEventInterval: null,
+		savedPosition: null,
 		monitorIntervalObj:{},
 
 		_p25Once: false,
@@ -47,7 +49,6 @@
 		_p75Once: false,
 		_p100Once: false,
 		hasSeeked: false,
-		lastSeek: 0,
 		dvr: false,
 
 		smartSetInterval:function(callback,time,monitorObj) {
@@ -105,6 +106,10 @@
 				_this.sendAnalytics(playerEvent.IMPRESSION);
 			});
 
+			this.embedPlayer.bindHelper( 'onChangeMedia' , function () {
+				_this.firstPlay = true;
+			});
+
 			this.embedPlayer.bindHelper( 'userInitiatedPlay' , function () {
 				_this.sendAnalytics(playerEvent.PLAY_REQUEST);
 			});
@@ -128,7 +133,6 @@
 
 			this.embedPlayer.bindHelper( 'seeked' , function (e, seekTarget) {
 				_this.hasSeeked = true;
-				_this.lastSeek = seekTarget;
 				if ( _this.embedPlayer.isDVR() ) {
 					_this.dvr = true;
 				}
@@ -168,7 +172,12 @@
 				_this.sendAnalytics(playerEvent.EXIT_FULLSCREEN);
 			});
 
+			this.embedPlayer.bindHelper( 'onEndedDone' , function () {
+				_this.stopViewTracking();
+			});
+
 			this.embedPlayer.bindHelper( 'replayEvent' , function () {
+				_this.resetPlayerflags();
 				_this.sendAnalytics(playerEvent.REPLAY);
 			});
 
@@ -235,11 +244,26 @@
 				if (source.getBitrate()){
 					_this.currentBitRate = source.getBitrate();
 				}
+				if (source.getAssetId()){
+					_this.currentFlavourId = source.getAssetId();
+				}
 			});
+
 			this.embedPlayer.bindHelper( 'sourceSwitchingEnd' , function (e, newSource) {
 				if (newSource.newBitrate){
 					_this.currentBitRate = newSource.newBitrate;
 				}
+			});
+
+			this.embedPlayer.bindHelper( 'AdSupport_midroll AdSupport_postroll' , function () {
+				_this.savedPosition = _this.embedPlayer.currentTime; // during ad playback (mid and post only), report position as the last player position
+			});
+
+			this.embedPlayer.bindHelper( 'AdSupport_EndAdPlayback' , function () {
+				setTimeout(function(){
+					_this.savedPosition = null; // use timeout to use the savedPosition for events reported immediately after ad finish (play event)
+				},0);
+
 			});
 		},
 		resetPlayerflags:function(){
@@ -248,27 +272,26 @@
 			this._p75Once = false;
 			this._p100Once = false;
 			this.hasSeeked = false;
-			this.lastSeek = 0;
+			this.savedPosition = null;
 		},
 
 		updateTimeStats: function() {
 			var _this = this;
 			var percent = this.embedPlayer.currentTime / this.embedPlayer.duration;
-			var seekPercent = this.lastSeek / this.embedPlayer.duration;
 			var playerEvent = this.PlayerEvent;
 
 			// Send updates based on logic present in StatisticsMediator.as
 			if ( !this.embedPlayer.isLive() ){
-				if( !_this._p25Once && percent >= .25  &&  seekPercent <= .25 ) {
+				if( !_this._p25Once && percent >= .25 ) {
 					_this._p25Once = true;
 					_this.sendAnalytics(playerEvent.PLAY_25PERCENT);
-				} else if ( !_this._p50Once && percent >= .50 && seekPercent < .50 ) {
+				} else if ( !_this._p50Once && percent >= .50 ) {
 					_this._p50Once = true;
 					_this.sendAnalytics(playerEvent.PLAY_50PERCENT);
-				} else if( !_this._p75Once && percent >= .75 && seekPercent < .75 ) {
+				} else if( !_this._p75Once && percent >= .75 ) {
 					_this._p75Once = true;
 					_this.sendAnalytics(playerEvent.PLAY_75PERCENT);
-				} else if(  !_this._p100Once && percent >= .98 && seekPercent < 1) {
+				} else if(  !_this._p100Once && percent >= .99) {
 					_this._p100Once = true;
 					_this.sendAnalytics(playerEvent.PLAY_100PERCENT);
 				}
@@ -300,6 +323,9 @@
 			_this.viewEventInterval = null;
 		},
 		startViewTracking :function(){
+			if (this.viewEventInterval){
+				this.stopViewTracking();
+			}
 			var _this = this;
 			var playerEvent = this.PlayerEvent;
 			_this.startTime = null;
@@ -310,8 +336,10 @@
 				_this.firstPlay = false;
 			}
 			_this.smartSetInterval(function(){
-				_this.sendAnalytics(playerEvent.VIEW);
-				_this.bufferTime = 0;
+				if ( !_this._p100Once ){ // since we report 100% at 99%, we don't want any "VIEW" reports after that (FEC-5269)
+					_this.sendAnalytics(playerEvent.VIEW);
+					_this.bufferTime = 0;
+				}
 			},_this.reportingInterval,_this.monitorIntervalObj);
 
 		},
@@ -329,6 +357,11 @@
 				playbackType = this.dvr ? "dvr" : "live";
 			}
 
+			var position = this.embedPlayer.currentTime ? this.embedPlayer.currentTime : 0;
+			if ( this.savedPosition ){
+				position = this.savedPosition;
+			}
+
 			var statsEvent = {
 				'entryId'           : this.embedPlayer.kentryid,
 				'partnerId'         : this.embedPlayer.kpartnerid,
@@ -337,12 +370,13 @@
 				'eventIndex'        : this.eventIndex,
 				'bufferTime'        : this.bufferTime,
 				'actualBitrate'     : this.currentBitRate,
+				'flavourId'         : this.currentFlavourId,
 				'referrer'          : encodeURIComponent( mw.getConfig('EmbedPlayer.IframeParentUrl') ),
 				'deliveryType'      : this.embedPlayer.streamerType,
 				'sessionStartTime'  : this.startTime,
 				'uiConfId'          : this.embedPlayer.kuiconfid,
 				'clientVer'         : mw.getConfig("version"),
-				'position'          : this.embedPlayer.currentTime,
+				'position'          : position,
 				'playbackType'      : playbackType
 			};
 
@@ -377,12 +411,13 @@
 				statsEvent["playbackContext"] = mw.getConfig("playbackContext");
 			}
 
-			var eventRequest = {'service' : 'analytics', 'action' : 'collectEvent'};
-			$.each(statsEvent , function (index , value) {
-				eventRequest[ 'event:' + index] = value;
+			var eventRequest = {'service' : 'analytics', 'action' : 'trackEvent'};
+			$.each(statsEvent , function (event , value) {
+				eventRequest[event] = value;
 			});
 			this.eventIndex += 1;
 			this.embedPlayer.triggerHelper( 'analyticsEvent' , statsEvent);
+			this.log("Trigger analyticsEvent type = "+statsEvent.eventType);
 			this.kClient.doRequest( eventRequest, function(data){
 				try {
 					if (!_this.startTime ) {

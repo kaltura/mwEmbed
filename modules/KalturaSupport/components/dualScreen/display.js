@@ -178,8 +178,10 @@
         },
 		hide: function () {
 			this.obj.addClass( 'hiddenScreen' );
+			this.obj.removeClass( 'componentOn').addClass( 'componentOff' );
 		},
 		show: function () {
+			this.obj.removeClass( 'componentOff').addClass( 'componentOn' );
 			this.obj.removeClass( 'hiddenScreen' );
 		},
         bringToFront: function ( ) {

@@ -46,6 +46,11 @@
                 "initvalue": true,
                 "type": "boolean"
             },
+            "enableOptionsMenu": {
+                "doc": "Should captions styling menu be enabled.",
+                "initvalue": false,
+                "type": "boolean"
+            },
             "useCookie": {
                 "doc": "Should cookies be used to store user language.",
                 "type": "boolean"
@@ -308,6 +313,11 @@
                 "type": "boolean",
                 "initvalue": true
             },
+	        "includeHeader": {
+                "doc": "Display playlist header, including title, number of clips and playlist controls.",
+                "type": "boolean",
+                "initvalue": true
+            },
             "autoContinue": {
                 "doc": "If the playlist should autocontinue.",
                 "type": "boolean"
@@ -424,9 +434,6 @@
     "flavorComboControllerScreen": {
         "description": "The Kaltura flavor selector plugin."
     },
-    "audioSelector": {
-        "description": "Enables users to select from audio tracks active in the stream."
-    },
     "sourceSelector": {
         "description": "Enables users to select the video quality.",
         "attributes": {
@@ -463,6 +470,16 @@
                     "value": "sizebitrate"
                   }
                 ]
+            }
+        }
+    },
+    "audioSelector": {
+        "description": "Enables users to select multiple audio tracks.",
+        "attributes": {
+            "plugin": {
+                "doc": "If the audio selector should be activated.",
+                "label": "Enable audio selector",
+                "type": "hiddenValue"
             }
         }
     },

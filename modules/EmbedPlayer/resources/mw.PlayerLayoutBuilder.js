@@ -54,8 +54,8 @@ mw.PlayerLayoutBuilder.prototype = {
 		this.fullScreenManager = new mw.FullScreenManager( embedPlayer );
 		var animationSupported = this.checkAnimationSupport();
 		mw.setConfig( 'EmbedPlayer.AnimationSupported', animationSupported );
+		this.addUserAgentCssClass();
 		$(document.body).append($('<div style="display: block" class="cssChecker"></div>'));
-
 		// Return the layoutBuilder Object:
 		return this;
 	},
@@ -144,6 +144,35 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	clearInterface: function() {
 		this.getInterface().find( '.overlay-win' ).remove();
+	},
+	/**
+	 * Add user agent css classes to player interface
+	 */
+	addUserAgentCssClass: function(){
+		if ( mw.isTouchDevice() )
+			this.getInterface().addClass( 'ua-touch' );
+		if ( mw.hasMouseEvents() )
+			this.getInterface().addClass( 'ua-mouse' );
+		if ( mw.isIOS() )
+			this.getInterface().addClass( 'ua-ios' );
+		if ( mw.isAndroid() )
+			this.getInterface().addClass( 'ua-android' );
+		if ( mw.isMacintosh() )
+			this.getInterface().addClass( 'ua-osx' );
+		if ( mw.isWindows() )
+			this.getInterface().addClass( 'ua-win' );
+		if ( mw.isChrome() )
+			this.getInterface().addClass( 'ua-chrome' );
+		if ( mw.isFirefox() )
+			this.getInterface().addClass( 'ua-firefox' );
+		if ( mw.isIE() )
+			this.getInterface().addClass( 'ua-ie' );
+		if ( mw.isSafari() )
+			this.getInterface().addClass( 'ua-safari' );
+		if ( mw.isEdge() )
+			this.getInterface().addClass( 'ua-edge' );
+		if ( mw.isChromeCast() )
+			this.getInterface().addClass( 'ua-chromecast' );
 	},
 	/**
 	* Add the controls HTML to player interface
@@ -310,7 +339,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		$(this.embedPlayer ).trigger( 'updateComponentsVisibilityStart' )
 		// Go over containers and update their components
 		$.each(this.layoutContainers, function( containerId, components ) {
-			if( containerId == 'videoHolder' || containerId == 'controlBarContainer' ){
+			if( containerId == 'videoHolder' || containerId == 'controlBarContainer' || containerId == 'smartContainer' ){
 				return true;
 			}
 			_this.updateContainerCompsByAvailableSpace(
@@ -415,7 +444,7 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	getComponentsWidthForContainer: function( $container ){
 		var _this = this;
-		var totalWidth = 10; // add some padding
+		var totalWidth = this.embedPlayer.isMobileSkin() ? 2 : 10; // add some padding
 		$container.find('.comp:visible').each(function () {
 			totalWidth += _this.getComponentWidth( $(this) );
 		});
@@ -818,7 +847,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	// Adds class to the interface with the current player size and trigger event
 	// Triggered by updateLayout event
 	updatePlayerSizeClass: function(){
-		var width = $(window).width();
+		var width = this.embedPlayer.getVideoHolder().width();
 		var playerSizeClass = '';
 		if( width < 300 ) {
 			playerSizeClass = 'tiny';
@@ -1165,7 +1194,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			.css( {
 				'height' : '100%',
 				'width' : '100%',
-				'z-index' : mw.isMobileDevice() ? 200 : 2
+				'z-index' : mw.isMobileDevice() ? 1000 : 4
 			})
 		);
 
@@ -1189,7 +1218,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			'position' : 'absolute',
 			'margin': margin,
 			'overflow' : 'hidden',
-			'z-index' : 3
+			'z-index' : 5
 		};
 		var $overlayMenu = $('<div />')
 			.addClass( 'overlay-win ui-state-default ui-widget-header ui-corner-all' )

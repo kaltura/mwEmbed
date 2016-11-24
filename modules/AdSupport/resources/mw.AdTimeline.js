@@ -170,6 +170,12 @@
 					};
 				});
 
+				var playedAnLinearAdFlag = false;
+				embedPlayer.bindHelper('onAdOpen' + _this.bindPostfix, function (e, adId, adSystem, AdSlotType, adPosition, linear) {
+					mw.log("AdTimeline:: set Played an linear ad flag to " + linear);
+					playedAnLinearAdFlag = linear;
+				});
+
 				//Setup a playedAnAdFlag
 				var playedAnAdFlag = false;
 				embedPlayer.bindHelper( 'AdSupport_StartAdPlayback' +  _this.bindPostfix, function(){
@@ -212,7 +218,9 @@
 								// Restore duration:
 								embedPlayer.setDuration( orgDuration );
 								// Continue playback
-								embedPlayer.play();
+								if (playedAnAdFlag || !playedAnLinearAdFlag){
+									embedPlayer.play();
+								}
 							};
 							// Check if the src does not match original src if
 							// so switch back and restore original bindings

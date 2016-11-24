@@ -46,7 +46,7 @@
 		bindPostfix: ".nativeBridge",
 		subscribed: [],
 		playerMethods: [
-			'stop', 'play', 'pause', 'replay', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen', 'notifyKPlayerEvent', 'notifyKPlayerEvaluated', 'notifyJsReady', 'showChromecastDeviceList', 'notifyLayoutReady',
+			'stop', 'play', 'pause', 'replay', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen', 'notifyKPlayerEvent', 'notifyKPlayerEvaluated', 'notifyJsReady', 'showChromecastDeviceList', 'sendCCRecieverMessage', 'notifyLayoutReady',
 			'doneFSBtnPressed', 'addNativeAirPlayButton', 'showNativeAirPlayButton', 'hideNativeAirPlayButton', 'doNativeAction', 'textTracksReceived', 'loadEmbeddedCaptions', 'flavorsListChanged', 'switchFlavor','togglePictureInPicture' ],
 
 		registerPlayer: function (proxyElement) {
@@ -168,8 +168,7 @@
 			} else if (eventName == 'pause') {
 				this.proxyElement['paused'] = true;
 			}
-
-			$(this.proxyElement).trigger(eventName, [jsEventValue]);
+			$(this.proxyElement).triggerHandler(eventName, [jsEventValue]);
 
 			if (this.subscribed[eventName]) {
 				this.subscribed[eventName](jsEventValue);

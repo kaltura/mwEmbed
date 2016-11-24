@@ -210,7 +210,7 @@
 						checkBufferUnderrun = null;
 					}
 					checkBufferUnderrun = setInterval(function(){
-						if (_this.embedPlayer.currentTime === startBufferPlayerTime){
+						if (_this.embedPlayer.currentTime === startBufferPlayerTime || _this.embedPlayer.isLive()){
 							shouldReprotBufferUnderrun = true;
 						}else{
 							startBufferPlayerTime = _this.embedPlayer.currentTime;
@@ -422,11 +422,6 @@
 			return this.viewCode + "_" + this.viewIndex;
 		},
 		getCurrentVideoSrc: function(){
-			var vid = this.embedPlayer.getPlayerElement();
-			if( vid && vid.src ){
-				return vid.src;
-			}
-			// else just return the normal content source:
 			return this.embedPlayer.getSrc();
 		}
 

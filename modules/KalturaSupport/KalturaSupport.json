@@ -13,7 +13,8 @@
 			"matchMedia",
 			"mw.KEntryLoader",
 			"mw.KDPMapping",
-			"mw.KCuePoints"
+			"mw.KCuePoints",
+			"polyfill_Array_filter"
 		],
 		"kalturaLoad": "always",
 		"messageFile": "KalturaSupport.i18n.json"
@@ -90,7 +91,7 @@
 			"components/dualScreen/dualScreenControlBar.js",
 			"components/dualScreen/displays.js",
 			"components/dualScreen/display.js",
-			"components/dualScreen/dualScreenCuePointsManager.js",
+			"components/dualScreen/cuePointsManager.js",
 			"components/dualScreen/dualScreenExternalControlManager.js",
 			"components/dualScreen/imagePlayer.js",
 			"components/dualScreen/videoPlayer.js",
@@ -253,6 +254,11 @@
 		"dependencies": "mw.KBaseComponent",
 		"kalturaPluginName": "logo"
 	},
+  "video360": {
+    "scripts": "components/video360.js",
+    "dependencies": ["threejs","mw.KBasePlugin"],
+    "kalturaPluginName": "video360"
+  },
 	"closeFSMobile": {
 		"scripts": "components/closeFSMobile.js",
 		"dependencies": "mw.KBaseComponent",
@@ -271,14 +277,21 @@
 		"templates": "components/nativeCallout/nativeCallout.tmpl.html"
 	},
 	"closedCaptions": {
-		"scripts": "resources/mw.ClosedCaptions.js",
+		"scripts": [
+			"resources/mw.ClosedCaptions.js",
+			"components/cvaa/cvaa.js"
+		],
 		"dependencies": [
 			"mw.KBaseComponent",
+			"mw.KBaseScreen",
 			"mw.TextSource",
 			"mw.Language.names"
 		],
 		"kalturaPluginName": "closedCaptions",
+		"styles": "components/cvaa/cvaa.css",
+		"templates": "components/cvaa/cvaa.tmpl.html",
 		"messageFile": "../TimedText/TimedText.i18n.json"
+
 	},
 	"infoScreen": {
 		"scripts": "components/info/info.js",

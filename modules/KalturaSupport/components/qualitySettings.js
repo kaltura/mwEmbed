@@ -4,7 +4,7 @@
 
 		defaultConfig: {
 			'parent': 'topBarContainer',
-			'order': 1,
+			'order': 2,
 			'showTooltip': true,
 			"displayImportance": "high",
 			"align": "right",

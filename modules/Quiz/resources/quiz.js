@@ -31,6 +31,8 @@
         setup: function () {
             var _this = this;
             var embedPlayer = _this.getPlayer();
+            // make sure we actually have a layout builder
+            embedPlayer.getInterface();
             embedPlayer.disableComponentsHover();
             mw.log("Quiz: " + _this.IVQVer);
             this.bind('onChangeStream', function () {
@@ -39,7 +41,6 @@
             });
 
             embedPlayer.addJsListener( 'kdpReady', function(){
-
                 _this.KIVQModule = new mw.KIVQModule(embedPlayer, _this);
                 _this.KIVQModule.isKPlaylist = (typeof (embedPlayer.playlist) === "undefined" ) ? false : true;
 
@@ -48,7 +49,15 @@
                         embedPlayer.autoplay = false;
                     }
 
-                    _this.KIVQModule.setupQuiz();
+                    _this.KIVQModule.setupQuiz().fail(function(data, msg) {
+                        mw.log("Quiz: error loading quiz, error: " + msg);
+                        embedPlayer.hideSpinner();
+                        _this.KIVQModule.unloadQuizPlugin(embedPlayer);
+                        embedPlayer.enablePlayControls();
+                    }).done(function(data) {
+                        mw.log("Quiz: setup is completed, continuing...");
+                    });
+
                     _this.KIVQScreenTemplate = new mw.KIVQScreenTemplate(embedPlayer);
 
                     if(_this.KIVQModule.isKPlaylist){

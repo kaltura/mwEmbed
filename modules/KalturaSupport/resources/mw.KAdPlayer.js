@@ -522,8 +522,7 @@ mw.KAdPlayer.prototype = {
 			} else {
 				$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
 			}
-			this.embedPlayer.enablePlayControls(["scrubber"]);
-			this.embedPlayer.enablePlayControls();
+			this.embedPlayer.enablePlayControls(["scrubber","share","infoScreen","related","playlistAPI","nextPrevBtn","sourceSelector"]);
 		}
 	},
 	resumeAd: function(){

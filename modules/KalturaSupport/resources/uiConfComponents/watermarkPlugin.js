@@ -39,9 +39,19 @@
 
 			}
 		},
+		watermarkLoaded: function(){
+			this.getPlayer().triggerHelper("waterMarkLoaded", [this.getComponent().get(0)]);
+		},
 		getComponent: function(){
 			var _this = this;
 			if(!this.$el){
+				var img = $('<img />')
+					.one("load", function(){
+						_this.watermarkLoaded();
+					})
+					.attr({
+						'src': this.getConfig('img')
+					});
 				this.$el = $('<div />')
 							.addClass ( this.getCssClass() )
 							.append(
@@ -53,11 +63,7 @@
 									_this.getPlayer().sendNotification( 'watermarkClick' );
 									return true;
 								})
-								.append(
-									$('<img />').attr({
-										'src': this.getConfig('img')
-									})
-								)
+								.append(img)
 							);
 				if( this.getConfig('padding') ){
 					this.$el.css('padding', this.getConfig('padding') );

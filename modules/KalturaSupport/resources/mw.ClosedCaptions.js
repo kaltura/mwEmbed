@@ -26,7 +26,10 @@
 			"forceLoadLanguage": false,
 			"title": gM( 'mwe-embedplayer-timed_text'),
 			"smartContainer": "qualitySettings",
-			'smartContainerCloseEvent': 'changedClosedCaptions'
+			'smartContainerCloseEvent': 'changedClosedCaptions',
+			"forceWebVTT": false, // force using webvtt on-the-fly. only for kalturaAPI captions
+			"enableOptionsMenu": false,
+			"sortCaptionsAlphabetically": false
 		},
 
 		textSources: [],
@@ -45,6 +48,15 @@
 				( this.getConfig( 'hideClosedCaptions') === true )
 			){
 				this.setConfig('displayCaptions', false );
+			}
+
+			if(_this.getConfig("enableOptionsMenu")){
+				this.optionsMenu = new mw.closedCaptions.cvaa(this.getPlayer(), function () {
+				}, "cvaa");
+
+				if(!this.optionsMenu.isSafeEnviornment()){
+					this.setConfig('enableOptionsMenu', false );
+				}
 			}
 
 			if( (this.embedPlayer.isOverlayControls() && !this.embedPlayer.getInterface().find( '.controlBarContainer' ).is( ':hidden' )) || this.embedPlayer.useNativePlayerControls() ){
@@ -85,7 +97,7 @@
 						_this.destory();
 						var newSources = [];
 						$.each( data.languages, function ( inx, src ) {
-							var source = new mw.TextSource( $.extend( { srclang: src.label }, src ) );
+							var source = new mw.TextSource( $.extend( { srclang: src.label }, src ), _this.embedPlayer );
 							//no need to load embedded captions
 							source.loaded = true;
 							newSources.push( source );
@@ -111,8 +123,17 @@
 					if ( !(data && $.isArray( data.languages ) ) ) {
 						data.languages = [];
 					}
+
+					//Map all objects to textSources
+					var languages = $.map(data.languages, function(language){
+						var textSource = language;
+						if (!(language instanceof mw.TextSource)){
+							textSource = _this.addTextSource(language);
+						}
+						return textSource;
+					});
 					_this.destory();
-					_this.buildMenu( data.languages );
+					_this.buildMenu( languages );
 				} );
 				outOfBandCaptionEventHandlers.call(this);
 			}
@@ -132,7 +153,16 @@
 				this.bind( 'playing', function(){
 					_this.ended = false;
 				});
-			}
+
+                this.bind('resizeEvent', function () {
+					// in WebVTT we have to remove the caption on resizing
+					// for recalculation the caption layout
+                    if ( _this.selectedSource.mimeType === "text/vtt" ) {
+						mw.log( 'mw.ClosedCaptions:: resizeEvent: remove captions' );
+                        _this.getPlayer().getInterface().find('.track').remove();
+                    }
+                })
+            }
 
 			this.bind( 'onplay', function(){
 				_this.playbackStarted = true;
@@ -152,7 +182,7 @@
 			});
 
 			this.bind( 'showClosedCaptions preHideScreen hideMobileComponents', function(){
-				if( !_this.embedPlayer.changeMediaStarted && _this.getConfig('displayCaptions') === false ){
+				if( !_this.embedPlayer.changeMediaStarted && _this.getConfig('displayCaptions') === false && _this.selectedSource ){
 					_this.setConfig('displayCaptions', true);
 				}
 			});
@@ -163,7 +193,7 @@
 				}
 			});
 
-			this.bind( 'onCloseFullScreen onOpenFullScreen', function(){
+			this.bind( 'updateLayout', function(){
 				if (_this.getConfig("displayCaptions") == true){
 					_this.updateTextSize();
 				}
@@ -198,6 +228,26 @@
 			this.bind( 'onDisableInterfaceComponents', function(e, arg ){
 				_this.getMenu().close();
 			});
+			this.bind( 'newCaptionsStyles', function (e, stylesObj){
+				_this.customStyle = stylesObj;
+			});
+		},
+		addTextSource: function(captionData){
+			// Try to insert the track source:
+			var embedSource = this.embedPlayer.mediaElement.tryAddSource(
+				$( '<track />' ).attr({
+					'kind'		: 'subtitles',
+					'language'	: captionData.language, //full language name, e.g. english
+					'srclang' 	: captionData.languageCode, //language code, e.g. en for english
+					'label'		: captionData.label || captionData.language, //Friendly label
+					'fileExt'	: captionData.fileExt, //accepts xml, srt or vtt
+					'src'		: captionData.src, //valid asset URL
+					'title'		: captionData.label,
+					'default'	: captionData.isDefault
+				})[0]
+			);
+			// Return a "textSource" object:
+			return new mw.TextSource( embedSource, this.embedPlayer );
 		},
 		updateTextSize: function(){
 			// Check if we are in fullscreen or not, if so add an additional bottom offset of
@@ -292,7 +342,7 @@
 			this.updateTimeOffset();
 			// Get from <track> elements
 			$.each( this.getPlayer().getTextTracks(), function( inx, textSource ){
-				var textSource = new mw.TextSource( textSource );
+				var textSource = new mw.TextSource( textSource, _this.embedPlayer );
 				if ( !_this.textSourcesInSources(_this.textSources, textSource) ){
 					_this.textSources.push( textSource );
 				}
@@ -405,9 +455,21 @@
 					_this.captionURLs = captionsURLs;
 					// Done adding source issue callback
 					mw.log( 'mw.ClosedCaptions:: loadCaptionsURLsFromApi> total captions count: ' + captions.length );
+					// Check if we need to sort captions array Alphabetically
+					if( _this.getConfig("sortCaptionsAlphabetically")) {
+						captions = _this.sortByKey( captions, 'language' );
+						callback( captions );
+					}
 					callback( captions );
 				} );
 			}
+		},
+		sortByKey: function ( array, key ) {
+			return array.sort( function( a, b ) {
+				var x = a[key];
+				var y = b[key];
+				return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+			});
 		},
 		getTextSourceFromDB: function( dbTextSource ) {
 			var _this = this;
@@ -420,11 +482,14 @@
 					case '2':
 						dbTextSource.fileExt = 'xml';
 						break;
+					case '3':
+						dbTextSource.fileExt = 'vtt';
+						break;
 				}
 			}
 
 			var captionsSrc;
-			if( mw.isIphone() && !mw.getConfig('disableTrackElement') && !this.getConfig('forceLoadLanguage') ) {
+			if( mw.isIphone() && !mw.getConfig('disableTrackElement') && !this.getConfig('forceLoadLanguage') || this.getConfig("forceWebVTT") ) {
 				// getting generated vtt file from dfxp/srt
 				captionsSrc = mw.getConfig('Kaltura.ServiceUrl') +
 							"/api_v3/index.php/service/caption_captionasset/action/serveWebVTT/captionAssetId/" +
@@ -453,7 +518,7 @@
 				})[0]
 			);
 			// Return a "textSource" object:
-			return new mw.TextSource( embedSource );
+			return new mw.TextSource( embedSource, _this.embedPlayer );
 		},
 		forceLoadLanguage: function(){
 			var lang = this.getConfig('forceLoadLanguage');
@@ -523,10 +588,12 @@
 			}
 		},
 		selectSourceByLangKey: function( langKey ){
+			var _this = this;
 			var selectedSource = null;
 			$.each(this.textSources, function(idx, source){
 				if( source.srclang && langKey == source.srclang.toLowerCase() ){
 					selectedSource = source;
+					_this.embedPlayer.triggerHelper("sourceSelectedByLangKey",[selectedSource.label]);
 					return false;
 				}
 			});
@@ -577,64 +644,109 @@
 			});
 		},
 
-		addCaption: function( source, capId, caption ){
+		addCaptionAsDomElement: function ( source, capId, caption ){
+			var $textTarget = $('<div />')
+				.addClass('track')
+				.attr('data-capId', capId)
+				.html($(caption.content)
+					.addClass('caption')
+					.css('pointer-events', 'auto')
+					.css("background-color", (this.customStyle && this.customStyle.windowColor) ? this.customStyle.windowColor : "none")
+				);
+
+			this.displayTextTarget($textTarget);
+
+			var captionDiv = $('.caption div');
+
+			// remove default background-color which comes from vtt.js
+			captionDiv.css("background-color", "transparent");
+			// apply custom style
+			captionDiv.css(this.getCaptionCss());
+
+			// vtt.js calculates the caption layout assuming margin of 1.5%
+			this.getCaptionsOverlay().css('margin', '1.5%');
+		},
+
+		addCaptionAsText: function ( source, capId, caption ) {
 			// use capId as a class instead of id for easy selections and no conflicts with
 			// multiple players on page.
 			var $textTarget = $('<div />')
-				.addClass( 'track' )
-				.attr( 'data-capId', capId )
+				.addClass('track')
+				.attr('data-capId', capId)
 				.hide();
+
+			var $windowTarget = $('<div />')
+				.css("background-color", (this.customStyle && this.customStyle.windowColor) ? this.customStyle.windowColor : "none")
+				.addClass('trackWindow');
 
 			// Update text ( use "html" instead of "text" so that subtitle format can
 			// include html formating
 			// TOOD we should scrub this for non-formating html
+
 			$textTarget.append(
+				$windowTarget.append(
 				$('<span />')
-					.addClass( 'ttmlStyled' )
-					.css( 'pointer-events', 'auto')
-					.css( this.getCaptionCss() )
+					.addClass('ttmlStyled')
+					.css('pointer-events', 'auto')
+					.css(this.getCaptionCss())
 					.append(
 						$('<span>')
 						// Prevent background (color) overflowing TimedText
 						// http://stackoverflow.com/questions/9077887/avoid-overlapping-rows-in-inline-element-with-a-background-color-applied
-						.css( 'position', 'relative' )
-						.html( caption.content )
+							.css('position', 'relative')
+							.html(caption.content)
 					)
+				)
 			);
 
 			// Add/update the lang option
-			$textTarget.attr( 'lang', source.srclang.toLowerCase() );
+			$textTarget.attr('lang', source.srclang.toLowerCase());
 
 			// Update any links to point to a new window
-			$textTarget.find( 'a' ).attr( 'target', '_blank' );
+			$textTarget.find('a').attr('target', '_blank');
 
 			// Add TTML or other complex text styles / layouts if we have ontop captions:
-			if( this.getConfig('layout') == 'ontop' ){
-				if( caption.css ){
-					$textTarget.css( caption.css );
+			if (this.getConfig('layout') == 'ontop') {
+				if (caption.css) {
+					$textTarget.css(caption.css);
 				} else {
-					$textTarget.css( this.getDefaultStyle() );
+					$textTarget.css(this.getDefaultStyle());
 				}
 			}
 			// Apply any custom style ( if we are ontop of the video )
-			this.displayTextTarget( $textTarget );
+			this.displayTextTarget($textTarget);
 
 			// apply any interface size adjustments:
-			$textTarget.css( this.getInterfaceSizeTextCss({
-					'width' :  this.embedPlayer.getInterface().width(),
-					'height' : this.embedPlayer.getInterface().height()
+			$textTarget.css(this.getInterfaceSizeTextCss({
+					'width': this.embedPlayer.getInterface().width(),
+					'height': this.embedPlayer.getInterface().height()
 				})
 			);
 
 			// Update the style of the text object if set
-			if( caption.styleId ){
-				var capCss = source.getStyleCssById( caption.styleId );
+			if (caption.styleId) {
+				var capCss = source.getStyleCssById(caption.styleId);
 				$textTarget.find('span.ttmlStyled').css(
 					capCss
 				);
 			}
 			$textTarget.fadeIn('fast');
+
+			// in case we added margin for webvtt, we should remove it for non-webvtt
+			this.getCaptionsOverlay().css('margin', '0px');
 		},
+
+		addCaption: function( source, capId, caption ){
+            if ( source.mimeType === "text/vtt" ) {
+	            //in WebVTT the caption is an entire div which contains the styled caption
+	            //so we should only hang it on the DOM
+				this.addCaptionAsDomElement( source, capId, caption )
+            } else {
+	            // in NO WebVTT the caption is simple text
+	            this.addCaptionAsText( source, capId, caption );
+            }
+		},
+
 		displayTextTarget: function( $textTarget ){
 			var embedPlayer = this.embedPlayer;
 			var $interface = embedPlayer.getInterface();
@@ -648,6 +760,7 @@
 			} else {
 				this.log("Possible Error, layout mode not recognized: " + this.getConfig('layout') );
 			}
+			embedPlayer.triggerHelper("captionsUpdated",$textTarget.html());
 		},
 		getInterfaceSizeTextCss: function( size ) {
 			//mw.log(' win size is: ' + $( window ).width() + ' ts: ' + textSize );
@@ -665,8 +778,7 @@
 				'left': 0,
 				'top': 0,
 				'bottom': 0,
-				'right': 0,
-				'position': 'absolute'
+				'right': 0
 			};
 
 			if( $captionsOverlayTarget.length == 0 ){
@@ -734,41 +846,97 @@
 			if( textSize < 95 ){
 				textSize = 95;
 			}
-			if( textSize > 150 ){
-				textSize = 150;
+			if( textSize > 200 ){
+				textSize = 200;
 			}
 			return textSize;
-		},		
+		},
 		getCaptionCss: function() {
-			var style = {'display': 'inline'};
+			var style;
 
-			if( this.getConfig( 'bg' ) ) {
-				style[ "background-color" ] = mw.getHexColor( this.getConfig( 'bg' ) );
+			if (this.customStyle) {
+				style = this.getCustomCaptionCss();
+			} else if (this.embedPlayer.playerConfig.layout.skin === "ott"){
+				style = this.getOttCaptionCss();
+			} else {
+				style = this.getDefaultCaptionCss();
 			}
-			if( this.getConfig( 'fontColor' ) ) {
-				style[ "color" ] = mw.getHexColor( this.getConfig( 'fontColor' ) );
+
+			return style;
+		},
+		getOttCaptionCss: function(){
+			var style = {};
+			style["display"] = "inline";
+			style["color"] = "white";
+			style["font-size"] = this.getEmFromFontSize(22);
+			style["text-shadow"] = "0px 1px 5px #000000";
+			style["text-align"] = "center";
+			style["background"] = "none";
+			return style;
+		},
+		getDefaultCaptionCss: function(){
+			var style = {};
+			style["display"] = "inline";
+			if (this.getConfig('bg')) {
+				style["background-color"] = mw.getHexColor(this.getConfig('bg'));
 			}
-			if( this.getConfig( 'fontFamily' ) ) {
-				style[ "font-family" ] = this.getConfig( 'fontFamily' );
+			if (this.getConfig('fontColor')) {
+				style["color"] = mw.getHexColor(this.getConfig('fontColor'));
 			}
-			if( this.getConfig( 'fontsize' ) ) {
+			if (this.getConfig('fontFamily')) {
+				style["font-family"] = this.getConfig('fontFamily');
+			}
+			if (this.getConfig('fontsize')) {
 				// Translate to em size so that font-size parent percentage
 				// base on http://pxtoem.com/
-				var emFontMap = { '6': .5, '7': .583, '8': .666, '9': .75, '10': .833, '11': .916,
-						'12': 1, '13': 1.083, '14': 1.166, '15': 1.25, '16': 1.333, '17': 1.416, '18': 1.5, '19': 1.583,
-						'20': 1.666, '21': 1.75, '22': 1.833, '23': 1.916, '24': 2 };
+
 				// Make sure its an int:
-				var fontsize = parseInt( this.getConfig( 'fontsize' ) );
-				style[ "font-size" ] = ( emFontMap[ fontsize ] ) ?
-						emFontMap[ fontsize ] +'em' :
-						(  fontsize > 24 )?  emFontMap[ 24 ]+'em' : emFontMap[ 6 ];
+				var fontsize = parseInt(this.getConfig('fontsize'));
+				style["font-size"] = this.getEmFromFontSize(fontsize);
 			}
-			if( this.getConfig( 'useGlow' ) && this.getConfig( 'glowBlur' ) && this.getConfig( 'glowColor' ) ) {
-				var hShadow = this.getConfig( 'hShadow' ) ? this.getConfig( 'hShadow' ) : 0;
-				var vShadow = this.getConfig( 'vShadow' ) ? this.getConfig( 'vShadow' ) : 0;
-				style[ "text-shadow" ] = hShadow + 'px ' + vShadow + 'px ' + this.getConfig( 'glowBlur' ) + 'px ' + mw.getHexColor( this.getConfig( 'glowColor' ) );
+			if (this.getConfig('useGlow') && this.getConfig('glowBlur') && this.getConfig('glowColor')) {
+				var hShadow = this.getConfig('hShadow') ? this.getConfig('hShadow') : 0;
+				var vShadow = this.getConfig('vShadow') ? this.getConfig('vShadow') : 0;
+				style["text-shadow"] = hShadow + 'px ' + vShadow + 'px ' + this.getConfig('glowBlur') + 'px ' + mw.getHexColor(this.getConfig('glowColor'));
 			}
 			return style;
+		},
+		getCustomCaptionCss: function(){
+			var style = {};
+			style["display"] = "inline";
+			style["font-family"] = this.customStyle.fontFamily;
+			style["color"] = this.customStyle.fontColor;
+			style["font-size"] = this.customStyle.fontSize;
+			style["background-color"] = this.customStyle.backgroundColor;
+			style["text-shadow"] = this.customStyle.edgeStyle;
+			return style;
+		},
+		getEmFromFontSize: function(fontsize){
+			var emFontMap = {
+				'6': .5,
+				'7': .583,
+				'8': .666,
+				'9': .75,
+				'10': .833,
+				'11': .916,
+				'12': 1,
+				'13': 1.083,
+				'14': 1.166,
+				'15': 1.25,
+				'16': 1.333,
+				'17': 1.416,
+				'18': 1.5,
+				'19': 1.583,
+				'20': 1.666,
+				'21': 1.75,
+				'22': 1.833,
+				'23': 1.916,
+				'24': 2
+			};
+			var calculatedEm = ( emFontMap[fontsize] ) ? emFontMap[fontsize] :
+				(  fontsize > 24 ) ? emFontMap[24] : emFontMap[6];
+			return (calculatedEm+ 'em');
+
 		},
 		getDefaultStyle: function(){
 			var baseCss =  {
@@ -817,45 +985,40 @@
 
 				return this.getMenu();
 			} else {
-				if( this.getConfig('hideWhenEmpty') == true ){
+				if( this.getConfig('hideWhenEmpty') == true && !this.embedPlayer.isMobileSkin()){
 					this.setConfig('visible', true)
 				}
-				this.getBtn().show();
+				if (this.getConfig("parent") !== "smartContainer"){
+					this.getComponent().show();
+				}
 				this.embedPlayer.triggerHelper("updateComponentsVisibilityDone");
 				// show new timed captions text if exists
 				this.showCaptions();
 			}
 
-			// Add Off item as first element
-			if( this.getConfig('showOffButton') && this.getConfig('offButtonPosition') == 'first' ) {
-				this.addOffButton();
-			}
+			this.getPlayer().triggerHelper('captionsMenuEmpty');
 
-			var items = [];
-			// Add text sources
-			$.each(sources, function( idx, source ){
-				_this.getMenu().addItem({
-					'label': source.label,
-					'callback': function(){
-						// If this caption is the same as current caption, toggle off captions
-						if( _this.getConfig('toggleActiveCaption') && _this.selectedSource === source ) {
-							_this.selectedSource = null;
-							_this.setConfig('displayCaptions', false);
-						} else {
-							_this.setTextSource( source );
-							_this.embedPlayer.triggerHelper("selectClosedCaptions", source.label);
-							_this.getActiveCaption();
-						}
-					},
-					'active': ( _this.selectedSource === source && _this.getConfig( "displayCaptions" )  )
-				});
-				items.push({'label':source.label, 'value':source.label});
-				if (_this.embedPlayer.isMobileSkin() && _this.selectedSource === source){
-					_this.getMenu().setActive(idx+1);
-				}
-			});
+            //add styles menu as first button
+            if (this.getConfig('enableOptionsMenu')) {
+                this.addOptionsButton(this.optionsMenu.addOptionsBtn());
+            }
+
+            // Add Off item as first element
+            if (this.getConfig('showOffButton') && this.getConfig('offButtonPosition') == 'first') {
+                this.addOffButton();
+            }
+
+            var items = [];
+
+            // Add text sources
+            for (var j = 0; j < sources.length; j++) {
+                var src = sources[j];
+                this.addSourceButton(src);
+                items.push({'label': src.label, 'value': src.label});
+            }
 
 			this.getActiveCaption();
+
 			// Add Off item as last element
 			if( this.getConfig('showOffButton') && this.getConfig('offButtonPosition') == 'last' ) {
 				this.addOffButton();
@@ -865,12 +1028,42 @@
 				items.unshift({'label':'Off', 'value':'Off'});
 			}
 
+			// If it's a mobile skin we need to set the active caption in the mobile menu
+            if (this.embedPlayer.isMobileSkin()) {
+                var activeText = this.getMenu().$el.find('.active').text();
+                var activeIndex = this.getMenu().mobileMenu.find('option[value="' + activeText + '"]').index();
+                this.getMenu().setActive(activeIndex);
+            }
+
 			// dispatch event to be used by a master plugin if defined
-			this.getPlayer().triggerHelper("updatePropertyEvent",{"plugin": this.pluginName, "property": "captions", "items": items, "selectedItem": this.getMenu().$el.find('.active a').text()});
+            this.getPlayer().triggerHelper("updatePropertyEvent", {
+                "plugin": this.pluginName,
+                "property": "captions",
+                "items": items,
+                "selectedItem": this.getMenu().$el.find('.active a').text()
+            });
 
 			// Allow plugins to integrate with captions menu
 			this.getPlayer().triggerHelper('captionsMenuReady');
 		},
+        addSourceButton: function (src) {
+            var _this = this;
+            _this.getMenu().addItem({
+                'label': src.label,
+                'callback': function () {
+                    // If this caption is the same as current caption, toggle off captions
+                    if (_this.getConfig('toggleActiveCaption') && _this.selectedSource === src) {
+                        _this.selectedSource = null;
+                        _this.setConfig('displayCaptions', false);
+                    } else {
+                        _this.setTextSource(src);
+                        _this.embedPlayer.triggerHelper("selectClosedCaptions", src.label);
+                        _this.getActiveCaption();
+                    }
+                },
+                'active': ( _this.selectedSource === src && _this.getConfig("displayCaptions")  )
+            });
+        },
 		addOffButton: function() {
 			var _this = this;
 			this.getMenu().addItem({
@@ -881,6 +1074,7 @@
 				'callback': function(){
 					_this.selectedSource = null;
 					_this.embedPlayer.triggerHelper("selectClosedCaptions", "Off");
+					_this.embedPlayer.triggerHelper('changedClosedCaptions', {language: ""});
 					_this.setConfig('displayCaptions', false);
 					// also update the cookie to "None"
 					_this.getPlayer().setCookie( _this.cookieName, 'None' );
@@ -888,11 +1082,27 @@
 				'active': ! _this.getConfig( "displayCaptions" ) 
 			});
 		},
+		addOptionsButton: function(btnOptions) {
+			var _this = this;
+			this.getMenu().addItem({
+				'label': btnOptions.optionsLabel,
+				'attributes': {
+					'class': "cvaaOptions"
+				},
+				'callback': function(){
+					_this.getPlayer().triggerHelper(btnOptions.optionsEvent);
+				},
+				'active': false
+			});
+		},
 		setTextSource: function( source, setCookie ){
 			setCookie = ( setCookie === undefined ) ? true : setCookie;
 			var _this = this;
 			if( !source.loaded ){
-				this.embedPlayer.getInterface().find('.track').text( gM('mwe-timedtext-loading-text') );
+				this.embedPlayer.getInterface().find('.track')
+					.css( this.getDefaultStyle() )
+					.html( $('<div />')
+						.text( gM('mwe-timedtext-loading-text') ) );
 				source.load(function(){
 					_this.getPlayer().triggerHelper('newClosedCaptionsData' , _this.selectedSource);
 					if( _this.playbackStarted ){

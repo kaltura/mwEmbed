@@ -7,36 +7,45 @@
             {
 
             },
-            initialize:function()
+            destroy : function()
             {
+                if (this.cuePointsManager)
+                {
+                    this.cuePointsManager.destroy();
+                    this.cuePointsManager = null;
+                }
+            },
+            start:function()
+            {
+                mw.log("dualScreen.externalControlManager.start(): start invoked");
+
                 var _this = this;
 
-                if (_this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") || _this.getPlayer().kCuePoints) {
+                if ((_this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints")) || _this.getPlayer().kCuePoints) {
+                    mw.log("dualScreen.externalControlManager.start(): creating cue point manager to monitor media cue points");
+
                     // handle cue points only if either live or we have cue points loaded from the server
                     setTimeout(function()
                     {
                         if (!_this.cuePointsManager) {
                             // we need to initialize the instance
-                            _this.cuePointsManager = new mw.dualScreen.CuePointsManager('dualScreenExternalControlManager', '', _this.getPlayer(), function (args) {
-                                var relevantCuePoints = args.filter({tag: 'player-view-mode', sortDesc: true});
+                            _this.cuePointsManager = new mw.dualScreen.CuePointsManager(_this.getPlayer(), function () {
+                            }, "externalControlCuePointsManager");
+
+
+                            _this.cuePointsManager.onCuePointsReached = function (args) {
+                                var relevantCuePoints = args.filter({
+                                    tags: ['player-view-mode', 'change-view-mode'],
+                                    sortDesc: true
+                                });
                                 var mostUpdatedCuePointToHandle = relevantCuePoints.length > 0 ? relevantCuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
 
                                 if (mostUpdatedCuePointToHandle) {
                                     _this.handleCuePoint(mostUpdatedCuePointToHandle);
                                 }
-                            });
+                            };
                         }
-
-                        // enable cue points manager
-                        _this.cuePointsManager.enable();
                     },1000);
-                }else
-                {
-                    // no need for cue points manager
-                    if (_this.cuePointsManager) {
-                        _this.cuePointsManager.disable();
-                    }
-
                 }
             },
             setViewById : function(viewId)
@@ -89,16 +98,22 @@
             {
                 var _this = this;
 
-                if (!cuePoint || cuePoint.cuePointType !== 'codeCuePoint.Code' || cuePoint.tags !== 'player-view-mode' ||
-                    !cuePoint.code)
+                var actionContent = null;
+
+                if (cuePoint && cuePoint.cuePointType === 'codeCuePoint.Code' && (cuePoint.tags || '').indexOf('player-view-mode') !== -1 && cuePoint.code)
                 {
-                    // ignore any cue point not relevant to player view mode.
-                    return;
+                    actionContent = cuePoint.code;
+
+                }else if (cuePoint && cuePoint.cuePointType === 'codeCuePoint.Code' && (cuePoint.tags || '').indexOf('change-view-mode') !== -1 && cuePoint.partnerData)
+                {
+                    actionContent = cuePoint.partnerData;
                 }
 
-                var cuePointCode = JSON.parse(cuePoint.code);
-                if (cuePointCode.playerViewModeId) {
-                    _this.setViewById(cuePointCode.playerViewModeId)
+                if (actionContent) {
+                    var cuePointCode = JSON.parse(actionContent);
+                    if (cuePointCode.playerViewModeId) {
+                        _this.setViewById(cuePointCode.playerViewModeId)
+                    }
                 }
             }
         });

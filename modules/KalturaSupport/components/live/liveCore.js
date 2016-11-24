@@ -143,7 +143,7 @@
 					if ( !embedPlayer.firstPlay && _this.isDVR() ) {
 						embedPlayer.disablePlayControls();
 						var shouldPause = !embedPlayer.isPlaying();
-						var playingEvtName = "playing.backToLive";
+						var playingEvtName = "seeked.backToLive playing.backToLive";
 						embedPlayer.bindHelper( playingEvtName , function() {
 							embedPlayer.unbindHelper( playingEvtName );
 							setTimeout( function() {
@@ -209,7 +209,9 @@
 
 					if ( !_this.isNativeHLS() ) {
 						embedPlayer.bindHelper( 'ended', function() {
-							embedPlayer.getPlayerElement().seek( 0 );
+							if(embedPlayer.getPlayerElement().seek){
+								embedPlayer.getPlayerElement().seek( 0 );
+							}
 						});
 					}
 				}
@@ -303,7 +305,7 @@
 
 				hideComponentsArr.push( 'durationLabel' );
 				//live + DVR
-				if ( _this.isDVR() ) {
+				if ( _this.isDVR() && !embedPlayer.casting) {
 					_this.dvrWindow = embedPlayer.evaluate( '{mediaProxy.entry.dvrWindow}' ) * 60;
 					if ( !_this.dvrWindow ) {
 						_this.dvrWindow = _this.defaultDVRWindow;
@@ -342,7 +344,10 @@
 			else {
 				embedPlayer.removePosterFlag = false;
 				hideComponentsArr.push( 'liveStatus' );
-				showComponentsArr.push( 'sourceSelector', 'scrubber', 'durationLabel', 'currentTimeLabel' );
+				showComponentsArr.push( 'scrubber', 'durationLabel', 'currentTimeLabel' );
+				if (!embedPlayer.isMobileSkin()){
+					showComponentsArr.push( 'sourceSelector' );
+				}
 				_this.removeLiveStreamStatusMonitor();
 				_this.unbind('timeupdate');
 			}
@@ -457,7 +462,7 @@
                 'protocol' : protocol,
                 'partnerId': embedPlayer.kpartnerid
             };
-            if ( mw.isIOS8_9() ) {
+            if ( mw.isIOSAbove7() ) {
                 requestObj.rnd = Math.random();
             }
 			_this.getKalturaClient().doRequest( requestObj, function( data ) {
@@ -487,7 +492,7 @@
 		},
 
 		isNativeHLS: function() {
-			if ( mw.isIOS() || mw.isDesktopSafari() || mw.isAndroid() ) {
+			if ( mw.isIOS() || mw.isDesktopSafari() || mw.isAndroid() || mw.isEdge()) {
 				return true;
 			}
 			return false;

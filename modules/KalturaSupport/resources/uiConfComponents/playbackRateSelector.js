@@ -60,7 +60,9 @@
 
 			this.bind( 'onChangeMedia', function(){
 				_this.currentSpeed = 1;
-				_this.getBtn().text( '1x' );
+				if ( !_this.embedPlayer.isMobileSkin() ){
+					_this.getBtn().text( '1x' );
+				}
 				_this.buildMenu();
 
 				_this.manifestSource = null;
@@ -73,8 +75,15 @@
 			});
 
 			this.bind( 'onRemovePlayerSpinner', function(){
-				 if ( _this.getPlayer().getPlayerElement() ) {
-					 _this.getPlayer().getPlayerElement().playbackRate = _this.currentSpeed;
+				 if ( _this.getPlayer().getPlayerElement() && !_this.getConfig("serverSpeedPlayback")) {
+					 if (_this.getPlayer().instanceOf === 'Native') {
+						 _this.getPlayer().getPlayerElement().playbackRate = _this.currentSpeed;
+					 }
+					 //Unfortunately until we transform the DASH player API to be same as native
+					 //we have to do this
+					 if (_this.getPlayer().instanceOf === 'MultiDRM'){
+						 _this.getPlayer().getPlayerElement().setPlaybackRate(_this.currentSpeed);
+					 }
 				 }
 			});
 			this.bind( 'playbackRateChangeSpeed', function(e, arg ){
@@ -150,7 +159,7 @@
 			this.getMenu().destroy();
 
 			$.each( this.speedSet, function( idx, speedFloat ){
-				var active = ( _this.currentSpeed == speedFloat ) ? true : false;
+				var active = ( _this.currentSpeed == speedFloat );
 				_this.getMenu().addItem({
 					'label': speedFloat + 'x',
 					'callback': function(){
@@ -169,7 +178,7 @@
 			var previousSpeed = this.currentSpeed;
 			this.currentSpeed = newSpeed;
 			// check if we need to switch interfaces: 
-			if( this.getPlayer().instanceOf != 'Native' || (mw.isMobileDevice() && this.getConfig("serverSpeedPlayback") && this.manifestSource)){
+			if( (this.getPlayer().instanceOf != 'Native' && this.getPlayer().instanceOf != 'MultiDRM') || (mw.isMobileDevice() && this.getConfig("serverSpeedPlayback") && this.manifestSource)){
 				this.handlePlayerInstanceUpdate( newSpeed, previousSpeed );
 				return ;
 			}
@@ -270,7 +279,14 @@
 		updatePlaybackRate: function( newSpeed ){
 			// workaround for Firefox and IE - changing playbackRate before media loads causes player to stuck
 			if (this.getPlayer().mediaLoadedFlag){
-				this.getPlayer().getPlayerElement().playbackRate = newSpeed;
+				if (this.getPlayer().instanceOf === 'Native') {
+					this.getPlayer().getPlayerElement().playbackRate = newSpeed;
+				}
+				//Unfortunately until we transform the DASH player API to be same as native
+				//we have to do this
+				if (this.getPlayer().instanceOf === 'MultiDRM'){
+					this.getPlayer().getPlayerElement().setPlaybackRate(newSpeed);
+				}
 			}
 			if (!this.embedPlayer.isMobileSkin()){
 				this.getBtn().text( newSpeed + 'x' );

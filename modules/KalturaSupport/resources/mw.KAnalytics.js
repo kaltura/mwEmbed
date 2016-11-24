@@ -35,6 +35,8 @@ mw.KAnalytics.prototype = {
 	//delay the stats call in x sec
 	delay:0,
 
+    histroyEvent : {},
+    histroyEventCount:{},
 	kEventTypes : {
 		'WIDGET_LOADED' : 1,
 		'MEDIA_LOADED' : 2,
@@ -76,6 +78,9 @@ mw.KAnalytics.prototype = {
 		var _this = this;
 		// set the version of html5 player
 		this.version = mw.getConfig( 'version' );
+        if (!mw.KAnalytics.totalEventCount)  {
+            mw.KAnalytics.totalEventCount = 0;
+        }
 		// Setup the local reference to the embed player
 		this.embedPlayer = embedPlayer;
 		if( ! this.kClient ) {
@@ -90,6 +95,12 @@ mw.KAnalytics.prototype = {
 			_this.resetPlayerflags();
 		});
 
+        $( embedPlayer ).bind( 'changeMedia' + this.bindPostFix, function() {
+            // Setup the initial state of some flags
+            _this.histroyEvent = {};
+            _this.histroyEventCount = {};
+        });
+
 		// Add relevant hooks for reporting beacons
 		this.bindPlayerEvents();
 	},
@@ -100,7 +111,7 @@ mw.KAnalytics.prototype = {
 		this._p100Once = false;
 		this.hasSeeked = false;
 		this.lastSeek = 0;
-	},
+    },
 	/**
 	 * Get the current report set
 	 *
@@ -117,7 +128,6 @@ mw.KAnalytics.prototype = {
 
 		// get the id for the given event:
 		var eventKeyId = this.kEventTypes[ KalturaStatsEventKey ];
-
 		// Generate the status event
 		var eventSet = {
 			'eventType'			: eventKeyId,
@@ -146,7 +156,21 @@ mw.KAnalytics.prototype = {
 			eventSet[ 'entryId' ] = this.embedPlayer.getSrc();
 		}
 
-		// Set the 'event:uiconfId'
+        if (this.histroyEvent[eventSet[ 'entryId' ]]   == null)
+        {
+            this.histroyEvent[eventSet[ 'entryId' ]] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+        }
+
+        if (this.histroyEventCount[eventSet[ 'entryId' ]]   == null)
+        {
+            this.histroyEventCount[eventSet[ 'entryId' ]] = 0;
+        }
+        this.histroyEvent[eventSet[ 'entryId' ]][eventKeyId - 1] = 1;
+        this.histroyEventCount[eventSet[ 'entryId' ]]++;
+        mw.KAnalytics.totalEventCount++;
+
+        eventSet[ 'historyEvents' ] = this.histroyEvent[eventSet[ 'entryId' ]].join('') + '-' + this.histroyEventCount[eventSet[ 'entryId' ]] + '-' + mw.KAnalytics.totalEventCount ;
+        // Set the 'event:uiconfId'
 		if( this.embedPlayer.kuiconfid ) {
 			eventSet[ 'uiconfId' ] = this.embedPlayer.kuiconfid;
 		}
@@ -321,7 +345,6 @@ mw.KAnalytics.prototype = {
 		// Set the seek and time percent:
 		var percent = embedPlayer.currentTime / embedPlayer.duration;
 		var seekPercent = this.lastSeek/ embedPlayer.duration;
-
 
 		// Send updates based on logic present in StatisticsMediator.as
 		if ( !embedPlayer.isLive() ){

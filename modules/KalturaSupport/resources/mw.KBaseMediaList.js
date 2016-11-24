@@ -55,6 +55,9 @@
 				'entry_id': this.getPlayer().kentryid,
 				'width': this.getConfig( "thumbWidth" )
 			};
+			if ( this.getPlayer().getFlashvars( 'loadThumbnailWithKs' )  ){
+				this.baseThumbSettings[ 'ks' ] = this.getPlayer().getFlashvars('ks');
+			}
 		},
 		_addBindings: function () {
 			var _this = this;

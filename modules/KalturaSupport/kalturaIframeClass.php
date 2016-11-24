@@ -76,7 +76,7 @@ class kalturaIframeClass {
 			try {
 				$result = $client->widget->get($widgetId);
 			} catch( Exception $e ){
-				throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
+				throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . htmlspecialchars($e->getMessage()) );
 			}
 			if( $result ) {
 				return $result;
@@ -95,7 +95,7 @@ class kalturaIframeClass {
 				// Init a new result object with the client tag:
 				$this->uiConfResult = $container['uiconf_result'];
 			} catch ( Exception $e ){//die($e->getMessage());
-				$this->fatalError( $e->getMessage() );
+				$this->fatalError( htmlspecialchars($e->getMessage()) );
 			}
 		}
 		return $this->uiConfResult;
@@ -170,7 +170,7 @@ class kalturaIframeClass {
 		// NOTE: special persistentNativePlayer class will prevent the video from being swapped
 		// so that overlays work on the iPad.
 		$o = "\n\n\t" .'<video class="persistentNativePlayer" ';
-		$o.= 'poster="' . htmlspecialchars( "data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%01%00%00%00%01%08%02%00%00%00%90wS%DE%00%00%00%01sRGB%00%AE%CE%1C%E9%00%00%00%09pHYs%00%00%0B%13%00%00%0B%13%01%00%9A%9C%18%00%00%00%07tIME%07%DB%0B%0A%17%041%80%9B%E7%F2%00%00%00%19tEXtComment%00Created%20with%20GIMPW%81%0E%17%00%00%00%0CIDAT%08%D7c%60%60%60%00%00%00%04%00%01'4'%0A%00%00%00%00IEND%AEB%60%82" ) . '" ';
+        $o.= 'poster="' . htmlspecialchars( "data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%01%00%00%00%01%08%02%00%00%00%90wS%DE%00%00%00%01sRGB%00%AE%CE%1C%E9%00%00%00%09pHYs%00%00%0B%13%00%00%0B%13%01%00%9A%9C%18%00%00%00%07tIME%07%DB%0B%0A%17%041%80%9B%E7%F2%00%00%00%19tEXtComment%00Created%20with%20GIMPW%81%0E%17%00%00%00%0CIDAT%08%D7c%60%60%60%00%00%00%04%00%01'4'%0A%00%00%00%00IEND%AEB%60%82" ) . '" ';
 		//$o.= '  crossorigin="anonymous" poster="' . htmlspecialchars( "data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%01%00%00%00%01%08%02%00%00%00%90wS%DE%00%00%00%01sRGB%00%AE%CE%1C%E9%00%00%00%09pHYs%00%00%0B%13%00%00%0B%13%01%00%9A%9C%18%00%00%00%07tIME%07%DB%0B%0A%17%041%80%9B%E7%F2%00%00%00%19tEXtComment%00Created%20with%20GIMPW%81%0E%17%00%00%00%0CIDAT%08%D7c%60%60%60%00%00%00%04%00%01'4'%0A%00%00%00%00IEND%AEB%60%82" ) . '" ';
 		$o.= 'id="' . htmlspecialchars( $this->getIframeId() ) . '" ';
 
@@ -577,7 +577,6 @@ class kalturaIframeClass {
 		}
 		return "Kaltura Embed Player iFrame";
 	}
-
 	/**
 	 * Get the iframe css
 	 */
@@ -652,6 +651,56 @@ HTML;
 			}
 		}
 	}
+
+		function outputCustomCss(){
+    		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
+    		$customStyle = 'false';
+    		if (isset($playerConfig['plugins']['theme'])){
+    			$theme = $playerConfig['plugins']['theme'];
+    		    $customStyle = '"';
+    			if (isset($theme['buttonsSize'])){
+    				$customStyle = $customStyle . '.mwPlayerContainer:not(.mobileSkin) .controlsContainer, .topBarContainer {font-size: ' . $theme['buttonsSize'] . 'px}';
+    			}
+    			if (isset($theme['buttonsColor'])){
+    				$customStyle = $customStyle . '.mwPlayerContainer:not(.mobileSkin) .btn {background-color: ' . $theme['buttonsColor'] . '}';
+    				if (isset($theme['applyToLargePlayButton']) && $theme['applyToLargePlayButton'] == true){
+    					$customStyle = $customStyle  . '.largePlayBtn {background-color: ' . $theme['buttonsColor'] . '!important}';
+    				}
+    			}
+    			if (isset($theme['sliderColor'])){
+    				$customStyle = $customStyle . '.ui-slider {background-color: ' . $theme['sliderColor'] . '!important}';
+    			}
+    			if (isset($theme['controlsBkgColor'])){
+    				$customStyle = $customStyle . '.mwPlayerContainer:not(.mobileSkin) .controlsContainer {background-color: ' . $theme['controlsBkgColor'] . '!important}';
+    				$customStyle = $customStyle . '.mwPlayerContainer:not(.mobileSkin) .controlsContainer {background: ' . $theme['controlsBkgColor'] . '!important}';
+    			}
+    			if (isset($theme['scrubberColor'])){
+    				$customStyle = $customStyle . '.mwPlayerContainer:not(.mobileSkin) .playHead {background-color: ' . $theme['scrubberColor'] . '!important}';
+    				$customStyle = $customStyle . '.mwPlayerContainer:not(.mobileSkin) .playHead {background: ' . $theme['scrubberColor'] . '!important}';
+    			}
+    			if (isset($theme['buttonsIconColor'])){
+    				$customStyle = $customStyle . '.btn {color: ' . $theme['buttonsIconColor'] . '!important}';
+    				if (isset($theme['applyToLargePlayButton']) && $theme['applyToLargePlayButton'] == true){
+    					$customStyle = $customStyle  . '.largePlayBtn {color: ' . $theme['buttonsIconColor'] . '!important}';
+    				}
+    			}
+    			if (isset($theme['watchedSliderColor'])){
+    				$customStyle = $customStyle . '.watched {background-color: ' . $theme['watchedSliderColor'] . '!important}';
+    			}
+    			if (isset($theme['bufferedSliderColor'])){
+                    $customStyle = $customStyle . '.buffered {background-color: ' . $theme['bufferedSliderColor'] . '!important}';
+                }
+    			if (isset($theme['timeLabelColor'])){
+    				$customStyle = $customStyle . '.currentTimeLabel {color: ' . $theme['timeLabelColor'] . '!important}';
+    				$customStyle = $customStyle . '.durationLabel {color: ' . $theme['timeLabelColor'] . '!important}';
+    			}
+                if (isset($theme['buttonsIconColorDropShadow']) && isset($theme['dropShadowColor'])){
+                    $customStyle = $customStyle . '.btn {text-shadow: ' . $theme['dropShadowColor'] . '!important}';
+                }
+    			$customStyle =  $customStyle . '"';
+    		}
+    		return $customStyle;
+    	}
 
 	function getPath() {
 		global $wgResourceLoaderUrl;
@@ -965,11 +1014,11 @@ HTML;
 					    $payload[ 'entryResult' ] = $this->getEntryResultData();
 					}
 				} catch ( Exception $e ){
-					$payload['error'] = $e->getMessage();
+					$payload['error'] = htmlspecialchars($e->getMessage());
 				}
 				// push up entry result errors to top level:
 				if( isset( $payload[ 'entryResult' ]  ) && isset( $payload[ 'entryResult' ]['error']) ){
-					$payload['error'] = $payload[ 'entryResult' ]['error'];
+					$payload['error'] = htmlspecialchars($payload[ 'entryResult' ]['error']);
 				} 
 				// check for returned errors: 
 				echo json_encode( $payload );
@@ -1215,6 +1264,7 @@ HTML;
 	function getIFramePageOutput( ){
 		$this->inlineScript = false;
 		$flashvars = $this->request->getFlashVars();
+		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
 
 		if (isset($flashvars['inlineScript']) && $flashvars['inlineScript'] == "true"){
 			$this->inlineScript = true;
@@ -1228,13 +1278,34 @@ HTML;
 <!DOCTYPE html>
 <html>
 <head>
+
+	<?php
+        $forceCompatMode = $this->getUiConfResult()->getPlayerConfig(false, 'forceCompatMode');
+        if(!empty($forceCompatMode)){
+            if ($forceCompatMode != "none"){
+                echo '<meta http-equiv="X-UA-Compatible" content="' . $forceCompatMode . '"/>';
+            }
+        } else {
+            echo '<meta http-equiv="X-UA-Compatible" content="IE=edge"/>';
+        }
+	?>
 	<script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ </script>
 	<?php if($wgRemoteWebInspector && $wgEnableScriptDebug){
 		echo '<script src="' . $wgRemoteWebInspector . '"></script>';
 	 } ?>
-	<link href='//fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+	<link href='//fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+	<?php if (isset($flashvars) && isset($flashvars['nativeCallout'])){
+	    $nativeCallout = json_decode($flashvars['nativeCallout'],true);
+        if (isset($nativeCallout) && ($nativeCallout['plugin'] ===  true)){
+            echo '<meta name="format-detection" content="telephone=no">';
+            echo '<meta name="format-detection" content="date=no">';
+            echo '<meta name="format-detection" content="address=no">';
+            echo '<meta name="format-detection" content="email=no">';
+        }
+    } ?>
 	<?php echo $this->outputIframeHeadCss(); ?>
 	<?php echo $this->outputSkinCss(); ?>
+    <?php $customCss = $this->outputCustomCss(); ?>
 
 	<script type="text/javascript">
 		(function (document) {
@@ -1249,6 +1320,22 @@ HTML;
 </head>
 <body>
 <?php echo $this->getKalturaIframeScripts(); ?>
+
+<script type="text/javascript">
+    var customCSS = <?php echo $customCss ?>;
+    if (['kWidget'] && !window['kWidget'].isMobileDevice() && customCSS){
+        var head = document.head || document.getElementsByTagName('head')[0];
+        var customStyle = document.createElement('style');
+        customStyle.type = 'text/css';
+        if (customStyle.styleSheet){
+          customStyle.styleSheet.cssText = customCSS;
+        } else {
+          customStyle.appendChild(document.createTextNode(customCSS));
+        }
+        head.appendChild(customStyle);
+    }
+</script>
+
 <?php
 	// wrap in a top level playlist in the iframe to avoid javascript base .wrap call that breaks video playback in iOS
 	if( $this->getUiConfResult()->isPlaylist() ){
