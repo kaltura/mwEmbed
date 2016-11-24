@@ -1196,7 +1196,15 @@ body {
 .dropup .dropdown-menu,.navbar-fixed-bottom .dropdown .dropdown-menu {
 	top: auto;
 	bottom: 102%;
+	overflow-x: hidden;
+	max-height: 300px;
+	width: auto !important;
 }
+
+.dropup .dropdown-menu a.truncateText { overflow: visible !important; text-overflow: initial;
+	padding-right: 20px;
+}
+
 .ua-chromecast .closedCaptions{
     display: none !important;
 }
