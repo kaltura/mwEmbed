@@ -1,0 +1,76 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>get licensedUrl (phoenix) test page</title>
+
+    <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+    <script>mw.setConfig('forceMobileHTML5', true);</script>
+
+
+
+
+</head>
+<body>
+<h1>
+    test
+</h1>
+<p>This test page demonstrates get licensedUrl (phoenix)</p>
+
+<div id="kaltura_player" style="width: 585px; height: 330px;float: left;"></div>
+<br style="clear: both;" /><br />
+<script>
+var format = ["Web HD", "Web_HD_FP", "Web_HD_Dash", "Web SD"]
+    kWidget.embed({
+        'targetId': 'kaltura_player',
+        'wid': '_1726172',
+        'uiconf_id' : '8413350',
+        'entry_id' : '255859',
+        'flashvars': {
+          "tvpapiGetlicensedUrl": {
+                      "restApiBaseUrl": "http://api-preprod.ott.kaltura.com/v4_1/api_v3/",
+                      "plugin": true,
+                      "ItemID": 80493,
+                      "Type": "Recording",
+                      "ks": "djJ8MTk4fEnw5b7doxxZx0mFNyjIp-DOj2yQiZoUp8v_Iqo4jRw1vZbNiwmT5xsVakgqcBoFLbfoRDajXq_rwMsUyOX-ekqaHNmJrAKZHLQ5a3XexBgeDcBhWz0ajiDIblXQ_ilk5jhmj4_DhXIstMW3Z4hz8c8="
+          },
+          "liveCore": {
+                    "plugin": false
+                },
+            "proxyData": {
+                "initObj": {
+                    "ApiUser": "tvpapi_198",
+                    "ApiPass": "11111",
+                    "UDID": "E39CE359C4EF4DF5A15BDF6E44C8BA23",
+                    "DomainID": 0,
+                    "Platform": "Web",
+                    "Locale": {
+                        "LocaleDevice": null,
+                        "LocaleUserState": "Unknown",
+                        "LocaleCountry": null,
+                        "LocaleLanguage": "en"
+                    },
+                    "SiteGuid": "639809"
+                },
+                "tagsMetas": [],
+                "MediaID": 255859,
+                "iMediaID": 255859,
+                "mediaID": 255859,
+                "config": {
+                  "flavorassets": {
+                    "filters": {
+                      "include": {
+                        "Format": format
+                      }
+                    }
+                  }
+                },
+                "picSize": "144X81",
+                "pageSize": 24,
+                "pageIndex": 0
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
