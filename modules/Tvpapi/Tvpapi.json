@@ -33,5 +33,10 @@
         "scripts": "resources/startOver.js",
         "dependencies": ["tvpapiRequest"] ,
         "kalturaPluginName": "tvpapiStartOver"
+    },
+    "tvpapiGetlicensedUrl": {
+        "scripts": "resources/getLicensedUrl.js",
+        "dependencies": ["tvpapiRequest"] ,
+        "kalturaPluginName": "tvpapiGetlicensedUrl"
     }
 }
