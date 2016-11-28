@@ -30,9 +30,7 @@
 
         setup: function () {
             var _this = this;
-            var embedPlayer = _this.getPlayer()
-
-            embedPlayer.disableComponentsHover();
+            var embedPlayer = _this.getPlayer();
             mw.log("Quiz: " + _this.IVQVer);
             this.bind('onChangeStream', function () {
                 mw.log("Quiz: multistream On");
