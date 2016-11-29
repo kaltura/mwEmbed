@@ -543,6 +543,7 @@
 		},
 
 		getCaptionsFromVTT: function( data ){
+			window.VTTCue = window.VttjsCue;
 			var parser = new WebVTT.Parser(window, WebVTT.StringDecoder());
 			var cues = [];
 			var regions = [];
@@ -604,5 +605,8 @@
 		}
 	};
 
+	// vtt.js override the VTTCue to wrong format for shaka, so store the vtt.js's VTTCue and set the original.
+	window.VttjsCue = window.VTTCue;
+	window.VTTCue = window.originalVTTCue;
 
 } )( window.mediaWiki, window.jQuery );

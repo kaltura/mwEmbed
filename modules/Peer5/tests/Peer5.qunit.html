@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html>
-  <head>
+<head>
     <title>Peer5 Test Page</title>
 
     <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
@@ -9,41 +9,40 @@
 
     <script type="text/javascript" src="../../Peer5/tests/Peer5.qunit.js"></script>
 
-    <script>  // NOTE Don't really know what is this and why.
-        function jsCallbackReady(videoId){
-            if (console && console.log) {
-                console.log( 'jsCallbackReady: ' + videoId );
-            }
+    <script>
+    function jsCallbackReady(videoId) {
+        if (console && console.log) {
+            console.log('jsCallbackReady: ' + videoId);
         }
+    }
     </script>
 
     <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
     <script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
-  </head>
-  <body>
-    <div id="playerMain" style="width:800px;height:500px;float:left"></div>
-    <script>
-        kWidget.featureConfig({
-            'cache_st':'123',
-            'targetId':'playerMain',
-            'wid': '_243342',
-            'uiconf_id':'2877502',
-            'entry_id':'1_zm1lgs13',
-            'flashvars':{
-                'LeadWithHLSOnJs': true,
-                'hlsjs':{
-                    'plugin':true
-                },
-                'peer5':{
-                    'plugin':true,
-                    'peer5JsUrl': 'https://api.peer5.com/peer5.js?id=l3ftftn4dftl881rfp32',
-                    'peer5HlsjsPluginJsUrl': 'https://api.peer5.com/peer5.hlsjs.plugin.js'
-                }
+</head>
+<body>
+<div id="playerMain" style="width:800px;height:500px;float:left"></div>
+<script>
+    kWidget.featureConfig({
+        'cache_st': '123',
+        'targetId': 'playerMain',
+        'wid': '_243342',
+        'uiconf_id': '2877502',
+        'entry_id': '1_zm1lgs13',
+        'flashvars': {
+            'LeadWithHLSOnJs': true,
+            'hlsjs': {
+                'plugin': true
+            },
+            'peer5': {
+                'plugin': true,
+                'apiKey': 'qp12sghcd0lnn1avjfrm'
             }
-        });
-    </script>
-    <div style="clear:both"></div>
-    <br>
+        }
+    });
+</script>
+<div style="clear:both"></div>
+<br>
 
-  </body>
+</body>
 </html>

@@ -3,9 +3,19 @@
         mw.dualScreen = mw.dualScreen || {};
 
         mw.dualScreen.externalControlManager = mw.KBasePlugin.extend({
+            /* DEVELOPER NOTICE: you should not set any property directly here (they will be shared between instances) - use the setup function instead */
+            defaultConfig: {
+                /* DEVELOPER NOTICE : don't use this plugin config feature since it is a detached plugin. A detached plugin cannot access the player configuration to support overrides */
+            },
             setup : function()
             {
+                var _this = this;
 
+                /*
+                 DEVELOPER NOTICE: you should set properties here (they will be scoped per instance)
+                 */
+                $.extend(_this, {
+                });
             },
             destroy : function()
             {
@@ -29,7 +39,7 @@
                     {
                         if (!_this.cuePointsManager) {
                             // we need to initialize the instance
-                            _this.cuePointsManager = new mw.dualScreen.CuePointsManager(_this.getPlayer(), function () {
+                            _this.cuePointsManager = new mw.webcast.CuePointsManager(_this.getPlayer(), function () {
                             }, "externalControlCuePointsManager");
 
 
@@ -42,13 +52,15 @@
 
                                 if (mostUpdatedCuePointToHandle) {
                                     _this.handleCuePoint(mostUpdatedCuePointToHandle);
+                                } else if(args.reason === 'reconstructState'){
+                                    _this.resetViewMode(); //if no relevant cue point was reached, make sure player view mode is reset to default (f.e - prevent unnecessary locked view mode state)
                                 }
                             };
                         }
                     },1000);
                 }
             },
-            setViewById : function(viewId)
+            setViewById : function(viewId, lockstate)
             {
                 var action, mainDisplayType;
 
@@ -86,9 +98,13 @@
                     }
 
                     if (action) {
-                        mw.log("dualscreenExternalControlManager.handleCuePoint(): Changing player view to '" + action + "' with main display '" + mainDisplayType + "' (provided id '" + viewId + "')");
-
-                        this.getPlayer().triggerHelper('dualScreenStateChange', { action : action, mainDisplayType : mainDisplayType});
+                        var dualScreenState = { action : action, mainDisplayType : mainDisplayType};
+                        if(lockstate) {
+                            this.log("dualscreenExternalControlManager.setViewById(): Changing player view mode state to '" + lockstate);
+                            dualScreenState.lockState = lockstate;
+                        }
+                        this.log("dualscreenExternalControlManager.setViewById(): Changing player view to '" + action + "' with main display '" + mainDisplayType + "' (provided id '" + viewId + "')");
+                        this.getPlayer().triggerHelper('dualScreenStateChange', dualScreenState);
                     }
 
                 }
@@ -112,9 +128,19 @@
                 if (actionContent) {
                     var cuePointCode = JSON.parse(actionContent);
                     if (cuePointCode.playerViewModeId) {
-                        _this.setViewById(cuePointCode.playerViewModeId)
+                        //updating current view mode lock state
+                        //the default view mode lock state is 'unlocked'
+                        var viewModeLockState = cuePointCode.viewModeLockState ?
+                            cuePointCode.viewModeLockState : mw.dualScreen.display.STATE.UNLOCKED;
+                        _this.setViewById(cuePointCode.playerViewModeId, viewModeLockState)
                     }
                 }
+            },
+            resetViewMode : function ()
+            {
+                //reset view mode lock state to unlocked
+                var dualScreenState = { lockState : mw.dualScreen.display.STATE.UNLOCKED };
+                this.getPlayer().triggerHelper('dualScreenStateChange', dualScreenState);
             }
         });
     }

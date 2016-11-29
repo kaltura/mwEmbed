@@ -675,7 +675,7 @@ var mw = ( function ( $, undefined ) {
 			function addScript( src, callback, async ) {
 				var done = false, script, head;
 				// Always use async to add scripts.
-				// TOOD add a configuration option upstream. 
+				// TOOD add a configuration option upstream.
 				if ( true /*|| ready || async || $.browser.msie */ ) {
 					// jQuery's getScript method is NOT better than doing this the old-fashioned way
 					// because jQuery will eval the script's code, and errors will not have sane
@@ -804,7 +804,7 @@ var mw = ( function ( $, undefined ) {
 						}
 						//mw.log("done with cb:" + module );
 					};
-					
+
 					nestedAddScript = function ( arr, callback, async, i ) {
 						//mw.log( 'nestedAddScript: a:' + arr + ' ' + callback );
 						// Recursively call addScript() in its own callback
@@ -1323,6 +1323,37 @@ var mw = ( function ( $, undefined ) {
 					// Undefined modules are acceptable here in load(), because load() takes
 					// an array of unrelated modules, whereas the modules passed to
 					// using() are related and must all be loaded.
+
+                    // if we are in ChromeCast
+                    if ((/CrKey/.test(navigator.userAgent))) {
+						var excludeForChromeCast = ["mw.EmbedPlayerNativeComponent", "mw.EmbedPlayerSilverlight", "mw.EmbedPlayerVlc",
+							"mw.EmbedPlayerYouTube", "mw.EmbedPlayerGeneric", "mw.EmbedPlayerImageOverlay", "mw.EmbedPlayerJava",
+							"mw.EmbedPlayerKplayer", "mw.EmbedPlayerMultiDRM"];
+
+                        registry["mw.EmbedPlayer"].dependencies = registry["mw.EmbedPlayer"].dependencies.filter(function (dep) {
+                            return excludeForChromeCast.indexOf(dep) === -1;
+                        });
+
+                        for (var j = 0; j < excludeForChromeCast.length; j++) {
+                            delete registry[excludeForChromeCast[j]];
+                        }
+                    }
+
+					if (document.documentMode && document.documentMode === 8) {
+						var hlsPos = -1;
+						var hlsjs = "Hlsjs";
+						for (var i = 0; i < modules.length; i++) {
+							if (modules[i] === hlsjs) {
+								hlsPos = i;
+								break;
+							}
+						}
+						if (hlsPos !== -1) {
+							modules.splice(hlsPos, 1);
+							delete registry[hlsjs];
+						}
+					}
+
 					for ( filtered = [], m = 0; m < modules.length; m += 1 ) {
 						if ( registry[modules[m]] !== undefined ) {
 							filtered[filtered.length] = modules[m];

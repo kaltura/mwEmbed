@@ -57,8 +57,8 @@
 				setTimeout(function()
 				{
 					if (!_this.cuePointsManager) {
-						_this.cuePointsManager = new mw.dualScreen.CuePointsManager(_this.getPlayer(), function () {
-						}, "imagePlayerCuePointsManager");
+						_this.cuePointsManager = new mw.webcast.CuePointsManager(_this.getPlayer(), function () {
+						}, "imagePlayer_CuePointsManager");
 
 						_this.cuePointsManager.onCuePointsReached = function (args) {
 							_this.cuePointsReached(args);
@@ -87,9 +87,8 @@
 
 			if (mostUpdatedCuePointToHandle) {
 				this.sync(mostUpdatedCuePointToHandle)
-				return true;
-			} else {
-				return false;
+			} else if (context.reason === 'reconstructState') {
+				this.sync(null);
 			}
 		},
 		canRender: function () {
@@ -102,36 +101,14 @@
 				)
 			);
 		},
-		syncByReachedCuePoints : function()
-		{
-			var _this = this;
-			if (_this.cuePointsManager) {
-				var cuePointsReachedResult = _this.cuePointsManager.getCuePointsReached();
-				if (!_this.cuePointsReached(cuePointsReachedResult)) {
-					// when user seek/press play we need to handle scenario that no relevant cue points has reached and thus we need to clear the image shown.
-					_this.sync(null);
-				}
-			}
-
-			return false;
-		},
 		addBinding: function(){
 			var _this = this;
 			this.bind( 'playerReady', function (  ) {
 				_this.initializeCuePointsManager();
 			});
 
-			this.bind('seeked',function()
-			{
-				// Checking if we are pausing, if we do then we need to handle sync from 'seeked' event. otherwise the 'onplay' event will handle the sync
-				if (!_this.getPlayer().isPlaying())
-				{
-					_this.syncByReachedCuePoints();
-				}
-			});
 			this.bind( 'onplay', function () {
 				_this.loadAdditionalAssets();
-				_this.syncByReachedCuePoints();
 			} );
 
 			this.bind("onChangeMedia", function(){
@@ -142,12 +119,13 @@
 					_this.getComponent().attr("src", "");
 				}
 			});
+
 			this.bind("onChangeStream", function(){
 				_this.syncEnabled = false;
 			});
+
 			this.bind("onChangeStreamDone", function(){
 				_this.syncEnabled = true;
-				_this.syncByReachedCuePoints();
 			});
 		},
 		getComponent: function() {

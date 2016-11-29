@@ -663,9 +663,12 @@
 					var kdp = document.getElementById(playerId);
 					kdp.kBind('mediaReady', function () {
 						setTimeout(function () {
-							kdp.sendNotification('doPlay');
-						}, 100);
+							if (_this.isMobileDevice()) {
+								kdp.sendNotification('doPlay');
+							}
+						}, 0);
 					});
+
 					if (typeof orgEmbedCallback == 'function') {
 						orgEmbedCallback(playerId);
 					}

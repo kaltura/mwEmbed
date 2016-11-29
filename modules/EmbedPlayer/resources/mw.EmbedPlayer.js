@@ -733,7 +733,7 @@
 		getPlayerByStreamerType: function (source) {
 			var targetPlayer;
 			// if currently casting - always return the Chromecast player
-			if ( this.casting ){
+			if ( this.casting && !mw.getConfig('EmbedPlayer.ForceNativeComponent') === true){
 				return mw.EmbedTypes.getMediaPlayers().getPlayerById('chromecast');
 			}
 			//currently only kplayer can handle other streamerTypes
@@ -833,6 +833,13 @@
 			};
 			this.mediaElement.autoSelectSource(baseTimeOptions);
 
+            // Allow the native SDK to prefetch player resources
+            if (!this.mediaElement.selectedSource && mw.getConfig("EmbedPlayer.PreloadNativeComponent")) {
+                this.selectPlayer(mw.EmbedTypes.getNativeComponentPlayerVideo());
+                this.updatePlaybackInterface();
+                return;
+            }
+            
 			// Auto select player based on default order
 			if (this.mediaElement.selectedSource) {
 
@@ -876,6 +883,7 @@
 						$.each(this.mediaElement.sources, function (currentIndex, currentSource) {
 							if (currentSource.getFlavorId() == "ism") {
 								errorObj = _this.getKalturaMsgObject('mwe-embedplayer-install-silverlight');
+								errorObj.code = "7000";
 								return;
 							}
 						});
@@ -1224,6 +1232,7 @@
 			if (!this.isStopped()) {
 				// set the "stopped" flag:
 				this.stopped = true;
+				this.isPauseLoading = false;
 
 				// TOOD we should improve the end event flow
 				// First end event for ads or current clip ended bindings
@@ -3109,6 +3118,9 @@
 			if (this.kalturaPlayerMetaData && this.kalturaPlayerMetaData[ 'dvrStatus' ]) {
 				return this.kalturaPlayerMetaData[ 'dvrStatus' ];
 			}
+			if (mw.getConfig("forceDVR")){
+				return true;
+			}
 
 			return false;
 
@@ -3193,38 +3205,40 @@
 		 * @param {Object} source asset to switch to
 		 */
 		switchSrc: function( source ){
-			var _this = this;
-			var currentBR = 0;
-			if (this.mediaElement.selectedSource) {
-				currentBR = this.mediaElement.selectedSource.getBitrate();
-			}
+			if (source !== -1) {
+				var _this = this;
+				var currentBR = 0;
+				if (this.mediaElement.selectedSource) {
+					currentBR = this.mediaElement.selectedSource.getBitrate();
+				}
 
-			$(this).trigger('sourceSwitchingStarted', [
-				{ currentBitrate: currentBR }
-			]);
-			this.mediaElement.setSource(source);
-			$(this).trigger('sourceSwitchingEnd', [
-				{ newBitrate: source.getBitrate() }
-			]);
-			if (!this.isStopped()) {
-				this.isFlavorSwitching = true;
-				// Get the exact play time
-				var oldMediaTime = this.currentTime;
-				var oldPaused = this.paused;
-				// Do a live switch
-				this.playerSwitchSource(source, function (vid) {
-					// issue a seek
-					setTimeout(function () {
-						_this.addBlackScreen();
-						_this.hidePlayerOffScreen();
-						_this.unbindHelper("seeked.switchSrc" ).bindOnceHelper("seeked.switchSrc", function () {
-							_this.isFlavorSwitching = false;
-							_this.removeBlackScreen();
-							_this.restorePlayerOnScreen();
-						});
-						_this.seek(oldMediaTime, oldPaused);
-					}, 100);
-				});
+				$(this).trigger('sourceSwitchingStarted', [
+					{currentBitrate: currentBR}
+				]);
+				this.mediaElement.setSource(source);
+				$(this).trigger('sourceSwitchingEnd', [
+					{newBitrate: source.getBitrate()}
+				]);
+				if (!this.isStopped()) {
+					this.isFlavorSwitching = true;
+					// Get the exact play time
+					var oldMediaTime = this.currentTime;
+					var oldPaused = this.paused;
+					// Do a live switch
+					this.playerSwitchSource(source, function (vid) {
+						// issue a seek
+						setTimeout(function () {
+							_this.addBlackScreen();
+							_this.hidePlayerOffScreen();
+							_this.unbindHelper("seeked.switchSrc").bindOnceHelper("seeked.switchSrc", function () {
+								_this.isFlavorSwitching = false;
+								_this.removeBlackScreen();
+								_this.restorePlayerOnScreen();
+							});
+							_this.seek(oldMediaTime, oldPaused);
+						}, 100);
+					});
+				}
 			}
 		},
 		/**
@@ -3309,19 +3323,30 @@
 		handlePlayerError: function (data, shouldHandlePlayerError) {
 			if (this.shouldHandlePlayerError || shouldHandlePlayerError) {
 				var message = this.getErrorMessage(data);
-				this.showErrorMsg({ title: this.getKalturaMsg('ks-GENERIC_ERROR_TITLE'), message: message });
-
+				var errorObj = { title: this.getKalturaMsg('ks-GENERIC_ERROR_TITLE'), message: message};
+				if(data.code){
+					errorObj.code = data.code;
+				}
+				this.showErrorMsg(errorObj);
 			}
 		},
 
 		getErrorMessage: function(data){
 			var message = data ? data : this.getKalturaMsg('ks-CLIP_NOT_FOUND');
 			/* there are two formats used to represent error messages*/
-			message = message.errorMessage !== undefined ? message.errorMessage : message;
+			if(message.errorMessage){
+				message = message.errorMessage;
+			} else if (message.message){
+				message = message.message;
+			}
 			if (!message || message == undefined){
 				message = this.getKalturaMsg('ks-CLIP_NOT_FOUND');
 			}
 			return message;
+		},
+
+		getErrorCode: function(data){
+			return data ? data.code : "7000";
 		},
 
 		/**

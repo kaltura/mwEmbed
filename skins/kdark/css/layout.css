@@ -200,7 +200,7 @@ body {
     display: -webkit-box !important;
 }
 
-.mobileSkin.ua-chromecast.start-state .titleLabel{
+.mobileSkin.start-state .titleLabel{
     display: block !important;
     display: -webkit-box !important;
 }
@@ -246,7 +246,10 @@ body {
 .controlBarContainer.open {
 	bottom: 0;
 }
-
+.mobileSkin.start-state .controlBarContainer{
+	display: none;
+	bottom: -4.2em;
+}
 
 .btn {
 	display: inline-block;
@@ -1988,6 +1991,11 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
     -o-transition: top 0.3s ease-in-out;
     transition: top 0.3s ease-in-out;
 }
+.trackWindow{
+    display: inline-block;
+    padding: 5px;
+    margin: 0 15px 0 15px;
+ }
 /* used to detect when the css file finished loading */
 .cssChecker{
     display: none !important;

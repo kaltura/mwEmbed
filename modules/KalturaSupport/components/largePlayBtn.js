@@ -26,12 +26,14 @@
 					'target': '_blank'
 				});
 			});
-			
+
 			this.bind('onChangeMediaDone playerReady onpause onEndedDone onRemovePlayerSpinner showPlayerControls showLargePlayBtn', function(e){
 				if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() && !_this.embedPlayer.isPauseLoading ){
 					if (mw.isChromeCast()){
 						_this.getComponent().removeClass("icon-play").addClass("icon-pause");
-
+						if (e.type !== "onpause" && e.type !== "playerReady"){
+							return;
+						}
 					} else {
 						_this.getComponent().removeClass( "icon-pause" ).addClass( "icon-play" );
 					}
@@ -40,13 +42,8 @@
 			});
 
 			this.bind('onShowControlBar', function(){
-				if( !mw.isIE8() && _this.getConfig("togglePause") && _this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() ){
-					if (mw.isChromeCast()){
-						_this.getComponent().removeClass("icon-pause").addClass("icon-play");
-
-					} else {
-						_this.getComponent().removeClass( "icon-play" ).addClass( "icon-pause" );
-					}
+				if( !mw.isIE8() && _this.getConfig("togglePause") && (_this.embedPlayer.isPlaying() || mw.isChromeCast()) && !_this.embedPlayer.isInSequence() ){
+					_this.getComponent().removeClass("icon-play").addClass("icon-pause");
 					_this.show();
 				}
 			});
@@ -60,7 +57,7 @@
 				if( newState == 'load' || newState == 'play' ){
 					_this.hide(true);
 				}
-				if( newState == 'pause' && _this.getPlayer().isPauseLoading ){
+				if( newState == 'pause' && _this.getPlayer().isPauseLoading && !mw.isChromeCast()){
 					_this.hide();
 				}
 			});
@@ -69,11 +66,11 @@
 					_this.show();
 				}
 			});
-            this.bind('liveOnline', function(){
-                if( _this.getPlayer().isLive && !_this.getPlayer().isDVR() ) {
-                    _this.hide();
-                }
-            });
+			this.bind('liveOnline', function(){
+				if( _this.getPlayer().isLive && !_this.getPlayer().isDVR() ) {
+					_this.hide();
+				}
+			});
 		},
 		show: function(){
 			if ( !this.isDisabled && !this.embedPlayer.layoutBuilder.displayOptionsMenuFlag ) {
@@ -99,6 +96,11 @@
 		},
 		hideComponent: function( force ) {
 			if( force || !this.isPersistantPlayBtn() ) {
+				//Need to cancel animation if hiding right after showing button in mobile skin
+				//cause in show we use animation in mobile skin
+				if (this.embedPlayer.isMobileSkin()){
+					this.getComponent().stop();
+				}
 				this.getComponent().hide();
 			}
 		},
@@ -130,24 +132,21 @@
 			this.hideComponent();
 		},
 		getComponent: function() {
-			var _this = this;
-			var eventName = 'click';
-			if ( mw.isAndroid() ){
-				eventName += ' touchstart';
-			}
 			if( !this.$el ) {
+				var _this = this;
+				var eventName = 'click';
 				this.$el = $( '<a />' )
-							.attr( {
-								'tabindex': '-1',
-								'href' : '#',
-								'title' : gM( 'mwe-embedplayer-play_clip' ),
-								'class'	: "icon-play " + this.getCssClass()
-							} )
-							.hide()
-							// Add play hook:
-							.on(eventName, function(e) {
-								_this.clickButton(e);
-							} );
+					.attr( {
+						'tabindex': '-1',
+						'href' : '#',
+						'title' : gM( 'mwe-embedplayer-play_clip' ),
+						'class'	: "icon-play " + this.getCssClass()
+					} )
+					.hide()
+					// Add play hook:
+					.on(eventName, function(e) {
+						_this.clickButton(e);
+					} );
 				if ( !mw.isWindowsPhone() ){
 					this.$el.addClass("largePlayBtnBorder");
 				}

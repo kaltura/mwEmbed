@@ -287,7 +287,7 @@
 				$.extend( adsCuePointConf, baseDisplayConf );
 
 				var originalSource = embedPlayer.getSource();
-				var seekTime = parseFloat( cuePoint.startTime / 1000 );
+				var seekTime = embedPlayer.currentTime;
 				var oldDuration = embedPlayer.duration;
 
 				// Set switch back function

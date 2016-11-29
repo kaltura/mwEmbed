@@ -92,11 +92,13 @@
 			'overlays': true
 		},
 
-		canPlay: function(readyCallback){
+		canPlay: function(callback){
 			var deferred =  $.Deferred();
-			this.bindHelper("canplay", function () {
-				readyCallback();
-				return deferred.resolve();
+			this.bindOnceHelper("canplay", function () {
+				if (callback) {
+					callback();
+				}
+				deferred.resolve();
 			});
 
 			return deferred;
@@ -139,27 +141,29 @@
 				mw.log("EmbedPlayerNativeComponent:: sendCCRecieverMessage::");
 				_this.getPlayerElement().sendCCRecieverMessage(msg);
 			});
-			this.bindHelper("loadReceiverMedia", function (e,url, mime) {
-				mw.log("EmbedPlayerNativeComponent:: loadReceiverMedia::");
-				_this.getPlayerElement().loadReceiverMedia(url, mime);
-			});
 			this.bindHelper("onEndedDone", function () {
 				_this.playbackDone = true;
 			});
 			if (this.startTime && !this.supportsURLTimeEncoding()) {
 				this.setStartTimeAttribute(this.startTime);
 			}
-			this.resolveSrcURL(this.getSrc()).then(
-				function (resolvedSrc) {
-					mw.log("EmbedPlayerNativeComponent::resolveSrcURL get succeeded");
-					_this.setSrcAttribute( resolvedSrc );
-				},
-				function () {
-					mw.log("EmbedPlayerNativeComponent::resolveSrcURL get failed");
-					_this.setSrcAttribute( _this.getSrc() );
-					readyCallback();
-				}
-			);
+            
+            var selectedSource = this.getSrc();
+            if (!selectedSource && mw.getConfig("EmbedPlayer.PreloadNativeComponent")) {
+                readyCallback();
+
+            } else {
+                this.resolveSrcURL(selectedSource).then(
+                    function (resolvedSrc) {
+                        mw.log("EmbedPlayerNativeComponent::resolveSrcURL get succeeded");
+                        _this.setSrcAttribute( resolvedSrc );
+                    },
+                    function () {
+                        mw.log("EmbedPlayerNativeComponent::resolveSrcURL get failed");
+                        _this.setSrcAttribute( selectedSource );
+                    }
+                );
+            }
 		},
 
 		embedPlayerHTML: function () {
@@ -236,7 +240,7 @@
 		playerSwitchSource: function (source, switchCallback, doneCallback) {
 			mw.log("NativeComponent:: playerSwitchSource");
 			var _this = this;
-			this.canPlayPromise = this.canPlay(switchCallback);
+
 			var vid = this.getPlayerElement();
 			var src = source.getSrc();
 			var switchBindPostfix = '.playerSwitchSource';
@@ -253,6 +257,14 @@
 				return;
 			}
 
+			var switchCallbackCalled = false;
+			var switchCallbackWrapper = function(){
+				if (!switchCallbackCalled) {
+					switchCallbackCalled = true;
+					switchCallback();
+				}
+			};
+			this.canPlayPromise = this.canPlay(switchCallbackWrapper);
 
 			// remove old binding:
 			$(vid).unbind(switchBindPostfix);
@@ -273,7 +285,7 @@
 			if ($.isFunction(switchCallback)) {
 				$(vid).bind('durationchange' + switchBindPostfix, function () {
 					$( vid ).unbind( 'durationchange' + switchBindPostfix );
-					switchCallback( vid );
+					switchCallbackWrapper();
 				} );
 			}
 
@@ -305,7 +317,8 @@
 			// If switching a Persistent native player update the source:
 			// ( stop and play won't refresh the source  )
 			_this.switchPlaySource(this.getSource(), function () {
-				if (!_this.autoplay  || ( _this.autoplay && mw.isMobileDevice()) ) {
+				if (!_this.autoplay) {
+					mw.log("AutoPlay = false in Mobile");
 					// pause is need to keep pause state, while
 					// switch source calls .play() that some browsers require.
 					// to reflect source switches. Playlists handle pause state so no need to pause in playlist
@@ -313,6 +326,11 @@
 					if ( !_this.playlist ){
 						_this.pause();
 					}
+					_this.updatePosterHTML();
+				}
+				if ( _this.autoplay && mw.isMobileDevice() && !_this.casting) {
+					mw.log("Autoplay = true in Mobile");
+					_this.play();
 					_this.updatePosterHTML();
 				}
 				callback();
@@ -389,10 +407,6 @@
 		play: function () {
 			var _this = this;
 			mw.log("EmbedPlayerNativeComponent:: play::");
-			if (!this.checkPlayPauseTime()){
-				mw.log("EmbedPlayerNativeComponent:: received play right after pause: aborting play command");
-				return;
-			}
 			this.playbackDone = false;
 
 			this.unbindHelper('replayEvent').bindHelper('replayEvent',function(){
@@ -400,7 +414,7 @@
 			});
 
 			var doPlay = function(){
-				if (_this.parent_play()) {
+				if (_this.parent_play() || _this.casting) {
 					if (_this.getPlayerElement()) { // update player
 						_this.getPlayerElement().play();
 					}
@@ -420,29 +434,15 @@
 		 */
 		pause: function () {
 			mw.log("EmbedPlayerNativeComponent:: pause::");
-			if (!this.checkPlayPauseTime()){
-				mw.log("EmbedPlayerNativeComponent:: received pause right after play: aborting pause command");
-				return;
+			if (this.paused === false) {
+				//If we are pausing during seek make sure to indicate this to the seek handler
+				this.stopPlayAfterSeek = true;
+				this.stopAfterSeek = true;
 			}
 			this.parent_pause(); // update interface
 			if (this.getPlayerElement()) { // update player
 				this.getPlayerElement().pause();
 			}
-		},
-
-		// verify that we didn't get play right after pause or vise versa when user multiple clicks the device
-		checkPlayPauseTime: function(){
-			if(mw.getConfig('disableKalturaControls') === true) {
-				return true;
-			}
-			var d = new Date();
-			var t = d.getTime();
-			var executeCommand = false;
-			if (this.lastPlayPauseTime === 0 || (t - this.lastPlayPauseTime) > 1000){
-				executeCommand = true;
-			}
-			this.lastPlayPauseTime = t;
-			return executeCommand;
 		},
 
 		doSeek: function (seekTime) {

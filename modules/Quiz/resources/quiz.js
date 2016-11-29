@@ -30,8 +30,9 @@
 
         setup: function () {
             var _this = this;
-            var embedPlayer = _this.getPlayer()
-
+            var embedPlayer = _this.getPlayer();
+            // make sure we actually have a layout builder
+            embedPlayer.getInterface();
             embedPlayer.disableComponentsHover();
             mw.log("Quiz: " + _this.IVQVer);
             this.bind('onChangeStream', function () {
@@ -40,7 +41,6 @@
             });
 
             embedPlayer.addJsListener( 'kdpReady', function(){
-
                 _this.KIVQModule = new mw.KIVQModule(embedPlayer, _this);
                 _this.KIVQModule.isKPlaylist = (typeof (embedPlayer.playlist) === "undefined" ) ? false : true;
 

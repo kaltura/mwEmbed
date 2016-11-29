@@ -48,18 +48,12 @@
 		],
 
 		setup: function( readyCallback ) {
+			$(this).trigger("chromecastReceiverLoaded");
 			$(this).bind('layoutBuildDone', function(){
 				this.getVideoHolder().find('video').remove();
 			});
 			this.setPlayerElement(parent.document.getElementById('receiverVideoElement'));
 			this.addBindings();
-			this.applyMediaElementBindings();
-			mw.log('EmbedPlayerChromecastReceiver:: Setup. Video element: '+this.getPlayerElement().toString());
-			this.getPlayerElement().src = '';
-			$(this).trigger("chromecastReceiverLoaded");
-			this._propagateEvents = true;
-			$(this.getPlayerElement()).css('position', 'absolute');
-			this.stopped = false;
 			readyCallback();
 		},
 		/**
@@ -71,6 +65,14 @@
 				_this.getVideoHolder().css("backgroundColor","transparent");
 				$("body").css("backgroundColor","transparent");
 
+			});
+			this.bindHelper("loadstart", function(){
+
+				_this.applyMediaElementBindings();
+				mw.log('EmbedPlayerChromecastReceiver:: Setup. Video element: '+_this.getPlayerElement().toString());
+				_this._propagateEvents = true;
+				$(_this.getPlayerElement()).css('position', 'absolute');
+				_this.stopped = false;
 			});
 			this.bindHelper("replay", function(){
 				_this.triggerReplayEvent = true;
@@ -86,7 +88,7 @@
 			this.bindHelper("AdSupport_AdUpdateDuration", function(event, duration){
 				_this.triggerHelper("broadcastToSender", ["chromecastReceiverAdDuration|" + duration]);
 			});
-			this.bindHelper("onAdComplete", function(){
+			this.bindHelper("onContentResumeRequested", function(){
 				_this.triggerHelper("broadcastToSender", ["chromecastReceiverAdComplete"]);
 				_this.triggerHelper("cancelAllAds");
 			});
@@ -122,7 +124,10 @@
 				});
 			});
 		},
-
+		play: function(){
+			this.parent_play();
+			this.hideSpinner();
+		},
 		/**
 		 * Handle the native paused event
 		 */
@@ -173,22 +178,34 @@
 				this.seeking = false;
 				if (this._propagateEvents && !this.isLive()) {
 					this.triggerHelper('seeked', [this.getPlayerElementTime()]);
+					this.triggerHelper("onComponentsHoverEnabled");
 					this.syncCurrentTime();
 					this.updatePlayheadStatus();
 				}
 			}
 		},
-
+		changeMediaCallback: function (callback) {
+			this.changeMediaStarted = false;
+			if (callback){
+				callback();
+			}
+			this.play();
+		},
 		// override these functions so embedPlayer won't try to sync time
 		syncCurrentTime: function(){
 			this.currentTime = this.getPlayerElementTime();
 		},
 
-		isInSequence: function(){return false;},
 		_ondurationchange: function (event, data) {
 			if ( this.playerElement && !isNaN(this.playerElement.duration) && isFinite(this.playerElement.duration) ) {
 				this.setDuration(this.getPlayerElement().duration);
 				return;
+			}
+		},
+
+		_onended: function(){
+			if (this._propagateEvents) {
+				this.onClipDone();
 			}
 		},
 
@@ -205,6 +222,9 @@
 
 		isVideoSiblingEnabled: function() {
 			return false;
+		},
+		canAutoPlay: function () {
+			return true;
 		}
 	};
 	} )( mediaWiki, jQuery );

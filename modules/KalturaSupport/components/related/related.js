@@ -100,6 +100,7 @@
 			this.bind('preHideScreen', function (event, screenName) {
 				if ( screenName === "related" ){
 					_this.embedPlayer.enablePlayControls();
+					_this.embedPlayer.triggerHelper("showLargePlayBtn");
 				}
 			});
 		},
