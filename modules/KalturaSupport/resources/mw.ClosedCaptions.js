@@ -236,6 +236,10 @@
 			this.bind( 'newCaptionsStyles', function (e, stylesObj){
 				_this.customStyle = stylesObj;
 			});
+			this.bind( 'onChangeMedia', function (e, stylesObj){
+				//Reset UI state on change media
+				_this.getBtn().show();
+			});
 		},
 		addTextSource: function(captionData){
 			// Try to insert the track source:
