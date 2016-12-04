@@ -677,8 +677,8 @@
 			}
 			this.addMediaItems( items );   // prepare the data to be compatible with KBaseMediaList
 			this.getMedialistHeaderComponent().empty();
-			// try to get number of clips from the content property if exists. If not - take from items array
-			var numOfClips = this.playlistSet[playlistIndex].content ? this.playlistSet[playlistIndex].content.split(",").length : this.playlistSet[playlistIndex].items.length
+			// First playlist will always have items in it, other playlists will populate the items array after selection.
+			var numOfClips = this.playlistSet[playlistIndex].items.length;
 			if ( this.getLayout() === "vertical" ) {
 				this.getMedialistHeaderComponent().prepend( '<span class="playlistTitle">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription">' + numOfClips + ' ' + gM( 'mwe-embedplayer-videos' ) + '</span>' );
 				this.getMedialistHeaderComponent().prepend( '<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist' ) + '"></div>' );
