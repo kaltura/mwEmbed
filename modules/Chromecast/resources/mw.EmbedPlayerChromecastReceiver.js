@@ -1,6 +1,8 @@
 (function ( mw, $ ) {
+
     "use strict";
-    // Add chromecast player:
+
+    // Add Chromecast player:
     $( mw ).bind( 'EmbedPlayerUpdateMediaPlayers', function ( event, mediaPlayers ) {
         var chromecastSupportedProtocols = [ 'video/h264', 'video/mp4', 'application/vnd.apple.mpegurl' ];
         var chromecastReceiverPlayer = new mw.MediaPlayer( 'chromecastReceiver', chromecastSupportedProtocols, 'ChromecastReceiver' );
@@ -49,27 +51,17 @@
         mediaHost: null,
         mediaProtocol: null,
         mediaPlayer: null,
-        preloadPlayer: null,
+        wasPreload: false,
 
         setup: function ( readyCallback ) {
             this.setPlayerElement( document.querySelector( 'video' ) );
             this.addBindings();
             this.applyMediaElementBindings();
-            this.load();
+            this.preloadMediaSourceExtension();
             readyCallback();
         },
 
-        load: function () {
-            var _this = this;
-            this.triggerHelper( 'onEmbedPlayerReceiverMsg', {
-                'type': 'getMediaInfo',
-                'callback': function ( mediaInfo ) {
-                    _this.loadVideo( mediaInfo );
-                }
-            } );
-        },
-
-        loadVideo: function ( mediaInfo ) {
+        preloadMediaSourceExtension: function () {
             if ( this.mediaPlayer !== null ) {
                 this.mediaPlayer.unload();
                 this.mediaPlayer = null;
@@ -80,15 +72,13 @@
                 'url': this.getSrc()
             } );
 
-            var initStart = mediaInfo.data[ 'currentTime' ] || this.getPlayerElementTime();
-            var autoPlay = mediaInfo.data[ 'autoplay' ] || true;
+            var initStart = this.startTime || 0;
             var mimeType = this.getSource().getMIMEType();
             var licenseUrl = this.buildUdrmLicenseUri( mimeType );
 
             if ( licenseUrl ) {
                 this.mediaHost.licenseUrl = licenseUrl;
             }
-            this.getPlayerElement().autoplay = autoPlay;
 
             switch ( mimeType ) {
                 case "application/vnd.apple.mpegurl":
@@ -111,10 +101,10 @@
 
             if ( this.mediaProtocol === null ) {
                 // Call on original handler
-                this.triggerHelper( 'onEmbedPlayerReceiverMsg', { 'type': 'doDefaultOnLoad', 'data': mediaInfo } );
             } else {
                 this.mediaPlayer = new top.cast.player.api.Player( this.mediaHost );
-                this.mediaPlayer.load( this.mediaProtocol, (this.isLive() ? Infinity : initStart) );
+                this.mediaPlayer.preload( this.mediaProtocol, (this.isLive() ? Infinity : initStart) );
+                this.wasPreload = true;
             }
         },
 
@@ -237,27 +227,15 @@
         addBindings: function () {
             var _this = this;
 
-            this.bindHelper( "layoutBuildDone", function () {
-                _this.getVideoHolder().css( "backgroundColor", "transparent" );
-                $( "body" ).css( "backgroundColor", "transparent" );
-
-            } );
-
             this.bindHelper( "loadstart", function () {
                 mw.log( 'EmbedPlayerChromecastReceiver:: Setup. Video element: ' + _this.getPlayerElement().toString() );
                 _this._propagateEvents = true;
-                $( _this.getPlayerElement() ).css( 'position', 'absolute' );
                 _this.stopped = false;
             } );
 
             this.bindHelper( "replay", function () {
                 _this.triggerReplayEvent = true;
                 _this.triggerHelper( "playerReady" ); // since we reload the media for replay, trigger playerReady to reset Analytics
-            } );
-
-            this.bindHelper( "postEnded", function () {
-                _this.currentTime = _this.getPlayerElement().duration;
-                _this.updatePlayheadStatus();
             } );
 
             //TODO: Ads support
@@ -274,14 +252,15 @@
             //     _this.triggerHelper( "cancelAllAds" );
             // } );
 
-            this.bindHelper( "ccSelectClosedCaptions sourceSelectedByLangKey", function ( e, label ) {
-                _this.triggerHelper( "propertyChangedEvent", {
-                    "plugin": "closedCaptions",
-                    "property": "captions",
-                    "value": typeof label === "string" ? label : label[ 0 ]
-                } );
-                $( parent.document.getElementById( 'captionsOverlay' ) ).empty();
-            } );
+            //TODO: Closed captions
+            // this.bindHelper( "ccSelectClosedCaptions sourceSelectedByLangKey", function ( e, label ) {
+            //     _this.triggerHelper( "propertyChangedEvent", {
+            //         "plugin": "closedCaptions",
+            //         "property": "captions",
+            //         "value": typeof label === "string" ? label : label[ 0 ]
+            //     } );
+            //     $( parent.document.getElementById( 'captionsOverlay' ) ).empty();
+            // } );
         },
 
         /**
@@ -313,15 +292,12 @@
         },
 
         play: function () {
-            if ( this.parent_play() && top.AppState.isInState( top.StateManager.State.IDLE ) ) {
-                // If its first play or change media case, load mediaPlayer from scratch
-                if ( !this.mediaPlayer || (this.getSrc() !== this.mediaPlayer.getHost().url ) ) {
-                    this.load();
-                } else {
-                    // We're in replay case
-                    this.mediaPlayer.reload();
-                    this.mediaPlayer.playWhenHaveEnoughData();
+            if ( this.parent_play() ) {
+                if ( this.wasPreload ) {
+                    this.wasPreload = false;
+                    this.mediaPlayer.load();
                 }
+                this.mediaPlayer.playWhenHaveEnoughData();
             }
         },
 
@@ -329,13 +305,8 @@
          * Handle the native paused event
          */
         _onpause: function () {
-            // console.info("underflow: " + this.mediaPlayer.getState()['underflow']);
-            if ( this.mediaPlayer.getState()[ 'underflow' ] ) {
-                // console.info("buffer start");
-            } else {
-                this.pause();
-                $( this ).trigger( 'onPlayerStateChange', [ "pause", "play" ] );
-            }
+            this.pause();
+            $( this ).trigger( 'onPlayerStateChange', [ "pause", "play" ] );
         },
 
         // When player started to play
@@ -349,14 +320,16 @@
          * Handle the native play event
          */
         _onplay: function () {
-            console.info( "underflow: " + this.mediaPlayer.getState()[ 'underflow' ] );
             this.restoreEventPropagation();
             this.triggerHelper( 'hidePlayerControls' );
         },
 
         replay: function () {
-            this.restoreEventPropagation();
-            this.restoreComponentsHover();
+            if ( this.getPlayerElementCurrentState() === "end" ) {
+                this.restoreEventPropagation();
+                this.preloadMediaSourceExtension();
+                this.play();
+            }
         },
 
         // On perform seek
@@ -386,6 +359,7 @@
         },
 
         changeMediaCallback: function ( callback ) {
+            this.preloadMediaSourceExtension();
             this.changeMediaStarted = false;
             if ( callback ) {
                 callback();
@@ -415,6 +389,10 @@
             this.playerElement = mediaElement;
         },
 
+        getPlayerElementCurrentState: function () {
+            return this.currentState;
+        },
+
         getPlayerElement: function () {
             if ( !this.playerElement ) {
                 this.playerElement = $( '#' + this.pid ).get( 0 );
@@ -431,7 +409,6 @@
         },
 
         playerSwitchSource: function ( source, switchCallback, doneCallback ) {
-            //we are not supposed to switch source. Ads can be played as siblings. Change media doesn't use this method.
             if ( switchCallback ) {
                 switchCallback( this.playerObject );
             }
