@@ -101,7 +101,7 @@
 			}
 			$(this.getPlayerElement()).css('position', 'absolute');
 			if (this.inline) {
-				$(this.getPlayerElement()).attr('webkit-playsinline', '');
+				$(this.getPlayerElement()).attr('playsinline', '');
 			}
 			readyCallback();
 
