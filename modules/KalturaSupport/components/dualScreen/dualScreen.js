@@ -32,6 +32,7 @@
 					"containment": "parent"
 				},
 				"mobileTag": null,
+				"forceMuxedOnMobileDevices": true,
 				"menuFadeout": 5000,
 				"resizeHandlesFadeout": 5000,
 				"mainViewDisplay": 0, // DONT USE THIS - obslete... 1 - Main stream, 2 - Presentation
@@ -991,7 +992,8 @@
 				var promise;
 
 				if (mw.isMobileDevice()) {
-					var forceMosaic = mw.isIOS() && (navigator.userAgent.indexOf('iPad') === -1);
+					var forceMosaic = this.getConfig('forceMuxedOnMobileDevices') ||
+						(mw.isIOS() && (navigator.userAgent.indexOf('iPad') === -1));
 					promise = (forceMosaic ? $.Deferred().reject() : this.initSecondPlayer(true))
 						.then(function (res) {
 							if (mobileTag) {
