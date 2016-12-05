@@ -33,11 +33,6 @@ var mediaElement;
  */
 var messageBus;
 /**
- * The last request that we received from loadMedia event.
- * @type {object}
- */
-var lastLoadMediaReq = null;
-/**
  * The application logger.
  */
 var AppLogger = Logger.getInstance();
@@ -181,7 +176,6 @@ function onStop( event ) {
 function onLoad( event ) {
     AppLogger.log( "MediaManager", "onLoad" );
     if ( event && event.data ) {
-        lastLoadMediaReq = event;
         if ( !embedPlayerInitialized ) {
             AppLogger.log( "MediaManager", "Embed player isn't initialized yet. Starting dynamic embed.", event );
             embedPlayer( event );
@@ -191,7 +185,7 @@ function onLoad( event ) {
             // If same entry is sent then reload, else perform changeMedia
             if ( kdp.evaluate( '{mediaProxy.entry.id}' ) === embedConfig[ 'entryID' ] ) {
                 AppLogger.log( "MediaManager", "Embed player already initialized with the same entry. Start replay.", event );
-                kdp.sendNotification( "doPlay" );
+                kdp.sendNotification( "doReplay" );
             } else {
                 AppLogger.log( "MediaManager", "Embed player already initialized with different entry. Change media.", event );
                 kdp.sendNotification( "changeMedia", { "entryId": embedConfig[ 'entryID' ] } );
@@ -212,13 +206,12 @@ function onEnded() {
 // Receiver manager's events
 function onReady() {
     AppLogger.log( "receiverManager", "Receiver is ready." );
+    setLogo();
+    showElement( LOGO_ID );
 }
 
 function onSenderConnected( event ) {
     AppLogger.log( "receiverManager", "Sender connected. Number of current senders: " + receiverManager.getSenders().length, event );
-    if ( receiverManager.getSenders().length === 1 ) {
-        displaySplashScreen();
-    }
 }
 
 function onSenderDisconnected( event ) {
@@ -232,12 +225,11 @@ function onSenderDisconnected( event ) {
 
 function onVisibilityChanged( event ) {
     AppLogger.log( "receiverManager", "Visibility changed. isVisible: " + event.isVisible, event );
+    //TODO: There's an issue for now that isVisible is always true
     if ( event.isVisible ) {
         // We're visible - resume playback
-        onPlay( event );
     } else {
         // We're not visible - pause playback
-        onPause( event );
     }
 }
 
@@ -258,7 +250,8 @@ function onMessage( event ) {
 
 // Class functions
 function embedPlayer( req ) {
-    var embedInfo = req.data.media.customData.embedConfig;
+    var data = req.data;
+    var embedInfo = data.media.customData.embedConfig;
     $.getScript( embedInfo.lib + "mwEmbedLoader.php" )
         .then( function () {
             setConfiguration( embedInfo );
@@ -272,7 +265,7 @@ function embedPlayer( req ) {
                     addBindings();
                     swapVideoElement();
                 },
-                "flashvars": getFlashVars( embedInfo.flashVars ),
+                "flashvars": getFlashVars( data ),
                 "cache_st": 1438601385,
                 "entry_id": embedInfo.entryID
             } );
@@ -300,14 +293,7 @@ function addBindings() {
         var opt_msgData = msgObj.data;
         var opt_msgCallback = msgObj.callback;
         switch ( msgType ) {
-            case "doDefaultOnLoad":
-                mediaManager[ 'onLoadOrig' ]( opt_msgData );
-                break;
-            case "getMediaInfo":
-                opt_msgCallback( lastLoadMediaReq );
-                break;
-            case "hideLogo":
-                hideElement( LOGO_ID );
+
         }
     } );
 }
@@ -341,8 +327,15 @@ var receiverFlashVars = {
     }
 };
 
-function getFlashVars( senderFlashVars ) {
+function getFlashVars( data ) {
+    debugger;
     try {
+        var senderFlashVars = data.media.customData.embedConfig.flashVars;
+
+        // Embed media info params in mwEmbedChromecastReceiver
+        receiverFlashVars.mediaProxy = { mediaPlayFrom: data.currentTime || 0 };
+        receiverFlashVars.autoPlay = data.autoplay || true;
+
         if ( typeof senderFlashVars !== 'object' ) {
             senderFlashVars = JSON.parse( senderFlashVars );
         }
@@ -382,9 +375,9 @@ function getQueryVariable( variable ) {
     return false;
 }
 
-function displaySplashScreen() {
+function setLogo() {
     var logoUrl = getQueryVariable( 'logoUrl' );
-    // Set partner logo
+    // Set partner's logo
     if ( logoUrl ) {
         AppLogger.log( "receiver.js", "Displaying partner's splash screen.", { 'logoUrl': logoUrl } );
         $( "#" + LOGO_ID ).css( 'background-image', 'url(' + logoUrl + ')' );
@@ -394,5 +387,4 @@ function displaySplashScreen() {
         AppLogger.log( "receiver.js", "Displaying Kaltura's splash screen." );
         $( "#" + LOGO_ID ).css( 'background-image', "url('assets/kalturalogo.png')" );
     }
-    showElement( LOGO_ID );
 }
