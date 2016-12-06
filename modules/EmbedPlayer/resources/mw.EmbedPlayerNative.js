@@ -101,7 +101,7 @@
 			}
 			$(this.getPlayerElement()).css('position', 'absolute');
 			if (this.inline) {
-				$(this.getPlayerElement()).attr('webkit-playsinline', '');
+				$(this.getPlayerElement()).attr('playsinline', '');
 			}
 			readyCallback();
 
@@ -520,7 +520,7 @@
 				this.stop();
 				return false;
 			}
-            if( this.isLive() && !this.isDVR() ){
+			if( this.isLive() && !this.isDVR() ){
                 return this.LiveCurrentTime ? this.LiveCurrentTime : 0;
             }
 			var ct = this.playerElement.currentTime;
@@ -1065,7 +1065,7 @@
 					if (_this._propagateEvents) {
 						if( !_this.isLive() || ( _this.isLive() && _this.isDVR() ) ) {
 							_this.log(" trigger: seeked");
-							_this.triggerHelper('seeked', [_this.currentTime]);
+							_this.triggerHelper('seeked', [_this.playerElement.currentTime]);
 						}
 					}
 					_this.hideSpinner();
@@ -1357,6 +1357,7 @@
 			var vid = this.getPlayerElement();
 			vid.load();
 			vid.play();
+			this.parseTracks();
             setTimeout( function() {
                 _this.triggerHelper('movingBackToLive'); //for some reason on Mac the isLive client response is a little bit delayed, so in order to get update liveUI properly, we need to delay "movingBackToLive" helper
             }, 1000 );
@@ -1402,9 +1403,8 @@
         parseTracks: function(){
             var vid = this.getPlayerElement();
             this.parseAudioTracks(vid, 0); //0 is for a setTimer counter. Try to catch audioTracks, give up after 5 seconds
-            if(this.isLive() && !this.isDVR()) {
-                //right now we parse metadata textTrack in order to read id3Tag only for live without DVR
-                this.parseTextTracks(vid, 0); //0 is for a setTimer counter. Try to catch textTracks.kind === "metadata, give up after 10 seconds
+            if(this.isLive()) {
+                this.parseTextTracks(vid, 0); //0 is for a setTimer counter. Try to catch textTracks.kind === "metadata", give up after 10 seconds
             }
         },
         parseTextTracks: function(vid, counter){
@@ -1413,7 +1413,7 @@
                 if( vid.textTracks.length > 0 ) {
                     for (var i = 0; i < vid.textTracks.length; i++) {
                         if (vid.textTracks[i].kind === "metadata") {
-                            //add id3 tags support (for now only if Live + no DVR)
+                            //add id3 tags support
                             _this.id3Tag(vid.textTracks[i]);
                             vid.textTracks[i].mode = "hidden";
                         }
@@ -1439,7 +1439,7 @@
 						//Parse JSON
 						id3Tag = JSON.parse(id3TagString);
 					} else {
-						id3Tag = JSON.parse(evt.currentTarget.cues[evt.currentTarget.cues.length - 1].value.data);
+						id3Tag = JSON.parse(this.activeCues[0].value.data);
 					}
 					_this.triggerHelper('onId3Tag', id3Tag);
                 }
