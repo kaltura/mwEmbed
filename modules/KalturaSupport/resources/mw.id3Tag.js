@@ -47,8 +47,8 @@
                 _this.preSeekTime = _this.getPlayer().getPlayerElement().currentTime;
             });
 
-            this.bind('seeked' + _this.bindPostfix, function(e, time){
-                var delta = _this.preSeekTime - time;
+            this.bind('seeked' + _this.bindPostfix, function(){
+                var delta = _this.preSeekTime - _this.getPlayer().getPlayerElement().currentTime;
                 _this.updatedTime -= delta;
             });
 
