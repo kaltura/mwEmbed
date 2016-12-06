@@ -1,15 +1,15 @@
 /**
- * Indicates whether the embed player already been initialized
+ * Indicates whether the embed player already been initialized.
  * @type {boolean}
  */
 var embedPlayerInitialized = false;
 /**
- * Indicates if we're running in debug mode
+ * Indicates if we're running in debug mode.
  * @type {boolean}
  */
 var debugMode = true;
 /**
- * The kaltura player
+ * The Kaltura player
  * @type {object}
  */
 var kdp = null;
@@ -41,7 +41,10 @@ var AppLogger = Logger.getInstance();
  * @type {StateManager}
  */
 var AppState = new StateManager();
-
+/**
+ * Indicated if we're before preroll or after postroll.
+ */
+var isInSequence = false;
 /**
  * The id of the splash screen div.
  * @type {string}
@@ -53,13 +56,9 @@ var LOGO_ID = "logo";
  * @type {object}
  */
 var MESSAGE_BUS_MAP = {
-    'notification': function ( payload ) {
-        AppLogger.log( "MessageBus", "Pass notification " + payload[ 'event' ] + " to the player.", payload );
-        kdp.sendNotification( payload[ 'event' ], [ payload[ 'data' ] ] );
-    },
-    'setKDPAttribute': function ( payload ) {
-        AppLogger.log( "MessageBus", "Sets KDP attribute: " + payload[ 'property' ] + " to " + payload[ 'value' ], payload );
-        kdp.setKDPAttribute( payload[ 'plugin' ], payload[ 'property' ], payload[ 'value' ] );
+    //TODO: will be implemented after integration with the senders SDK v3
+    'someMessage': function ( payload ) {
+        // Write here the implementation to that message
     }
 };
 
@@ -68,6 +67,7 @@ var MESSAGE_BUS_MAP = {
  * @param vidElement initial fake video tag that will be changed later.
  */
 function startReceiver( vidElement ) {
+    AppState.setState( StateManager.State.LAUNCHING );
     // Init receiver manager and setting his events
     receiverManager = cast.receiver.CastReceiverManager.getInstance();
     receiverManager.onReady = onReady.bind( this );
@@ -122,7 +122,13 @@ function customizedStatusCallback( mediaStatus ) {
             hideElement( LOGO_ID );
         }
         else if ( AppState.isInState( StateManager.State.IDLE ) ) {
-            showElement( LOGO_ID );
+            if ( isInSequence ) {
+                // Override "IDLE" with "PLAYING" status since we're before or after an ad
+                mediaStatus.playerState = StateManager.State.PLAYING;
+                AppState.setState( StateManager.State.PLAYING );
+            } else {
+                showElement( LOGO_ID );
+            }
         }
     }
     return mediaStatus;
@@ -174,6 +180,7 @@ function onStop( event ) {
 }
 
 function onLoad( event ) {
+    AppState.setState( StateManager.State.LOADING );
     AppLogger.log( "MediaManager", "onLoad" );
     if ( event && event.data ) {
         if ( !embedPlayerInitialized ) {
@@ -195,11 +202,12 @@ function onLoad( event ) {
 }
 
 function onEnded() {
-    AppLogger.log( "MediaManager", "onEnded" );
-    if ( kdp.evaluate( '{sequenceProxy.isInSequence}' ) ) {
-        AppLogger.log( "MediaManager", "Set flag isIdleBecauseOfAdEnded to true." );
+    AppLogger.log( "MediaManager", "onEnded", { 'isInSequence': isInSequence } );
+    // If ad is playing, do not perform onEnded, just broadcast your status
+    if ( isInSequence ) {
+        mediaManager.broadcastStatus( true );
     } else {
-        mediaManager[ 'onEndedOrig' ]();
+        mediaManager.onEndedOrig();
     }
 }
 
@@ -284,18 +292,27 @@ function swapVideoElement() {
 
 /**
  * Sets the required bindings to the Kaltura player.
- * @param initialRequest
  */
 function addBindings() {
-    kdp.kBind( "onEmbedPlayerReceiverMsg", function ( msgObj ) {
-        AppLogger.log( "kdp", "onEmbedPlayerReceiverMsg", msgObj );
-        var msgType = msgObj.type;
-        var opt_msgData = msgObj.data;
-        var opt_msgCallback = msgObj.callback;
-        switch ( msgType ) {
+    // In case of ad plugin enabled, add bindings to support prerolls and postrolls
+    if ( kdp.evaluate( '{doubleClick.plugin}' ) ) {
 
-        }
-    } );
+        kdp.kBind( "durationChange", function ( newDuration ) {
+            var mediaInfo = mediaManager.getMediaInformation();
+            if ( mediaInfo ) {
+                mediaInfo.duration = newDuration;
+                mediaManager.setMediaInformation( mediaInfo );
+            }
+        } );
+
+        kdp.kBind( "preSequenceStart", function () {
+            isInSequence = true;
+        } );
+
+        kdp.kBind( "postSequenceStart", function () {
+            isInSequence = false;
+        } );
+    }
 }
 
 function setConfiguration( embedInfo ) {
@@ -331,7 +348,7 @@ function getFlashVars( data ) {
     try {
         var senderFlashVars = data.media.customData.embedConfig.flashVars;
 
-        // Embed media info params in mwEmbedChromecastReceiver
+        // Embed media info params from onLoad event in mwEmbedChromecastReceiver
         receiverFlashVars.mediaProxy = { mediaPlayFrom: data.currentTime || 0 };
         receiverFlashVars.autoPlay = data.autoplay || true;
 
@@ -376,13 +393,12 @@ function getQueryVariable( variable ) {
 
 function setLogo() {
     var logoUrl = getQueryVariable( 'logoUrl' );
-    // Set partner's logo
     if ( logoUrl ) {
+        // Set partner's logo
         AppLogger.log( "receiver.js", "Displaying partner's splash screen.", { 'logoUrl': logoUrl } );
         $( "#" + LOGO_ID ).css( 'background-image', 'url(' + logoUrl + ')' );
-    }
-    // Set Kaltura's default logo
-    else {
+    } else {
+        // Set Kaltura's default logo
         AppLogger.log( "receiver.js", "Displaying Kaltura's splash screen." );
         $( "#" + LOGO_ID ).css( 'background-image', "url('assets/kalturalogo.png')" );
     }

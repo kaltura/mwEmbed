@@ -5,6 +5,8 @@ function StateManager() {
 }
 
 StateManager.State = {
+    LAUNCHING: 'LAUNCHING',
+    LOADING: 'LAUNCHING',
     BUFFERING: 'BUFFERING',
     PLAYING: 'PLAYING',
     PAUSED: 'PAUSED',
@@ -12,7 +14,7 @@ StateManager.State = {
 };
 
 StateManager.prototype.setState = function ( state ) {
-    AppLogger.log( "stateManager", "Setting new state for receiver: " + state );
+    AppLogger.log( "AppState", "Setting new state for receiver: " + state );
     this.idleManager.setIdleTimeout( state );
     this.prevState = this.currState;
     this.currState = state;

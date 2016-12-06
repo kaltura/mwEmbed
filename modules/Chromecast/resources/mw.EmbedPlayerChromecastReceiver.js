@@ -103,8 +103,12 @@
                 // Call on original handler
             } else {
                 this.mediaPlayer = new top.cast.player.api.Player( this.mediaHost );
-                this.mediaPlayer.preload( this.mediaProtocol, (this.isLive() ? Infinity : initStart) );
-                this.wasPreload = true;
+                if ( this.isLive() ) {
+                    this.mediaPlayer.load( this.mediaProtocol, Infinity );
+                } else {
+                    this.mediaPlayer.preload( this.mediaProtocol, initStart );
+                    this.wasPreload = true;
+                }
             }
         },
 
@@ -230,37 +234,18 @@
             this.bindHelper( "loadstart", function () {
                 mw.log( 'EmbedPlayerChromecastReceiver:: Setup. Video element: ' + _this.getPlayerElement().toString() );
                 _this._propagateEvents = true;
-                _this.stopped = false;
+                _this.stopped = false; // To always support autoPlay
             } );
 
             this.bindHelper( "replay", function () {
                 _this.triggerReplayEvent = true;
-                _this.triggerHelper( "playerReady" ); // since we reload the media for replay, trigger playerReady to reset Analytics
+                _this.triggerHelper( "playerReady" ); // Since we reload the media for replay, trigger playerReady to reset Analytics
             } );
 
-            //TODO: Ads support
-            // this.bindHelper( "onAdOpen", function ( event, id, system, type ) {
-            //     _this.triggerHelper( "broadcastToAllSenders", [ "chromecastReceiverAdOpen" ] );
-            // } );
-
-            // this.bindHelper( "AdSupport_AdUpdateDuration", function ( event, duration ) {
-            //     _this.triggerHelper( "broadcastToAllSenders", [ "chromecastReceiverAdDuration|" + duration ] );
-            // } );
-
-            // this.bindHelper( "onContentResumeRequested", function () {
-            //     _this.triggerHelper( "broadcastToAllSenders", [ "chromecastReceiverAdComplete" ] );
-            //     _this.triggerHelper( "cancelAllAds" );
-            // } );
-
-            //TODO: Closed captions
-            // this.bindHelper( "ccSelectClosedCaptions sourceSelectedByLangKey", function ( e, label ) {
-            //     _this.triggerHelper( "propertyChangedEvent", {
-            //         "plugin": "closedCaptions",
-            //         "property": "captions",
-            //         "value": typeof label === "string" ? label : label[ 0 ]
-            //     } );
-            //     $( parent.document.getElementById( 'captionsOverlay' ) ).empty();
-            // } );
+            this.bindHelper( "postEnded", function () {
+                _this.currentTime = _this.getPlayerElement().duration;
+                _this.updatePlayheadStatus();
+            } );
         },
 
         /**
@@ -291,6 +276,9 @@
             } );
         },
 
+        /**
+         * Player methods
+         */
         play: function () {
             if ( this.parent_play() ) {
                 if ( this.wasPreload ) {
@@ -301,27 +289,9 @@
             }
         },
 
-        /**
-         * Handle the native paused event
-         */
-        _onpause: function () {
-            this.pause();
-            $( this ).trigger( 'onPlayerStateChange', [ "pause", "play" ] );
-        },
-
-        // When player started to play
-        _onplaying: function () {
-            this.hideSpinner();
-            this.triggerHelper( "playing" );
-            this.triggerHelper( 'hidePlayerControls' );
-        },
-
-        /**
-         * Handle the native play event
-         */
-        _onplay: function () {
-            this.restoreEventPropagation();
-            this.triggerHelper( 'hidePlayerControls' );
+        pause: function () {
+            this.parent_pause();
+            this.getPlayerElement().pause();
         },
 
         replay: function () {
@@ -329,32 +299,6 @@
                 this.restoreEventPropagation();
                 this.preloadMediaSourceExtension();
                 this.play();
-            }
-        },
-
-        // On perform seek
-        _onseeking: function () {
-            this.addPlayerSpinner();
-            this.triggerHelper( 'hidePlayerControls' );
-            if ( !this.seeking ) {
-                this.seeking = true;
-                if ( this._propagateEvents && !this.isLive() ) {
-                    this.triggerHelper( 'seeking' );
-                }
-            }
-        },
-
-        // After seeking ends
-        _onseeked: function () {
-            if ( this.seeking ) {
-                this.seeking = false;
-                if ( this._propagateEvents && !this.isLive() ) {
-                    this.triggerHelper( 'seeked', [ this.getPlayerElementTime() ] );
-                    this.triggerHelper( "onComponentsHoverEnabled" );
-                    this.syncCurrentTime();
-                    this.updatePlayheadStatus();
-                    this.hideSpinner();
-                }
             }
         },
 
@@ -367,22 +311,19 @@
             this.play();
         },
 
-        // override these functions so embedPlayer won't try to sync time
+        playerSwitchSource: function ( source, switchCallback, doneCallback ) {
+            if ( switchCallback ) {
+                switchCallback( this.playerObject );
+            }
+            setTimeout( function () {
+                if ( doneCallback ) {
+                    doneCallback();
+                }
+            }, 100 );
+        },
+
         syncCurrentTime: function () {
             this.currentTime = this.getPlayerElementTime();
-        },
-
-        _ondurationchange: function ( event, data ) {
-            if ( this.playerElement && !isNaN( this.playerElement.duration ) && isFinite( this.playerElement.duration ) ) {
-                this.setDuration( this.getPlayerElement().duration );
-                return;
-            }
-        },
-
-        _onended: function () {
-            if ( this._propagateEvents ) {
-                this.onClipDone();
-            }
         },
 
         setPlayerElement: function ( mediaElement ) {
@@ -408,19 +349,70 @@
             return false;
         },
 
-        playerSwitchSource: function ( source, switchCallback, doneCallback ) {
-            if ( switchCallback ) {
-                switchCallback( this.playerObject );
-            }
-            setTimeout( function () {
-                if ( doneCallback ) {
-                    doneCallback();
-                }
-            }, 100 );
-        },
-
         canAutoPlay: function () {
             return true;
+        },
+
+        /**
+         * Native video tag methods
+         */
+        _onpause: function () {
+            if ( !this.mediaPlayer.getState()[ 'underflow' ] ) {
+                this.pause();
+                // To display the actions oppositely in the Chromecast UI
+                $( this ).trigger( 'onPlayerStateChange', [ "pause", "play" ] );
+            }
+        },
+
+        // When player started to play
+        _onplaying: function () {
+            this.hideSpinner();
+            this.triggerHelper( "playing" );
+            this.triggerHelper( 'hidePlayerControls' );
+        },
+
+        _onplay: function () {
+            this.restoreEventPropagation();
+            this.triggerHelper( 'hidePlayerControls' );
+        },
+
+        // On perform seek
+        _onseeking: function () {
+            this.triggerHelper( 'hidePlayerControls' );
+            if ( !this.seeking ) {
+                this.addPlayerSpinner();
+                this.seeking = true;
+                if ( this._propagateEvents && !this.isLive() ) {
+                    this.triggerHelper( 'seeking' );
+                }
+            }
+        },
+
+        // After seeking ends
+        _onseeked: function () {
+            if ( this.seeking ) {
+                this.hideSpinner();
+                this.seeking = false;
+                if ( this._propagateEvents && !this.isLive() ) {
+                    this.triggerHelper( 'seeked', [ this.getPlayerElementTime() ] );
+                    this.triggerHelper( "onComponentsHoverEnabled" );
+                    this.syncCurrentTime();
+                    this.updatePlayheadStatus();
+                }
+            }
+        },
+
+        _ondurationchange: function ( event, data ) {
+            if ( this.playerElement && !isNaN( this.playerElement.duration ) && isFinite( this.playerElement.duration ) ) {
+                this.setDuration( this.getPlayerElement().duration );
+                return;
+            }
+        },
+
+        _onended: function () {
+            if ( this._propagateEvents ) {
+                this.onClipDone();
+            }
         }
     };
 })( mediaWiki, jQuery );
