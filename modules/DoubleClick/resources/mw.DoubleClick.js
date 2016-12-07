@@ -623,12 +623,8 @@
 				_this.resumeAd(isLinear)
 			});
 			$(".adCover").remove();
-			if (this.isChromeless){
+			if (!mw.isIphone()){
 				$(".videoDisplay").prepend(adCover);
-			}else{
-				if (!mw.isIphone()){
-					$(this.getAdContainer()).append(adCover);
-				}
 			}
 			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
 
