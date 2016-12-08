@@ -1,0 +1,16 @@
+{
+  "SaveForLater": {
+    "description": "Save current video time to watch later",
+    "attributes": {
+      "parent": {
+        "doc": "Parent container for component. Components include default placement, leave as null if unsure.",
+        "type": "enum",
+        "enum": [
+          "topBarContainer",
+          "videoHolder",
+          "controlsContainer"
+        ]
+      }
+    }
+  }
+}

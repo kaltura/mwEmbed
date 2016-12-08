@@ -1,0 +1,11 @@
+{
+  "SaveForLater": {
+    "scripts": [
+      "resources/SaveForLater.js"
+    ],
+    "dependencies": "mw.KBaseComponent",
+    "kalturaPluginName": "saveForLater",
+    "styles": "resources/SaveForLater.css",
+    "messageFile": "SaveForLater.i18n.json"
+  }
+}
