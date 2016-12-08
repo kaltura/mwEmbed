@@ -1,0 +1,10 @@
+{
+    "flashhls": {
+        "scripts": [
+          "resources/FlashHLS.js"
+        ],
+        "dependencies": ["mw.KBaseComponent"],
+        "kalturaPluginName": "flashhls"
+    },
+  "mw.EmbedPlayerFlashHLS"	:{ "scripts": "resources/mw.EmbedPlayerFlashHLS.js" }
+}
