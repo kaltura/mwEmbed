@@ -208,6 +208,8 @@ DAL for Q&A Module
         QandA_ResponseProfileSystemName: "QandA",
         QandA_MetadataProfileSystemName: "Kaltura-QnA",
         QandA_cuePointTag: "qna",
+        QandA_publicNotificationName: "PUBLIC_QNA",
+        QandA_UserNotificationName: "USER_QNA",
         QandA_cuePointTypes: {"Question":1,"Answer":2, "Announcement":3},
         bootPromise:null,
 
@@ -704,15 +706,86 @@ DAL for Q&A Module
                 );
             });
         },
+        
+        registerPublicNotificationItems: function() {
+            var _this = this;
+            var entryId = _this.embedPlayer.kentryid;
+
+            var request = {
+                'service': 'eventNotification_eventNotificationTemplate',
+                'action': 'register',
+                'format': 1,
+                "notificationTemplateSystemName": _this.QandA_UserNotificationName,
+                "userParamsArray:0:objectType": "KalturaEventNotificationParameter",
+                "userParamsArray:0:key": "entryId",
+                "userParamsArray:0:value:objectType": "KalturaStringValue",
+                "userParamsArray:0:value:value": entryId,
+                "userParamsArray:1:objectType": "KalturaEventNotificationParameter",
+                "userParamsArray:1:key": "userId",
+                "userParamsArray:1:value:objectType": "KalturaStringValue",
+                "userParamsArray:1:value:value": _this.userId
+            }
+
+            _this.getKClient().doRequest(request, function(result) {
+                var socket = io.connect(result.url);
+
+                socket.on('validated', function(){
+                    console.log("Connected to socket.");
+                    socket.emit('listen', result.key);
+                });
+
+                socket.on('connected', function(queueKey){
+                    console.log("Listening to queue [" + queueKey + "]");
+                });
+
+                socket.on('message', function(queueKey, msg){
+                    console.log("[" + queueKey + "]: " +  String.fromCharCode.apply(null, new Uint8Array(msg.data)));
+                });
+            });
+        },
+
+        registerUserNotificationItems: function() {
+            var _this = this;
+            var entryId = _this.embedPlayer.kentryid;
+
+            var request = {
+                'service': 'eventNotification_eventNotificationTemplate',
+                'action': 'register',
+                'format': 1,
+                "notificationTemplateSystemName": _this.QandA_publicNotificationName,
+                "userParamsArray:0:objectType": "KalturaEventNotificationParameter",
+                "userParamsArray:0:key": "entryId",
+                "userParamsArray:0:value:objectType": "KalturaStringValue",
+                "userParamsArray:0:value:value": entryId
+            }
+
+            _this.getKClient().doRequest(request, function(result) {
+                var socket = io.connect(result.url);
+
+                socket.on('validated', function(){
+                    console.log("Connected to socket.");
+                    socket.emit('listen', result.key);
+                });
+
+                socket.on('connected', function(queueKey){
+                    console.log("Listening to queue [" + queueKey + "]");
+                });
+
+                socket.on('message', function(queueKey, msg){
+                    console.log("[" + queueKey + "]: " +  String.fromCharCode.apply(null, new Uint8Array(msg.data)));
+                });
+            });
+        },
 
         //Currently there is no notification, so we poll the API
         registerItemNotification: function () {
             var _this = this;
 
-            //Start live cuepoint pulling
-            this.liveAQnaIntervalId = setInterval(function () {
-                _this.requestCuePoints();
-            }, _this.qnaPlugin.getConfig("qnaPollingInterval") || 10000);
+            _this.requestCuePoints();
+            
+            _this.registerPublicNotificationItems();
+            
+            _this.registerUserNotificationItems();
         }
     };
 })(window.mw, window.jQuery, window.ko);

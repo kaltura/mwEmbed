@@ -5,7 +5,8 @@
             "resources/qnaKOExtensions.js",
             "resources/qnaModule.js",
             "resources/qnaService.js",
-            "resources/qna.js"
+            "resources/qna.js",
+            "resources/socket.io.js"
         ],
         "dependencies": [
         	"mw.KBaseScreen",
