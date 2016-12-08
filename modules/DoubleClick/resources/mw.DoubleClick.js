@@ -774,11 +774,20 @@
 				}
 			}, timeoutVal);
 
-			// if on chromeless - reuest ads using the KDP DoubleClick plugin instead of the JS plugin
+			// if on chromeless - request ads using the KDP DoubleClick plugin instead of the JS plugin
 			if (this.isChromeless){
 				adsRequest.adTagUrl = encodeURIComponent(adsRequest.adTagUrl);
-				_this.embedPlayer.getPlayerElement().sendNotification( 'requestAds', adsRequest );
-				mw.log( "DoubleClick::requestAds: Chromeless player request ad from KDP plugin");
+				// if during change media - wait for changeMediaDone before requesting ads to prevent the media change callback destroying the ad manager in the Flash plugin
+				if (this.embedPlayer.changeMediaStarted){
+					this.embedPlayer.autoplay = false; // prevent seeing the first few seconds of the entry before the ad loads
+					this.embedPlayer.unbindHelper('onChangeMediaDone' + this.bindPostfix).bindHelper('onChangeMediaDone' + this.bindPostfix, function (event) {
+						_this.embedPlayer.getPlayerElement().sendNotification( 'requestAds', adsRequest );
+						mw.log( "DoubleClick::requestAds: Chromeless player request ad from KDP plugin after onChangeMediaDone");
+					});
+				}else{
+					_this.embedPlayer.getPlayerElement().sendNotification( 'requestAds', adsRequest );
+					mw.log( "DoubleClick::requestAds: Chromeless player request ad from KDP plugin");
+				}
 				return;
 			}
 
