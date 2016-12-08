@@ -1,0 +1,6 @@
+{
+    "mw.NielsenVideoCensus": {
+        "scripts": "resources/mw.NielsenVideoCensus.js",
+        "kalturaPluginName": "nielsenVideoCensus"
+    }
+}

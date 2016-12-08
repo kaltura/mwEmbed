@@ -1,0 +1,132 @@
+/* font icons */
+@font-face {
+    font-family: 'qna';
+    src:url('../fonts/qna.eot?2bxczj');
+    src:url('../fonts/qna.eot?#iefix2bxczj') format('embedded-opentype'),
+    url('../fonts/qna.woff?2bxczj') format('woff'),
+    url('../fonts/qna.ttf?2bxczj') format('truetype'),
+    url('../fonts/qna.svg?2bxczj#qna') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+[class^="qna-icon-"], [class*=" qna-icon-"] {
+    font-family: 'qna';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.qna-icon-drop:before {
+    content: "\e600";
+}
+
+.qna-icon-drop2:before {
+    content: "\e601";
+}
+
+.qna-icon-tech:before {
+    content: "\e602";
+}
+
+.qna-icon-more:before {
+    content: "\e603";
+}
+
+.qna-icon-expand:before {
+    content: "\e608";
+}
+
+.qna-icon-Ask:before {
+    content: "\e605";
+}
+
+.qna-icon-close:before {
+    content: "\e606";
+}
+
+.qna-icon-Announcement:before {
+    content: "\e607";
+}
+
+.qna-icon-collapse:before {
+    content: "\e604";
+}
+
+.qna-icon-bullet:before {
+    content: "\e609";
+}
+
+.qna-icon-answeronair:before {
+    content: "\e60a";
+}
+
+.qnaInterface .qna-bullet-icon{
+    margin-left: 5px;
+    position: absolute;
+    font-size: 15px;
+}
+
+.qnaInterface .qna-bullet-icon-read{
+    color: #d7d7d7;
+}
+
+.qnaInterface .qna-bullet-icon-unread{
+    color: #00b4d1;
+    z-index: 99999;
+}
+
+.qnaInterface .qna-bullet-icon-bottom-drop{
+    margin-top: 11px;
+}
+
+.qnaInterface .qna-bullet-icon-middle-drop{
+    margin-top: 13px;
+}
+
+.qnaInterface .qna-bullet-icon-top-drop{
+    margin-top: 15px;
+}
+
+.qnaInterface .qnaAnnouncementIconRead{
+    float: left;
+    color: #414442;
+    position: relative;
+    left: 10px;
+    bottom: 4px;
+    ont-size: 17px;
+}
+
+.qnaInterface .qnaAnnouncementIcon{
+    float: left;
+    color: #ffffff;
+    position: relative;
+    left: 10px;
+    bottom: 4px;
+    font-size: 17px;
+}
+
+.qnaInterface .collapseExpandIcon{
+    color: #414442;
+    position: absolute;
+    top: 14px;
+    right: 17px;
+    font-size: 12px;
+    float: right;
+}
+
+.qnaInterface .answerOnAirIcon{
+    color: #414442;
+    position: absolute;
+    bottom: 8px;
+    right: 20px;
+    font-size: 16px;
+    float: right;
+}

@@ -62,15 +62,17 @@
 				'parent': "topBarContainer",
 				'order': 3,
 				'socialShareURL': 'smart',
-				'socialNetworks': 'facebook,twitter,googleplus,email,linkedin,sms'
+				'socialNetworks': 'facebook,twitter,googleplus,email,linkedin,sms',
+				'embedCodeTemplate': '<iframe src="//cdnapi.kaltura.com/p/{mediaProxy.entry.partnerId}/sp/{mediaProxy.entry.partnerId}00/embedIframeJs/uiconf_id/{configProxy.kw.uiConfId}/partner_id/{mediaProxy.entry.partnerId}?iframeembed=true&playerId={configProxy.targetId}&entry_id={mediaProxy.entry.id}&flashvars[streamerType]=auto" width="560" height="395" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0"></iframe>'
 			},
-			'autoPlay': false,
+			'autoPlay': false
 		}
 	});
 </script>
 <div style="clear:both"></div>
+Also see <a href="SharePlaylist.html">SharePlaylist</a> example.
 <h3> Supporting Twitter Cards </h3>
-You can lean more about twitter cards in the detailed <a href="https://dev.twitter.com/docs/cards">twitter car documentation</a> <br>
+You can lean more about twitter cards in the detailed <a href="https://dev.twitter.com/docs/cards">twitter card documentation</a> <br>
 <br><b>Sample Kaltura player Twitter card markup: </b>
 <pre class="prettyprint linenums">&lt;meta name=&quot;twitter:card&quot; content=&quot;player&quot;&gt;
 &lt;meta name=&quot;twitter:site&quot; content=&quot;@Kaltura&quot;&gt;
@@ -86,8 +88,7 @@ You can lean more about twitter cards in the detailed <a href="https://dev.twitt
 </pre>
 
 <h3> Supporting Facebook Embeds </h3>
-Facebook support player embed via <a href="https://developers.facebook.com/docs/opengraph">open graph</a>, presently only for flash object embeds. 
-For your player to inline playback on facebook, you should associate a flash UiConf XML with your html5 JSON player.
+Facebook supports html5 player embeds via <a href="https://developers.facebook.com/docs/opengraph">open graph</a>.
 <br><br>
 <b>Sample Kaltura player Facebook Open Graph markup:</b>
 <pre class="prettyprint linenums">&lt;!-- Facebook Open Graph tags --&gt;

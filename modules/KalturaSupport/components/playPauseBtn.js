@@ -22,6 +22,9 @@
 		setup: function( embedPlayer ) {
 			this.addBindings();
 		},
+		isSafeEnviornment: function(){
+			return !this.embedPlayer.isMobileSkin();
+		},
 		getComponent: function() {
 			var _this = this;
 			if( !this.$el ) {
@@ -94,7 +97,7 @@
 		togglePlayback: function() {
 			if( this.isDisabled ) return ;
 			var notificationName = ( this.getPlayer().isPlaying() ) ? 'doPause' : 'doPlay';
-			this.getPlayer().sendNotification( notificationName );
+			this.getPlayer().sendNotification( notificationName, {'userInitiated': true} );
 		}
 	})
 	);

@@ -316,7 +316,6 @@ mw.FreeWheelController.prototype = {
 		slot.donePlaying = false;
 
 		mw.log( 'mw.FreeWheelController:: playSlot:' + this.getSlotType( slot ) + ' adInstances: ' +  slot.getAdCount() );
-		
 		// if no ad slots are available return
 		if( slot.getAdCount() == 0 ){
 			return false;
@@ -329,8 +328,13 @@ mw.FreeWheelController.prototype = {
 		// make sure we remove preload attr
 		$( vid ).removeAttr( 'preload' );
 		
-		var adMetaData = this.getFwAdMetaData( slot ) ;
-		// Update ad Meta data:
+		var adMetaData = this.getFwAdMetaData( slot );
+
+        //send ad start event for analytics tracking
+        $(_this.embedPlayer).trigger("onAdPlay",[adMetaData.ID, adMetaData.name, adMetaData.type, 0, adMetaData.duration, null, null, adMetaData.title]);
+
+
+        // Update ad Meta data:
 		_this.embedPlayer.adTimeline.updateSequenceProxy(
 			'activePluginMetadata',
 			adMetaData
@@ -469,6 +473,10 @@ mw.FreeWheelController.prototype = {
 		mw.log( "FreeWheelController::onSlotEnded> " + event.slot.getTimePositionClass() );
 		// Update slot event:
 		event.slot.donePlaying = true;
+
+        // trigger ad complete event for analytics tracking.
+        $(_this.embedPlayer).trigger('onAdComplete');
+
 		var slotType =_this.getSlotType( event.slot );
 		if( slotType == 'overlay'  ){
 			_this.overlaySlotActive = false;

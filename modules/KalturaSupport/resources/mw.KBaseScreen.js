@@ -31,21 +31,17 @@
 
 			this.bind('onplay preSequence', $.proxy(function () {
 				if (this.isScreenVisible()) {
-					setTimeout(function () {
-						_this.getPlayer().disableComponentsHover();
-					}, 50);
 					if (this.hasPreviewPlayer()) {
 						this.resizePlayer();
 
 					} else {
 						this.hideScreen();
-
 					}
 				}
 			}, this));
 
 			this.bind('playerReady', $.proxy(function (e, size) {
-				this.error = false;
+				_this.error = false;
 			}, this));
 
 			this.bind('playerSizeClassUpdate', $.proxy(function (e, size) {
@@ -59,6 +55,12 @@
 			this.bind('closeOpenScreens', $.proxy(function (e, opener) {
 				if (this.pluginName !== opener)
 					this.hideScreen();
+			}, this));
+
+			this.bind('toggleScreen', $.proxy(function (e, screenName){
+				if( this.pluginName === screenName ) {
+					this.toggleScreen();
+				}
 			}, this));
 		},
 
@@ -82,6 +84,7 @@
 			}
 		},
 		hideScreen: function () {
+			var _this = this;
 			if (!this.error) {
 				this.getPlayer().triggerHelper( 'preHideScreen', [this.pluginName] );
 				if ( this.hasPreviewPlayer() ) {
@@ -93,12 +96,17 @@
 					this.getPlayer().restoreComponentsHover();
 				}
 
-				if ( !this.enablePlayDuringScreen ){
-					this.getScreen().fadeOut( 400 );
+				if ( !this.enablePlayDuringScreen && this.isScreenVisible() ){
+					this.getScreen().then(function(screen){
+						screen.fadeOut( 400, $.proxy( function () {
+							_this.getPlayer().triggerHelper( 'hideScreen', [_this.pluginName] );
+						}, this ) );
+					});
 				}
 			}
 		},
 		showScreen: function () {
+			var _this = this;
 			if (!this.error) {
 				this._hideAllScreens( this.pluginName );
 				this.getPlayer().triggerHelper( 'preShowScreen', [this.pluginName] );
@@ -108,9 +116,11 @@
 					this.pausePlayback();
 				}
 				this.getPlayer().disableComponentsHover();
-				this.getScreen().fadeIn( 400, $.proxy( function () {
-					this.getPlayer().triggerHelper( 'showScreen', [this.pluginName] );
-				}, this ) );
+				this.getScreen().then(function(screen){
+					screen.fadeIn( 400, $.proxy( function () {
+						_this.getPlayer().triggerHelper( 'showScreen', [_this.pluginName] );
+					}, this ) );
+				});
 			}
 		},
 		toggleScreen: function () {
@@ -122,7 +132,7 @@
 			}
 		},
 		isScreenVisible: function () {
-			return (!this.$screen) ? false : this.getScreen().is(':visible');
+			return (!this.$screen) ? false : this.$screen.is(':visible');
 		},
 		hasPreviewPlayer: function () {
 			return this.getConfig('usePreviewPlayer') && this.getConfig('previewPlayerEnabled');
@@ -169,31 +179,46 @@
 			}
 		},
 		getScreen: function () {
+			var _this = this;
+			var defer = $.Deferred();
 			if (!this.$screen) {
-				this.$screen = $('<div />')
-					.addClass('screen ' + this.pluginName)
-					.append(
-						$('<div class="screen-content" /> ').append(
-							this.getTemplateHTML(this.getTemplateData())
-						)
-					);
+				this.getTemplateHTML(this.getTemplateData())
+				.then(
+				function(data) {
+					var closeBtn = $('<span class="icon-close"/>')
+						.on('click', function(){
+							_this.hideScreen();
+						});
+					_this.$screen = $('<div />')
+						.addClass('screen ' + _this.pluginName)
+						.append(
+							$('<div class="screen-content" /> ').append(closeBtn).append(data)
+						);
 
-				// Create expand button
-				var hasExpandBtn = this.getPlayer().getVideoDisplay().find('.expandPlayerBtn').length;
-				if (this.getConfig('usePreviewPlayer') && !hasExpandBtn) {
-					this.getPlayer().getVideoDisplay().append(
-						$('<i />')
-							.addClass('expandPlayerBtn icon-expand2')
-							.click($.proxy(function () {
-								this._hideAllScreens();
-							}, this))
-					);
-				}
+					// Create expand button
+					var hasExpandBtn = _this.getPlayer().getVideoDisplay().find('.expandPlayerBtn').length;
+					if (_this.getConfig('usePreviewPlayer') && !hasExpandBtn) {
+						_this.getPlayer().getVideoDisplay().append(
+							$('<i />')
+								.addClass('expandPlayerBtn icon-expand2')
+								.click($.proxy(function () {
+									_this._hideAllScreens();
+								}, _this))
+						);
+					}
 
-				this.getPlayer().getVideoHolder().append(this.$screen);
-				this.addScreenBindings();
+					_this.getPlayer().getVideoHolder().append(_this.$screen);
+					_this.addScreenBindings();
+					defer.resolve(_this.$screen);
+				}, function(msg) {
+					mw.log( msg );
+					defer.reject(msg);
+				});
+
+			}else{
+				defer.resolve(this.$screen);
 			}
-			return this.$screen;
+			return defer;
 		},
 		// Override this method in plugins that extend KBaseScreen to attach DOM events to template
 		addScreenBindings: function () {

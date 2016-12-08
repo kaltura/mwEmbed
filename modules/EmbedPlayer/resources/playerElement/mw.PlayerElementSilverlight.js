@@ -10,6 +10,7 @@
 			this.id = playerId;
 			this.targetObj = target;
 			var xapPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/silverlight-player/Player.xap';
+
 			//var xapPath = 'http://192.168.162.72/lightKdp/Player.xap';
 			window["onError" + playerId]=function(sender, args){
 				var appSource = "";
@@ -100,10 +101,14 @@
 					width:"100%",height:"100%",
 					background:"transparent",
 					windowless:"true",
-					version: "4.0.60310.0" },
+					version: "4.0.60310.0",
+					 EnableGPUAcceleration:"true",
+					 debug:mw.getConfig('debug') ? "true" : ""
+				 },
 				{
 					onError: "onError" + playerId,
-					enableHtmlAccess: "true" },
+					enableHtmlAccess: "true"
+				},
 				params
 			//	context: "row4"
 			);
@@ -156,6 +161,11 @@
 				this.bindPlayerFunction( eventName, methodName );
 			}
 		},
+		changeMulticastParams: function( multicastGroup, sourceAddress,multicastPolicyOverMulticastEnabled ) {
+			if ( this.playerElement ) {
+				this.playerElement.changeMulticastParams( multicastGroup, sourceAddress, multicastPolicyOverMulticastEnabled);
+			}
+		},
 
 		removeJsListener: function( eventName, methodName ) {
 			if ( this.playerElement ) {
@@ -182,10 +192,7 @@
 			$( this ).trigger( 'seeking' );
 		},
 		load: function(){
-			if ( this.src ) {
-				this.playerProxy.setSrc(this.src);
-				this.playerProxy.loadMedia();
-			}
+			this.playerProxy.loadMedia();
 		},
 		changeVolume: function( volume ){
 			this.playerProxy.setVolume(  volume );
@@ -206,7 +213,13 @@
 		stretchFill: function() {
 			this.playerProxy.stretchFill();
 		},
-
+		getMulticastDiagnostics: function(){
+			if (this.playerProxy) {
+				return this.playerProxy.getDiagnostics();
+			} else {
+				return {}
+			}
+		},
 		/**
 		 * Bind a Player Function,
 		 *

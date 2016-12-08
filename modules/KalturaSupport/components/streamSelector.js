@@ -9,14 +9,20 @@
 			"displayImportance": 'low',
 			"align": "right",
 			"showTooltip": true,
+			"hideWhenEmpty": true,
 			"labelWidthPercentage": 33,
 			"defaultStream": 1,
 			"maxNumOfStream": 4,
 			"enableKeyboardShortcuts": true,
+			'smartContainer': 'qualitySettings',
+			'smartContainerCloseEvent': 'onChangeStream',
+			"title": gM( 'mwe-embedplayer-select_stream' ),
 			"keyboardShortcutsMap": {
 				"nextStream": 221,   // Add ] Sign for next stream
 				"prevStream": 219,   // Add [ Sigh for previous stream
-				"defaultStream": 220 // Add \ Sigh for default stream
+				"defaultStream": 220, // Add \ Sigh for default stream
+				"openMenu": 83, // Add S Sigh for open menu
+				"closeMenu": "shift+83" // Add Shift+S Sigh for close menu
 			}
 		},
 
@@ -24,6 +30,7 @@
 		streams: [],
 		streamsReady: false,
 		streamEnded: false,
+		streamChanging: false,
 
 		setup: function () {
 			this.addBindings();
@@ -62,6 +69,7 @@
 				//TODO: handle default stream selection???
 				if (_this.getPlayer().kentryid != _this.currentStream.id) {
 					_this.setStream(_this.currentStream);
+					_this.setActiveMenuItem();
 				}
 				_this.buildMenu();
 				_this.onEnable();
@@ -89,6 +97,19 @@
 				_this.externalSetStream(arg);
 			});
 
+			this.bind('onChangeMedia', function () {
+				if (!_this.streamChanging){
+						_this.streams = [];
+						_this.getMenu().destroy();
+						_this.onDisable();
+						_this.streamsReady = false;
+					}
+			});
+
+			this.bind( 'onDisableInterfaceComponents', function(e, arg ){
+				_this.getMenu().close();
+			});
+
 			if (this.getConfig('enableKeyboardShortcuts')) {
 				this.bind('addKeyBindCallback', function (e, addKeyCallback) {
 					_this.addKeyboardShortcuts(addKeyCallback);
@@ -102,6 +123,8 @@
 				'service': 'baseEntry',
 				'action': 'list',
 				'filter:objectType': 'KalturaBaseEntryFilter',
+				// MEDIA_CLIP
+				'filter:typeEqual': 1,
 				'filter:parentEntryIdEqual': this.getPlayer().kentryid
 			});
 
@@ -118,12 +141,19 @@
 			// do the api request
 			this.getKalturaClient().doRequest(requestObject, function (data) {
 				// Validate result
-				if (data && _this.isValidResult(data[0])) {
+				if (data && _this.isValidResult(data[0] && data[0].totalCount > 0)) {
 					_this.createStreamList(data);
+					if( _this.getConfig('hideWhenEmpty') == true ){
+						_this.setConfig('visible', true);
+					}
+					_this.getBtn().show();
 				} else {
 					mw.log('streamSelector::Error retrieving streams, disabling component');
-					_this.getBtn().hide();
+					if( _this.getConfig('hideWhenEmpty') == false ){
+						_this.setConfig('visible', true);
+					}
 				}
+				_this.embedPlayer.triggerHelper("updateComponentsVisibilityDone");
 			});
 		},
 		createStreamList: function (data) {
@@ -145,7 +175,7 @@
 					}
 				} );
 			} else {
-				mw.log('streamSelector::No streams avaialble, disabling component');
+				mw.log('streamSelector::No streams available, disabling component');
 				_this.getBtn().hide();
 			}
 			_this.embedPlayer.triggerHelper('streamsReady');
@@ -168,14 +198,25 @@
 			// Add ] Sign for next stream
 			addKeyCallback(this.getConfig("keyboardShortcutsMap").nextStream, function () {
 				_this.setStream(_this.getNextStream());
+				_this.setActiveMenuItem();
 			});
 			// Add [ Sigh for previous stream
 			addKeyCallback(this.getConfig("keyboardShortcutsMap").prevStream, function () {
 				_this.setStream(_this.getPrevStream());
+				_this.setActiveMenuItem();
 			});
 			// Add \ Sigh for default stream
 			addKeyCallback(this.getConfig("keyboardShortcutsMap" ).defaultStream, function () {
 				_this.setStream(_this.getDefaultStream());
+				_this.setActiveMenuItem();
+			});
+			// Add S Sigh for open menu
+			addKeyCallback(this.getConfig("keyboardShortcutsMap" ).openMenu, function () {
+				_this.getMenu().open();
+			});
+			// Add Shift+S Sigh for close menu
+			addKeyCallback(this.getConfig("keyboardShortcutsMap" ).closeMenu, function () {
+				_this.getMenu().close();
 			});
 		},
 		getNextStream: function () {
@@ -227,6 +268,10 @@
 			}
 			this.getMenu().setActive({'key': 'id', 'val': this.getCurrentStreamIndex()});
 		},
+		setActiveMenuItem: function() {
+			var index = this.getCurrentStreamIndex();
+			this.getMenu().setActive(index);
+		},
 		addStreamToMenu: function (id, stream) {
 			var _this = this;
 			var active = (this.getCurrentStreamIndex() == id);
@@ -247,6 +292,7 @@
 			var stream = this.streams[id];
 			if (stream) {
 				this.setStream(stream);
+				this.setActiveMenuItem();
 			} else {
 				this.log("Error - invalid stream id");
 			}
@@ -256,6 +302,7 @@
 			if (this.currentStream != stream) {
 				var _this = this;
 				var embedPlayer = this.getPlayer();
+				this.streamChanging = true;
 				embedPlayer.triggerHelper('onChangeStream', [_this.currentStream.id]);
 				//Set reference to active stream
 				this.currentStream = stream;
@@ -292,7 +339,7 @@
 					//Reinit the kCuePoints service
 					if( (embedPlayer.rawCuePoints && embedPlayer.rawCuePoints.length > 0)) {
 						embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
-						embedPlayer.triggerHelper('KalturaSupport_CuePointsReady', embedPlayer.rawCuePoints);
+						embedPlayer.triggerHelper('KalturaSupport_CuePointsReady', [embedPlayer.rawCuePoints]);
 					}
 					callback();
 				};
@@ -315,6 +362,7 @@
 							embedPlayer.removeBlackScreen();
 							//Return poster to allow display of poster on clip done
 							mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
+							_this.streamChanging = false;
 							embedPlayer.triggerHelper('onChangeStreamDone', [_this.currentStream.id]);
 						});
 						//Add black screen before seek to avoid flashing of video
@@ -370,13 +418,11 @@
 		onEnable: function () {
 			this.isDisabled = false;
 			this.updateTooltip(gM('mwe-embedplayer-select_stream'));
-			this.getComponent().find('button').removeClass('rotate');
 			this.getBtn().removeClass('disabled');
 		},
 		onDisable: function () {
 			this.isDisabled = true;
 			this.updateTooltip(gM('mwe-embedplayer-switch_stream'));
-			this.getComponent().find('button').addClass('rotate');
 			this.getComponent().removeClass('open');
 			this.getBtn().addClass('disabled');
 		}

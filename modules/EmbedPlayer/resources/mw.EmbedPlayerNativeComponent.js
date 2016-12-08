@@ -16,7 +16,7 @@
 		instanceOf: 'NativeComponent',
 
 		bindPostfix: '.EmbedPlayerNativeComponent',
-		
+
 		// Flag to only load the video ( not play it )
 		onlyLoadFlag: false,
 
@@ -49,6 +49,8 @@
 
 		playingSource: undefined,
 
+		lastPlayPauseTime: 0,
+
 		// All the native events per:
 		// http://www.w3.org/TR/html5/video.html#mediaevents
 		nativeEvents: [
@@ -69,9 +71,14 @@
 			'enterfullscreen',
 			'exitfullscreen',
 			'chromecastDeviceConnected',
+			'hideConnectingMessage',
 			'chromecastDeviceDisConnected',
 			'textTracksReceived',
-			'loadEmbeddedCaptions'
+			'loadEmbeddedCaptions',
+			'flavorsListChanged',
+			'sourceSwitchingStarted',
+			'sourceSwitchingEnd',
+			'audioTracksReceived'
 		],
 
 		// Native player supported feature set
@@ -79,10 +86,22 @@
 			'playHead': true,
 			'pause': true,
 			'fullscreen': true,
-			'SourceSelector': false,
+			'SourceSelector': true,
 			'timeDisplay': true,
 			'volumeControl': false,
 			'overlays': true
+		},
+
+		canPlay: function(callback){
+			var deferred =  $.Deferred();
+			this.bindOnceHelper("canplay", function () {
+				if (callback) {
+					callback();
+				}
+				deferred.resolve();
+			});
+
+			return deferred;
 		},
 
 		setup: function (readyCallback) {
@@ -99,13 +118,15 @@
 			this.proxyElement = divElement;
 			try {
 				if (NativeBridge.videoPlayer) {
-					NativeBridge.videoPlayer.registePlayer(this.getPlayerElement());
+					NativeBridge.videoPlayer.registerPlayer(this.getPlayerElement());
 					NativeBridge.videoPlayer.registerEmbedPlayer(this);
 				}
 			}
 			catch (e) {
 				alert(e);
 			}
+
+			this.canPlayPromise = this.canPlay(readyCallback);
 
 			this.applyMediaElementBindings();
 
@@ -116,34 +137,110 @@
 				mw.log("EmbedPlayerNativeComponent:: showChromecastDeviceList::");
 				_this.getPlayerElement().showChromecastDeviceList();
 			});
+			this.bindHelper("sendCCRecieverMessage", function (e,msg) {
+				mw.log("EmbedPlayerNativeComponent:: sendCCRecieverMessage::");
+				_this.getPlayerElement().sendCCRecieverMessage(msg);
+			});
 			this.bindHelper("onEndedDone", function () {
 				_this.playbackDone = true;
 			});
-			this.resolveSrcURL(this.getSrc()).then(
-				function (resolvedSrc) {
-					mw.log("EmbedPlayerNativeComponent::resolveSrcURL get succeeded");
-					_this.setSrcAttribute( resolvedSrc );
-					readyCallback();
-				},
-				function () {
-					mw.log("EmbedPlayerNativeComponent::resolveSrcURL get failed");
-					_this.setSrcAttribute( _this.getSrc() );
-					readyCallback();
-				}
-			);
+			if (this.startTime && !this.supportsURLTimeEncoding()) {
+				this.setStartTimeAttribute(this.startTime);
+			}
+            
+            var selectedSource = this.getSrc();
+            if (!selectedSource && mw.getConfig("EmbedPlayer.PreloadNativeComponent")) {
+                readyCallback();
+
+            } else {
+                this.resolveSrcURL(selectedSource).then(
+                    function (resolvedSrc) {
+                        mw.log("EmbedPlayerNativeComponent::resolveSrcURL get succeeded");
+                        _this.setSrcAttribute( resolvedSrc );
+                    },
+                    function () {
+                        mw.log("EmbedPlayerNativeComponent::resolveSrcURL get failed");
+                        _this.setSrcAttribute( selectedSource );
+                    }
+                );
+            }
 		},
 
 		embedPlayerHTML: function () {
 		},
 
+        buildUdrmLicenseUri: function(mimeType) {
+            var licenseServer = mw.getConfig('Kaltura.UdrmServerURL');
+			var licenseParams = this.mediaElement.getLicenseUriComponent();
+            var licenseUri = null;
+
+			if (licenseServer && licenseParams) {
+				// Build licenseUri by mimeType.
+				switch (mimeType) {
+					case "video/wvm":
+						// widevine classic
+						licenseUri = licenseServer + "/widevine/license?" + licenseParams;
+						break;
+					case "application/dash+xml":
+						// widevine modular, because we don't have any other dash DRM right now.
+						licenseUri = licenseServer + "/cenc/widevine/license?" + licenseParams;
+						break;
+					case "application/vnd.apple.mpegurl":
+						// fps
+						licenseUri = licenseServer + "/fps/license?" + licenseParams;
+						break;
+					default:
+						break;
+				}   
+			}
+            
+            return licenseUri;
+        },
+        
+		// Build the licenseUri (if needed) and send it to the native component as the "licenseUri" attribute.
+		pushLicenseUri: function () {
+            var selectedSource = this.mediaElement.selectedSource;
+            if (!selectedSource) {
+                return;
+            }
+            
+            var mimeType = selectedSource.mimeType;
+
+            var overrideDrmServerURL = mw.getConfig('Kaltura.overrideDrmServerURL');
+            var licenseUri = overrideDrmServerURL ? overrideDrmServerURL : this.buildUdrmLicenseUri(mimeType);
+            
+            if (licenseUri) {
+                var playerElement = this.getPlayerElement();
+                
+                // Push the license uri
+                playerElement.attr('licenseUri', licenseUri);
+                
+                // If the source has an FPS certificate, push it as well
+                if (selectedSource.fpsCertificate) {
+                    playerElement.attr('fpsCertificate', selectedSource.fpsCertificate);
+                }                
+            }
+		},
+
+		addStartTimeCheck: function () {
+			//nothing here, just override embedPlayer.js function
+		},
+
 		setSrcAttribute: function( source ) {
 			this.getPlayerElement().attr('src', source);
 			this.playingSource =  source;
+			this.pushLicenseUri();
+		},
+
+		setStartTimeAttribute : function(startTime){
+			this.getPlayerElement().attr('startTime', startTime);
+			this.pushLicenseUri();
 		},
 
 		playerSwitchSource: function (source, switchCallback, doneCallback) {
 			mw.log("NativeComponent:: playerSwitchSource");
 			var _this = this;
+
 			var vid = this.getPlayerElement();
 			var src = source.getSrc();
 			var switchBindPostfix = '.playerSwitchSource';
@@ -160,6 +257,14 @@
 				return;
 			}
 
+			var switchCallbackCalled = false;
+			var switchCallbackWrapper = function(){
+				if (!switchCallbackCalled) {
+					switchCallbackCalled = true;
+					switchCallback();
+				}
+			};
+			this.canPlayPromise = this.canPlay(switchCallbackWrapper);
 
 			// remove old binding:
 			$(vid).unbind(switchBindPostfix);
@@ -175,20 +280,13 @@
 			// Update some parent embedPlayer vars:
 			this.currentTime = 0;
 			this.previousTime = 0;
-			_this.hideSpinner();
+
 
 			if ($.isFunction(switchCallback)) {
 				$(vid).bind('durationchange' + switchBindPostfix, function () {
 					$( vid ).unbind( 'durationchange' + switchBindPostfix );
-					switchCallback( vid );
+					switchCallbackWrapper();
 				} );
-			}
-
-			var isPlayingAdsContext = _this.adsOnReplay || !(_this.adTimeline.displayedSlotCount > 0);
-			if ( (isPlayingAdsContext || _this.loop) && !_this.playbackDone) {
-				setTimeout(function () {
-					vid.play();
-				}, 100);
 			}
 
 			// Add the end binding if we have a post event:
@@ -215,13 +313,26 @@
 		},
 
 		changeMediaCallback: function (callback) {
-			// Check if we have source
-			if (!this.getSource()) {
-				callback();
-				return;
-			}
-
-			this.switchPlaySource(this.getSource(), function () {
+			var _this = this;
+			// If switching a Persistent native player update the source:
+			// ( stop and play won't refresh the source  )
+			_this.switchPlaySource(this.getSource(), function () {
+				if (!_this.autoplay) {
+					mw.log("AutoPlay = false in Mobile");
+					// pause is need to keep pause state, while
+					// switch source calls .play() that some browsers require.
+					// to reflect source switches. Playlists handle pause state so no need to pause in playlist
+					_this.ignoreNextNativeEvent = true;
+					if ( !_this.playlist ){
+						_this.pause();
+					}
+					_this.updatePosterHTML();
+				}
+				if ( _this.autoplay && mw.isMobileDevice() && !_this.casting) {
+					mw.log("Autoplay = true in Mobile");
+					_this.play();
+					_this.updatePosterHTML();
+				}
 				callback();
 			});
 		},
@@ -294,17 +405,27 @@
 		 */
 
 		play: function () {
+			var _this = this;
 			mw.log("EmbedPlayerNativeComponent:: play::");
 			this.playbackDone = false;
 
+			this.unbindHelper('replayEvent').bindHelper('replayEvent',function(){
+				this.getPlayerElement().replay();
+			});
 
-			if (this.parent_play()) {
-				if (this.getPlayerElement()) { // update player
-					this.getPlayerElement().play();
+			var doPlay = function(){
+				if (_this.parent_play() || _this.casting) {
+					if (_this.getPlayerElement()) { // update player
+						_this.getPlayerElement().play();
+					}
+					_this.monitor();
 				}
-				this.monitor();
+				_this.removePoster();
 			}
-			this.removePoster();
+
+			this.canPlayPromise.then(function() {
+				doPlay();
+			});
 		},
 
 		/**
@@ -313,6 +434,11 @@
 		 */
 		pause: function () {
 			mw.log("EmbedPlayerNativeComponent:: pause::");
+			if (this.paused === false) {
+				//If we are pausing during seek make sure to indicate this to the seek handler
+				this.stopPlayAfterSeek = true;
+				this.stopAfterSeek = true;
+			}
 			this.parent_pause(); // update interface
 			if (this.getPlayerElement()) { // update player
 				this.getPlayerElement().pause();
@@ -322,6 +448,13 @@
 		doSeek: function (seekTime) {
 			mw.log("EmbedPlayerNativeComponent:: seek::");
 			this.getPlayerElement().attr('currentTime', seekTime);
+		},
+		seek: function (seekTime, stopAfterSeek) {
+			if (seekTime === 0){
+				seekTime = 0.01;
+			}
+			this.parent_seek(seekTime, stopAfterSeek);
+
 		},
 
 		/**
@@ -335,6 +468,9 @@
 		setCurrentTime: function( seekTime , callback ) {
 			seekTime = parseFloat( seekTime );
 			mw.log( "EmbedPlayerNativeComponent:: setCurrentTime to " + seekTime );
+			if (seekTime === 0){
+				seekTime = 0.01;
+			}
 			this.getPlayerElement().attr('currentTime', seekTime);
 			if ($.isFunction(callback)) {
 				callback();
@@ -364,6 +500,39 @@
 			return true;
 		},
 
+		_onflavorsListChanged: function(event, data) {
+//			mw.log("_onFlavorsListChanged", event, data);
+
+			// Build an array with this format:
+			//{"tracks" : [{"assetid":0,"originalIndex":0,"bandwidth":517120,"type":"video/mp4","height":0},{"assetid":1,"originalIndex":1,"bandwidth":727040,"type":"video/mp4","height":0},{"assetid":2,"originalIndex":2,"bandwidth":1041408,"type":"video/mp4","height":0}]}
+			//
+			var _this = this;
+			var flavorsList = [];
+			$.each(data.tracks, function(idx, obj) {
+				var flavor = {
+					assetid: obj.assetid,
+					originalIndex: obj.originalIndex,
+					bandwidth: obj.bandwidth,
+					height: obj.height,
+					width: obj.width,
+					type: "video/mp4"//obj.type  //"video/mp4 for example"
+				};
+				flavorsList.push(flavor);
+			});
+			setTimeout(function(){
+				_this.setKDPAttribute('sourceSelector', 'visible', true);
+			},100);
+			this.onFlavorsListChanged(flavorsList);
+		},
+
+		_onsourceSwitchingStarted: function(event, data) {
+			$(this).trigger('sourceSwitchingStarted', data);
+		},
+
+		_onsourceSwitchingEnd: function(event, data) {
+            $(this).trigger('sourceSwitchingEnd', data);
+		},
+
 		_onloadEmbeddedCaptions: function (event, data) {
 
 			this.triggerHelper('onTextData', data);
@@ -381,7 +550,11 @@
 		},
 
 		_ondurationchange: function () {
-			mw.log( "EmbedPlayerNativeComponent:: onDurationChange::" + this.getPlayerElement().duration );
+			mw.log( "EmbedPlayerNativeComponent:: onDurationChange::" + this.getPlayerElement().duration )
+			this.playerElement = this.getPlayerElement();
+			if (this.playerElement && !isNaN(this.playerElement.duration) && isFinite(this.playerElement.duration)) {
+				this.setDuration(this.getPlayerElement().duration);
+			}
 		},
 
 		/**
@@ -493,6 +666,14 @@
 			this.triggerHelper('embedPlayerError', data);
 		},
 
+		_onbufferchange: function (event , isBuffering) {
+			if (isBuffering === "true") {
+				this.bufferStart();
+			} else {
+				this.bufferEnd();
+			}
+		},
+
 		/**
 		 * buffer progress
 		 * @param event
@@ -502,6 +683,9 @@
 		_onprogress: function (event, progress) {
 			if (typeof progress !== 'undefined') {
 				this.updateBufferStatus(progress);
+				if (!this.seeking) {
+					this.updatePlayHead(progress);
+				}
 				if(progress < 0.9){
 					if(!this.showProgressSpinner) {
 						this.addPlayerSpinner();
@@ -514,11 +698,21 @@
 
 			}
 		},
-
-		_ontextTracksReceived: function (event, data) {
-			this.unbindHelper('changedClosedCaptions').bindHelper('changedClosedCaptions',function(event, selection){
-				this.getPlayerElement().attr('textTrackSelected', selection);
+		_onaudioTracksReceived:function(event,data){
+			var _this = this;
+			this.unbindHelper('switchAudioTrack').bindHelper('switchAudioTrack',function(event, selection){
+				_this.getPlayerElement().attr('audioTrackSelected', selection.index.toString());
 			});
+
+			this.triggerHelper("audioTracksReceived",data);
+		},
+		_ontextTracksReceived: function (event, data) {
+			var _this = this;
+
+			this.unbindHelper('selectClosedCaptions').bindHelper('selectClosedCaptions',function(event, selection){
+				_this.getPlayerElement().attr('textTrackSelected', selection);
+			});
+
 			this.triggerHelper('textTracksReceived', data);
 		},
 		/*
@@ -547,6 +741,7 @@
 		 * Passes a fullscreen request to the layoutBuilder interface
 		 */
 		toggleFullscreen: function () {
+			this.parent_toggleFullscreen();
 			this.getPlayerElement().toggleFullscreen();
 		},
 
@@ -567,12 +762,16 @@
 			this.getPlayerElement().showNativeAirPlayButton([x, y, w, h]);
 		},
 
+		togglePictureInPicture: function() {
+			this.getPlayerElement().togglePictureInPicture();
+		},
+
 		hideNativeAirPlayButton: function () {
 			this.getPlayerElement().hideNativeAirPlayButton();
 		},
 
 		isVideoSiblingEnabled: function () {
-			return false;
+			return true;
 		},
 
 		isPlaying: function () {
@@ -580,6 +779,17 @@
 				return false;
 			}
 			return true;
+		},
+
+		switchSrc: function (source) {
+			var sourceIndex = (source === -1) ? -1 : source.assetid;
+			this.getPlayerElement().switchFlavor(sourceIndex);
+		},
+
+		checkClipDoneCondition: function() {
+			if ( mw.isAndroid() ) {
+				this.parent_checkClipDoneCondition();
+			}
 		}
 	};
 })(mediaWiki, jQuery);

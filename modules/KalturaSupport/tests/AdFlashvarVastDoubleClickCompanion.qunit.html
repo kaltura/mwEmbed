@@ -57,7 +57,26 @@ function jsKalturaPlayerTest( videoId ){
 	<span property="media:width" content="400"></span>
 	<span property="media:height" content="300"></span>
 </div>
+<div style="clear:both"></div>
+<h3> Player API: </h3>
+<div id="sampleActions">
+	<a class="btn">doPlay</a> 
+	<a class="btn">doPause</a>
+	<a class="btn">doStop</a> 
+</div>
+<br>
+<h3> Player API logging </h3>
+<textarea id="eventLog" style="width:430px;height:300px;"></textarea>
 <script>
+kWidget.addReadyCallback( function( playerId ){
+	var kdp = document.getElementById( playerId );
+	$('#sampleActions .btn').click(function(){
+		kdp.sendNotification( $(this).text() );
+	});
+	kdp.kBind("onPlayerStateChange", function(state){
+		$('#eventLog').append( state + "\n");	
+	});
+});
 </script>
 <script>
 	// clear the companions 
@@ -80,6 +99,12 @@ function jsKalturaPlayerTest( videoId ){
 				'timeout' : 4,
 				'preSequence' : 1,
 				'unescapeAdUrls': false
+			},
+			'skipBtn': {
+				'label': 'Skip Ad'
+			},
+			'noticeMessage': {
+				'text': 'Advertisment {sequenceProxy.timeRemaining|timeFormat}'
 			},
 			'adsOnReplay':true
 		}, 

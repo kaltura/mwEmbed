@@ -1,0 +1,6 @@
+{
+    "mw.Subply": {
+        "scripts": "resources/mw.Subply.js",
+        "styles": "resources/plymediaStyles.css"
+    }
+}

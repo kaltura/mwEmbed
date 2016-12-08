@@ -8,12 +8,14 @@
 </head>
 <body>
 <h2> Thumbnail embed </h2>
-The thumbnail embed method takes the same arguments as "kWidget.embed". 
-Thumbnail embed will pass all the configuration to the kWidget.embed when the user "click" on the play button.
+The thumbnail embed method takes the same arguments as "kWidget.embed". <br>
+Thumbnail embed will pass all the configuration to the kWidget.embed when the user "click" on the play button.<br>
+The player context menu can be disabled by setting the "EmbedPlayer.DisableContextMenu" UIVar to true.<br><br>
 <pre class="prettyprint linenums">
 &lt;div id=&quot;myEmbedTarget&quot; style=&quot;width:400px;height:330px;&quot;&gt;&lt;/div&gt;
 &lt;script src=&quot;{{HTML5LibraryURL}}&quot;&gt;&lt;/script&gt;
 &lt;script&gt;
+	mw.setConfig("EmbedPlayer.DisableContextMenu",true);
 	kWidget.thumbEmbed({
 		'targetId': 'myEmbedTarget',
 		'wid': '_243342',
@@ -158,8 +160,9 @@ if( window.QUnit ){
 						}
 					}
 				}
-				
+
 				if( useThumbEmbed ){
+					mw.setConfig("EmbedPlayer.DisableContextMenu",true);
 					kWidget.thumbEmbed( kWidgetEmbedSettings );
 				} else {
 					kWidget.embed( kWidgetEmbedSettings );
@@ -169,8 +172,32 @@ if( window.QUnit ){
 	}
 </script>
 <br><br>
-<div style="clear:both">
-<h3>Custom Thumbnail embed</h3>
+<div style="clear:both"></div>
+<h3 id="custom-play-btn">Custom play button</h3>
+You can override the playButton with on-page CSS: 
+<pre class="prettyprint linenums">
+.kWidgetPlayBtn {
+	background: url("flower.jpg");
+}
+</pre>
+<style>
+#player-target-css-example .kWidgetPlayBtn{
+	background: url("externalResources/flower.jpg");
+}
+</style>
+<div id="player-target-css-example" style="width:400px;height:300px"></div>
+<script type="text/javascript">
+kWidget.thumbEmbed({
+	'targetId': 'player-target-css-example',
+	'wid': '_243342',
+	'uiconf_id' : '12905712',
+	'entry_id': '0_uka1msg4'
+});
+</script>
+</div>
+
+<div style="clear:both"></div>
+<h3>Custom Thumbnail embed HTML</h3>
 <div id="player-target" style="width:400px;height:300px"></div>
 <br>
 <b>Load the entry data from the API, then embed with captureClickEventForiOS flag for one click playback for iOS</b>

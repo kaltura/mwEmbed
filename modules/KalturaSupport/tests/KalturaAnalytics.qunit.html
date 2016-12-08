@@ -85,7 +85,7 @@ kWidget.featureConfig({
 	'targetId' : 'kaltura_player',
 	'wid' : '_243342',
 	'uiconf_id' : '11140701',
-	'entry_id' : '0_swup5zao',
+	'entry_id' : '1_sf5ovm7u',
 	'flashvars': {
 		'statistics':{
 			'plugin': true,
@@ -96,7 +96,10 @@ kWidget.featureConfig({
 			'playbackContext': '123',
 			'originFeature': '0',
 			'applicationName': 'customAN',
-			'userId': 'customUid'
+			'userId': 'customUid',
+			'hideUserId': false,
+			'delay': 1,
+			'hideKs' : false
 		},
 		"chromecast":{
 			"plugin": true
@@ -104,7 +107,7 @@ kWidget.featureConfig({
 	},
 	'readyCallback': function(){
 		$('#kaltura_player').css('float', 'left').after('<div id="analyticsContainer" style="float:left;padding-left:20px;" >'+
-			'<i>Analytics events:</i> ( only html5 )<br />' + 
+			'<i>Analytics events:</i> <br />' + 
 				'<textarea id="analyticsLog" style="width:300px;height:280px;" ></textarea>' +
 			'</div>'
 		)

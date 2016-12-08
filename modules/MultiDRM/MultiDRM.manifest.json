@@ -1,0 +1,13 @@
+{
+    "multiDrm": {
+	    "label": "Universal DRM",
+        "description": "Kaltura Universal DRM, enables multiple DRM engines to run within the Kaltura player based on the capabilities of the browser or packaged native applications. Learn more about <a href='http://knowledge.kaltura.com/kaltura-universal-digital-rights-management-drm' target='_blank'>Kaltura Universal DRM</a>",
+	    "attributes": {
+		    "plugin": {
+			    "doc": "If the multi drm should be activated.",
+			    "label": "Enable multi drm",
+			    "type": "hiddenValue"
+		    }
+	    }
+    }
+}

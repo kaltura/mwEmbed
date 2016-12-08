@@ -62,7 +62,7 @@
 		},
 		// Return the ggcmb370 url ( for now hard coded should be moved to config )
 		getGgCmbUrl: function(){
-			return mw.getMwEmbedPath() + 'modules/NielsenCombined/ggcmb382.js';
+			return mw.getMwEmbedPath() + 'modules/NielsenCombined/ggcmb392.js';
 			// temporarily use local copy of ggcmb
 			//return 'http://secure-us.imrworldwide.com/novms/js/2/ggcmb370.js';
 		},

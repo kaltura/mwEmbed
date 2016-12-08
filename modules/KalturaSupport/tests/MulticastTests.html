@@ -1,0 +1,96 @@
+<html>
+<head>
+    <title>DebugInfo Demo</title>
+    <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+    <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+    <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+</head>
+<body>
+<h1>Multicast Demo</h1>
+<div id="kaltura_player" style="width: 885px; height: 630px;float: left;"></div>
+<br style="clear: both;" /><br />
+
+<script>
+    var localhost="192.168.163.88";
+    //var localhost="10.0.0.15";
+
+    //   var ismSource='http://'+localhost+':1935/live/abc123/Manifest';
+    //ismsource="http://tglsch8a-s.akamaihd.net/live/234736_234737/channel8.isml/Manifest";
+
+    /*
+     resolvedSrc={ "flavors": [
+     {url: "http://192.168.163.88:9000/kMulticast/http://192.168.163.88:1935/live/abc123/playlist55.m3u8", bitrate:55},
+     {url: "http://192.168.163.88:9000/kMulticast/http://192.168.163.88:1935/live/abc123/playlist855.m3u8", bitrate:855},
+     {url: "http://192.168.163.88:9000/kMulticast/192.168.163.88:1935/live/abc123/playlist515.m3u8", bitrate:515},
+     {url: "http://192.168.163.188:9000/kMulticast/192.168.163.188:1935/live/abc123/playlist55.m3u8", bitrate:55},
+     {url: "http://192.168.163.188:9000/kMulticast/192.168.163.188:1935/live/abc123/playlist515.m3u8", bitrate:515},
+     {url: "http://192.168.163.188:9000/kMulticast/192.168.163.188:1935/live/abc123/playlist2515.m3u8", bitrate:2515}]
+     }
+     */
+    //var hlssource='http://'+localhost+':1935/live/abc123/playlist.m3u8';
+    //var hlssource='http://kalsegsec-a.akamaihd.net/dc-1/m/ny-live-publish3/kLive/smil:1_oorxcge2_publish.smil/chunklist_b2096000.m3u8';
+
+   // var multicast='http://'+localhost+':9000/kMulticast/'+hlssource;
+//    var multicast='234.2.2.3:12340';
+
+    var replaceSources=[];
+    if (window.multicast) {
+        replaceSources.push( {
+        'type': 'video/multicast',
+            'src': multicast
+
+        });
+    }
+
+    if (window.ism) {
+
+
+        replaceSources.push({
+            'type': 'video/ism',
+            'src': ismsource
+        });
+    }
+    if (window.hlssource) {
+
+        replaceSources.push({
+            'type': 'application/vnd.apple.mpegurl',
+            'src': hlssource
+        });
+    }
+
+    if (replaceSources.length>0) {
+        mw.setConfig('EmbedPlayer.ReplaceSources', replaceSources);
+    }
+    kWidget.featureConfig({
+        'targetId': 'kaltura_player',
+        'wid': '_1802381',
+        'uiconf_id' : '30139111',
+        'flashvars': {
+            "liveCore":{"plugin":true} ,
+
+            'LeadWithHLSOnFlash':true,
+          // 'LeadWithUnicastToMulticast': true,
+            'debugInfo': {
+                'plugin': true,
+                'isVisible':true
+            },
+            "currentTimeLabel": {
+                "plugin": true
+            },
+            "chapters": {
+                "plugin":true
+            },
+            "dualScreen": {
+                "plugin":true
+            },
+            "EmbedPlayer.LiveCuepoints": true,
+            'disableMulticastFallback':false,
+           'autoPlay': true
+        },
+        'entry_id': "1_yinsgmiv"
+
+    });
+</script>
+</body>
+</html>
+<div>

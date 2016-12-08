@@ -3,7 +3,8 @@
     data-slide-index="<%=mediaItem.slideNumber%>"
     data-box-type="<%=mediaItem.type%>"
     data-obj-id="<%=mediaItem.id%>"
-    data-mediaBox-index="<%=mediaItem.order%>">
+    data-mediaBox-index="<%=mediaItem.order%>"
+    tabindex="<%=mediaItem.tabIndex%>">
     <div class="boxImg" title="<%=mediaItem.title%>" data-show-tooltip="true">
         <img src="<%=mediaItem.thumbnail.url%>" alt="Thumbnail for <%=mediaItem.title%>"/>
     </div>
@@ -14,12 +15,15 @@
                     <%=(mediaItem.chapterNumber + 1)%>.<%=(mediaItem.slideNumber + 1)%>
                 </div>
             <%}%>
-            <span class="mediaBoxText k-chapter-time" title="<%=meta.titles.slideStartTime%>" data-show-tooltip="true">
-                <span class="icon-start_time"></span>
-            <span><%=mediaItem.startTimeDisplay%></span>
-        </span>
+            <% if (mediaItem.startTimeDisplay){ %>
+                <span class="mediaBoxText k-chapter-time" title="<%=meta.titles.slideStartTime%>" data-show-tooltip="true">
+                    <span class="icon-start_time"></span>
+                    <span><%=mediaItem.startTimeDisplay%></span>
+                </span>
+            <%}%>
         </div>
     </div>
     <div class="slideOverlay"></div>
+    <div class="boxOutline"></div>
     <div class="separator"></div>
 </li>

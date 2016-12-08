@@ -1,10 +1,16 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>kWidget Direct JS Server API</title>
-<script type="text/javascript" src="../../tests/qunit/qunit-bootstrap.js"></script>
-<script type="text/javascript" src="../../mwEmbedLoader.php"></script>
-<script type="text/javascript" src="../../docs/js/doc-bootstrap.js"></script>
+	<title>kWidget Direct JS Server API</title>
+	<script type="text/javascript" src="../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../docs/js/doc-bootstrap.js"></script>
+	
+	<script type="text/javascript" src="resources/ace/ace.js" charset="utf-8"></script>
+	<script type="text/javascript" src=".resources/ace/theme-twilight.js" charset="utf-8"></script>
+	<script type="text/javascript" src="resources/ace/mode-html.js" charset="utf-8"></script>
+
+
 <script>
 // don't show qunit test links
 window.isKalturaDocsIframe = true;
@@ -48,14 +54,143 @@ JavaScript client library</a>, which offers object mappings
 and works with the code generated in the <a title="testme console" target="_new" href="http://www.kaltura.com/api_v3/testme/index.php">test me console</a>.
 <br><br>
 The kWidget  Direct Server API is included by default every time you include the player library.<br><br>
-Your html5 library include is given to you by the KMC embed dynamic embed code, and looks like this:  
 <pre class="prettyprint linenums">
 &lt;script src="http//cdnapi.kaltura.com/p/{partnerId}/sp/{partnerId}00/embedIframeJs/uiconf_id/{uiconf_id}/partner_id/{partnerId}"&gt;&lt;/script&gt;
+&lt;script&gt;
+	new kWidget.api( {
+		'wid' : {partnerId},
+	}).doRequest( requestObject, function( result ){ ... });
+&lt;/script&gt;
 </pre> 
+
+<h3> Custom API query </h3>
+Partner id: <input id="customPartnerId" type="text" value=""></input><br>
+Multi-Request:
+<div id="json-editor" style="width:100%;height:350px;"></div><br>
+<button id="runCustom" type="button" class="btn">Run Multi-Request</button>
+<button id="custom_close" type="button" class="btn" style="display:none;">close</button>
+<script> 
+var customQuery = [
+       		{
+    			'contextDataParams' : {
+    				'referrer' : document.URL,
+    				'objectType' : 'KalturaEntryContextDataParams',
+    				'flavorTags': 'all'
+    			},
+    			'service' : 'baseentry',
+    			'entryId' : '0_uka1msg4',
+    			'action' : 'getContextData'
+    		},
+    		{
+    			 'service' : 'metadata_metadata',
+    			 'action' : 'list',
+    			 'version' : '-1',
+    			 // metaDataFilter
+    			 'filter:metadataObjectTypeEqual' :1, /* KalturaMetadataObjectType::ENTRY */
+    			 'filter:orderBy' : '+createdAt',
+    			 'filter:objectIdEqual': '0_uka1msg4',
+    			 'pager:pageSize' : 1
+    		}
+    	];
+var customPartnerId = '_243342';
+
+// grab from hash: 
+try{
+	var hashPayload = JSON.parse( decodeURIComponent( window.location.hash.substring( 1 ) ) ); 
+	customQuery = hashPayload.req;
+	customPartnerId = hashPayload.p;
+} catch (e ){
+	// could not update custom query. 
+}
+
+$('#customPartnerId').val( customPartnerId );
+jsonEditor = ace.edit("json-editor");
+// editor.setTheme("ace/theme/twilight");
+jsonEditor.getSession().setMode("ace/mode/json");
+jsonEditor.setShowPrintMargin(false);
+jsonEditor.setValue( JSON.stringify( customQuery, null, "\t" ), -1 );
+
+
+$('#custom_close').click(function(){
+	$(this).toggle();
+	$('#custom_result').hide();
+})
+$('#runCustom').click(function(){
+	try{
+		customQuery = JSON.parse( jsonEditor.getValue() );
+	}catch(e){
+		$('#custom_result').show().text('Error parsing JSON:' + e);
+		return ;
+	}
+	customPartnerId = $('#customPartnerId').val();
+	// update hash: 
+	window.location.hash = JSON.stringify({ 'p': customPartnerId, 'req':  customQuery });
+	$('#custom_result').show().text('loading..');
+	new kWidget.api( {
+		'wid' : customPartnerId,
+	}).doRequest(customQuery, function(result){
+		$('#custom_close').show();
+		$('#custom_result').html( 
+			syntaxHighlight( result )
+		);
+	});
+});
+</script>
+<pre id="custom_result" style="display:none;"></pre>
 <h3>Get entries from playlist id</h3>
 Retrieves all the entries for a given playlist id via <a target="_new" href="http://www.kaltura.com/api_v3/testmeDoc/index.php?service=playlist&action=execute">playlist execute</a>
+ along with custom entry metadata for all the returned playlist items in a customMetadata field on the processed result data 
 <pre class="prettyprint linenums">
-&lt;script&gt;<br/>$('#plbutton').click(function(){<br/>	// Create new api object and issue request<br/>	new kWidget.api( {<br/>		'wid' : '_243342',<br/>	}).doRequest({<br/>		'service':'playlist', <br/>		'action': 'execute', <br/>		'id': '1_e387kavu'<br/>	}, function( data ){<br/>		// output formatted json result:<br/>		$('#playlist_result').html( <br/>			syntaxHighlight( data )<br/>		);<br/>	})<br/>});<br/>&lt;/script&gt;</pre>
+&lt;script&gt;<br/>$('#plbutton').click(function(){
+	var multiRequest = [{
+		'service':'playlist', 
+		'action': 'execute', 
+		'id': '1_ft5fcih2'
+	}];
+	for(var i=0;i<25;i++){
+		multiRequest.push({
+			'service' : 'metadata_metadata',
+			'action' : 'list',
+			'version' : '-1',
+			// metaDataFilter
+			'filter:metadataProfileId': 3282,
+			'filter:metadataObjectTypeEqual' :1, /* KalturaMetadataObjectType::ENTRY */
+			'filter:orderBy' : '+createdAt',
+			'filter:objectIdEqual' : '{1:result:' + i + ':id}',
+			'pager:pageSize' : 1
+		});
+	}
+	
+	$('#playlist_result').show().text('loading..');
+	new kWidget.api( {
+		'wid' : '_243342',
+	}).doRequest( multiRequest, function( data ){
+		$('#plclose').show();
+		// normalize the XML custom data into a customMetadata field in each entry results:
+		var playlist = data.splice(0,1);
+		var result = {};
+		$.each(playlist[0], function(inx, entryItem){
+			result[entryItem.id] = entryItem;
+		});
+		$.each( data, function( inx, resultItem ){
+			if( resultItem && resultItem.objects && resultItem.objects[0] ){
+				var xml = $.parseXML( resultItem.objects[0].xml );
+				var $xml = $( xml ).find('metadata').children();
+				var jsonObj = {};
+				$.each( $xml, function(inx, node){
+					jsonObj[ node.nodeName ] = node.textContent;
+				});
+				result[ resultItem.objects[0]['objectId'] ]['customMetadata'] = jsonObj;
+			}
+		});
+		
+		$('#playlist_result').html( 
+			syntaxHighlight( result )
+		);
+	})
+});
+&lt;/script&gt;
+</pre>
 <button id="plbutton" type="button" class="btn">Run Playlist Execute</button>
 <button id="plclose" type="button" class="btn" style="display:none;">close</button>
 <pre id="playlist_result" style="display:none;"></pre>
@@ -65,17 +200,50 @@ $('#plclose').click(function(){
 	$('#playlist_result').hide();
 })
 $('#plbutton').click(function(){
+	var multiRequest = [{
+		'service':'playlist', 
+		'action': 'execute', 
+		'id': '1_ft5fcih2'
+	}];
+	for(var i=0;i<25;i++){
+		multiRequest.push({
+			'service' : 'metadata_metadata',
+			'action' : 'list',
+			'version' : '-1',
+			// metaDataFilter
+			'filter:metadataProfileId': 3282,
+			'filter:metadataObjectTypeEqual' :1, /* KalturaMetadataObjectType::ENTRY */
+			'filter:orderBy' : '+createdAt',
+			'filter:objectIdEqual' : '{1:result:' + i + ':id}',
+			'pager:pageSize' : 1
+		});
+	}
+	
 	$('#playlist_result').show().text('loading..');
 	new kWidget.api( {
 		'wid' : '_243342',
-	}).doRequest({
-		'service':'playlist', 
-		'action': 'execute', 
-		'id': '1_e387kavu'
-	}, function( data ){
+	}).doRequest( multiRequest, function( data ){
 		$('#plclose').show();
+		// normalize the XML custom data into a customMetadata field in each entry results:
+		var playlist = data.splice(0,1);
+		var result = {};
+		$.each(playlist[0], function(inx, entryItem){
+			result[entryItem.id] = entryItem;
+		});
+		$.each( data, function( inx, resultItem ){
+			if( resultItem && resultItem.objects && resultItem.objects[0] ){
+				var xml = $.parseXML( resultItem.objects[0].xml );
+				var $xml = $( xml ).find('metadata').children();
+				var jsonObj = {};
+				$.each( $xml, function(inx, node){
+					jsonObj[ node.nodeName ] = node.textContent;
+				});
+				result[ resultItem.objects[0]['objectId'] ]['customMetadata'] = jsonObj;
+			}
+		});
+		
 		$('#playlist_result').html( 
-			syntaxHighlight( data )
+			syntaxHighlight( result )
 		);
 	})
 });
@@ -90,47 +258,5 @@ Also see <a href="kWidget.getSources.html">kWidget.getSources.html</a> for simpl
 <pre class="prettyprint linenums">
 &lt;script&gt;<br/>$('#entriesbutton').click(function(){<br/>	new kWidget.api( {<br/>		'wid' : '_243342',<br/>	}).doRequest([<br/>		{<br/>			'contextDataParams' : {<br/>				'referrer' : document.URL,<br/>				'objectType' : 'KalturaEntryContextDataParams',<br/>				'flavorTags': 'all'<br/>			},<br/>			'service' : 'baseentry',<br/>			'entryId' : '0_uka1msg4',<br/>			'action' : 'getContextData'<br/>		},<br/>		{<br/>			 'service' : 'metadata_metadata',<br/>			 'action' : 'list',<br/>			 'version' : '-1',<br/>			 // metaDataFilter<br/>			 'filter:metadataObjectTypeEqual' :1, /* KalturaMetadataObjectType::ENTRY */<br/>			 'filter:orderBy' : '+createdAt',<br/>			 'filter:objectIdEqual' : '0_uka1msg4',<br/>			 'pager:pageSize' : 1<br/>		}<br/>	], function(data ){<br/>		$('#entries_result').html( <br/>			syntaxHighlight( data )<br/>		);<br/>	})<br/>});<br/>&lt;/script&gt;
 </pre>
-<button id="entriesbutton" type="button" class="btn">Get Entry Context and Custom MetaData</button>
-<button id="entriesclose" type="button" class="btn" style="display:none;">close</button>
-<pre id="entries_result" style="display:none;"></pre>
-
-<script>
-$('#entriesclose').click(function(){
-	$(this).toggle();
-	$('#entries_result').hide();
-})
-$('#entriesbutton').click(function(){
-	$('#entries_result').show().text('loading..');
-	new kWidget.api( {
-		'wid' : '_243342',
-	}).doRequest([
-		{
-			'contextDataParams' : {
-				'referrer' : document.URL,
-				'objectType' : 'KalturaEntryContextDataParams',
-				'flavorTags': 'all'
-			},
-			'service' : 'baseentry',
-			'entryId' : '0_uka1msg4',
-			'action' : 'getContextData'
-		},
-		{
-			 'service' : 'metadata_metadata',
-			 'action' : 'list',
-			 'version' : '-1',
-			 // metaDataFilter
-			 'filter:metadataObjectTypeEqual' :1, /* KalturaMetadataObjectType::ENTRY */
-			 'filter:orderBy' : '+createdAt',
-			 'filter:objectIdEqual' : '0_uka1msg4',
-			 'pager:pageSize' : 1
-		}
-	], function(data ){
-		$('#entriesclose').show();
-		$('#entries_result').html( 
-			syntaxHighlight( data )
-		);
-	})
-});
-</script>
 </body>
 </html>

@@ -12,7 +12,8 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 		accessibleVolumeChange: 0.1,
 		showSlider: true,
         pinVolumeBar: false,
-		useCookie: true
+		useCookie: true,
+		uniquePlayerCookie: false
 
 	},
 	icons: {
@@ -24,7 +25,7 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 	setup: function( embedPlayer ) {
 		this.addBindings();
 		var _this = this;
-		this.cookieName = this.pluginName + '_volumeValue';
+		this.cookieName = _this.getConfig( 'uniquePlayerCookie' ) ? this.pluginName + '_volumeValue_' + this.embedPlayer.kuiconfid : this.pluginName + '_volumeValue';
 		this.bind( 'playerReady ' , function () {
 			if ( (_this.getConfig( 'useCookie' ) && $.cookie( _this.cookieName ) ) ) {
 				var volumeValue = parseInt( $.cookie( _this.cookieName ) );
@@ -58,57 +59,82 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 	getSliderConfig: function(){
 		var _this = this;
 		return {
+			orientation: this.getConfig("layout"),
 			range: "min",
 			value: (this.getPlayer().getPlayerElementVolume() * 100),
 			min: 0,
 			max: 100,
 			slide: function( event, ui ){
 				_this.getPlayer().setVolume( (ui.value / 100) , true );
+				_this.updateTooltipAndAccessibility(ui.value);
 			},
 			change: function( event, ui ) {
 				_this.getPlayer().setVolume( (ui.value / 100) , true );
+				_this.updateTooltipAndAccessibility(ui.value);
+			},
+			start: function( event, ui ) {
+				_this.getPlayer().preMuteVolume = (ui.value / 100);
 			}
 		};
 	},
+	updateTooltipAndAccessibility: function (value) {
+		if (this.getPlayer().isMuted() || value === 0) {
+			this.updateTooltip(gM('mwe-embedplayer-volume-unmute'));
+			this.setAccessibility(this.getBtn(), gM('mwe-embedplayer-volume-unmute'));
+		} else {
+			this.updateTooltip(gM('mwe-embedplayer-volume-mute'));
+			this.setAccessibility(this.getBtn(), gM('mwe-embedplayer-volume-mute'));
+		}
+	},
+
 	addBindings: function() {
 		var _this = this;
+		var mouseOverSlider = false;
 		// If the slider should be shown; 
 		if( this.getConfig('showSlider' ) ) {
 			var openSlider = function () {
 				// restore transition on hover
 				_this.getComponent().removeClass( 'noTransition' );
 				_this.getComponent().addClass( 'open' );
+				if ( _this.getConfig( 'layout' ) === "vertical"){
+					_this.getPlayer().triggerHelper("onShowSideBar"); // prevent hovering controls from closing during volume setup
+				}
 			};
 			var closeSlider = function () {
-				if ( !_this.getConfig( 'pinVolumeBar' ) ) {
+				if ( _this.getConfig( 'layout' ) === "horizontal" && !_this.getConfig( 'pinVolumeBar' ) ) {
 					_this.getComponent().removeClass( 'open' );
+				}
+				if ( _this.getConfig( 'layout' ) === "vertical" ) {
+					setTimeout(function(){
+						if (!mouseOverSlider){
+							_this.getComponent().removeClass( 'open' );
+							_this.getPlayer().triggerHelper("onHideSideBar"); // re-enable hovering controls
+						}
+					},350);
+
 				}
 			};
 
 			// Save component width on data attribute ( used for responsive player )
 			this.bind( 'layoutBuildDone' , function () {
-				// open slider with noTransition: 
-				openSlider();
-				_this.getComponent().addClass( 'noTransition' );
-				// Firefox unable to get component width correctly without timeout
-				setTimeout(function(){
-					// update the slider expand space: 
-					_this.getComponent().data( 'width' , _this.getComponent().width() );
-					// close the slider ( if not pinned ) 
-					closeSlider();
-				},100);
+				if ( _this.getConfig( 'layout' ) === "horizontal"){
+					// open slider with noTransition:
+					openSlider();
+					_this.getComponent().addClass( 'noTransition' );
+					// Firefox unable to get component width correctly without timeout
+					setTimeout(function(){
+						// update the slider expand space:
+						_this.getComponent().data( 'width' , _this.getComponent().width() );
+						// close the slider ( if not pinned )
+						closeSlider();
+					},100);
+				}
 			} );
 		}
 		// Add click bindings
 		this.getBtn().click( function() {
-			if( !_this.getPlayer().isMuted() ){
-				_this.updateTooltip(gM( 'mwe-embedplayer-volume-unmute' ));
-				_this.setAccessibility(_this.getBtn(), gM( 'mwe-embedplayer-volume-unmute' ));
-			} else {
-				_this.updateTooltip(gM( 'mwe-embedplayer-volume-mute' ));
-				_this.setAccessibility(_this.getBtn(), gM( 'mwe-embedplayer-volume-mute' ));
-			}
 			_this.getPlayer().toggleMute();
+			_this.updateTooltipAndAccessibility();
 			if ( _this.updateFirstMute ){
 				_this.updateFirstMute = false;
 				_this.updateVolumeUI(1);
@@ -132,6 +158,7 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 		this.getBtn().focusin(openSlider);
 		this.getBtn().focusout(closeSlider);
 		this.getComponent().hover(openSlider, closeSlider);
+		this.getSliderContainer().hover(function(){mouseOverSlider = true},function(){mouseOverSlider = false});
 
 		this.bind( 'volumeChanged', function(e, percent){
 			_this.updateVolumeUI( percent );
@@ -184,11 +211,18 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 						.attr( {'title': gM( 'mwe-embedplayer-volume-mute' ) ,'id': 'muteBtn'});
 			this.setAccessibility($btn, gM( 'mwe-embedplayer-volume-mute' ));
 			// Add the volume control icon
+			var $sliderContainer = $( '<div />' ).addClass( 'sliderContainer');
+			if (this.getConfig("layout")=="vertical"){
+				$sliderContainer.append($( '<div />' ).addClass( 'arrow' ));
+				$sliderContainer.append($( '<div />' ).addClass( 'slider' ));
+			}else{
+				$sliderContainer = $( '<div />' ).addClass( 'slider' );
+			}
 			this.$el = $('<div />')
 				.addClass( this.getCssClass() + layoutClass )
 				.append(
 					$btn,
-					$( '<div />' ).addClass( 'slider' )
+					$sliderContainer
 				);
 			// add accessibility controls
 			if (this.getConfig("accessibleControls")){
@@ -211,6 +245,9 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 	},
 	getAccessibilityBtn : function(id){
 		return this.getComponent().find( '#'+id );
+	},
+	getSliderContainer : function(id){
+		return this.getComponent().find( '.sliderContainer' );
 	}
 }));
 

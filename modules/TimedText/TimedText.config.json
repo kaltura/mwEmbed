@@ -1,0 +1,8 @@
+{
+    "TimedText.ShowInterface": "auto",
+    "TimedText.ShowAddTextLink": false,
+    "TimedText.ShowRequestTranscript": false,
+    "TimedText.NeedsTranscriptCategory": "Videos needing subtitles",
+    "TimedText.BottomPadding": 10,
+    "TimedText.BelowVideoBlackBoxHeight": 40
+}

@@ -1,0 +1,27 @@
+/*.playlistAPI .horizontalHeaderLables {
+	padding-top: 5px !important;
+}
+.playlistAPI .playlistControls.k-horizontal{
+	top: 5px !important;
+}
+*/
+.playlistAPI .chapterBox{
+	height: 120px !important;
+}
+.playlistAPI .k-chapters-container .k-duration {
+	float: left !important;
+	top: 40px !important;
+	left: 70px !important;
+	color: white !important;
+	text-shadow: 2px 2px black !important;
+}
+.playlistAPI .k-title-container {
+	margin-left: 2px !important;
+	margin-top: 54px !important;
+	font-size: 12px !important;
+	width: 94px !important;
+}
+.playlistAPI .k-views-container {
+	font-size: 11px !important;
+	color: greenyellow;
+}

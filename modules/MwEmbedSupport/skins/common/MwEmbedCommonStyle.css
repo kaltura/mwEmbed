@@ -160,11 +160,11 @@
 	right: 0;
 	bottom: 0;
 	max-width: 80%;
-	max-height: 30%;
+	max-height: 40%;
 }
 
 .alert-container-with-buttons {
-	max-height: 34%;
+	max-height: 44%;
 }
 .ie8 .alert-container {
 	top: 50%;
@@ -186,6 +186,8 @@
 }
 
 .alert-message {
+	overflow: auto;
+	max-height: inherit;
 	padding : 5px;
 	font-weight : normal !important;
 	text-align: center;

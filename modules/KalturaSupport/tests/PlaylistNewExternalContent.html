@@ -1,0 +1,95 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Playlist Features</title>
+    <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../modules/KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
+
+    </head>
+   <body>
+   	<h2>Load new content to the playlist at runtime</h2>
+
+<h3>Implementation example</h3>
+	<pre class="prettyprint linenums">
+var player = ($( '#kaltura_player' ).get(0));
+var currentEntry = player.evaluate("{mediaProxy.entry.id}") ;
+
+
+var params = {
+	'playlistParams' : {
+		'service':'playlist' ,
+		'action':'execute' ,
+		'id' : '_KDP_CTXPL' ,
+		'filter:objectType' : 'KalturaMediaEntryFilterForPlaylist' ,
+		'filter:idNotIn' : currentEntry , 	// dont fetch current entry
+		'playlistContext:objectType':'KalturaEntryContext',
+		'playlistContext:entryId': currentEntry,
+		'totalResults' : 50
+	},
+	'autoInsert' : true, //load and play new playlist
+	//'initItemEntryId' : '', // player start playing a specific entry if exist
+	'playlistName' : 'new playlist' // override the displayed playlist name
+}
+player.sendNotification('loadExternalPlaylist', params );
+	</pre>
+
+
+	<button class="btn btn-primary btn-sm" onclick="load()">Load Related playlist</button>
+
+	<div id='kaltura_player' style="height:365px;width:650px"></div>
+
+	<script>
+
+		load = function(){
+			var player = ($( '#kaltura_player' ).get(0));
+			var currentEntry = player.evaluate("{mediaProxy.entry.id}") ;
+
+
+			var params = {
+				'playlistParams' : {
+					'service':'playlist' ,
+					'action':'execute' ,
+					'id' : '_KDP_CTXPL' ,
+					'filter:objectType' : 'KalturaMediaEntryFilterForPlaylist' ,
+					'filter:idNotIn' : currentEntry , 	// dont fetch current entry
+					'playlistContext:objectType':'KalturaEntryContext',
+					'playlistContext:entryId': currentEntry,
+					'totalResults' : 50
+				},
+				'autoInsert' : true, //if this is set to true the player will load and switch the current video to the new playlist
+				//'initItemEntryId' : '', // player start playing a specific entry if exist
+				'playlistName' : 'new playlist' // override the displayed playlist name
+			}
+			player.sendNotification('loadExternalPlaylist', params );
+		}
+
+
+		kWidget.featureConfig({
+			'targetId': 'kaltura_player',
+			'wid': '_243342',
+			'uiconf_id': '25975211',
+			'flashvars': {
+				'playlistAPI':{
+					'autoContinue': true,
+					'includeInLayout': true,
+					'autoPlay': false,
+					'loop': false,
+					'onPage': false,
+					'layout': 'vertical',
+					'containerPosition': 'left',
+					'hideClipPoster': true,
+					'onPageCss1' : "../components/playlist/playList.css",
+					'kpl0Name': "test 4 item playlist",
+					'showEmptyPlaylistError': false,
+					'kpl0Id': '0_q79jh71b'
+				},
+				'nextPrevBtn':{
+					'plugin': true
+				}
+			}
+		});
+	</script>
+  </body>
+</html>

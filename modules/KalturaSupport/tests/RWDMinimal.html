@@ -33,7 +33,15 @@
 	&lt;div id="kaltura-player1" style="position:absolute;top:0;left:0;left: 0;right: 0;bottom:0;border:solid thin black;"&gt;
 	&lt;/div&gt;
 &lt;/div&gt;
-	</pre>
+&lt;script&gt;
+kWidget.embed({
+	'targetId': 'kaltura-player1',
+	'wid': '_{your partner id}',
+	'uiconf_id' : '{your player uiconf id}',
+	'entry_id' : '{your content entry id}'
+});
+&lt;/script&gt;
+</pre>
 	<div style="width: 60%;display: inline-block;position: relative;"> 
 		<h3>Example of non-hover controls correction ( bottom:-36px; )</h3>
 		<div style="width: 100%;display: inline-block;position: relative;"> 
@@ -66,6 +74,14 @@
 	&lt;div id="kaltura-player1" style="position:absolute;top:0;left:0;left: 0;right: 0;bottom:-36px;border:solid thin black;"&gt;
 	&lt;/div&gt;
 &lt;/div&gt;
+&lt;script&gt;
+kWidget.embed({
+	'targetId': 'kaltura-player1',
+	'wid': '_{your partner id}',
+	'uiconf_id' : '{your player uiconf id}',
+	'entry_id' : '{your content entry id}'
+});
+&lt;/script&gt;
 	</pre>
 </body>
 </html>

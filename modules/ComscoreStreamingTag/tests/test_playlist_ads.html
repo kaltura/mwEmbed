@@ -1,0 +1,71 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>ComscoreStreamingTag Module - playlist with ads</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+	<script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h1>ComscoreStreamingTag Plugin - playlist with ads</h1>
+<br>
+<div id="myVideoTarget" style="width:650px;height:330px;"></div>
+<i>Analytics events:</i> ( only html5 )<br />
+<textarea id="analyticsLog" rows='15' style="width:450px;"></textarea>
+</div>
+
+<script>
+	mw.setConfig("forceMobileHTML5", true);
+	kWidget.embed({
+
+		// Normal playlist (No DC plugin)
+		'cache_st': 99,
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '25550701',
+		'flashvars': {
+			"playlist": {
+				"visible": true,
+				"includeInLayout": true
+			},
+			'playlistAPI':{
+				'autoContinue': true,
+				'autoPlay': false,
+				'autoInsert':true,
+				'kpl0Name': "test 4 item playlist",
+				'kpl0Url': 'http://www.kaltura.com/index.php/partnerservices2/executeplaylist?uid=&partner_id=243342&subp_id=24334200&format=8&ks={ks}&playlist_id=0_q79jh71b'
+			},
+			'doubleClick': {
+				'plugin': true,
+				'path': 'http://cdnbakmi.kaltura.com/content/uiconf/ps/veria/kdp3.9.1/plugins/doubleclickPlugin.swf',
+				'adTagUrl':"http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=xml_vmap1&unviewed_position_start=1&cust_params=sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=[timestamp]",
+				'disableCompanionAds': false,
+				'postSequence': '0',
+				'preSequence': '1',
+				'trackCuePoints': false,
+				'debugMode': false
+			},
+			'comScoreStreamingTag':{
+				'debug': true,
+				'plugin': true,
+				'asyncInit': 'true',
+				'position': "before",
+				'relativeTo': "video",
+				'trackEventMonitor': 'trackEvent',
+				'c2':"1234567",
+				'labelMapping':'test_1="test value",test_2={mediaProxy.entry.description}',
+				'persistentLabels':'test_0="something else"',
+				'pageView':'true'
+			}
+		}
+	});
+
+	window['trackEvent'] = function( eventObj ){
+		$( "#analyticsLog" ).append( 'comScore Event:' + JSON.stringify( eventObj) + "\n\n" );
+	}
+</script>
+
+</body>
+</html>

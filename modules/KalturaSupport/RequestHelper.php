@@ -32,7 +32,8 @@ class RequestHelper {
 		'height'=> null,
 		'playerId' => null,
 		'vid_sec' => null,
-		'vid_slices' => null
+		'vid_slices' => null,
+		'inlineScript' => null
 	);
 
 
@@ -141,7 +142,7 @@ class RequestHelper {
 		global $wgKalturaAllowIframeRemoteService;
 		
 		// Check if we allow URL override: 
-		if( $wgKalturaAllowIframeRemoteService == true ){
+		if(( $wgKalturaAllowIframeRemoteService == true ) || $this->isEmbedServicesEnabled()){
 			// Check for urlParameters
 			if( $this->get( $name ) ){
 				return $this->get( $name );
@@ -167,6 +168,24 @@ class RequestHelper {
 				return $wgKalturaUseManifestUrls;
 				break;
 		}
+	}
+
+	function isEmbedServicesEnabled(){
+	    global $wgEnableKalturaEmbedServicesRouting, $wgKalturaAuthEmbedServicesDomains;
+	    if ($wgEnableKalturaEmbedServicesRouting){
+	        return true;
+	    } else {
+	        return false;
+        }
+	}
+
+	function isEmbedServicesRequest(){
+	    $proxyData = $this->getFlashVars("proxyData");
+        return (isset($proxyData) && !empty($proxyData));
+    }
+
+	function getEmbedServicesRequest(){
+	    return $this->getFlashVars("proxyData");
 	}
 
 	public function getUserAgent() {
@@ -258,7 +277,7 @@ class RequestHelper {
 		// make sure there is no white space
 		$ip = trim( $ip );
 		$s = $ip . "," . time() . "," . microtime( true );
-		return "X_KALTURA_REMOTE_ADDR: " . $s . ',' . md5( $s . "," . $wgKalturaRemoteAddressSalt );
+		return "X-KALTURA-REMOTE-ADDR: " . $s . ',' . md5( $s . "," . $wgKalturaRemoteAddressSalt );
 	}
 
 	public function getCacheSt(){
@@ -288,7 +307,7 @@ class RequestHelper {
 		if( $this->get('flashvars') ) {
 			$flashVars = $this->get('flashvars');
 			if( ! is_null( $key ) ) {
-				if( isset($flashVars[$key]) ) {
+				if(is_array($flashVars) && isset($flashVars[$key]) ) {
 					return $this->utility->formatString($flashVars[$key]);
 				} else {
 					return $default;
@@ -313,7 +332,8 @@ class RequestHelper {
 	}
 	
 	public function hasKS() {
-		return isset($this->ks);
+		global $wgForceCache;
+		return $wgForceCache ? false : isset($this->ks);
 	}
 
 	public function getKS() {

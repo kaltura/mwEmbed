@@ -1,4 +1,3 @@
-<span class="share-close icon-share-close"  data-click="closeScreen"></span>
 <div class='panel-center'>
 	<span class="share-alert"></span>
 	<div class="share-icons-scroller">
@@ -21,7 +20,7 @@
 
 	<% if( socialShareEnabled) { %>
 		<div class="share-input-container share-container">
-			<input class="shareembed-input share-input" value="<%= share.getConfig('shareURL') %>"/>
+			<input class="shareembed-input share-input" value="<%= share.getConfig('shareURL') %>" readonly/>
 			<!--div class="share-copy-btn" data-target=".share-input"><%=share.locale.copyLbl%></div>
 			<div class="icon-share-Yes share-v-icon"></div-->
 		</div>
@@ -35,7 +34,7 @@
 
 	<% if( embedEnabled) { %>
 		<div class="share-input-container embed-container">
-			<input class="shareembed-input embed-input"/>
+			<input class="shareembed-input embed-input" readonly/>
 			<!--div class="share-copy-btn" data-target=".embed-input"><%=share.locale.copyLbl%></div>
 			<div class="icon-share-Yes share-v-icon"></div-->
 		</div>

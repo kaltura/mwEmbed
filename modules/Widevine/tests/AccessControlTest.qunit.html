@@ -50,7 +50,7 @@ require_once(  '/kaltura_client_v3/KalturaClient.php' );
 
 // setup your local config:
 $partnerId = '929011';
-$kalturaAdminSecret = 'Your admin secret is available in the settings tab in the KMC';
+$kalturaUserSecret = 'Your user secret is available in the settings tab in the KMC';
 $entryId = '1_4f9zv9fu';
 
 $conf = new KalturaConfiguration( $partnerId );
@@ -59,9 +59,9 @@ $conf->serviceBase =  '/api_v3/index.php?service=';
 
 $client = new KalturaClient( $conf );
 
-$ks = $client->session->start ( $kalturaAdminSecret, 
+$ks = $client->session->start ( $kalturaUserSecret, 
 	$_SERVER['REMOTE_ADDR'], 
-	KalturaSessionType::ADMIN, 
+	KalturaSessionType::USER, 
 	$partnerId, 
 	3600, // expire in one hour
 	"sview:{$entryId}" // give permission to "view" the entry for the allocated time

@@ -50,11 +50,11 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> Access Control Preview embed level ks </h2>
-
+View source code of sample <a href="https://github.com/kaltura/mwEmbed/blob/master/modules/KalturaSupport/apiServices/mweApiKSTest.php">KS service</a><br>
 <br />
 <div id="playerTarget" style="width:400px;height:330px;"> loading ... </div>
 <script>
-	$.getJSON( '../../../services.php?service=KSTest&entry_id=1_20x0ca3l&wid=_243342', function( ksJSON ){
+	$.getJSON( '../../../services.php?service=KSTest&entry_id=0_mjbelixh&wid=_243342', function( ksJSON ){
 		if( ! ksJSON || ! ksJSON.ks ){
 			$('#playerTarget').text( 'error getting ks');
 			return ;
@@ -62,10 +62,11 @@ function jsKalturaPlayerTest( videoId ){
 		kWidget.embed( 'playerTarget', {
 			'wid' : '_243342',
 			'uiconf_id' : '8145862',
-			'entry_id' : '1_20x0ca3l',
+			'entry_id' : '0_mjbelixh',
 			'flashvars':{
 				'ks' : ksJSON.ks,
-				'disableAlerts': true
+				'disableAlerts': true,
+				'loadThumbnailWithKs': true
 			},
 			'readyCallback': function( playerId ){
 				var kdp = $('#' + playerId )[0];
@@ -91,12 +92,28 @@ $.getJSON( 'YOUR_ENTITLEMENT_CHECK_SERVICE__&entry_id=1_20x0ca3l&wid=_243342', f
 	kWidget.embed( 'playerTarget', {
 		'wid' : '_243342',
 		'uiconf_id' : '8145862',
-		'entry_id' : '1_20x0ca3l',
+		'entry_id' : '0_mjbelixh',
 		'flashvars':{
 			'ks' : ksJSON.ks
 		}
 	});
 });
 </pre>
+<h3> Example of same player without KS provided</h3>
+<div id="playerTargetNoKs" style="width:400px;height:330px;"> loading ... </div>
+<script>
+	$.getJSON( '../../../services.php?service=KSTest&entry_id=1_20x0ca3l&wid=_243342', function( ksJSON ){
+		if( ! ksJSON || ! ksJSON.ks ){
+			$('#playerTarget').text( 'error getting ks');
+			return ;
+		}
+		kWidget.embed( 'playerTargetNoKs', {
+			'wid' : '_243342',
+			'uiconf_id' : '8145862',
+			'entry_id' : '0_mjbelixh'
+		});
+	});
+</script>
+
 </body>
 </html>

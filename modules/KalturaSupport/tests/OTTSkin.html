@@ -1,0 +1,120 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title> MediaGo Skin</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+
+</head>
+<body>
+<h2> MediaGo Skin </h2>
+<div id="kaltura_player" style="width:800px;height:450px;"></div>
+<script>
+	kWidget.embed({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id' : '12905712',
+		'entry_id' : '0_7dmu2xhz',
+		'flashvars': {
+			"layout":{
+				"skin":"ott"
+			},
+			'controlBarContainer': {
+				'plugin': true,
+				"hover": true
+			},
+			'scrubber': {
+				'parent': 'controlsContainer',
+				'minWidth': 50,
+				'order': 22,
+				'showOnlyTime': true
+			},
+			'logo':{
+				'plugin': false
+			},
+			"volumeControl":{
+				"layout": "vertical",
+                "align": "right",
+				"order": 52
+			},
+			"durationLabel":{
+				"prefix":" "
+			},
+			"loadingSpinner":{
+				"customSpinner": true,
+				"className": "ottSpinner"
+			},
+			'closedCaptions': {
+				'layout': 'ontop',
+				'useCookie': true,
+				'defaultLanguageKey': 'en',
+				'whiteListLanguagesCodes': 'en,es,fr,jp',
+				'fontsize': 12,
+				'bg' : '0x335544',
+				'fontFamily' : 'Arial',
+				'fontColor' : '0xFFFFFF',
+				'useGlow' : 'false',
+				'glowBlur': 4,
+				'glowColor': '0x133693',
+				'showEmbeddedCaptions': false,
+				'visible': false,
+				"plugin":true
+			},
+			'audioSelector': {
+				'plugin':true
+			},
+			'closedCaptions': {
+				'layout': 'ontop',
+				'useCookie': true,
+				'defaultLanguageKey': 'en',
+				'whiteListLanguagesCodes': 'en,es,fr,jp',
+				'fontsize': 12,
+				'bg' : '0x335544',
+				'fontFamily' : 'Arial',
+				'fontColor' : '0xFFFFFF',
+				'useGlow' : 'false',
+				'glowBlur': 4,
+				'glowColor': '0x133693',
+				'showEmbeddedCaptions': false,
+				'visible': false,
+				"plugin":true
+			},
+			'smartContainer': {
+				'plugin': true,
+				'tooltip': 'Language Settings',
+				'iconClass': 'icon-globe',
+				'align': 'right',
+				"order": 53,
+				'config':{
+					'plugins':[
+						{
+							'pluginName':'closedCaptions',
+							'properties':[
+								{
+									'property':'captions',
+									'label': 'Language:',
+									'type': 'enum'
+								}
+							]
+						},{
+							'pluginName':'audioSelector',
+							'properties':[
+								{
+									'property':'sources',
+									'label': 'Audio:',
+									'type': 'enum'
+								}
+							]
+						}
+					]
+				}
+			}
+
+		}
+	});
+</script>
+<br>
+
+</body>
+</html>

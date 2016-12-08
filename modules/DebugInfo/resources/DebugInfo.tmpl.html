@@ -1,0 +1,35 @@
+<a href="#" class="mw-debug-info-close-btn">X</a>
+<div id="mw-debug-info-values">
+    <div>version: {{version}}</div>
+    <div class="mw-debug-info-text" title="{{src}}">src: {{src}}</div>
+    <div>entryid: {{entryid}}</div>
+    <div>uiconf: {{kuiconf}}</div>
+    <div>mimeType: {{mimeType}}</div>
+    <div>currentState: {{currentState}}</div>
+    <div ng-show="hls">
+        <div class="mw-debug-info-separator">HLS Information ({{hlsEngine}})</div>
+        <div ng-show="kesChain">KES: {{kesChain}}</div>
+        <span>current:</span><a class="mw-debug-info-a" href="{{hlsCurrentSegment}}">{{hlsCurrentSegment | getFileName}}</a><br>
+        <span>downloading:</span><a class="mw-debug-info-a" href="{{hlsDownloadingSegment}}">{{hlsDownloadingSegment | getFileName}}</a><br>
+        <span>processed:</span><a class="mw-debug-info-a" href="{{hlsLastProcessedSegment}}">{{hlsLastProcessedSegment | getFileName}}</a><br>
+        <div>Buffer: {{bufferLength}}</div>
+        <div>droppedFrames: {{droppedFrames}}</div>
+        <div>currentBitrate: {{currentBitrate}}</div>
+    </div>
+    <div ng-show="multicast">
+        <div class="mw-debug-info-separator">Multicast Information</div>
+        <span>KES:</span><a class="mw-debug-info-a" href="{{multiastServerUrl}}">{{kesChain}}</a><br>
+        <div>multicast Address: {{mcAddress}}</div>
+        <div>session id: {{multicastSessionId}}</div>
+        <div>bitrate: {{currentBitrate}}</div>
+        <div>input   fps: {{mcInputFps}}</div>
+        <div>render  fps: {{mcRenderFps}}</div>
+        <div>dropped fps: {{mcRenderDroppedFps}}</div>
+        <div>dropped packets / sec: {{mcPacketLoss}}</div>
+        <div>packets / sec: {{mcPacketsPerSec}}</div>
+    </div>
+</div>
+<a href="#" class="mw-debug-info-copy-btn" >Copy</a>
+
+
+

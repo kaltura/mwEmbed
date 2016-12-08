@@ -3,7 +3,7 @@
 	// Add supported external players:
 	$( mw ).bind('EmbedPlayerUpdateMediaPlayers', function( event, mediaPlayers ){
 		
-		var youTubePlayer = new mw.MediaPlayer( 'youTube', ['video/youtube'], 'YouTube' );
+		var youTubePlayer = new mw.MediaPlayer( 'YouTube', ['video/youtube'], 'YouTube' );
 		mediaPlayers.addPlayer( youTubePlayer );
 		mediaPlayers.defaultPlayers['video/youtube'] = [ 'YouTube' ];
 		

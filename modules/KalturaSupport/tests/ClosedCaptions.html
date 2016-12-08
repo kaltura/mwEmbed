@@ -47,6 +47,22 @@ kWidget.addReadyCallback( function( playerId ) {
 <div style="clear:both">
 <br>
 
+<h2> Captions selection logic </h2>
+<pre>
+ 1. Check if there is an existing cookie (created by the player),<br>    which remembers a language preferred by the user.
+
+   <div style="color:red; display:inline;"> Note:</div> if user selected specific caption, it is saved in a cookie,<br>    and the next time that he reloads the page, that cookie will be checked and preferred.
+
+ 2. If there was no existing cookie, check if default caption is set for the entry via the <br>    KMC, or FlashVar (defaultLanguageKey), if there is, use it.
+
+   <div style="color:red; display:inline;"> Note:</div> on iOS devices defaultLanguageKey takes effect only if the user device is set to<br>    auto(Recommended), otherwise the caption selected by the user is used.
+
+ 3. If cases 1 or 2, did not occur, check for user's browser language and,<br>    select the relevant caption.
+
+ 4. If none of the above occurred, select the first available caption.
+
+</pre>
+
 <h2> Captions API</h2>
 The Kaltura captions API enables you to hide and show captions via javascript. <br>
 

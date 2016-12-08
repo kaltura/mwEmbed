@@ -79,6 +79,7 @@
 			});
 
 			this.bind( 'playerReady', function() {
+				_this.onAirStatus = true;
 				_this.isLiveChanged();
 			} );
 
@@ -117,39 +118,14 @@
 
 				//if we moved from live to offline  - show message
 				if ( _this.onAirStatus && !onAirObj.onAirStatus ) {
-					//sometimes offline is only for a second and the message is not needed..
-					setTimeout( function() {
-						if ( !_this.onAirStatus ) {
-                            if( _this.getConfig('showThumbnailWhenOffline') ){
-                                _this.addPoster();
-                            }
-							//if we already played once it means stream data was loaded. We can continue playing in "VOD" mode
-							if ( !embedPlayer.firstPlay && _this.isDVR() ) {
-                                embedPlayer.triggerHelper( 'liveEventEnded' );
-							} else {
-								//remember last state
-								_this.playWhenOnline = embedPlayer.isPlaying();
-
-                                embedPlayer.layoutBuilder.displayAlert({
-                                title: embedPlayer.getKalturaMsg('ks-LIVE-STREAM-OFFLINE-TITLE'),
-                                message: embedPlayer.getKalturaMsg('ks-LIVE-STREAM-OFFLINE'),
-                                keepOverlay: true,
-                                noButtons: true,
-                                props: {
-                                    customAlertTitleCssClass: "AlertTitleTransparent",
-                                    customAlertMessageCssClass: "AlertMessageTransparent",
-                                    customAlertContainerCssClass: "AlertContainerTransparent"
-                                    }
-                                });
-
-							    _this.getPlayer().disablePlayControls();
-                            }
-                        }
-					}, _this.getConfig( 'offlineAlertOffest' ) );
-
-					embedPlayer.triggerHelper( 'liveOffline' );
-
+                    //calculate offlineAlertOffset for timeout (by default = 0 as sometimes offline is only for a second and the message is not needed..)
+                    var firstOfflineAlertOffest = _this.calculateOfflineAlertOffest();
+                    _this.setOffAir(firstOfflineAlertOffest);
 				}  else if ( !_this.onAirStatus && onAirObj.onAirStatus ) {
+                    if (_this.offAirTimeout){
+                        clearTimeout(_this.offAirTimeout);
+                        _this.offAirTimeout = null;
+                    }
 					if ( _this.getPlayer().removePosterFlag && !_this.playWhenOnline && !embedPlayer.isPlaying() ) {
 						_this.addPoster();
 					}
@@ -157,17 +133,17 @@
 					if ( !_this.getPlayer().getError() ) {
 						_this.getPlayer().enablePlayControls();
 					}
+                    embedPlayer.triggerHelper( 'liveOnline' );
 					if ( _this.playWhenOnline ) {
 						embedPlayer.play();
 						_this.playWhenOnline = false;
 					}
-					embedPlayer.triggerHelper( 'liveOnline' );
 
 					//reload livestream
 					if ( !embedPlayer.firstPlay && _this.isDVR() ) {
 						embedPlayer.disablePlayControls();
 						var shouldPause = !embedPlayer.isPlaying();
-						var playingEvtName = "playing.backToLive";
+						var playingEvtName = "seeked.backToLive playing.backToLive";
 						embedPlayer.bindHelper( playingEvtName , function() {
 							embedPlayer.unbindHelper( playingEvtName );
 							setTimeout( function() {
@@ -194,6 +170,7 @@
 					embedPlayer.firstPlay &&
 					embedPlayer.autoplay &&
 					embedPlayer.canAutoPlay() &&
+					!embedPlayer.isInSequence() &&
 					!embedPlayer.isPlaying() ) {
 					embedPlayer.play();
 				}
@@ -232,7 +209,9 @@
 
 					if ( !_this.isNativeHLS() ) {
 						embedPlayer.bindHelper( 'ended', function() {
-							embedPlayer.getPlayerElement().seek( 0 );
+							if(embedPlayer.getPlayerElement().seek){
+								embedPlayer.getPlayerElement().seek( 0 );
+							}
 						});
 					}
 				}
@@ -245,6 +224,53 @@
 				 }
 			});
 		},
+
+        setOffAir: function(offlineAlertOffest) {
+            var _this = this;
+            var embedPlayer = this.getPlayer();
+
+            if (_this.offAirTimeout){
+                clearTimeout(_this.offAirTimeout);
+                _this.offAirTimeout = null;
+            }
+
+            _this.offAirTimeout = setTimeout( function() {
+                if ( !_this.onAirStatus ) {
+                    //recheck the buffer length
+                    var secondOfflineAlertOffest = _this.calculateOfflineAlertOffest();
+                    if( secondOfflineAlertOffest > 1000 ) {
+                        _this.setOffAir(secondOfflineAlertOffest);
+                    } else {
+                        //if we already played once it means stream data was loaded. We can continue playing in "VOD" mode
+                        if (!embedPlayer.firstPlay && _this.isDVR()) {
+                            embedPlayer.triggerHelper('liveEventEnded');
+                        } else {
+                            //remember last state
+                            _this.playWhenOnline = embedPlayer.isPlaying();
+
+                            if (_this.getConfig('showThumbnailWhenOffline')) {
+                                _this.addPoster();
+                            } else {
+                                embedPlayer.layoutBuilder.displayAlert({
+                                    title: embedPlayer.getKalturaMsg('ks-LIVE-STREAM-OFFLINE-TITLE'),
+                                    message: embedPlayer.getKalturaMsg('ks-LIVE-STREAM-OFFLINE'),
+                                    keepOverlay: true,
+                                    noButtons: true,
+                                    props: {
+                                        customAlertTitleCssClass: "AlertTitleTransparent",
+                                        customAlertMessageCssClass: "AlertMessageTransparent",
+                                        customAlertContainerCssClass: "AlertContainerTransparent"
+                                    }
+                                });
+                            }
+
+                            _this.getPlayer().disablePlayControls();
+                        }
+                        embedPlayer.triggerHelper('liveOffline');
+                    }
+                }
+            }, offlineAlertOffest );
+        },
 
 		isLiveChanged: function() {
 			var _this = this;
@@ -279,24 +305,21 @@
 
 				hideComponentsArr.push( 'durationLabel' );
 				//live + DVR
-				if ( _this.isDVR() ) {
+				if ( _this.isDVR() && !embedPlayer.casting) {
 					_this.dvrWindow = embedPlayer.evaluate( '{mediaProxy.entry.dvrWindow}' ) * 60;
 					if ( !_this.dvrWindow ) {
 						_this.dvrWindow = _this.defaultDVRWindow;
 					}
-					showComponentsArr.push( 'scrubber', 'currentTimeLabel' );
+					showComponentsArr.push( 'scrubber' );
+                    hideComponentsArr.push( 'currentTimeLabel' ); //new DVR layout: no time label, only negative live edge offset at the mousemove over the scrubber
 				} else {  //live + no DVR
 					showComponentsArr.push( 'liveStatus' );
-					if ( _this.getConfig('hideCurrentTimeLabel') ){
-						hideComponentsArr.push( 'scrubber', 'currentTimeLabel' );
-					} else {
-						showComponentsArr.push( 'scrubber', 'currentTimeLabel' );
-					}
+                    hideComponentsArr.push( 'scrubber', 'currentTimeLabel' );
 				}
 
 				if ( _this.isNativeHLS() ) {
 					_this.bind( 'timeupdate' , function() {
-						var curTime = embedPlayer.getPlayerElementTime();
+						var curTime = embedPlayer.getPlayerElement().currentTime;
 
 						if ( _this.isDVR() ) {
 						  if ( curTime > _this.maxCurrentTime ) {
@@ -321,13 +344,17 @@
 			else {
 				embedPlayer.removePosterFlag = false;
 				hideComponentsArr.push( 'liveStatus' );
-				showComponentsArr.push( 'sourceSelector', 'scrubber', 'durationLabel', 'currentTimeLabel' );
+				showComponentsArr.push( 'scrubber', 'durationLabel', 'currentTimeLabel' );
+				if (!embedPlayer.isMobileSkin()){
+					showComponentsArr.push( 'sourceSelector' );
+				}
 				_this.removeLiveStreamStatusMonitor();
 				_this.unbind('timeupdate');
 			}
 
 			embedPlayer.triggerHelper('onShowInterfaceComponents', [ showComponentsArr ] );
 			embedPlayer.triggerHelper('onHideInterfaceComponents', [ hideComponentsArr ] );
+			embedPlayer.doUpdateLayout();
 		},
 
 		isDVR: function(){
@@ -427,13 +454,18 @@
 			if ( embedPlayer.streamerType != 'http' ) {
 				protocol = embedPlayer.streamerType;
 			}
-			_this.getKalturaClient().doRequest( {
-				'service' : service,
-				'action' : 'islive',
-				'id' : embedPlayer.kentryid,
-				'protocol' : protocol,
-				'partnerId': embedPlayer.kpartnerid
-			}, function( data ) {
+
+            var requestObj = {
+                'service' : service,
+                'action' : 'islive',
+                'id' : embedPlayer.kentryid,
+                'protocol' : protocol,
+                'partnerId': embedPlayer.kpartnerid
+            };
+            if ( mw.isIOSAbove7() ) {
+                requestObj.rnd = Math.random();
+            }
+			_this.getKalturaClient().doRequest( requestObj, function( data ) {
 				var onAirStatus = false;
 				if ( data === true ) {
 					onAirStatus = true;
@@ -460,11 +492,20 @@
 		},
 
 		isNativeHLS: function() {
-			if ( mw.isIOS() || mw.isDesktopSafari() || mw.isAndroid() ) {
+			if ( mw.isIOS() || mw.isDesktopSafari() || mw.isAndroid() || mw.isEdge()) {
 				return true;
 			}
 			return false;
-		}
+		},
+
+        calculateOfflineAlertOffest: function() {
+            var offlineAlertOffest = this.getConfig( 'offlineAlertOffest' );
+            var bufferLength = this.getPlayer().getCurrentBufferLength() *1000;
+            if(bufferLength>0){
+                offlineAlertOffest = bufferLength;
+            }
+            return offlineAlertOffest;
+        }
 
 	}));
 

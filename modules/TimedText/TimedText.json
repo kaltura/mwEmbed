@@ -1,0 +1,23 @@
+{
+    "mw.TimedText": {
+        "scripts": "resources/mw.TimedText.js",
+        "styles": "resources/mw.style.TimedText.css",
+        "dependencies": [
+            "mw.EmbedPlayer",
+            "mw.TextSource",
+            "mw.Language.names"
+        ],
+        "messageFile": "TimedText.i18n.json"
+    },
+    "mw.TextSource": {
+        "scripts": "resources/mw.TextSource.js",
+        "dependencies": [
+            "mediawiki.UtilitiesTime",
+            "mw.ajaxProxy",
+            "vtt.js"
+        ]
+    },
+    "mw.Language.names": {
+        "scripts": "resources/mw.Language.names.js"
+    }
+}

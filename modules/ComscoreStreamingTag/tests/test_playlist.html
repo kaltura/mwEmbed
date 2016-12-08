@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>ComscoreStreamingTag Module - playlist </title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+</head>
+<body>
+<h1>ComscoreStreamingTag Plugin - playlist</h1>
+<br>
+<div id="myVideoTarget" style="width:650px;height:330px;"></div>
+<i>Analytics events:</i> ( only html5 )<br />
+<textarea id="analyticsLog" rows='15' style="width:600px;"></textarea>
+</div>
+
+<div style="clear:both"></div>
+
+<script>
+	var localPath = document.location.href;
+	localPath = localPath.split('VPAID.html')[0];
+	kWidget.featureConfig({
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '25975211',
+		'entry_id' : '0_uka1msg4',
+		'flashvars': {
+			"playlistAPI": {
+				"containerPosition" : "left",
+				"layout" : "vertical",
+				"includeInLayout" : true,
+				"autoContinue" : true,
+				"autoPlay" : false,
+				"loop" : false,
+				"onPage" : false,
+				"kpl0Id" : "0_q79jh71b",
+				"kpl0Name" : "test 4 item playlist"
+			},
+			"nextPrevBtn": {
+			},
+			'comScoreStreamingTag':{
+				'debug': true,
+				'plugin': true,
+				'asyncInit': 'true',
+				'position': "before",
+				'relativeTo': "video",
+				'trackEventMonitor': 'trackEvent',
+				'c2':"1234567",
+				'labelMapping':'test_1="test value",test_2={mediaProxy.entry.description}',
+				'persistentLabels':'test_0="something else"',
+				'pageView':'true'
+			}
+		}
+	})
+
+	window['trackEvent'] = function( eventObj ){
+		$( "#analyticsLog" ).append( 'comScore Event:' + JSON.stringify( eventObj) + "\n\n" );
+	}
+</script>
+<br>
+</body>
+</html>

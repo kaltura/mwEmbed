@@ -1,3 +1,8 @@
+.relatedContainer{
+    width: 100%;
+    height: 100%;
+    margin-top: 1.5em;
+}
 .fullscreen .related .screen-content {
 	width: 960px;
 	height: 570px;
@@ -5,8 +10,43 @@
 	position: absolute;
 	top: 0; bottom: 0; left: 0; right: 0;
 }
+.related .related-close{
+    width: 100%;
+    text-align: right;
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+.fullscreen .related-close{
+    padding-top: 3px;
+}
+.screen.related{
+    padding-top: 0px;
+}
+.hover .screen.related{
+    padding-bottom: 10px;
+}
+.related .icon-close{
+    padding-top: 0 !important;
+    right: 0.5em !important;
+}
+.mobileSkin .related .icon-close{
+    margin-right: -0.3em;
+}
+.mobileSkin.fullscreen .related .icon-close{
+    margin-top: 0.2em;
+    position: fixed;
+}
 .related .screen-content {
-	padding: 0 5px; overflow: hidden; height: 100%;
+	padding: 10px 5px;
+    overflow: hidden;
+    height: 100%;
+}
+.mobileSkin .related .screen-content {
+    padding: 0px 5px;
+    padding-bottom: 15px;
+}
+.fullscreen.mobileSkin .related .screen-content {
+    padding: 10px 5px;
 }
 .related .item {
 	position: relative;
@@ -15,6 +55,9 @@
 	height: 50%;
 	box-sizing: border-box;
 	cursor: pointer;
+}
+.fullscreen .related .item {
+	height: 33.3%;
 }
 .related .item:hover .title {
 	display: block;
@@ -79,36 +122,31 @@
 }
 
 @media only screen and (max-width: 480px)  {
-	.related .item {
-		position: relative;
-		float: left;
-		width: 50%;
-		height: 25%;
-		box-sizing: border-box;
-		cursor: pointer;
-	}
+    .related .item {
+        width: 25% !important;
+        height: 33.1% !important;
+    }
 
-	.related .featured {
-		width: 100% !important;
-		height: 50% !important;
-	}
-
+    .related .featured {
+        width: 50% !important;
+        height: 65.9% !important;
+    }
 }
 /* smartphone in app landscape */
 @media only screen and (max-width: 650px) and (min-width: 481px) {
 	.related .item {
 		width: 25%!important;
-		height: 33%!important;
+		height: 33.1%!important;
 	}
 
 	.fullscreen .related .item {
 		width: 25% !important;
-		height: 33% !important;
+		height: 33.1% !important;
 	}
 
 	.related .featured {
 		width: 50% !important;
-		height: 66% !important;
+		height: 65.9% !important;
 	}
 }
 
@@ -127,12 +165,12 @@
 @media screen and (max-device-width: 480px) and (orientation: landscape) {
 	 .related .item {
 		width: 25% !important;
-		height: 33% !important;
+		height: 33.1% !important;
 	}
 
 	.related .featured {
 		width: 50% !important;
-		height: 66% !important;
+		height: 65.9% !important;
 	}
 }
 /* smartphone - portrait web*/
@@ -151,12 +189,12 @@
 @media only screen and (max-device-width : 321px) {
 	.fullscreen .related .item {
 		width: 25% !important;
-		height: 33% !important;
+		height: 33.1% !important;
 	}
 
 	.fullscreen .related .featured {
 		width: 50% !important;
-		height: 66% !important;
+		height: 65.9% !important;
 	}
 }
 
@@ -164,12 +202,12 @@
 @media only screen and (max-device-width: 640px) and (orientation: landscape) {
 	.fullscreen .related .item {
 		width: 25% !important;
-		height: 33% !important;
+		height: 33.1% !important;
 	}
 
 	.fullscreen .related .featured {
 		width: 50% !important;
-		height: 66% !important;
+		height: 65.9% !important;
 	}
 }
 
@@ -178,21 +216,27 @@
 	/* Small desktop / ipad view: 3 tiles */
 	.related .item {
 		width: 25%;
-		height: 33.3%;
+		height: 33.1%;
 	}
 
 	.fullscreen .related .item {
 		width: 25%;
-		height: 33%;
+		height: 33.1%;
 	}
 
 	.fullscreen .related .featured {
-		width: 100% !important;
-		height: 50% !important;
+		width: 50%;
+		height: 65.9%;
 	}
-
+    .related .screen-content{
+        width: 100% !important;
+    }
 }
-
+@media only screen and (max-width: 1050px) and (min-width: 651px)  and (orientation: portrait){
+    .related .screen-content{
+        height: 50% !important;
+    }
+}
 
 @media only screen and (max-width: 1290px) and (min-width: 1051px) {
 	/* Medium desktop: 4 tiles */

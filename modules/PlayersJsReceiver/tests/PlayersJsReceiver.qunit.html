@@ -1,0 +1,108 @@
+<html>
+<head>
+<title>Player.js Receiver demo</title>
+
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+
+<script type="text/javascript" src="../resources/embedly/player-0.0.10.min.js"></script>
+
+	<!-- Facebook iframe embed  -->
+	<meta property="og:video:url" content="https://cdnapisec.kaltura.com/p/243342/sp/24334200/embedIframeJs/uiconf_id/28685261/partner_id/243342?iframeembed=true&playerId=kaltura_player&entry_id=1_sf5ovm7u">
+	<meta property="og:video:secure_url" content="https://cdnapisec.kaltura.com/p/243342/sp/24334200/embedIframeJs/uiconf_id/28685261/partner_id/243342?iframeembed=true&playerId=kaltura_player&entry_id=1_sf5ovm7u">
+	<meta property="og:video:type" content="text/html">
+	<meta property="og:video:width" content="560">
+	<meta property="og:video:height" content="395">
+	
+	<meta name="twitter:image" content="https://cdnsecakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_sf5ovm7u/version/100003/width/400">
+	<meta name="twitter:player" content="https://cdnapisec.kaltura.com/p/243342/sp/24334200/embedIframeJs/uiconf_id/28685261/partner_id/243342?iframeembed=true&playerId=kaltura_player&entry_id=1_sf5ovm7u">
+	
+</head>
+<body>
+	<h2> Player.js iframe receiver </h2>
+	<iframe id="kaltura_player" src="../../../mwEmbedFrame.php/p/243342/uiconf_id/28685261/entry_id/1_sf5ovm7u?wid=_243342&iframeembed=true&playerId=kaltura_player&entry_id=1_sf5ovm7u
+	&flashvars[autoPlay]=false
+	&flashvars[playersJsReceiver.plugin]=true"
+	style="width:600px;height:340px;border:none;"></iframe> <br>
+	
+	<div id="kdoc-more-desc">Demonstrates iFrame players.js API. 
+	This Receiver API is enabled default to maximize compatibility with players.js / embed.ly embeds.
+	You can disable the plugin by setting <b>playersJsReceiver.plugin=false</b> in your player config.<br><br>
+	<b>Methods</b>: <br><div id="methods"> </div><br>
+	<b>Event Log</b>:<br>
+	<textarea id="log" style="width:600px;height:200px;"> </textarea><br>
+	
+<script> 
+	var player = new playerjs.Player( document.getElementById('kaltura_player') );
+	var supportedMethods = [ 'play', 'pause', 'getPaused', 'mute', 
+		'unmute', 'getMuted', 'setVolume .5', 'getVolume', 'getDuration', 
+		'setCurrentTime 10s', 'getCurrentTime', 'setLoop true', 'getLoop'
+	];
+	var supportedEvents = ['progress', 'timeupdate', 'play', 'pause', 'ended', 'seeked', 'error'];
+	$('#methods').text('Loading ...');
+	player.on('ready', function(){
+		$('#methods').empty();
+		$.each(supportedMethods, function(inx, method){
+			$('#methods').append( 
+				$('<button>').addClass('btn btn-default').attr('href', '#').text( method ).click(function(){
+					// special case: 
+					if( method == 'setCurrentTime 10s'){
+						player.setCurrentTime('10')
+						return;
+					}
+					if( method == 'setVolume .5'){
+						player.setVolume('.5')
+						return;
+					}
+					if( method == 'setLoop true'){
+						player.setLoop( true );
+						return;
+					}
+					player[method](function(value){
+						// if there is a callback alert it
+						alert(value);
+					});
+				}),
+				$('<span>').html('&nbsp')
+			);
+		});
+		// triger ready right away ( we add bindings after ready)
+		$('#log').prepend("ready:\n");
+		// handle events:
+		$.each(supportedEvents, function(inx, eventName){
+			player.on(eventName, function(data){
+				var dataString = ( data ) ? JSON.stringify( data ) : "";
+				$('#log').prepend( eventName + ": " + dataString + "\n" );
+			})
+		});
+		
+	});
+</script>
+	
+	
+	
+	You can learn more about <a target="_new" href="http://embed.ly/">embed.ly</a> and <a target="_new" href="http://playerjs.io/">player.js</a> on their respective product pages.<br>
+	
+	To make use of embed.ly simply include open graph tags in your page content pointing to Kaltura iframe player, 
+	also see the Kaltura <a href="../../KalturaSupport/components/share/Share.html">share page</a></div>
+
+	<h3> Using the players.js adapter:</h3>
+	 <a href="https://github.com/embedly/player.js#methods">Supported methods</a> | <a href="https://github.com/embedly/player.js#events">Supported Events</a><br><br>
+	Include embed.ly's player library and a kaltura iframe embed
+	<pre class="prettyprint linenums">&lt;script type="text/javascript" src="//cdn.embed.ly/player-0.0.10.min.js"&gt;&lt;/script&gt;
+&lt;iframe id="kaltura_player" src="https://cdnapisec.kaltura.com/p/243342/sp/24334200/embedIframeJs/uiconf_id/28685261/partner_id/243342?iframeembed=true&playerId=kaltura_player&entry_id=1_sf5ovm7u" style="width:600px;height:375px;border:none;" allowfullscreen&gt;&lt;/iframe&gt; </pre>
+	Setup the player and listen to events or call methods:
+	<pre class="prettyprint linenums">&lt;script type="text/javascript"&gt;
+	var player = new playerjs.Player( document.getElementById('kaltura_player') );
+	//listen to play start
+	player.on(playerjs.Events.PLAY, function(
+		console.log('play');
+	));
+	// call play to start playback: 
+	$('#play-btn').click(function(){
+		player.play();
+	})
+&lt;/script&gt;</pre>
+	</body>
+</html>

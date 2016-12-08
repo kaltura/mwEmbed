@@ -11,13 +11,17 @@
 			"hideTimeout": 0
 		},
 		isSafeEnviornment: function(){
-			return !!this.getConfig('img');
+			return this.getConfig('img') || this.getConfig('watermarkPath');
 		},
 		setup: function(){
 			var _this = this;
 			// support legacy position config: 
 			if( this.getConfig('watermarkPosition') ){
 				this.setConfig('cssClass', this.getConfig('watermarkPosition'));
+			}
+			// support legacy path config:
+			if( this.getConfig('watermarkPath') ){
+				this.setConfig('img', this.getConfig('watermarkPath'));
 			}
 			this.bind('AdSupport_StartAdPlayback', function(){
 				_this.getComponent().hide();
@@ -33,11 +37,21 @@
 						_this.timeoutWatermark();
 				});
 
-			};
+			}
+		},
+		watermarkLoaded: function(){
+			this.getPlayer().triggerHelper("waterMarkLoaded", [this.getComponent().get(0)]);
 		},
 		getComponent: function(){
 			var _this = this;
 			if(!this.$el){
+				var img = $('<img />')
+					.one("load", function(){
+						_this.watermarkLoaded();
+					})
+					.attr({
+						'src': this.getConfig('img')
+					});
 				this.$el = $('<div />')
 							.addClass ( this.getCssClass() )
 							.append(
@@ -49,11 +63,7 @@
 									_this.getPlayer().sendNotification( 'watermarkClick' );
 									return true;
 								})
-								.append(
-									$('<img />').attr({
-										'src': this.getConfig('img')
-									})
-								)
+								.append(img)
 							);
 				if( this.getConfig('padding') ){
 					this.$el.css('padding', this.getConfig('padding') );

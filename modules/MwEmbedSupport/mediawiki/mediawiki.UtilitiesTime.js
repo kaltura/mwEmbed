@@ -4,8 +4,7 @@
 ( function( mw ) {
 
 	/**
-	 * Given a float number of seconds, returns npt format response. ( ignore
-	 * days for now )
+	 * Given a float number of seconds, returns npt format response.
 	 *
 	 * @param {Float}
 	 *			sec Seconds
@@ -13,9 +12,11 @@
 	 *			show_ms If milliseconds should be displayed.
 	 * @param {Boolean}
 	 *			mm_format if you want to show 2 digits for minutes
-	 * @return {Float} String npt format
+	 * @return {String} String npt format
 	 */
 	mw.seconds2npt = function( sec, show_ms , mm_format ) {
+		var hoursStr;
+
 		if ( isNaN( sec ) ) {
 			mw.log("Warning: mediawiki.UtilitiesTime, trying to get npt time on NaN:" + sec);
 			return '0:00:00';
@@ -41,9 +42,14 @@
 			if ( tm.minutes < 10 )
 				tm.minutes = '0' + tm.minutes;
 
-			hoursStr = tm.hours + ":";
+			hoursStr = tm.hours;
 		}
 
+		hoursStr += tm.days * 24 || '';
+
+		if ( hoursStr ) {
+			hoursStr += ':';
+		}
 		return hoursStr + tm.minutes + ":" + tm.seconds;
 	};
 
@@ -56,7 +62,7 @@
 	mw.seconds2Measurements = function ( sec ){
 		var tm = {};
 		tm.days = Math.floor( sec / ( 3600 * 24 ) );
-		tm.hours = Math.floor( Math.round( sec ) / 3600 );
+		tm.hours = Math.floor( Math.round( sec ) / 3600 ) % 24;
 		tm.minutes = Math.floor( ( Math.round( sec ) / 60 ) % 60 );
 		tm.seconds = Math.round(sec) % 60;
 		return tm;

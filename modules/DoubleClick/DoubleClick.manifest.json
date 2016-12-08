@@ -1,0 +1,104 @@
+{
+    "doubleClick": {
+        "label": "DoubleClick",
+        "description": "DoubleClick for Publishers (DFP) Video provides publishers with a platform \r\n\t\tto increase revenue from video advertising as well as manage costs. Fully integrated with DFP,\r\n\t\t publishers can now manage their entire display advertising through one platform, with video at its core.\r\n\t\t Learn more about <a href=\"http://www.google.com/doubleclick/publishers/solutions/video.html\" target=\"_blank\">DFP video solutions</a>",
+	    "type": "menu",
+	    "sections": {
+		    "type": "tabs",
+		    "tabset": [
+			    {
+				    "label": "DFP Trafficking",
+				    "active": true,
+				    "key": "dfp",
+				    "children": [
+
+				    ]
+			    },
+			    {
+				    "label": "VAST Trafficking",
+				    "key": "vast",
+				    "children": [
+
+				    ]
+			    }
+		    ],
+		    "title": "Trafficking"
+	    },
+        "attributes": {
+            "adTagUrl": {
+                "label": "Ad tag URL",
+                "doc": "The DoubleClick DFP VAST ad tag URL (can include multiple nested VAST URLs).",
+                "type": "url",
+	            "section": "dfp"
+            },
+            "pauseAdOnClick": {
+                "label": "Pause ad on clicked",
+                "doc": "When checked, the ad pauses when the user clicks on it",
+                "initvalue": true,
+                "type": "boolean"
+            },
+	        "leadWithFlash": {
+		        "label": "Lead with flash",
+		        "doc": "If the flash based DFP runtime should be used where flash is available.",
+		        "type": "boolean",
+		        "initvalue": false
+	        },
+            "contentId": {
+                "doc": "The contentId, used by DoubleClick plugin API, generally the entry ID, but can also be custom metadata mapping",
+                "type": "string"
+            },
+            "customParams": {
+                "doc": "Custom parameters passed to the DoubleClick adTag URL. Should be listed as URL parameterss key=value&key2=value2 pairs.",
+                "type": "string"
+            },
+            "cmsId": {
+                "label": "CMS id",
+                "doc": "The CMS id, appended to the VAST url, used by DoubleClick plugin api",
+                "type": "number"
+            },
+            "disableCompanionAds": {
+                "doc": "determine if companion ads should be disabled.",
+                "type": "hiddenValue",
+                "initvalue": false
+            },
+            "htmlCompanions": {
+                "label": "HTML Companions",
+                "doc": "Companions list. For each companion please specify the ad container div id and the expected ad width and height.",
+                "type": "companions",
+                "filter": "companions",
+                "initvalue": "Comp_300x250:300:250;Comp_728x90:728:90;"
+            },
+            "adsManagerLoadedTimeout": {
+                "doc": "Timer for timed checking if adsManager was loaded(in milliseconds)",
+                "initvalue": 5000,
+                "type": "hiddenValue"
+            },
+	        "trackCuePoints": {
+		        "doc": "If entry cuepoints should be tracked for midroll or overlay ad requests.",
+		        "type": "boolean",
+		        "section": "vast"
+	        },
+	        "prerollUrl": {
+		        "doc": "The pre-roll VAST ad tag XML URL.",
+		        "label": "Preroll URL",
+		        "type": "url",
+		        "section": "vast"
+	        },
+	        "postrollUrl": {
+		        "label": "Postroll URL",
+		        "doc": "The post-roll VAST ad tag XML URL",
+		        "type": "url",
+		        "section": "vast"
+	        },
+	        "timeout": {
+		        "doc": "The timeout in seconds, for displaying an overlay VAST ad.",
+		        "type": "number",
+		        "section": "over",
+		        "min": 0,
+		        "initvalue": 5,
+		        "max": 1000,
+		        "section": "vast"
+	        }
+        }
+    }
+}

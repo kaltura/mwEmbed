@@ -1,0 +1,478 @@
+{
+    "startup": {
+        "class": "MwEmbedResourceLoaderStartUpModule"
+    },
+    "jquery": {
+        "scripts": "resources/jquery/jquery.min.js",
+        "debugRaw": false
+    },
+    "base64_encode": {
+        "scripts": "resources/base64/base64_encode.js",
+        "dependencies": "utf8_encode"
+    },
+    "utf8_encode": {
+        "scripts": "resources/utf8/utf8_encode.js"
+    },
+    "base64_decode": {
+        "scripts": "resources/base64/base64_decode.js"
+    },
+    "class": {
+        "scripts": "resources/class/class.js"
+    },
+    "matchMedia": {
+        "scripts": "resources/matchMedia/matchMedia.js"
+    },
+    "jquery.async": {
+        "scripts": "resources/jquery/jquery.async.js"
+    },
+    "jquery.autoEllipsis": {
+        "scripts": "resources/jquery/jquery.autoEllipsis.js",
+        "dependencies": "jquery.highlightText"
+    },
+    "jquery.checkboxShiftClick": {
+        "scripts": "resources/jquery/jquery.checkboxShiftClick.js"
+    },
+    "jquery.client": {
+        "scripts": "resources/jquery/jquery.client.js"
+    },
+    "jquery.collapsibleTabs": {
+        "scripts": "resources/jquery/jquery.collapsibleTabs.js"
+    },
+    "jquery.colorUtil": {
+        "scripts": "resources/jquery/jquery.colorUtil.js"
+    },
+    "jquery.cookie": {
+        "scripts": "resources/jquery/jquery.cookie.js"
+    },
+    "jquery.delayedBind": {
+        "scripts": "resources/jquery/jquery.delayedBind.js"
+    },
+    "jquery.expandableField": {
+        "scripts": "resources/jquery/jquery.expandableField.js"
+    },
+    "jquery.highlightText": {
+        "scripts": "resources/jquery/jquery.highlightText.js"
+    },
+    "jquery.hoverIntent": {
+        "scripts": "resources/jquery/jquery.hoverIntent.js"
+    },
+    "jquery.placeholder": {
+        "scripts": "resources/jquery/jquery.placeholder.js"
+    },
+    "jquery.localize": {
+        "scripts": "resources/jquery/jquery.localize.js"
+    },
+    "jquery.makeCollapsible": {
+        "scripts": "resources/jquery/jquery.makeCollapsible.js",
+        "styles": "resources/jquery/jquery.makeCollapsible.css",
+        "messages": [
+            "collapsible-expand",
+            "collapsible-collapse"
+        ]
+    },
+    "jquery.suggestions": {
+        "scripts": "resources/jquery/jquery.suggestions.js",
+        "styles": "resources/jquery/jquery.suggestions.css"
+    },
+    "jquery.tabIndex": {
+        "scripts": "resources/jquery/jquery.tabIndex.js"
+    },
+    "jquery.textSelection": {
+        "scripts": "resources/jquery/jquery.textSelection.js"
+    },
+    "jquery.tipsy": {
+        "scripts": "resources/jquery.tipsy/jquery.tipsy.js",
+        "styles": "resources/jquery.tipsy/jquery.tipsy.css"
+    },
+    "jquery.naturalSize": {
+        "scripts": "resources/jquery/jquery.naturalSize.js"
+    },
+    "jquery.serialize-object": {
+        "scripts": "resources/jquery/jquery.serialize-object.js"
+    },
+    "jquery.ui.core": {
+        "scripts": "resources/jquery.ui/jquery.ui.core.js",
+        "skinStyles": {
+            "default": [
+                "resources/jquery.ui/themes/default/jquery.ui.core.css"
+            ],
+            "vector": [
+                "resources/jquery.ui/themes/vector/jquery.ui.core.css"
+            ]
+        },
+        "dependencies": "jquery"
+    },
+    "jquery.ui.widget": {
+        "scripts": "resources/jquery.ui/jquery.ui.widget.js"
+    },
+    "jquery.ui.mouse": {
+        "scripts": "resources/jquery.ui/jquery.ui.mouse.js",
+        "dependencies": "jquery.ui.widget"
+    },
+    "jquery.ui.position": {
+        "scripts": "resources/jquery.ui/jquery.ui.position.js"
+    },
+    "jquery.ui.selectable": {
+        "scripts": "resources/jquery.ui/jquery.ui.selectable.js",
+        "skinStyles": {
+            "default": "resources/jquery.ui/themes/default/jquery.ui.selectable.css",
+            "vector": "resources/jquery.ui/themes/vector/jquery.ui.selectable.css"
+        },
+        "dependencies": [
+            "jquery.ui.core",
+            "jquery.ui.widget",
+            "jquery.ui.mouse"
+        ]
+    },
+    "jquery.ui.sortable": {
+        "scripts": "resources/jquery.ui/jquery.ui.sortable.js",
+        "dependencies": [
+            "jquery.ui.core",
+            "jquery.ui.widget",
+            "jquery.ui.mouse"
+        ]
+    },
+    "jquery.ui.tooltip": {
+        "scripts": "resources/jquery.ui/jquery.ui.tooltip.js",
+        "dependencies": [
+            "jquery.ui.core",
+            "jquery.ui.widget",
+            "jquery.ui.position"
+        ],
+        "skinStyles": {
+            "no-theme": "resources/jquery.ui/themes/no-theme/jquery.ui.tooltip.css"
+        }
+    },
+    "jquery.ui.draggable": {
+        "scripts": "resources/jquery.ui/jquery.ui.draggable.js",
+        "dependencies": [
+            "jquery.ui.core",
+            "jquery.ui.widget",
+            "jquery.ui.mouse"
+        ]
+    },
+    "jquery.ui.resizable": {
+        "scripts": "resources/jquery.ui/jquery.ui.resizable.js",
+        "dependencies": [
+            "jquery.ui.core",
+            "jquery.ui.widget",
+            "jquery.ui.mouse"
+        ],
+        "skinStyles": {
+            "default": "resources/jquery.ui/themes/no-theme/jquery.ui.resizable.css",
+            "no-theme": "resources/jquery.ui/themes/no-theme/jquery.ui.resizable.css"
+        }
+    },
+    "jquery.ui.accordion": {
+        "scripts": "resources/jquery.ui/jquery.ui.accordion.js",
+        "dependencies": [
+            "jquery.ui.core",
+            "jquery.ui.widget"
+        ],
+        "skinStyles": {
+            "default": "resources/jquery.ui/themes/default/jquery.ui.accordion.css",
+            "vector": "resources/jquery.ui/themes/vector/jquery.ui.accordion.css"
+        }
+    },
+    "jquery.ui.autocomplete": {
+        "scripts": "resources/jquery.ui/jquery.ui.autocomplete.js",
+        "dependencies": [
+            "jquery.ui.core",
+            "jquery.ui.widget",
+            "jquery.ui.position",
+            "jquery.ui.menu"
+        ],
+        "skinStyles": {
+            "default": "resources/jquery.ui/themes/default/jquery.ui.autocomplete.css",
+            "vector": "resources/jquery.ui/themes/vector/jquery.ui.autocomplete.css"
+        }
+    },
+    "jquery.ui.menu": {
+        "scripts": "resources/jquery.ui/jquery.ui.menu.js",
+        "dependencies": [
+            "jquery.ui.core",
+            "jquery.ui.widget",
+            "jquery.ui.position"
+        ],
+        "skinStyles": {
+            "default": "resources/jquery.ui/themes/default/jquery.ui.menu.css",
+            "vector": "resources/jquery.ui/themes/vector/jquery.ui.menu.css"
+        }
+    },
+    "jquery.ui.datepicker": {
+        "scripts": "resources/jquery.ui/jquery.ui.datepicker.js",
+        "dependencies": "jquery.ui.core",
+        "skinStyles": {
+            "default": "resources/jquery.ui/themes/default/jquery.ui.datepicker.css",
+            "vector": "resources/jquery.ui/themes/vector/jquery.ui.datepicker.css"
+        },
+        "languageScripts": {
+            "af": "resources/jquery.ui/i18n/jquery.ui.datepicker-af.js",
+            "ar": "resources/jquery.ui/i18n/jquery.ui.datepicker-ar.js",
+            "az": "resources/jquery.ui/i18n/jquery.ui.datepicker-az.js",
+            "bg": "resources/jquery.ui/i18n/jquery.ui.datepicker-bg.js",
+            "bs": "resources/jquery.ui/i18n/jquery.ui.datepicker-bs.js",
+            "ca": "resources/jquery.ui/i18n/jquery.ui.datepicker-ca.js",
+            "cs": "resources/jquery.ui/i18n/jquery.ui.datepicker-cs.js",
+            "da": "resources/jquery.ui/i18n/jquery.ui.datepicker-da.js",
+            "de": "resources/jquery.ui/i18n/jquery.ui.datepicker-de.js",
+            "el": "resources/jquery.ui/i18n/jquery.ui.datepicker-el.js",
+            "en-gb": "resources/jquery.ui/i18n/jquery.ui.datepicker-en-GB.js",
+            "eo": "resources/jquery.ui/i18n/jquery.ui.datepicker-eo.js",
+            "es": "resources/jquery.ui/i18n/jquery.ui.datepicker-es.js",
+            "et": "resources/jquery.ui/i18n/jquery.ui.datepicker-et.js",
+            "eu": "resources/jquery.ui/i18n/jquery.ui.datepicker-eu.js",
+            "fa": "resources/jquery.ui/i18n/jquery.ui.datepicker-fa.js",
+            "fi": "resources/jquery.ui/i18n/jquery.ui.datepicker-fi.js",
+            "fo": "resources/jquery.ui/i18n/jquery.ui.datepicker-fo.js",
+            "fr-ch": "resources/jquery.ui/i18n/jquery.ui.datepicker-fr-CH.js",
+            "fr": "resources/jquery.ui/i18n/jquery.ui.datepicker-fr.js",
+            "he": "resources/jquery.ui/i18n/jquery.ui.datepicker-he.js",
+            "hr": "resources/jquery.ui/i18n/jquery.ui.datepicker-hr.js",
+            "hu": "resources/jquery.ui/i18n/jquery.ui.datepicker-hu.js",
+            "hy": "resources/jquery.ui/i18n/jquery.ui.datepicker-hy.js",
+            "id": "resources/jquery.ui/i18n/jquery.ui.datepicker-id.js",
+            "is": "resources/jquery.ui/i18n/jquery.ui.datepicker-is.js",
+            "it": "resources/jquery.ui/i18n/jquery.ui.datepicker-it.js",
+            "ja": "resources/jquery.ui/i18n/jquery.ui.datepicker-ja.js",
+            "ko": "resources/jquery.ui/i18n/jquery.ui.datepicker-ko.js",
+            "lt": "resources/jquery.ui/i18n/jquery.ui.datepicker-lt.js",
+            "lv": "resources/jquery.ui/i18n/jquery.ui.datepicker-lv.js",
+            "ms": "resources/jquery.ui/i18n/jquery.ui.datepicker-ms.js",
+            "nl": "resources/jquery.ui/i18n/jquery.ui.datepicker-nl.js",
+            "no": "resources/jquery.ui/i18n/jquery.ui.datepicker-no.js",
+            "pl": "resources/jquery.ui/i18n/jquery.ui.datepicker-pl.js",
+            "pt-br": "resources/jquery.ui/i18n/jquery.ui.datepicker-pt-BR.js",
+            "ro": "resources/jquery.ui/i18n/jquery.ui.datepicker-ro.js",
+            "ru": "resources/jquery.ui/i18n/jquery.ui.datepicker-ru.js",
+            "sk": "resources/jquery.ui/i18n/jquery.ui.datepicker-sk.js",
+            "sl": "resources/jquery.ui/i18n/jquery.ui.datepicker-sl.js",
+            "sq": "resources/jquery.ui/i18n/jquery.ui.datepicker-sq.js",
+            "sr-sr": "resources/jquery.ui/i18n/jquery.ui.datepicker-sr-SR.js",
+            "sr": "resources/jquery.ui/i18n/jquery.ui.datepicker-sr.js",
+            "sv": "resources/jquery.ui/i18n/jquery.ui.datepicker-sv.js",
+            "ta": "resources/jquery.ui/i18n/jquery.ui.datepicker-ta.js",
+            "th": "resources/jquery.ui/i18n/jquery.ui.datepicker-th.js",
+            "tr": "resources/jquery.ui/i18n/jquery.ui.datepicker-tr.js",
+            "uk": "resources/jquery.ui/i18n/jquery.ui.datepicker-uk.js",
+            "vi": "resources/jquery.ui/i18n/jquery.ui.datepicker-vi.js",
+            "zh-cn": "resources/jquery.ui/i18n/jquery.ui.datepicker-zh-CN.js",
+            "zh-hk": "resources/jquery.ui/i18n/jquery.ui.datepicker-zh-HK.js",
+            "zh-tw": "resources/jquery.ui/i18n/jquery.ui.datepicker-zh-TW.js"
+        }
+    },
+    "jquery.ui.progressbar": {
+        "scripts": "resources/jquery.ui/jquery.ui.progressbar.js",
+        "dependencies": [
+            "jquery.ui.core",
+            "jquery.ui.widget"
+        ],
+        "skinStyles": {
+            "default": "resources/jquery.ui/themes/default/jquery.ui.progressbar.css",
+            "vector": "resources/jquery.ui/themes/vector/jquery.ui.progressbar.css"
+        }
+    },
+    "jquery.ui.slider": {
+        "scripts": "resources/jquery.ui/jquery.ui.slider.js",
+        "dependencies": [
+            "jquery.ui.core",
+            "jquery.ui.widget",
+            "jquery.ui.mouse"
+        ],
+        "skinStyles": {
+            "no-theme": "resources/jquery.ui/themes/no-theme/jquery.ui.slider.css",
+            "default": "resources/jquery.ui/themes/default/jquery.ui.slider.css",
+            "vector": "resources/jquery.ui/themes/vector/jquery.ui.slider.css"
+        }
+    },
+    "jquery.ui.tabs": {
+        "scripts": "resources/jquery.ui/jquery.ui.tabs.js",
+        "dependencies": [
+            "jquery.ui.core",
+            "jquery.ui.widget"
+        ],
+        "skinStyles": {
+            "default": "resources/jquery.ui/themes/default/jquery.ui.tabs.css",
+            "vector": "resources/jquery.ui/themes/vector/jquery.ui.tabs.css"
+        }
+    },
+    "jquery.effects.core": {
+        "scripts": "resources/jquery.effects/jquery.effects.core.js",
+        "dependencies": "jquery"
+    },
+    "jquery.effects.blind": {
+        "scripts": "resources/jquery.effects/jquery.effects.blind.js",
+        "dependencies": "jquery.effects.core"
+    },
+    "jquery.effects.bounce": {
+        "scripts": "resources/jquery.effects/jquery.effects.bounce.js",
+        "dependencies": "jquery.effects.core"
+    },
+    "jquery.effects.clip": {
+        "scripts": "resources/jquery.effects/jquery.effects.clip.js",
+        "dependencies": "jquery.effects.core"
+    },
+    "jquery.effects.drop": {
+        "scripts": "resources/jquery.effects/jquery.effects.drop.js",
+        "dependencies": "jquery.effects.core"
+    },
+    "jquery.effects.explode": {
+        "scripts": "resources/jquery.effects/jquery.effects.explode.js",
+        "dependencies": "jquery.effects.core"
+    },
+    "jquery.effects.fold": {
+        "scripts": "resources/jquery.effects/jquery.effects.fold.js",
+        "dependencies": "jquery.effects.core"
+    },
+    "jquery.effects.highlight": {
+        "scripts": "resources/jquery.effects/jquery.effects.highlight.js",
+        "dependencies": "jquery.effects.core"
+    },
+    "jquery.effects.pulsate": {
+        "scripts": "resources/jquery.effects/jquery.effects.pulsate.js",
+        "dependencies": "jquery.effects.core"
+    },
+    "jquery.effects.scale": {
+        "scripts": "resources/jquery.effects/jquery.effects.scale.js",
+        "dependencies": "jquery.effects.core"
+    },
+    "jquery.effects.shake": {
+        "scripts": "resources/jquery.effects/jquery.effects.shake.js",
+        "dependencies": "jquery.effects.core"
+    },
+    "jquery.effects.slide": {
+        "scripts": "resources/jquery.effects/jquery.effects.slide.js",
+        "dependencies": "jquery.effects.core"
+    },
+    "jquery.effects.transfer": {
+        "scripts": "resources/jquery.effects/jquery.effects.transfer.js",
+        "dependencies": "jquery.effects.core"
+    },
+    "mediawiki": {
+        "scripts": "resources/mediawiki/mediawiki.js",
+        "debugScripts": "resources/mediawiki/mediawiki.log.js",
+        "debugRaw": false
+    },
+    "mediawiki.Uri": {
+        "scripts": "resources/mediawiki/mediawiki.Uri.js"
+    },
+    "mediawiki.kmenu": {
+        "scripts": "resources/mediawiki/mediawiki.kmenu.js"
+    },
+    "mediawiki.language": {
+        "scripts": "resources/mediawiki.language/mediawiki.language.js",
+        "languageScripts": {
+            "am": "resources/mediawiki.language/languages/am.js",
+            "ar": "resources/mediawiki.language/languages/ar.js",
+            "bat-smg": "resources/mediawiki.language/languages/bat-smg.js",
+            "be": "resources/mediawiki.language/languages/be.js",
+            "be-tarask": "resources/mediawiki.language/languages/be-tarask.js",
+            "bh": "resources/mediawiki.language/languages/bh.js",
+            "bs": "resources/mediawiki.language/languages/bs.js",
+            "cs": "resources/mediawiki.language/languages/cs.js",
+            "cu": "resources/mediawiki.language/languages/cu.js",
+            "cy": "resources/mediawiki.language/languages/cy.js",
+            "dsb": "resources/mediawiki.language/languages/dsb.js",
+            "fr": "resources/mediawiki.language/languages/fr.js",
+            "ga": "resources/mediawiki.language/languages/ga.js",
+            "gd": "resources/mediawiki.language/languages/gd.js",
+            "gv": "resources/mediawiki.language/languages/gv.js",
+            "he": "resources/mediawiki.language/languages/he.js",
+            "hi": "resources/mediawiki.language/languages/hi.js",
+            "hr": "resources/mediawiki.language/languages/hr.js",
+            "hsb": "resources/mediawiki.language/languages/hsb.js",
+            "hy": "resources/mediawiki.language/languages/hy.js",
+            "ksh": "resources/mediawiki.language/languages/ksh.js",
+            "ln": "resources/mediawiki.language/languages/ln.js",
+            "lt": "resources/mediawiki.language/languages/lt.js",
+            "lv": "resources/mediawiki.language/languages/lv.js",
+            "mg": "resources/mediawiki.language/languages/mg.js",
+            "mk": "resources/mediawiki.language/languages/mk.js",
+            "mo": "resources/mediawiki.language/languages/mo.js",
+            "mt": "resources/mediawiki.language/languages/mt.js",
+            "nso": "resources/mediawiki.language/languages/nso.js",
+            "pl": "resources/mediawiki.language/languages/pl.js",
+            "pt-br": "resources/mediawiki.language/languages/pt-br.js",
+            "ro": "resources/mediawiki.language/languages/ro.js",
+            "ru": "resources/mediawiki.language/languages/ru.js",
+            "se": "resources/mediawiki.language/languages/se.js",
+            "sh": "resources/mediawiki.language/languages/sh.js",
+            "sk": "resources/mediawiki.language/languages/sk.js",
+            "sl": "resources/mediawiki.language/languages/sl.js",
+            "sma": "resources/mediawiki.language/languages/sma.js",
+            "sr-ec": "resources/mediawiki.language/languages/sr-ec.js",
+            "sr-el": "resources/mediawiki.language/languages/sr-el.js",
+            "sr": "resources/mediawiki.language/languages/sr.js",
+            "ti": "resources/mediawiki.language/languages/ti.js",
+            "tl": "resources/mediawiki.language/languages/tl.js",
+            "uk": "resources/mediawiki.language/languages/uk.js",
+            "wa": "resources/mediawiki.language/languages/wa.js"
+        }
+    },
+    "mediawiki.jqueryMsg": {
+        "scripts": "resources/mediawiki/mediawiki.jqueryMsg.js",
+        "dependencies": [
+            "mediawiki.util",
+            "mediawiki.language"
+        ]
+    },
+    "mediawiki.util": {
+        "scripts": "resources/mediawiki/mediawiki.util.js",
+        "dependencies": [
+            "jquery.client",
+            "jquery.cookie",
+            "jquery.messageBox",
+            "jquery.mwExtension"
+        ],
+        "messages": [
+            "showtoc",
+            "hidetoc"
+        ],
+        "position": "top"
+    },
+    "mediawiki.util.tmpl": {
+        "scripts": "resources/mediawiki/mediawiki.util.tmpl.js",
+        "dependencies": "mediawiki.util"
+    },
+    "jquery.messageBox": {
+        "scripts": "resources/jquery/jquery.messageBox.js",
+        "styles": "resources/jquery/jquery.messageBox.css"
+    },
+    "jquery.mwExtension": {
+        "scripts": "resources/jquery/jquery.mwExtension.js"
+    },
+    "touchSwipe": {
+        "scripts": "resources/touchSwipe/jquery.touchSwipe.min.js",
+        "dependencies": "jquery"
+    },
+    "nanoScroller": {
+        "scripts": "resources/nanoScroller/nanoScroller.min.js",
+        "styles": "resources/nanoScroller/nanoScroller.css",
+        "dependencies": "jquery"
+    },
+    "typeahead": {
+        "scripts": "resources/typeahead/typeahead.jquery.min.js",
+        "dependencies": "jquery"
+    },
+    "dotdotdot": {
+        "scripts": "resources/jquery.dotdotdot/jquery.dotdotdot.min.js",
+        "dependencies": "jquery"
+    },
+    "threejs":{
+      "dependencies": "jquery",
+      "scripts": "resources/threejs/three.min.js"
+    },
+    "vtt.js": {
+        "scripts": "resources/vtt.js/vtt.js",
+        "dependencies": ["polyfill_Array_forEach"]
+    },
+    "polyfill_Array_forEach": {
+        "scripts": "resources/polyfills/Array.forEach.js"
+    },
+    "polyfill_Array_filter": {
+        "scripts": "resources/polyfills/Array.filter.js"
+    },
+    "polyfill_Array_findIndex": {
+        "scripts": "resources/polyfills/Array.findIndex.js"
+    }
+}

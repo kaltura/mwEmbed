@@ -168,7 +168,7 @@ $.widget( "ui.slider", $.ui.mouse, {
 		}
 
 		this.elementSize = {
-			width: this.element.outerWidth(),
+			width:  this.element.outerWidth(),
 			height: this.element.outerHeight()
 		};
 		this.elementOffset = this.element.offset();

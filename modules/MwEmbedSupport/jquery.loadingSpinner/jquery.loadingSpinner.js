@@ -71,7 +71,11 @@
 		}
 		// add color and shadow:
 		opts = $.extend({}, spinnerConfig, opts);
-		
+
+		if ((mw.getConfig("EmbedPlayer.EnableMobileSkin") && kWidget.isMobileDevice() && !options) || kWidget.isChromeCast() || (mw.getConfig("EmbedPlayer.EnableMobileSkin") && mw.getConfig("EmbedPlayer.SimulateMobile"))){
+			opts["customSpinner"] = true;
+			opts.className = "customSpinner";
+		}
 
 		this.each( function() {
 			var $this = $(this).empty();
@@ -91,7 +95,12 @@
 					});
 					thisSpinner = $this.append( $loadingSpinner);
 				}else{
-					thisSpinner = new Spinner( $.extend( { color: $this.css('color') }, opts ) ).spin( this );
+					if (opts['customSpinner'] === true){
+						var $loadingSpinner = $('<div />').addClass(opts['className']);
+						thisSpinner = $this.append( $loadingSpinner);
+					}else{
+						thisSpinner = new Spinner( $.extend( { color: $this.css('color') }, opts ) ).spin( this );
+					}
 				}
 			}
 		});

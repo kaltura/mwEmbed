@@ -45,19 +45,14 @@
 		isJsCallbackReady: false,
 		bindPostfix: ".nativeBridge",
 		subscribed: [],
-		playerMethods: [ 'stop', 'play', 'pause', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen', 'notifyKPlayerEvent', 'notifyKPlayerEvaluated', 'notifyJsReady', 'showChromecastDeviceList', 'notifyLayoutReady',
-			'doneFSBtnPressed', 'addNativeAirPlayButton', 'showNativeAirPlayButton', 'hideNativeAirPlayButton', 'doNativeAction', 'textTracksReceived', 'loadEmbeddedCaptions' ],
+		playerMethods: [
+			'stop', 'play', 'pause', 'replay', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen', 'notifyKPlayerEvent', 'notifyKPlayerEvaluated', 'notifyJsReady', 'showChromecastDeviceList', 'sendCCRecieverMessage', 'notifyLayoutReady',
+			'doneFSBtnPressed', 'addNativeAirPlayButton', 'showNativeAirPlayButton', 'hideNativeAirPlayButton', 'doNativeAction', 'textTracksReceived', 'loadEmbeddedCaptions', 'flavorsListChanged', 'switchFlavor','togglePictureInPicture' ],
 
-		registePlayer: function (proxyElement) {
+		registerPlayer: function (proxyElement) {
 			var _this = this;
 			this.proxyElement = proxyElement;
-			for (var i = 0; i < this.playerMethods.length; i++) {
-				(function (method) {
-					_this.proxyElement[method] = function (arg) {
-						_this.execute(method, arg);
-					}
-				})(this.playerMethods[i]);
-			}
+
 			this.proxyElement.attr = function (attributeName, attributeValue) {
 				if (attributeName && attributeValue === undefined) {
 					return _this.proxyElement[ attributeName ];
@@ -68,6 +63,15 @@
 					_this.execute('setAttribute', [ 'language', mw.getConfig('localizationCode') ]);
 				}
 			}
+			
+			for (var i = 0; i < this.playerMethods.length; i++) {
+				(function (method) {
+					_this.proxyElement[method] = function (arg) {
+						_this.execute(method, arg);
+					}
+				})(this.playerMethods[i]);
+			}
+
 
 			//TODO support more than 1 subscribe?
 			this.proxyElement.subscribe = function (callback, eventName) {
@@ -81,6 +85,11 @@
 			this.bindNativeEvents();
 		},
 
+		notifyErrorOccurred: function (errObj) {
+			var errMsg = errObj != null ? errObj.title + ", " + errObj.message : "error undefined";
+			NativeBridge.videoPlayer.execute('setAttribute', [ "playerError", errMsg ]);
+		},
+
 		notifyJsReadyFunc: function () {
 			if (this.isJsCallbackReady && this.proxyElement) {
 				this.proxyElement.notifyJsReady([]);
@@ -88,11 +97,15 @@
 		},
 
 		registerEmbedPlayer: function (embedPlayer) {
+			var _this = this;
 			this.embedPlayer = embedPlayer;
+			$(this.embedPlayer).unbind("playerError").bind("playerError", function (e, errObj) {
+				_this.notifyErrorOccurred(errObj);
+			});
 			this.notifyJsReadyFunc();
 		},
 		sendNotification: function (eventName, eventValue) {
-			this.embedPlayer.sendNotification(eventName, JSON.parse(eventValue));
+			this.embedPlayer.sendNotification(eventName, eventValue);
 		},
 		/**
 		 *
@@ -135,9 +148,9 @@
 				//set undefined
 				eventValue = void(0);
 			}
-
+			var jsEventValue;
 			if (eventValue != undefined) {
-				var jsEventValue = this.stringConvertion(eventValue);
+				jsEventValue = this.stringConvertion(eventValue);
 			}
 
 			if (eventName == 'timeupdate') {
@@ -155,8 +168,7 @@
 			} else if (eventName == 'pause') {
 				this.proxyElement['paused'] = true;
 			}
-
-			$(this.proxyElement).trigger(eventName, [jsEventValue]);
+			$(this.proxyElement).triggerHandler(eventName, [jsEventValue]);
 
 			if (this.subscribed[eventName]) {
 				this.subscribed[eventName](jsEventValue);
@@ -198,9 +210,11 @@
 		}
 	};
 
-
 	if (mw.getConfig('EmbedPlayer.ForceNativeComponent') === true) {
 		window["NativeBridge"] = NativeBridge;
+		$(".mwPlayerContainer").one("playerError", function (e, errObj) {
+			NativeBridge.videoPlayer.notifyErrorOccurred(errObj);
+		});
 		kWidget.addReadyCallback(function () {
 			NativeBridge.videoPlayer.isJsCallbackReady = true;
 			NativeBridge.videoPlayer.notifyJsReadyFunc();

@@ -1,0 +1,9 @@
+{
+    "mw.Kontiki": {
+        "scripts": [
+            "resources/mw.Kontiki.js"
+        ],
+        "dependencies": "mw.KBasePlugin",
+        "kalturaPluginName": "kontiki"
+    }
+}

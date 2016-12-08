@@ -32,6 +32,8 @@
 		ALT_KEY_CODE: 18,
 
 		enableKeyBindings: true,
+		enableSingleKeyBindings: true,
+		enableComboKeyBindings: true,
 		canSeek: false,
 
 		// Will hold our single keys mapping
@@ -40,7 +42,10 @@
 		combinationKeys: {
 			'ctrl': {},
 			'alt': {},
-			'shift': {}			
+			'shift': {},
+			'alt+ctrl': {},
+			'alt+shift': {},
+			'ctrl+shift': {}
 		},
 
 		setup: function(){
@@ -53,7 +58,7 @@
 			});
 
 			// Special case percentageSeekKeys
-			var percentageArr = this.getConfig('percentageSeekKeys').split(",")
+			var percentageArr = this.getConfig('percentageSeekKeys').split(",");
 			$.each(percentageArr, function(keyIdx, keyCode){
 				_this.singleKeys[keyCode] = 'percentageSeekKeys';
 			});
@@ -69,9 +74,19 @@
 			// Enable/Disable keyboard bindings
 			this.bind('onEnableKeyboardBinding', function(){
 				_this.enableKeyBindings = true;
+				_this.enableSingleKeyBindings = true;
+				_this.enableComboKeyBindings = true;
 			});
-			this.bind('onDisableKeyboardBinding', function(){
-				_this.enableKeyBindings = false;
+			this.bind('onDisableKeyboardBinding', function(e, options){
+					if (options){
+						_this.enableSingleKeyBindings = options.disableSingle ? !(!!options.disableSingle) : true;
+						_this.enableComboKeyBindings = options.disableCombo ? !(!!options.disableCombo) : true;
+						_this.enableKeyBindings = _this.enableSingleKeyBindings || _this.enableComboKeyBindings;
+					} else {
+						_this.enableKeyBindings = false;
+						_this.enableSingleKeyBindings = false;
+						_this.enableComboKeyBindings = false;
+					}
 			});
 
 			this.bind('updateBufferPercent', function(){
@@ -97,10 +112,24 @@
                         break;
                     }
 					var validSpecialKeys = ['ctrl', 'alt', 'shift'];
-					if( $.inArray(parts[0], validSpecialKeys) != -1 ){
-						this.combinationKeys[parts[0]][parts[1]] = callback;
-					} else {
-						this.log('First key must be one of: ' + validSpecialKeys.join(","));
+					if( parts.length === 2) {
+						if( $.inArray(parts[0], validSpecialKeys) !== -1 ){
+							this.combinationKeys[parts[0]][parts[1]] = callback;
+						} else {
+							this.log('First key must be one of: ' + validSpecialKeys.join(","));
+						}
+					}
+					if( parts.length === 3) {
+						if(( $.inArray(parts[0], validSpecialKeys) !== -1 ) && ($.inArray(parts[1], validSpecialKeys) !== -1)){
+							var comboKey = parts.slice(0,2 ).sort(function(a, b){
+								if ( a.toLowerCase().charAt(0) > b.toLowerCase().charAt(0)){ return 1; }
+								if ( a.toLowerCase().charAt(0) < b.toLowerCase().charAt(0)){ return -1; }
+								return 0;
+							});
+							this.combinationKeys[comboKey[0] + "+" + comboKey[1]][parts[2]] = callback;
+						} else {
+							this.log('First and second keys must be one of: ' + validSpecialKeys.join(","));
+						}
 					}
 				break;
 			}
@@ -109,18 +138,30 @@
 			var ranCallback = false;
 			var keyCode = e.keyCode || e.which;
 
+			//we need to ignore shortcuts if text area or input have input (space, P are not support to be triggered)
+			if ( $("*:focus").is("textarea, input") ) {
+				return true;
+			}
 			// Handle combinations
-			if( e.altKey && keyCode != this.ALT_KEY_CODE ){
-				ranCallback = this.runCallbackByKeysArr( keyCode, this.combinationKeys['alt'] );
-			} else if( e.ctrlKey && keyCode != this.CTRL_KEY_CODE && !ranCallback ) {
-				ranCallback = this.runCallbackByKeysArr( keyCode, this.combinationKeys['ctrl'] );
-			} else if( e.shiftKey && keyCode != this.SHIFT_KEY_CODE && !ranCallback ) {
-				ranCallback = this.runCallbackByKeysArr( keyCode, this.combinationKeys['shift'] );
+			if (this.enableComboKeyBindings) {
+				if ( e.ctrlKey && e.altKey && keyCode !== this.CTRL_KEY_CODE && keyCode !== this.ALT_KEY_CODE && !ranCallback ) {
+					ranCallback = this.runCallbackByKeysArr( keyCode, this.combinationKeys['alt+ctrl'] );
+				} else if ( e.ctrlKey && e.shiftKey && keyCode !== this.CTRL_KEY_CODE && keyCode !== this.SHIFT_KEY_CODE && !ranCallback ) {
+					ranCallback = this.runCallbackByKeysArr( keyCode, this.combinationKeys['ctrl+shift'] );
+				} else if ( e.shiftKey && e.altKey && keyCode !== this.SHIFT_KEY_CODE && keyCode !== this.ALT_KEY_CODE && !ranCallback ) {
+					ranCallback = this.runCallbackByKeysArr( keyCode, this.combinationKeys['alt+shift'] );
+				} else if ( e.altKey && keyCode !== this.ALT_KEY_CODE ) {
+					ranCallback = this.runCallbackByKeysArr( keyCode, this.combinationKeys['alt'] );
+				} else if ( e.ctrlKey && keyCode !== this.CTRL_KEY_CODE && !ranCallback ) {
+					ranCallback = this.runCallbackByKeysArr( keyCode, this.combinationKeys['ctrl'] );
+				} else if ( e.shiftKey && keyCode !== this.SHIFT_KEY_CODE && !ranCallback ) {
+					ranCallback = this.runCallbackByKeysArr( keyCode, this.combinationKeys['shift'] );
+				}
 			}
 
 			// Handle single keys
-			if( !ranCallback ) {
-				this.runCallbackByKeysArr( keyCode, this.singleKeys );
+			if( !ranCallback && this.enableSingleKeyBindings) {
+				ranCallback = this.runCallbackByKeysArr( keyCode, this.singleKeys );
 			}
 			if( ranCallback ){
 				// Prevent the default behavior
@@ -190,7 +231,7 @@
 				return false;
 			}
 			var notificationName = ( this.getPlayer().isPlaying() ) ? 'doPause' : 'doPlay';
-			this.getPlayer().sendNotification( notificationName );
+			this.getPlayer().sendNotification( notificationName,{'userInitiated': true} );
 			return false;
 		},
 		seek: function( seekType, direction ){
@@ -245,7 +286,7 @@
 			}
 		},
 		closeFullscreenkeyCallback: function(){
-			if( this.getPlayer().getInterface().hasClass('fullscreen') ){
+			if( this.getPlayer().getInterface().hasClass('fullscreen') && this.getPlayer().layoutBuilder.fullScreenManager.inFullScreen ){
 				this.getPlayer().toggleFullscreen();
 			}
 		},
@@ -256,10 +297,10 @@
 			this.getPlayer().seek(0);
 		},
 		gotoEndKeyCallback: function(){
-			if( !this.canSeek ) {
+			if( !this.canSeek || this.getPlayer().currentState === 'end') {
 				return false;
 			}
-			this.getPlayer().seek(this.getPlayer().getDuration());
+			this.getPlayer().seek(this.getPlayer().getDuration()-1);
 		},
 		getOpenedMenu: function(){
 			var openedMenu = null;

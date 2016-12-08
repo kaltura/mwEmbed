@@ -38,6 +38,9 @@
 
 			_this.embedPlayer = embedPlayer;
 
+			// Setup the ad loader:
+			_this.adLoader = new mw.AdLoader( embedPlayer );
+
 			// Setup the ad player:
 			_this.adPlayer = new mw.KAdPlayer( embedPlayer );
 
@@ -78,7 +81,6 @@
 					}
 
 					$( embedPlayer.getPlayerElement() ).bind('pause' + _this.bindPostfix, function() {
-						if(_this.seekIntervalID) {
 							embedPlayer.disableSwitchSourceCallback = false;
 							// next button was tapped
 							if (embedPlayer.getPlayerElement().currentTime > _this.previousTime + 1
@@ -88,11 +90,11 @@
 								}
 								embedPlayer.getPlayerElement().currentTime = _this.previousTime;
 							}
-						}
 					});
 				});
 
 				$( embedPlayer ).bind('onAdComplete' + _this.bindPostfix, function() {
+					$( embedPlayer.getPlayerElement() ).unbind( 'pause' + _this.bindPostfix );
 					if( _this.seekIntervalID ) {
 						clearInterval(_this.seekIntervalID);
 						_this.seekIntervalID = null;
@@ -118,6 +120,10 @@
 				mw.log( "KAds::All ads have been loaded" );
 				callback();
 			});
+			// disable overlays on native devices
+			if (embedPlayer.useNativePlayerControls()){
+				_this.embedPlayer.setKalturaConfig('vast', 'supportOverlays', false);
+			}
 		},
 		handleAdsOnPlay: function( embedPlayer ){
 			var _this = this;
@@ -125,6 +131,9 @@
 			embedPlayer.bindHelper('prePlayAction' + _this.bindPostfix, function( e, prePlay ){
 				if( loadedAds === null ){
 					embedPlayer.addPlayerSpinner();
+					if (mw.isMobileDevice()){
+						embedPlayer.getPlayerElement().load();
+					}
 					_this.loadAds( function(){
 						loadedAds = true;
 						embedPlayer.unbindHelper('prePlayAction' + _this.bindPostfix);
@@ -187,7 +196,7 @@
 				return ;
 			}
 			// Load Ad
-			mw.AdLoader.load( cuePoint.sourceUrl, function( adConf ){
+			_this.adLoader.load( cuePoint.sourceUrl, function( adConf ){
 				if( ! adConf ) {
 					return ;
 				}
@@ -258,7 +267,7 @@
 
 			var baseDisplayConf = this.getBaseDisplayConf();
 
-			mw.AdLoader.load( cuePoint.sourceUrl, function( adConf ){
+			_this.adLoader.load( cuePoint.sourceUrl, function( adConf ){
 				// No Ad configuration, continue playback
 				if( ! adConf ){
 					// Ad skip re-enable play controls:
@@ -278,7 +287,7 @@
 				$.extend( adsCuePointConf, baseDisplayConf );
 
 				var originalSource = embedPlayer.getSource();
-				var seekTime = parseFloat( cuePoint.startTime / 1000 );
+				var seekTime = embedPlayer.currentTime;
 				var oldDuration = embedPlayer.duration;
 
 				// Set switch back function
@@ -315,12 +324,6 @@
 							} else if(  adType == 'midroll' ){
 								embedPlayer.hidePlayerOffScreen();
 								embedPlayer.addPlayerSpinner();
-
-								// on iOS player we can set current time only while playing
-								if( mw.isIOS() ) {
-									mw.log( "KAds:: doneCallback:: if iOS first play then setCurrentTime");
-									embedPlayer.play();
-								}
 
 								embedPlayer.unbindHelper("seeked.midroll").bindOnceHelper("seeked.midroll", function () {
 									if( !mw.isIOS() ) {
@@ -474,7 +477,7 @@
 					// Disable UI while playing ad
 					_this.embedPlayer.adTimeline.updateUiForAdPlayback( adType );
 
-					mw.AdLoader.load( _this.getAdUrl( adType ), function( adDisplayConf ){
+					_this.adLoader.load( _this.getAdUrl( adType ), function( adDisplayConf ){
 						var adConf = $.extend(adConfig, _this.getBaseAdConf( adType ), adDisplayConf );
 						_this.adPlayer.display( adConf, function(){
 							// play next ad
@@ -539,7 +542,7 @@
 				)
 			};
 
-			$( embedPlayer ).bind( 'monitorEvent', function(){
+			$( embedPlayer ).bind( 'monitorEvent' + this.bindPostfix, function(){
 				if( (embedPlayer.currentTime > overlayConfig.start) && (embedPlayer.currentTime < overlayConfig.end) && !startOvelrayDisplayed && !embedPlayer.evaluate('{sequenceProxy.isInSequence}') ){
 					lastDisplay = embedPlayer.currentTime;
 					startOvelrayDisplayed = true;
@@ -618,7 +621,7 @@
 				if( _this.getConfig( adType + 'Url' ) ){
 					loadQueueCount++;
 					// Load and parse the adXML into displayConf format
-					mw.AdLoader.load( _this.getAdUrl( adType ) , function( adDisplayConf ){
+					_this.adLoader.load( _this.getAdUrl( adType ) , function( adDisplayConf ){
 						mw.log("KalturaAds loaded: " + adType );
 						loadQueueCount--;
 						addAdCheckLoadDone( adType,  $.extend({}, _this.getBaseAdConf( adType ), adDisplayConf ));

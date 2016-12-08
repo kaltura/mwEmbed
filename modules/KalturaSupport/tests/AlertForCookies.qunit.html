@@ -40,26 +40,25 @@
 </head>
 <body>
 	<h2> User allows/disallows saving cookies </h2>
+	Select a close captions option and notice the player will alert before setting a cookie.  
 	<div id="afcConfig"></div>
 	
 	<br /><br />
 	<div id="myVideoTarget" style="width:400px;height:330px;float:left">
 	</div>
 	<script>
-		var flashvars = {
-			'alertForCookies' : true
-		};
-		function doEmbedPlayer( fv ){
-			kWidget.embed({
-				'targetId': 'myVideoTarget',
-				'wid': '_861182',
-				'uiconf_id' : '8648081',
-				'entry_id' : '1_gq12hhkj',
-				'flashvars': fv
-			})
-		}
-		/* embed with flashvars: */
-		doEmbedPlayer(flashvars);
+		kWidget.featureConfig({
+			'targetId': 'myVideoTarget',
+		    'wid': '_243342',
+	        'uiconf_id' : '21099702',
+	        'entry_id' : '0_uka1msg4',
+			'flashvars': {
+				'alertForCookies' : true,
+				'closedCaptions': {
+					"plugin": true
+				}
+			}
+		})
 	</script>
 	</body>
 </html>

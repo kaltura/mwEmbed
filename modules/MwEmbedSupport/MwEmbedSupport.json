@@ -1,0 +1,77 @@
+{
+    "mw.MwEmbedSupport": {
+        "scripts": [
+            "mw.MwEmbedSupport.js"
+        ],
+        "debugRaw": false,
+        "dependencies": [
+            "jquery.triggerQueueCallback",
+            "Spinner",
+            "jquery.loadingSpinner",
+            "jquery.mwEmbedUtil",
+            "mw.MwEmbedSupport.style",
+            "jquery.color"
+        ],
+        "messageFile": "MwEmbedSupport.i18n.json"
+    },
+    "jquery.color": {
+        "scripts": "jquery/jquery.color.js"
+    },
+    "Spinner": {
+        "scripts": "jquery.loadingSpinner/Spinner.js"
+    },
+    "iScroll": {
+        "scripts": "iscroll/src/iscroll.js"
+    },
+    "jquery.loadingSpinner": {
+        "scripts": "jquery.loadingSpinner/jquery.loadingSpinner.js"
+    },
+    "mw.MwEmbedSupport.style": {
+        "styles": [
+            "skins/common/MwEmbedCommonStyle.css"
+        ],
+        "skinStyles": {
+            "kaltura-dark": "skins/jquery.ui.themes/kaltura-dark/jquery-ui-1.7.2.css"
+        }
+    },
+    "mediawiki.UtilitiesTime": {
+        "scripts": "mediawiki/mediawiki.UtilitiesTime.js"
+    },
+    "mediawiki.client": {
+        "scripts": "mediawiki/mediawiki.client.js"
+    },
+    "mediawiki.UtilitiesUrl": {
+        "scripts": "mediawiki/mediawiki.UtilitiesUrl.js",
+        "dependancies": [
+            "mediawiki.Uri"
+        ]
+    },
+    "mw.ajaxProxy": {
+        "scripts": "mediawiki/mediawiki.ajaxProxy.js"
+    },
+    "screenfull": {
+        "scripts": "screenfull/screenfull.js"
+    },
+    "jquery.menu": {
+        "scripts": "jquery.menu/jquery.menu.js",
+        "styles": "jquery.menu/jquery.menu.css"
+    },
+    "jquery.ui.touchPunch": {
+        "scripts": "jquery/jquery.ui.touchPunch.js",
+        "dependencies": [
+            "jquery.ui.core",
+            "jquery.ui.mouse"
+        ]
+    },
+    "jquery.triggerQueueCallback": {
+        "scripts": "jquery/jquery.triggerQueueCallback.js",
+        "debugRaw": false
+    },
+    "jquery.mwEmbedUtil": {
+        "scripts": "jquery/jquery.mwEmbedUtil.js",
+        "debugRaw": false
+    },
+    "jquery.debouncedresize": {
+        "scripts": "jquery/jquery.debouncedresize.js"
+    }
+}

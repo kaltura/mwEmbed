@@ -1,0 +1,9 @@
+{
+    "mw.Tremor": {
+        "scripts": "resources/mw.Tremor.js",
+        "dependencies": [
+            "mw.AdTimeline"
+        ],
+        "kalturaPluginName": "tremor"
+    }
+}

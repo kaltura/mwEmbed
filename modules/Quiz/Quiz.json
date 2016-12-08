@@ -1,0 +1,19 @@
+{
+  "quiz": {
+    "scripts":[
+      "resources/quiz.js",
+      "resources/IVQApiCall.js",
+      "resources/IVQModule.js",
+      "resources/IVQScreenTemplate.js"
+    ],
+    "dependencies": "mw.KBaseScreen",
+    "kalturaPluginName": "quiz",
+    "styles": ["resources/css/quiz.css",
+               "resources/css/quizFonts.css"
+              ],
+    "templates":{
+      "quizstart": "../Quiz/resources/templates/quiz.tmpl.html"
+    },
+    "messageFile": "Quiz.i18n.json"
+  }
+}

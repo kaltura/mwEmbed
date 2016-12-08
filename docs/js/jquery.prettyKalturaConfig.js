@@ -90,6 +90,9 @@
 					attrValue = 'true';
 				if (attrValue === false)
 					attrValue = 'false';
+				if( typeof attrValue == 'object' && attrValue != null){
+					return JSON.stringify( attrValue );
+				}
 				return attrValue;
 			}
 
@@ -246,7 +249,10 @@
 						var editHolder = this;
 
 						var getValueDispaly = function (attrName) {
-							var attrValue = getAttrValue(attrName) || '<i>null</i>';
+							var attrValue = getAttrValue(attrName);
+							if( ! attrValue ){
+								return '<i>null</i>';
+							}
 							// stringy if object: 
 							if (typeof attrValue == 'object') {
 								attrValue = JSON.stringify(attrValue);
@@ -261,6 +267,10 @@
 										),
 									attrValue
 								)
+							}
+							if( getAttrType(attrName) == 'string' || getAttrType(attrName) == "hiddenValue" ){
+								// escape any html: 
+								attrValue = $('<span>').text( attrValue );
 							}
 							return attrValue
 						}
@@ -323,6 +333,9 @@
 							}
 
 							var attVal = getAttrValue(attrName);
+							if( getAttrType( attrName ) == 'json' ){
+								attVal = JSON.parse( attVal );
+							}
 							if (attVal !== null) {
 								configuredFlashvars[ pName ] [ attrName ] = attVal;
 							}
@@ -617,6 +630,7 @@
 				// Check for secondary plugins:
 				$.each(manifestData, function (otherPluginId, pluginObject) {
 					if (pluginObject.attributes && pluginName != otherPluginId) {
+						$otherPlugins.append($('<h3 style="text-decoration:underline;"/>').text(otherPluginId));
 						$otherPlugins.append(
 							$('<b />').html(pluginObject.description)
 						);
@@ -693,10 +707,10 @@
 						.click(function () {
 							// update hash url with settings:
 							var win = ( self == top ) ? window : top;
-							win.location.hash = encodeURIComponent('config=' + JSON.stringify(
-								getChangedSettingsHash()
-							)
-							)
+							win.location.hash = encodeURIComponent( JSON.stringify(
+									getChangedSettingsHash()
+								)
+							);
 
 							flashvarCallback(getConfiguredFlashvars());
 							// restore disabled class ( now that the player is up-to-date )
@@ -863,7 +877,7 @@
 				var shareUrl = '';
 				// check if we are in an iframe or top level page: 
 				var doc = ( self == top ) ? document : top.document;
-				shareUrl = doc.URL.split('#')[0] + '#config=' + JSON.stringify(
+				shareUrl = doc.URL.split('#')[0] + '#' + JSON.stringify(
 					getChangedSettingsHash()
 				);
 
@@ -1033,14 +1047,15 @@
 			 * UiConf tab
 			 */
 			function getUiConfConfig() {
-				var uiText = '';
+				var uiText = '', coma ='';
 				// add uiConf vars
 				$.each(manifestData, function (pAttrName, attr) {
 					if (manifestData[ pAttrName ].attributes) {
 						uiText += '"' + pAttrName + '": { ';
 						$.each(manifestData[ pAttrName ].attributes, function (attrName, attr) {
 							if (attrName != 'plugin' && getAttrValue(attrName) !== null) {
-								uiText += "\n\t\"" + attrName + '" : "' + getAttrValue(attrName) + '" ';
+								uiText += coma + "\n\t\"" + attrName + '" : "' + getAttrValue(attrName) + '"';
+								coma =','
 							}
 						});
 						uiText += "\n}\n";
@@ -1081,8 +1096,8 @@
 				});
 
 				return $('<div />').append(
-					$('<pre />').text(plText),
-					$('<span>Can be used with the player studio <i>"additional paramaters"</i> plug-in line</span>')
+					$('<span>Can be used with the <b>player studio</b> plugins <i>"import plugin"</i> buton</span>'),
+					$('<pre />').text(plText)
 				)
 			}
 
@@ -1348,8 +1363,8 @@
 								$liEmbed,
 								// Disable flashvars ( not needed when we have 'embed' tab )
 								// '<li><a data-getter="getFlashvarConfigHTML" href="#tab-flashvars-' + id +'" data-toggle="tab">flashvars</a></li>' +
-								$('<li><a data-getter="getUiConfConfig" href="#tab-uiconf-' + id + '" data-toggle="tab">JSON Config</a></li>')
-								//$('<li><a data-getter="getPlayerStudioLine" href="#tab-pstudio-'+ id +'" data-toggle="tab">Player Studio Line</a></li>')
+								$('<li><a data-getter="getUiConfConfig" href="#tab-uiconf-' + id + '" data-toggle="tab">JSON Config</a></li>'),
+								$('<li><a data-getter="getPlayerStudioLine" href="#tab-pstudio-'+ id +'" data-toggle="tab">Player Studio</a></li>')
 							),
 							$('<div class="tab-content" />').append(
 								$('<div class="tab-pane active" id="tab-docs-' + id + '" />'),
@@ -1512,7 +1527,7 @@
 
 				var settingTabHtml = ( showSettingsTab ) ?
 					'<li><a data-getter="getSettings" href="#tab-settings-' + id + '" data-toggle="tab">' +
-						'<i class="kpcicon-integrate"></i>Integrate</a></li>' :
+						/*'<i class="kpcicon-integrate"></i>Integrate</a></li>'*/ '' :
 					'';
 				$(_this).empty().append(
 					$('<div />')

@@ -12,5 +12,16 @@ return array(
 			'skins/kdark/css/layout.css',
 			'skins/kdark/css/icons.css',
 		)
-	)
+	),
+	'ott' => array(
+        /**
+          * We need to have mw.EmbedPlayer dependency for our skin
+          * So that the Core CSS will load before Skin CSS
+         **/
+        'dependencies' => 'mw.EmbedPlayer',
+        'styles' => array(
+            'skins/ott/css/layout.css',
+            'skins/ott/css/icons.css',
+        )
+    )
 );

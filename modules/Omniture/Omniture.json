@@ -1,0 +1,6 @@
+{
+    "mw.Omniture": {
+        "scripts": "resources/mw.Omniture.js",
+        "kalturaPluginName": "omniture"
+    }
+}

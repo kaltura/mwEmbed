@@ -9,7 +9,9 @@
 			'showTooltip': true,
 			'file': null,
 			'volume': 1,
-			'disableable': true
+			'disableable': true,
+			smartContainer: 'morePlugins',
+			smartContainerCloseEvent: 'hideScreen'
 		},
 
 		selected: true,
@@ -26,7 +28,11 @@
 						{ plugin: 'true', volume: this.getConfig( 'volume' ) } );
 				
 				this.bind("playerReady", function(){
-					_this.updateAudioFile();
+					if (_this.embedPlayer.selectedPlayer.library === "Kplayer"){
+						_this.updateAudioFile();
+					}else{
+						_this.getComponent().hide();
+					}
 				})
 			} else { //hide the button if we don't support flash
 				// TODO should hide show based at changeMeida / playerReady time, i.e a clip without flash flavors ? 

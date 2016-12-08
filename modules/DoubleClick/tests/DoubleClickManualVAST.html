@@ -1,0 +1,51 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title> DoubleClick Manual VAST  </title>
+
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+</head>
+<body>
+<!--script type="text/javascript" src="http://s0.2mdn.net/instream/html5/gpt_proxy.js"></script-->
+<h3>DoubleClick Manual VAST</h3>
+<p>The Kaltura video player can utilize DoubleClick DFP playback engine to traffic VAST tags and entry cue point ads.<br>
+The following example displays pre-roll, cue-point triggered mid-roll and post-roll ads using the DFP engine.<br>
+A Skip button, Skip notice and Countdown text options are also demonstrated.</p>
+<div id="videoTarget" style="width:600px;height:430px"></div>
+<script>
+	kWidget.featureConfig({
+
+		'targetId': 'videoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '25550701',
+		'entry_id' : '1_sf5ovm7u',
+		'flashvars': {
+			'doubleClick':{
+				'plugin':true,
+				'trackCuePoints': true,
+				'postrollUrl':'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&cust_params=sample_ct%3Dlinear&correlator=[timestamp]',
+				'prerollUrl':'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dlinear',
+				'timeout': 5,
+				'disableCompanionAds' : false,
+				'debugMode':false,
+				'enableCountDown': true,
+				'countdownText': "Video will start in {sequenceProxy.timeRemaining} seconds"
+			},
+			'skipBtn':{
+				'plugin': true,
+				'label': "Skip this ad",
+				'skipOffset': 5
+			},
+			'skipNotice':{
+				'plugin': true,
+				'text': "You can skip this ad in {sequenceProxy.skipOffsetRemaining} seconds"
+			},
+			'adsOnReplay':true
+		}
+	});
+</script>
+</body>
+</html>

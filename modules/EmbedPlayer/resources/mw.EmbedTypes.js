@@ -12,16 +12,15 @@
  * We can't cleanly store these values per library since player library is sometimes
  * loaded post player detection
  */
+
+
 //Native Mobile player
-var nativeComponentPlayerVideo = new mw.MediaPlayer( 'nativeComponentPlayer', ['video/h264', 'video/mp4', 'application/vnd.apple.mpegurl', 'video/wvm'], 'NativeComponent' );
+var nativeComponentPlayerVideo = new mw.MediaPlayer( 'nativeComponentPlayer', window.kNativeSdk && window.kNativeSdk.allFormats, 'NativeComponent' );
 
 // Flash based players:
-var kplayer = new mw.MediaPlayer('kplayer', ['video/live', 'video/kontiki', 'video/wvm', 'video/x-flv', 'video/h264', 'video/mp4', 'audio/mpeg', 'application/x-shockwave-flash', 'application/vnd.apple.mpegurl'], 'Kplayer');
+var kplayer = new mw.MediaPlayer('kplayer', ['video/live', 'video/kontiki', 'video/x-flv', 'video/h264', 'video/mp4', 'audio/mpeg', 'application/x-shockwave-flash', 'application/vnd.apple.mpegurl'], 'Kplayer');
 // Silverlight
 var splayer = new mw.MediaPlayer('splayer', ['video/playreadySmooth', 'video/ism', 'video/multicast', 'video/h264', 'video/mp4'], 'Silverlight');
-
-// Java based player
-var cortadoPlayer = new mw.MediaPlayer( 'cortado', ['video/ogg', 'audio/ogg', 'application/ogg'], 'Java' );
 
 // Native html5 players
 var oggNativePlayer = new mw.MediaPlayer( 'oggNative', ['video/ogg', 'audio/ogg', 'application/ogg' ], 'Native' );
@@ -30,7 +29,6 @@ var appleVdnPlayer = new mw.MediaPlayer( 'appleVdn', ['application/vnd.apple.mpe
 var wvmPlayer = new mw.MediaPlayer( 'wvmNative', ['video/wvm'], 'Native');
 var mp3NativePlayer = new mw.MediaPlayer( 'mp3Native', ['audio/mpeg', 'audio/mp3'], 'Native' );
 var webmNativePlayer = new mw.MediaPlayer( 'webmNative', ['video/webm'], 'Native' );
-var chromecastPlayer = new mw.MediaPlayer( 'chromecast', ['video/mp4'], 'Chromecast' );
 
 // Image Overlay player ( extends native )
 var imageOverlayPlayer = new mw.MediaPlayer( 'imageOverlay', ['image/jpeg', 'image/png'], 'ImageOverlay' );
@@ -76,6 +74,10 @@ mw.EmbedTypes = {
 		return nativeComponentPlayerVideo;
 	},
 
+	getNativeImageOverlayPlayer: function(){
+		return imageOverlayPlayer;
+	},
+
 	/**
 	 * If the browsers supports a given mimetype
 	 *
@@ -100,11 +102,6 @@ mw.EmbedTypes = {
 		this.mediaPlayers.addPlayer(splayer);
 	},
 
-	addJavaPlayer: function(){
-		if( !mw.getConfig( 'EmbedPlayer.DisableJava' ) ){
-			this.mediaPlayers.addPlayer( cortadoPlayer );
-		}
-	},
 	addNativeComponentPlayer: function(){
 		this.mediaPlayers.addPlayer( nativeComponentPlayerVideo );
 	},
@@ -130,14 +127,6 @@ mw.EmbedTypes = {
 			this.addNativeComponentPlayer();
 		}
 
-		// Opera will switch off javaEnabled in preferences if java can't be
-		// found. And it doesn't register an application/x-java-applet mime type like
-		// Mozilla does.
-
-		if ( javaEnabled && ( navigator.appName == 'Opera' ) ) {
-			this.addJavaPlayer();
-		}
-
 		// Use core mw.supportsFlash check:
 		// Safari has cross domain issue - Flash external interface doesn't work, so we disable kplayer
 		if( mw.supportsFlash() ){
@@ -146,11 +135,6 @@ mw.EmbedTypes = {
 
 		if( mw.supportSilverlight() ) {
 			this.addSilverlightPlayer();
-		}
-
-		// Java ActiveX
-		if( mw.isIE() && this.testActiveX( 'JavaWebStart.isInstalled' ) ) {
-			this.addJavaPlayer();
 		}
 
 		// <video> element
@@ -235,11 +219,6 @@ mw.EmbedTypes = {
 				//	this.mediaPlayers.addPlayer( vlcPlayer );
 				//	continue;
 				//}
-
-				if ( type == 'application/x-java-applet' ) {
-					this.addJavaPlayer();
-					continue;
-				}
 
 				if ( (type == 'video/mpeg' || type == 'video/x-msvideo') ){
 					//pluginName.toLowerCase() == 'vlc multimedia plugin' ) {

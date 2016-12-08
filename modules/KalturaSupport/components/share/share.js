@@ -8,6 +8,7 @@
 			order: 5,
 			align: "right",
 			tooltip:  gM( 'mwe-embedplayer-share' ),
+			title:  gM( 'mwe-embedplayer-share' ),
 			showTooltip: true,
 			displayImportance: 'medium',
 			templatePath: 'components/share/share.tmpl.html',
@@ -74,7 +75,7 @@
 					"barColor": '#394F8F'
 				}
 			},
-			embedCodeTemplate: '<iframe src="//cdnapi.kaltura.com/p/{mediaProxy.entry.partnerId}/sp/{mediaProxy.entry.partnerId}00/embedIframeJs/uiconf_id/{configProxy.kw.uiConfId}/partner_id/{mediaProxy.entry.partnerId}?iframeembed=true&playerId={configProxy.targetId}&entry_id={mediaProxy.entry.id}&flashvars[streamerType]=auto" width="560" height="395" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0"></iframe>',
+			embedCodeTemplate: '<iframe src="' + mw.getConfig("Kaltura.ServiceUrl") + '/p/{mediaProxy.entry.partnerId}/sp/{mediaProxy.entry.partnerId}00/embedIframeJs/uiconf_id/{configProxy.kw.uiConfId}/partner_id/{mediaProxy.entry.partnerId}?iframeembed=true&playerId={configProxy.targetId}&entry_id={mediaProxy.entry.id}&flashvars[streamerType]=auto" width="560" height="395" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0"></iframe>',
 			embedOptions: {
 				"streamerType": "auto",
 				"uiconfID": null,
@@ -95,6 +96,7 @@
 		shareScreenOpened: false,
 
 		setup: function () {
+			this.setShareConfig();
 			this.setupPlayerURL();
 			this.addBindings();
 
@@ -102,92 +104,14 @@
 			if ( mw.isMobileDevice() || mw.isNativeApp() ){
 				this.setConfig( 'embedEnabled' , false );
 			}
+
+			// force parent to be topBarContainer on mobile
+			if (this.embedPlayer.isMobileSkin()){
+				this.setConfig( 'parent' , 'topBarContainer' );
+			}
 		},
 
-		addBindings: function () {
-			var _this = this;
-			var embedPlayer = this.getPlayer();
-			this.bind('playerReady', function () {
-				_this.setupPlayerURL();
-			});
-			this.bind('preShowScreen', function (event, screenName) {
-				if ( screenName === "share" ){
-					_this.getScreen().addClass('semiTransparentBkg'); // add semi-transparent background for share plugin screen only. Won't affect other screen based plugins
-					_this.shareScreenOpened = true;
-					// add blur effect to video and poster
-					$("#"+embedPlayer.getPlayerElement().id).addClass("blur");
-					embedPlayer.getPlayerPoster().addClass("blur");
-					// prevent keyboard key actions to allow typing in share screen fields
-					embedPlayer.triggerHelper( 'onDisableKeyboardBinding' );
-					// disable all player controls except play button, scrubber and volume control
-					embedPlayer.disablePlayControls(["volumeControl","scrubber","playPauseBtn"]);
-					// setup embed code when the screen opens
-					_this.setupEmbedCode();
-					// set embed code in the UI as the template doesn't load it correctly when using data binding because of the double quotes inside the text
-					$(".embed-input").val(_this.getConfig('embedCode'));
-					// send event for analytics
-					$(embedPlayer).trigger("showShareEvent");
-					// enable playback when the share screen is opened
-					_this.enablePlayDuringScreen = true;
-					// set responsive size
-					if (embedPlayer.getVideoHolder().width() < 400){
-						$(".share").addClass("small");
-					}
-				}
-			});
-			this.bind('preHideScreen', function (event, screenName) {
-				if ( screenName === "share" ){
-					if ( !_this.enablePlayDuringScreen ){
-						_this.shareScreenOpened = false;
-					}
-					// restore keyboard actions
-					embedPlayer.triggerHelper( 'onEnableKeyboardBinding' );
-					// re-enable player controls
-					embedPlayer.enablePlayControls();
-				}
-			});
-
-			// add API support: register to the "doShare" notification and dispatch the "shareEvent" event with the share link data
-			this.bind( 'doShare', function(event, data){
-				var shareUrl = _this.getConfig('shareURL');
-				if ( data && data.timeOffset ){
-					shareUrl += "#t="+data.timeOffset;
-				}
-				embedPlayer.triggerHelper( 'shareEvent', { "shareLink" : shareUrl } );
-			});
-
-			this.bind( 'onplay', function(event, data){
-				if ( _this.shareScreenOpened ){
-					setTimeout(function(){
-						embedPlayer.disablePlayControls(["volumeControl","scrubber","playPauseBtn"]);
-					},0);
-				}
-			});
-
-			this.bind( 'onpause', function(event, data){
-				if ( _this.shareScreenOpened ){
-					$("#"+embedPlayer.getPlayerElement().id).addClass("blur");
-					embedPlayer.getPlayerPoster().addClass("blur");
-				}
-			});
-
-			this.bind( 'updateLayout', function(event, data){
-				if ( _this.shareScreenOpened ){
-					if (embedPlayer.getVideoHolder().width() < 400){
-						$(".share").addClass("small");
-					}else{
-						$(".share").removeClass("small");
-					}
-				}
-			});
-		},
-
-		hideScreen: function(){
-			this._super();
-			$("#"+this.getPlayer().getPlayerElement().id).removeClass("blur");
-			this.getPlayer().getPlayerPoster().removeClass("blur");
-		},
-		getTemplateData: function () {
+		setShareConfig: function() {
 			var networks = this.getConfig('shareConfig');
 
 			// in order to support the legacy socialNetworks Flashvar, we will go through it and remove networks that are not specified in socialNetworks
@@ -209,8 +133,120 @@
 			}
 
 			// save networks to config
-			this.setConfig( 'shareConfig' , networks );
+			this.setConfig( 'shareConfig' , networks );			
+		},
 
+		addBindings: function () {
+			var _this = this;
+			var embedPlayer = this.getPlayer();
+			this.bind('playerReady', function () {
+				_this.setupPlayerURL();
+				_this.getScreen();
+			});
+			this.bind('preShowScreen', function (event, screenName) {
+				if ( screenName === "share" ){
+					_this.getScreen().then(function(screen){
+						screen.addClass('semiTransparentBkg'); // add semi-transparent background for share plugin screen only. Won't affect other screen based plugins
+						_this.shareScreenOpened = true;
+						// prevent keyboard key actions to allow typing in share screen fields
+						embedPlayer.triggerHelper( 'onDisableKeyboardBinding' );
+						// disable all player controls except play button, scrubber and volume control
+						embedPlayer.disablePlayControls(["volumeControl","scrubber","playPauseBtn","playlistAPI"]);
+						// setup embed code when the screen opens
+						_this.setupEmbedCode();
+						// set embed code in the UI as the template doesn't load it correctly when using data binding because of the double quotes inside the text
+						$(".embed-input").val(_this.getConfig('embedCode'));
+						// send event for analytics
+						$(embedPlayer).trigger("showShareEvent");
+						// enable playback when the share screen is opened
+						_this.enablePlayDuringScreen = true;
+						// set responsive size
+						if (embedPlayer.getVideoHolder().width() < 400){
+							$(".share").addClass("small");
+						}
+					});
+				}
+			});
+			this.bind('showScreen', function (event, screenName) {
+				if ( screenName === "share" ){
+					_this.getScreen().then(function(screen){
+						$( "#" + embedPlayer.getPlayerElement().id ).addClass("blur");
+						embedPlayer.getPlayerPoster().addClass("blur");
+					});
+				}
+			});
+			this.bind('preHideScreen', function (event, screenName) {
+				if ( screenName === "share" ){
+					if ( !_this.enablePlayDuringScreen ){
+						_this.shareScreenOpened = false;
+					}
+					// restore keyboard actions
+					embedPlayer.triggerHelper( 'onEnableKeyboardBinding' );
+					// re-enable player controls
+					if ( !embedPlayer.isInSequence() ){
+						embedPlayer.enablePlayControls();
+						embedPlayer.triggerHelper("showLargePlayBtn");
+					}
+					// remove blur
+					if (embedPlayer.getPlayerElement()) {
+						$( "#" + embedPlayer.getPlayerElement().id ).removeClass( "blur" );
+						embedPlayer.getPlayerPoster().removeClass( "blur" );
+					}
+				}
+			});
+
+			// Allow plugins to trigger share for specific platform/network
+			this.bind( 'shareByPlatform', function(e, platform) {
+				var platforms = _this.getConfig('shareConfig');
+				if( platforms[platform] ) {
+					var url = embedPlayer.evaluate(platforms[platform].template);
+					_this.openPopup(null, {
+						id: platform,
+						url: url
+					});
+				}
+			});
+
+			// add API support: register to the "doShare" notification and dispatch the "shareEvent" event with the share link data
+			this.bind( 'doShare', function(event, data){
+				var shareUrl = _this.getConfig('shareURL');
+				if ( data && data.timeOffset ){
+					shareUrl += "#t="+data.timeOffset;
+				}
+				embedPlayer.triggerHelper( 'shareEvent', { "shareLink" : shareUrl } );
+			});
+
+			this.bind( 'onplay', function(event, data){
+				if ( _this.shareScreenOpened ){
+					setTimeout(function(){
+						embedPlayer.disablePlayControls(["volumeControl","scrubber","playPauseBtn","playlistAPI"]);
+					},0);
+				}
+			});
+
+			this.bind( 'onpause', function(event, data){
+				if ( _this.shareScreenOpened ){
+					$( "#" + embedPlayer.getPlayerElement().id ).addClass("blur");
+					embedPlayer.getPlayerPoster().addClass("blur");
+				}
+			});
+
+			this.bind( 'AdSupport_StartAdPlayback', function(){
+				_this.closeScreen();
+			});
+
+			this.bind( 'updateLayout', function(event, data){
+				if ( _this.shareScreenOpened ){
+					if (embedPlayer.getVideoHolder().width() < 400){
+						$(".share").addClass("small");
+					}else{
+						$(".share").removeClass("small");
+					}
+				}
+			});
+		},
+
+		getTemplateData: function () {
 			return {
 				'share': this,
 				'socialShareEnabled': this.getConfig('socialShareEnabled'),
@@ -218,7 +254,7 @@
 				'allowTimeOffset': this.getConfig('allowTimeOffset'),
 				'allowSecuredEmbed': this.getConfig('allowSecuredEmbed'),
 				'shareURL': this.getConfig('shareURL'),
-				'networks': networks
+				'networks': this.getConfig('shareConfig')
 			};
 		},
 
@@ -244,8 +280,13 @@
 						$(".share-icons-container").hide().show(); // force refresh for IE8 :(
 					});
 				}
-				$(this).select();
-			});
+			})
+			.on('mouseup', function (e) {
+					e.preventDefault();
+				})
+			.on('click', function () {
+					this.setSelectionRange(0, 9999);
+				});
 
 			$(".embed-input").on("click", function(){
 				if ( $(".embed-offset-container").css("display") === "none" ){
@@ -257,8 +298,14 @@
 						$(".share-icons-container").hide().show(); // force refresh for IE8 :(
 					});
 				}
-				$(this).select();
+			})
+			.on('mouseup', function (e) {
+				e.preventDefault();
+			})
+			.on('click', function () {
+				this.setSelectionRange(0, 9999);
 			});
+
 			this.restrictNPTFields();
 			// handle time offset for share link
 			$(".share-offset-container>.share-offset").on("propertychange change keyup input paste", function(event){
@@ -277,22 +324,28 @@
 			});
 
 			// handle secured embed
-			$(".share-secured").on("click", function(){
-				var embedCode = $(".embed-input").val();
-				if ($(this).is(':checked')){
-					embedCode = embedCode.split("cdnapi.kaltura.com").join("cdnapisec.kaltura.com");
-				}else{
-					embedCode = embedCode.split("cdnapisec.kaltura.com").join("cdnapi.kaltura.com");
-				}
-				$(".embed-input").val(embedCode);
-			});
+			if ( mw.getConfig("Kaltura.ServiceUrl").indexOf(".kaltura.com") !== -1 ){
+				$(".share-secured").on("click", function(){
+					var embedCode = $(".embed-input").val();
+					if ($(this).is(':checked')){
+						embedCode = embedCode.split("http://cdnapi.kaltura.com").join("https://cdnapisec.kaltura.com");
+					}else{
+						embedCode = embedCode.split("https://cdnapisec.kaltura.com").join("http://cdnapi.kaltura.com");
+					}
+					$(".embed-input").val(embedCode);
+				});
+				$('.share-secured').prop('checked', mw.getConfig("Kaltura.ServiceUrl").indexOf("https") === 0); // initial check state according to ServiceUrl
+			}else{
+				// on prem - hide the security checkbox as the security settings are derived from the ServiceUrl
+				$(".share-secured, .share-secure-lbl").hide();
+			}
 
 			// handle scroll buttons
 			var deltaScroll = $(".share-icons-container .icon-border").width() + parseInt($(".share-icons-container .icon-border").css("margin-right"))*2;
 			$(".share-icons-scroller .next-btn").on("click", function(){
 				$(".share-icons-scroller .back-btn").show();
 				$('.share-icons-container').animate({scrollLeft: '+='+deltaScroll }, 300, function(){
-					if ($('.share-icons-container').scrollLeft()/deltaScroll === ($(".icon-border").length - 5) ){
+					if (Math.round($('.share-icons-container').scrollLeft()/deltaScroll) === ($(".icon-border").length - 5) ){
 						$(".share-icons-scroller .next-btn").hide();
 					}
 				});
@@ -308,7 +361,12 @@
 			});
 			setTimeout(function(){
 				_this.addScroll(); // add scroll for social network icons if needed
-			},0)
+			},0);
+
+			// close button override
+			$(".share .icon-close").on("mousedown", function(e){
+				_this.closeScreen();
+			});
 
 		},
 
@@ -375,6 +433,10 @@
 			return true;
 		},
 		closeScreen: function(){
+			if (this.getPlayer().getPlayerElement()) {
+				$(  "#" + this.getPlayer().getPlayerElement().id ).removeClass( "blur" );
+				this.getPlayer().getPlayerPoster().removeClass( "blur" );
+			}
 			$(".embed-offset-container").hide();
 			$(".embed-container>.share-copy-btn").hide();
 			$(".share-offset-container").hide();
@@ -386,15 +448,26 @@
 			this.hideScreen();
 		},
 
-		openPopup: function (e) {
+		openPopup: function (e, network) {
+
+			// Maintain backward compatibility 
+			if( e && e.originalEvent ) {
+				network = {
+					id: $(e.target).attr('id'),
+					url: $(e.target).parents('a').attr('href')
+				};
+			}
+
 			var embedPlayer = this.getPlayer();
-			var url = $(e.target).parents('a').attr('href');
+			var url = network.url;
 			url = decodeURIComponent(url);        // url was encoded to keep curly brackets for template tokens
 			url = this.getPlayer().evaluate(url); // replace tokens
-
+			url = url.replace('#','%23'); // encode hash sign to keep time offset
+			var networks = this.getConfig('shareConfig');
+			// send event for analytics
+			$( embedPlayer ).trigger( "socialShareEvent", networks[network.id] );
 			if (mw.isNativeApp()) {
-				var networks = this.getConfig('shareConfig');
-				var id = $(e.target).attr('id');
+				var id = network.id;
 				var shareParams = {
 					actionType: 'share',
 					id: id[0].toUpperCase() + id.substr(1),
@@ -405,17 +478,22 @@
 				};
 				embedPlayer.doNativeAction(JSON.stringify(shareParams));
 			} else {
-				var opener = window.open(url,'_blank','width=626,height=436');
-				// close the window if this is an email
-				if (url.indexOf("mailto") === 0){
-					setTimeout(function(){
-						opener.close();
-					},2000);
-
+				if ( mw.isIphone() && url.indexOf("mailto") === 0){
+					e.preventDefault();
+					window.location = url;
+				}else{
+					var opener = window.open(url,'_blank','width=626,height=436');
+					// close the window if this is an email
+					if (url.indexOf("mailto") === 0){
+						setTimeout(function(){
+							if (opener && typeof opener.close === 'function') {
+								opener.close();
+							}
+						},2000);
+					}
 				}
+				return false;
 			}
-			// send event for analytics
-			$( embedPlayer ).trigger( "socialShareEvent" );
 		},
 		getThumbnailURL: function () {
 			return kWidgetSupport.getKalturaThumbnailUrl({

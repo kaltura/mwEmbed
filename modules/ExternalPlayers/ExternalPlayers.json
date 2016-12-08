@@ -1,0 +1,5 @@
+{
+    "mw.EmbedPlayerYouTube": {
+        "scripts": "resources/mw.EmbedPlayerYouTube.js"
+    }
+}

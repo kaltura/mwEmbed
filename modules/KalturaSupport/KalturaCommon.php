@@ -89,7 +89,7 @@ $container['client_helper'] = $container->share(function ($c) {
 	// Setup client config
 	$config = array(
 		'ClientTag'			=>	'html5iframe:' . $c['mwembed_version'] . ',cache_st: ' . $request->getCacheSt(),
-		'ServiceUrl'		=>	$request->getServiceConfig('ServiceUrl'),
+        'ServiceUrl'		=>	$request->getServiceConfig('ServiceUrl'),
 		'ServiceBase'		=>	$request->getServiceConfig('ServiceBase'),
 		'ServiceTimeout'	=>	$c['service_timeout'],
 		'UserAgent'			=>	$request->getUserAgent(),
@@ -102,7 +102,8 @@ $container['client_helper'] = $container->share(function ($c) {
 		$config['Logger'] = $c['logger'];
 	}
 	// Set KS from our request or generate a new KS
-	if( $request->hasKS() ) {
+	global $wgForceCache;
+	if( $wgForceCache || $request->hasKS() ) {
 		$config['KS'] = $request->getKS();
 	} else {
 		$config['WidgetId'] = $request->getWidgetId();

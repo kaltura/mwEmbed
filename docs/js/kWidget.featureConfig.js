@@ -33,29 +33,23 @@
 				}
 			})
 		}
-		function getQueryParams( qs ) {
-			qs = decodeURIComponent( qs )
-			qs = qs.split("+").join(" ");
-			var params = {}, tokens,
-				re = /[?&]?([^=]+)=([^&]*)/g;
-			while (tokens = re.exec(qs)) {
-				params[decodeURIComponent(tokens[1])]
-				= decodeURIComponent(tokens[2]);
-			}
-			return params;
-		}
-		var params = {};
+		var hashConfig;
 		// check if we are in an iframe or top level page: 
 		if( self == top || document.URL.indexOf( 'noparent=') !== -1 ){
-			params = getQueryParams( document.location.hash.substr(1) );
+			hashConfig =  document.location.hash.substr(1) ;
 		} else {
-			params = getQueryParams( top.document.location.hash.substr(1) );
+			hashConfig = top.document.location.hash.substr(1) ;
+		}
+		hashConfig = decodeURIComponent( hashConfig );
+		// strip leading config= if present:( legacy config lines ) 
+		if( hashConfig.substr(0, 7) == 'config=' ){
+			hashConfig = hashConfig.substr(7);
 		}
 		// parse JSON 
 		var urlOptions = {};
-		if( params['config'] ){
+		if( hashConfig ){
 			try{
-				urlOptions = JSON.parse( params['config'] );
+				urlOptions = JSON.parse( hashConfig );
 			} catch ( e ){
 				if( console )
 					console.warn( 'Error could not parse config: ' + e.message );

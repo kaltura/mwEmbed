@@ -1,5 +1,6 @@
 /*Screens*/
 .firstScreen{
+    position: absolute !important;
     top: 0px !important;
     left: 0px !important;
     height: 100% !important;
@@ -51,13 +52,19 @@
 
 }
 .hiddenScreen{
-    top: 0px !important;
-    left: 0px !important;
-    width: 0px !important;
-    height: 0px !important;
+    -ms-transform: translate(200%, 0);
+    -webkit-transform: translate(200%, 0);
+    -moz-transform: translate(200%, 0);
+    -o-transform: translate(200%, 0);
+    transform: translate(200%, 0);
+    transition: 0.7s !important;
+    -webkit-box-shadow: 0px 0px 5px -1px rgba(0,0,0,0.3);
+    -moz-box-shadow: 0px 0px 5px -1px rgba(0,0,0,0.3);
+    box-shadow: 0px 0px 5px -1px rgba(0,0,0,0.3);
+    background-color: rgb(0,0,0);
 }
 .screenTransition{
-    transition: 0.5s;
+    transition: 0.3s;
 }
 /*Override jquery UI resizable cursor handlers*/
 .dualScreen > .ui-resizable-ne{

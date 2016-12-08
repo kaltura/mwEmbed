@@ -1,0 +1,68 @@
+.mw-debug-info {
+    background-color: rgba(20,20,20,0.50);
+    position: absolute;
+    max-width: 60%;
+    overflow: hidden;
+    padding: 5px;
+    margin: 10px;
+    z-index: 100;
+    pointer-events: none
+}
+
+.mw-debug-info-close-btn {
+    position: absolute;
+    right:3px;
+    top:3px;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0px;
+    color: #ffffff;
+    font-size: 12px;
+    background: #000000;
+    padding: 3px 3px 3px 3px;
+    text-decoration: none;
+    pointer-events: auto
+}
+.mw-debug-info-copy-btn {
+    pointer-events: auto
+}
+
+.mw-debug-info-close-btn:hover {
+    background: #44535c;
+    text-decoration: none;
+}
+
+
+.mw-debug-info-text {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.mw-debug-info-a:link ,
+.mw-debug-info-a:visited,
+.mw-debug-info-a:hover,
+.mw-debug-info-a:active {
+
+    white-space: nowrap;
+    color: white;
+    pointer-events: auto
+}
+
+
+.mw-debug-info-separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+.mw-debug-info-separator::before, .mw-debug-info-separator::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid white;
+}
+.mw-debug-info-separator::before {
+    margin-right: .25em;
+}
+.mw-debug-info-separator::after {
+    margin-left: .25em;
+}

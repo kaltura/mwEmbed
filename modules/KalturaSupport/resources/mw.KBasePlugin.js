@@ -9,6 +9,7 @@ mw.KBasePlugin = Class.extend({
 		this.embedPlayer = embedPlayer;
 		this.initCompleteCallback = callback;
 		this.pluginName = pluginName;
+		this.safe = true;
 
 		this.bindPostFix = '.' + pluginName;
 
@@ -21,10 +22,12 @@ mw.KBasePlugin = Class.extend({
 		if( typeof safeEnviornment == 'object' && safeEnviornment.promise ){
 			safeEnviornment.done(function(isSafe){
 				if( !isSafe ){
+					_this.safe = false;
 					_this.destroy();
 				}
 			});
 		} else if( typeof safeEnviornment == 'boolean' && ! safeEnviornment ) {
+			this.safe = false;
 			this.initCompleteCallback();
 			return false;
 		}
@@ -79,40 +82,60 @@ mw.KBasePlugin = Class.extend({
 		data.player = this.embedPlayer;
 		data.entry = this.embedPlayer.kalturaPlayerMetaData;
 		data.entryMetadata = this.embedPlayer.kalturaEntryMetaData;
-		data.formaters = mw.formaters;
+		data.formaters = mw.util.formaters().getAll();
+
+		var defer = $.Deferred();
+
+		var parseTemplate = function(rawHTML){
+			var transformedHTML = mw.util.tmpl( rawHTML );
+			transformedHTML = transformedHTML(data);
+			var evaluatedHTML = $.trim( _this.embedPlayer.evaluate( transformedHTML ) );
+			var $templateHtml = $( '<span class="tmpl">' + evaluatedHTML + '</span>' );
+
+			$templateHtml
+				.find('[data-click],[data-notification]')
+				.click(function(e){
+					var data = $(this).data();
+					return _this.handleClick( e, data );
+				});
+
+			// Handle form submission
+			$templateHtml.find('[data-submit]').submit(function(e){
+				var cb = $(this).data('submit');
+				if( $.isFunction( _this[cb] ) ) {
+					_this[cb](e);
+				}
+				return false;
+			});
+			defer.resolve($templateHtml);
+		}
 
 		// First get template from 'template' config
 		var rawHTML = this.getConfig( 'template', true );
 		if( !rawHTML ){
 			var templatePath = this.getConfig( 'templatePath' );
-			if( !templatePath || !window.kalturaIframePackageData.templates[ templatePath ]) {
-				this.log('getTemplateHTML:: Template not found');
-				return '';
+			if( !window.kalturaIframePackageData.templates[ templatePath ]) {
+				this.log('getTemplateHTML:: Template not found in payload - trying async loading');
+				if ( templatePath && templatePath.indexOf("http") === 0 ){
+					$.ajax({
+						url: templatePath
+					}).done(function(data) {
+							window.kalturaIframePackageData.templates[ templatePath ] = rawHTML = data;
+							parseTemplate(rawHTML);
+						}).fail(function(data) {
+							defer.reject("mw.KBasePlugin::Error occur when trying to load external template from: " + templatePath);
+						});
+				}else{
+					defer.reject("mw.KBasePlugin::Could not load external template: " + templatePath + ". Must be a full url starting with http.");
+				}
+			}else{
+				rawHTML = window.kalturaIframePackageData.templates[ templatePath ];
+				parseTemplate(rawHTML);
 			}
-			rawHTML = window.kalturaIframePackageData.templates[ templatePath ];
+		}else{
+			parseTemplate(rawHTML);
 		}
-		var transformedHTML = mw.util.tmpl( rawHTML );
-		transformedHTML = transformedHTML(data);
-		var evaluatedHTML = $.trim( this.embedPlayer.evaluate( transformedHTML ) );
-		var $templateHtml = $( '<span class="tmpl">' + evaluatedHTML + '</span>' );
-
-		$templateHtml
-			.find('[data-click],[data-notification]')
-			.click(function(e){
-				var data = $(this).data();
-				return _this.handleClick( e, data );
-			});
-
-		// Handle form submission
-		$templateHtml.find('[data-submit]').submit(function(e){
-			var cb = $(this).data('submit');
-			if( $.isFunction( _this[cb] ) ) {
-				_this[cb](e);
-			}
-			return false;
-		});
-
-		return $templateHtml;
+		return defer;
 	},
 	getTemplatePartialHTML: function( partialName, settings ){
 		// First get template from 'template' config
@@ -143,7 +166,10 @@ mw.KBasePlugin = Class.extend({
 
 		return false;
 	},
-	bind: function( eventName, callback ){
+	once: function(eventName,callback) {
+		return this.bind( eventName , callback , true );
+	},
+	bind: function( eventName, callback , once ){
 		var bindEventsString = '',
 			events = eventName.split(" "),
 			totalEvents = events.length,
@@ -155,6 +181,9 @@ mw.KBasePlugin = Class.extend({
 				space = '';
 			}
 			bindEventsString += events[ i ] + this.bindPostFix + space;
+		}
+		if (once){
+			return this.embedPlayer.bindOnceHelper( bindEventsString, callback);
 		}
 		return this.embedPlayer.bindHelper( bindEventsString, callback);
 	},

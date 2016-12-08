@@ -1,0 +1,487 @@
+{
+	"mw.KalturaIframePlayerSetup": {
+		"scripts": "resources/mw.KalturaIframePlayerSetup.js",
+		"dependencies": [
+			"mw.MwEmbedSupport"
+		],
+		"kalturaLoad": "always"
+	},
+	"mw.KWidgetSupport": {
+		"scripts": "resources/mw.KWidgetSupport.js",
+		"dependencies": [
+			"base64_encode",
+			"matchMedia",
+			"mw.KEntryLoader",
+			"mw.KDPMapping",
+			"mw.KCuePoints",
+			"polyfill_Array_filter"
+		],
+		"kalturaLoad": "always",
+		"messageFile": "KalturaSupport.i18n.json"
+	},
+	"mw.KBaseScreen": {
+		"scripts": "resources/mw.KBaseScreen.js",
+		"dependencies": [
+			"mw.KBaseComponent"
+		]
+	},
+	"mw.KBaseMediaList": {
+		"scripts": "resources/mw.KBaseMediaList.js",
+		"dependencies": [
+			"mw.KBaseComponent",
+			"jCarouse",
+			"nanoScroller"
+		]
+	},
+	"mw.KBaseSmartContainer": {
+		"scripts": "resources/mw.KBaseSmartContainer.js",
+		"dependencies": [
+			"mw.KBaseComponent"
+		]
+	},
+	"mw.KBaseComponent": {
+		"scripts": "resources/mw.KBaseComponent.js",
+		"dependencies": [
+			"mw.KBasePlugin",
+			"mediawiki.kmenu"
+		]
+	},
+	"mw.KBaseButton": {
+		"scripts": "resources/mw.KBaseButton.js",
+		"dependencies": [
+			"mw.KBaseComponent"
+		]
+	},
+	"mw.KBasePlugin": {
+		"scripts": "resources/mw.KBasePlugin.js",
+		"dependencies": [
+			"class",
+			"mw.PluginManager",
+			"mediawiki.util.tmpl"
+		]
+	},
+	"mw.KCuePoints": {
+		"scripts": "resources/mw.KCuePoints.js"
+	},
+	"mw.KTimedText": {
+		"scripts": "resources/mw.KTimedText.js"
+	},
+	"mw.KAnalytics": {
+		"scripts": "resources/mw.KAnalytics.js"
+	},
+	"mw.KDPMapping": {
+		"scripts": "resources/mw.KDPMapping.js"
+	},
+	"mw.KEntryLoader": {
+		"scripts": "resources/mw.KEntryLoader.js"
+	},
+	"mw.KAds": {
+		"scripts": "resources/mw.KAds.js",
+		"dependencies": [
+			"mw.AdTimeline",
+			"mw.KAdPlayer"
+		]
+	},
+	"mw.KAdPlayer": {
+		"scripts": "resources/mw.KAdPlayer.js"
+	},
+	"dualScreen": {
+		"scripts": [
+			"components/dualScreen/dualScreen.js",
+			"components/dualScreen/dualScreenControlBar.js",
+			"components/dualScreen/displays.js",
+			"components/dualScreen/display.js",
+			"components/dualScreen/dualScreenExternalControlManager.js",
+			"components/dualScreen/imagePlayer.js",
+			"components/dualScreen/videoPlayer.js",
+			"components/dualScreen/videoSync.js",
+			"components/dualScreen/fsm.js",
+			"components/dualScreen/dualScreenStatesConfig.js",
+			"resources/webcast/cuePointsManager.js"
+		],
+		"styles": [
+			"components/dualScreen/dualScreen.css",
+			"components/dualScreen/dualScreenControlBar.css"
+		],
+		"templates": {
+			"dualScreenControlBar": "components/dualScreen/dualScreenControlBar.tmpl.html"
+		},
+		"dependencies": [
+			"mw.KBaseComponent",
+			"jquery.ui.draggable",
+			"jquery.ui.resizable"
+		],
+		"kalturaPluginName": "dualScreen"
+	},
+	"hammerEvents": {
+		"scripts": "components/hammerEvents/hammerEvents.js",
+		"kalturaPluginName": "hammerEvents",
+		"dependencies": [
+			"mw.KBasePlugin",
+			"hammer"
+		]
+	},
+	"hammer": {
+		"scripts": "components/hammerEvents/hammer.min.js"
+	},
+	"smartContainer": {
+		"scripts": "components/smartContainer.js",
+		"dependencies": "mw.KBaseComponent",
+		"kalturaPluginName": "smartContainer"
+	},
+	"chapters": {
+		"scripts": "components/chapters/chapters.js",
+		"styles": "components/chapters/chapters.css",
+		"templates": {
+			"list": "components/chapters/list.tmpl.html",
+			"chapters": "components/chapters/chapters.tmpl.html",
+			"slides": "components/chapters/slides.tmpl.html"
+		},
+		"dependencies": [
+			"mw.KBaseMediaList",
+			"typeahead",
+			"dotdotdot"
+		],
+		"kalturaPluginName": "chapters"
+	},
+	"keyboardShortcuts": {
+		"scripts": "resources/mw.KeyboardShortcuts.js",
+		"dependencies": "mw.KBasePlugin",
+		"kalturaLoad": "always"
+	},
+   "id3Tag": {
+     "scripts": "resources/mw.id3Tag.js",
+     "dependencies": "mw.KBasePlugin",
+     "kalturaLoad": "always"
+   },
+	"controlBarContainer": {
+		"scripts": "components/controlBarContainer.js",
+		"dependencies": "mw.KBasePlugin",
+		"kalturaLoad": "always"
+	},
+	"topBarContainer": {
+		"scripts": "components/topBarContainer.js",
+		"dependencies": "mw.KBasePlugin",
+		"kalturaLoad": "always"
+	},
+	"sideBarContainer": {
+		"scripts": "components/sideBarContainer.js",
+		"dependencies": "mw.KBasePlugin",
+		"kalturaLoad": "always"
+	},
+	"theme": {
+		"scripts": "components/theme.js",
+		"dependencies": "mw.KBaseComponent",
+		"kalturaPluginName": "theme"
+	},
+	"playlistAPI": {
+		"scripts": "components/playlistAPI.js",
+		"dependencies": [
+			"mw.KBaseMediaList",
+			"dotdotdot"
+		],
+		"styles": "components/playlist/playList.css",
+		"templates": "components/playlist/playList.tmpl.html",
+		"kalturaPluginName": "playlistAPI"
+	},
+	"largePlayBtn": {
+		"scripts": "components/largePlayBtn.js",
+		"dependencies": "mw.KBaseComponent",
+		"kalturaPluginName": "largePlayBtn"
+	},
+    "pipBtn":{
+      "scripts": "components/pipBtn.js",
+      "dependencies": "mw.KBaseComponent",
+      "kalturaPluginName": "pipBtn"
+    },
+	"playPauseBtn": {
+		"scripts": "components/playPauseBtn.js",
+		"dependencies": "mw.KBaseComponent",
+		"kalturaPluginName": "playPauseBtn"
+	},
+	"nextPrevBtn": {
+		"scripts": "components/nextPrevBtn.js",
+		"dependencies": "mw.KBaseComponent",
+		"kalturaPluginName": "nextPrevBtn"
+	},
+	"fullScreenBtn": {
+		"scripts": "components/fullScreenBtn.js",
+		"dependencies": "mw.KBaseComponent",
+		"kalturaPluginName": "fullScreenBtn"
+	},
+        "audioSelector":{
+            "scripts":  "components/audioSelector.js",
+                "dependencies":"mw.KBaseComponent" ,
+                    "kalturaPluginName":"audioSelector"
+        } ,
+	"expandToggleBtn": {
+		"scripts": "components/expandToggleBtn.js",
+		"dependencies": "mw.KBaseButton",
+		"kalturaPluginName": "expandToggleBtn"
+	},
+	"scrubber": {
+		"scripts": "components/scrubber.js",
+		"dependencies": "mw.KBaseComponent",
+		"kalturaPluginName": "scrubber"
+	},
+	"volumeControl": {
+		"scripts": "components/volumeControl.js",
+		"dependencies": "mw.KBaseComponent",
+		"kalturaPluginName": "volumeControl"
+	},
+	"accessibilityButtons": {
+		"scripts": "components/accessibilityButtons.js",
+		"dependencies": "mw.KBaseComponent",
+		"kalturaPluginName": "accessibilityButtons"
+	},
+	"currentTimeLabel": {
+		"scripts": "components/currentTimeLabel.js",
+		"dependencies": "mw.KBaseComponent",
+		"kalturaPluginName": "currentTimeLabel"
+	},
+	"durationLabel": {
+		"scripts": "components/durationLabel.js",
+		"dependencies": "mw.KBaseComponent",
+		"kalturaPluginName": "durationLabel"
+	},
+	"sourceSelector": {
+		"scripts": "components/sourceSelector.js",
+		"dependencies": "mw.KBaseComponent",
+		"kalturaPluginName": "sourceSelector"
+	},
+	"logo": {
+		"scripts": "components/logo.js",
+		"dependencies": "mw.KBaseComponent",
+		"kalturaPluginName": "logo"
+	},
+  "video360": {
+    "scripts": "components/video360.js",
+    "dependencies": ["threejs","mw.KBasePlugin"],
+    "kalturaPluginName": "video360"
+  },
+	"closeFSMobile": {
+		"scripts": "components/closeFSMobile.js",
+		"dependencies": "mw.KBaseComponent",
+		"kalturaPluginName": "closeFSMobile"
+	},
+	"airPlay": {
+		"scripts": "components/airPlay.js",
+		"dependencies": "mw.KBaseComponent",
+		"kalturaPluginName": "airPlay"
+	},
+	"nativeCallout": {
+		"scripts": "components/nativeCallout/nativeCallout.js",
+		"dependencies": "mw.KBasePlugin",
+		"kalturaPluginName": "nativeCallout",
+		"styles": "components/nativeCallout/PlayStore.css",
+		"templates": "components/nativeCallout/nativeCallout.tmpl.html"
+	},
+	"closedCaptions": {
+		"scripts": [
+			"resources/mw.ClosedCaptions.js",
+			"components/cvaa/cvaa.js"
+		],
+		"dependencies": [
+			"mw.KBaseComponent",
+			"mw.KBaseScreen",
+			"mw.TextSource",
+			"mw.Language.names"
+		],
+		"kalturaPluginName": "closedCaptions",
+		"styles": "components/cvaa/cvaa.css",
+		"templates": "components/cvaa/cvaa.tmpl.html",
+		"messageFile": "../TimedText/TimedText.i18n.json"
+
+	},
+	"infoScreen": {
+		"scripts": "components/info/info.js",
+		"styles": "components/info/info.css",
+		"templates": "components/info/info.tmpl.html",
+		"dependencies": [
+			"mw.KBaseScreen"
+		],
+		"kalturaPluginName": "infoScreen"
+	},
+	"related": {
+		"scripts": "components/related/related.js",
+		"styles": "components/related/related.css",
+		"templates": "components/related/related.tmpl.html",
+		"dependencies": [
+			"mw.KBaseScreen"
+		],
+		"kalturaPluginName": "related"
+	},
+	"share": {
+		"scripts": "components/share/share.js",
+		"styles": "components/share/share.css",
+		"templates": "components/share/share.tmpl.html",
+		"dependencies": [
+			"mw.KBaseScreen"
+		],
+		"kalturaPluginName": "share"
+	},
+	"playServerUrls": {
+		"scripts": "components/playServerUrls.js",
+		"dependencies": [
+			"mw.KBasePlugin"
+		],
+		"kalturaPluginName": "playServerUrls"
+	},
+	"adBlockDetector": {
+		"scripts": "components/adBlockDetector/adBlockDetector.js",
+		"dependencies": [
+			"mw.KBasePlugin"
+		],
+		"kalturaPluginName": "adBlockDetector"
+	},
+	"pptWidgetPlugin": {
+		"scripts": "resources/uiConfComponents/pptWidgetPlugin.js",
+		"kalturaPluginName": "pptWidgetAPI"
+	},
+	"acCheck": {
+		"scripts": "resources/uiConfComponents/acCheck.js",
+		"kalturaLoad": "always"
+	},
+	"acPreview": {
+		"scripts": "resources/uiConfComponents/acPreview.js",
+		"kalturaLoad": "always"
+	},
+	"bumperPlugin": {
+		"scripts": "resources/uiConfComponents/bumperPlugin.js",
+		"dependencies": [
+			"mw.KAds"
+		],
+		"kalturaPluginName": "bumper"
+	},
+	"captureThumbnailPlugin": {
+		"scripts": "resources/uiConfComponents/captureThumbnailPlugin.js",
+		"dependencies": "mw.KBaseComponent",
+		"kalturaPluginName": "captureThumbnail"
+	},
+	"carouselPlugin": {
+		"scripts": "resources/uiConfComponents/carouselPlugin.js",
+		"dependencies": [
+			"jCarouse"
+		],
+		"kalturaPluginName": [
+			"related",
+			"carousel"
+		]
+	},
+	"likeAPIPlugin": {
+		"scripts": "resources/uiConfComponents/likeAPIPlugin.js",
+		"kalturaPluginName": "likeAPI"
+	},
+	"liveStream": {
+		"scripts": [
+			"components/live/liveCore.js",
+			"components/live/liveStatus.js"
+		],
+		"styles": "components/live/liveStream.css",
+		"dependencies": "mw.KBaseComponent",
+		"kalturaLoad": "always"
+	},
+	"titleLabel": {
+		"scripts": "resources/uiConfComponents/titleLabel.js",
+		"dependencies": "mw.KBaseComponent",
+		"kalturaPluginName": "titleLabel"
+	},
+	"shareSnippet": {
+		"scripts": "resources/uiConfComponents/shareSnippet.js",
+		"kalturaPluginName": "shareSnippet"
+	},
+	"moderationPlugin": {
+		"scripts": "resources/uiConfComponents/moderationPlugin.js",
+		"dependencies": [
+			"mw.KBaseScreen"
+		],
+		"kalturaPluginName": "moderation"
+	},
+	"downloadPlugin": {
+		"scripts": "resources/uiConfComponents/downloadPlugin.js",
+		"dependencies": "mw.KBaseComponent",
+		"kalturaPluginName": "download"
+	},
+	"jCarouse": {
+		"scripts": "resources/uiConfComponents/jcarousellite_1.0.1.js",
+		"dependencies": [
+			"touchSwipe"
+		]
+	},
+	"mw.KLayout": {
+		"scripts": "resources/mw.KLayout.js"
+	},
+	"restrictUserAgentPlugin": {
+		"scripts": "resources/uiConfComponents/restrictUserAgentPlugin.js",
+		"dependencies": "mw.KBasePlugin",
+		"kalturaPluginName": "restrictUserAgent"
+	},
+	"segmentScrubberPlugin": {
+		"scripts": "resources/uiConfComponents/segmentScrubberPlugin.js",
+		"dependencies": "mw.KBasePlugin",
+		"kalturaPluginName": "segmentScrubber"
+	},
+	"statisticsPlugin": {
+		"scripts": "resources/uiConfComponents/statisticsPlugin.js",
+		"dependencies": [
+			"mw.KAnalytics"
+		],
+		"kalturaPluginName": "statistics"
+	},
+	"liveAnalytics": {
+		"scripts": "resources/mw.KLiveAnalytics.js",
+		"dependencies": [
+			"mw.KBasePlugin"
+		],
+		"kalturaPluginName": "liveAnalytics"
+	},
+	"kAnalony": {
+		"scripts": "resources/mw.kAnalony.js",
+		"dependencies": [
+			"mw.KBasePlugin"
+		],
+		"kalturaPluginName": "kAnalony"
+	},
+	"playbackRateSelectorPlugin": {
+		"scripts": "resources/uiConfComponents/playbackRateSelector.js",
+		"dependencies": "mw.KBaseComponent",
+		"kalturaPluginName": "playbackRateSelector"
+	},
+	"qualitySettings": {
+		"scripts": "components/qualitySettings.js",
+		"dependencies": "mw.KBaseSmartContainer",
+		"kalturaPluginName": "qualitySettings"
+	},
+	"morePlugins": {
+		"scripts": "components/morePlugins.js",
+		"dependencies": "mw.KBaseSmartContainer",
+		"kalturaPluginName": "morePlugins"
+	},
+	"streamSelector": {
+		"scripts": "components/streamSelector.js",
+		"dependencies": "mw.KBaseComponent",
+		"kalturaPluginName": "streamSelector"
+	},
+	"watermarkPlugin": {
+		"scripts": "resources/uiConfComponents/watermarkPlugin.js",
+		"dependencies": "mw.KBaseComponent",
+		"kalturaPluginName": "watermark"
+	},
+	"vastPlugin": {
+		"scripts": "resources/uiConfComponents/vastPlugin.js",
+		"dependencies": [
+			"mw.KAds"
+		],
+		"kalturaPluginName": "vast"
+	},
+	"audioDescription": {
+		"scripts": "components/audioDescription.js",
+		"dependencies": "mw.KBaseComponent",
+		"kalturaPluginName": "audioDescription"
+	},
+	"reportError": {
+		"scripts": "components/reportError.js",
+		"dependencies": "mw.KBaseComponent",
+		"kalturaPluginName": "reportError"
+	}
+}

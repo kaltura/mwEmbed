@@ -1,75 +1,55 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title> HLS Test </title>
+	<title> HLS Multi-Track Audio Test </title>
 	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 </head>
 <body>
-
-<div id="kaltura_player_1404120708" style="width: 400px; height: 333px;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject">
-	<span itemprop="name" content="Sample Big Buck Bunny Trailer (HD) (Source)"></span>
-	<span itemprop="description" content=""></span>
-	<span itemprop="duration" content="33"></span>
-	<span itemprop="thumbnail" content="http://cdnsecakmi.kaltura.com/p/524241/sp/52424100/thumbnail/entry_id/0_r1ss0uv1/version/100003"></span>
-	<span itemprop="width" content="400"></span>
-	<span itemprop="height" content="333"></span>
+<h3>HLS Multi-Track Audio</h3>
+<div id="kaltura_player" style="width: 500px; height: 323px;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject">
 </div>
 
-<div>
-	<Label> Change Audio Track: </Label>
-	<select id="tracksList" onchange="switchTrack()"/>
-</div>
+
 
 <script>
 	var kdp;
-	function onTracksReceived( data ) {
-		if ( data.languages && data.languages.length > 0 ) {
-			var tracks = data.languages;
-			$.each(tracks, function(){
-				$('<option />')
-						.attr('value', this.index)
-						.html(this.label)
-						.appendTo('#tracksList');
-			});
-		}
-	}
 
-	function onTrackSelected( data ) {
-		if ( data.index < $('#tracksList option').size() && data.index != $('#tracksList').val() ) {
-			$('#tracksList').val(data.index);
-		}
-	}
-
-	function switchTrack() {
-		kdp.sendNotification('switchAudioTrack', {index: $('#tracksList').val() });
-	}
 
 	mw.setConfig("KalturaSupport.LeadWithHTML5", true);
 	mw.setConfig("LeadWithHLSOnFlash", true);
 
-	mw.setConfig('EmbedPlayer.ReplaceSources', [
-		{
-			'type' : 'application/vnd.apple.mpegurl',
-			'src' : 'http://pa-www.kaltura.com/content/shared/erank/multi_audio.m3u8'
-		}
-	]);
 
-	kWidget.embed({
-		"targetId": "kaltura_player_1404120708",
-		"wid": "_524241",
-		"uiconf_id": 24670302,
+	kWidget.featureConfig({
+		"targetId": "kaltura_player",
+		"wid": "_243342",
+		"uiconf_id": "12905712",
 		"flashvars": {
+			"audioSelector": {
+				"plugin": true
+			},
 			"streamerType": "auto",
+			"mediaProxy": {
+				'entry':{
+					'name': "Obama Video",
+					"thumbnailUrl": "http://www.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_2kbfzmku/version/100000/width/560"
+				},
+				'sources':[
+					{
+						'type' : 'application/vnd.apple.mpegurl',
+						'src' : 'http://pa-www.kaltura.com/content/shared/erank/multi_audio.m3u8'
+					}
+				]
+	 		}
 		},
 		"cache_st": 1404120708,
-		"entry_id": "0_r1ss0uv1",
 		"readyCallback": function( playerId ){
 			kdp = $('#' + playerId)[0];
 			kdp.addJsListener( 'audioTracksReceived', 'onTracksReceived' );
 			kdp.addJsListener( 'audioTrackIndexChanged', 'onTrackSelected' );
 		}
+
 	});
 </script>
 </body>

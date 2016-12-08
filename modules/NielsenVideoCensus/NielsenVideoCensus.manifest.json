@@ -1,0 +1,35 @@
+{
+    "nielsenVideoCensus": {
+        "description": "Nielsen Video Census allows media owners and advertisers to accurately measure  \r\n\t\tthe size and demographic composition (age, gender, etc.) of audiences viewing video online, \r\n\t\tacross the entire web and for specific sites. Learn more at\r\n\t\t<a target=\"new\" href=\"http://www.nielsen.com/us/en/nielsen-solutions.html\">Nielsen.com</a>\r\n\t\tThe Kaltura Integration supports the Video Census beacon. <br>Note only one beacon is fired per\r\n\t\tcontent view. See NielsenCombined for Nielsen video event tracking support.",
+        "attributes": {
+            "trackEventMonitor": {
+                "doc": "Track beacon dispatches.",
+                "type": "string"
+            },
+            "clientId": {
+                "doc": "Client ID provider by Nielsen.",
+                "type": "string"
+            },
+            "videoCensusId": {
+                "doc": "The video Census Id.",
+                "type": "string"
+            },
+            "tl": {
+                "doc": "Video title. Should be prefixed by \"dav0-\" Percent (%) encode the TL value after the \"dav0-\" prefix. Encoding prevents restricted characters from impacting any processing scripts.",
+                "type": "string"
+            },
+            "cg": {
+                "doc": "Show the name or category name of the TV networks required to use program name here. The entire cg value should be percent (%) encoded.",
+                "type": "string"
+            },
+            "lp": {
+                "doc": "Long play indicator.",
+                "type": "string"
+            },
+            "ls": {
+                "doc": "Live stream indicator. One parameter: 1. Set to Y if this is a live stream 2. Set to N if this is a standard video on demand stream.",
+                "type": "string"
+            }
+        }
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "mw.DoubleClick": {
+        "scripts": [
+            "resources/mw.DoubleClick.js"
+        ],
+        "dependencies": [
+            "mw.AdTimeline"
+        ],
+        "kalturaPluginName": "doubleClick"
+    }
+}

@@ -10,7 +10,12 @@
 			'fullScreenDisplayOnly': false,
 			'minDisplayWidth': 0,
 			'minDisplayHeight': 0,
-			'toggleBtnLabel': null
+			'toggleBtnLabel': null,
+			enableKeyboardShortcuts: true,
+			"keyboardShortcutsMap": {
+				"open": "ctrl+79",   // Add ctrl+o Sign for next stream
+				"close": "ctrl+alt+79"   // Add ctrl+alt+o Sigh for previous stream
+			}
 		},
 		enabled: true,
 		render: true,
@@ -50,7 +55,7 @@
 							_this.closeBarTimeout = setTimeout(function(){
 								_this.closeBarTimeout = null;
 								if (_this.getConfig('isSideBarOpen')) {
-									_this.closeSideBar();
+									_this.close();
 								}
 							}, _this.getConfig("closeTimeout"));
 						} )
@@ -62,25 +67,25 @@
 			this.bind( 'onDisableInterfaceComponents', function( event, excludedComponents ){
 				if( $.inArray( _this.pluginName, excludedComponents ) == -1) {
 					_this.enabled = false;
-					_this.hide();
+					_this.hideReminder();
 				}
 			});
 			this.bind( 'onEnableInterfaceComponents', function( event, excludedComponents ){
 				if( $.inArray( _this.pluginName, excludedComponents ) == -1) {
 					_this.enabled = true;
-					_this.show();
+					_this.showReminder();
 				}
 			});
 			this.bind( 'preShowScreen', function( event, screenName ){
 				_this.currentScreenNameShown = screenName;
 				_this.enabled = false;
-				_this.hide();
+				_this.hideReminder();
 			});
 			this.bind( 'preHideScreen', function( event, screenName ){
 				if (_this.currentScreenNameShown === screenName) {
 					_this.currentScreenNameShown = "";
 					_this.enabled = true;
-					_this.show();
+					_this.showReminder();
 				}
 			});
 			this.bind('updateLayout', function(){
@@ -91,43 +96,76 @@
 					_this.render = true;
 					//Sidebar height is player height without the top and bottom bars
 					_this.setHeight();
-					_this.show();
+					_this.showReminder();
 				} else {
 					_this.render = false;
-					_this.hide();
+					_this.hideReminder();
 				}
 			});
 
 			// If have no components, hide
 			this.bind('layoutBuildDone', function(){
 				if( !_this.getComponent().children().length ){
-					_this.destroy();
+					_this.getComponent().hide();
+					_this.getComponentReminder().hide();
 				}
 			});
+			this.bind('onChangeMedia', function(){
+				_this.close();
+			});
+			this.bind('onChangeMediaDone layoutChange', function(){
+				var children = _this.getComponent().children();
+				if( children.length && (children.filter('*[data-visibility="visible"]').length > 0 )) {
+					_this.getComponent().show();
+					_this.getComponentReminder().show();
+				} else {
+					_this.getComponent().hide();
+					_this.getComponentReminder().hide();
+				}
+			});
+
 			this.bind( 'layoutBuildDone ended', function(){
 				_this.setHeight();
-				_this.show();
+				_this.showReminder();
 			});
 
 			// Bind hover events
 			if( this.getConfig('hover') ){
 				// Show / Hide controlbar on hover
 				this.bind( 'showPlayerControls', function(e, data){
-					_this.show();
+					_this.showReminder();
 				});
 				this.bind( 'hidePlayerControls', function(){
-					_this.hide();
+					_this.hideReminder();
 				});
 				this.bind( 'onComponentsHoverDisabled', function(){
 					_this.keepOnScreen = true;
-					_this.show();
+					_this.showReminder();
 				});
 				this.bind( 'onComponentsHoverEnabled preHideScreen', function(){
 					_this.keepOnScreen = false;
 				});
 			}
+
+			//key bindings
+			if (this.getConfig('enableKeyboardShortcuts')) {
+				this.bind('addKeyBindCallback', function (e, addKeyCallback) {
+					_this.addKeyboardShortcuts(addKeyCallback);
+				});
+			}
 		},
-		show: function(){
+		addKeyboardShortcuts: function (addKeyCallback) {
+			var _this = this;
+			// Add ctrl+O for open side bar
+			addKeyCallback(this.getConfig("keyboardShortcutsMap").open, function () {
+				_this.open();
+			});
+			// Add ctrl+Alt+O for close side bar
+			addKeyCallback(this.getConfig("keyboardShortcutsMap").close, function () {
+				_this.close();
+			});
+		},
+		showReminder: function(){
 			if (this.enabled && this.render) {
 				this.getComponentReminder().addClass( 'open' );
 				if ( this.openAfterDisable ) {
@@ -136,7 +174,7 @@
 				}
 			}
 		},
-		hide: function(){
+		hideReminder: function(){
 			if( this.enabled && this.render && (this.keepOnScreen || (this.getConfig('clickToClose') && this.getConfig( 'isSideBarOpen')))) return;
 			if ( this.getConfig( 'isSideBarOpen' ) ) {
 				this.openAfterDisable = true;
@@ -147,12 +185,12 @@
 		},
 		toggleSideBar: function(){
 			if (this.getConfig('isSideBarOpen')) {
-				this.closeSideBar();
+				this.close();
 			} else {
-				this.openSideBar();
+				this.open();
 			}
 		},
-		openSideBar: function(){
+		open: function(){
 			if (this.render) {
 				this.setConfig( 'isSideBarOpen', 'true' );
 				this.getComponentReminder().addClass( 'shifted' );
@@ -163,7 +201,7 @@
 				this.getPlayer().triggerHelper( 'onComponentsHoverDisabled');
 			}
 		},
-		closeSideBar: function(){
+		close: function(){
 			this.setConfig( 'isSideBarOpen', 'false' );
 			this.getComponent().removeClass( 'openBtn' );
 			this.getComponentReminder().removeClass( 'shifted' );
@@ -174,7 +212,8 @@
 		},
 		setHeight: function(){
 			var height = this.getPlayer().getHeight() - this.getPlayer().getControlBarContainer().height();
-			if (this.getPlayer().getTopBarContainer().length){
+			var noControls = this.getPlayer().isMobileSkin() ? 2 : 0;
+			if (this.getPlayer().getTopBarContainer().length && this.getPlayer().getTopBarContainer().children().length !== noControls) {
 				height -= this.getPlayer().getTopBarContainer().height();
 				//If topbar exist then add top value
 				this.getComponent().css('top', this.getPlayer().getTopBarContainer().height());

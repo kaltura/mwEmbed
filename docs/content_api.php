@@ -114,9 +114,6 @@ require_once( realpath( dirname( __FILE__ ) ) . '/api_evaluates.php' );
 			$o.='<li class="linkable" id="'. $key .'">';
 			$o.='<span class="key">'. $key . '</span><br>';
 			$o.= $var['desc'];
-			if( isset( $var['example'] ) && $var['example'] != '' ){
-				$o.= '<br><a href="'. $var['example'] . '" target="_blank">Usage Example</a>';
-			}
 			if(  isset( $var['type'] ) ){
 				$o.='<br><span class="type">Type</span>: <br>&nbsp;&nbsp;&nbsp;&nbsp;' .$var['type'];
 			}
@@ -145,6 +142,9 @@ require_once( realpath( dirname( __FILE__ ) ) . '/api_evaluates.php' );
 			if( isset( $var['default'] ) && $var['default'] != '' ){
 				$o.='<br><span class="default">Default</span>: <br>&nbsp;&nbsp;&nbsp;&nbsp;' .$var['default'];
 			}
+            if( isset( $var['example'] ) && $var['example'] != '' ){
+                $o.= '<br><a href="'. $var['example'] . '" target="_blank">Usage Example</a>';
+            }
 			if( isset( $var['availability'] ) && $var['availability'] == 'kdp' ){
 				$o.= '<br><span class="label label-warning">Legacy Only</span>';
 			}
@@ -267,11 +267,10 @@ $(function(){
 
 <a name="kWidget"></a>
 <h2>kWidget Embedding API</h2>
-Embeding into <a href="http://knowledge.kaltura.com/kaltura-player-sdk-ios">Native iOS</a> 
-<br> Embeding into <a href="http://knowledge.kaltura.com/kaltura-player-sdk-android">Native Android</a>
-<br><br>
 The kWidget API is available after you include the Kaltura player library. kWidget provides embedding and basic utility functions.
-<br>Sample Kaltura player library include :
+The Kaltura player library can be embeded into both <a href="http://knowledge.kaltura.com/kaltura-player-sdk-android">Native Android</a>
+ and <a href="http://knowledge.kaltura.com/kaltura-player-sdk-ios">Native iOS</a>.
+<br><br>Sample JavaScript Kaltura player library include :
 <pre class="prettyprint linenums">
 &lt!-- Substitute {partner_id} for your Kaltura partner id, {uiconf_id} for uiconf player id --&gt;
 &lt;script src=&quot;http://cdnapi.kaltura.com/p/{partner_id}/sp/{partnerId}00/embedIframeJs/uiconf_id/{uiconf_id}/partner_id/{partnerId}&quot;&gt;&lt;/script&gt;

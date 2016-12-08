@@ -54,7 +54,7 @@ define( 'MEDIAWIKI', true );
 # dirname( __FILE__ ) would do.
 $IP = getenv( 'MW_INSTALL_PATH' );
 if ( $IP === false ) {
-	$IP = realpath( '.' );
+	$IP = realpath( dirname( __FILE__ ) . '/../');
 }
 
 
@@ -103,13 +103,59 @@ $wgLang = new UserLang();
 if( in_array( "MwEmbedSupport",  $wgMwEmbedEnabledModules ) == false ){
 	array_push( $wgMwEmbedEnabledModules, "MwEmbedSupport" );
 }
-
+$ORG_IP = $IP;
+$IP = realpath( $IP . '/..' );
+global $wgScriptPath;
 # Register / load all the mwEmbed modules
 foreach( $wgMwEmbedEnabledModules as $moduleName ){
-	$modulePath = "modules/$moduleName";
-	if( is_file( "$IP/$modulePath/$moduleName.php" ) ){
+	$modulePath = $wgScriptPath."modules/$moduleName";
+	if( is_file( "$IP/$modulePath/$moduleName.json" ) || is_file( "$IP/$modulePath/$moduleName.php" ) ){
 		MwEmbedResourceManager::register( $modulePath );
 	}
+}
+
+/**
+ *
+ * Find the relative file system path between two file system paths
+ *
+ * @param  string  $frompath  Path to start from
+ * @param  string  $topath    Path we want to end up in
+ *
+ * @return string             Path leading from $frompath to $topath
+ */
+function find_relative_path ( $frompath, $topath ) {
+    $from = explode( DIRECTORY_SEPARATOR, $frompath ); // Folders/File
+    $to = explode( DIRECTORY_SEPARATOR, $topath ); // Folders/File
+    $relpath = '';
+
+    $i = 0;
+    // Find how far the path is the same
+    while ( isset($from[$i]) && isset($to[$i]) ) {
+        if ( $from[$i] != $to[$i] ) break;
+        $i++;
+    }
+    $j = count( $from ) - 1;
+    // Add '..' until the path is the same
+    while ( $i <= $j ) {
+        if ( !empty($from[$j]) ) $relpath .= '..'.DIRECTORY_SEPARATOR;
+        $j--;
+    }
+    // Go to folder from where it starts differing
+    while ( isset($to[$i]) ) {
+        if ( !empty($to[$i]) ) $relpath .= $to[$i].DIRECTORY_SEPARATOR;
+        $i++;
+    }
+
+    // Strip last separator
+    return substr($relpath, 0, -1);
+}
+
+foreach( $wgKwidgetPsEnabledModules as $moduleName ){
+    $modulePath = $wgKalturaPSHtml5ModulesDir . '/' . $moduleName ;
+    $relativeModulePath = (find_relative_path($IP, $modulePath));
+    if( is_file( $modulePath . '/' . $moduleName . '.json') ){
+        MwEmbedResourceManager::register( $relativeModulePath );
+    }
 }
 
 # Add the resource loader hooks

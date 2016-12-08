@@ -1,0 +1,27 @@
+{
+    "tremor": {
+        "description": "Tremor Video is a digital video technology company that serves the complementary needs of the media community. \n\t\tThe Tremor VideoHub Server offers advertisers massive reach and proven engagement with their marketing messages in \n\t\t100% brand-safe environments. The Acudeo income engine provides publishers easy access to multiple sources \n\t\tof revenue and the ability to manage and monetize every video impression. <a target=\"_new\" href=\"http://tremorvideo.com/\">More about Tremor</a>\n\t\t<br> \n\t\tKaltura supports a full Acudeo ad module integration for both HTML5 and Flash",
+        "attributes": {
+            "displayAdCountdown": {
+                "doc": "If the ad countdown should be displayed.",
+                "initvalue": "true",
+                "type": "string"
+            },
+            "progId": {
+                "doc": "The Tremor policy ID.",
+                "label": "Tremor policy ID.",
+                "type": "string"
+            },
+            "banner": {
+                "doc": "The banner ID.",
+                "label": "Banner ID.",
+                "type": "string"
+            },
+            "timeout": {
+                "doc": "Time in seconds to load the tremor ad. The default is 10 seconds,",
+                "initvalue": 10,
+                "type": "number"
+            }
+        }
+    }
+}

@@ -20,6 +20,8 @@ kWidget.api.prototype = {
 	// the default api request method
 	// will dictate if the CDN can cache on a per url basis
 	type: 'auto',
+	// initialize callback index to zero
+	callbackIndex: 0,
 	baseParam: {
 		'apiVersion' : '3.1',
 		'expiry' : '86400',
@@ -55,10 +57,28 @@ kWidget.api.prototype = {
 	getKs: function(){
 		return this.ks;
 	},
+	forceKs:function(wid,callback,errorCallback){
+		if( this.getKs() ){
+			callback( this.getKs() );
+			return true;
+		}
+		var _this = this;
+		// Add the Kaltura session ( if not already set )
+		var ksParam = {
+			'action' : 'startwidgetsession',
+			'widgetId': wid
+		};
+		// add in the base parameters:
+		var param = kWidget.extend( { 'service' : 'session' }, this.baseParam, ksParam );
+		this.doRequest( param, function( data ){
+			_this.ks = data.ks;
+			callback( _this.ks );
+		},null,errorCallback);
+	},
 	/**
 	 * Do an api request and get data in callback
 	 */
-	doRequest: function ( requestObject, callback,skipKS, errorCallback  ){
+	doRequest: function ( requestObject, callback,skipKS, errorCallback, withProxyData){
 		var _this = this;
 		var param = {};
 		var globalCBName = null;
@@ -80,6 +100,10 @@ kWidget.api.prototype = {
 		} else {
 			kWidget.extend( param, requestObject );
 		}
+
+		// set format to JSON ( Access-Control-Allow-Origin:* )
+		param['format'] = 1;
+
 		// Add kalsig to query:
 		param[ 'kalsig' ] = this.hashCode( kWidget.param( param ) );
 		
@@ -101,7 +125,8 @@ kWidget.api.prototype = {
 			clearTimeout(timeoutError);
 			// check if the base param was a session
             data = data || [];
-            if( data.length > 1 && param[ '1:service' ] == 'session' ){
+            if( data.length > 1 && param[ '1:service' ] == 'session' && !withProxyData){ // in case of proxyData (OTT) we request a session but KS doesn't exist
+																						 // so the response doesn't contain it so don't handle
 				//Set the returned ks
 	            _this.setKs(data[0].ks);
 	            // if original request was not a multirequest then directly return the data object
@@ -123,21 +148,27 @@ kWidget.api.prototype = {
 		// NOTE kaltura api server should return: 
 		// Access-Control-Allow-Origin:* most browsers support this. 
 		// ( old browsers with large api payloads are not supported )
+		var userAgent = navigator.userAgent.toLowerCase();
+		var forceJSONP = document.documentMode && document.documentMode <= 10;
 		try {
-			if ( mw.getConfig( 'Kaltura.ForceJSONP' ) ){
+			if ( forceJSONP ){
 				throw "forceJSONP";
 			}
-			// set format to JSON ( Access-Control-Allow-Origin:* )
-			param['format'] = 1;
 			this.xhrRequest( _this.getApiUrl( serviceType ), param, function( data ){
 				handleDataResult( data );
 			});
 		} catch(e){
 			param['format'] = 9; // jsonp
+			//Delete previous kalSig
+			delete param[ 'kalsig' ];
+			//Regenerate kalSig with amended format
+			var kalSig = this.hashCode( kWidget.param( param ) );
+			// Add kalsig to query:
+			param[ 'kalsig' ] = kalSig;
 			// build the request url: 
 			var requestURL = _this.getApiUrl( serviceType ) + '&' + kWidget.param( param );
 			// try with callback:
-			globalCBName = 'kapi_' + Math.abs( _this.hashCode( kWidget.param( param ) ) );
+			globalCBName = 'kapi_' + kalSig;
 			if( window[ globalCBName ] ){
 				// Update the globalCB name inx.
 				this.callbackIndex++;
@@ -249,7 +280,7 @@ kWidget.api.prototype = {
 	parseParam: function(data){
 		var param = data;
 		//Check if we need to request session
-		if (!this.getKs()) {
+		if (!this.getKs() && (param !== undefined)) {
 			//check if request contains dependent params and if so then update reference object num -
 			// because reference index changed due to addition of multirequest startWidgetSession service
 			var paramParts = param.toString().match( /\{(\d+)(:result:.*)\}/ );
@@ -268,17 +299,13 @@ kWidget.api.prototype = {
 		if( serviceType && serviceType == 'liveStats' &&  mw.getConfig( 'Kaltura.LiveStatsServiceUrl' ) ) {
 			serviceUrl = mw.getConfig( 'Kaltura.LiveStatsServiceUrl' );
 		}
+		if( serviceType && serviceType == 'analytics' &&  mw.getConfig( 'Kaltura.AnalyticsUrl' ) ) {
+			serviceUrl = mw.getConfig( 'Kaltura.AnalyticsUrl' );
+		}
 		return serviceUrl + mw.getConfig( 'Kaltura.ServiceBase' ) + serviceType;
 	},
 	hashCode: function( str ){
-		var hash = 0;
-		if (str.length == 0) return hash;
-		for (var i = 0; i < str.length; i++) {
-			var currentChar = str.charCodeAt(i);
-			hash = ((hash<<5)-hash)+currentChar;
-			hash = hash & hash; // Convert to 32bit integer
-		}
-		return hash;
+		return md5(str);
 	}
 }
 

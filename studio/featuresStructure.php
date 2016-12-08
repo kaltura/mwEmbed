@@ -53,14 +53,34 @@ return array(
 					array(
 						"label" => "16/9",
 						"value" => "wide"
-					)
+					),
+                    array(
+                        "label" => "Custom",
+                        "value" => "custom"
+                    )
 				),
 				"showSearch"=> false,
-				"initvalue" => "wide",
-				"helpnote" => "Select aspect ratio for the current preview. Aspect ratio is not saved with the player settings",
-				"type" => "dropdown",
-				"label" => "Aspect Ratio",
+				"allowNegative"=> false,
+				"helpnote" => "Set Player Dimensions",
+				"helpnote2" => "Height will be automatically calculated according to the selected aspect ratio",
+				"type" => "dimensions",
+				"label" => "Player Dimensions",
 				"endline" => "true"
+			),
+            array(
+                "player-refresh"=> "false",
+                "label" => "Update Version Automatically",
+                "helpnote" => "Automatically update this player when a new player version is available",
+                "type" => "checkbox",
+                "endline" => "true",
+                "model" => "autoUpdate"
+            ),
+			array(
+				"label" => "Enable new mobile skin",
+				"helpnote" => "Caution: Turning on Mobile skin will override any existing custom CSS",
+				"type" => "checkbox",
+				"endline" => "true",
+				"model" => "config.uiVars.EmbedPlayer.EnableMobileSkin"
 			),
 			array(
 				"label" => "Automatically play video on page load",
@@ -80,6 +100,13 @@ return array(
                 "endline" => "true",
                 "model" => "config.plugins.controlBarContainer.hover"
             ),
+//            array(
+//               "label" => "Localization code:",
+//                "type" => "text",
+//                "size" => "small",
+//                "endline" => "true",
+//                "model" => "config.enviornmentConfig.localizationCode"
+//            ),
 			array(
 				"label" => "Last Update",
 				"type" => "readonly",
@@ -102,6 +129,13 @@ return array(
                 "endline" => "false",
                 "model" => "config.uiVars.enableTooltips"
             ),
+//            array(
+//                "label" => "Simulate Mobile",
+//                "type" => "checkbox",
+//                "initvalue" => false,
+//                "endline" => "false",
+//                "model" => "config.uiVars.EmbedPlayer.SimulateMobile"
+//            ),
 			"titleLabel" => "",
 			"logo" => "",
 			"loadingSpinner" => "",
@@ -111,7 +145,9 @@ return array(
 			"theme" => "",
 			"infoScreen" => "",
 			"share" => "",
+			"playersJsReceiver" => "",
 			"related" => "",
+			"dualScreen" => "",
 			"playlistAPI" => "",
 			"nextPrevBtn" => ""
 		)
@@ -129,6 +165,7 @@ return array(
 			"nielsenCombined" => "",
 			"omnitureOnPage" => "",
 			"statistics" => "",
+			"youbora" => ""
 		)
 	),
 	"monetization"=> array(
@@ -147,11 +184,11 @@ return array(
             ),
 			"bumper" => "",
 			"vast" => "",
-			"skipBtn" => "",
-			"skipNotice" => "",
-			"noticeMessage" => "",
 			"doubleClick" => "",
-			"freeWheel" => ""
+			"freeWheel" => "",
+			"skipBtn" => "",
+            "skipNotice" => "",
+            "noticeMessage" => ""
 		)
 	),
 	"plugins"=> array(
@@ -166,10 +203,10 @@ return array(
 			"moderation" => "",
 			"playbackRateSelector" => "",
 			"restrictUserAgent" => "",
-			"widevine" => "",
+			"multiDrm" => "",
 			"sourceSelector" => "",
+			"audioSelector" => "",
 			"download" => "",
-			"nativeCallout" => "",
 			"strings" => "",
 			"uiVars" => ""
 		)

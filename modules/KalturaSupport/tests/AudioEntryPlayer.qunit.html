@@ -38,19 +38,19 @@
 	<br />
 	<div id="kaltura_player" style="width:400px;height:30px;"></div>
 	<script>
-		kWidget.embed({
+		kWidget.featureConfig({
 			'targetId' : 'kaltura_player',
 			'wid' : '_243342',
 			'uiconf_id' :'12905712',
 			'entry_id': '1_wup745o9',
 			'flashvars':{
-				'largePlayBtn':{
-					'plugin': false
-				},
 				'scrubber': {
 					'parent': 'controlsContainer',
 					'minWidth': 100,
 					'sliderPreview': false
+				},
+				'largePlayBtn':{
+					'plugin': false
 				},
 				'volumeControl':{
 					'pinVolumeBar': true

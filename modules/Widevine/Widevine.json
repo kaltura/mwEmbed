@@ -1,0 +1,10 @@
+{
+    "mw.Widevine": {
+        "scripts": [
+            "resources/WidevineCore.js",
+            "resources/mw.Widevine.js"
+        ],
+        "dependencies": "mw.KBasePlugin",
+        "kalturaPluginName": "widevine"
+    }
+}
