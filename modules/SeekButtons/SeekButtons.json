@@ -1,0 +1,11 @@
+{
+  "SeekButtons": {
+    "scripts": [
+      "resources/SeekButtons.js"
+    ],
+    "dependencies": "mw.KBaseComponent",
+    "kalturaPluginName": "seekButtons",
+    "styles": "resources/SeekButtons.css",
+    "messageFile": "SeekButtons.i18n.json"
+  }
+}
