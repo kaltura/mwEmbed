@@ -2,8 +2,31 @@
 <html>
 <head>
     <style type="text/css">
-        body {
-            overflow: hidden;
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @-webkit-keyframes loading {
+            0% {
+                margin-left: -100%;
+            }
+            100% {
+                margin-left: 100%;
+            }
+        }
+
+        @keyframes fadein {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
         }
 
         video {
@@ -27,7 +50,7 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            background-color: black;
+            background-color: ghostwhite;
             background-repeat: no-repeat;
             background-attachment: fixed;
             background-position: center;
@@ -39,22 +62,199 @@
             -o-transition: opacity 1s ease-in-out;
             opacity: 1;
         }
+
+        .loading-spinner {
+            -webkit-animation: spin 1s infinite linear;
+            height: 36px;
+            width: 32px;
+            display: none;
+            position: absolute;
+            background-image: url("assets/buffering.png");
+            bottom: 64px;
+            left: 50%;
+            z-index: 1;
+            margin-left: 32px / -2;
+        }
+
+        .cast-watermark {
+            position: absolute;
+            top: 5%;
+            left: 5%;
+            bottom: 5%;
+            right: 4%;
+            display: none;
+            background-position: bottom right;
+            background-repeat: no-repeat;
+            background-image: url("assets/watermark.png");
+        }
+
+        .gradient {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            top: 0;
+            display: none;
+            opacity: 0.9;
+            background: linear-gradient(
+                    to top,
+                    rgba(0, 0, 0, 1.0),
+                    rgba(0, 0, 0, 0.0) 72%,
+                    rgba(0, 0, 0, 0.0) 100%
+            );
+        }
+
+        .overlay {
+            position: absolute;
+            left: 64px;
+            bottom: 64px;
+            right: 64px;
+            display: none;
+            top: auto;
+        }
+
+        .media-info {
+            padding-bottom: 0;
+            display: flex;
+
+        }
+
+        .media-info .media-title {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 44px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 80%;
+        }
+
+        .media-info .media-subtitle {
+            color: rgba(203, 203, 203, 0.8);
+            font-size: 22px;
+            overflow: hidden;
+            width: 80%;
+        }
+
+        .media-info .media-subtitle span:not(:first-child):before {
+            content: '\00B7';
+            padding-left: 10px;
+            padding-right: 10px;
+            font-weight: bold;
+        }
+
+        .media-artwork {
+            align-self: flex-end;
+            margin-right: 32px;
+            min-width: 96px;
+            height: 250px;
+            box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.3);
+            width: 384px;
+            max-width: 384px;
+            background-image: url("assets/placeholder-media.jpg");
+        }
+
+        .media-text {
+            width: 100%;
+            align-self: flex-end;
+            float: left;
+            margin-top: 19px;
+        }
+
+        .media-info .media-title {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 34px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 80%;
+        }
+
+        .media-info .media-subtitle {
+            color: rgba(203, 203, 203, 0.8);
+            font-size: 22px;
+            overflow: hidden;
+            width: 80%;
+        }
+
+        .media-info .media-subtitle span:not(:first-child):before {
+            content: '\00B7';
+            padding-left: 10px;
+            padding-right: 10px;
+            font-weight: bold;
+        }
+
+        /* ------------------------------------------------- */
+        /* cast-watermark                                    */
+        /* ------------------------------------------------- */
+
+        #receiver-wrapper[state="idle"] .cast-watermark {
+            display: block;
+        }
+
+        /* ------------------------------------------------- */
+        /* loading-spinner                                   */
+        /* ------------------------------------------------- */
+
+        #receiver-wrapper[state="loading"] .loading-spinner,
+        #receiver-wrapper[state="buffering"] .loading-spinner,
+        #receiver-wrapper[state="playing"] .loading-spinner {
+            display: block;
+        }
+
+        /* ------------------------------------------------- */
+        /* media                                             */
+        /* ------------------------------------------------- */
+
+        /*
+        #receiver-wrapper[state="loading_media"] .gradient,
+        #receiver-wrapper[state="buffering"] .gradient {
+            display: block;
+            visibility: visible;
+        }
+
+        #receiver-wrapper[state="loading_media"] .overlay,
+        #receiver-wrapper[state="buffering"] .overlay {
+            display: block;
+        }
+
+        #receiver-wrapper[state="loading_media"] .media-info,
+        #receiver-wrapper[state="buffering"] .media-info {
+            display: block;
+        }*/
     </style>
     <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
     <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/mediaplayer/1.0.0/media_player.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="assets/animate.css">
     <script src="app_components/Logger.js"></script>
     <script src="app_components/IdleMgr.js"></script>
     <script src="app_components/StateMgr.js"></script>
     <script src="receiver.js"></script>
 </head>
 <body>
-<div id="kaltura_player" style=" width:98%; height: 98%; position: absolute; z-index: 1;"></div>
-<video id="receiverVideoElement"></video>
-<div id="logo"></div>
+<div id="receiver-wrapper" class="receiver-wrapper">
+    <div id="kaltura_player" style=" width:98%; height: 98%; position: absolute; z-index: 1;"></div>
+    <video id="initial-video-element"></video>
+    <div id="logo" class="logo">
+        <div class="gradient animated fadeIn"></div>
+        <div class="overlay animated fadeIn">
+            <div class="media-info animated fadeIn">
+                <div class="media-artwork"></div>
+                <div class="media-text">
+                    <div class="media-title"></div>
+                    <div class="media-subtitle"></div>
+                </div>
+            </div>
+        </div>
+        <div class="loading-spinner"></div>
+        <div class="cast-watermark"></div>
+    </div>
+</div>
 <script>
+    var receiverWrapper = document.getElementById( 'receiver-wrapper' ); // Wrapper div for the entire UI to manage changes in app state.
+    var initialVidElement = document.getElementById( 'initial-video-element' ); // Initial fake video tag that will be changed later.
     $( document ).ready( function () {
-        startReceiver( document.getElementById( 'receiverVideoElement' ) );
+        startReceiver();
     } );
 </script>
 </body>

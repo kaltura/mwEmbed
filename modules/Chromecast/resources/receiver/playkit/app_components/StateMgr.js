@@ -1,12 +1,11 @@
 function StateManager() {
-    this.prevState = null;
     this.currState = null;
     this.idleManager = new IdleManager();
 }
 
 StateManager.State = {
     LAUNCHING: 'LAUNCHING',
-    LOADING: 'LAUNCHING',
+    LOADING: "LOADING",
     BUFFERING: 'BUFFERING',
     PLAYING: 'PLAYING',
     PAUSED: 'PAUSED',
@@ -15,11 +14,11 @@ StateManager.State = {
 
 StateManager.prototype.setState = function ( state ) {
     AppLogger.log( "AppState", "Setting new state for receiver: " + state );
+    receiverWrapper.setAttribute( "state", state.toLowerCase() );
     this.idleManager.setIdleTimeout( state );
-    this.prevState = this.currState;
     this.currState = state;
 };
 
-StateManager.prototype.isInState = function ( state ) {
-    return this.currState === state;
+StateManager.prototype.getState = function () {
+    return this.currState;
 };

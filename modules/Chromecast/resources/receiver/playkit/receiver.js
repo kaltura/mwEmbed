@@ -24,14 +24,36 @@ var receiverManager;
  */
 var mediaManager;
 /**
- * The video element.
- */
-var mediaElement;
-/**
  * The Google cast message bus.
  * Using to pass custom messages from sender to receiver.
  */
 var messageBus;
+/**
+ * The Kaltura video element.
+ */
+var mediaElement;
+/**
+ * Indicator to know when all ads completed.
+ * Will be called according to the adTagUrl.
+ * For example:
+ * If the adTagUrl contains only prerolls it will be called in the end of pre sequence.
+ * If the adTagUrl contains only postrolls it will be called in the end of post sequence.
+ * If the adTagUrl contains both prerolls & postrolls it will be called in the end of post sequence.
+ * @type {boolean}
+ */
+var allAdsCompleted = true;
+/**
+ * Indicator to know when post sequence start to play (postrolls).
+ * It's because we need to know when to call onEnded explicitly.
+ * For example:
+ * In the scenario of just prerolls, onAllAdsCompleted event will be called
+ * before the content has start to play. In that case, we don't want to
+ * call onEnded explicitly because it will then shutdown the receiver application.
+ * To make a long story short, the only scenarios we will want to call onEnded explicitly
+ * are when we playing postrolls.
+ * @type {boolean}
+ */
+var postSequenceStart = false;
 /**
  * The application logger.
  */
@@ -42,11 +64,7 @@ var AppLogger = Logger.getInstance();
  */
 var AppState = new StateManager();
 /**
- * Indicated if we're before preroll or after postroll.
- */
-var isInSequence = false;
-/**
- * The id of the splash screen div.
+ * The id of the idle screen div.
  * @type {string}
  */
 var LOGO_ID = "logo";
@@ -64,46 +82,35 @@ var MESSAGE_BUS_MAP = {
 
 /**
  * Starts the receiver application and opening new session.
- * @param vidElement initial fake video tag that will be changed later.
  */
-function startReceiver( vidElement ) {
+function startReceiver() {
     AppState.setState( StateManager.State.LAUNCHING );
     // Init receiver manager and setting his events
     receiverManager = cast.receiver.CastReceiverManager.getInstance();
     receiverManager.onReady = onReady.bind( this );
     receiverManager.onSenderConnected = onSenderConnected.bind( this );
     receiverManager.onSenderDisconnected = onSenderDisconnected.bind( this );
-    receiverManager.onVisibilityChanged = onVisibilityChanged.bind( this );
 
     // Init media manager and setting his events
-    mediaManager = new cast.receiver.MediaManager( vidElement );
+    mediaManager = new cast.receiver.MediaManager( initialVidElement );
     mediaManager.customizedStatusCallback = customizedStatusCallback.bind( this );
 
-    mediaManager[ 'onEndedOrig' ] = mediaManager.onEnded;
-    mediaManager.onEnded = onEnded.bind( this );
-
-    mediaManager[ 'onErrorOrig' ] = mediaManager.onError;
-    mediaManager.onError = onError.bind( this );
-
-    mediaManager[ 'onLoadMetadataErrorOrig' ] = mediaManager.onLoadMetadataError;
-    mediaManager.onLoadMetadataError = onLoadMetadataError.bind( this );
-
-    mediaManager[ 'onMetadataLoadedOrig' ] = mediaManager.onMetadataLoaded;
+    mediaManager.onMetadataLoadedOrig = mediaManager.onMetadataLoaded;
     mediaManager.onMetadataLoaded = onMetadataLoaded.bind( this );
 
-    mediaManager[ 'onPauseOrig' ] = mediaManager.onPause;
+    mediaManager.onEndedOrig = mediaManager.onEnded;
+    mediaManager.onEnded = onEnded.bind( this );
+
+    mediaManager.onPauseOrig = mediaManager.onPause;
     mediaManager.onPause = onPause.bind( this );
 
-    mediaManager[ 'onPlayOrig' ] = mediaManager.onPlay;
+    mediaManager.onPlayOrig = mediaManager.onPlay;
     mediaManager.onPlay = onPlay.bind( this );
 
-    mediaManager[ 'onSeekOrig' ] = mediaManager.onSeek;
+    mediaManager.onSeekOrig = mediaManager.onSeek;
     mediaManager.onSeek = onSeek.bind( this );
 
-    mediaManager[ 'onStopOrig' ] = mediaManager.onStop;
-    mediaManager.onStop = onStop.bind( this );
-
-    mediaManager[ 'onLoadOrig' ] = mediaManager.onLoad;
+    mediaManager.onLoadOrig = mediaManager.onLoad;
     mediaManager.onLoad = onLoad.bind( this );
 
     // Init message bus and setting his event
@@ -113,75 +120,112 @@ function startReceiver( vidElement ) {
     receiverManager.start();
 }
 
-// Media manager's events
+/**
+ * Media Manager Events
+ */
+
+/**
+ * Override callback for media manager customizedStatusCallback.
+ * In the next phases we will fully customize our application state here.
+ */
 function customizedStatusCallback( mediaStatus ) {
-    AppLogger.log( "MediaManager", "customizedStatusCallback", { 'playerState': mediaStatus.playerState } );
-    if ( !AppState.isInState( mediaStatus.playerState ) ) {
+    if ( !embedPlayerInitialized ) {
+        return null;
+    }
+    AppLogger.log( "MediaManager", "customizedStatusCallback", mediaStatus );
+    if ( AppState.getState() !== mediaStatus.playerState ) {
         AppState.setState( mediaStatus.playerState );
-        if ( AppState.isInState( StateManager.State.PLAYING ) ) {
-            hideElement( LOGO_ID );
-        }
-        else if ( AppState.isInState( StateManager.State.IDLE ) ) {
-            if ( isInSequence ) {
-                // Override "IDLE" with "PLAYING" status since we're before or after an ad
-                mediaStatus.playerState = StateManager.State.PLAYING;
-                AppState.setState( StateManager.State.PLAYING );
-            } else {
-                showElement( LOGO_ID );
-            }
+        switch ( AppState.getState() ) {
+            case StateManager.State.PLAYING:
+                hideElement( LOGO_ID );
+                break;
+            case StateManager.State.IDLE:
+                if ( allAdsCompleted ) {
+                    showElement( LOGO_ID );
+                } else {
+                    mediaStatus.playerState = StateManager.State.PLAYING;
+                    AppState.setState( StateManager.State.PLAYING );
+                }
+                break;
         }
     }
+    AppLogger.log( "MediaManager", "Returning senders status of " + mediaStatus.playerState );
     return mediaStatus;
 }
 
-function onError( event ) {
-    AppLogger.log( "MediaManager", "onError", event );
-    mediaManager[ 'onErrorOrig' ]( event );
+/**
+ * Override callback for media manager onMetadataLoaded.
+ * The sender should send us metadata regarding the media ge chose to play.
+ * After we extract this metadata, we will present it on the UI.
+ */
+function onMetadataLoaded( event ) {
+    AppLogger.log( "MediaManager", "onMetadataLoaded", event );
+
+    var metadata;
+    metadata = event.message.media.metadata;
+    if ( !metadata ) {
+        metadata = {
+            title: 'Sintel',
+            subtitle: 'Trailer 1080p',
+            images: [ { url: 'http://cfvod.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/0_l1v5vzh3/version/100002/width/460/height/260' } ]
+        };
+    }
+
+    var titleElement = receiverWrapper.querySelector( '.media-title' );
+    titleElement.innerText = metadata.title;
+
+    var subtitleElement = receiverWrapper.querySelector( '.media-subtitle' );
+    subtitleElement.innerText = metadata.subtitle;
+
+    var imageUrl = null;
+    if ( metadata.images.length > 0 ) {
+        imageUrl = metadata.images[ 0 ].url;
+    }
+    var artworkElement = receiverWrapper.querySelector( '.media-artwork' );
+    artworkElement.style.backgroundImage = (imageUrl ? 'url("' + imageUrl.replace( /"/g, '\\"' ) + '")' : 'none');
+    artworkElement.style.display = (imageUrl ? '' : 'none');
+
+    mediaManager.onMetadataLoadedOrig( event );
 }
 
-function onLoadMetadataError( event ) {
-    AppLogger.log( "MediaManager", "onLoadMetadataError", event );
-    mediaManager[ 'onLoadMetadataErrorOrig' ]( event );
-}
-
-function onMetadataLoaded( info ) {
-    AppLogger.log( "MediaManager", "onMetadataLoaded", info );
-    mediaManager[ 'onMetadataLoadedOrig' ]( info );
-}
-
+/**
+ * Override callback for media manager onPause.
+ */
 function onPause( event ) {
     if ( !kdp.evaluate( "{sequenceProxy.isInSequence}" ) ) {
         AppLogger.log( "MediaManager", "onPause", event );
         kdp.sendNotification( 'doPause' );
-        mediaManager[ 'onPauseOrig' ]( event );
     } else {
         AppLogger.log( "MediaManager", "Preventing pause during ad!!!", event );
     }
 }
 
+/**
+ * Override callback for media manager onPlay.
+ */
 function onPlay( event ) {
     AppLogger.log( "MediaManager", "onPlay", event );
     kdp.sendNotification( "doPlay" );
-    mediaManager[ 'onPlayOrig' ]( event );
 }
 
+/**
+ * Override callback for media manager onSeek.
+ */
 function onSeek( event ) {
     if ( !kdp.evaluate( "{sequenceProxy.isInSequence}" ) ) {
         AppLogger.log( "MediaManager", "onSeek", event );
-        mediaManager[ 'onSeekOrig' ]( event );
+        mediaManager.onSeekOrig( event );
     } else {
         AppLogger.log( "MediaManager", "Preventing seek during ad!!!", event );
     }
 }
 
-function onStop( event ) {
-    AppLogger.log( "MediaManager", "onStop", event );
-    mediaManager[ 'onStopOrig' ]( event );
-}
-
+/**
+ * Override callback for media manager onLoad.
+ */
 function onLoad( event ) {
-    AppState.setState( StateManager.State.LOADING );
     AppLogger.log( "MediaManager", "onLoad" );
+    AppState.setState( StateManager.State.LOADING );
     if ( event && event.data ) {
         if ( !embedPlayerInitialized ) {
             AppLogger.log( "MediaManager", "Embed player isn't initialized yet. Starting dynamic embed.", event );
@@ -201,27 +245,79 @@ function onLoad( event ) {
     }
 }
 
+/**
+ * Override callback for media manager onEnded.
+ * We are overriding onEnded just in case we playing
+ * ads.
+ */
 function onEnded() {
-    AppLogger.log( "MediaManager", "onEnded", { 'isInSequence': isInSequence } );
-    // If ad is playing, do not perform onEnded, just broadcast your status
-    if ( isInSequence ) {
-        mediaManager.broadcastStatus( true );
-    } else {
+    if ( allAdsCompleted ) {
         mediaManager.onEndedOrig();
+    } else {
+        mediaManager.broadcastStatus( true );
     }
 }
 
-// Receiver manager's events
+/**
+ * Receiver Manager Events.
+ */
+
+/**
+ * Override callback for receiver manager onReady.
+ */
 function onReady() {
     AppLogger.log( "receiverManager", "Receiver is ready." );
+
+    /**
+     * Gets the value from the url's query string.
+     * @param variable the key in the query string.
+     * @returns {*}
+     */
+    var getQueryVariable = function ( variable ) {
+        var query = decodeURIComponent( window.location.search.substring( 1 ) );
+        var vars = query.split( "&" );
+        for ( var i = 0; i < vars.length; i++ ) {
+            var pair = vars[ i ].split( "=" );
+            if ( pair[ 0 ] == variable ) {
+                return pair[ 1 ];
+            }
+        }
+        return false;
+    };
+
+    /**
+     * Sets the receiver's idle screen logo.
+     * If a query string with a logoUrl key added to the
+     * receiver application's url it will set it. Else,
+     * it will set Kaltura logo.
+     */
+    var setLogo = function () {
+        var logoUrl = getQueryVariable( 'logoUrl' );
+        if ( logoUrl ) {
+            // Set partner's logo
+            AppLogger.log( "receiver.js", "Displaying partner's idle screen.", { 'logoUrl': logoUrl } );
+            $( "#" + LOGO_ID ).css( 'background-image', 'url(' + logoUrl + ')' );
+        } else {
+            // Set Kaltura's default logo
+            AppLogger.log( "receiver.js", "Displaying Kaltura's idle screen." );
+            $( "#" + LOGO_ID ).css( 'background-image', "url('assets/kaltura_logo_small.png')" );
+        }
+    };
+
     setLogo();
     showElement( LOGO_ID );
 }
 
+/**
+ * Override callback for receiver manager onSenderConnected.
+ */
 function onSenderConnected( event ) {
     AppLogger.log( "receiverManager", "Sender connected. Number of current senders: " + receiverManager.getSenders().length, event );
 }
 
+/**
+ * Override callback for receiver manager onSenderDisconnected.
+ */
 function onSenderDisconnected( event ) {
     AppLogger.log( "receiverManager", "Sender disconnected. Number of current senders: " + receiverManager.getSenders().length, event );
     if ( receiverManager.getSenders().length === 0
@@ -231,17 +327,12 @@ function onSenderDisconnected( event ) {
     }
 }
 
-function onVisibilityChanged( event ) {
-    AppLogger.log( "receiverManager", "Visibility changed. isVisible: " + event.isVisible, event );
-    //TODO: There's an issue for now that isVisible is always true
-    if ( event.isVisible ) {
-        // We're visible - resume playback
-    } else {
-        // We're not visible - pause playback
-    }
-}
-
-// Message bus's on message event
+/**
+ * Message Bus onMessage callback.
+ * Will be called after one of the senders sent
+ * some message through the custom channel.
+ * @param event
+ */
 function onMessage( event ) {
     AppLogger.log( "MessageBus", "onMessage", event );
     if ( event && event.data ) {
@@ -256,10 +347,12 @@ function onMessage( event ) {
     }
 }
 
-// Class functions
+/**
+ * Loading the embed player to the Chromecast device.
+ * @param req
+ */
 function embedPlayer( req ) {
-    var data = req.data;
-    var embedInfo = data.media.customData.embedConfig;
+    var embedInfo = req.data.media.customData.embedConfig;
     $.getScript( embedInfo.lib + "mwEmbedLoader.php" )
         .then( function () {
             setConfiguration( embedInfo );
@@ -268,12 +361,23 @@ function embedPlayer( req ) {
                 "wid": "_" + embedInfo.publisherID,
                 "uiconf_id": embedInfo.uiconfID,
                 "readyCallback": function ( playerID ) {
+                    var swapVideoElement = function () {
+                        /**
+                         * Switching the initial video element to Kaltura's
+                         * video element after the embed process finished.
+                         */
+                        $( "#initial-video-element" ).remove();
+                        mediaElement = $( kdp ).contents().contents().find( "video" )[ 0 ];
+                        mediaManager.setMediaElement( mediaElement );
+                    };
                     embedPlayerInitialized = true;
                     kdp = document.getElementById( playerID );
-                    addBindings();
                     swapVideoElement();
+                    if ( kdp.evaluate( '{doubleClick.plugin}' ) ) {
+                        addAdsBindings();
+                    }
                 },
-                "flashvars": getFlashVars( data ),
+                "flashvars": getFlashVars( req.data.currentTime, req.data.autoplay, embedInfo.flashVars ),
                 "cache_st": 1438601385,
                 "entry_id": embedInfo.entryID
             } );
@@ -281,40 +385,38 @@ function embedPlayer( req ) {
 }
 
 /**
- * Switching the initial video element to Kaltura's
- * video element after the embed process finished.
+ * Sets the required bindings to the Kaltura player in case of ads are enabled.
+ * Supporting only prerolls and postrolls (no midrolls).
  */
-function swapVideoElement() {
-    $( "#receiverVideoElement" ).remove();
-    var kalturaVidElement = $( kdp ).contents().contents().find( "video" )[ 0 ];
-    mediaManager.setMediaElement( kalturaVidElement );
+function addAdsBindings() {
+    // If ad plugin enabled, sets this flag to false
+    allAdsCompleted = false;
+
+    // Bind the kdp to the relevant events
+    kdp.kBind( "durationChange", function ( newDuration ) {
+        var mediaInfo = mediaManager.getMediaInformation();
+        if ( mediaInfo ) {
+            mediaInfo.duration = newDuration;
+            mediaManager.setMediaInformation( mediaInfo );
+        }
+    } );
+
+    kdp.kBind( "postSequenceStart", function () {
+        postSequenceStart = true;
+    } );
+
+    kdp.kBind( "onAllAdsCompleted", function () {
+        allAdsCompleted = true;
+        if ( postSequenceStart ) {
+            onEnded();
+        }
+    } );
 }
 
 /**
- * Sets the required bindings to the Kaltura player.
+ * Sets the configuration for the embed player.
+ * @param embedInfo
  */
-function addBindings() {
-    // In case of ad plugin enabled, add bindings to support prerolls and postrolls
-    if ( kdp.evaluate( '{doubleClick.plugin}' ) ) {
-
-        kdp.kBind( "durationChange", function ( newDuration ) {
-            var mediaInfo = mediaManager.getMediaInformation();
-            if ( mediaInfo ) {
-                mediaInfo.duration = newDuration;
-                mediaManager.setMediaInformation( mediaInfo );
-            }
-        } );
-
-        kdp.kBind( "preSequenceStart", function () {
-            isInSequence = true;
-        } );
-
-        kdp.kBind( "postSequenceStart", function () {
-            isInSequence = false;
-        } );
-    }
-}
-
 function setConfiguration( embedInfo ) {
     mw.setConfig( "EmbedPlayer.HidePosterOnStart", true );
     if ( embedInfo.debugKalturaPlayer == true ) {
@@ -326,80 +428,81 @@ function setConfiguration( embedInfo ) {
     mw.setConfig( "Kaltura.ExcludedModules", "chromecast" );
 }
 
+/**
+ * The receiver's embed player flashvars.
+ * @type {{dash: {plugin: boolean}, multiDrm: {plugin: boolean}, embedPlayerChromecastReceiver: {plugin: boolean}, chromecast: {plugin: boolean}, playlistAPI: {plugin: boolean}, controlBarContainer: {hover: boolean}, volumeControl: {plugin: boolean}, titleLabel: {plugin: boolean}, fullScreenBtn: {plugin: boolean}, scrubber: {plugin: boolean}, largePlayBtn: {plugin: boolean}, mediaProxy: {mediaPlayFrom: number}, autoPlay: boolean}}
+ */
 var receiverFlashVars = {
-    "dash": {
-        'plugin': false
-    },
-    "multiDrm": {
-        'plugin': false
-    },
-    "embedPlayerChromecastReceiver": {
-        'plugin': true
-    },
-    "chromecast": {
-        'plugin': false
-    },
-    "playlistAPI": {
-        'plugin': false
-    }
+    "dash": { 'plugin': false },
+    "multiDrm": { 'plugin': false },
+    "embedPlayerChromecastReceiver": { 'plugin': true },
+    "chromecast": { 'plugin': false },
+    "playlistAPI": { 'plugin': false },
+    "controlBarContainer": { 'hover': true },
+    "volumeControl": { 'plugin': false },
+    "titleLabel": { 'plugin': true },
+    "fullScreenBtn": { 'plugin': false },
+    "scrubber": { 'plugin': true },
+    "largePlayBtn": { 'plugin': true },
+    "mediaProxy": { "mediaPlayFrom": 0 },
+    "autoPlay": true
 };
 
-function getFlashVars( data ) {
+/**
+ * Merge between the receiver's constant flashvars and the flashvars
+ * that been sent from the sender who opened the session.
+ * The sender usually will need to send ks or proxyData.
+ * The sender can override playFrom and autoPlay flashvars.
+ * @param senderPlayFrom
+ * @param senderAutoPlay
+ * @param senderFlashVars
+ * @returns {{dash: {plugin: boolean}, multiDrm: {plugin: boolean}, embedPlayerChromecastReceiver: {plugin: boolean}, chromecast: {plugin: boolean}, playlistAPI: {plugin: boolean}, controlBarContainer: {hover: boolean}, volumeControl: {plugin: boolean}, titleLabel: {plugin: boolean}, fullScreenBtn: {plugin: boolean}, scrubber: {plugin: boolean}, largePlayBtn: {plugin: boolean}, mediaProxy: {mediaPlayFrom: number}, autoPlay: boolean}}
+ */
+function getFlashVars( senderPlayFrom, senderAutoPlay, senderFlashVars ) {
+
+    var extend = function ( a, b ) {
+        for ( var key in b )
+            if ( b.hasOwnProperty( key ) )
+                a[ key ] = b[ key ];
+        return a;
+    };
+
     try {
-        var senderFlashVars = data.media.customData.embedConfig.flashVars;
-
-        // Embed media info params from onLoad event in mwEmbedChromecastReceiver
-        receiverFlashVars.mediaProxy = { mediaPlayFrom: data.currentTime || 0 };
-        receiverFlashVars.autoPlay = data.autoplay || true;
-
-        if ( typeof senderFlashVars !== 'object' ) {
-            senderFlashVars = JSON.parse( senderFlashVars );
+        // Embed the media info params from onLoad event into mwEmbedChromecastReceiver
+        if ( senderPlayFrom ) {
+            receiverFlashVars.mediaProxy.mediaPlayFrom = senderPlayFrom;
         }
-        return extend( receiverFlashVars, senderFlashVars );
+        if ( senderAutoPlay ) {
+            receiverFlashVars.autoPlay = senderAutoPlay;
+        }
+        if ( !senderFlashVars ) {
+            return receiverFlashVars;
+        } else if ( typeof senderFlashVars === 'object' ) {
+            return extend( receiverFlashVars, senderFlashVars );
+        }
+        else if ( typeof senderFlashVars === 'string' ) {
+            return extend( receiverFlashVars, JSON.parse( senderFlashVars ) );
+        }
     }
     catch ( e ) {
         return receiverFlashVars;
     }
 }
 
-function extend( a, b ) {
-    for ( var key in b )
-        if ( b.hasOwnProperty( key ) )
-            a[ key ] = b[ key ];
-    return a;
-}
-
+/**
+ * Hides DOM element from the receiver application UI.
+ * @param id
+ */
 function hideElement( id ) {
     AppLogger.log( "receiver.js", "Hiding element with id: " + id );
     $( "#" + id ).fadeOut();
 }
 
+/**
+ * Shows DOM element on the receiver application UI.
+ * @param id
+ */
 function showElement( id ) {
     AppLogger.log( "receiver.js", "Showing element with id: " + id );
     $( "#" + id ).fadeIn();
-}
-
-function getQueryVariable( variable ) {
-    var query = decodeURIComponent( window.location.search.substring( 1 ) );
-    var vars = query.split( "&" );
-    for ( var i = 0; i < vars.length; i++ ) {
-        var pair = vars[ i ].split( "=" );
-        if ( pair[ 0 ] == variable ) {
-            return pair[ 1 ];
-        }
-    }
-    return false;
-}
-
-function setLogo() {
-    var logoUrl = getQueryVariable( 'logoUrl' );
-    if ( logoUrl ) {
-        // Set partner's logo
-        AppLogger.log( "receiver.js", "Displaying partner's splash screen.", { 'logoUrl': logoUrl } );
-        $( "#" + LOGO_ID ).css( 'background-image', 'url(' + logoUrl + ')' );
-    } else {
-        // Set Kaltura's default logo
-        AppLogger.log( "receiver.js", "Displaying Kaltura's splash screen." );
-        $( "#" + LOGO_ID ).css( 'background-image', "url('assets/kalturalogo.png')" );
-    }
 }

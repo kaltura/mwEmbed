@@ -246,6 +246,19 @@
                 _this.currentTime = _this.getPlayerElement().duration;
                 _this.updatePlayheadStatus();
             } );
+            //
+            //
+            // this.bindHelper( "AdSupport_preSequenceStart", function () {
+            //     debugger;
+            // } );
+            //
+            // this.bindHelper( "AdSupport_preSequenceComplete", function () {
+            //     debugger;
+            // } );
+            //
+            // this.bindHelper( "AdSupport_postSequenceStart", function () {
+            //     debugger;
+            // } );
         },
 
         /**
@@ -357,11 +370,9 @@
          * Native video tag methods
          */
         _onpause: function () {
-            if ( !this.mediaPlayer.getState()[ 'underflow' ] ) {
-                this.pause();
-                // To display the actions oppositely in the Chromecast UI
-                $( this ).trigger( 'onPlayerStateChange', [ "pause", "play" ] );
-            }
+            this.pause();
+            // To display the actions oppositely in the Chromecast UI
+            $( this ).trigger( 'onPlayerStateChange', [ "pause", "play" ] );
         },
 
         // When player started to play
