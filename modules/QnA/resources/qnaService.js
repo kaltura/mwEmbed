@@ -212,6 +212,8 @@ DAL for Q&A Module
         QandA_UserNotificationName: "USER_QNA",
         QandA_cuePointTypes: {"Question":1,"Answer":2, "Announcement":3},
         bootPromise:null,
+        fullCuePointFetchingCalled:false,
+        sockets:{},
 
 
         init: function (embedPlayer, qnaPlugin) {
@@ -222,11 +224,8 @@ DAL for Q&A Module
             this.embedPlayer = embedPlayer;
             this.qnaPlugin = qnaPlugin;
 
-
-
             if (embedPlayer.isLive()) {
                 this.requestCuePoints();
-                this.registerItemNotification();
             }
 
         },
@@ -235,24 +234,41 @@ DAL for Q&A Module
             if (this.bootPromise) {
                 return this.bootPromise;
             }
+            var _this=this;
+            this.bootPromise = $.Deferred();
+            //we first register to all notification before continue to get the existing cuepoints, so we don't get races and lost cue points
+            $.when( this.getMetaDataProfile(), this.registerPublicNotificationItems(),this.registerUserNotificationItems())
+                .done(function( ) {
+                    ///todo should we setInterval?
+                    _this.bootPromise.resolve();
+            });
 
+            return this.bootPromise;
+        },
+        getMetaDataProfile:function() {
             var _this=this;
 
-            var deferred = $.Deferred();
             var listMetadataProfileRequest = {
                 service: "metadata_metadataprofile",
                 action: "list",
                 "filter:systemNameEqual": this.QandA_MetadataProfileSystemName
             };
+            this.userId=this.qnaPlugin.getUserID();
 
+
+            var deferred = $.Deferred();
             this.getKClient().doRequest(listMetadataProfileRequest, function (result) {
-                _this.metadataProfile = result.objects[0];
-                _this.userId=_this.qnaPlugin.getUserID();
-                deferred.resolve();
-            });
 
-            this.bootPromise=deferred;
-            return this.bootPromise;
+                if (result.objectType==="KalturaAPIException") {
+                    mw.log("Error getting metadata profile: "+result.message+" ("+result.code+")");
+                    deferred.resolve(false);
+                    return;
+                }
+
+                _this.metadataProfile = result.objects[0];
+                deferred.resolve(true);
+            });
+            return deferred;
         },
 
         viewedEntries: viewedEntries,
@@ -539,6 +555,85 @@ DAL for Q&A Module
             }
             _this.AnswerOnAirQueue.push(ko.observable(item));
         },
+        processQnA:function(cuePoints) {
+            var _this=this;
+            cuePoints.forEach(function(cuePoint) {
+
+                var item=_this.annotationCuePointToQnaEntry(cuePoint);
+                if (item) {
+
+                    if (_this.fullCuePointFetchingCalled && _this.lastUpdateTime < cuePoint.updatedAt) {
+                        _this.lastUpdateTime = cuePoint.updatedAt;
+                    }
+                    if (item.getType() === "AnswerOnAir"){
+
+                        _this.addOrUpdateAnswerOnAir(item);
+                        _this.AnswerOnAirQueueUpdate(_this.qnaPlugin.embedPlayer.currentTime);
+
+                    }
+                    else {
+                        _this.addOrUpdateEntry(item);
+                    }
+                }
+            });
+
+            this.sortThreads();
+        },
+        processQnAState:function(cuePoint) {
+
+            var disableModule = true;
+            var announcementOnly = false;
+
+            if (this.fullCuePointFetchingCalled) {
+                this.moduleStatusLastUpdateTime = cuePoint.updatedAt;
+            }
+            //TODO remove this once all procuders app will be upgraded to latest
+            if (cuePoint.code === "ENABLE_QNA"){
+                disableModule = false;
+                announcementOnly = false;
+            }
+            else if (cuePoint.code === "DISABLE_QNA"){
+                disableModule = true;
+                announcementOnly = false;
+            }
+            else if (cuePoint.code === "ENABLE_ANNOUNCEMENTS_ONLY"){
+                disableModule = false;
+                announcementOnly = true;
+            }
+            else if (cuePoint.code === "DISABLE_ANNOUNCEMENTS_ONLY"){
+                disableModule = false;
+                announcementOnly = false;
+            }
+            //for BC supporting both new and old QnA settings cue points
+            if(cuePoint.tags) {
+                //old QnA settings cue point convention //todo [sa] remove after releasing new producer version
+                if (cuePoint.tags.indexOf("WEBCASTSTATETAG") >= 0) {
+                    try {
+                        var webCastingState=JSON.parse(cuePoint.code);
+                        disableModule=!webCastingState["QnA"];
+                        announcementOnly=!disableModule && webCastingState["AnnouncementsOnly"];
+                    }
+                    catch(e) {
+                        mw.log("Error:: Error parsing WEBCASTSTATETAG code cue point "+ e.message+ " "+ e.stack);
+                    }
+                }
+                //new QnA settings cue point convention
+                else if (cuePoint.tags.indexOf("player-qna-settings-update") >= 0) {
+                    try {
+                        if(cuePoint.partnerData) {
+                            var webCastingState = JSON.parse(cuePoint.partnerData);
+                            webCastingState = webCastingState["qnaSettings"];
+                            disableModule = !webCastingState["qnaEnabled"];
+                            announcementOnly = !disableModule && webCastingState["announcementOnly"];
+                        }
+                    }
+                    catch(e) {
+                        mw.log("Error:: Error parsing player-qna-settings-update code cue point "+ e.message+ " "+ e.stack);
+                    }
+                }
+            }
+            this.qnaPlugin.hideModule(disableModule, announcementOnly);
+        },
 
         requestCuePoints:function() {
             var _this = this;
@@ -606,102 +701,33 @@ DAL for Q&A Module
                 }
 
                 _this.getKClient().doRequest( [request, codeCuePointListRequest],
-                    function (resoults) {
+                    function (results) {
 
                         // process results from 1st request
-                        var data = resoults[0];
+                        var data = results[0];
                         // if an error pop out:
                         if (!data || data.code) {
                             // todo: add error handling
                             mw.log("Error:: KCuePoints could not retrieve live cuepoints");
                             return;
                         }
+                        _this.fullCuePointFetchingCalled=true;
 
-                        data.objects.forEach(function(cuePoint) {
-
-                            var item=_this.annotationCuePointToQnaEntry(cuePoint);
-                            if (item) {
-
-                                if (_this.lastUpdateTime < cuePoint.updatedAt) {
-                                    _this.lastUpdateTime = cuePoint.updatedAt;
-                                }
-                                if (item.getType() === "AnswerOnAir"){
-
-                                    _this.addOrUpdateAnswerOnAir(item);
-                                    _this.AnswerOnAirQueueUpdate(_this.qnaPlugin.embedPlayer.currentTime);
-
-                                }
-                                else {
-                                    _this.addOrUpdateEntry(item);
-                                }
-                            }
-                        });
-
-                        _this.sortThreads();
+                        _this.processQnA(data.objects);
 
                         // process results from 2nd request
-                        var data2 = resoults[1];
+                        var data2 = results[1];
                         // if an error pop out:
                         if (!data2 || !data2.objects || data2.objects.length < 1) {
                             return;
                         }
 
-                        var disableModule = true;
-                        var announcementOnly = false;
-
                         var cuePoint = data2.objects[0];
                         if (cuePoint === undefined || cuePoint.code === undefined){
                             return;
                         }
+                        _this.processQnAState(cuePoint);
 
-                        _this.moduleStatusLastUpdateTime = cuePoint.updatedAt;
-
-                        //TODO remove this once all procuders app will be upgraded to latest
-                        if (cuePoint.code === "ENABLE_QNA"){
-                            disableModule = false;
-                            announcementOnly = false;
-                        }
-                        else if (cuePoint.code === "DISABLE_QNA"){
-                            disableModule = true;
-                            announcementOnly = false;
-                        }
-                        else if (cuePoint.code === "ENABLE_ANNOUNCEMENTS_ONLY"){
-                            disableModule = false;
-                            announcementOnly = true;
-                        }
-                        else if (cuePoint.code === "DISABLE_ANNOUNCEMENTS_ONLY"){
-                            disableModule = false;
-                            announcementOnly = false;
-                        }
-                        //for BC supporting both new and old QnA settings cue points
-                        if(cuePoint.tags) {
-                            //old QnA settings cue point convention //todo [sa] remove after releasing new producer version
-                            if (cuePoint.tags.indexOf("WEBCASTSTATETAG") >= 0) {
-                                try {
-                                    var webCastingState=JSON.parse(cuePoint.code);
-                                    disableModule=!webCastingState["QnA"];
-                                    announcementOnly=!disableModule && webCastingState["AnnouncementsOnly"];
-                                }
-                                catch(e) {
-                                    mw.log("Error:: Error parsing WEBCASTSTATETAG code cue point "+ e.message+ " "+ e.stack);
-                                }
-                            }
-                            //new QnA settings cue point convention
-                            else if (cuePoint.tags.indexOf("player-qna-settings-update") >= 0) {
-                                try {
-                                    if(cuePoint.partnerData) {
-                                        var webCastingState = JSON.parse(cuePoint.partnerData);
-                                        webCastingState = webCastingState["qnaSettings"];
-                                        disableModule = !webCastingState["qnaEnabled"];
-                                        announcementOnly = !disableModule && webCastingState["announcementOnly"];
-                                    }
-                                }
-                                catch(e) {
-                                    mw.log("Error:: Error parsing player-qna-settings-update code cue point "+ e.message+ " "+ e.stack);
-                                }
-                            }
-                        }
-                        _this.qnaPlugin.hideModule(disableModule, announcementOnly);
                     }
                 );
             });
@@ -709,83 +735,73 @@ DAL for Q&A Module
         
         registerPublicNotificationItems: function() {
             var _this = this;
-            var entryId = _this.embedPlayer.kentryid;
 
-            var request = {
-                'service': 'eventNotification_eventNotificationTemplate',
-                'action': 'register',
-                'format': 1,
-                "notificationTemplateSystemName": _this.QandA_UserNotificationName,
-                "userParamsArray:0:objectType": "KalturaEventNotificationParameter",
-                "userParamsArray:0:key": "entryId",
-                "userParamsArray:0:value:objectType": "KalturaStringValue",
-                "userParamsArray:0:value:value": entryId,
-                "userParamsArray:1:objectType": "KalturaEventNotificationParameter",
-                "userParamsArray:1:key": "userId",
-                "userParamsArray:1:value:objectType": "KalturaStringValue",
-                "userParamsArray:1:value:value": _this.userId
-            }
-
-            _this.getKClient().doRequest(request, function(result) {
-                var socket = io.connect(result.url);
-
-                socket.on('validated', function(){
-                    console.log("Connected to socket.");
-                    socket.emit('listen', result.key);
-                });
-
-                socket.on('connected', function(queueKey){
-                    console.log("Listening to queue [" + queueKey + "]");
-                });
-
-                socket.on('message', function(queueKey, msg){
-                    console.log("[" + queueKey + "]: " +  String.fromCharCode.apply(null, new Uint8Array(msg.data)));
-                });
+            return this.registerNotification(_this.QandA_UserNotificationName,
+                {"entryId":_this.embedPlayer.kentryid,"userId":_this.userId},function(cuePoint) {
+                _this.processQnA([cuePoint]);
             });
         },
-
         registerUserNotificationItems: function() {
+
             var _this = this;
-            var entryId = _this.embedPlayer.kentryid;
+
+            return this.registerNotification(this.QandA_publicNotificationName,
+                {"entryId":_this.embedPlayer.kentryid},function(cuePoint) {
+                _this.processQnA([cuePoint]);
+            });
+
+        },
+
+        registerNotification:function(eventName,params,request,callback) {
+            var deferred = $.Deferred();
+
+            var _this=this;
+
 
             var request = {
                 'service': 'eventNotification_eventNotificationTemplate',
                 'action': 'register',
                 'format': 1,
-                "notificationTemplateSystemName": _this.QandA_publicNotificationName,
-                "userParamsArray:0:objectType": "KalturaEventNotificationParameter",
-                "userParamsArray:0:key": "entryId",
-                "userParamsArray:0:value:objectType": "KalturaStringValue",
-                "userParamsArray:0:value:value": entryId
-            }
+                "notificationTemplateSystemName": eventName,
+            };
+            var index=0;
+            $.each( params, function(key,value) {
+                request["userParamsArray:"+index+":objectType"]="KalturaEventNotificationParameter";
+                request["userParamsArray:"+index+":key"]=key;
+                request["userParamsArray:"+index+":value:objectType"]="KalturaStringValue";
+                request["userParamsArray:"+index+":value:value"]=value;
+                index++;
+            });
 
-            _this.getKClient().doRequest(request, function(result) {
+            this.getKClient().doRequest(request, function(result) {
+                if (result.objectType==="KalturaAPIException") {
+                    mw.log("Error registering to "+eventName+" message:"+result.message+" ("+result.code+")");
+                    deferred.resolve(false);
+                    return;
+                }
                 var socket = io.connect(result.url);
+                _this.sockets[eventName]= socket;
 
                 socket.on('validated', function(){
-                    console.log("Connected to socket.");
+                    mw.log("Connected to socket for eventName "+eventName);
                     socket.emit('listen', result.key);
                 });
 
                 socket.on('connected', function(queueKey){
-                    console.log("Listening to queue [" + queueKey + "]");
+                    mw.log("Listening to queue [" + queueKey + "] for eventName "+eventName);
+                    deferred.resolve(true);
                 });
 
                 socket.on('message', function(queueKey, msg){
-                    console.log("[" + queueKey + "]: " +  String.fromCharCode.apply(null, new Uint8Array(msg.data)));
+                    var message=String.fromCharCode.apply(null, new Uint8Array(msg.data))
+                    mw.log("["+eventName+"][" + queueKey + "]: " +  message);
+                    var obj=JSON.parse(message);
+                    callback(obj);
                 });
             });
-        },
 
-        //Currently there is no notification, so we poll the API
-        registerItemNotification: function () {
-            var _this = this;
-
-            _this.requestCuePoints();
-            
-            _this.registerPublicNotificationItems();
-            
-            _this.registerUserNotificationItems();
+            return deferred;
         }
+
     };
 })(window.mw, window.jQuery, window.ko);
