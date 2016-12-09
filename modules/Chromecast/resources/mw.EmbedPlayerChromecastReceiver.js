@@ -246,19 +246,6 @@
                 _this.currentTime = _this.getPlayerElement().duration;
                 _this.updatePlayheadStatus();
             } );
-            //
-            //
-            // this.bindHelper( "AdSupport_preSequenceStart", function () {
-            //     debugger;
-            // } );
-            //
-            // this.bindHelper( "AdSupport_preSequenceComplete", function () {
-            //     debugger;
-            // } );
-            //
-            // this.bindHelper( "AdSupport_postSequenceStart", function () {
-            //     debugger;
-            // } );
         },
 
         /**

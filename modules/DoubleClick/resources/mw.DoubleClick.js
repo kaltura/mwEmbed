@@ -610,28 +610,28 @@
             }
         },
 
-        pauseAd: function ( isLinear ) {
-            var _this = this;
-            this.adPaused = true;
-            this.embedPlayer.paused = true;
-            $( this.embedPlayer ).trigger( 'onpause' );
-            var classes = "adCover";
-            if ( mw.isIE8() ) {
-                classes += " adCoverIE8";
-            }
-            var adCover = $( '<div class="' + classes + '"></div>' ).on( 'click', function () {
-                _this.embedPlayer.hideSpinnerOncePlaying();
-                _this.resumeAd( isLinear )
-            } );
-            $( ".adCover" ).remove();
-            if ( this.isChromeless ) {
-                $( ".videoDisplay" ).prepend( adCover );
-            } else {
-                if ( !mw.isIphone() ) {
-                    $( this.getAdContainer() ).append( adCover );
-                }
-            }
-            $( this.embedPlayer ).trigger( "onPlayerStateChange", [ "pause", this.embedPlayer.currentState ] );
+		pauseAd: function (isLinear) {
+			var _this = this;
+			this.adPaused = true;
+			this.embedPlayer.paused = true;
+			$(this.embedPlayer).trigger('onpause');
+			var classes = "adCover";
+			if (mw.isIE8()){
+				classes += " adCoverIE8";
+			}
+			var adCover = $('<div class="' + classes + '"></div>').on('click', function(){
+				_this.embedPlayer.hideSpinnerOncePlaying();
+				_this.resumeAd(isLinear)
+			});
+			$(".adCover").remove();
+			if (this.isChromeless){
+				$(".videoDisplay").prepend(adCover);
+			}else{
+				if (!mw.isIphone()){
+					$(this.getAdContainer()).append(adCover);
+				}
+			}
+			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
 
             if ( isLinear && !this.isNativeSDK ) {
                 this.clearSkipTimeout();
