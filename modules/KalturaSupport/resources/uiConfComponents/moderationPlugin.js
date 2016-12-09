@@ -8,6 +8,8 @@
 		 	"displayImportance": "low",
 		 	"align": "right",
 		 	"showTooltip": true,
+		 	"multiReasons": null,
+		 	"multiReasonsFlagType": 4,
 			"smartContainer": 'morePlugins',
 			"smartContainerCloseEvent": 'closeMenuOverlay',
 			"title": gM("ks-MODERATION-REPORT"),
@@ -72,10 +74,21 @@
 					.click(function() {
 						_this.submitFlag({
 							'flagType': $( '#flagType' ).val(),
+							'flagSelectedLabel': $( '#flagType option:selected').text(),
 							'flagComments': $( '#flagComments' ).val()
 						});
 					}) )
 			);
+			if(_this.getConfig("multiReasons")){
+				//replace 4 defaults with custom strings (may be more than 4)
+				$moderationMessage.find("option").each(function() {
+					$(this).remove();
+				});
+				_this.reasonsArr = _this.getConfig("multiReasons").split(",");
+				for(var i=0;i<_this.reasonsArr.length;i++){
+					$moderationMessage.find("select").append($( '<option />' ).attr( 'value', _this.getConfig("multiReasonsFlagType") ).text( _this.reasonsArr[i] ) );
+				}
+			}
 			if (mw.isAndroid()){
 				$moderationMessage.find(".icon-toggle").remove();
 			}
@@ -113,13 +126,17 @@
 			var _this = this;
 			this.getPlayer().triggerHelper( 'moderationSubmit', flagObj.flagType );
 			this.getPlayer().addPlayerSpinner();
+			var reasonText = flagObj.flagComments;
+			if(_this.reasonsArr){
+				reasonText = flagObj.flagSelectedLabel + " : " + reasonText;
+			}
 			this.getKalturaClient().doRequest( {
 				'service' : 'baseentry',
 				'action' : 'flag',
 				'moderationFlag:objectType' : 'KalturaModerationFlag',
 				'moderationFlag:flaggedEntryId' : _this.getPlayer().kentryid,
 				'moderationFlag:flagType' : flagObj.flagType,
-				'moderationFlag:comments' : flagObj.flagComments
+				'moderationFlag:comments' : reasonText
 			}, function( data ) {
 				_this.getPlayer().hideSpinner();
 				var $flagScreen = $( '<div />' )
