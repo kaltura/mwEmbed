@@ -183,49 +183,19 @@
             font-weight: bold;
         }
 
-        /* ------------------------------------------------- */
-        /* cast-watermark                                    */
-        /* ------------------------------------------------- */
-
         #receiver-wrapper[state="idle"] .cast-watermark {
             display: block;
         }
-
-        /* ------------------------------------------------- */
-        /* loading-spinner                                   */
-        /* ------------------------------------------------- */
 
         #receiver-wrapper[state="loading"] .loading-spinner,
         #receiver-wrapper[state="buffering"] .loading-spinner,
         #receiver-wrapper[state="playing"] .loading-spinner {
             display: block;
         }
-
-        /* ------------------------------------------------- */
-        /* media                                             */
-        /* ------------------------------------------------- */
-
-        /*
-        #receiver-wrapper[state="loading_media"] .gradient,
-        #receiver-wrapper[state="buffering"] .gradient {
-            display: block;
-            visibility: visible;
-        }
-
-        #receiver-wrapper[state="loading_media"] .overlay,
-        #receiver-wrapper[state="buffering"] .overlay {
-            display: block;
-        }
-
-        #receiver-wrapper[state="loading_media"] .media-info,
-        #receiver-wrapper[state="buffering"] .media-info {
-            display: block;
-        }*/
     </style>
     <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
     <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/mediaplayer/1.0.0/media_player.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" type="text/css" href="assets/animate.css">
     <script src="app_components/Logger.js"></script>
     <script src="app_components/IdleMgr.js"></script>
     <script src="app_components/StateMgr.js"></script>

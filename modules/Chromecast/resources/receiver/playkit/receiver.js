@@ -81,7 +81,7 @@ var MESSAGE_BUS_MAP = {
 };
 
 /**
- * Starts the receiver application and opening new session.
+ * Starts the receiver application and opening a new session.
  */
 function startReceiver() {
     AppState.setState( StateManager.State.LAUNCHING );
@@ -94,9 +94,6 @@ function startReceiver() {
     // Init media manager and setting his events
     mediaManager = new cast.receiver.MediaManager( initialVidElement );
     mediaManager.customizedStatusCallback = customizedStatusCallback.bind( this );
-
-    mediaManager.onMetadataLoadedOrig = mediaManager.onMetadataLoaded;
-    mediaManager.onMetadataLoaded = onMetadataLoaded.bind( this );
 
     mediaManager.onEndedOrig = mediaManager.onEnded;
     mediaManager.onEnded = onEnded.bind( this );
@@ -120,9 +117,7 @@ function startReceiver() {
     receiverManager.start();
 }
 
-/**
- * Media Manager Events
- */
+/***** Media Manager Events *****/
 
 /**
  * Override callback for media manager customizedStatusCallback.
@@ -151,41 +146,6 @@ function customizedStatusCallback( mediaStatus ) {
     }
     AppLogger.log( "MediaManager", "Returning senders status of " + mediaStatus.playerState );
     return mediaStatus;
-}
-
-/**
- * Override callback for media manager onMetadataLoaded.
- * The sender should send us metadata regarding the media ge chose to play.
- * After we extract this metadata, we will present it on the UI.
- */
-function onMetadataLoaded( event ) {
-    AppLogger.log( "MediaManager", "onMetadataLoaded", event );
-
-    var metadata;
-    metadata = event.message.media.metadata;
-    if ( !metadata ) {
-        metadata = {
-            title: 'Sintel',
-            subtitle: 'Trailer 1080p',
-            images: [ { url: 'http://cfvod.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/0_l1v5vzh3/version/100002/width/460/height/260' } ]
-        };
-    }
-
-    var titleElement = receiverWrapper.querySelector( '.media-title' );
-    titleElement.innerText = metadata.title;
-
-    var subtitleElement = receiverWrapper.querySelector( '.media-subtitle' );
-    subtitleElement.innerText = metadata.subtitle;
-
-    var imageUrl = null;
-    if ( metadata.images.length > 0 ) {
-        imageUrl = metadata.images[ 0 ].url;
-    }
-    var artworkElement = receiverWrapper.querySelector( '.media-artwork' );
-    artworkElement.style.backgroundImage = (imageUrl ? 'url("' + imageUrl.replace( /"/g, '\\"' ) + '")' : 'none');
-    artworkElement.style.display = (imageUrl ? '' : 'none');
-
-    mediaManager.onMetadataLoadedOrig( event );
 }
 
 /**
@@ -226,13 +186,16 @@ function onSeek( event ) {
 function onLoad( event ) {
     AppLogger.log( "MediaManager", "onLoad" );
     AppState.setState( StateManager.State.LOADING );
-    if ( event && event.data ) {
-        if ( !embedPlayerInitialized ) {
-            AppLogger.log( "MediaManager", "Embed player isn't initialized yet. Starting dynamic embed.", event );
-            embedPlayer( event );
-        }
-        else {
-            var embedConfig = event.data.media.customData.embedConfig;
+    if ( !embedPlayerInitialized ) {
+        AppLogger.log( "MediaManager", "Embed player isn't initialized yet. Starting dynamic embed.", event );
+        embedPlayer( event );
+    }
+    else {
+        var media = event.data.media;
+        var embedConfig = media.customData.embedConfig;
+        loadMetadata( media );
+        preloadMediaImages( media, function () {
+            showPreviewMediaMetadata();
             // If same entry is sent then reload, else perform changeMedia
             if ( kdp.evaluate( '{mediaProxy.entry.id}' ) === embedConfig[ 'entryID' ] ) {
                 AppLogger.log( "MediaManager", "Embed player already initialized with the same entry. Start replay.", event );
@@ -241,14 +204,86 @@ function onLoad( event ) {
                 AppLogger.log( "MediaManager", "Embed player already initialized with different entry. Change media.", event );
                 kdp.sendNotification( "changeMedia", { "entryId": embedConfig[ 'entryID' ] } );
             }
+        } );
+    }
+}
+
+/**
+ * Preloads media data that can be preloaded (usually images).
+ * @param media
+ * @param callback
+ */
+function preloadMediaImages( media, callback ) {
+    var imagesToPreload = [];
+    var counter = 0;
+    var images = [];
+
+    function imageLoaded() {
+        if ( ++counter === imagesToPreload.length ) {
+            callback();
+        }
+    }
+
+    // Try to preload image metadata
+    var thumbnailUrl = getMediaImageUrl( media );
+    if ( thumbnailUrl ) {
+        imagesToPreload.push( thumbnailUrl );
+    }
+    if ( imagesToPreload.length === 0 ) {
+        callback();
+    } else {
+        for ( var i = 0; i < imagesToPreload.length; i++ ) {
+            images[ i ] = new Image();
+            images[ i ].src = imagesToPreload[ i ];
+            images[ i ].onload = imageLoaded;
+            images[ i ].onerror = imageLoaded;
         }
     }
 }
 
 /**
+ * Loads the metadata for the given media.
+ * @param media
+ */
+function loadMetadata( media ) {
+    AppLogger.log( "MediaManager", "loadMetadata", media );
+    var metadata = media.metadata;
+    if ( media.metadata ) {
+        var titleElement = receiverWrapper.querySelector( '.media-title' );
+        titleElement.innerText = metadata.title;
+
+        var subtitleElement = receiverWrapper.querySelector( '.media-subtitle' );
+        subtitleElement.innerText = metadata.subtitle;
+
+        var imageUrl = getMediaImageUrl( media );
+        var artworkElement = receiverWrapper.querySelector( '.media-artwork' );
+        artworkElement.style.backgroundImage = (imageUrl ? 'url("' + imageUrl.replace( /"/g, '\\"' ) + '")' : 'none');
+        artworkElement.style.display = (imageUrl ? '' : 'none');
+    }
+}
+
+/**
+ * Returns the image url for the given media object.
+ * @param media
+ * @returns {*|Array}
+ */
+function getMediaImageUrl( media ) {
+    var metadata = media.metadata || {};
+    var images = metadata[ 'images' ] || [];
+    return images && images[ 0 ] && images[ 0 ][ 'url' ];
+}
+
+/**
+ * Display the media metadata UI on screen.
+ */
+function showPreviewMediaMetadata() {
+    $( '.gradient, .overlay, .media-info' ).each( function () {
+        $( this ).fadeIn();
+    } );
+}
+
+/**
  * Override callback for media manager onEnded.
- * We are overriding onEnded just in case we playing
- * ads.
  */
 function onEnded() {
     if ( allAdsCompleted ) {
@@ -258,9 +293,7 @@ function onEnded() {
     }
 }
 
-/**
- * Receiver Manager Events.
- */
+/***** Receiver Manager Events *****/
 
 /**
  * Override callback for receiver manager onReady.
@@ -349,10 +382,11 @@ function onMessage( event ) {
 
 /**
  * Loading the embed player to the Chromecast device.
- * @param req
+ * @param event
  */
-function embedPlayer( req ) {
-    var embedInfo = req.data.media.customData.embedConfig;
+function embedPlayer( event ) {
+    var media = event.data.media;
+    var embedInfo = media.customData.embedConfig;
     $.getScript( embedInfo.lib + "mwEmbedLoader.php" )
         .then( function () {
             setConfiguration( embedInfo );
@@ -361,23 +395,27 @@ function embedPlayer( req ) {
                 "wid": "_" + embedInfo.publisherID,
                 "uiconf_id": embedInfo.uiconfID,
                 "readyCallback": function ( playerID ) {
-                    var swapVideoElement = function () {
+                    loadMetadata( media );
+                    preloadMediaImages( media, function () {
+                        showPreviewMediaMetadata();
                         /**
                          * Switching the initial video element to Kaltura's
                          * video element after the embed process finished.
                          */
-                        $( "#initial-video-element" ).remove();
-                        mediaElement = $( kdp ).contents().contents().find( "video" )[ 0 ];
-                        mediaManager.setMediaElement( mediaElement );
-                    };
-                    embedPlayerInitialized = true;
-                    kdp = document.getElementById( playerID );
-                    swapVideoElement();
-                    if ( kdp.evaluate( '{doubleClick.plugin}' ) ) {
-                        addAdsBindings();
-                    }
+                        var swapVideoElement = function () {
+                            $( "#initial-video-element" ).remove();
+                            mediaElement = $( kdp ).contents().contents().find( "video" )[ 0 ];
+                            mediaManager.setMediaElement( mediaElement );
+                        };
+                        embedPlayerInitialized = true;
+                        kdp = document.getElementById( playerID );
+                        swapVideoElement();
+                        if ( kdp.evaluate( '{doubleClick.plugin}' ) ) {
+                            addAdsBindings();
+                        }
+                    } );
                 },
-                "flashvars": getFlashVars( req.data.currentTime, req.data.autoplay, embedInfo.flashVars ),
+                "flashvars": getFlashVars( event.data.currentTime, event.data.autoplay, embedInfo.flashVars ),
                 "cache_st": 1438601385,
                 "entry_id": embedInfo.entryID
             } );
