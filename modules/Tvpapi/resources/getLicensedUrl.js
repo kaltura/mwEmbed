@@ -39,12 +39,12 @@
             if (url) {
                 var config = this.getConfig();
 
-                var request = {}
+                var request = {};
                 switch(config.Type) {
                   case "Recording":
                     var mediaData = this.getProxyConfig();
                     var mediaSelectedFile = mediaData.Files.filter(function( file ) {
-                                                                return file. FileID == source.assetid;
+                                                                return file.FileID == source.assetid;
                                                             });
                     request = {
                         "objectType": "KalturaLicensedUrlRecordingRequest",
