@@ -734,7 +734,7 @@ DAL for Q&A Module
             });
         },
         
-        registerPublicNotificationItems: function() {
+        registerUserNotificationItems: function() {
             var _this = this;
 
             return this.registerNotification(_this.QandA_UserNotificationName,
@@ -747,10 +747,10 @@ DAL for Q&A Module
 
             return this.registerNotification(_this.QandA_CodeNotificationName,
                 {"entryId":_this.embedPlayer.kentryid},function(cuePoint) {
-                    _this.processQnA([cuePoint]);
+                    _this.processQnAState([cuePoint]);
                 });
         },
-        registerUserNotificationItems: function() {
+        registerPublicNotificationItems: function() {
 
             var _this = this;
 
@@ -796,15 +796,18 @@ DAL for Q&A Module
                         var message=String.fromCharCode.apply(null, new Uint8Array(msg.data))
                         mw.log("["+eventName+"][" + queueKey + "]: " +  message);
                         var obj=JSON.parse(message);
+                        _this.callback(obj);
+                        /*
                         if (_this.callbacks[queueKey]) {
                             _this.callbacks[queueKey](obj);
-                        }
+                        }*/
                     });
                     return this.deferred;
 
                 },
                 listen:function(eventName,cb) {
-                    this.callbacks[eventName] = cb;
+                   // this.callbacks[eventName] = cb;
+                    this.callback = cb;
                 },
                 emit:function(key,msg) {
                     this.socket.emit(key,msg)
@@ -812,7 +815,7 @@ DAL for Q&A Module
             }
         },
 
-        registerNotification:function(eventName,params,request,callback) {
+        registerNotification:function(eventName,params,callback) {
             var deferred = $.Deferred();
 
             var _this=this;
@@ -831,6 +834,7 @@ DAL for Q&A Module
                 request["userParamsArray:"+index+":value:value"]=value;
                 index++;
             });
+            mw.log("registering to ",request)
 
             this.getKClient().doRequest(request, function(result) {
                 if (result.objectType==="KalturaAPIException") {
