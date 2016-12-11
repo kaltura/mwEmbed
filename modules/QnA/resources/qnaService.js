@@ -208,12 +208,13 @@ DAL for Q&A Module
         QandA_ResponseProfileSystemName: "QandA",
         QandA_MetadataProfileSystemName: "Kaltura-QnA",
         QandA_cuePointTag: "qna",
-        QandA_publicNotificationName: "PUBLIC_QNA",
-        QandA_UserNotificationName: "USER_QNA",
+        QandA_publicNotificationName: "PUBLIC_QNA_NOTIFICATIONS",
+        QandA_UserNotificationName: "USER_QNA_NOTIFICATIONS_2",
+        QandA_CodeNotificationName: "CODE_QNA_NOTIFICATIONS",
         QandA_cuePointTypes: {"Question":1,"Answer":2, "Announcement":3},
         bootPromise:null,
         fullCuePointFetchingCalled:false,
-        sockets:{},
+        socketWrappers:{},
 
 
         init: function (embedPlayer, qnaPlugin) {
@@ -237,7 +238,7 @@ DAL for Q&A Module
             var _this=this;
             this.bootPromise = $.Deferred();
             //we first register to all notification before continue to get the existing cuepoints, so we don't get races and lost cue points
-            $.when( this.getMetaDataProfile(), this.registerPublicNotificationItems(),this.registerUserNotificationItems())
+            $.when( this.getMetaDataProfile(), this.registerPublicNotificationItems(),this.registerUserNotificationItems(),this.registerCodeNotificationItems())
                 .done(function( ) {
                     ///todo should we setInterval?
                     _this.bootPromise.resolve();
@@ -377,7 +378,7 @@ DAL for Q&A Module
                     },
                     false,
                     function (err) {
-                        mw.log("Error: " + this.bindPostfix + " could not add cue point. Error: " + err);
+                        mw.log("Error: " + _this.bindPostfix + " could not add cue point. Error: " + err);
                     });
             });
         },
@@ -741,6 +742,14 @@ DAL for Q&A Module
                 _this.processQnA([cuePoint]);
             });
         },
+        registerCodeNotificationItems: function() {
+            var _this = this;
+
+            return this.registerNotification(_this.QandA_CodeNotificationName,
+                {"entryId":_this.embedPlayer.kentryid},function(cuePoint) {
+                    _this.processQnA([cuePoint]);
+                });
+        },
         registerUserNotificationItems: function() {
 
             var _this = this;
@@ -752,11 +761,61 @@ DAL for Q&A Module
 
         },
 
+        socketWrapper: function() {
+            return {
+                socket: null,
+                callbacks:{},
+                connect: function(eventName, url) {
+                    if (this.deferred ) {
+                        return this.deferred;
+                    }
+                    this.deferred = $.Deferred();
+
+                    var _this=this;
+                    this.socket = io.connect(url);
+
+                    this.socket.on('validated', function(){
+                        mw.log("Connected to socket for eventName "+eventName);
+                        _this.deferred.resolve(true);
+                    });
+                    this.socket.on('disconnect', function () {
+                        log('push server was disconnected');
+                    });
+                    this.socket.on('reconnect', function () {
+                        log('push server was reconnected');
+                    });
+                    this.socket.on('reconnect_error', function (e) {
+                        log('push server reconnection failed '+e);
+                    });
+
+                    this.socket.on('connected', function(queueKey){
+                        mw.log("Listening to queue [" + queueKey + "] for eventName "+eventName);
+                    });
+
+                    this.socket.on('message', function(queueKey, msg){
+                        var message=String.fromCharCode.apply(null, new Uint8Array(msg.data))
+                        mw.log("["+eventName+"][" + queueKey + "]: " +  message);
+                        var obj=JSON.parse(message);
+                        if (_this.callbacks[queueKey]) {
+                            _this.callbacks[queueKey](obj);
+                        }
+                    });
+                    return this.deferred;
+
+                },
+                listen:function(eventName,cb) {
+                    this.callbacks[eventName] = cb;
+                },
+                emit:function(key,msg) {
+                    this.socket.emit(key,msg)
+                }
+            }
+        },
+
         registerNotification:function(eventName,params,request,callback) {
             var deferred = $.Deferred();
 
             var _this=this;
-
 
             var request = {
                 'service': 'eventNotification_eventNotificationTemplate',
@@ -779,24 +838,20 @@ DAL for Q&A Module
                     deferred.resolve(false);
                     return;
                 }
-                var socket = io.connect(result.url);
-                _this.sockets[eventName]= socket;
-
-                socket.on('validated', function(){
-                    mw.log("Connected to socket for eventName "+eventName);
-                    socket.emit('listen', result.key);
-                });
-
-                socket.on('connected', function(queueKey){
-                    mw.log("Listening to queue [" + queueKey + "] for eventName "+eventName);
-                    deferred.resolve(true);
-                });
-
-                socket.on('message', function(queueKey, msg){
-                    var message=String.fromCharCode.apply(null, new Uint8Array(msg.data))
-                    mw.log("["+eventName+"][" + queueKey + "]: " +  message);
-                    var obj=JSON.parse(message);
+                var socket = _this.socketWrappers[result.url];
+                if (!socket) {
+                    socket= _this.socketWrapper();
+                    _this.socketWrappers[result.url]=socket;
+                }
+                socket.listen(result.key,function(obj) {
                     callback(obj);
+                });
+
+                socket.connect(eventName, result.url).then(function() {
+
+                    socket.emit('listen', result.key);
+                    deferred.resolve(true);
+
                 });
             });
 
