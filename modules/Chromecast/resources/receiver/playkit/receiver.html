@@ -63,6 +63,10 @@
             opacity: 1;
         }
 
+        #media-area {
+            display: none;
+        }
+
         .loading-spinner {
             -webkit-animation: spin 1s infinite linear;
             height: 36px;
@@ -94,7 +98,6 @@
             left: 0;
             right: 0;
             top: 0;
-            display: none;
             opacity: 0.9;
             background: linear-gradient(
                     to top,
@@ -109,14 +112,12 @@
             left: 64px;
             bottom: 64px;
             right: 64px;
-            display: none;
             top: auto;
         }
 
         .media-info {
             padding-bottom: 0;
             display: flex;
-
         }
 
         .media-info .media-title {
@@ -182,20 +183,11 @@
             padding-right: 10px;
             font-weight: bold;
         }
-
-        #receiver-wrapper[state="idle"] .cast-watermark {
-            display: block;
-        }
-
-        #receiver-wrapper[state="loading"] .loading-spinner,
-        #receiver-wrapper[state="buffering"] .loading-spinner,
-        #receiver-wrapper[state="playing"] .loading-spinner {
-            display: block;
-        }
     </style>
     <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
     <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/mediaplayer/1.0.0/media_player.js"></script>
-    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"
+            integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
     <script src="app_components/Logger.js"></script>
     <script src="app_components/IdleMgr.js"></script>
     <script src="app_components/StateMgr.js"></script>
@@ -206,18 +198,20 @@
     <div id="kaltura_player" style=" width:98%; height: 98%; position: absolute; z-index: 1;"></div>
     <video id="initial-video-element"></video>
     <div id="logo" class="logo">
-        <div class="gradient animated fadeIn"></div>
-        <div class="overlay animated fadeIn">
-            <div class="media-info animated fadeIn">
-                <div class="media-artwork"></div>
-                <div class="media-text">
-                    <div class="media-title"></div>
-                    <div class="media-subtitle"></div>
+        <div id="media-area">
+            <div class="gradient"></div>
+            <div class="overlay">
+                <div class="media-info">
+                    <div class="media-artwork"></div>
+                    <div class="media-text">
+                        <div class="media-title"></div>
+                        <div class="media-subtitle"></div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="loading-spinner"></div>
-        <div class="cast-watermark"></div>
+        <div id="loading-spinner" class="loading-spinner"></div>
+        <div id="cast-watermark" class="cast-watermark"></div>
     </div>
 </div>
 <script>

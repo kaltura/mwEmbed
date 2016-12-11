@@ -9,7 +9,7 @@ var embedPlayerInitialized = false;
  */
 var debugMode = true;
 /**
- * The Kaltura player
+ * The Kaltura player.
  * @type {object}
  */
 var kdp = null;
@@ -64,11 +64,6 @@ var AppLogger = Logger.getInstance();
  */
 var AppState = new StateManager();
 /**
- * The id of the idle screen div.
- * @type {string}
- */
-var LOGO_ID = "logo";
-/**
  * The possible messages that sender can send to receiver
  * on the message bus and their callbacks.
  * @type {object}
@@ -84,7 +79,6 @@ var MESSAGE_BUS_MAP = {
  * Starts the receiver application and opening a new session.
  */
 function startReceiver() {
-    AppState.setState( StateManager.State.LAUNCHING );
     // Init receiver manager and setting his events
     receiverManager = cast.receiver.CastReceiverManager.getInstance();
     receiverManager.onReady = onReady.bind( this );
@@ -124,24 +118,18 @@ function startReceiver() {
  * In the next phases we will fully customize our application state here.
  */
 function customizedStatusCallback( mediaStatus ) {
-    if ( !embedPlayerInitialized ) {
-        return null;
-    }
     AppLogger.log( "MediaManager", "customizedStatusCallback", mediaStatus );
+    if ( mediaStatus.extendedStatus ) {
+        mediaStatus.playerState = mediaStatus.extendedStatus.playerState;
+    }
     if ( AppState.getState() !== mediaStatus.playerState ) {
-        AppState.setState( mediaStatus.playerState );
-        switch ( AppState.getState() ) {
-            case StateManager.State.PLAYING:
-                hideElement( LOGO_ID );
-                break;
-            case StateManager.State.IDLE:
-                if ( allAdsCompleted ) {
-                    showElement( LOGO_ID );
-                } else {
-                    mediaStatus.playerState = StateManager.State.PLAYING;
-                    AppState.setState( StateManager.State.PLAYING );
-                }
-                break;
+        if ( mediaStatus.playerState !== StateManager.State.IDLE ) {
+            AppState.setState( mediaStatus.playerState );
+        } else if ( mediaStatus.idleReason === "FINISHED" ) {
+            if ( !allAdsCompleted ) {
+                mediaStatus.playerState = StateManager.State.PLAYING;
+            }
+            AppState.setState( mediaStatus.playerState );
         }
     }
     AppLogger.log( "MediaManager", "Returning senders status of " + mediaStatus.playerState );
@@ -152,9 +140,10 @@ function customizedStatusCallback( mediaStatus ) {
  * Override callback for media manager onPause.
  */
 function onPause( event ) {
+    AppLogger.log( "MediaManager", "onPause", event );
     if ( !kdp.evaluate( "{sequenceProxy.isInSequence}" ) ) {
-        AppLogger.log( "MediaManager", "onPause", event );
         kdp.sendNotification( 'doPause' );
+        mediaManager.broadcastStatus( true );
     } else {
         AppLogger.log( "MediaManager", "Preventing pause during ad!!!", event );
     }
@@ -166,14 +155,15 @@ function onPause( event ) {
 function onPlay( event ) {
     AppLogger.log( "MediaManager", "onPlay", event );
     kdp.sendNotification( "doPlay" );
+    mediaManager.broadcastStatus( true );
 }
 
 /**
  * Override callback for media manager onSeek.
  */
 function onSeek( event ) {
+    AppLogger.log( "MediaManager", "onSeek", event );
     if ( !kdp.evaluate( "{sequenceProxy.isInSequence}" ) ) {
-        AppLogger.log( "MediaManager", "onSeek", event );
         mediaManager.onSeekOrig( event );
     } else {
         AppLogger.log( "MediaManager", "Preventing seek during ad!!!", event );
@@ -193,9 +183,8 @@ function onLoad( event ) {
     else {
         var media = event.data.media;
         var embedConfig = media.customData.embedConfig;
-        loadMetadata( media );
-        preloadMediaImages( media, function () {
-            showPreviewMediaMetadata();
+        loadMediaMetadata( media, function ( showPreview ) {
+            showPreviewMediaMetadata( showPreview );
             // If same entry is sent then reload, else perform changeMedia
             if ( kdp.evaluate( '{mediaProxy.entry.id}' ) === embedConfig[ 'entryID' ] ) {
                 AppLogger.log( "MediaManager", "Embed player already initialized with the same entry. Start replay.", event );
@@ -205,6 +194,34 @@ function onLoad( event ) {
                 kdp.sendNotification( "changeMedia", { "entryId": embedConfig[ 'entryID' ] } );
             }
         } );
+    }
+}
+
+/**
+ * Loads the metadata for the given media.
+ * @param media
+ * @param doneFunc
+ */
+function loadMediaMetadata( media, doneFunc ) {
+    AppLogger.log( "MediaManager", "loadMediaMetadata", media );
+    var metadata = media.metadata;
+    if ( media.metadata ) {
+        var titleElement = receiverWrapper.querySelector( '.media-title' );
+        titleElement.innerText = metadata.title;
+
+        var subtitleElement = receiverWrapper.querySelector( '.media-subtitle' );
+        subtitleElement.innerText = metadata.subtitle;
+
+        var imageUrl = getMediaImageUrl( media );
+        var artworkElement = receiverWrapper.querySelector( '.media-artwork' );
+        artworkElement.style.backgroundImage = (imageUrl ? 'url("' + imageUrl.replace( /"/g, '\\"' ) + '")' : 'none');
+        artworkElement.style.display = (imageUrl ? '' : 'none');
+
+        preloadMediaImages( media, function () {
+            doneFunc( true );
+        } );
+    } else {
+        doneFunc( false );
     }
 }
 
@@ -242,27 +259,6 @@ function preloadMediaImages( media, callback ) {
 }
 
 /**
- * Loads the metadata for the given media.
- * @param media
- */
-function loadMetadata( media ) {
-    AppLogger.log( "MediaManager", "loadMetadata", media );
-    var metadata = media.metadata;
-    if ( media.metadata ) {
-        var titleElement = receiverWrapper.querySelector( '.media-title' );
-        titleElement.innerText = metadata.title;
-
-        var subtitleElement = receiverWrapper.querySelector( '.media-subtitle' );
-        subtitleElement.innerText = metadata.subtitle;
-
-        var imageUrl = getMediaImageUrl( media );
-        var artworkElement = receiverWrapper.querySelector( '.media-artwork' );
-        artworkElement.style.backgroundImage = (imageUrl ? 'url("' + imageUrl.replace( /"/g, '\\"' ) + '")' : 'none');
-        artworkElement.style.display = (imageUrl ? '' : 'none');
-    }
-}
-
-/**
  * Returns the image url for the given media object.
  * @param media
  * @returns {*|Array}
@@ -276,10 +272,10 @@ function getMediaImageUrl( media ) {
 /**
  * Display the media metadata UI on screen.
  */
-function showPreviewMediaMetadata() {
-    $( '.gradient, .overlay, .media-info' ).each( function () {
-        $( this ).fadeIn();
-    } );
+function showPreviewMediaMetadata( showPreview ) {
+    if ( showPreview ) {
+        $( '#media-area' ).fadeIn();
+    }
 }
 
 /**
@@ -299,63 +295,25 @@ function onEnded() {
  * Override callback for receiver manager onReady.
  */
 function onReady() {
-    AppLogger.log( "receiverManager", "Receiver is ready." );
-
-    /**
-     * Gets the value from the url's query string.
-     * @param variable the key in the query string.
-     * @returns {*}
-     */
-    var getQueryVariable = function ( variable ) {
-        var query = decodeURIComponent( window.location.search.substring( 1 ) );
-        var vars = query.split( "&" );
-        for ( var i = 0; i < vars.length; i++ ) {
-            var pair = vars[ i ].split( "=" );
-            if ( pair[ 0 ] == variable ) {
-                return pair[ 1 ];
-            }
-        }
-        return false;
-    };
-
-    /**
-     * Sets the receiver's idle screen logo.
-     * If a query string with a logoUrl key added to the
-     * receiver application's url it will set it. Else,
-     * it will set Kaltura logo.
-     */
-    var setLogo = function () {
-        var logoUrl = getQueryVariable( 'logoUrl' );
-        if ( logoUrl ) {
-            // Set partner's logo
-            AppLogger.log( "receiver.js", "Displaying partner's idle screen.", { 'logoUrl': logoUrl } );
-            $( "#" + LOGO_ID ).css( 'background-image', 'url(' + logoUrl + ')' );
-        } else {
-            // Set Kaltura's default logo
-            AppLogger.log( "receiver.js", "Displaying Kaltura's idle screen." );
-            $( "#" + LOGO_ID ).css( 'background-image', "url('assets/kaltura_logo_small.png')" );
-        }
-    };
-
-    setLogo();
-    showElement( LOGO_ID );
+    AppLogger.log( "ReceiverManager", "Receiver is ready." );
+    AppState.setState( StateManager.State.LAUNCHING );
 }
 
 /**
  * Override callback for receiver manager onSenderConnected.
  */
 function onSenderConnected( event ) {
-    AppLogger.log( "receiverManager", "Sender connected. Number of current senders: " + receiverManager.getSenders().length, event );
+    AppLogger.log( "ReceiverManager", "Sender connected. Number of current senders: " + receiverManager.getSenders().length, event );
 }
 
 /**
  * Override callback for receiver manager onSenderDisconnected.
  */
 function onSenderDisconnected( event ) {
-    AppLogger.log( "receiverManager", "Sender disconnected. Number of current senders: " + receiverManager.getSenders().length, event );
+    AppLogger.log( "ReceiverManager", "Sender disconnected. Number of current senders: " + receiverManager.getSenders().length, event );
     if ( receiverManager.getSenders().length === 0
         && event.reason === cast.receiver.system.DisconnectReason.REQUESTED_BY_SENDER ) {
-        AppLogger.log( "receiverManager", "Last or only sender is disconnected, stops the app from running on the receiver." );
+        AppLogger.log( "ReceiverManager", "Last or only sender is disconnected, stops the app from running on the receiver." );
         receiverManager.stop();
     }
 }
@@ -368,15 +326,13 @@ function onSenderDisconnected( event ) {
  */
 function onMessage( event ) {
     AppLogger.log( "MessageBus", "onMessage", event );
-    if ( event && event.data ) {
-        try {
-            var payload = JSON.parse( event.data );
-            var msgType = payload.type;
-            MESSAGE_BUS_MAP[ msgType ]( payload );
-        }
-        catch ( e ) {
-            AppLogger.error( "MessageBus", e.message, event );
-        }
+    try {
+        var payload = JSON.parse( event.data );
+        var msgType = payload.type;
+        MESSAGE_BUS_MAP[ msgType ]( payload );
+    }
+    catch ( e ) {
+        AppLogger.error( "MessageBus", e.message, event );
     }
 }
 
@@ -395,21 +351,13 @@ function embedPlayer( event ) {
                 "wid": "_" + embedInfo.publisherID,
                 "uiconf_id": embedInfo.uiconfID,
                 "readyCallback": function ( playerID ) {
-                    loadMetadata( media );
-                    preloadMediaImages( media, function () {
-                        showPreviewMediaMetadata();
-                        /**
-                         * Switching the initial video element to Kaltura's
-                         * video element after the embed process finished.
-                         */
-                        var swapVideoElement = function () {
-                            $( "#initial-video-element" ).remove();
-                            mediaElement = $( kdp ).contents().contents().find( "video" )[ 0 ];
-                            mediaManager.setMediaElement( mediaElement );
-                        };
+                    loadMediaMetadata( media, function ( showPreview ) {
+                        showPreviewMediaMetadata( showPreview );
                         embedPlayerInitialized = true;
                         kdp = document.getElementById( playerID );
-                        swapVideoElement();
+                        mediaElement = $( kdp ).contents().contents().find( "video" )[ 0 ];
+                        mediaManager.setMediaElement( mediaElement );
+                        $( "#initial-video-element" ).remove();
                         if ( kdp.evaluate( '{doubleClick.plugin}' ) ) {
                             addAdsBindings();
                         }
@@ -525,22 +473,4 @@ function getFlashVars( senderPlayFrom, senderAutoPlay, senderFlashVars ) {
     catch ( e ) {
         return receiverFlashVars;
     }
-}
-
-/**
- * Hides DOM element from the receiver application UI.
- * @param id
- */
-function hideElement( id ) {
-    AppLogger.log( "receiver.js", "Hiding element with id: " + id );
-    $( "#" + id ).fadeOut();
-}
-
-/**
- * Shows DOM element on the receiver application UI.
- * @param id
- */
-function showElement( id ) {
-    AppLogger.log( "receiver.js", "Showing element with id: " + id );
-    $( "#" + id ).fadeIn();
 }
