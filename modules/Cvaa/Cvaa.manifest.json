@@ -1,0 +1,38 @@
+{
+  "cvaa": {
+    "featureCheckbox": true,
+    "label": "Closed captions options menu",
+    "description": "Adds closed captions options menu which extends existing styling.",
+    "type": "featuremenu",
+    "model": "config.plugins.cvaa",
+    "attributes": {
+      "cvaaBtnPosition": {
+        "label": "Button position",
+        "doc": "Captions position within the captions menu. possible options are first and last",
+        "initvalue": "first",
+        "type": "string"
+      },
+      "useCookie": {
+        "doc": "Should cookies be used to store user settings. if not used, settings will be set to default upon page refresh",
+        "type": "boolean",
+        "initvalue": true
+      },
+      "cvaaDefaultSettings": {
+        "label":"Default settings",
+        "doc": "Initial styling configuration options, if cookies are disabled these options will be set upon page refresh.",
+        "initvalue": {
+          "fontFamily": "Arial, Roboto, Arial Unicode Ms, Helvetica, Verdana, PT Sans Caption, sans-serif",
+          "fontColor": "#ffffff",
+          "fontOpacity": 100,
+          "fontSize": 12,
+          "backgroundColor": "#000000",
+          "backgroundOpacity": 75,
+          "windowColor": "#ffffff",
+          "windowOpacity": 0,
+          "edgeStyle": "none"
+        },
+        "type": "json"
+      }
+    }
+  }
+}
