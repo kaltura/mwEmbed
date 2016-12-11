@@ -40,6 +40,7 @@
                 var config = this.getConfig();
 
                 var request = {};
+
                 switch(config.Type) {
                   case "Recording":
                     var mediaData = this.getProxyConfig();

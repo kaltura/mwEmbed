@@ -1073,7 +1073,11 @@
 					delete settings.flashvars.jsonConfig;
 					url += '?' + this.getIframeRequest(widgetElm, settings);
 					requestData = {"jsonConfig": jsonConfig};
+					url += "&protocol=" + location.protocol.slice(0, -1);
+				} else {
+					url += "?protocol=" + location.protocol.slice(0, -1);
 				}
+
 				$.ajax({
 					type: "POST",
 					dataType: 'text',
@@ -1089,6 +1093,7 @@
 				})
 			} else {
 				var iframeUrl = this.getIframeUrl() + '?' + iframeRequest;
+				iframeUrl += "&protocol=" + location.protocol.slice(0, -1);
 				// Store iframe urls
 				this.iframeUrls[ targetId ] = iframeUrl;
 				// do an iframe payload request:
