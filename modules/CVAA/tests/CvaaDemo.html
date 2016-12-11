@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Cvaa Demo</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+	<script>mw.setConfig('forceMobileHTML5', true);</script>
+</head>
+<body>
+	<h1>Cvaa Demo</h1>
+	<div id="kaltura_player" style="width: 660px; height: 460px;float: left;"></div>
+	<br style="clear: both;" /><br />
+<script>
+	kWidget.featureConfig({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id': '20540612',
+		'entry_id': '0_uka1msg4',
+		'flashvars': {
+			'disableTrackElement': true,
+			'closedCaptions': {
+				'hideWhenEmpty': true,
+				'whiteListLanguagesCodes': 'en,es,fr,jp',
+				'layout': 'ontop',
+				'useCookie': true,
+				'defaultLanguageKey': 'en',
+				'fontsize': 12,
+				'bg' : '0x335544',
+				'fontFamily' : 'Arial',
+				'fontColor' : '0xFFFFFF',
+				'useGlow' : 'false',
+				'glowBlur': 4,
+				'glowColor': '0x133693'
+			},
+//			'disableTrackElement': false,
+//			"closedCaptions": {
+//				"useExternalClosedCaptions":true,
+//				"layout": "ontop",
+//				"displayCaptions": true,
+//				"fontFamily": "Arial",
+//				"fontsize": 12,
+//				"fontColor": "#000000",
+//				"bg": "#ffffff",
+//				"useGlow": false,
+//				"glowBlur": 0,
+//				"glowColor": "#ffffff",
+//				"showEmbeddedCaptions": false,
+//				"plugin": true
+//			},
+			'Cvaa':{
+				'plugin':true
+			}
+		},
+//		readyCallback: function(videoid){
+//			var kdp = document.getElementById(videoid);
+//			kdp.kBind( 'playerReady', function () {
+//				kdp.sendNotification("loadExternalClosedCaptions", {
+//					languages: [{
+//						"language": "English",
+//						"languageCode": "en",
+//						"isDefault": true,
+//						"label": "English",
+//						"type": "vtt",
+//						"src": "http://externaltests.dev.kaltura.com/player/resources/captions/texttags.vtt",
+//						"fileExt": "vtt",
+//						"nodeName": "track"
+//					},
+//						{
+//							"language": "French",
+//							"languageCode": "fr",
+//							"isDefault": false,
+//							"label": "French",
+//							"type": "vtt",
+//							"src": "http://externaltests.dev.kaltura.com/player/resources/captions/french.vtt",
+//							"fileExt": "vtt",
+//							"nodeName": "track"
+//						},
+//						{
+//							"language": "Hebrew",
+//							"languageCode": "he",
+//							"isDefault": false,
+//							"label": "Hebrew",
+//							"type": "vtt",
+//							"src": "http://externaltests.dev.kaltura.com/player/resources/captions/hebrew.vtt",
+//							"fileExt": "vtt",
+//							"nodeName": "track"
+//						}
+//					]
+//				});
+//			});
+//		}
+	});
+</script>
+</body>
+</html>

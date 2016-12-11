@@ -1,0 +1,91 @@
+<div class="cvaaScreenPanel">
+
+	<div id="cvaaPreview">
+		<span id="previewWindow">
+			<span id="previewText">
+				Captions look like this
+			</span>
+		</span>
+	</div>
+
+	<div class="column-1-4">
+		<div class="fontSizeContainer">
+			<input type="text" id="kFontSizeVal">
+			<div><%=cvaa.locale.fontSizelabel%></div>
+			<div id="kFontSize"></div>
+		</div>
+
+		<div class="fontFamilyContainer">
+			<div><%=cvaa.locale.fontFamilylabel%></div>
+			<select id="kFontFamily">
+				<% $.each(cvaaOptions.family, function(idx, property){ %>
+				<option value="<%=property.prop%>"><%=property.text%></option>
+				<% }); %>
+			</select>
+		</div>
+
+
+		<div class="fontEdgeStyleContainer">
+			<div><%=cvaa.locale.edgeStylelabel%></div>
+			<select id="kEdgeStyle">
+				<% $.each(cvaaOptions.edgeStyle, function(idx, property){ %>
+				<option value="<%=property.prop%>"><%=property.text%></option>
+				<% }); %>
+			</select>
+		</div>
+	</div>
+
+	<div class="column-1-2">
+			<ul class="colorContainer">
+				<div><%=cvaa.locale.fontColorlabel%></div>
+				<% $.each(cvaaOptions.color, function(idx, property){ %>
+				<li id="kFontColor" value="<%=property.prop%>">
+					<span class=<%=property.text%>></span>
+				</li>
+				<% }); %>
+			</ul>
+
+			<ul class="colorContainer">
+				<div><%=cvaa.locale.backgroundColorlabel%></div>
+				<% $.each(cvaaOptions.color, function(idx, property){ %>
+				<li id="kBackgroundColor" value="<%=property.prop%>">
+					<span class=<%=property.text%>></span>
+				</li>
+				<% }); %>
+			</ul>
+
+
+			<ul class="colorContainer">
+				<div><%=cvaa.locale.windowColorlabel%></div>
+				<% $.each(cvaaOptions.color, function(idx, property){ %>
+				<li id="kWindowColor" value="<%=property.prop%>">
+					<span class=<%=property.text%>></span>
+				</li>
+				<% }); %>
+			</ul>
+	</div>
+
+	<div class="column-1-4">
+		<div class="fontOpacityContainer">
+			<input type="text" id="kFontOpacityVal">
+			<div><%=cvaa.locale.fontOplabel%></div>
+			<div id="kFontOpacity"></div>
+		</div>
+		<div class="backgroundOpacityContainer">
+			<input type="text" id="kBackgroundOpacityVal">
+			<div><%=cvaa.locale.backgroundOpLabel%></div>
+			<div id="kBackgroundOpacity"></div>
+		</div>
+		<div class="windowOpacityContainer">
+			<input type="text" id="kWindowOpacityVal">
+			<div><%=cvaa.locale.windowOplabel%></div>
+			<div id="kWindowOpacity"></div>
+		</div>
+	</div>
+
+	<div id="cvaaButtons">
+		<button type="button" class="resetCvaaSettings">Reset to default</button>
+		<button type="button" class="saveCvaaSettings">Save settings</button>
+	</div>
+
+</div>

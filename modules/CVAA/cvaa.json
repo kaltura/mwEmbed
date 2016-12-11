@@ -1,0 +1,12 @@
+{
+    "Cvaa": {
+        "scripts": [
+            "resources/cvaa.js"
+        ],
+        "dependencies": "mw.KBaseScreen",
+        "kalturaPluginName": "cvaa",
+        "styles": "resources/cvaa.css",
+        "messageFile": "Cvaa.i18n.json",
+        "templates":"../CVvaa/resources/cvaa.tmpl.html"
+    }
+}
