@@ -7,7 +7,7 @@ var embedPlayerInitialized = false;
  * Indicates if we're running in debug mode.
  * @type {boolean}
  */
-var debugMode = true;
+var debugMode = false;
 /**
  * The Kaltura player.
  * @type {object}
@@ -57,7 +57,7 @@ var postSequenceStart = false;
 /**
  * The application logger.
  */
-var AppLogger = Logger.getInstance();
+var AppLogger = Logger.getInstance( debugMode );
 /**
  * The application state manager.
  * @type {StateManager}
@@ -79,6 +79,9 @@ var MESSAGE_BUS_MAP = {
  * Starts the receiver application and opening a new session.
  */
 function startReceiver() {
+    if ( debugMode ) {
+        cast.receiver.logger.setLevelValue( cast.receiver.LoggerLevel.DEBUG );
+    }
     // Init receiver manager and setting his events
     receiverManager = cast.receiver.CastReceiverManager.getInstance();
     receiverManager.onReady = onReady.bind( this );
@@ -86,7 +89,7 @@ function startReceiver() {
     receiverManager.onSenderDisconnected = onSenderDisconnected.bind( this );
 
     // Init media manager and setting his events
-    mediaManager = new cast.receiver.MediaManager( initialVidElement );
+    mediaManager = new cast.receiver.MediaManager( document.getElementById( 'initial-video-element' ) );
     mediaManager.customizedStatusCallback = customizedStatusCallback.bind( this );
 
     mediaManager.onEndedOrig = mediaManager.onEnded;
@@ -176,24 +179,25 @@ function onSeek( event ) {
 function onLoad( event ) {
     AppLogger.log( "MediaManager", "onLoad" );
     AppState.setState( StateManager.State.LOADING );
+
+    loadMediaMetadata( event.data.media ).then( function ( showPreview ) {
+        showPreviewMediaMetadata( showPreview );
+    } );
+
     if ( !embedPlayerInitialized ) {
         AppLogger.log( "MediaManager", "Embed player isn't initialized yet. Starting dynamic embed.", event );
         embedPlayer( event );
     }
     else {
-        var media = event.data.media;
         var embedConfig = media.customData.embedConfig;
-        loadMediaMetadata( media, function ( showPreview ) {
-            showPreviewMediaMetadata( showPreview );
-            // If same entry is sent then reload, else perform changeMedia
-            if ( kdp.evaluate( '{mediaProxy.entry.id}' ) === embedConfig[ 'entryID' ] ) {
-                AppLogger.log( "MediaManager", "Embed player already initialized with the same entry. Start replay.", event );
-                kdp.sendNotification( "doReplay" );
-            } else {
-                AppLogger.log( "MediaManager", "Embed player already initialized with different entry. Change media.", event );
-                kdp.sendNotification( "changeMedia", { "entryId": embedConfig[ 'entryID' ] } );
-            }
-        } );
+        // If same entry is sent then reload, else perform changeMedia
+        if ( kdp.evaluate( '{mediaProxy.entry.id}' ) === embedConfig[ 'entryID' ] ) {
+            AppLogger.log( "MediaManager", "Embed player already initialized with the same entry. Start replay.", event );
+            kdp.sendNotification( "doReplay" );
+        } else {
+            AppLogger.log( "MediaManager", "Embed player already initialized with different entry. Change media.", event );
+            kdp.sendNotification( "changeMedia", { "entryId": embedConfig[ 'entryID' ] } );
+        }
     }
 }
 
@@ -202,8 +206,9 @@ function onLoad( event ) {
  * @param media
  * @param doneFunc
  */
-function loadMediaMetadata( media, doneFunc ) {
+function loadMediaMetadata( media ) {
     AppLogger.log( "MediaManager", "loadMediaMetadata", media );
+    var deferred = $.Deferred();
     var metadata = media.metadata;
     if ( media.metadata ) {
         var titleElement = receiverWrapper.querySelector( '.media-title' );
@@ -217,27 +222,29 @@ function loadMediaMetadata( media, doneFunc ) {
         artworkElement.style.backgroundImage = (imageUrl ? 'url("' + imageUrl.replace( /"/g, '\\"' ) + '")' : 'none');
         artworkElement.style.display = (imageUrl ? '' : 'none');
 
-        preloadMediaImages( media, function () {
-            doneFunc( true );
+        preloadMediaImages( media ).then( function () {
+            deferred.resolve( true );
         } );
     } else {
-        doneFunc( false );
+        deferred.resolve( false );
     }
+    return deferred.promise();
 }
 
 /**
  * Preloads media data that can be preloaded (usually images).
  * @param media
- * @param callback
  */
-function preloadMediaImages( media, callback ) {
+function preloadMediaImages( media ) {
+    AppLogger.log( "MediaManager", "preloadMediaImages" );
+    var deferred = $.Deferred();
     var imagesToPreload = [];
     var counter = 0;
     var images = [];
 
     function imageLoaded() {
         if ( ++counter === imagesToPreload.length ) {
-            callback();
+            deferred.resolve();
         }
     }
 
@@ -247,7 +254,7 @@ function preloadMediaImages( media, callback ) {
         imagesToPreload.push( thumbnailUrl );
     }
     if ( imagesToPreload.length === 0 ) {
-        callback();
+        deferred.resolve();
     } else {
         for ( var i = 0; i < imagesToPreload.length; i++ ) {
             images[ i ] = new Image();
@@ -256,6 +263,7 @@ function preloadMediaImages( media, callback ) {
             images[ i ].onerror = imageLoaded;
         }
     }
+    return deferred.promise();
 }
 
 /**
@@ -351,17 +359,14 @@ function embedPlayer( event ) {
                 "wid": "_" + embedInfo.publisherID,
                 "uiconf_id": embedInfo.uiconfID,
                 "readyCallback": function ( playerID ) {
-                    loadMediaMetadata( media, function ( showPreview ) {
-                        showPreviewMediaMetadata( showPreview );
-                        embedPlayerInitialized = true;
-                        kdp = document.getElementById( playerID );
-                        mediaElement = $( kdp ).contents().contents().find( "video" )[ 0 ];
-                        mediaManager.setMediaElement( mediaElement );
-                        $( "#initial-video-element" ).remove();
-                        if ( kdp.evaluate( '{doubleClick.plugin}' ) ) {
-                            addAdsBindings();
-                        }
-                    } );
+                    embedPlayerInitialized = true;
+                    kdp = document.getElementById( playerID );
+                    mediaElement = $( kdp ).contents().contents().find( "video" )[ 0 ];
+                    mediaManager.setMediaElement( mediaElement );
+                    $( "#initial-video-element" ).remove();
+                    if ( kdp.evaluate( '{doubleClick.plugin}' ) ) {
+                        addAdsBindings();
+                    }
                 },
                 "flashvars": getFlashVars( event.data.currentTime, event.data.autoplay, embedInfo.flashVars ),
                 "cache_st": 1438601385,
@@ -407,8 +412,6 @@ function setConfiguration( embedInfo ) {
     mw.setConfig( "EmbedPlayer.HidePosterOnStart", true );
     if ( embedInfo.debugKalturaPlayer == true ) {
         mw.setConfig( "debug", true );
-        mw.setConfig( "debugTarget", "kdebug" );
-        mw.setConfig( "autoScrollDebugTarget", true );
     }
     mw.setConfig( "chromecastReceiver", true );
     mw.setConfig( "Kaltura.ExcludedModules", "chromecast" );
@@ -463,12 +466,10 @@ function getFlashVars( senderPlayFrom, senderAutoPlay, senderFlashVars ) {
         }
         if ( !senderFlashVars ) {
             return receiverFlashVars;
-        } else if ( typeof senderFlashVars === 'object' ) {
-            return extend( receiverFlashVars, senderFlashVars );
+        } else if ( typeof senderFlashVars === 'string' ) {
+            senderFlashVars = JSON.parse( senderFlashVars );
         }
-        else if ( typeof senderFlashVars === 'string' ) {
-            return extend( receiverFlashVars, JSON.parse( senderFlashVars ) );
-        }
+        return extend( receiverFlashVars, senderFlashVars );
     }
     catch ( e ) {
         return receiverFlashVars;

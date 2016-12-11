@@ -1,11 +1,12 @@
 var Logger = (function () {
     var instance;
 
-    function createInstance() {
-        return new LoggerManager();
+    function createInstance( debugMode ) {
+        return new LoggerManager( debugMode );
     }
 
-    function LoggerManager() {
+    function LoggerManager( debugMode ) {
+        this.debugMode = debugMode;
     }
 
     LoggerManager.prototype.log = function ( comp, msg, opt_data ) {
@@ -21,6 +22,9 @@ var Logger = (function () {
     };
 
     LoggerManager.prototype.writeToConsole_ = function ( method, comp, msg, opt_data ) {
+        if ( !this.debugMode ) {
+            return;
+        }
         var msg_array = this.getMessage_( comp, msg, opt_data );
         switch ( method ) {
             case 'log':
@@ -43,9 +47,9 @@ var Logger = (function () {
     };
 
     return {
-        getInstance: function () {
+        getInstance: function ( debugMode ) {
             if ( !instance ) {
-                instance = createInstance();
+                instance = createInstance( debugMode );
             }
             return instance;
         }
