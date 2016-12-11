@@ -214,8 +214,6 @@ DAL for Q&A Module
         QandA_cuePointTypes: {"Question":1,"Answer":2, "Announcement":3},
         bootPromise:null,
         fullCuePointFetchingCalled:false,
-        socketWrappers:{},
-
 
         init: function (embedPlayer, qnaPlugin) {
             var _this = this;
@@ -224,6 +222,7 @@ DAL for Q&A Module
             // Setup player ref:
             this.embedPlayer = embedPlayer;
             this.qnaPlugin = qnaPlugin;
+            this.kPushServerNotification=new mw.KPushServerNotification(embedPlayer);
 
             if (embedPlayer.isLive()) {
                 this.requestCuePoints();
@@ -737,7 +736,7 @@ DAL for Q&A Module
         registerUserNotificationItems: function() {
             var _this = this;
 
-            return this.registerNotification(_this.QandA_UserNotificationName,
+            return this.kPushServerNotification.registerNotification(_this.QandA_UserNotificationName,
                 {"entryId":_this.embedPlayer.kentryid,"userId":_this.userId},function(cuePoint) {
                 _this.processQnA([cuePoint]);
             });
@@ -745,7 +744,7 @@ DAL for Q&A Module
         registerCodeNotificationItems: function() {
             var _this = this;
 
-            return this.registerNotification(_this.QandA_CodeNotificationName,
+            return this.kPushServerNotification.registerNotification(_this.QandA_CodeNotificationName,
                 {"entryId":_this.embedPlayer.kentryid},function(cuePoint) {
                     _this.processQnAState([cuePoint]);
                 });
@@ -754,112 +753,11 @@ DAL for Q&A Module
 
             var _this = this;
 
-            return this.registerNotification(this.QandA_publicNotificationName,
+            return this.kPushServerNotification.registerNotification(this.QandA_publicNotificationName,
                 {"entryId":_this.embedPlayer.kentryid},function(cuePoint) {
                 _this.processQnA([cuePoint]);
             });
 
-        },
-
-        socketWrapper: function() {
-            return {
-                socket: null,
-                callbacks:{},
-                connect: function(eventName, url) {
-                    if (this.deferred ) {
-                        return this.deferred;
-                    }
-                    this.deferred = $.Deferred();
-
-                    var _this=this;
-                    this.socket = io.connect(url);
-
-                    this.socket.on('validated', function(){
-                        mw.log("Connected to socket for eventName "+eventName);
-                        _this.deferred.resolve(true);
-                    });
-                    this.socket.on('disconnect', function () {
-                        log('push server was disconnected');
-                    });
-                    this.socket.on('reconnect', function () {
-                        log('push server was reconnected');
-                    });
-                    this.socket.on('reconnect_error', function (e) {
-                        log('push server reconnection failed '+e);
-                    });
-
-                    this.socket.on('connected', function(queueKey){
-                        mw.log("Listening to queue [" + queueKey + "] for eventName "+eventName);
-                    });
-
-                    this.socket.on('message', function(queueKey, msg){
-                        var message=String.fromCharCode.apply(null, new Uint8Array(msg.data))
-                        mw.log("["+eventName+"][" + queueKey + "]: " +  message);
-                        var obj=JSON.parse(message);
-                        _this.callback(obj);
-                        /*
-                        if (_this.callbacks[queueKey]) {
-                            _this.callbacks[queueKey](obj);
-                        }*/
-                    });
-                    return this.deferred;
-
-                },
-                listen:function(eventName,cb) {
-                   // this.callbacks[eventName] = cb;
-                    this.callback = cb;
-                },
-                emit:function(key,msg) {
-                    this.socket.emit(key,msg)
-                }
-            }
-        },
-
-        registerNotification:function(eventName,params,callback) {
-            var deferred = $.Deferred();
-
-            var _this=this;
-
-            var request = {
-                'service': 'eventNotification_eventNotificationTemplate',
-                'action': 'register',
-                'format': 1,
-                "notificationTemplateSystemName": eventName,
-            };
-            var index=0;
-            $.each( params, function(key,value) {
-                request["userParamsArray:"+index+":objectType"]="KalturaEventNotificationParameter";
-                request["userParamsArray:"+index+":key"]=key;
-                request["userParamsArray:"+index+":value:objectType"]="KalturaStringValue";
-                request["userParamsArray:"+index+":value:value"]=value;
-                index++;
-            });
-            mw.log("registering to ",request)
-
-            this.getKClient().doRequest(request, function(result) {
-                if (result.objectType==="KalturaAPIException") {
-                    mw.log("Error registering to "+eventName+" message:"+result.message+" ("+result.code+")");
-                    deferred.resolve(false);
-                    return;
-                }
-                var socket = _this.socketWrappers[result.url];
-                if (!socket) {
-                    socket= _this.socketWrapper();
-                    _this.socketWrappers[result.url]=socket;
-                }
-                socket.listen(result.key,function(obj) {
-                    callback(obj);
-                });
-
-                socket.connect(eventName, result.url).then(function() {
-
-                    socket.emit('listen', result.key);
-                    deferred.resolve(true);
-
-                });
-            });
-
-            return deferred;
         }
 
     };
