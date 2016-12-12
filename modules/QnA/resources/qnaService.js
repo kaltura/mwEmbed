@@ -209,7 +209,7 @@ DAL for Q&A Module
         QandA_MetadataProfileSystemName: "Kaltura-QnA",
         QandA_cuePointTag: "qna",
         QandA_publicNotificationName: "PUBLIC_QNA_NOTIFICATIONS",
-        QandA_UserNotificationName: "USER_QNA_NOTIFICATIONS_2",
+        QandA_UserNotificationName: "USER_QNA_NOTIFICATIONS",
         QandA_CodeNotificationName: "CODE_QNA_NOTIFICATIONS",
         QandA_cuePointTypes: {"Question":1,"Answer":2, "Announcement":3},
         bootPromise:null,
@@ -736,16 +736,25 @@ DAL for Q&A Module
         registerUserNotificationItems: function() {
             var _this = this;
 
-            return this.kPushServerNotification.registerNotification(_this.QandA_UserNotificationName,
-                {"entryId":_this.embedPlayer.kentryid,"userId":_this.userId},function(cuePoint) {
-                _this.processQnA([cuePoint]);
-            });
+            var params = {
+                "entryId":_this.embedPlayer.kentryid,
+                "userId":_this.userId
+            };
+
+            return this.kPushServerNotification.registerNotification(_this.QandA_UserNotificationName,params,
+                function(cuePoint) {
+                    _this.processQnA([cuePoint]);
+                });
         },
         registerCodeNotificationItems: function() {
             var _this = this;
 
-            return this.kPushServerNotification.registerNotification(_this.QandA_CodeNotificationName,
-                {"entryId":_this.embedPlayer.kentryid},function(cuePoint) {
+            var params = {
+                "entryId":_this.embedPlayer.kentryid
+            };
+
+            return this.kPushServerNotification.registerNotification(_this.QandA_CodeNotificationName,params,
+                function(cuePoint) {
                     _this.processQnAState([cuePoint]);
                 });
         },
@@ -753,10 +762,15 @@ DAL for Q&A Module
 
             var _this = this;
 
-            return this.kPushServerNotification.registerNotification(this.QandA_publicNotificationName,
-                {"entryId":_this.embedPlayer.kentryid},function(cuePoint) {
-                _this.processQnA([cuePoint]);
-            });
+            var params = {
+                "entryId":_this.embedPlayer.kentryid
+            };
+
+            return this.kPushServerNotification.registerNotification(_this.QandA_publicNotificationName,params,
+                function(cuePoint) {
+                    _this.processQnA([cuePoint]);
+                });
+
 
         }
 

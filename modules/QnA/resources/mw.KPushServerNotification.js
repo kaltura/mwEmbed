@@ -4,9 +4,12 @@
         return this.init(embedPlayer);
     }
 
-    function SocketWrapper() {
+
+    function SocketWrapper(key) {
         this.socket=null;
-        this.callbacks={};
+        this.key=key;
+        this.listenKeys={};
+        this.callbackMap={};
     }
 
     SocketWrapper.prototype.connect=function(eventName, url) {
@@ -23,39 +26,53 @@
             _this.deferred.resolve(true);
         });
         this.socket.on('disconnect', function () {
-            log('push server was disconnected');
+            mw.log('push server was disconnected');
         });
         this.socket.on('reconnect', function () {
-            log('push server was reconnected');
+            mw.log('push server was reconnected');
         });
         this.socket.on('reconnect_error', function (e) {
-            log('push server reconnection failed '+e);
+            mw.log('push server reconnection failed '+e);
         });
 
-        this.socket.on('connected', function(queueKey){
-            mw.log("Listening to queue [" + queueKey + "] for eventName "+eventName);
+        this.socket.on('connected', function(queueKey, key) {
+            if (_this.listenKeys[key]) {
+                _this.listenKeys[key].deferred.resolve(queueKey);
+                _this.callbackMap[queueKey] = _this.listenKeys[key];
+                mw.log("Listening to queue [" + queueKey + "] for eventName " + eventName+ " key "+key);
+            } else {
+                mw.log("Cannot listen to queue [" + queueKey + "] for eventName " + eventName+ " key "+key);
+            }
         });
 
         this.socket.on('message', function(queueKey, msg){
             var message=String.fromCharCode.apply(null, new Uint8Array(msg.data))
             mw.log("["+eventName+"][" + queueKey + "]: " +  message);
             var obj=JSON.parse(message);
-            _this.callback(obj);
-            /*
-             if (_this.callbacks[queueKey]) {
-             _this.callbacks[queueKey](obj);
-             }*/
+            ///_this.callback(obj);
+            if (_this.callbackMap[queueKey]) {
+                _this.callbackMap[queueKey].cb(obj);
+            }
         });
         return this.deferred;
 
     };
-    SocketWrapper.prototype.listen=function(eventName,cb) {
-        // this.callbacks[eventName] = cb;
-        this.callback = cb;
+    SocketWrapper.prototype.listen=function(key, cb) {
+
+        var deferred = $.Deferred();
+
+        this.listenKeys[key] = {
+            deferred: deferred,
+            cb: cb
+        };
+
+        this.socket.emit('listen', key);
+
     };
-    SocketWrapper.prototype.emit=function(key,msg) {
-        this.socket.emit(key,msg)
-    };
+    SocketWrapper.prototype.registerReconnect=function(cb) {
+
+        this.socket.on('reconnect_error', cb);
+    }
 
 
     mw.KPushServerNotification.prototype = {
@@ -86,7 +103,7 @@
                 'service': 'eventNotification_eventNotificationTemplate',
                 'action': 'register',
                 'format': 1,
-                "notificationTemplateSystemName": eventName,
+                "notificationTemplateSystemName": eventName
             };
             var index=0;
             $.each( params, function(key,value) {
@@ -104,25 +121,27 @@
                     deferred.resolve(false);
                     return;
                 }
-                var socket = _this.socketWrappers[result.url];
+                var socketKey=result.url.replace(/^(.*\/\/[^\/?#]*).*$/,"$1");
+                var socket = _this.socketWrappers[socketKey];
                 if (!socket) {
-                    socket= new SocketWrapper();
-                    _this.socketWrappers[result.url]=socket;
+                    socket= new SocketWrapper(socketKey);
+                    _this.socketWrappers[socketKey]=socket;
                 }
-                socket.listen(result.key,function(obj) {
-                    callback(obj);
-                });
 
                 socket.connect(eventName, result.url).then(function() {
 
-                    socket.emit('listen', result.key);
+                    socket.listen(result.key,function(obj) {
+                        callback(obj);
+                    });
                     deferred.resolve(true);
 
                 });
+
             });
 
             return deferred;
         }
     }
+
 })(window.mw, window.jQuery);
 
