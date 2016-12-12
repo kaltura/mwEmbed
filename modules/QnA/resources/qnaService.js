@@ -201,8 +201,6 @@ DAL for Q&A Module
         bindPostfix: '.KQnaService',
         QnaThreads: ko.observableArray(),
         AnswerOnAirQueue: ko.observableArray(),
-        lastUpdateTime: -1,
-        moduleStatusLastUpdateTime: -1,
         QandA_ResponseProfile: "QandA_ResponseProfile",
         QandA_ResponseProfileSystemName: "QandA",
         QandA_MetadataProfileSystemName: "Kaltura-QnA",
@@ -211,7 +209,6 @@ DAL for Q&A Module
         QandA_UserNotificationName: "USER_QNA_NOTIFICATIONS",
         QandA_CodeNotificationName: "CODE_QNA_NOTIFICATIONS",
         QandA_cuePointTypes: {"Question":1,"Answer":2, "Announcement":3},
-        fullCuePointFetchingCalled:false,
 
         init: function (embedPlayer, qnaPlugin) {
             var _this = this;
@@ -224,12 +221,6 @@ DAL for Q&A Module
 
             if (embedPlayer.isLive()) {
 
-                this.kPushServerNotification.on('reconnect', function () {
-                    //check if we already got a request
-                    if (_this.fullCuePointFetchingCalled) {
-                    //    _this.requestCuePoints();
-                    }
-                });
                 //we first register to all notification before continue to get the existing cuepoints, so we don't get races and lost cue points
                 $.when(this.getMetaDataProfile(), this.registerPublicNotificationItems(), this.registerUserNotificationItems(), this.registerCodeNotificationItems())
                     .done(function () {
@@ -548,9 +539,6 @@ DAL for Q&A Module
                 var item=_this.annotationCuePointToQnaEntry(cuePoint);
                 if (item) {
 
-                    if (_this.fullCuePointFetchingCalled && _this.lastUpdateTime < cuePoint.updatedAt) {
-                        _this.lastUpdateTime = cuePoint.updatedAt;
-                    }
                     if (item.getType() === "AnswerOnAir"){
 
                         _this.addOrUpdateAnswerOnAir(item);
@@ -570,9 +558,6 @@ DAL for Q&A Module
             var disableModule = true;
             var announcementOnly = false;
 
-            if (this.fullCuePointFetchingCalled) {
-                this.moduleStatusLastUpdateTime = cuePoint.updatedAt;
-            }
             //TODO remove this once all procuders app will be upgraded to latest
             if (cuePoint.code === "ENABLE_QNA"){
                 disableModule = false;
@@ -659,11 +644,6 @@ DAL for Q&A Module
                 'filter:advancedSearch:items:item2:value': "AnswerOnAir"
             };
 
-            var lastUpdatedAt = _this.lastUpdateTime;
-            // Only add lastUpdatedAt filter if any cue points already received
-            if (lastUpdatedAt > 0) {
-                request['filter:updatedAtGreaterThanOrEqual'] = lastUpdatedAt;
-            }
 
             // build list code cue point request for qna settings (checking both new and old tags for BC)
             var codeCuePointListRequest = {
@@ -678,11 +658,6 @@ DAL for Q&A Module
             };
 
 
-            var moduleStatusLastUpdateTime = this.moduleStatusLastUpdateTime + 1;
-            // Only add lastUpdatedAt filter if any cue points already received
-            if (moduleStatusLastUpdateTime > 0) {
-                codeCuePointListRequest['filter:updatedAtGreaterThanOrEqual'] = moduleStatusLastUpdateTime;
-            }
 
             this.getKClient().doRequest( [request, codeCuePointListRequest],
                 function (results) {
@@ -695,7 +670,6 @@ DAL for Q&A Module
                         mw.log("Error:: KCuePoints could not retrieve live cuepoints");
                         return;
                     }
-                    _this.fullCuePointFetchingCalled=true;
 
                     _this.processQnA(data.objects);
 

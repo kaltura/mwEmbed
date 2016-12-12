@@ -43,6 +43,13 @@
                 _this.reconnectCB();
             }
         });
+
+        setTimeout(function() {
+            if (_this.reconnectCB) {
+                _this.reconnectCB();
+            }
+
+        },5000);
         this.socket.on('reconnect_error', function (e) {
             mw.log('push server reconnection failed '+e);
         });
@@ -151,12 +158,12 @@
 
             function emitEvents(name) {
 
-                var events=this.events[name];
+                var events=_this.events[name];
 
                 if (events) {
-                    $.each(this.events[name],function(event) {
+                    $.each(_this.events[name],function(eventName,cb) {
                         try {
-                            event();
+                            cb();
                         }catch(e) {
                             mw.log(e);
                         }
