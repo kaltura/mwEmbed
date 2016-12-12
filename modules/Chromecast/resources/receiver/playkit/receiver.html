@@ -94,17 +94,12 @@
 
         .gradient {
             position: absolute;
+            height: 320px;
             bottom: 0;
             left: 0;
             right: 0;
-            top: 0;
             opacity: 0.9;
-            background: linear-gradient(
-                    to top,
-                    rgba(0, 0, 0, 1.0),
-                    rgba(0, 0, 0, 0.0) 72%,
-                    rgba(0, 0, 0, 0.0) 100%
-            );
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0), black);
         }
 
         .overlay {
@@ -183,6 +178,17 @@
             padding-right: 10px;
             font-weight: bold;
         }
+
+        .media-info .now-playing {
+            font-size: 50px;
+            color: white;
+            text-shadow: 2px 2px #000000;
+        }
+
+        .separator {
+            border-color: grey;
+            opacity: 0.5;
+        }
     </style>
     <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
     <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/mediaplayer/1.0.0/media_player.js"></script>
@@ -204,6 +210,8 @@
                 <div class="media-info">
                     <div class="media-artwork"></div>
                     <div class="media-text">
+                        <div class="now-playing">Next Playing:</div>
+                        <hr class="separator">
                         <div class="media-title"></div>
                         <div class="media-subtitle"></div>
                     </div>
@@ -217,7 +225,7 @@
 <script>
     var receiverWrapper = document.getElementById( 'receiver-wrapper' ); // Wrapper div for the entire UI to manage changes in app state.
     $( document ).ready( function () {
-        startReceiver();
+            startReceiver();
     } );
 </script>
 </body>

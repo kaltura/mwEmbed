@@ -122,21 +122,22 @@ function startReceiver() {
  */
 function customizedStatusCallback( mediaStatus ) {
     AppLogger.log( "MediaManager", "customizedStatusCallback", mediaStatus );
-    if ( mediaStatus.extendedStatus ) {
-        mediaStatus.playerState = mediaStatus.extendedStatus.playerState;
-    }
-    if ( AppState.getState() !== mediaStatus.playerState ) {
-        if ( mediaStatus.playerState !== StateManager.State.IDLE ) {
-            AppState.setState( mediaStatus.playerState );
-        } else if ( mediaStatus.idleReason === "FINISHED" ) {
-            if ( !allAdsCompleted ) {
-                mediaStatus.playerState = StateManager.State.PLAYING;
+    if ( embedPlayerInitialized ) {
+        if ( AppState.getState() !== mediaStatus.playerState ) {
+            if ( mediaStatus.playerState !== StateManager.State.IDLE ) {
+                AppState.setState( mediaStatus.playerState );
+            } else if ( mediaStatus.idleReason === "FINISHED" ) {
+                if ( !allAdsCompleted ) {
+                    mediaStatus.playerState = StateManager.State.PLAYING;
+                }
+                AppState.setState( mediaStatus.playerState );
+            } else {
+                mediaStatus.playerState = AppState.getState();
             }
-            AppState.setState( mediaStatus.playerState );
         }
+        AppLogger.log( "MediaManager", "Returning senders status of " + mediaStatus.playerState );
+        return mediaStatus;
     }
-    AppLogger.log( "MediaManager", "Returning senders status of " + mediaStatus.playerState );
-    return mediaStatus;
 }
 
 /**
@@ -158,7 +159,6 @@ function onPause( event ) {
 function onPlay( event ) {
     AppLogger.log( "MediaManager", "onPlay", event );
     kdp.sendNotification( "doPlay" );
-    mediaManager.broadcastStatus( true );
 }
 
 /**
@@ -189,7 +189,7 @@ function onLoad( event ) {
         embedPlayer( event );
     }
     else {
-        var embedConfig = media.customData.embedConfig;
+        var embedConfig = event.data.media.customData.embedConfig;
         // If same entry is sent then reload, else perform changeMedia
         if ( kdp.evaluate( '{mediaProxy.entry.id}' ) === embedConfig[ 'entryID' ] ) {
             AppLogger.log( "MediaManager", "Embed player already initialized with the same entry. Start replay.", event );
@@ -210,7 +210,7 @@ function loadMediaMetadata( media ) {
     AppLogger.log( "MediaManager", "loadMediaMetadata", media );
     var deferred = $.Deferred();
     var metadata = media.metadata;
-    if ( media.metadata ) {
+    if ( metadata ) {
         var titleElement = receiverWrapper.querySelector( '.media-title' );
         titleElement.innerText = metadata.title;
 
@@ -349,8 +349,7 @@ function onMessage( event ) {
  * @param event
  */
 function embedPlayer( event ) {
-    var media = event.data.media;
-    var embedInfo = media.customData.embedConfig;
+    var embedInfo = event.data.media.customData.embedConfig;
     $.getScript( embedInfo.lib + "mwEmbedLoader.php" )
         .then( function () {
             setConfiguration( embedInfo );

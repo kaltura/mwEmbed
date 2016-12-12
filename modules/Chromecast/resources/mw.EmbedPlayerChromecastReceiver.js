@@ -92,7 +92,15 @@
                     break;
             }
 
-            this.mediaHost.onError = function ( errorCode ) {
+            this.mediaHost.onAutoPause = function ( underflow ) {
+                if ( underflow ) {
+                    this.bufferStart();
+                } else {
+                    this.bufferEnd();
+                }
+            }.bind( this );
+
+            this.mediaHost.onError = function () {
                 if ( this.mediaPlayer !== null ) {
                     this.mediaPlayer.unload();
                     this.mediaPlayer = null;
@@ -313,7 +321,7 @@
 
         playerSwitchSource: function ( source, switchCallback, doneCallback ) {
             if ( switchCallback ) {
-                switchCallback( this.playerObject );
+                switchCallback( this.getPlayerElement() );
             }
             setTimeout( function () {
                 if ( doneCallback ) {
@@ -357,9 +365,10 @@
          * Native video tag methods
          */
         _onpause: function () {
-            this.pause();
-            // To display the actions oppositely in the Chromecast UI
-            $( this ).trigger( 'onPlayerStateChange', [ "pause", "play" ] );
+            if ( !this.mediaPlayer.getState()[ 'underflow' ] ) {
+                // To display the actions oppositely in the Chromecast UI
+                $( this ).trigger( 'onPlayerStateChange', [ "pause", "play" ] );
+            }
         },
 
         // When player started to play
