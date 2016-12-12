@@ -710,6 +710,12 @@ DAL for Q&A Module
                             setTimeout(_this.requestCuePoints.bind(_this),
                                 _this.qnaPlugin.getConfig("qnaPollingInterval") || 10000);
                         }
+                    },
+                    undefined,
+                    function onError(e) {
+                        mw.log("Error in qna requestCuePoints "+e);
+                        setTimeout(_this.requestCuePoints.bind(_this),
+                            _this.qnaPlugin.getConfig("qnaPollingInterval") || 10000);
                     }
                 );
             });
