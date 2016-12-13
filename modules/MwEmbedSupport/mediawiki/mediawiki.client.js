@@ -95,7 +95,10 @@
 	mw.isAndroid4andUp = function () {
 		return ( (userAgent.indexOf('Android 4.') != -1) || (userAgent.indexOf('Android 5.') != -1) || (userAgent.indexOf('Android 6.') != -1) ) && userAgent.indexOf('Windows') === -1;
 	};
-	
+
+	mw.isSamsungStockBrowser = function () {
+		return ( (userAgent.indexOf('SamsungBrowser') != -1) );
+	};
 	
 	mw.isFirefox = function () {
 		return ( userAgent.indexOf('Firefox') != -1 );
