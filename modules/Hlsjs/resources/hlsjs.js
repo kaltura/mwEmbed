@@ -2,7 +2,7 @@
 	"use strict";
 
 	//Currently use native support when available, e.g. Safari desktop
-	if (Hls.isSupported() && !mw.isNativeApp() && !mw.isChromeCast() && !mw.isDesktopSafari() && !mw.getConfig("disableHLSOnJs")) {
+	if (Hls.isSupported() && !mw.isNativeApp() && !mw.isChromeCast() && !mw.isDesktopSafari() && !mw.isSamsungStockBrowser() && !mw.getConfig("disableHLSOnJs")) {
 		var orig_supportsFlash = mw.supportsFlash.bind(mw);
 		mw.supportsFlash = function () {
 			return false;
@@ -64,7 +64,7 @@
 			 * Setup the HLS playback engine wrapper with supplied config options
 			 */
 			setup: function () {
-				this.log("version: " + Hls.version ? Hls.version : this.version);
+				this.log("version: " + (Hls.version ? Hls.version : this.version));
 				mw.setConfig('isHLS_JS', true);
 				this.addBindings();
 			},
