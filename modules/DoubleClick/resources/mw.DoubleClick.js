@@ -927,7 +927,7 @@
 			}
 
 			if ( this.isNativeSDK ) {
-				this.embedPlayer.getPlayerElement().attr( 'doubleClickRequestAds', this.getConfig( 'adTagUrl' ));
+				this.embedPlayer.getPlayerElement().attr( 'doubleClickRequestAds', adTagUrl);
 				mw.log( "DoubleClick::requestAds: Native SDK player request ad ");
 				return;
 			}
