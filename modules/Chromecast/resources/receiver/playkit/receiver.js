@@ -14,7 +14,7 @@ var EmbedPhase = {
  */
 var embedPlayerInitialized = {
     phase: EmbedPhase.Pending,
-    setAs: function ( phase ) {
+    setState: function ( phase ) {
         this.phase = phase;
     },
     is: function ( phase ) {
@@ -25,7 +25,7 @@ var embedPlayerInitialized = {
  * Indicates if we're running in debug mode.
  * @type {boolean}
  */
-var debugMode = true;
+var debugMode = false;
 /**
  * The Kaltura player.
  * @type {object}
@@ -221,7 +221,7 @@ function onLoad( event ) {
 
     if ( embedPlayerInitialized.is( EmbedPhase.Pending ) ) {
         AppLogger.log( "MediaManager", "Embed player isn't initialized yet. Starting dynamic embed.", event );
-        embedPlayerInitialized.setAs( EmbedPhase.Started );
+        embedPlayerInitialized.setState( EmbedPhase.Started );
         embedPlayer( event );
     }
     else {
@@ -398,7 +398,7 @@ function embedPlayer( event ) {
                     if ( kdp.evaluate( '{doubleClick.plugin}' ) ) {
                         addAdsBindings();
                     }
-                    embedPlayerInitialized.setAs( EmbedPhase.Completed );
+                    embedPlayerInitialized.setState( EmbedPhase.Completed );
                 },
                 "flashvars": getFlashVars( event.data.currentTime, event.data.autoplay, embedInfo.flashVars ),
                 "cache_st": 1438601385,
@@ -488,16 +488,12 @@ function getFlashVars( senderPlayFrom, senderAutoPlay, senderFlashVars ) {
         return a;
     };
 
-    var isTrueOrFalse = function ( val ) {
-        return ((val === true) || (val === false));
-    };
-
     try {
         // Embed the media info params from onLoad event into mwEmbedChromecastReceiver
         if ( $.isNumeric( senderPlayFrom ) ) {
             receiverFlashVars.mediaProxy.mediaPlayFrom = senderPlayFrom;
         }
-        if ( isTrueOrFalse( senderAutoPlay ) ) {
+        if ( typeof senderAutoPlay === 'boolean' ) {
             receiverFlashVars.autoPlay = senderAutoPlay;
         }
         if ( !senderFlashVars ) {
