@@ -930,11 +930,11 @@
                 return;
             }
 
-            if ( this.isNativeSDK ) {
-                this.embedPlayer.getPlayerElement().attr( 'doubleClickRequestAds', this.getConfig( 'adTagUrl' ) );
-                mw.log( "DoubleClick::requestAds: Native SDK player request ad " );
-                return;
-            }
+			if ( this.isNativeSDK ) {
+				this.embedPlayer.getPlayerElement().attr( 'doubleClickRequestAds', adTagUrl);
+				mw.log( "DoubleClick::requestAds: Native SDK player request ad ");
+				return;
+			}
 
             // Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
             this.getAdDisplayContainer();
