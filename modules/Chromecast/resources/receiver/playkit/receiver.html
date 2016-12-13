@@ -98,7 +98,6 @@
             bottom: 0;
             left: 0;
             right: 0;
-            opacity: 0.9;
             background: linear-gradient(to bottom, rgba(255, 255, 255, 0), black);
         }
 
@@ -143,7 +142,7 @@
             margin-right: 32px;
             min-width: 96px;
             height: 250px;
-            box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.3);
+            box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.53);
             width: 384px;
             max-width: 384px;
             background-image: url("assets/placeholder-media.jpg");
@@ -205,12 +204,12 @@
     <video id="initial-video-element"></video>
     <div id="logo" class="logo">
         <div id="media-area">
-            <div class="gradient"></div>
-            <div class="overlay">
+            <div id="gradient" class="gradient"></div>
+            <div id="overlay" class="overlay">
                 <div class="media-info">
                     <div class="media-artwork"></div>
                     <div class="media-text">
-                        <div class="now-playing">Next Playing:</div>
+                        <div class="now-playing">Now Playing:</div>
                         <hr class="separator">
                         <div class="media-title"></div>
                         <div class="media-subtitle"></div>
@@ -223,9 +222,8 @@
     </div>
 </div>
 <script>
-    var receiverWrapper = document.getElementById( 'receiver-wrapper' ); // Wrapper div for the entire UI to manage changes in app state.
     $( document ).ready( function () {
-            startReceiver();
+        startReceiver();
     } );
 </script>
 </body>

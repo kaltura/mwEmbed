@@ -1,13 +1,31 @@
 /**
- * Indicates whether the embed player already been initialized.
- * @type {boolean}
+ * The embed process phases.
+ * @type {{Pending: number, Started: number, Completed: number}}
  */
-var embedPlayerInitialized = false;
+var EmbedPhase = {
+    Pending: 0,
+    Started: 1,
+    Completed: 2
+};
+/**
+ * Indicates whether the embed player already been initialized
+ * and in what phase of the initialization is in.
+ * @type {object}
+ */
+var embedPlayerInitialized = {
+    phase: EmbedPhase.Pending,
+    setAs: function ( phase ) {
+        this.phase = phase;
+    },
+    is: function ( phase ) {
+        return this.phase === phase;
+    }
+};
 /**
  * Indicates if we're running in debug mode.
  * @type {boolean}
  */
-var debugMode = false;
+var debugMode = true;
 /**
  * The Kaltura player.
  * @type {object}
@@ -68,13 +86,12 @@ var AppState = new StateManager();
  * on the message bus and their callbacks.
  * @type {object}
  */
-var MESSAGE_BUS_MAP = {
+var MessageBusMap = {
     //TODO: will be implemented after integration with the senders SDK v3
     'someMessage': function ( payload ) {
         // Write here the implementation to that message
     }
 };
-
 /**
  * Starts the receiver application and opening a new session.
  */
@@ -82,6 +99,7 @@ function startReceiver() {
     if ( debugMode ) {
         cast.receiver.logger.setLevelValue( cast.receiver.LoggerLevel.DEBUG );
     }
+    AppState.setState( StateManager.State.LAUNCHING );
     // Init receiver manager and setting his events
     receiverManager = cast.receiver.CastReceiverManager.getInstance();
     receiverManager.onReady = onReady.bind( this );
@@ -91,6 +109,12 @@ function startReceiver() {
     // Init media manager and setting his events
     mediaManager = new cast.receiver.MediaManager( document.getElementById( 'initial-video-element' ) );
     mediaManager.customizedStatusCallback = customizedStatusCallback.bind( this );
+
+    mediaManager.onMediaStatusOrig = mediaManager.onMediaStatus;
+    mediaManager.onMediaStatus = onMediaStatus.bind( this );
+
+    mediaManager.onMetadataLoadedOrig = mediaManager.onMetadataLoaded;
+    mediaManager.onMetadataLoaded = onMetadataLoaded.bind( this );
 
     mediaManager.onEndedOrig = mediaManager.onEnded;
     mediaManager.onEnded = onEnded.bind( this );
@@ -118,26 +142,41 @@ function startReceiver() {
 
 /**
  * Override callback for media manager customizedStatusCallback.
- * In the next phases we will fully customize our application state here.
  */
 function customizedStatusCallback( mediaStatus ) {
     AppLogger.log( "MediaManager", "customizedStatusCallback", mediaStatus );
-    if ( embedPlayerInitialized ) {
-        if ( AppState.getState() !== mediaStatus.playerState ) {
-            if ( mediaStatus.playerState !== StateManager.State.IDLE ) {
-                AppState.setState( mediaStatus.playerState );
-            } else if ( mediaStatus.idleReason === "FINISHED" ) {
-                if ( !allAdsCompleted ) {
-                    mediaStatus.playerState = StateManager.State.PLAYING;
-                }
-                AppState.setState( mediaStatus.playerState );
-            } else {
-                mediaStatus.playerState = AppState.getState();
-            }
+    var playerState = mediaStatus.playerState;
+    var isIdle = (playerState === StateManager.State.IDLE);
+    var isIdleBecauseOfFinished = (mediaStatus.idleReason === "FINISHED");
+    var idleBecauseOfLoading = (typeof mediaStatus.extendedStatus !== "undefined");
+    // If its idle because of loading state do not return status update
+    if ( idleBecauseOfLoading ) {
+        return null;
+    } else {
+        if ( isIdle && isIdleBecauseOfFinished && !allAdsCompleted ) {
+            mediaStatus.playerState = StateManager.State.PLAYING;
         }
-        AppLogger.log( "MediaManager", "Returning senders status of " + mediaStatus.playerState );
         return mediaStatus;
     }
+}
+
+function onMediaStatus( mediaStatus ) {
+    AppLogger.log( "MediaManager", "onMediaStatus" );
+    var playerState = mediaStatus.playerState;
+    var appState = AppState.getState();
+    var stateChanged = (playerState !== appState);
+    var idleBecauseOfLoading = (typeof mediaStatus.extendedStatus !== "undefined");
+    if ( !idleBecauseOfLoading && stateChanged ) {
+        AppState.setState( playerState );
+    }
+}
+
+function onMetadataLoaded( loadInfo ) {
+    AppLogger.log( "MediaManager", "onMetadataLoaded" );
+    loadMediaMetadata( loadInfo.message.media ).then( function ( showPreview ) {
+        showPreviewMediaMetadata( showPreview );
+    } );
+    mediaManager.onMetadataLoadedOrig( loadInfo );
 }
 
 /**
@@ -180,12 +219,9 @@ function onLoad( event ) {
     AppLogger.log( "MediaManager", "onLoad" );
     AppState.setState( StateManager.State.LOADING );
 
-    loadMediaMetadata( event.data.media ).then( function ( showPreview ) {
-        showPreviewMediaMetadata( showPreview );
-    } );
-
-    if ( !embedPlayerInitialized ) {
+    if ( embedPlayerInitialized.is( EmbedPhase.Pending ) ) {
         AppLogger.log( "MediaManager", "Embed player isn't initialized yet. Starting dynamic embed.", event );
+        embedPlayerInitialized.setAs( EmbedPhase.Started );
         embedPlayer( event );
     }
     else {
@@ -211,16 +247,13 @@ function loadMediaMetadata( media ) {
     var deferred = $.Deferred();
     var metadata = media.metadata;
     if ( metadata ) {
-        var titleElement = receiverWrapper.querySelector( '.media-title' );
-        titleElement.innerText = metadata.title;
-
-        var subtitleElement = receiverWrapper.querySelector( '.media-subtitle' );
-        subtitleElement.innerText = metadata.subtitle;
+        $( '.media-title' ).text( metadata.title );
+        $( '.media-subtitle' ).text( metadata.subtitle );
 
         var imageUrl = getMediaImageUrl( media );
-        var artworkElement = receiverWrapper.querySelector( '.media-artwork' );
-        artworkElement.style.backgroundImage = (imageUrl ? 'url("' + imageUrl.replace( /"/g, '\\"' ) + '")' : 'none');
-        artworkElement.style.display = (imageUrl ? '' : 'none');
+        var mediaArtwork = $( '.media-artwork' );
+        mediaArtwork.css( 'background-image', (imageUrl ? 'url("' + imageUrl.replace( /"/g, '\\"' ) + '")' : 'none') );
+        mediaArtwork.css( 'display', (imageUrl ? '' : 'none') );
 
         preloadMediaImages( media ).then( function () {
             deferred.resolve( true );
@@ -304,7 +337,7 @@ function onEnded() {
  */
 function onReady() {
     AppLogger.log( "ReceiverManager", "Receiver is ready." );
-    AppState.setState( StateManager.State.LAUNCHING );
+    AppState.setState( StateManager.State.IDLE );
 }
 
 /**
@@ -337,7 +370,7 @@ function onMessage( event ) {
     try {
         var payload = JSON.parse( event.data );
         var msgType = payload.type;
-        MESSAGE_BUS_MAP[ msgType ]( payload );
+        MessageBusMap[ msgType ]( payload );
     }
     catch ( e ) {
         AppLogger.error( "MessageBus", e.message, event );
@@ -358,14 +391,14 @@ function embedPlayer( event ) {
                 "wid": "_" + embedInfo.publisherID,
                 "uiconf_id": embedInfo.uiconfID,
                 "readyCallback": function ( playerID ) {
-                    embedPlayerInitialized = true;
                     kdp = document.getElementById( playerID );
-                    mediaElement = $( kdp ).contents().contents().find( "video" )[ 0 ];
+                    mediaElement = $( kdp ).contents().contents().find( 'video' )[ 0 ];
                     mediaManager.setMediaElement( mediaElement );
-                    $( "#initial-video-element" ).remove();
+                    $( '#initial-video-element' ).remove();
                     if ( kdp.evaluate( '{doubleClick.plugin}' ) ) {
                         addAdsBindings();
                     }
+                    embedPlayerInitialized.setAs( EmbedPhase.Completed );
                 },
                 "flashvars": getFlashVars( event.data.currentTime, event.data.autoplay, embedInfo.flashVars ),
                 "cache_st": 1438601385,
@@ -455,12 +488,16 @@ function getFlashVars( senderPlayFrom, senderAutoPlay, senderFlashVars ) {
         return a;
     };
 
+    var isTrueOrFalse = function ( val ) {
+        return ((val === true) || (val === false));
+    };
+
     try {
         // Embed the media info params from onLoad event into mwEmbedChromecastReceiver
-        if ( senderPlayFrom ) {
+        if ( $.isNumeric( senderPlayFrom ) ) {
             receiverFlashVars.mediaProxy.mediaPlayFrom = senderPlayFrom;
         }
-        if ( senderAutoPlay ) {
+        if ( isTrueOrFalse( senderAutoPlay ) ) {
             receiverFlashVars.autoPlay = senderAutoPlay;
         }
         if ( !senderFlashVars ) {

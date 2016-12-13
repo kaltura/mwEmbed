@@ -1,9 +1,13 @@
 function StateManager() {
     this.currState = null;
     this.idleManager = new IdleManager();
+    this.logo = null;
+    this.KALTURA_DEFAULT_LOGO_URL = "assets/kaltura_logo_small.png";
     this.LOGO = 'logo';
     this.WATERMARK = 'cast-watermark';
     this.SPINNER = 'loading-spinner';
+    this.MEDIA = 'media-area';
+    this.GRADIENT = 'gradient';
 }
 
 StateManager.State = {
@@ -22,7 +26,7 @@ StateManager.State = {
 StateManager.prototype.setState = function ( state ) {
     AppLogger.log( "StateManager", "Setting new state for receiver: " + state );
     // Sets a 'state' attribute to the wrapper div
-    receiverWrapper.setAttribute( "state", state.toLowerCase() );
+    $( '#receiver-wrapper' ).attr( 'state', state.toLowerCase() );
     // Start timeout for the new state
     this.idleManager.setIdleTimeout( state );
     // Save the new state
@@ -50,12 +54,11 @@ StateManager.prototype._handleStateScreen = function () {
         $( '#' + _this.LOGO ).children().fadeOut();
     };
 
-    var hideIdleScreen = function () {
-        $( '#' + _this.LOGO ).fadeOut();
-    };
-
     var showIdleScreen = function () {
-        $( '#' + _this.LOGO ).fadeIn();
+        var logoDiv = $( '#' + _this.LOGO );
+        logoDiv.css( 'background', '' );
+        logoDiv.css( 'background-image', 'url(' + _this.logo + ')' );
+        logoDiv.fadeIn();
     };
 
     var showCastWatermark = function () {
@@ -70,25 +73,51 @@ StateManager.prototype._handleStateScreen = function () {
         $( '#' + _this.SPINNER ).fadeIn();
     };
 
+    var hideSpinner = function () {
+        $( '#' + _this.SPINNER ).fadeOut();
+    };
+
+    var makeBackgroundTransparent = function () {
+        $( '#' + _this.LOGO ).css( 'background', 'transparent' );
+    };
+
+    var hideMediaMetadata = function () {
+        $( '#' + _this.MEDIA ).fadeOut();
+    };
+
+    var changeGradient = function ( transperent ) {
+        if ( transperent ) {
+            $( '#' + _this.GRADIENT ).css( 'background', 'linear-gradient(to bottom, rgba(255, 255, 255, 0), black, black, black)' );
+        } else {
+            $( '#' + _this.GRADIENT ).css( 'background', 'linear-gradient(to bottom, rgba(255, 255, 255, 0), black)' );
+        }
+    };
+
     switch ( this.currState ) {
         case StateManager.State.LAUNCHING:
             this._setLogo();
-            showCastWatermark();
-            showIdleScreen();
             break;
         case StateManager.State.IDLE:
+            changeGradient( false );
             clearIdleScreenElements();
             showCastWatermark();
             showIdleScreen();
             break;
         case StateManager.State.LOADING:
-        case StateManager.State.BUFFERING:
-            hideCastWatermark();
             showSpinner();
+            hideCastWatermark();
+            break;
+        case StateManager.State.BUFFERING:
+            hideSpinner();
             break;
         case StateManager.State.PLAYING:
-            clearIdleScreenElements();
-            hideIdleScreen();
+            changeGradient( true );
+            makeBackgroundTransparent();
+            setTimeout( function () {
+                hideMediaMetadata();
+            }, 3500 );
+            break;
+        default:
             break;
     }
 };
@@ -121,11 +150,12 @@ StateManager.prototype._setLogo = function () {
     var logoUrl = getQueryVariable( 'logoUrl' );
     if ( logoUrl ) {
         // Set partner's logo
-        AppLogger.log( "StateManager", "Displaying partner's idle screen.", { 'logoUrl': logoUrl } );
-        $( "#" + this.LOGO ).css( 'background-image', 'url(' + logoUrl + ')' );
+        AppLogger.log( "StateManager", "Setting partner's logo.", { 'logoUrl': logoUrl } );
+        this.logo = logoUrl;
     } else {
         // Set Kaltura's default logo
-        AppLogger.log( "StateManager", "Displaying Kaltura's idle screen." );
-        $( "#" + this.LOGO ).css( 'background-image', "url('assets/kaltura_logo_small.png')" );
+        AppLogger.log( "StateManager", "Setting Kaltura's logo." );
+        this.logo = this.KALTURA_DEFAULT_LOGO_URL;
     }
+    $( '#' + this.LOGO ).css( 'background-image', 'url(' + this.logo + ')' );
 };

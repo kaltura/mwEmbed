@@ -43,7 +43,7 @@ var Logger = (function () {
         if ( !opt_data ) {
             opt_data = 'NO_DATA';
         }
-        return [ "[RECEIVER] ### " + comp + ": " + msg, opt_data ];
+        return [ "[RECEIVER-APP] ### " + comp + ": " + msg, opt_data ];
     };
 
     return {
