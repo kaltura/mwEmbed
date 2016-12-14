@@ -171,7 +171,7 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
 
                 var link = "mailto:kalturasupport@kaltura.com"
                         + "?subject=" + encodeURIComponent("player debug information report from "+document.referrer)
-                        + "&body=" + encodeURIComponent(JSON.stringify(_this.getDiagnostics()));
+                        + "&body=" + encodeURIComponent(JSON.stringify(_this.getDiagnostics(), null, "\t"));
 
                 window.location.href = link;
             });
