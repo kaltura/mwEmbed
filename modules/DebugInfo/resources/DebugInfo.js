@@ -5,7 +5,9 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
 	defaultConfig: {
 		templatePath: '../DebugInfo/resources/DebugInfo.tmpl.html',
         cssFileName: 'modules/debugInfo/resources/DebugInfo.css',
-        isVisible:false
+        isVisible:false,
+        emailButton:true,
+        emailAddress:"kalturasupport@kaltura.com"
 	},
     getBaseConfig: function() {
         var parentConfig = this._super();
@@ -27,6 +29,7 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
 
         });
 
+        this.emailButton = this.getConfig( 'emailButton' );
 
 
         if (_this.getConfig( 'isVisible' )) {
@@ -162,14 +165,15 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
                 _this.setVisible(false);
             });
             $(elem).find(".mw-debug-info-copy-btn").click(function() {
-                alert( JSON.stringify(_this.getDiagnostics()));
+                alert( JSON.stringify(_this.getDiagnostics(), null, "\t"));
             });
             $(elem).find(".mw-debug-info-getIps-btn").click(function() {
                 _this.getIps();
             });
             $(elem).find(".mw-debug-info-email-btn").click(function() {
 
-                var link = "mailto:kalturasupport@kaltura.com"
+                var emailAddress=_this.getConfig( 'emailAddress');
+                var link = "mailto:"+emailAddress
                         + "?subject=" + encodeURIComponent("player debug information report from "+document.referrer)
                         + "&body=" + encodeURIComponent(JSON.stringify(_this.getDiagnostics(), null, "\t"));
 
@@ -302,6 +306,7 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
     },
     refresh: function() {
         var player=this.embedPlayer;
+        this.$scope.emailButton=this.emailButton;
         this.$scope.version=MWEMBED_VERSION;
         this.$scope.entryid= player.kentryid;
         this.$scope.kuiconf= player.kuiconfid;
