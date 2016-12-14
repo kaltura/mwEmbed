@@ -137,6 +137,12 @@ onload = function () {
 			kdp.sendNotification('changeMedia', payload.data);
 		} else if (payload['type'] === 'embed') {
 			if (!playerInitialized) {
+				var playerLib = payload['lib'] + "mwEmbedLoader.php";
+				var s = document.createElement("script");
+				s.type = "text/javascript";
+				s.src = playerLib;
+				document.head.appendChild(s);
+
 				var intervalID = setInterval(function () {
 					if (typeof mw !== "undefined") {
 						clearInterval(intervalID);

@@ -656,9 +656,9 @@
 				this.flashActivationRequired = false;
 				$(this).show();
 			}
-            if(this.isLive() && !this.isDVR()){
+            if(this.isLive()){
                 $(this).trigger('timeupdate');
-                return; //for Live + no DVR the flashCurrentTime will be updated through id3Tag
+                return; //for Live the flashCurrentTime will be updated through id3Tag
             }
 			if (this.seeking) {
 				this.seeking = false;

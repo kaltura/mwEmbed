@@ -2,7 +2,7 @@
 	"use strict";
 
 	//Currently use native support when available, e.g. Safari desktop
-	if (Hls.isSupported() && !mw.isNativeApp() && !mw.isChromeCast() && !mw.isDesktopSafari() && !mw.getConfig("disableHLSOnJs")) {
+	if (Hls.isSupported() && !mw.isNativeApp() && !mw.isChromeCast() && !mw.isDesktopSafari() && !mw.isSamsungStockBrowser() && !mw.getConfig("disableHLSOnJs")) {
 		var orig_supportsFlash = mw.supportsFlash.bind(mw);
 		mw.supportsFlash = function () {
 			return false;
@@ -64,7 +64,7 @@
 			 * Setup the HLS playback engine wrapper with supplied config options
 			 */
 			setup: function () {
-				this.log("version: " + Hls.version ? Hls.version : this.version);
+				this.log("version: " + (Hls.version ? Hls.version : this.version));
 				mw.setConfig('isHLS_JS', true);
 				this.addBindings();
 			},
@@ -86,6 +86,7 @@
 			isNeeded: function () {
 				if (this.getPlayer().mediaElement.selectedSource.mimeType === "application/vnd.apple.mpegurl") {
 					this.LoadHLS = true;
+					this.embedPlayer.streamerType = 'http';
 				} else {
 					this.LoadHLS = false;
 				}
@@ -425,7 +426,12 @@
 					this.log("Try flash fallback");
 					this.fallbackToFlash();
 				} else {
-					this.getPlayer().triggerHelper('embedPlayerError', [data]);
+					var errorObj = {
+						message : JSON.stringify(data),
+						// hls fatal error code could be either Network Error (1000) or Media Errors (3000)
+						code : data.type === "networkError" ? "1000" : "3000"
+					};
+					this.getPlayer().triggerHelper('embedPlayerError', errorObj);
 				}
 			},
 			fallbackToFlash: function () {

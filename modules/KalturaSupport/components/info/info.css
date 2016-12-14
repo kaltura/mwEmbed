@@ -22,7 +22,7 @@
     font-size: 1em;
     margin-top: 1.5em;
 }
-.infoScreen .views {
+.infoScreen .plays {
     font-size: 0.8em;
     margin-left: 0.5em;
 }
@@ -38,7 +38,7 @@
     font-size: 2em;
     margin-top: 3em;
 }
-.fullscreen .infoScreen .views {
+.fullscreen .infoScreen .plays {
     font-size: 1.6em;
     margin-left: 1em;
 }
@@ -54,7 +54,7 @@
     font-size: 1em;
     margin-top: 1.5em;
 }
-.fullscreen .fullscreen-video-size-small .infoScreen .views {
+.fullscreen .fullscreen-video-size-small .infoScreen .plays {
     font-size: 0.7em;
     margin-left: 0.5em;
 }
