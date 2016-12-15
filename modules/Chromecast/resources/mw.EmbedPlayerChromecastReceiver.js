@@ -364,16 +364,8 @@
         /**
          * Native video tag methods
          */
-        _onpause: function () {
-            if ( !this.mediaPlayer.getState()[ 'underflow' ] ) {
-                // To display the actions oppositely in the Chromecast UI
-                $( this ).trigger( 'onPlayerStateChange', [ "pause", "play" ] );
-            }
-        },
-
         // When player started to play
         _onplaying: function () {
-            this.hideSpinner();
             this.triggerHelper( "playing" );
             this.triggerHelper( 'hidePlayerControls' );
         },
@@ -387,18 +379,13 @@
         _onseeking: function () {
             this.triggerHelper( 'hidePlayerControls' );
             if ( !this.seeking ) {
-                this.addPlayerSpinner();
                 this.seeking = true;
-                if ( this._propagateEvents && !this.isLive() ) {
-                    this.triggerHelper( 'seeking' );
-                }
             }
         },
 
         // After seeking ends
         _onseeked: function () {
             if ( this.seeking ) {
-                this.hideSpinner();
                 this.seeking = false;
                 if ( this._propagateEvents && !this.isLive() ) {
                     this.triggerHelper( 'seeked', [ this.getPlayerElementTime() ] );

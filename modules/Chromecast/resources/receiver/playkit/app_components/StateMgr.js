@@ -3,11 +3,9 @@ function StateManager() {
     this.idleManager = new IdleManager();
     this.logo = null;
     this.KALTURA_DEFAULT_LOGO_URL = "assets/kaltura_logo_small.png";
-    this.LOGO = 'logo';
-    this.WATERMARK = 'cast-watermark';
-    this.SPINNER = 'loading-spinner';
-    this.MEDIA = 'media-area';
-    this.GRADIENT = 'gradient';
+    this.isPlaying = false;
+    this.isOverlayShown = false;
+    this.pauseTimeout = null;
 }
 
 StateManager.State = {
@@ -19,12 +17,29 @@ StateManager.State = {
     IDLE: 'IDLE'
 };
 
+StateManager.prototype.init = function () {
+    this.beforePlayControls = $( '#cast-before-play-controls' );
+    this.inPlayControls = $( '#cast-in-play-controls' );
+    this.mediaInfoContainer = $( '#cast-media-info' );
+    this.logoDiv = $( '#logo' );
+    this.stateBtnContainer = $( '#cast-state-button-container' );
+    this.playBtn = $( '#cast-play-button' );
+    this.pauseBtn = $( '#cast-pause-button' );
+    this.loadingSpinner = $( '#cast-loading-spinner' );
+    this.bufferingSpinner = $( '#cast-buffering-spinner' );
+    this.watermark = $( '#cast-watermark' );
+    this.gradient = $( '#cast-gradient' );
+    this.curTimeDiv = $( '#cast-current-time' );
+    this.totalTimeDiv = $( '#cast-total-time' );
+    this.progressFill = $( '.cast-media-progress-fill' );
+};
+
 /**
  * Sets the new state of the receiver application.
  * @param state
  */
 StateManager.prototype.setState = function ( state ) {
-    AppLogger.log( "StateManager", "Setting new state for receiver: " + state );
+    ReceiverLogger.log( "StateManager", "Setting new state for receiver: " + state );
     // Sets a 'state' attribute to the wrapper div
     $( '#receiver-wrapper' ).attr( 'state', state.toLowerCase() );
     // Start timeout for the new state
@@ -47,75 +62,25 @@ StateManager.prototype.getState = function () {
  * Handle the application UI according to the new state.
  * @private
  */
-StateManager.prototype._handleStateScreen = function () {
-    var _this = this;
-
-    var clearIdleScreenElements = function () {
-        $( '#' + _this.LOGO ).children().fadeOut();
-    };
-
-    var showIdleScreen = function () {
-        var logoDiv = $( '#' + _this.LOGO );
-        logoDiv.css( 'background', '' );
-        logoDiv.css( 'background-image', 'url(' + _this.logo + ')' );
-        logoDiv.fadeIn();
-    };
-
-    var showCastWatermark = function () {
-        $( '#' + _this.WATERMARK ).fadeIn();
-    };
-
-    var hideCastWatermark = function () {
-        $( '#' + _this.WATERMARK ).fadeOut();
-    };
-
-    var showSpinner = function () {
-        $( '#' + _this.SPINNER ).fadeIn();
-    };
-
-    var hideSpinner = function () {
-        $( '#' + _this.SPINNER ).fadeOut();
-    };
-
-    var makeBackgroundTransparent = function () {
-        $( '#' + _this.LOGO ).css( 'background', 'transparent' );
-    };
-
-    var hideMediaMetadata = function () {
-        $( '#' + _this.MEDIA ).fadeOut();
-    };
-
-    var changeGradient = function ( transperent ) {
-        if ( transperent ) {
-            $( '#' + _this.GRADIENT ).css( 'background', 'linear-gradient(to bottom, rgba(255, 255, 255, 0), black, black, black)' );
-        } else {
-            $( '#' + _this.GRADIENT ).css( 'background', 'linear-gradient(to bottom, rgba(255, 255, 255, 0), black)' );
-        }
-    };
-
+StateManager.prototype._handleStateScreen = function ( opt_seeked ) {
     switch ( this.currState ) {
         case StateManager.State.LAUNCHING:
             this._setLogo();
             break;
         case StateManager.State.IDLE:
-            changeGradient( false );
-            clearIdleScreenElements();
-            showCastWatermark();
-            showIdleScreen();
+            this._onIdle();
             break;
         case StateManager.State.LOADING:
-            showSpinner();
-            hideCastWatermark();
+            this._onLoading();
             break;
         case StateManager.State.BUFFERING:
-            hideSpinner();
+            this._onBuffering();
             break;
         case StateManager.State.PLAYING:
-            changeGradient( true );
-            makeBackgroundTransparent();
-            setTimeout( function () {
-                hideMediaMetadata();
-            }, 3500 );
+            this._onPlaying( opt_seeked );
+            break;
+        case StateManager.State.PAUSED:
+            this._onPause( opt_seeked );
             break;
         default:
             break;
@@ -129,33 +94,150 @@ StateManager.prototype._handleStateScreen = function () {
  * it will set Kaltura logo.
  */
 StateManager.prototype._setLogo = function () {
-
-    /**
-     * Gets the value from the url's query string.
-     * @param variable the key in the query string.
-     * @returns {*}
-     */
-    var getQueryVariable = function ( variable ) {
-        var query = decodeURIComponent( window.location.search.substring( 1 ) );
-        var vars = query.split( "&" );
-        for ( var i = 0; i < vars.length; i++ ) {
-            var pair = vars[ i ].split( "=" );
-            if ( pair[ 0 ] == variable ) {
-                return pair[ 1 ];
-            }
-        }
-        return false;
-    };
-
     var logoUrl = getQueryVariable( 'logoUrl' );
     if ( logoUrl ) {
         // Set partner's logo
-        AppLogger.log( "StateManager", "Setting partner's logo.", { 'logoUrl': logoUrl } );
+        ReceiverLogger.log( "StateManager", "Setting partner's logo.", { 'logoUrl': logoUrl } );
         this.logo = logoUrl;
     } else {
         // Set Kaltura's default logo
-        AppLogger.log( "StateManager", "Setting Kaltura's logo." );
+        ReceiverLogger.log( "StateManager", "Setting Kaltura's logo." );
         this.logo = this.KALTURA_DEFAULT_LOGO_URL;
     }
-    $( '#' + this.LOGO ).css( 'background-image', 'url(' + this.logo + ')' );
+    this.logoDiv.css( 'background-image', 'url(' + this.logo + ')' );
+};
+
+StateManager.prototype._onBuffering = function () {
+    this.loadingSpinner.fadeOut();
+};
+
+StateManager.prototype._onLoading = function () {
+    this.loadingSpinner.fadeIn();
+    this.watermark.fadeOut();
+};
+
+StateManager.prototype._onIdle = function () {
+    this.isPlaying = false;
+    this.watermark.fadeIn();
+    this.logoDiv.css( 'background', '' );
+    this.logoDiv.css( 'background-image', 'url(' + this.logo + ')' );
+    this.logoDiv.fadeIn();
+};
+
+StateManager.prototype._onPlaying = function ( opt_seeked ) {
+    if ( !this.isPlaying ) {
+        this.isPlaying = true;
+        this.beforePlayControls.fadeOut();
+        this.mediaInfoContainer.fadeOut();
+        this.logoDiv.css( 'background', 'transparent' );
+    } else {
+        if ( !opt_seeked ) {
+            this._clearTimeouts();
+            if ( this.pauseBtn.is( ":visible" ) ) {
+                this.pauseBtn.fadeOut();
+                this.stateBtnContainer.fadeOut();
+            }
+            if ( this.isOverlayShown ) {
+                this.gradient.fadeOut();
+                this.mediaInfoContainer.fadeOut();
+                this.inPlayControls.fadeOut();
+            }
+        }
+    }
+};
+
+StateManager.prototype._onPause = function ( opt_seeked ) {
+    var _this = this;
+    this.pauseBtn.fadeIn();
+    this.stateBtnContainer.fadeIn();
+
+    var showOverlay = function () {
+        _this.gradient.fadeIn();
+        _this.mediaInfoContainer.fadeIn();
+        _this.inPlayControls.fadeIn();
+    };
+
+    var hideOverlay = function () {
+        _this.gradient.fadeOut();
+        _this.mediaInfoContainer.fadeOut();
+        _this.inPlayControls.fadeOut();
+    };
+
+    if ( opt_seeked ) {
+        if ( this.isOverlayShown ) {
+            showOverlay();
+            this.pauseTimeout = setTimeout( function () {
+                hideOverlay();
+                _this.isOverlayShown = false;
+            }, 4000 );
+        }
+    }
+    else {
+        this._clearTimeouts();
+        showOverlay();
+        this.isOverlayShown = true;
+        this.pauseTimeout = setTimeout( function () {
+            hideOverlay();
+            _this.isOverlayShown = false;
+        }, 4000 );
+    }
+};
+
+StateManager.prototype.onSeekStart = function () {
+    if ( this.isPlaying ) {
+        this._clearTimeouts();
+        if ( this.pauseBtn.is( ":visible" ) ) {
+            this.playBtn.fadeOut();
+            this.pauseBtn.fadeOut();
+            this.stateBtnContainer.fadeOut();
+        }
+        this.bufferingSpinner.fadeIn();
+        if ( !this.isOverlayShown ) {
+            this.inPlayControls.fadeIn();
+        }
+    }
+};
+
+StateManager.prototype.onSeekEnd = function () {
+    if ( this.isPlaying ) {
+        var _this = this;
+        this.bufferingSpinner.fadeOut();
+        if ( !this.isOverlayShown ) {
+            _this.inPlayControls.fadeOut();
+        }
+        this._handleStateScreen( true );
+    }
+};
+
+StateManager.prototype._clearTimeouts = function () {
+    if ( this.pauseTimeout !== null ) {
+        clearTimeout( this.pauseTimeout );
+        this.pauseTimeout = null;
+    }
+};
+
+StateManager.prototype.onProgress = function ( curTime, totalTime ) {
+    var formatDuration = function ( dur ) {
+        dur = Math.floor( dur );
+        function digit( n ) {
+            return ('00' + Math.round( n )).slice( -2 );
+        }
+
+        var hr = Math.floor( dur / 3600 );
+        var min = Math.floor( dur / 60 ) % 60;
+        var sec = dur % 60;
+        if ( !hr ) {
+            return digit( min ) + ':' + digit( sec );
+        } else {
+            return digit( hr ) + ':' + digit( min ) + ':' + digit( sec );
+        }
+    };
+
+    if ( !isNaN( curTime ) && !isNaN( totalTime ) ) {
+        var pct = (curTime / totalTime);
+        var pix = pct * 780;
+        this.curTimeDiv.text( formatDuration( curTime ) + ' ' );
+        this.totalTimeDiv.text( '/ ' + formatDuration( totalTime ) );
+        this.progressFill.css( 'width', pix + 'px' );
+    }
 };

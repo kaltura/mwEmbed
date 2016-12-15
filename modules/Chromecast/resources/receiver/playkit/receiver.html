@@ -2,6 +2,18 @@
 <html>
 <head>
     <style type="text/css">
+        @font-face {
+            font-family: 'proxima nova';
+            src: url('assets/fonts/proxima/proximanova-light-webfont.eot');
+            src: url('assets/fonts/proxima/proximanova-light-webfont.eot?#iefix') format('embedded-opentype'),
+            url('assets/fonts/proxima/proximanova-light-webfont.woff2') format('woff2'),
+            url('assets/fonts/proxima/proximanova-light-webfont.woff') format('woff'),
+            url('assets/fonts/proxima/proximanova-light-webfont.ttf') format('truetype'),
+            url('assets/fonts/proxima/proximanova-light-webfont.svg#proxima_novalight') format('svg');
+            font-weight: 300;
+            font-style: normal;
+        }
+
         @-webkit-keyframes spin {
             0% {
                 -webkit-transform: rotate(0deg);
@@ -11,21 +23,21 @@
             }
         }
 
-        @-webkit-keyframes loading {
+        @-webkit-keyframes fill {
             0% {
-                margin-left: -100%;
+                left: 200px;
+            }
+            30% {
+                left: 300px;
+            }
+            50% {
+                left: 500px;
+            }
+            70% {
+                left: 700px;
             }
             100% {
-                margin-left: 100%;
-            }
-        }
-
-        @keyframes fadein {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
+                left: 900px;
             }
         }
 
@@ -50,7 +62,8 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            background-color: ghostwhite;
+            background-color: rgba(50, 50, 50, 0.95);
+            opacity: 95%;
             background-repeat: no-repeat;
             background-attachment: fixed;
             background-position: center;
@@ -60,18 +73,165 @@
             -moz-transition: opacity 1s ease-in-out;
             -ms-transition: opacity 1s ease-in-out;
             -o-transition: opacity 1s ease-in-out;
-            opacity: 1;
         }
 
-        #media-area {
+        #cast-media-info {
             display: none;
         }
 
-        .loading-spinner {
+        #cast-pause-button {
+            display: none;
+        }
+
+        #cast-play-button {
+            display: none;
+        }
+
+        #cast-state-button-container {
+            display: none;
+        }
+
+        #cast-in-play-controls {
+            display: none;
+        }
+
+        #cast-before-play-controls {
+            display: none;
+        }
+
+        #cast-loading-spinner {
+            display: none;
+        }
+
+        #cast-buffering-spinner {
+            display: none;
+        }
+
+        #cast-gradient {
+            display: none;
+        }
+
+        #cast-watermark {
+            display: none;
+        }
+
+        .cast-overlay {
+            display: block;
+            position: absolute;
+            left: 52px;
+            bottom: 52px;
+        }
+
+        .cast-artwork {
+            width: 150px;
+            height: 250px;
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+        }
+
+        .cast-title {
+            width: 278px;
+            position: absolute;
+            font-size: 52px;
+            font-weight: normal;
+            font-style: normal;
+            font-stretch: normal;
+            left: 200px;
+            bottom: 155px;
+            color: #ffffff;
+            font-family: "proxima nova";
+            white-space: nowrap;
+            overflow: visible;
+            text-overflow: ellipsis;
+            align-self: flex-end
+        }
+
+        .cast-subtitle {
+            width: 348px;
+            font-family: "proxima nova";
+            font-size: 32px;
+            font-style: normal;
+            font-stretch: normal;
+            color: #e2e2e2;
+            position: absolute;
+            left: 200px;
+            bottom: 115px;
+            white-space: nowrap;
+            overflow: visible;
+            text-overflow: ellipsis;
+            align-self: flex-end
+        }
+
+        .cast-separator {
+            position: absolute;
+            left: 200px;
+            width: 900px;
+            height: 1px;
+            bottom: 95px;
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .cast-progress-loading-container {
+            position: absolute;
+            height: 8px;
+            opacity: 0.4;
+            background-color: #ffffff;
+            bottom: 30px;
+            left: 200px;
+            width: 900px;
+        }
+
+        .cast-progress-loading-fill {
+            -webkit-animation: fill 0.7s infinite linear;
+            position: absolute;
+            height: 8px;
+            opacity: 0.4;
+            bottom: 30px;
+            left: 200px;
+            width: 200px;
+            background-color: #f8a61a;
+        }
+
+        .cast-media-progress-container {
+            position: absolute;
+            height: 8px;
+            opacity: 0.4;
+            background-color: #ffffff;
+            bottom: 30px;
+            left: 320px;
+            width: 780px;
+        }
+
+        .cast-media-progress-fill {
+            position: absolute;
+            height: 8px;
+            opacity: 0.4;
+            bottom: 30px;
+            left: 320px;
+            background-color: #f8a61a;
+        }
+
+        .cast-state-button-container {
+            position: absolute;
+            bottom: 1px;
+            left: 210px;
+            width: 70px;
+            height: 70px;
+            transform: rotate(90deg);
+            border-radius: 300px;
+            background-color: rgba(130, 130, 130, 0.4);
+        }
+
+        .cast-state {
+            position: absolute;
+            left: 233px;
+            bottom: 20px;
+        }
+
+        .cast-loading-spinner {
             -webkit-animation: spin 1s infinite linear;
             height: 36px;
             width: 32px;
-            display: none;
             position: absolute;
             background-image: url("assets/buffering.png");
             bottom: 64px;
@@ -80,113 +240,75 @@
             margin-left: 32px / -2;
         }
 
+        .cast-buffering-spinner {
+            -webkit-animation: spin 1s infinite linear;
+            height: 36px;
+            width: 32px;
+            position: absolute;
+            background-image: url("assets/buffering.png");
+            bottom: 20px;
+            left: 230px;
+            z-index: 1;
+        }
+
         .cast-watermark {
             position: absolute;
             top: 5%;
             left: 5%;
             bottom: 5%;
             right: 4%;
-            display: none;
             background-position: bottom right;
             background-repeat: no-repeat;
             background-image: url("assets/watermark.png");
         }
 
-        .gradient {
+        .cast-gradient {
             position: absolute;
             height: 320px;
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(to bottom, rgba(255, 255, 255, 0), black);
+            background: linear-gradient(179deg, rgba(50, 50, 50, 0), rgba(50, 50, 50, 0.95) 95%);
         }
 
-        .overlay {
+        .cast-total-time {
+            margin-left: 10px;
+            width: 108px;
+            height: 32px;
+            font-family: "proxima nova";
+            font-size: 26px;
+            font-weight: normal;
+            font-style: normal;
+            font-stretch: normal;
+            letter-spacing: 0.5px;
+            color: #ffffff;
             position: absolute;
-            left: 64px;
-            bottom: 64px;
-            right: 64px;
-            top: auto;
-        }
-
-        .media-info {
-            padding-bottom: 0;
-            display: flex;
-        }
-
-        .media-info .media-title {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 44px;
+            bottom: 50px;
+            left: 1005px;
             white-space: nowrap;
-            overflow: hidden;
+            overflow: visible;
             text-overflow: ellipsis;
-            width: 80%;
+            align-self: flex-end;
         }
 
-        .media-info .media-subtitle {
-            color: rgba(203, 203, 203, 0.8);
-            font-size: 22px;
-            overflow: hidden;
-            width: 80%;
-        }
-
-        .media-info .media-subtitle span:not(:first-child):before {
-            content: '\00B7';
-            padding-left: 10px;
-            padding-right: 10px;
+        .cast-current-time {
+            width: 51px;
+            height: 32px;
+            font-family: "proxima nova";
+            font-size: 26px;
             font-weight: bold;
-        }
-
-        .media-artwork {
-            align-self: flex-end;
-            margin-right: 32px;
-            min-width: 96px;
-            height: 250px;
-            box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.53);
-            width: 384px;
-            max-width: 384px;
-            background-image: url("assets/placeholder-media.jpg");
-        }
-
-        .media-text {
-            width: 100%;
-            align-self: flex-end;
-            float: left;
-            margin-top: 19px;
-        }
-
-        .media-info .media-title {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 34px;
+            font-style: normal;
+            font-stretch: normal;
+            letter-spacing: 0.5px;
+            text-align: right;
+            position: absolute;
+            bottom: 50px;
+            left: 940px;
+            color: #ffffff;
             white-space: nowrap;
-            overflow: hidden;
+            overflow: visible;
             text-overflow: ellipsis;
-            width: 80%;
-        }
-
-        .media-info .media-subtitle {
-            color: rgba(203, 203, 203, 0.8);
-            font-size: 22px;
-            overflow: hidden;
-            width: 80%;
-        }
-
-        .media-info .media-subtitle span:not(:first-child):before {
-            content: '\00B7';
-            padding-left: 10px;
-            padding-right: 10px;
-            font-weight: bold;
-        }
-
-        .media-info .now-playing {
-            font-size: 50px;
-            color: white;
-            text-shadow: 2px 2px #000000;
-        }
-
-        .separator {
-            border-color: grey;
-            opacity: 0.5;
+            align-self: flex-end;
         }
     </style>
     <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
@@ -203,28 +325,46 @@
     <div id="kaltura_player" style=" width:98%; height: 98%; position: absolute; z-index: 1;"></div>
     <video id="initial-video-element"></video>
     <div id="logo" class="logo">
-        <div id="media-area">
-            <div id="gradient" class="gradient"></div>
-            <div id="overlay" class="overlay">
-                <div class="media-info">
-                    <div class="media-artwork"></div>
-                    <div class="media-text">
-                        <div class="now-playing">Now Playing:</div>
-                        <hr class="separator">
-                        <div class="media-title"></div>
-                        <div class="media-subtitle"></div>
-                    </div>
+
+        <div id="cast-watermark" class="cast-watermark"></div>
+        <div id="cast-loading-spinner" class="cast-loading-spinner"></div>
+        <div id="cast-gradient" class="cast-gradient"></div>
+
+        <div class="cast-overlay">
+
+            <div id="cast-media-info">
+                <div id="cast-artwork" class="cast-artwork"></div>
+                <div id="cast-title" class="cast-title"></div>
+                <div id="cast-subtitle" class="cast-subtitle"></div>
+                <div class="cast-separator"></div>
+            </div>
+
+            <img id="cast-pause-button" src="assets/pause.png" class="cast-state" height="30" width="24">
+            <img id="cast-play-button" src="assets/play.png" class="cast-state" height="30" width="24">
+            <div id="cast-state-button-container" class="cast-state-button-container"></div>
+            <div id="cast-buffering-spinner" class="cast-buffering-spinner"></div>
+
+            <div id="cast-in-play-controls">
+                <div id="cast-current-time" class="cast-current-time"></div>
+                <div id="cast-total-time" class="cast-total-time"></div>
+                <div id="cast-media-progress">
+                    <div class="cast-media-progress-container"></div>
+                    <div class="cast-media-progress-fill"></div>
                 </div>
             </div>
+
+            <div id="cast-before-play-controls">
+                <div class="cast-progress-loading-container"></div>
+                <div class="cast-progress-loading-fill"></div>
+            </div>
+
         </div>
-        <div id="loading-spinner" class="loading-spinner"></div>
-        <div id="cast-watermark" class="cast-watermark"></div>
-    </div>
-</div>
-<script>
-    $( document ).ready( function () {
-        startReceiver();
-    } );
-</script>
+
+        <script>
+            $( document ).ready( function () {
+                initReceiver();
+                startReceiver();
+            } );
+        </script>
 </body>
 </html>

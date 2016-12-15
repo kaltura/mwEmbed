@@ -22,10 +22,15 @@ var embedPlayerInitialized = {
     }
 };
 /**
- * Indicates if we're running in debug mode.
+ * Indicates if we're running in debug mode for the receiver.
  * @type {boolean}
  */
-var debugMode = false;
+var debugReceiver;
+/**
+ * Indicates if we're running in debug mode for the kaltura player.
+ * @type {boolean}
+ */
+var debugKalturaPlayer;
 /**
  * The Kaltura player.
  * @type {object}
@@ -75,12 +80,12 @@ var postSequenceStart = false;
 /**
  * The application logger.
  */
-var AppLogger = Logger.getInstance( debugMode );
+var ReceiverLogger;
 /**
  * The application state manager.
  * @type {StateManager}
  */
-var AppState = new StateManager();
+var ReceiverStateManager = new StateManager();
 /**
  * The possible messages that sender can send to receiver
  * on the message bus and their callbacks.
@@ -92,14 +97,30 @@ var MessageBusMap = {
         // Write here the implementation to that message
     }
 };
+
+/**
+ * Initialized the receiver with the relevant data before starting.
+ */
+function initReceiver() {
+    // Take params out of the query string
+    debugReceiver = (getQueryVariable( 'debugReceiver' ) === 'true');
+    debugKalturaPlayer = (getQueryVariable( 'debugKalturaPlayer' ) === 'true');
+
+    // Set the receiver debug mode
+    ReceiverLogger = Logger.getInstance( debugReceiver );
+    if ( debugReceiver ) {
+        cast.receiver.logger.setLevelValue( cast.receiver.LoggerLevel.DEBUG );
+    }
+
+    // Init DOM elements in state manager
+    ReceiverStateManager.init();
+}
+
 /**
  * Starts the receiver application and opening a new session.
  */
 function startReceiver() {
-    if ( debugMode ) {
-        cast.receiver.logger.setLevelValue( cast.receiver.LoggerLevel.DEBUG );
-    }
-    AppState.setState( StateManager.State.LAUNCHING );
+    ReceiverStateManager.setState( StateManager.State.LAUNCHING );
     // Init receiver manager and setting his events
     receiverManager = cast.receiver.CastReceiverManager.getInstance();
     receiverManager.onReady = onReady.bind( this );
@@ -144,7 +165,7 @@ function startReceiver() {
  * Override callback for media manager customizedStatusCallback.
  */
 function customizedStatusCallback( mediaStatus ) {
-    AppLogger.log( "MediaManager", "customizedStatusCallback", mediaStatus );
+    ReceiverLogger.log( "MediaManager", "customizedStatusCallback", mediaStatus );
     var playerState = mediaStatus.playerState;
     var isIdle = (playerState === StateManager.State.IDLE);
     var isIdleBecauseOfFinished = (mediaStatus.idleReason === "FINISHED");
@@ -161,18 +182,20 @@ function customizedStatusCallback( mediaStatus ) {
 }
 
 function onMediaStatus( mediaStatus ) {
-    AppLogger.log( "MediaManager", "onMediaStatus" );
-    var playerState = mediaStatus.playerState;
-    var appState = AppState.getState();
-    var stateChanged = (playerState !== appState);
-    var idleBecauseOfLoading = (typeof mediaStatus.extendedStatus !== "undefined");
-    if ( !idleBecauseOfLoading && stateChanged ) {
-        AppState.setState( playerState );
+    if ( mediaStatus ) {
+        ReceiverLogger.log( "MediaManager", "onMediaStatus" );
+        var playerState = mediaStatus.playerState;
+        var appState = ReceiverStateManager.getState();
+        var stateChanged = (playerState !== appState);
+        var idleBecauseOfLoading = (typeof mediaStatus.extendedStatus !== "undefined");
+        if ( !idleBecauseOfLoading && stateChanged ) {
+            ReceiverStateManager.setState( playerState );
+        }
     }
 }
 
 function onMetadataLoaded( loadInfo ) {
-    AppLogger.log( "MediaManager", "onMetadataLoaded" );
+    ReceiverLogger.log( "MediaManager", "onMetadataLoaded" );
     loadMediaMetadata( loadInfo.message.media ).then( function ( showPreview ) {
         showPreviewMediaMetadata( showPreview );
     } );
@@ -183,12 +206,12 @@ function onMetadataLoaded( loadInfo ) {
  * Override callback for media manager onPause.
  */
 function onPause( event ) {
-    AppLogger.log( "MediaManager", "onPause", event );
+    ReceiverLogger.log( "MediaManager", "onPause", event );
     if ( !kdp.evaluate( "{sequenceProxy.isInSequence}" ) ) {
         kdp.sendNotification( 'doPause' );
         mediaManager.broadcastStatus( true );
     } else {
-        AppLogger.log( "MediaManager", "Preventing pause during ad!!!", event );
+        ReceiverLogger.log( "MediaManager", "Preventing pause during ad!!!", event );
     }
 }
 
@@ -196,7 +219,7 @@ function onPause( event ) {
  * Override callback for media manager onPlay.
  */
 function onPlay( event ) {
-    AppLogger.log( "MediaManager", "onPlay", event );
+    ReceiverLogger.log( "MediaManager", "onPlay", event );
     kdp.sendNotification( "doPlay" );
 }
 
@@ -204,11 +227,11 @@ function onPlay( event ) {
  * Override callback for media manager onSeek.
  */
 function onSeek( event ) {
-    AppLogger.log( "MediaManager", "onSeek", event );
+    ReceiverLogger.log( "MediaManager", "onSeek", event );
     if ( !kdp.evaluate( "{sequenceProxy.isInSequence}" ) ) {
         mediaManager.onSeekOrig( event );
     } else {
-        AppLogger.log( "MediaManager", "Preventing seek during ad!!!", event );
+        ReceiverLogger.log( "MediaManager", "Preventing seek during ad!!!", event );
     }
 }
 
@@ -216,11 +239,11 @@ function onSeek( event ) {
  * Override callback for media manager onLoad.
  */
 function onLoad( event ) {
-    AppLogger.log( "MediaManager", "onLoad" );
-    AppState.setState( StateManager.State.LOADING );
+    ReceiverLogger.log( "MediaManager", "onLoad" );
+    ReceiverStateManager.setState( StateManager.State.LOADING );
 
     if ( embedPlayerInitialized.is( EmbedPhase.Pending ) ) {
-        AppLogger.log( "MediaManager", "Embed player isn't initialized yet. Starting dynamic embed.", event );
+        ReceiverLogger.log( "MediaManager", "Embed player isn't initialized yet. Starting dynamic embed.", event );
         embedPlayerInitialized.setState( EmbedPhase.Started );
         embedPlayer( event );
     }
@@ -228,10 +251,10 @@ function onLoad( event ) {
         var embedConfig = event.data.media.customData.embedConfig;
         // If same entry is sent then reload, else perform changeMedia
         if ( kdp.evaluate( '{mediaProxy.entry.id}' ) === embedConfig[ 'entryID' ] ) {
-            AppLogger.log( "MediaManager", "Embed player already initialized with the same entry. Start replay.", event );
+            ReceiverLogger.log( "MediaManager", "Embed player already initialized with the same entry. Start replay.", event );
             kdp.sendNotification( "doReplay" );
         } else {
-            AppLogger.log( "MediaManager", "Embed player already initialized with different entry. Change media.", event );
+            ReceiverLogger.log( "MediaManager", "Embed player already initialized with different entry. Change media.", event );
             kdp.sendNotification( "changeMedia", { "entryId": embedConfig[ 'entryID' ] } );
         }
     }
@@ -243,15 +266,15 @@ function onLoad( event ) {
  * @param doneFunc
  */
 function loadMediaMetadata( media ) {
-    AppLogger.log( "MediaManager", "loadMediaMetadata", media );
+    ReceiverLogger.log( "MediaManager", "loadMediaMetadata", media );
     var deferred = $.Deferred();
     var metadata = media.metadata;
     if ( metadata ) {
-        $( '.media-title' ).text( metadata.title );
-        $( '.media-subtitle' ).text( metadata.subtitle );
+        $( '#cast-title' ).text( metadata.title );
+        $( '#cast-subtitle' ).text( metadata.subtitle );
 
         var imageUrl = getMediaImageUrl( media );
-        var mediaArtwork = $( '.media-artwork' );
+        var mediaArtwork = $( '#cast-artwork' );
         mediaArtwork.css( 'background-image', (imageUrl ? 'url("' + imageUrl.replace( /"/g, '\\"' ) + '")' : 'none') );
         mediaArtwork.css( 'display', (imageUrl ? '' : 'none') );
 
@@ -269,7 +292,7 @@ function loadMediaMetadata( media ) {
  * @param media
  */
 function preloadMediaImages( media ) {
-    AppLogger.log( "MediaManager", "preloadMediaImages" );
+    ReceiverLogger.log( "MediaManager", "preloadMediaImages" );
     var deferred = $.Deferred();
     var imagesToPreload = [];
     var counter = 0;
@@ -315,7 +338,8 @@ function getMediaImageUrl( media ) {
  */
 function showPreviewMediaMetadata( showPreview ) {
     if ( showPreview ) {
-        $( '#media-area' ).fadeIn();
+        $( '#cast-media-info' ).fadeIn();
+        $( '#cast-before-play-controls' ).fadeIn();
     }
 }
 
@@ -336,25 +360,25 @@ function onEnded() {
  * Override callback for receiver manager onReady.
  */
 function onReady() {
-    AppLogger.log( "ReceiverManager", "Receiver is ready." );
-    AppState.setState( StateManager.State.IDLE );
+    ReceiverLogger.log( "ReceiverManager", "Receiver is ready." );
+    ReceiverStateManager.setState( StateManager.State.IDLE );
 }
 
 /**
  * Override callback for receiver manager onSenderConnected.
  */
 function onSenderConnected( event ) {
-    AppLogger.log( "ReceiverManager", "Sender connected. Number of current senders: " + receiverManager.getSenders().length, event );
+    ReceiverLogger.log( "ReceiverManager", "Sender connected. Number of current senders: " + receiverManager.getSenders().length, event );
 }
 
 /**
  * Override callback for receiver manager onSenderDisconnected.
  */
 function onSenderDisconnected( event ) {
-    AppLogger.log( "ReceiverManager", "Sender disconnected. Number of current senders: " + receiverManager.getSenders().length, event );
+    ReceiverLogger.log( "ReceiverManager", "Sender disconnected. Number of current senders: " + receiverManager.getSenders().length, event );
     if ( receiverManager.getSenders().length === 0
         && event.reason === cast.receiver.system.DisconnectReason.REQUESTED_BY_SENDER ) {
-        AppLogger.log( "ReceiverManager", "Last or only sender is disconnected, stops the app from running on the receiver." );
+        ReceiverLogger.log( "ReceiverManager", "Last or only sender is disconnected, stops the app from running on the receiver." );
         receiverManager.stop();
     }
 }
@@ -366,14 +390,14 @@ function onSenderDisconnected( event ) {
  * @param event
  */
 function onMessage( event ) {
-    AppLogger.log( "MessageBus", "onMessage", event );
+    ReceiverLogger.log( "MessageBus", "onMessage", event );
     try {
         var payload = JSON.parse( event.data );
         var msgType = payload.type;
         MessageBusMap[ msgType ]( payload );
     }
     catch ( e ) {
-        AppLogger.error( "MessageBus", e.message, event );
+        ReceiverLogger.error( "MessageBus", e.message, event );
     }
 }
 
@@ -383,7 +407,8 @@ function onMessage( event ) {
  */
 function embedPlayer( event ) {
     var embedInfo = event.data.media.customData.embedConfig;
-    $.getScript( embedInfo.lib + "mwEmbedLoader.php" )
+    var embedLoaderLibPath = embedInfo.lib ? embedInfo.lib + "mwEmbedLoader.php" : "../../../../../mwEmbedLoader.php";
+    $.getScript( embedLoaderLibPath )
         .then( function () {
             setConfiguration( embedInfo );
             kWidget.embed( {
@@ -392,9 +417,10 @@ function embedPlayer( event ) {
                 "uiconf_id": embedInfo.uiconfID,
                 "readyCallback": function ( playerID ) {
                     kdp = document.getElementById( playerID );
+                    $( '#initial-video-element' ).remove();
                     mediaElement = $( kdp ).contents().contents().find( 'video' )[ 0 ];
                     mediaManager.setMediaElement( mediaElement );
-                    $( '#initial-video-element' ).remove();
+                    setMediaElementEvents();
                     if ( kdp.evaluate( '{doubleClick.plugin}' ) ) {
                         addAdsBindings();
                     }
@@ -402,7 +428,7 @@ function embedPlayer( event ) {
                 },
                 "flashvars": getFlashVars( event.data.currentTime, event.data.autoplay, embedInfo.flashVars ),
                 "cache_st": 1438601385,
-                "entry_id": embedInfo.entryID
+                "entry_id": embedInfo.entryID || ''
             } );
         } );
 }
@@ -442,7 +468,7 @@ function addAdsBindings() {
  */
 function setConfiguration( embedInfo ) {
     mw.setConfig( "EmbedPlayer.HidePosterOnStart", true );
-    if ( embedInfo.debugKalturaPlayer == true ) {
+    if ( embedInfo.debugKalturaPlayer == true || debugKalturaPlayer ) {
         mw.setConfig( "debug", true );
     }
     mw.setConfig( "chromecastReceiver", true );
@@ -459,12 +485,12 @@ var receiverFlashVars = {
     "embedPlayerChromecastReceiver": { 'plugin': true },
     "chromecast": { 'plugin': false },
     "playlistAPI": { 'plugin': false },
-    "controlBarContainer": { 'hover': true },
+    "controlBarContainer": { 'hover': false },
     "volumeControl": { 'plugin': false },
-    "titleLabel": { 'plugin': true },
+    "titleLabel": { 'plugin': false },
     "fullScreenBtn": { 'plugin': false },
-    "scrubber": { 'plugin': true },
-    "largePlayBtn": { 'plugin': true },
+    "scrubber": { 'plugin': false },
+    "largePlayBtn": { 'plugin': false },
     "mediaProxy": { "mediaPlayFrom": 0 },
     "autoPlay": true
 };
@@ -506,4 +532,52 @@ function getFlashVars( senderPlayFrom, senderAutoPlay, senderFlashVars ) {
     catch ( e ) {
         return receiverFlashVars;
     }
+}
+
+/**
+ * Gets the value from the url's query string.
+ * @param variable the key in the query string.
+ * @returns {*}
+ */
+function getQueryVariable( variable ) {
+    var query = decodeURIComponent( window.location.search.substring( 1 ) );
+    var vars = query.split( "&" );
+    for ( var i = 0; i < vars.length; i++ ) {
+        var pair = vars[ i ].split( "=" );
+        if ( pair[ 0 ] == variable ) {
+            return pair[ 1 ];
+        }
+    }
+    return false;
+}
+
+/**
+ * Sets the necessary events for the media element.
+ * Done for UI handling.
+ */
+function setMediaElementEvents() {
+    mediaElement.addEventListener( 'timeupdate', onProgress.bind( this ), false );
+    mediaElement.addEventListener( 'seeking', onSeekStart.bind( this ), false );
+    mediaElement.addEventListener( 'seeked', onSeekEnd.bind( this ), false );
+}
+
+/**
+ * Update the progress bar UI.
+ */
+function onProgress() {
+    ReceiverStateManager.onProgress( mediaElement.currentTime, mediaElement.duration );
+}
+
+/**
+ * Update the seek start state screen.
+ */
+function onSeekStart() {
+    ReceiverStateManager.onSeekStart();
+}
+
+/**
+ * Update the seek end state screen.
+ */
+function onSeekEnd() {
+    ReceiverStateManager.onSeekEnd();
 }
