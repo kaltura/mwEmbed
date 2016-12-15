@@ -1,4 +1,4 @@
-<a href="#" class="mw-debug-info-close-btn">X</a>
+<a href="#" class="mw-debug-info-btn mw-debug-info-close-btn">X</a>
 <div id="mw-debug-info-values">
     <div>version: {{version}}</div>
     <div class="mw-debug-info-text" title="{{src}}">src: {{src}}</div>
@@ -29,7 +29,13 @@
         <div>packets / sec: {{mcPacketsPerSec}}</div>
     </div>
 </div>
-<a href="#" class="mw-debug-info-copy-btn" >Copy</a>
+<div class="mw-debug-info-btn-group">
+    <a href="#" class="mw-debug-info-btn mw-debug-info-copy-btn" >Copy</a>
+    <a href="#" class="mw-debug-info-btn mw-debug-info-email-btn" ng-show="emailButton" >Email</a>
+    <a href="#" class="mw-debug-info-btn mw-debug-info-getIps-btn" >Get IP address</a>
+</div>
+<div style="display: initial;">&nbsp;{{browserIps}}</div>
+
 
 
 
