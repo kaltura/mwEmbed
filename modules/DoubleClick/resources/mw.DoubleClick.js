@@ -832,7 +832,7 @@
             //Use cust_params if available on double click URL, otherwise opt in to use old customParams config if available
             if ( !cust_params ) {
                 postFix = (this.getConfig( 'customParams' )) ?
-                'cust_params=' + encodeURIComponent( this.getConfig( 'customParams' ) ) : '';
+                    'cust_params=' + encodeURIComponent( this.getConfig( 'customParams' ) ) : '';
             } else {
                 postFix = 'cust_params=' + cust_params;
             }
@@ -930,11 +930,11 @@
                 return;
             }
 
-			if ( this.isNativeSDK ) {
-				this.embedPlayer.getPlayerElement().attr( 'doubleClickRequestAds', adTagUrl);
-				mw.log( "DoubleClick::requestAds: Native SDK player request ad ");
-				return;
-			}
+            if ( this.isNativeSDK ) {
+                this.embedPlayer.getPlayerElement().attr( 'doubleClickRequestAds', adTagUrl );
+                mw.log( "DoubleClick::requestAds: Native SDK player request ad " );
+                return;
+            }
 
             // Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
             this.getAdDisplayContainer();
@@ -992,6 +992,7 @@
 
             if ( mw.isChromeCast() ) {
                 this.adsManager.addEventListener( google.ima.AdEvent.Type.AD_BREAK_READY, this.adBreakReadyHandler.bind( this ) );
+                this.embedPlayer.triggerHelper( "onCuePointsRevealed", JSON.stringify(  this.adsManager.getCuePoints() ) );
             }
 
             // add a global ad manager refrence:

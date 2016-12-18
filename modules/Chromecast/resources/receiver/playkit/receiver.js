@@ -1,4 +1,8 @@
 /**
+ * Promise for loading metadata process.
+ */
+var loadMetadataPromise;
+/**
  * The embed process phases.
  * @type {{Pending: number, Started: number, Completed: number}}
  */
@@ -8,8 +12,7 @@ var EmbedPhase = {
     Completed: 2
 };
 /**
- * Indicates whether the embed player already been initialized
- * and in what phase of the initialization is in.
+ * Indicates whether the embed player already been initialized and in what phase of the initialization is in.
  * @type {object}
  */
 var embedPlayerInitialized = {
@@ -27,7 +30,7 @@ var embedPlayerInitialized = {
  */
 var debugReceiver;
 /**
- * Indicates if we're running in debug mode for the kaltura player.
+ * Indicates if we're running in debug mode for the Kaltura player.
  * @type {boolean}
  */
 var debugKalturaPlayer;
@@ -35,7 +38,7 @@ var debugKalturaPlayer;
  * The Kaltura player.
  * @type {object}
  */
-var kdp = null;
+var kdp;
 /**
  * The Google cast receiver manager.
  * Responsible for the application management.
@@ -55,6 +58,18 @@ var messageBus;
  * The Kaltura video element.
  */
 var mediaElement;
+/**
+ * Indicates whether an ad plugin is enabled.
+ */
+var adsPluginEnabled;
+/**
+ * The ad info object which sent on media status update to all senders.
+ * @type {{adsBreakInfo: Array, isPlayingAd: boolean}}
+ */
+var adsInfo = {
+    adsBreakInfo: [],
+    isPlayingAd: false
+};
 /**
  * Indicator to know when all ads completed.
  * Will be called according to the adTagUrl.
@@ -78,6 +93,24 @@ var allAdsCompleted = true;
  */
 var postSequenceStart = false;
 /**
+ * The receiver's embed player flashvars.
+ */
+var receiverFlashVars = {
+    "dash": { 'plugin': false },
+    "multiDrm": { 'plugin': false },
+    "embedPlayerChromecastReceiver": { 'plugin': true },
+    "chromecast": { 'plugin': false },
+    "playlistAPI": { 'plugin': false },
+    "controlBarContainer": { 'hover': false },
+    "volumeControl": { 'plugin': false },
+    "titleLabel": { 'plugin': false },
+    "fullScreenBtn": { 'plugin': false },
+    "scrubber": { 'plugin': false },
+    "largePlayBtn": { 'plugin': false },
+    "mediaProxy": { "mediaPlayFrom": 0 },
+    "autoPlay": true
+};
+/**
  * The application logger.
  */
 var ReceiverLogger;
@@ -85,7 +118,7 @@ var ReceiverLogger;
  * The application state manager.
  * @type {StateManager}
  */
-var ReceiverStateManager = new StateManager();
+var ReceiverStateManager;
 /**
  * The possible messages that sender can send to receiver
  * on the message bus and their callbacks.
@@ -103,17 +136,14 @@ var MessageBusMap = {
  */
 function initReceiver() {
     // Take params out of the query string
-    debugReceiver = (getQueryVariable( 'debugReceiver' ) === 'true');
-    debugKalturaPlayer = (getQueryVariable( 'debugKalturaPlayer' ) === 'true');
-
+    debugReceiver = getQueryVariable( 'debugReceiver' );
+    debugKalturaPlayer = getQueryVariable( 'debugKalturaPlayer' );
     // Set the receiver debug mode
     ReceiverLogger = Logger.getInstance( debugReceiver );
     if ( debugReceiver ) {
         cast.receiver.logger.setLevelValue( cast.receiver.LoggerLevel.DEBUG );
     }
-
-    // Init DOM elements in state manager
-    ReceiverStateManager.init();
+    ReceiverStateManager = new StateManager();
 }
 
 /**
@@ -168,17 +198,16 @@ function customizedStatusCallback( mediaStatus ) {
     ReceiverLogger.log( "MediaManager", "customizedStatusCallback", mediaStatus );
     var playerState = mediaStatus.playerState;
     var isIdle = (playerState === StateManager.State.IDLE);
-    var isIdleBecauseOfFinished = (mediaStatus.idleReason === "FINISHED");
-    var idleBecauseOfLoading = (typeof mediaStatus.extendedStatus !== "undefined");
-    // If its idle because of loading state do not return status update
-    if ( idleBecauseOfLoading ) {
-        return null;
-    } else {
-        if ( isIdle && isIdleBecauseOfFinished && !allAdsCompleted ) {
-            mediaStatus.playerState = StateManager.State.PLAYING;
-        }
-        return mediaStatus;
+    var isIdleBecauseOfLoading = isIdle && (typeof mediaStatus.extendedStatus !== "undefined");
+    if ( adsPluginEnabled ) {
+        mediaStatus.customData = adsInfo;
     }
+    if ( isIdleBecauseOfLoading ) {
+        return null;
+    } else if ( isIdle && !allAdsCompleted ) {
+        mediaStatus.playerState = StateManager.State.PLAYING;
+    }
+    return mediaStatus;
 }
 
 function onMediaStatus( mediaStatus ) {
@@ -187,8 +216,9 @@ function onMediaStatus( mediaStatus ) {
         var playerState = mediaStatus.playerState;
         var appState = ReceiverStateManager.getState();
         var stateChanged = (playerState !== appState);
-        var idleBecauseOfLoading = (typeof mediaStatus.extendedStatus !== "undefined");
-        if ( !idleBecauseOfLoading && stateChanged ) {
+        var isIdle = (playerState === StateManager.State.IDLE);
+        var isIdleBecauseOfLoading = isIdle && (typeof mediaStatus.extendedStatus !== "undefined");
+        if ( !isIdleBecauseOfLoading && stateChanged ) {
             ReceiverStateManager.setState( playerState );
         }
     }
@@ -196,9 +226,12 @@ function onMediaStatus( mediaStatus ) {
 
 function onMetadataLoaded( loadInfo ) {
     ReceiverLogger.log( "MediaManager", "onMetadataLoaded" );
-    loadMediaMetadata( loadInfo.message.media ).then( function ( showPreview ) {
-        showPreviewMediaMetadata( showPreview );
-    } );
+    // If no preroll, show media metadata right away
+    if ( $.inArray( 0, adsInfo.adsBreakInfo ) === -1 ) {
+        loadMetadataPromise.then( function ( showPreview ) {
+            showPreviewMediaMetadata( showPreview );
+        } );
+    }
     mediaManager.onMetadataLoadedOrig( loadInfo );
 }
 
@@ -241,7 +274,7 @@ function onSeek( event ) {
 function onLoad( event ) {
     ReceiverLogger.log( "MediaManager", "onLoad" );
     ReceiverStateManager.setState( StateManager.State.LOADING );
-
+    loadMetadataPromise = loadMediaMetadata( event.data.media );
     if ( embedPlayerInitialized.is( EmbedPhase.Pending ) ) {
         ReceiverLogger.log( "MediaManager", "Embed player isn't initialized yet. Starting dynamic embed.", event );
         embedPlayerInitialized.setState( EmbedPhase.Started );
@@ -338,8 +371,13 @@ function getMediaImageUrl( media ) {
  */
 function showPreviewMediaMetadata( showPreview ) {
     if ( showPreview ) {
-        $( '#cast-media-info' ).fadeIn();
-        $( '#cast-before-play-controls' ).fadeIn();
+        $( '#cast-media-info, #cast-before-play-controls, #cast-gradient' ).each( function () {
+            $( this ).fadeIn();
+        } );
+    } else {
+        $( '#cast-media-info, #cast-before-play-controls, #cast-gradient' ).each( function () {
+            $( this ).fadeOut();
+        } );
     }
 }
 
@@ -420,8 +458,9 @@ function embedPlayer( event ) {
                     $( '#initial-video-element' ).remove();
                     mediaElement = $( kdp ).contents().contents().find( 'video' )[ 0 ];
                     mediaManager.setMediaElement( mediaElement );
+                    adsPluginEnabled = kdp.evaluate( '{doubleClick.plugin}' );
                     setMediaElementEvents();
-                    if ( kdp.evaluate( '{doubleClick.plugin}' ) ) {
+                    if ( adsPluginEnabled ) {
                         addAdsBindings();
                     }
                     embedPlayerInitialized.setState( EmbedPhase.Completed );
@@ -441,17 +480,52 @@ function addAdsBindings() {
     // If ad plugin enabled, sets this flag to false
     allAdsCompleted = false;
 
-    // Bind the kdp to the relevant events
-    kdp.kBind( "durationChange", function ( newDuration ) {
+    kdp.kBind( "onCuePointsRevealed", function ( cuePoints ) {
+        adsInfo.adsBreakInfo = JSON.parse( cuePoints );
+    } );
+
+    /**
+     * Bind the kdp to the relevant ads events
+     */
+    kdp.kBind( "durationChange", function ( event ) {
         var mediaInfo = mediaManager.getMediaInformation();
         if ( mediaInfo ) {
-            mediaInfo.duration = newDuration;
+            mediaInfo.duration = event.newValue;
             mediaManager.setMediaInformation( mediaInfo );
         }
     } );
 
+    kdp.kBind( "onAdPlay", function () {
+        adsInfo.isPlayingAd = true;
+        mediaManager.broadcastStatus( true );
+    } );
+
+    // Pre sequence handling
+    kdp.kBind( "preSequenceStart", function () {
+        loadMetadataPromise.then( function ( showPreview ) {
+            if ( showPreview ) {
+                var time = mediaElement.duration - mediaElement.currentTime;
+                setTimeout( function () {
+                    showPreviewMediaMetadata( true );
+                }, (time - 2) * 1000 );
+            }
+        } );
+    } );
+
+    kdp.kBind( "preSequenceComplete", function () {
+        adsInfo.isPlayingAd = false;
+        mediaManager.broadcastStatus( true );
+        showPreviewMediaMetadata( false );
+    } );
+
+    // Post sequence handling
     kdp.kBind( "postSequenceStart", function () {
         postSequenceStart = true;
+    } );
+
+    kdp.kBind( "postSequenceComplete", function () {
+        adsInfo.isPlayingAd = false;
+        mediaManager.broadcastStatus( true );
     } );
 
     kdp.kBind( "onAllAdsCompleted", function () {
@@ -468,7 +542,7 @@ function addAdsBindings() {
  */
 function setConfiguration( embedInfo ) {
     mw.setConfig( "EmbedPlayer.HidePosterOnStart", true );
-    if ( embedInfo.debugKalturaPlayer == true || debugKalturaPlayer ) {
+    if ( embedInfo.debugKalturaPlayer === true || debugKalturaPlayer ) {
         mw.setConfig( "debug", true );
     }
     mw.setConfig( "chromecastReceiver", true );
@@ -476,27 +550,7 @@ function setConfiguration( embedInfo ) {
 }
 
 /**
- * The receiver's embed player flashvars.
- * @type {{dash: {plugin: boolean}, multiDrm: {plugin: boolean}, embedPlayerChromecastReceiver: {plugin: boolean}, chromecast: {plugin: boolean}, playlistAPI: {plugin: boolean}, controlBarContainer: {hover: boolean}, volumeControl: {plugin: boolean}, titleLabel: {plugin: boolean}, fullScreenBtn: {plugin: boolean}, scrubber: {plugin: boolean}, largePlayBtn: {plugin: boolean}, mediaProxy: {mediaPlayFrom: number}, autoPlay: boolean}}
- */
-var receiverFlashVars = {
-    "dash": { 'plugin': false },
-    "multiDrm": { 'plugin': false },
-    "embedPlayerChromecastReceiver": { 'plugin': true },
-    "chromecast": { 'plugin': false },
-    "playlistAPI": { 'plugin': false },
-    "controlBarContainer": { 'hover': false },
-    "volumeControl": { 'plugin': false },
-    "titleLabel": { 'plugin': false },
-    "fullScreenBtn": { 'plugin': false },
-    "scrubber": { 'plugin': false },
-    "largePlayBtn": { 'plugin': false },
-    "mediaProxy": { "mediaPlayFrom": 0 },
-    "autoPlay": true
-};
-
-/**
- * Merge between the receiver's constant flashvars and the flashvars
+ * Merged between the receiver's constant flashvars and the flashvars
  * that been sent from the sender who opened the session.
  * The sender usually will need to send ks or proxyData.
  * The sender can override playFrom and autoPlay flashvars.
@@ -544,8 +598,8 @@ function getQueryVariable( variable ) {
     var vars = query.split( "&" );
     for ( var i = 0; i < vars.length; i++ ) {
         var pair = vars[ i ].split( "=" );
-        if ( pair[ 0 ] == variable ) {
-            return pair[ 1 ];
+        if ( pair[ 0 ] === variable ) {
+            return (pair[ 1 ] ? pair[ 1 ] === 'true' : true);
         }
     }
     return false;
