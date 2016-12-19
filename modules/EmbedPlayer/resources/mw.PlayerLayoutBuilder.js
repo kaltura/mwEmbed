@@ -286,6 +286,7 @@
             var _this = this;
             // Draw the layout from the root el / components
             var $interface = this.getInterface();
+            this.componentsMenus = [];
             $.each(_this.layoutContainers, function (containerId, components) {
                 var $parent = $interface.find('.' + containerId);
                 if ($parent.length) {
@@ -326,6 +327,10 @@
                 if ($component === false) {
                     mw.log('PlayerLayoutBuilder:: drawComponents: component "' + component.id + '" was not defined');
                 } else {
+                    var dropDownMenu = $component.find('ul.dropdown-menu')[0];
+                    if( dropDownMenu ) {
+                        _this.componentsMenus.push(dropDownMenu);
+                    }
                     if (component.insertMode == 'firstChild') {
                         $parent.prepend($component);
                     } else {
@@ -720,14 +725,21 @@
             this.embedPlayer.triggerHelper('showPlayerControls');
         },
         hidePlayerControls: function () {
-            if (!this.embedPlayer.paused ||
-                this.embedPlayer.isInSequence()) {
-                this.getInterface().addClass(this.outPlayerClass);
-                this.addTouchOverlay();
-                if (this.isInFullScreen()) {
-                    this.$interface.find(".mwEmbedPlayer").addClass("noCursor");
+            if ((!this.embedPlayer.paused || this.embedPlayer.isInSequence())) {
+                // track open components menus ( FEC-5623 )
+                var areAllCompMenusClosed = true;
+                $.each(this.componentsMenus, function (index, dropDownMenu) {
+                    return (areAllCompMenusClosed = dropDownMenu.className.indexOf('open') === -1);
+                });
+
+                if (areAllCompMenusClosed) {
+                    this.getInterface().addClass(this.outPlayerClass);
+                    this.addTouchOverlay();
+                    if (this.isInFullScreen()) {
+                        this.$interface.find(".mwEmbedPlayer").addClass("noCursor");
+                    }
+                    this.embedPlayer.triggerHelper('hidePlayerControls');
                 }
-                this.embedPlayer.triggerHelper('hidePlayerControls');
             }
         },
 

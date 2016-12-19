@@ -128,10 +128,14 @@
 
 				//Disable/enable plugin view on screen plugins and ads actions
 				this.bind( "AdSupport_StartAdPlayback", function (e, screenName) {
-					_this.minimizeView("disabledScreen");
+					if ( !_this.getPlayer().isAudio() ) {
+						_this.minimizeView("disabledScreen");
+					}
 				} );
 				this.bind( "AdSupport_EndAdPlayback", function (e, screenName) {
-					_this.restoreView("disabledScreen");
+					if ( !_this.getPlayer().isAudio() ) {
+						_this.restoreView("disabledScreen");
+					}
 				} );
 				this.bind( "preShowScreen", function (e, screenName) {
 					_this.minimizeView(screenName);

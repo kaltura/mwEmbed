@@ -623,12 +623,8 @@
 				_this.resumeAd(isLinear)
 			});
 			$(".adCover").remove();
-			if (this.isChromeless){
+			if (!mw.isIphone()){
 				$(".videoDisplay").prepend(adCover);
-			}else{
-				if (!mw.isIphone()){
-					$(this.getAdContainer()).append(adCover);
-				}
 			}
 			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
 
@@ -931,7 +927,7 @@
 			}
 
 			if ( this.isNativeSDK ) {
-				this.embedPlayer.getPlayerElement().attr( 'doubleClickRequestAds', this.getConfig( 'adTagUrl' ));
+				this.embedPlayer.getPlayerElement().attr( 'doubleClickRequestAds', adTagUrl);
 				mw.log( "DoubleClick::requestAds: Native SDK player request ad ");
 				return;
 			}
@@ -1015,7 +1011,7 @@
 
 						try {
 							var selectionCriteria = new google.ima.CompanionAdSelectionSettings();
-							selectionCriteria.resourceType = google.ima.CompanionAdSelectionSettings.ResourceType.STATIC;
+							selectionCriteria.resourceType = google.ima.CompanionAdSelectionSettings.ResourceType.ALL;
 							selectionCriteria.creativeType = google.ima.CompanionAdSelectionSettings.CreativeType.IMAGE;
 							selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.IGNORE;
 							companionAds = ad.getCompanionAds(adSlotWidth, adSlotHeight, selectionCriteria);

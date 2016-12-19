@@ -676,6 +676,11 @@
 
 		onError: function ( message ) {
 			var data = {errorMessage: message};
+			var errorPatt = /\d{3,4}/;
+			var errorCode = errorPatt.exec(message);
+			if(errorCode){
+				data.code = errorCode[0];
+			}
 			mw.log( 'EmbedPlayerSPlayer::onError: ' + message );
 			this.triggerHelper( 'embedPlayerError' , [data] );
 		} ,
@@ -710,6 +715,9 @@
 			}
 
 			var errorObj = {message: messageText , title: gM( 'ks-ERROR' )};
+			if(data.code){
+				errorObj.code = data.code;
+			}
 			if ( this.readyCallbackFunc ) {
 				this.setError( errorObj );
 				this.callReadyFunc();
