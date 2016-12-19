@@ -485,7 +485,8 @@
 		"kalturaPluginName": "reportError"
 	},
 	"kgitGuard": {
-		"scripts": "components/kgitGuard.js",
+		"scripts": "components/kgitGuard/kgitGuard.js",
+		"styles": "components/kgitGuard/kgitGuard.css",
 		"dependencies": "mw.KBasePlugin",
 		"kalturaPluginName": "kgitGuard"
 	}
