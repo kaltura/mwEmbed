@@ -11,10 +11,11 @@
             this.proxyPosterMEthods();
         },
         isSafeEnviornment: function(){
-            var hostPageUrl = window.kWidgetSupport.getHostPageUrl()
+            var hostPageUrl = window.kWidgetSupport.getHostPageUrl();
+            var loaderPath = kWidget.getPath();
             return ((hostPageUrl.indexOf("kgit.html5video.org") === -1) &&
                     (hostPageUrl.indexOf("player.kaltura.com") === -1) &&
-                    (kWidget.getPath().indexOf("kgit.html5video.org") !== -1));
+                    (loaderPath.indexOf("kgit.html5video.org") !== -1));
         },
         proxyPosterMEthods: function(){
             var _this = this;
@@ -31,13 +32,13 @@
             };
         },
         addGuard: function(){
-            $(this.embedPlayer).append('<div class="ribbon-wrapper-green"><div class="ribbon-green">'+this.getConfig("guardText")+'</div></div>');
+            $(this.embedPlayer).append('<div class="guard-ribbon-wrapper"><div class="guard-ribbon">'+this.getConfig("guardText")+'</div></div>');
         },
         addGuardStyle: function(){
             var style = document.createElement('style');
             style.type = 'text/css';
             style.innerHTML =
-                '.ribbon-wrapper-green {'+
+                '.guard-ribbon-wrapper {'+
                 '  width: 300px;'+
                 '  height: 220px;'+
                 '  overflow: hidden;'+
@@ -45,7 +46,7 @@
                 '  top: 0px;'+
                 '  left: 0px;'+
                 '}'+
-                '.ribbon-green {'+
+                '.guard-ribbon {'+
                 '  font: bold 15px Sans-Serif;'+
                 '  color: red;'+
                 '  text-align: center;'+
@@ -70,7 +71,7 @@
                 '  -moz-box-shadow:    0px 0px 3px rgba(0,0,0,0.3);'+
                 '  box-shadow:         0px 0px 3px rgba(0,0,0,0.3);'+
                 '}'+
-                '.ribbon-green:before, .ribbon-green:after {'+
+                '.guard-ribbon:before, .guard-ribbon:after {'+
                 '  content: "";'+
                 '  border-top:   3px solid #6e8900;   '+
                 '  border-left:  3px solid transparent;'+
@@ -78,10 +79,10 @@
                 '  position:absolute;'+
                 '  bottom: -3px;'+
                 '}'+
-                '.ribbon-green:before {'+
+                '.guard-ribbon:before {'+
                 '  left: 0;'+
                 '}'+
-                '.ribbon-green:after {'+
+                '.guard-ribbon:after {'+
                 '  right: 0;'+
                 '}​';
             document.getElementsByTagName('head')[0].appendChild(style);
