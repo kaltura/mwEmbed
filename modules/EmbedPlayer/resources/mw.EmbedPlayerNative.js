@@ -406,7 +406,6 @@
 				this.playing = true;
 			}
 
-			mw.log("---- 1 vid.readyState = "+vid.readyState);
 			// some initial calls to prime the seek:
 			if ( ( vid.currentTime === 0 && callbackCount === 0 ) && vid.readyState === 0 ) { //load video again if not loaded yet (vid.readyState === 0)
 				// when seeking turn off preload none and issue a load call.
@@ -450,7 +449,6 @@
 							_this.parseTracks();
 						}
 					}else {
-						mw.log("---- 2 vid.readyState = "+vid.readyState);
 						vid.load();
 						vid.play();
 					}

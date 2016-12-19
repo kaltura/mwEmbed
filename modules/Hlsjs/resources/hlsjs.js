@@ -24,7 +24,9 @@
 		var hlsjs = mw.KBasePlugin.extend({
 
 			defaultConfig: {
-				options: {}
+				options: {
+					//debug:true
+				}
 			},
 
 			/** @type {Number} */
@@ -133,12 +135,16 @@
 				this.hls.on(Hls.Events.MANIFEST_PARSED, this.onManifestParsedHandler);
 				this.onFragParsingMetadataHandler = this.onFragParsingMetadata.bind(this);
 				this.hls.on(Hls.Events.FRAG_PARSING_METADATA, this.onFragParsingMetadataHandler);
+				this.onPTSUpdatedHandler = this.onPTSUpdated.bind(this);
+				this.hls.on(Hls.Events.LEVEL_PTS_UPDATED, this.onPTSUpdatedHandler);
 				this.onLevelSwitchHandler = this.onLevelSwitch.bind(this);
 				this.hls.on(Hls.Events.LEVEL_SWITCH, this.onLevelSwitchHandler);
 				this.onFragChangedHandler = this.onFragChanged.bind(this);
 				this.hls.on(Hls.Events.FRAG_CHANGED, this.onFragChangedHandler);
 				this.onErrorHandler = this.onError.bind(this);
 				this.hls.on(Hls.Events.ERROR, this.onErrorHandler);
+				this.onDropFramesHandler = this.onDropFrames.bind(this);
+				this.hls.on(Hls.Events.FPS_DROP, this.onDropFramesHandler);
 			},
 			/**
 			 * Unregister HLS playback engine events
@@ -150,12 +156,16 @@
 				this.onManifestParsedHandler = null;
 				this.hls.off(Hls.Events.FRAG_PARSING_METADATA, this.onFragParsingMetadataHandler);
 				this.onFragParsingMetadataHandler = null;
+				this.hls.off(Hls.Events.LEVEL_PTS_UPDATED, this.onPTSUpdatedHandler);
+				this.onPTSUpdatedHandler = null;
 				this.hls.off(Hls.Events.LEVEL_SWITCH, this.onLevelSwitchHandler);
 				this.onLevelSwitchHandler = null;
 				this.hls.off(Hls.Events.FRAG_CHANGED, this.onFragChangedHandler);
 				this.onFragChangedHandler = null;
 				this.hls.off(Hls.Events.ERROR, this.onErrorHandler);
 				this.onErrorHandler = null;
+				this.hls.off(Hls.Events.FPS_DROP, this.onDropFramesHandler);
+				this.onDropFramesHandler = null;
 			},
 			//Event handlers
 			/**
@@ -191,6 +201,18 @@
 
 				this.getPlayer().triggerHelper('onId3Tag', id3Tag);
 			},
+			onPTSUpdated: function (e, data) {
+				//fired when a level's PTS information has been updated after parsing a fragment
+				//data: { details : levelDetails object, level : id of updated level, drift: PTS drift observed when parsing last fragment }
+				this.getPlayer().triggerHelper('hlsjsUpdatePTS', data);
+				mw.log("hlsjs:: onDebugInfoReceived | onPTSUpdated");
+			},
+			onDropFrames: function (e, data) {
+				//triggered when FPS drop in last monitoring period is higher than given threshold
+				//data: {curentDropped : nb of dropped frames in last monitoring period, currentDecoded: nb of decoded frames in last monitoring period, totalDropped : total dropped frames on this video element}
+				this.getPlayer().triggerHelper('hlsjsDropFPS', data.totalDropped);
+				mw.log("hlsjs:: onDebugInfoReceived | onDropFrames | totalDropped = "+data.totalDropped);
+			},
 			/**
 			 * Extract metadata from parsed manifest data, e.g. ABR etc.
 			 * @param event
@@ -208,12 +230,16 @@
 			onLevelSwitch: function (event, data) {
 				//Set and report bitrate change
 				var source = this.hls.levels[data.level];
-				this.getPlayer().currentBitrate = source.bitrate/ 1024;
-				this.getPlayer().triggerHelper('bitrateChange', this.getPlayer().currentBitrate);
+				var currentBitrate = source.bitrate/ 1024
+				this.getPlayer().currentBitrate = currentBitrate;
+				this.getPlayer().triggerHelper('bitrateChange', currentBitrate);
 				//Notify sourceSwitchingStarted
 				if (this.isLevelSwitching && this.levelIndex == data.level) {
 					this.getPlayer().triggerHelper("sourceSwitchingStarted");
 				}
+				//fire debug info
+				this.getPlayer().triggerHelper('hlsjsLevelSwitch', currentBitrate);
+				mw.log("hlsjs:: onDebugInfoReceived | onLevelUpdated | level = "+ data.level+" | current bitrate = "+currentBitrate);
 			},
 			/**
 			 * Trigger source switch ended handler

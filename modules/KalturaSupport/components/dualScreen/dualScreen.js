@@ -398,22 +398,16 @@
 				// otherwise autoplay might not work.
 				setTimeout( function () {
 
-					if (defaultDualScreenViewId)
-					{
-						if ( _this.externalControlManager ) {
+					if ( _this.externalControlManager ) {
+
+						if (defaultDualScreenViewId)
+						{
 							_this.externalControlManager.setViewById(defaultDualScreenViewId);
-							_this.externalControlManager.initialize();
 						}
 
-						//if (_this.getPlayer().isAudio()){
-						//	// The product removed explicit handling for such a scenario
-						//}
-					}else
-					{
-						if ( _this.externalControlManager ) {
-							_this.externalControlManager.initialize();
-						}
+						_this.externalControlManager.initialize();
 					}
+
 				}, 1000 );
 			},
 

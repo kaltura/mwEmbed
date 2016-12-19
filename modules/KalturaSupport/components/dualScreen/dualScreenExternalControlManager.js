@@ -11,14 +11,14 @@
             {
                 var _this = this;
 
-                if (_this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") || _this.getPlayer().kCuePoints) {
+                if ((_this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints")) || _this.getPlayer().kCuePoints) {
                     // handle cue points only if either live or we have cue points loaded from the server
                     setTimeout(function()
                     {
                         if (!_this.cuePointsManager) {
                             // we need to initialize the instance
                             _this.cuePointsManager = new mw.dualScreen.CuePointsManager('dualScreenExternalControlManager', '', _this.getPlayer(), function (args) {
-                                var relevantCuePoints = args.filter({tag: 'player-view-mode', sortDesc: true});
+                                var relevantCuePoints = args.filter({tags: ['player-view-mode','change-view-mode'], sortDesc: true});
                                 var mostUpdatedCuePointToHandle = relevantCuePoints.length > 0 ? relevantCuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
 
                                 if (mostUpdatedCuePointToHandle) {
@@ -89,16 +89,22 @@
             {
                 var _this = this;
 
-                if (!cuePoint || cuePoint.cuePointType !== 'codeCuePoint.Code' || cuePoint.tags !== 'player-view-mode' ||
-                    !cuePoint.code)
+                var actionContent = null;
+
+                if (cuePoint && cuePoint.cuePointType === 'codeCuePoint.Code' && cuePoint.tags === 'player-view-mode' && cuePoint.code)
                 {
-                    // ignore any cue point not relevant to player view mode.
-                    return;
+                    actionContent = cuePoint.code;
+
+                }else if (cuePoint && cuePoint.cuePointType === 'codeCuePoint.Code' && cuePoint.tags === 'change-view-mode' && cuePoint.partnerData)
+                {
+                    actionContent = cuePoint.partnerData;
                 }
 
-                var cuePointCode = JSON.parse(cuePoint.code);
-                if (cuePointCode.playerViewModeId) {
-                    _this.setViewById(cuePointCode.playerViewModeId)
+                if (actionContent) {
+                    var cuePointCode = JSON.parse(actionContent);
+                    if (cuePointCode.playerViewModeId) {
+                        _this.setViewById(cuePointCode.playerViewModeId)
+                    }
                 }
             }
         });

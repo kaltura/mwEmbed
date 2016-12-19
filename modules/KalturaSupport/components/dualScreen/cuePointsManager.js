@@ -2,7 +2,7 @@
     "use strict";
     mw.dualScreen = mw.dualScreen || {};
 
-    mw.dualScreen.CuePointsManager = function(name, bindPostfix, player, onCuePointsReached) {
+    mw.dualScreen.CuePointsManager = function(name, bindPostfix, player, onCuePointsReached, invoker) {
 
         var $player = $(player);
         var nextPendingCuePointIndex = 0;
@@ -13,6 +13,33 @@
             mw.log(name + "." + context + ":" + message);
         }
 
+        function createReachedCuePointsArgs(cuePoints, context)
+        {
+            return $.extend({
+                'cuePoints': cuePoints,
+                filter: function (args) {
+                    var result = [];
+
+                    if (this.cuePoints) {
+                        var filterByTags = (args.tags ? args.tags : (args.tag ? [args.tag] : null));
+                        result = $.grep(this.cuePoints, function (cuePoint) {
+                            var isValidTag = (!filterByTags || filterByTags.indexOf(cuePoint.tags) !== -1);
+                            var isValidType = (!args.types || $.grep(args.types, function (cuePointType) {
+                                return (!cuePointType.main || cuePointType.main === cuePoint.cuePointType) && (!cuePointType.sub || cuePointType.sub === cuePoint.subType);
+                            }).length > 0);
+
+                            return isValidTag && isValidType;
+                        });
+
+                        result.sort(function (a, b) {
+                            return args.sortDesc ? (b.startTime - a.startTime) : (a.startTime - b.startTime);
+                        });
+                    }
+
+                    return result;
+                }
+            }, context);
+        }
         /**
          * notify listener with cue points that need to be handled
          * @param cuePoints
@@ -23,38 +50,16 @@
         {
             if (onCuePointsReached) {
                 // create event args that contains functions to filter the cue points wisely
-                var eventArgs = $.extend({
-                    'cuePoints': cuePoints,
-                    filter: function (args) {
-                        var result = [];
-
-                        if (this.cuePoints) {
-                            result = $.grep(this.cuePoints, function (cuePoint) {
-                                var isValidTag = (!args.tag || (cuePoint.tags === args.tag));
-                                var isValidType = (!args.types || $.grep(args.types, function (cuePointType) {
-                                    return (!cuePointType.main || cuePointType.main === cuePoint.cuePointType) && (!cuePointType.sub || cuePointType.sub === cuePoint.subType);
-                                }).length > 0);
-
-                                return isValidTag && isValidType;
-                            });
-
-                            result.sort(function (a, b) {
-                                return args.sortDesc ? (b.startTime - a.startTime) : (a.startTime - b.startTime);
-                            });
-                        }
-
-                        return result;
-                    }
-                }, eventContext);
+                var eventArgs = createReachedCuePointsArgs(cuePoints,eventContext);
 
                 log('triggerReachedCuePoints()', 'notify listener with ' + cuePoints.length + ' cue points to handle');
-                onCuePointsReached(eventArgs);
+                onCuePointsReached.call(invoker,eventArgs);
             }
         }
 
-        function getCodeCuePoints() {
+        function getManagerCuePoints() {
 
-            return player.kCuePoints ? player.kCuePoints.getCodeCuePoints() : [];
+            return player.kCuePoints ? player.kCuePoints.getManagerCuePoints() : [];
         }
 
         /**
@@ -65,12 +70,12 @@
         function reinvokeReachedLogicManually()
         {
             var currentTime = player.getPlayerElementTime() * 1000;
-            log('reinvokeReachedLogicManually', 'server time was modified to a past time (previously ' + lastHandledServerTime + ', current ' + currentTime + "). re-invoke logic by finding all cue points relevant until current time" );
+            log('reinvokeReachedLogicManually()', 'server time was modified to a past time (previously ' + lastHandledServerTime + ', current ' + currentTime + "). re-invoke logic by finding all cue points relevant until current time" );
             lastHandledServerTime = currentTime;
 
             nextPendingCuePointIndex = getNextCuePointIndex(currentTime, 0);
 
-            var cuePoints = getCodeCuePoints();
+            var cuePoints = getManagerCuePoints();
 
             if (nextPendingCuePointIndex > 0 && nextPendingCuePointIndex <= cuePoints.length) {
                 // invoke the following logic if we passed a cue point
@@ -101,6 +106,7 @@
                 "monitorEvent" + bindPostfix +
                 " onplay" + bindPostfix,
                 function (e) {
+
                     if (!isEnabled)
                     {
                         return;
@@ -108,7 +114,7 @@
 
                     var currentTime = player.getPlayerElementTime() * 1000;
 
-                    if ($.isNumeric(lastHandledServerTime) && lastHandledServerTime > currentTime)
+                    if ($.isNumeric(lastHandledServerTime) && (lastHandledServerTime - 2000) > currentTime)
                     {
                         // this part handles situation when user 'seek' from the player or if the server time changes
                         // for unknown reason. We don't use the 'seek' event since it sometimes provide an offset time and
@@ -172,7 +178,7 @@
 
                 startFromIndex = startFromIndex || 0;
 
-                var cuePoints = getCodeCuePoints();
+                var cuePoints = getManagerCuePoints();
 
                 // Start looking for the cue point via time, return FIRST match:
                 if (cuePoints && cuePoints.length > 0) {
@@ -190,7 +196,7 @@
         }
 
         function getCuePointByIndex(index) {
-            var cuePoints = getCodeCuePoints();
+            var cuePoints = getManagerCuePoints();
             if ($.isNumeric(index) && index > -1 && index < cuePoints.length) {
                 return cuePoints[index];
             }
@@ -206,7 +212,7 @@
                 {
                     startFromIndex = (startFromIndex < 0) ? 0 : startFromIndex;
 
-                    var cuePoints = getCodeCuePoints();
+                    var cuePoints = getManagerCuePoints();
 
                     for (var i = startFromIndex; i < cuePoints.length; i++) {
                         var curPoint = cuePoints[i];
@@ -223,8 +229,22 @@
             return result;
         }
 
+        this.isEnabled = function()
+        {
+            return isEnabled;
+        };
         this.enable = enable;
         this.disable = disable;
+        this.getCuePointsReached = function()
+        {
+            if (isEnabled) {
+                var currentTime = player.getPlayerElementTime() * 1000;
+                var cuePointsContext = getCuePointsReached(currentTime, 0);
+                return createReachedCuePointsArgs(cuePointsContext.cuePoints);
+            }
+
+            return null;
+        }
 
 
         initialize();

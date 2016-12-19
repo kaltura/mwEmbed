@@ -13,10 +13,50 @@
 				'minimumSequenceDuration': 2
 			}
 		},
+		cuePointsManager : null,
 		cuePoints: [],
 		syncEnabled: true,
 		setup: function(){
 			this.addBinding();
+		},
+		initializeCuePointsManager:function()
+		{
+			var _this = this;
+
+			if ((_this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints")) || _this.getPlayer().kCuePoints) {
+				// handle cue points only if either live or we have cue points loaded from the server
+				setTimeout(function()
+				{
+					if (!_this.cuePointsManager) {
+						// we need to initialize the instance
+						_this.cuePointsManager = new mw.dualScreen.CuePointsManager('imagePlayer', '', _this.getPlayer(),_this.cuePointsReached,_this);
+					}
+
+					// enable cue points manager
+					_this.cuePointsManager.enable();
+				},1000);
+			}else
+			{
+				// no need for cue points manager
+				if (_this.cuePointsManager) {
+					_this.cuePointsManager.disable();
+				}
+			}
+		},
+		cuePointsReached : function(context)
+		{
+			var cuePoints = context.filter({tags: ['remove-selected-thumb']});
+			cuePoints = cuePoints.concat(context.filter({types: [{main:'thumbCuePoint.Thumb'}]}));
+
+			cuePoints.sort(function (a, b) {
+				return  (b.startTime - a.startTime);
+			});
+
+			var mostUpdatedCuePointToHandle = cuePoints.length > 0 ? cuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
+
+			if (mostUpdatedCuePointToHandle) {
+				this.syncImage(mostUpdatedCuePointToHandle)
+			}
 		},
 		canRender: function () {
 			var cuePoints = this.getCuePoints();
@@ -30,40 +70,14 @@
 		},
 		addBinding: function(){
 			var _this = this;
+			this.bind( 'playerReady', function (  ) {
+				_this.initializeCuePointsManager();
+			});
+
 			this.bind( 'onplay', function () {
 				_this.loadAdditionalAssets();
 			} );
-			//In live mode wait for first updatetime that is bigger then 0 for syncing initial slide
-			if (mw.getConfig("EmbedPlayer.LiveCuepoints") && this.getPlayer().isLive()) {
-				this.bind( 'timeupdate', function ( ) {
-					if (_this.getPlayer().currentTime > 0) {
-						_this.unbind('timeupdate');
-					}
-					var cuePoint = _this.getCurrentCuePoint();
-					_this.sync( cuePoint );
-				} );
-			}
 
-			this.bind( 'KalturaSupport_ThumbCuePointsReady', function () {
-				var currentCuepoint = _this.getCurrentCuePoint() || _this.getCuePoints()[0];
-				_this.sync(currentCuepoint);
-			} );
-			this.bind( 'KalturaSupport_CuePointReached', function ( e, cuePointObj ) {
-				var cuePoint;
-				$.each(_this.getConfig("cuePointType"), function(i, cuePointType){
-					var main = $.isArray(cuePointType.main) ? cuePointType.main : [cuePointType.main];
-					var sub = $.isArray(cuePointType.sub) ? cuePointType.sub : [cuePointType.sub];
-					if ( ( $.inArray( cuePointObj.cuePoint.cuePointType, main ) > -1 ) &&
-						( $.inArray( cuePointObj.cuePoint.subType, sub ) > -1 ) ) {
-						cuePoint = cuePointObj.cuePoint;
-						return false;
-					}
-				});
-				if (!cuePoint){
-					cuePoint = _this.getCurrentCuePoint();
-				}
-				_this.sync( cuePoint );
-			} );
 			this.bind("onChangeMedia", function(){
 				if (_this.syncEnabled) {
 					//Clear the current slide before loading the new media
@@ -75,8 +89,11 @@
 			});
 			this.bind("onChangeStreamDone", function(){
 				_this.syncEnabled = true;
-				var cuePoint = _this.getCurrentCuePoint();
-				_this.sync( cuePoint );
+				var cuePointsReachedResult = _this.cuePointsManager.getCuePointsReached();
+				if (cuePointsReachedResult)
+				{
+					_this.cuePointsReached(cuePointsReachedResult);
+				}
 			});
 		},
 		getComponent: function() {
@@ -121,26 +138,32 @@
 			});
 			return cuePoints;
 		},
-		sync: function(cuePoint, callback){
+		syncImage: function(cuePoint){
 			if (this.syncEnabled) {
-				this.loadAdditionalAssets();
-				var _this = this;
-				var callCallback = function () {
-					_this.applyIntrinsicAspect();
-					if ( callback && typeof(callback) === "function" ) {
-						callback();
-					}
-				};
-				if ( cuePoint ) {
-					var myImg = this.getComponent();
-					if ( cuePoint.thumbnailUrl ) {
-						myImg.attr( 'src', cuePoint.thumbnailUrl );
-						callCallback();
-					} else {
-						this.loadNext( cuePoint, function ( url ) {
-							myImg.attr( 'src', url );
+				if (cuePoint && cuePoint.cuePointType === 'thumbCuePoint.Thumb') {
+					this.loadAdditionalAssets();
+					var _this = this;
+					var callCallback = function () {
+						_this.applyIntrinsicAspect();
+					};
+					if (cuePoint) {
+						var myImg = this.getComponent();
+						if (cuePoint.thumbnailUrl) {
+							myImg.attr('src', cuePoint.thumbnailUrl);
 							callCallback();
-						} );
+						} else {
+							this.loadNext(cuePoint, function (url) {
+								myImg.attr('src', url);
+								callCallback();
+							});
+						}
+					}
+				}else if (cuePoint && cuePoint.cuePointType === 'codeCuePoint.Code')
+				{
+					// remove slide if requested
+					if (cuePoint.tags === 'remove-selected-thumb')
+					{
+						this.getComponent().attr('src','');
 					}
 				}
 			}

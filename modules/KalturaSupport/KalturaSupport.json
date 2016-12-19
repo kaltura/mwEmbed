@@ -90,7 +90,7 @@
 			"components/dualScreen/dualScreenControlBar.js",
 			"components/dualScreen/displays.js",
 			"components/dualScreen/display.js",
-			"components/dualScreen/dualScreenCuePointsManager.js",
+			"components/dualScreen/cuePointsManager.js",
 			"components/dualScreen/dualScreenExternalControlManager.js",
 			"components/dualScreen/imagePlayer.js",
 			"components/dualScreen/videoPlayer.js",
