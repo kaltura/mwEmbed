@@ -10,7 +10,6 @@
             this.proxyPosterMethods();
         },
         isSafeEnviornment: function(){
-            return 1;
             var hostPageUrl = window.kWidgetSupport.getHostPageUrl();
             var loaderPath = kWidget.getPath();
             return ((hostPageUrl.indexOf("kgit.html5video.org") === -1) &&
