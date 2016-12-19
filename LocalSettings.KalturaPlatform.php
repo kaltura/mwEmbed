@@ -98,8 +98,8 @@ if( $kConf->hasParam('enableEmbedServicesRouting') ) {
 }
 
 $wgUseMemcache = false;
-if ($kConf->hasParam('memcacheLocal'){
-	$wgMemcacheConfiguration = kConf::get('memcacheLocal','cache',null);
+if ( $kConf->hasParam('cache') ){
+	$wgMemcacheConfiguration = $kConf->get('memcacheLocal','cache',null);
 	$wgUseMemcache = true;
 }
 

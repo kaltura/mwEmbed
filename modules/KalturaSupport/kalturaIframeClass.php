@@ -513,7 +513,7 @@ class kalturaIframeClass {
 		// check for language key: 
 		$_GET['lang'] = $this->getLangKey();
 		// include skin and language in cache path, as a custom param needed for startup
-		$cachePath = $wgScriptCacheDirectory . '/startup.' .
+		$cachePath =  '/startup.' .
 			$wgMwEmbedVersion . $_GET['skin'] . $_GET['lang'] . $wgHTTPProtocol . '.' . $_SERVER['SERVER_NAME'] . '.min.js';
 			
 		// check for cached startup:
@@ -879,8 +879,8 @@ HTML;
 	function getModulesRegistry(){
 		global $wgScriptCacheDirectory, $wgMwEmbedVersion;
 		$registrations;
-		$cachePath = $wgScriptCacheDirectory . '/registrations.' . $wgMwEmbedVersion . $_GET['skin'] . $_GET['lang'] . '.min.json';
-		$content = $this->cache->get($cachepath);
+		$cachePath =  '/registrations.' . $wgMwEmbedVersion . $_GET['skin'] . $_GET['lang'] . '.min.json';
+		$content = $this->cache->get($cachePath);
 		if($content != null  ){
 			$registrations = json_decode($content, true);
 		}
@@ -1134,9 +1134,9 @@ HTML;
 		// last modified time: 
 		$lmtime =  @filemtime( $resourcePath );
 		// set the cache key
-		$cachePath = $wgScriptCacheDirectory . '/OnPage_' . md5( $resourcePath ) . $lmtime . 'min.js';
+		$cachePath =  '/OnPage_' . md5( $resourcePath ) . $lmtime . 'min.js';
 		// check for cached version:
-		$content = $this->cache->get($cachepath);
+		$content = $this->cache->get($cachePath);
 		if( $content != null){
 			return $content;
 		}
