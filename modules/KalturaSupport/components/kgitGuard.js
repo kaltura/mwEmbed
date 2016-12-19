@@ -11,7 +11,10 @@
             this.proxyPosterMEthods();
         },
         isSafeEnviornment: function(){
-            return (kWidget.getPath().indexOf("kgit.html5video.org") !== -1);
+            var hostPageUrl = window.kWidgetSupport.getHostPageUrl()
+            return ((hostPageUrl.indexOf("kgit.html5video.org") === -1) &&
+                    (hostPageUrl.indexOf("player.kaltura.com") === -1) &&
+                    (kWidget.getPath().indexOf("kgit.html5video.org") !== -1));
         },
         proxyPosterMEthods: function(){
             var _this = this;
