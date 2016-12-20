@@ -136,6 +136,9 @@
 							data[index] = null;
 						}
 					});
+					thumbCuePoint = thumbCuePoint.filter(function(cuepoint) {
+						return (typeof(cuepoint.assetId) !== 'undefined');
+					});
 					$.each(thumbCuePoint, function (index, item) {
 						item.thumbnailUrl = loadThumbnailWithReferrer ? data[index] + '?options:referrer=' + referrer : data[index];
 					});
