@@ -97,6 +97,13 @@ if( $kConf->hasParam('enableEmbedServicesRouting') ) {
 	$wgEnableKalturaEmbedServicesRouting = $kConf->get('enableEmbedServicesRouting');
 }
 
+$wgUseMemcache = false;
+if ( $kConf->hasParam('cache') ){
+	$wgMemcacheConfiguration = $kConf->get('memcacheLocal','cache',null);
+	$wgUseMemcache = true;
+}
+
+
 // A helper function to get full URL of host
 function wgGetUrl( $hostKey = null ) {
 	global $wgHTTPProtocol, $wgServerPort, $kConf;
