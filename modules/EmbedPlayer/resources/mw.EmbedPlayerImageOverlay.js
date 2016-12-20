@@ -47,7 +47,7 @@
 		},
 
 		setup: function (readyCallback) {
-			this.bindHelper('firstPlay' + this.bindPostfix, function(){
+			this.bindHelper('onplay' + this.bindPostfix, function(){
 				// Reset clock time for load
 				this.clockStartTime = new Date().getTime();
 			}.bind(this));
@@ -128,14 +128,15 @@
 			} else {
 				this.duration = parseFloat( mw.getConfig( "EmbedPlayer.DefaultImageDuration" ) );
 			}
+			this.triggerHelper('durationChange',[this.duration]);
 		},
-		/**
-		* Stops the playback
-		*/
-		stop: function() {
-			this.currentTime = 0;
-			this.parent_stop();
-		},
+		///**
+		//* Stops the playback
+		//*/
+		//stop: function() {
+		//	this.currentTime = 0;
+		//	this.parent_stop();
+		//},
 		_onpause: function(){
 			// catch the native event ( and do nothing )
 		},
@@ -311,6 +312,8 @@
 				this.currentTime = 0;
 			} else if( this.paused ) {
 				this.currentTime = this.lastPauseTime;
+			} else if( this.stopped ) {
+				this.currentTime = this.duration;
 			} else if( this.clockStartTime > 0 ) {
 				this.currentTime = ( ( new Date().getTime() - this.clockStartTime ) / 1000 ) + this.lastPauseTime;
 			} else {
