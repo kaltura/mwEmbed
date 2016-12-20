@@ -136,8 +136,13 @@
 							data[index] = null;
 						}
 					});
+					var offset = 0;
 					$.each(thumbCuePoint, function (index, item) {
-						item.thumbnailUrl = loadThumbnailWithReferrer ? data[index] + '?options:referrer=' + referrer : data[index];
+						if (typeof (item.assetId) === 'undefined') {
+							offset++;
+							return;
+						}
+						item.thumbnailUrl = loadThumbnailWithReferrer ? data[index - offset] + '?options:referrer=' + referrer : data[index - offset];
 					});
 					if (callback) {
 						callback();
