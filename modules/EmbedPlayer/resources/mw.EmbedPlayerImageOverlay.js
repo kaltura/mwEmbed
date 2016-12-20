@@ -130,13 +130,7 @@
 			}
 			this.triggerHelper('durationChange',[this.duration]);
 		},
-		///**
-		//* Stops the playback
-		//*/
-		//stop: function() {
-		//	this.currentTime = 0;
-		//	this.parent_stop();
-		//},
+
 		_onpause: function(){
 			// catch the native event ( and do nothing )
 		},
