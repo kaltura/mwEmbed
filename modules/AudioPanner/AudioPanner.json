@@ -1,0 +1,9 @@
+{
+  "audioPanner": {
+    "scripts": [
+      "resources/audioPanner.js"
+    ],
+    "dependencies": ["mw.KBasePlugin"],
+    "kalturaPluginName": "audioPanner"
+  }
+}
