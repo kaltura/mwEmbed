@@ -26,6 +26,8 @@
 				var player = _this.getPlayer();
 				var video = player.getPlayerElement();
 				var container = player.getVideoDisplay();
+				//var viewer = new top.kl.Video({source: video, container: container[0]});
+				//viewer.render();
 				var longitude = 180;
 				var latitude = 0;
 				var savedX;
@@ -35,6 +37,7 @@
 				var texture;
 				_this.manualControl = _this.getConfig("manualControl");
 				$(_this.getPlayer().getPlayerElement() ).css('z-index','-1');
+				//return;
 				// setting up the renderer
 				renderer = new THREE.WebGLRenderer();
 				renderer.setSize(window.innerWidth, window.innerHeight);
@@ -115,10 +118,14 @@
 				// when the mouse moves, if in manual contro we adjust coordinates
 				function onDocumentMouseMove(event){
 					if(_this.manualControl){
-						longitude = (savedX - (event.clientX || event.originalEvent.touches[0].pageX)) * _this.getConfig("moveMultiplier") + savedLongitude;
-						latitude = ((event.clientY || event.originalEvent.touches[0].pageY) - savedY) * _this.getConfig("moveMultiplier") + savedLatitude;
+						if(event.clientX || event.originalEvent.touches){
+							longitude = (savedX - (event.clientX || event.originalEvent.touches[0].pageX)) * _this.getConfig("moveMultiplier") + savedLongitude;
+						}
+						if(event.clientY || event.originalEvent.touches){
+							latitude = ((event.clientY || event.originalEvent.touches[0].pageY) - savedY) * _this.getConfig("moveMultiplier") + savedLatitude;
+						}
 					}
-				}
+                }
 
 				// when the mouse is released, we turn manual control off
 				function onDocumentMouseUp(event){
