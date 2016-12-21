@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>360 video</title>
+    <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+    <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+    <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+    <script type="text/javascript" src="../../../../../360/kaleidoscope/dist/kaleidoscope.min.js"></script>
+</head>
+<body>
+<div id="target"></div>
+
+<div id="kdp" style="width:600px;height:370px;float:left"></div>
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+<script>
+    kWidget.embed({
+        "targetId": "kdp",
+        "wid": "_2196781",
+        "uiconf_id": "12905712",
+        "entry_id": "1_afvj3z0u",
+        "flashvars": {
+            'EmbedPlayer.WebKitPlaysInline':true,
+            'disableHLSOnJs':false,
+            'video360': {
+                'plugin': true
+            }
+        }
+    });
+</script>
+<div id="kdp1" style="width:600px;height:370px;float:left"></div>
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+<script>
+    kWidget.embed({
+        "targetId": "kdp1",
+        "wid": "_2196781",
+        "uiconf_id": "12905712",
+        "entry_id": "1_afvj3z0u",
+        "flashvars": {
+            'EmbedPlayer.WebKitPlaysInline':true,
+            'disableHLSOnJs':true,
+            'video360': {
+                'plugin': true
+            }
+            ,
+            'dash':{
+                'plugin':true
+            }
+        }
+    });
+</script>
+<div id="kdp2" style="width:600px;height:370px;float:left"></div>
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+<script>
+    kWidget.embed({
+        "targetId": "kdp2",
+        "wid": "_2196781",
+        "uiconf_id": "12905712",
+        "entry_id": "1_afvj3z0u",
+        "flashvars": {
+            'EmbedPlayer.WebKitPlaysInline':true,
+            'disableHLSOnJs':true,
+            'video360': {
+                'plugin': true
+            }
+        }
+    });
+</script>
+<script type="text/javascript">
+    kl= Kaleidoscope;
+</script>
+</body>
+</html>
