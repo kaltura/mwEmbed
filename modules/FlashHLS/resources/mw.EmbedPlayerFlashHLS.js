@@ -49,7 +49,7 @@
 				mwEmbedPath = window.location.protocol + mwEmbedPath.substring( mwEmbedPath.indexOf(":") + 1);
 			}
 
-			var flashhlsPath = mwEmbedPath + 'modules/FlashHLS/resources/flashlsChromeless.swf';
+			var flashhlsPath = mwEmbedPath + 'modules/FlashHLS/resources/flashlsChromeless.swf?x=2';
 			window.onHLSReady = function(playerId){
 				_this.playerObject = $("#" + playerId ).get(0);
 				//_this.getEntryUrl().then(function (srcToPlay) {
