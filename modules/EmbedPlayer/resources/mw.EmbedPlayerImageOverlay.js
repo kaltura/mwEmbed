@@ -46,6 +46,14 @@
 			}
 		},
 
+		setup: function (readyCallback) {
+			this.bindHelper('onplay' + this.bindPostfix, function(){
+				// Reset clock time for load
+				this.clockStartTime = new Date().getTime();
+			}.bind(this));
+			readyCallback();
+		},
+
 		/**
 		 * When on playback method switch remove imageOverlay
 		 * @param {function} callback
@@ -96,9 +104,7 @@
 			this.parent_play();
 			// Make sure we are in play interface:
 			this.playInterfaceUpdate();
-			// Reset clock time for load
-			this.clockStartTime = new Date().getTime();
-			
+
 			// Reset buffer:
 			this.bufferedPercent = 0;
 			
@@ -122,14 +128,9 @@
 			} else {
 				this.duration = parseFloat( mw.getConfig( "EmbedPlayer.DefaultImageDuration" ) );
 			}
+			this.triggerHelper('durationChange',[this.duration]);
 		},
-		/**
-		* Stops the playback
-		*/
-		stop: function() {
-			this.currentTime = 0;
-			this.parent_stop();
-		},
+
 		_onpause: function(){
 			// catch the native event ( and do nothing )
 		},
@@ -148,15 +149,8 @@
 				return ;
 			}
 			var oldCurrentTime = this.currentTime;
-			if ( this.currentTime >= this.duration ) {
-				// reset playhead on complete.
-				this.updatePlayHead( 0 );
-				this.stopMonitor();
-				$( this ).trigger( 'ended' );
-			} else {
-				// Run the parent monitor:
-				this.parent_monitor();
-			}
+			// Run the parent monitor:
+			this.parent_monitor();
 			if( oldCurrentTime != this.currentTime ){
 				$( this ).trigger( 'timeupdate' );
 			}
@@ -268,8 +262,6 @@
 			var loadedCallback = function(){
 				
 				_this.applyIntrinsicAspect();
-				// reset clock time for loa
-				_this.clockStartTime = new Date().getTime();
 				// update image loaded:
 				_this.imageLoaded = true;
 				_this.monitor();
@@ -314,8 +306,12 @@
 				this.currentTime = 0;
 			} else if( this.paused ) {
 				this.currentTime = this.lastPauseTime;
-			} else {
+			} else if( this.stopped ) {
+				this.currentTime = this.duration;
+			} else if( this.clockStartTime > 0 ) {
 				this.currentTime = ( ( new Date().getTime() - this.clockStartTime ) / 1000 ) + this.lastPauseTime;
+			} else {
+				this.currentTime = 0;
 			}
 			return this.currentTime;
 		}

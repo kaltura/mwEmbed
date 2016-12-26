@@ -367,7 +367,6 @@
          * Player methods
          */
         play: function () {
-            var that = this;
             if ( this.parent_play() ) {
                 if ( this.wasPreload ) {
                     this.wasPreload = false;
