@@ -92,6 +92,7 @@
 		adCuePoints: [],
 		skipTimeoutId: null,
 		chromelessAdManagerLoadedId: null,
+		companionSizeCriteria: 'SelectExactMatch', //Available choices: 'IGNORE', 'SELECT_EXACT_MATCH' ( default ), 'SELECT_NEAR_MATCH' - SELECT_EXACT_MATCH is set by default
 
 		init: function( embedPlayer, callback, pluginName ){
 			if (embedPlayer.casting || mw.getConfig("EmbedPlayer.UseExternalAdPlayer") === true){
@@ -1013,7 +1014,15 @@
 							var selectionCriteria = new google.ima.CompanionAdSelectionSettings();
 							selectionCriteria.resourceType = google.ima.CompanionAdSelectionSettings.ResourceType.ALL;
 							selectionCriteria.creativeType = google.ima.CompanionAdSelectionSettings.CreativeType.ALL;
-							selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.IGNORE;
+							if ( this.getConfig( 'companionSizeCriteria' ) === 'SelectNearMatch' ) {
+								selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.SELECT_NEAR_MATCH;
+							}
+							if ( this.getConfig( 'companionSizeCriteria' ) === 'IgnoreSize' ) {
+								selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.IGNORE;
+							}
+							else {
+								selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.SELECT_EXACT_MATCH;
+							}
 							companionAds = ad.getCompanionAds(adSlotWidth, adSlotHeight, selectionCriteria);
 						} catch(e) {
 							mw.log("Error: DoubleClick could not access getCompanionAds");
