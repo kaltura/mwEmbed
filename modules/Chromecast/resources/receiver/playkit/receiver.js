@@ -106,6 +106,9 @@ var receiverFlashVars = {
     "titleLabel": { 'plugin': false },
     "fullScreenBtn": { 'plugin': false },
     "scrubber": { 'plugin': false },
+    "audioSelector": { 'plugin': false },
+    "sourceSelector": { 'plugin': false },
+    "closedCaptions": { 'plugin': false },
     "largePlayBtn": { 'plugin': false },
     "mediaProxy": { "mediaPlayFrom": 0 },
     "autoPlay": true
@@ -125,9 +128,20 @@ var ReceiverStateManager;
  * @type {object}
  */
 var MessageBusMap = {
-    //TODO: will be implemented after integration with the senders SDK v3
-    'someMessage': function ( payload ) {
-        // Write here the implementation to that message
+    'onEditBitratesInfo': function ( payload ) {
+        ReceiverLogger.log( "MessageBus", "onEditBitratesInfo", payload );
+        var mediaInfo = mediaManager.getMediaInformation();
+        if ( !mediaInfo || !mediaInfo.tracks || mediaInfo.tracks.length === 0
+            || event.data.activeBitratesIds.length === 0 ) {
+            return;
+        }
+        var tracks = mediaInfo.tracks;
+        var activeBitratesIds = event.data.activeBitratesIds;
+        kdp.sendNotification( "switchSrc", {
+            type: 'bitrates',
+            activeBitratesIds: activeBitratesIds,
+            tracks: tracks
+        } );
     }
 };
 
@@ -161,25 +175,28 @@ function startReceiver() {
     mediaManager = new cast.receiver.MediaManager( document.getElementById( 'initial-video-element' ) );
     mediaManager.customizedStatusCallback = customizedStatusCallback.bind( this );
 
-    mediaManager.onMediaStatusOrig = mediaManager.onMediaStatus;
+    mediaManager.onMediaStatusOrig = mediaManager.onMediaStatus.bind( mediaManager );
     mediaManager.onMediaStatus = onMediaStatus.bind( this );
 
-    mediaManager.onMetadataLoadedOrig = mediaManager.onMetadataLoaded;
+    mediaManager.onEditTracksInfoOrig = mediaManager.onEditTracksInfo.bind( mediaManager );
+    mediaManager.onEditTracksInfo = onEditTracksInfo.bind( this );
+
+    mediaManager.onMetadataLoadedOrig = mediaManager.onMetadataLoaded.bind( mediaManager );
     mediaManager.onMetadataLoaded = onMetadataLoaded.bind( this );
 
-    mediaManager.onEndedOrig = mediaManager.onEnded;
+    mediaManager.onEndedOrig = mediaManager.onEnded.bind( mediaManager );
     mediaManager.onEnded = onEnded.bind( this );
 
-    mediaManager.onPauseOrig = mediaManager.onPause;
+    mediaManager.onPauseOrig = mediaManager.onPause.bind( mediaManager );
     mediaManager.onPause = onPause.bind( this );
 
-    mediaManager.onPlayOrig = mediaManager.onPlay;
+    mediaManager.onPlayOrig = mediaManager.onPlay.bind( mediaManager );
     mediaManager.onPlay = onPlay.bind( this );
 
-    mediaManager.onSeekOrig = mediaManager.onSeek;
+    mediaManager.onSeekOrig = mediaManager.onSeek.bind( mediaManager );
     mediaManager.onSeek = onSeek.bind( this );
 
-    mediaManager.onLoadOrig = mediaManager.onLoad;
+    mediaManager.onLoadOrig = mediaManager.onLoad.bind( mediaManager );
     mediaManager.onLoad = onLoad.bind( this );
 
     // Init message bus and setting his event
@@ -198,18 +215,15 @@ function customizedStatusCallback( mediaStatus ) {
     ReceiverLogger.log( "MediaManager", "customizedStatusCallback", mediaStatus );
     var playerState = mediaStatus.playerState;
     var isIdle = (playerState === StateManager.State.IDLE);
-    var isIdleBecauseOfLoading = isIdle && (typeof mediaStatus.extendedStatus !== "undefined");
-    if ( adsPluginEnabled ) {
-        mediaStatus.customData = adsInfo;
-    }
-    if ( isIdleBecauseOfLoading ) {
-        return null;
-    } else if ( isIdle && !allAdsCompleted ) {
+    if ( isIdle && !allAdsCompleted ) {
         mediaStatus.playerState = StateManager.State.PLAYING;
     }
     return mediaStatus;
 }
 
+/**
+ * Override callback for media manager onMediaStatus.
+ */
 function onMediaStatus( mediaStatus ) {
     if ( mediaStatus ) {
         ReceiverLogger.log( "MediaManager", "onMediaStatus" );
@@ -221,17 +235,35 @@ function onMediaStatus( mediaStatus ) {
         if ( !isIdleBecauseOfLoading && stateChanged ) {
             ReceiverStateManager.setState( playerState );
         }
+        mediaManager.onMediaStatusOrig( mediaStatus );
     }
 }
 
-function onMetadataLoaded( loadInfo ) {
-    ReceiverLogger.log( "MediaManager", "onMetadataLoaded" );
-    // If no preroll, show media metadata right away
-    if ( $.inArray( 0, adsInfo.adsBreakInfo ) === -1 ) {
-        loadMetadataPromise.then( function ( showPreview ) {
-            showPreviewMediaMetadata( showPreview );
-        } );
+/**
+ * Override callback for media manager onEditTracksInfo.
+ */
+function onEditTracksInfo( event ) {
+    ReceiverLogger.log( "MediaManager", "onEditTracksInfo", event.data );
+    var mediaInfo = mediaManager.getMediaInformation();
+    if ( !mediaInfo || !mediaInfo.tracks || mediaInfo.tracks.length === 0
+        || event.data.activeTrackIds.length === 0 ) {
+        return;
     }
+    var activeTrackIds = event.data.activeTrackIds;
+    var tracks = mediaInfo.tracks;
+    kdp.sendNotification( "switchSrc", {
+        type: 'tracks',
+        activeTrackIds: activeTrackIds,
+        tracks: tracks,
+        handler: ReceiverStateManager.onEditTracks.bind( ReceiverStateManager )
+    } );
+}
+
+/**
+ * Override callback for media manager onMetadataLoaded.
+ */
+function onMetadataLoaded( loadInfo ) {
+    ReceiverLogger.log( "MediaManager", "onMetadataLoaded", loadInfo );
     mediaManager.onMetadataLoadedOrig( loadInfo );
 }
 
@@ -240,12 +272,8 @@ function onMetadataLoaded( loadInfo ) {
  */
 function onPause( event ) {
     ReceiverLogger.log( "MediaManager", "onPause", event );
-    if ( !kdp.evaluate( "{sequenceProxy.isInSequence}" ) ) {
-        kdp.sendNotification( 'doPause' );
-        mediaManager.broadcastStatus( true );
-    } else {
-        ReceiverLogger.log( "MediaManager", "Preventing pause during ad!!!", event );
-    }
+    kdp.sendNotification( "doPause" );
+    mediaManager.broadcastStatus( true, event.data.requestId );
 }
 
 /**
@@ -254,6 +282,9 @@ function onPause( event ) {
 function onPlay( event ) {
     ReceiverLogger.log( "MediaManager", "onPlay", event );
     kdp.sendNotification( "doPlay" );
+    kdp.kBind( "playing", function () {
+        mediaManager.broadcastStatus( true, event.data.requestId );
+    } );
 }
 
 /**
@@ -261,11 +292,7 @@ function onPlay( event ) {
  */
 function onSeek( event ) {
     ReceiverLogger.log( "MediaManager", "onSeek", event );
-    if ( !kdp.evaluate( "{sequenceProxy.isInSequence}" ) ) {
-        mediaManager.onSeekOrig( event );
-    } else {
-        ReceiverLogger.log( "MediaManager", "Preventing seek during ad!!!", event );
-    }
+    mediaManager.onSeekOrig( event );
 }
 
 /**
@@ -279,41 +306,48 @@ function onLoad( event ) {
         ReceiverLogger.log( "MediaManager", "Embed player isn't initialized yet. Starting dynamic embed.", event );
         embedPlayerInitialized.setState( EmbedPhase.Started );
         embedPlayer( event );
-    }
-    else {
+    } else {
         var embedConfig = event.data.media.customData.embedConfig;
-        // If same entry is sent then reload, else perform changeMedia
-        if ( kdp.evaluate( '{mediaProxy.entry.id}' ) === embedConfig[ 'entryID' ] ) {
-            ReceiverLogger.log( "MediaManager", "Embed player already initialized with the same entry. Start replay.", event );
-            kdp.sendNotification( "doReplay" );
-        } else {
-            ReceiverLogger.log( "MediaManager", "Embed player already initialized with different entry. Change media.", event );
-            kdp.sendNotification( "changeMedia", { "entryId": embedConfig[ 'entryID' ] } );
-        }
+        loadMetadataPromise.then( function ( showPreview ) {
+            ReceiverStateManager.onShowMediaMetadata( showPreview );
+            // If same entry is sent then reload, else perform changeMedia
+            if ( kdp.evaluate( '{mediaProxy.entry.id}' ) === embedConfig[ 'entryID' ] ) {
+                ReceiverLogger.log( "MediaManager", "Embed player already initialized with the same entry. Start replay.", event );
+                kdp.sendNotification( "doReplay" );
+            } else {
+                ReceiverLogger.log( "MediaManager", "Embed player already initialized with different entry. Change media.", event );
+                kdp.sendNotification( "changeMedia", { "entryId": embedConfig[ 'entryID' ] } );
+            }
+        } );
     }
 }
 
 /**
  * Loads the metadata for the given media.
  * @param media
- * @param doneFunc
  */
 function loadMediaMetadata( media ) {
-    ReceiverLogger.log( "MediaManager", "loadMediaMetadata", media );
+    ReceiverLogger.log( "MediaManager", "loadMediaMetadata", media.metadata );
     var deferred = $.Deferred();
     var metadata = media.metadata;
     if ( metadata ) {
-        $( '#cast-title' ).text( metadata.title );
-        $( '#cast-subtitle' ).text( metadata.subtitle );
-
+        $( '#cast-title' ).text( metadata.title ? metadata.title : '' );
+        $( '#cast-subtitle' ).text( metadata.subtitle ? metadata.subtitle : '' );
         var imageUrl = getMediaImageUrl( media );
         var mediaArtwork = $( '#cast-artwork' );
-        mediaArtwork.css( 'background-image', (imageUrl ? 'url("' + imageUrl.replace( /"/g, '\\"' ) + '")' : 'none') );
-        mediaArtwork.css( 'display', (imageUrl ? '' : 'none') );
-
-        preloadMediaImages( media ).then( function () {
+        if ( imageUrl ) {
+            mediaArtwork.css( 'background-image', 'url("' + imageUrl.replace( /"/g, '\\"' ) + '")' );
+            preloadMediaImages( media ).then( function () {
+                deferred.resolve( true );
+            } );
+        } else {
+            mediaArtwork.css( 'background-color', '#424242' );
+            var img = $( '<img>' )
+                .css( { 'position': 'relative', 'top': '25%', 'left': '10%' } )
+                .attr( 'src', 'assets/media-placeholder.png' )
+                .appendTo( mediaArtwork );
             deferred.resolve( true );
-        } );
+        }
     } else {
         deferred.resolve( false );
     }
@@ -325,7 +359,7 @@ function loadMediaMetadata( media ) {
  * @param media
  */
 function preloadMediaImages( media ) {
-    ReceiverLogger.log( "MediaManager", "preloadMediaImages" );
+    ReceiverLogger.log( "MediaManager", "preloadMediaImages", media.metadata.images );
     var deferred = $.Deferred();
     var imagesToPreload = [];
     var counter = 0;
@@ -362,29 +396,15 @@ function preloadMediaImages( media ) {
  */
 function getMediaImageUrl( media ) {
     var metadata = media.metadata || {};
-    var images = metadata[ 'images' ] || [];
+    var images = metadata.images || [];
     return images && images[ 0 ] && images[ 0 ][ 'url' ];
-}
-
-/**
- * Display the media metadata UI on screen.
- */
-function showPreviewMediaMetadata( showPreview ) {
-    if ( showPreview ) {
-        $( '#cast-media-info, #cast-before-play-controls, #cast-gradient' ).each( function () {
-            $( this ).fadeIn();
-        } );
-    } else {
-        $( '#cast-media-info, #cast-before-play-controls, #cast-gradient' ).each( function () {
-            $( this ).fadeOut();
-        } );
-    }
 }
 
 /**
  * Override callback for media manager onEnded.
  */
 function onEnded() {
+    ReceiverLogger.log( "MediaManager", "onEnded" );
     if ( allAdsCompleted ) {
         mediaManager.onEndedOrig();
     } else {
@@ -428,14 +448,14 @@ function onSenderDisconnected( event ) {
  * @param event
  */
 function onMessage( event ) {
-    ReceiverLogger.log( "MessageBus", "onMessage", event );
+    ReceiverLogger.log( "MessageBus", "onMessage" );
     try {
         var payload = JSON.parse( event.data );
         var msgType = payload.type;
         MessageBusMap[ msgType ]( payload );
     }
     catch ( e ) {
-        ReceiverLogger.error( "MessageBus", e.message, event );
+        ReceiverLogger.error( "MessageBus", e.message );
     }
 }
 
@@ -444,6 +464,7 @@ function onMessage( event ) {
  * @param event
  */
 function embedPlayer( event ) {
+    ReceiverLogger.log( "MediaManager", "embedPlayer", event.data.media.customData.embedConfig );
     var embedInfo = event.data.media.customData.embedConfig;
     var embedLoaderLibPath = embedInfo.lib ? embedInfo.lib + "mwEmbedLoader.php" : "../../../../../mwEmbedLoader.php";
     $.getScript( embedLoaderLibPath )
@@ -454,24 +475,39 @@ function embedPlayer( event ) {
                 "wid": "_" + embedInfo.publisherID,
                 "uiconf_id": embedInfo.uiconfID,
                 "readyCallback": function ( playerID ) {
+                    loadMetadataPromise.then( function ( showPreview ) {
+                        ReceiverStateManager.onShowMediaMetadata( showPreview );
+                    } );
                     kdp = document.getElementById( playerID );
                     $( '#initial-video-element' ).remove();
                     mediaElement = $( kdp ).contents().contents().find( 'video' )[ 0 ];
                     mediaManager.setMediaElement( mediaElement );
                     adsPluginEnabled = kdp.evaluate( '{doubleClick.plugin}' );
                     setMediaElementEvents();
-                    if ( adsPluginEnabled ) {
-                        addAdsBindings();
-                    }
+                    addBindings();
                     embedPlayerInitialized.setState( EmbedPhase.Completed );
                 },
                 "flashvars": getFlashVars( event.data.currentTime, event.data.autoplay, embedInfo.flashVars ),
                 "cache_st": 1438601385,
-                "entry_id": embedInfo.entryID || ''
+                "entry_id": embedInfo.entryID
             } );
         } );
 }
 
+function addBindings() {
+    kdp.kBind( "onTracksParsed", function ( tracksInfo ) {
+        mediaManager.loadTracksInfo( tracksInfo );
+        var mediaInfo = mediaManager.getMediaInformation();
+        if ( mediaInfo ) {
+            mediaInfo.tracks = tracksInfo.tracks;
+            mediaManager.setMediaInformation( mediaInfo );
+            mediaManager.broadcastStatus( true );
+        }
+    } );
+    if ( adsPluginEnabled ) {
+        addAdsBindings();
+    }
+}
 /**
  * Sets the required bindings to the Kaltura player in case of ads are enabled.
  * Supporting only prerolls and postrolls (no midrolls).
@@ -481,7 +517,24 @@ function addAdsBindings() {
     allAdsCompleted = false;
 
     kdp.kBind( "onCuePointsRevealed", function ( cuePoints ) {
-        adsInfo.adsBreakInfo = JSON.parse( cuePoints );
+        var adsBreakOrig = JSON.parse( cuePoints );
+        for ( var i = 0; i < adsBreakOrig.length; i++ ) {
+            var adBreak = adsBreakOrig[ i ];
+            switch ( adBreak ) {
+                case 0:
+                    adsInfo.adsBreakInfo.push( adBreak );
+                    break;
+                case -1:
+                    var mediaInfo = mediaManager.getMediaInformation();
+                    if ( mediaInfo && mediaInfo.duration ) {
+                        adsInfo.adsBreakInfo.push( mediaInfo.duration );
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        mediaManager.broadcastStatus( false, null, { adsInfo: adsInfo } );
     } );
 
     /**
@@ -495,27 +548,23 @@ function addAdsBindings() {
         }
     } );
 
+    kdp.kBind( "adErrorEvent", function () {
+        ReceiverLogger.error( "kdp", "adErrorEvent" );
+    } );
+
     kdp.kBind( "onAdPlay", function () {
         adsInfo.isPlayingAd = true;
-        mediaManager.broadcastStatus( true );
+        mediaManager.broadcastStatus( false, null, { adsInfo: adsInfo } );
     } );
 
     // Pre sequence handling
     kdp.kBind( "preSequenceStart", function () {
-        loadMetadataPromise.then( function ( showPreview ) {
-            if ( showPreview ) {
-                var time = mediaElement.duration - mediaElement.currentTime;
-                setTimeout( function () {
-                    showPreviewMediaMetadata( true );
-                }, (time - 2) * 1000 );
-            }
-        } );
+        ReceiverStateManager.onShowMediaMetadata( false );
     } );
 
     kdp.kBind( "preSequenceComplete", function () {
         adsInfo.isPlayingAd = false;
-        mediaManager.broadcastStatus( true );
-        showPreviewMediaMetadata( false );
+        mediaManager.broadcastStatus( false, null, { adsInfo: adsInfo } );
     } );
 
     // Post sequence handling
@@ -525,7 +574,7 @@ function addAdsBindings() {
 
     kdp.kBind( "postSequenceComplete", function () {
         adsInfo.isPlayingAd = false;
-        mediaManager.broadcastStatus( true );
+        mediaManager.broadcastStatus( false, null, { adsInfo: adsInfo } );
     } );
 
     kdp.kBind( "onAllAdsCompleted", function () {
@@ -542,7 +591,7 @@ function addAdsBindings() {
  */
 function setConfiguration( embedInfo ) {
     mw.setConfig( "EmbedPlayer.HidePosterOnStart", true );
-    if ( embedInfo.debugKalturaPlayer === true || debugKalturaPlayer ) {
+    if ( embedInfo.debugKalturaPlayer || debugKalturaPlayer ) {
         mw.setConfig( "debug", true );
     }
     mw.setConfig( "chromecastReceiver", true );
@@ -550,14 +599,14 @@ function setConfiguration( embedInfo ) {
 }
 
 /**
- * Merged between the receiver's constant flashvars and the flashvars
+ * Merge between the receiver's constant flashvars and the flashvars
  * that been sent from the sender who opened the session.
  * The sender usually will need to send ks or proxyData.
  * The sender can override playFrom and autoPlay flashvars.
  * @param senderPlayFrom
  * @param senderAutoPlay
  * @param senderFlashVars
- * @returns {{dash: {plugin: boolean}, multiDrm: {plugin: boolean}, embedPlayerChromecastReceiver: {plugin: boolean}, chromecast: {plugin: boolean}, playlistAPI: {plugin: boolean}, controlBarContainer: {hover: boolean}, volumeControl: {plugin: boolean}, titleLabel: {plugin: boolean}, fullScreenBtn: {plugin: boolean}, scrubber: {plugin: boolean}, largePlayBtn: {plugin: boolean}, mediaProxy: {mediaPlayFrom: number}, autoPlay: boolean}}
+ * @returns object
  */
 function getFlashVars( senderPlayFrom, senderAutoPlay, senderFlashVars ) {
 
@@ -610,9 +659,17 @@ function getQueryVariable( variable ) {
  * Done for UI handling.
  */
 function setMediaElementEvents() {
+    mediaElement.addEventListener( 'canplay', onCanPlay.bind( this ), false );
     mediaElement.addEventListener( 'timeupdate', onProgress.bind( this ), false );
     mediaElement.addEventListener( 'seeking', onSeekStart.bind( this ), false );
     mediaElement.addEventListener( 'seeked', onSeekEnd.bind( this ), false );
+}
+
+/**
+ * Handles the first time that media has start to play.
+ */
+function onCanPlay() {
+    ReceiverStateManager.onCanPlay();
 }
 
 /**

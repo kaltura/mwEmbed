@@ -2,14 +2,14 @@
  * @constructor
  */
 function StateManager() {
+    this.KALTURA_DEFAULT_LOGO_URL = "assets/kaltura-logo.png";
+    this.PAUSE_TIMEOUT_DURATION = 5 * 1000;
     this.currState = null;
     this.idleManager = new IdleManager();
     this.logoUrl = null;
-    this.KALTURA_DEFAULT_LOGO_URL = "assets/kaltura_logo_small.png";
     this.isPlaying = false;
     this.isOverlayShown = false;
     this.pauseTimeout = null;
-    this.receiverWrapper = $( '#receiver-wrapper' );
     this.beforePlayControls = $( '#cast-before-play-controls' );
     this.inPlayControls = $( '#cast-in-play-controls' );
     this.mediaInfoContainer = $( '#cast-media-info' );
@@ -23,6 +23,7 @@ function StateManager() {
     this.curTimeDiv = $( '#cast-current-time' );
     this.totalTimeDiv = $( '#cast-total-time' );
     this.progressFill = $( '.cast-media-progress-fill' );
+    this.waitMsg = $( '.cast-wait-msg' );
 }
 
 /**
@@ -44,8 +45,6 @@ StateManager.State = {
  */
 StateManager.prototype.setState = function ( state ) {
     ReceiverLogger.log( "StateManager", "Setting new state for receiver: " + state );
-    // Sets a 'state' attribute to the wrapper div
-    this.receiverWrapper.attr( 'state', state.toLowerCase() );
     // Start timeout for the new state
     this.idleManager.setIdleTimeout( state );
     // Save the new state
@@ -63,19 +62,47 @@ StateManager.prototype.getState = function () {
 };
 
 /**
+ * Handles first play.
+ */
+StateManager.prototype.onEditTracks = function () {
+    this.waitMsg.fadeIn();
+};
+
+/**
+ * Display the media metadata UI on screen.
+ */
+StateManager.prototype.onShowMediaMetadata = function ( showPreview ) {
+    if ( this.loadingSpinner.is( ":visible" ) ) {
+        this.loadingSpinner.fadeOut();
+    }
+    this._toggleComponents( (showPreview ? 'show' : 'hide'),
+        [ this.mediaInfoContainer, this.beforePlayControls, this.gradient ] );
+};
+
+/**
+ * Handles first play.
+ */
+StateManager.prototype.onCanPlay = function () {
+    if ( !this.isPlaying ) {
+        this.isPlaying = true;
+        this._toggleComponents( 'hide', [ this.beforePlayControls, this.mediaInfoContainer, this.gradient ] );
+        this.logoDiv.css( 'background', 'transparent' );
+    }
+};
+
+/**
  * Handles seek start.
  */
 StateManager.prototype.onSeekStart = function () {
     if ( this.isPlaying ) {
         this._clearTimeouts();
         if ( this.pauseBtn.is( ":visible" ) ) {
-            this.pauseBtn.fadeOut();
-            this.stateBtnContainer.fadeOut();
+            this._toggleComponents( 'hide', [ this.pauseBtn, this.stateBtnContainer ] );
         }
-        this.bufferingSpinner.fadeIn();
-        if ( !this.isOverlayShown ) {
+        if ( !this.inPlayControls.is( ":visible" ) ) {
             this.inPlayControls.fadeIn();
         }
+        this.bufferingSpinner.fadeIn();
     }
 };
 
@@ -84,10 +111,9 @@ StateManager.prototype.onSeekStart = function () {
  */
 StateManager.prototype.onSeekEnd = function () {
     if ( this.isPlaying ) {
-        var _this = this;
         this.bufferingSpinner.fadeOut();
-        if ( !this.isOverlayShown ) {
-            _this.inPlayControls.fadeOut();
+        if ( this.currState !== StateManager.State.PAUSED ) {
+            this.inPlayControls.fadeOut();
         }
         this._handleStateScreen( true );
     }
@@ -126,10 +152,10 @@ StateManager.prototype.onProgress = function ( curTime, totalTime ) {
 
 /**
  * Handle the application UI according to the current state.
- * @param opt_seeked - optional parameter which indicates if we just finished to seek.
+ * @param opt_afterSeek - optional parameter which indicates if we just finished to seek.
  * @private
  */
-StateManager.prototype._handleStateScreen = function ( opt_seeked ) {
+StateManager.prototype._handleStateScreen = function ( opt_afterSeek ) {
     switch ( this.currState ) {
         case StateManager.State.LAUNCHING:
             this._setLogo();
@@ -144,10 +170,10 @@ StateManager.prototype._handleStateScreen = function ( opt_seeked ) {
             this._onBuffering();
             break;
         case StateManager.State.PLAYING:
-            this._onPlaying( opt_seeked );
+            this._onPlaying( opt_afterSeek );
             break;
         case StateManager.State.PAUSED:
-            this._onPause( opt_seeked );
+            this._onPause( opt_afterSeek );
             break;
         default:
             break;
@@ -180,7 +206,9 @@ StateManager.prototype._setLogo = function () {
  * @private
  */
 StateManager.prototype._onBuffering = function () {
-    this.loadingSpinner.fadeOut();
+    if ( this.loadingSpinner.is( ":visible" ) ) {
+        this.loadingSpinner.fadeOut();
+    }
 };
 
 /**
@@ -206,54 +234,50 @@ StateManager.prototype._onIdle = function () {
 
 /**
  * PLAYING state handling.
- * @param opt_seeked - optional parameter which indicates if we reached this
+ * @param opt_afterSeek - optional parameter which indicates if we reached this
  * state after seek.
  * @private
  */
-StateManager.prototype._onPlaying = function ( opt_seeked ) {
-    if ( !this.isPlaying ) {
-        this.isPlaying = true;
-        this.beforePlayControls.fadeOut();
-        this.mediaInfoContainer.fadeOut();
-        this.logoDiv.css( 'background', 'transparent' );
-    } else if ( !opt_seeked ) {
+StateManager.prototype._onPlaying = function ( opt_afterSeek ) {
+    if ( this.isPlaying && !opt_afterSeek ) {
         this._clearTimeouts();
+        if ( this.waitMsg.is( ":visible" ) ) {
+            this.waitMsg.fadeOut();
+        }
         if ( this.pauseBtn.is( ':visible' ) ) {
-            this.pauseBtn.fadeOut();
-            this.stateBtnContainer.fadeOut();
+            this._toggleComponents( 'hide', [ this.pauseBtn, this.stateBtnContainer, this.inPlayControls ] );
         }
         if ( this.isOverlayShown ) {
-            this._showHideOverlay( 'hide' );
+            this._toggleComponents( 'hide', [ this.mediaInfoContainer, this.gradient ] );
         }
     }
 };
 
 /**
  * PAUSE state handling.
- * @param opt_seeked - optional parameter which indicates if we reached this
+ * @param opt_afterSeek - optional parameter which indicates if we reached this
  * state after seek.
  * @private
  */
-StateManager.prototype._onPause = function ( opt_seeked ) {
+StateManager.prototype._onPause = function ( opt_afterSeek ) {
     var _this = this;
-    this.pauseBtn.fadeIn();
-    this.stateBtnContainer.fadeIn();
-    if ( opt_seeked ) {
+    this._toggleComponents( 'show', [ this.pauseBtn, this.stateBtnContainer, this.inPlayControls ] );
+    if ( opt_afterSeek ) {
         if ( this.isOverlayShown ) {
-            this._showHideOverlay( 'show' );
+            this._toggleComponents( 'show', [ this.gradient, this.mediaInfoContainer ] );
             this.pauseTimeout = setTimeout( function () {
-                _this._showHideOverlay( 'hide' );
+                _this._toggleComponents( 'hide', [ _this.gradient, _this.mediaInfoContainer ] );
                 _this.isOverlayShown = false;
-            }, 4000 );
+            }, this.PAUSE_TIMEOUT_DURATION );
         }
     } else {
         this._clearTimeouts();
-        this._showHideOverlay( 'show' );
+        this._toggleComponents( 'show', [ this.gradient, this.mediaInfoContainer ] );
         this.isOverlayShown = true;
         this.pauseTimeout = setTimeout( function () {
-            _this._showHideOverlay( 'hide' );
+            _this._toggleComponents( 'hide', [ _this.gradient, _this.mediaInfoContainer ] );
             _this.isOverlayShown = false;
-        }, 4000 );
+        }, this.PAUSE_TIMEOUT_DURATION );
     }
 };
 
@@ -269,14 +293,14 @@ StateManager.prototype._clearTimeouts = function () {
 };
 
 /**
- * Shows or hides the overlay cast UI components.
+ * Shows or hides cast UI components.
  * @param selector - 'show' or 'hide'
+ * @param components - the UI components
  * @private
  */
-StateManager.prototype._showHideOverlay = function ( selector ) {
+StateManager.prototype._toggleComponents = function ( selector, components ) {
     var show = (selector === 'show');
-    var overlayComponents = [ this.gradient, this.mediaInfoContainer, this.inPlayControls ];
-    for ( var i = 0; i < overlayComponents.length; i++ ) {
-        show ? overlayComponents[ i ].fadeIn() : overlayComponents[ i ].fadeOut();
+    for ( var i = 0; i < components.length; i++ ) {
+        show ? components[ i ].fadeIn() : components[ i ].fadeOut();
     }
 };

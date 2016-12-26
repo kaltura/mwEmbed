@@ -52,6 +52,11 @@
         mediaProtocol: null,
         mediaPlayer: null,
         wasPreload: false,
+        videoQualityIndex: -1,
+        videoStreamIndex: -1,
+        audioQualityIndex: -1,
+        audioStreamIndex: -1,
+        textStreamIndex: -1,
 
         setup: function ( readyCallback ) {
             this.setPlayerElement( document.querySelector( 'video' ) );
@@ -92,11 +97,28 @@
                     break;
             }
 
+            this.mediaHost.getQualityLevel = function ( streamIndex, qualityLevel ) {
+                if ( streamIndex === this.videoStreamIndex && this.videoQualityIndex !== -1 ) {
+                    return this.videoQualityIndex;
+                } else if ( streamIndex === this.audioStreamIndex && this.audioQualityIndex !== -1 ) {
+                    return this.audioQualityIndex;
+                } else {
+                    return qualityLevel;
+                }
+            }.bind( this );
+
             this.mediaHost.onAutoPause = function ( underflow ) {
                 if ( underflow ) {
                     this.bufferStart();
                 } else {
                     this.bufferEnd();
+                }
+            }.bind( this );
+
+            this.mediaHost.onManifestReady = function () {
+                var tracksInfo = this.parseTracks();
+                if ( tracksInfo ) {
+                    this.triggerHelper( "onTracksParsed", tracksInfo );
                 }
             }.bind( this );
 
@@ -147,100 +169,13 @@
             return licenseUri;
         },
 
-        changeLanguage: function () {
-            var currentLanguage = null;
-            var streamCount = this.mediaProtocol.getStreamCount();
-            var streamInfo;
-            for ( var i = 0; i < streamCount; i++ ) {
-                if ( this.mediaProtocol.isStreamEnabled( i ) ) {
-                    streamInfo = this.mediaProtocol.getStreamInfo( i );
-                    if ( streamInfo.mimeType.indexOf( 'audio' ) === 0 ) {
-                        if ( streamInfo.language ) {
-                            currentLanguage = i;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if ( currentLanguage === null ) {
-                currentLanguage = 0;
-            }
-
-            i = currentLanguage + 1;
-            while ( i !== currentLanguage ) {
-                if ( i === streamCount ) {
-                    i = 0;
-                }
-
-                streamInfo = this.mediaProtocol.getStreamInfo( i );
-                if ( streamInfo.mimeType.indexOf( 'audio' ) === 0 ) {
-                    this.mediaProtocol.enableStream( i, true );
-                    this.mediaProtocol.enableStream( currentLanguage, false );
-                    break;
-                }
-
-                i++;
-            }
-
-            if ( i !== currentLanguage ) {
-                this.mediaPlayer.reload();
-            }
-        },
-
-        changeCaptions: function () {
-            var current, next;
-            var streamCount = this.mediaProtocol.getStreamCount();
-            var streamInfo;
-            for ( current = 0; current < streamCount; current++ ) {
-                if ( this.mediaProtocol.isStreamEnabled( current ) ) {
-                    streamInfo = this.mediaProtocol.getStreamInfo( current );
-                    if ( streamInfo.mimeType.indexOf( 'text' ) === 0 ) {
-                        break;
-                    }
-                }
-            }
-
-            if ( current === streamCount ) {
-                next = 0;
-            } else {
-                next = current + 1;
-            }
-
-            while ( next !== current ) {
-                if ( next === streamCount ) {
-                    next = 0;
-                }
-
-                streamInfo = this.mediaProtocol.getStreamInfo( next );
-                if ( streamInfo.mimeType.indexOf( 'text' ) === 0 ) {
-                    break;
-                }
-
-                next++;
-            }
-
-            if ( next !== current ) {
-                if ( current !== streamCount ) {
-                    this.mediaProtocol.enableStream( current, false );
-                    this.mediaPlayer.enableCaptions( false );
-                }
-
-                if ( next !== streamCount ) {
-                    this.mediaProtocol.enableStream( next, true );
-                    this.mediaPlayer.enableCaptions( true );
-                }
-            }
-        },
-
         /**
-         * Apply player bindings for getting events from mpl.js
+         * Apply player bindings for getting events from receiver.js
          */
         addBindings: function () {
             var _this = this;
 
             this.bindHelper( "loadstart", function () {
-                mw.log( 'EmbedPlayerChromecastReceiver:: Setup. Video element: ' + _this.getPlayerElement().toString() );
                 _this._propagateEvents = true;
                 _this.stopped = false; // To always support autoPlay
             } );
@@ -254,6 +189,150 @@
                 _this.currentTime = _this.getPlayerElement().duration;
                 _this.updatePlayheadStatus();
             } );
+        },
+
+        switchSrc: function ( event ) {
+            var type = event.type;
+            var tracks = event.tracks;
+            switch ( type ) {
+                case 'bitrates':
+                    var activeBitratesIds = event.activeBitratesIds;
+                    for ( var trackId in activeBitratesIds ) {
+                        if ( activeBitratesIds.hasOwnProperty( trackId ) ) {
+                            if ( this.isVideoTrack( tracks[ trackId ] ) ) {
+                                this.videoQualityIndex = activeBitratesIds[ trackId ];
+                            } else if ( this.isAudioTrack( tracks[ trackId ] ) ) {
+                                this.audioQualityIndex = activeBitratesIds[ trackId ];
+                            }
+                        }
+                    }
+                    break;
+                case 'tracks':
+                    var getDifference = function ( array1, array2 ) {
+                        var difference = [];
+                        for ( var i = 0; i < array1.length; i++ ) {
+                            if ( $.inArray( array1[ i ], array2 ) === -1 ) {
+                                difference.push( array1[ i ] );
+                            }
+                        }
+                        return difference;
+                    };
+                    var isActiveIds = event.activeTrackIds;
+                    var wasActiveIds = [ this.audioStreamIndex, this.textStreamIndex ];
+                    var enableStreams = getDifference( isActiveIds, wasActiveIds );
+                    var disableStreams = getDifference( wasActiveIds, isActiveIds );
+                    var i, track;
+                    for ( i = 0; i < disableStreams.length; i++ ) {
+                        track = tracks[ disableStreams[ i ] ];
+                        if ( !track ) {
+                            continue;
+                        }
+                        if ( this.isAudioTrack( track ) ) {
+                            this.disableAudioTrack( disableStreams[ i ] );
+                        } else if ( this.isTextTrack( track ) ) {
+                            this.disableTextTrack( disableStreams[ i ] );
+                        }
+                    }
+                    for ( i = 0; i < enableStreams.length; i++ ) {
+                        track = tracks[ enableStreams[ i ] ];
+                        if ( !track ) {
+                            continue;
+                        }
+                        if ( this.isAudioTrack( track ) ) {
+                            this.enableAudioTrack( enableStreams[ i ] );
+                            event.handler();
+                        } else if ( this.isTextTrack( track ) ) {
+                            this.enableTextTrack( enableStreams[ i ] );
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+        },
+
+        isAudioTrack: function ( track ) {
+            return track.type === top.cast.receiver.media.TrackType.AUDIO;
+        },
+
+        isTextTrack: function ( track ) {
+            return track.type === top.cast.receiver.media.TrackType.TEXT;
+        },
+
+        isVideoTrack: function ( track ) {
+            return track.type === top.cast.receiver.media.TrackType.VIDEO;
+        },
+
+        disableTextTrack: function ( activeTrackId ) {
+            this.mediaPlayer.enableCaptions( false );
+            this.mediaProtocol.enableStream( activeTrackId, false );
+            this.textStreamIndex = -1;
+            this.mediaPlayer.enableCaptions( true );
+        },
+
+        disableAudioTrack: function ( activeTrackId ) {
+            this.mediaProtocol.enableStream( activeTrackId, false );
+            this.audioStreamIndex = -1;
+            this.mediaPlayer.reload();
+        },
+
+        enableTextTrack: function ( activeTrackId ) {
+            this.mediaPlayer.enableCaptions( false );
+            this.mediaProtocol.enableStream( activeTrackId, true );
+            this.textStreamIndex = activeTrackId;
+            this.mediaPlayer.enableCaptions( true );
+        },
+
+        enableAudioTrack: function ( activeTrackId ) {
+            this.mediaProtocol.enableStream( activeTrackId, true );
+            this.audioStreamIndex = activeTrackId;
+            this.mediaPlayer.reload();
+        },
+
+        parseTracks: function () {
+            if ( this.mediaProtocol === null ) {
+                return null;
+            }
+            var tracks = [];
+            var activeTrackIds = [];
+            var streamCount = this.mediaProtocol.getStreamCount();
+            for ( var trackId = 0; trackId < streamCount; trackId++ ) {
+                var trackType = null;
+                var track = null;
+                var isActive = this.mediaProtocol.isStreamEnabled( trackId );
+                var info = this.mediaProtocol.getStreamInfo( trackId );
+                if ( isActive ) {
+                    activeTrackIds.push( trackId );
+                }
+                if ( info.mimeType.indexOf( 'text' ) === 0 ) {
+                    trackType = top.cast.receiver.media.TrackType.TEXT;
+                    if ( isActive ) {
+                        this.textStreamIndex = trackId;
+                    }
+                } else if ( info.mimeType.indexOf( 'video' ) === 0 ) {
+                    trackType = top.cast.receiver.media.TrackType.VIDEO;
+                    if ( isActive ) {
+                        this.videoStreamIndex = trackId;
+                    }
+                } else if ( info.mimeType.indexOf( 'audio' ) === 0 ) {
+                    trackType = top.cast.receiver.media.TrackType.AUDIO;
+                    if ( isActive ) {
+                        this.audioStreamIndex = trackId;
+                    }
+                }
+                if ( trackType ) {
+                    track = new top.cast.receiver.media.Track( trackId, trackType );
+                    track.trackContentType = info.mimeType;
+                    track.language = info.language;
+                    track.name = info.name;
+                    track.customData = { bitrates: info.bitrates, codecs: info.codecs };
+                    tracks.push( track );
+                }
+            }
+            var tracksInfo = new top.cast.receiver.media.TracksInfo();
+            tracksInfo.tracks = tracks;
+            tracksInfo.activeTrackIds = activeTrackIds;
+            return tracksInfo;
         },
 
         /**
@@ -288,6 +367,7 @@
          * Player methods
          */
         play: function () {
+            var that = this;
             if ( this.parent_play() ) {
                 if ( this.wasPreload ) {
                     this.wasPreload = false;
@@ -364,6 +444,7 @@
         /**
          * Native video tag methods
          */
+
         // When player started to play
         _onplaying: function () {
             this.triggerHelper( "playing" );
@@ -372,12 +453,10 @@
 
         _onplay: function () {
             this.restoreEventPropagation();
-            this.triggerHelper( 'hidePlayerControls' );
         },
 
         // On perform seek
         _onseeking: function () {
-            this.triggerHelper( 'hidePlayerControls' );
             if ( !this.seeking ) {
                 this.seeking = true;
             }

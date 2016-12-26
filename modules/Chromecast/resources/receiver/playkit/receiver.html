@@ -15,11 +15,11 @@
         }
 
         @-webkit-keyframes spin {
-            0% {
+            from {
                 -webkit-transform: rotate(0deg);
             }
-            100% {
-                -webkit-transform: rotate(360deg);
+            to {
+                -webkit-transform: rotate(359deg);
             }
         }
 
@@ -62,8 +62,7 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            background-color: rgba(50, 50, 50, 0.95);
-            opacity: 95%;
+            background-color: rgb(50, 50, 50);
             background-repeat: no-repeat;
             background-attachment: fixed;
             background-position: center;
@@ -80,10 +79,6 @@
         }
 
         #cast-pause-button {
-            display: none;
-        }
-
-        #cast-play-button {
             display: none;
         }
 
@@ -130,7 +125,7 @@
         }
 
         .cast-title {
-            width: 278px;
+            width: 800px;
             position: absolute;
             font-size: 52px;
             font-weight: normal;
@@ -141,13 +136,13 @@
             color: #ffffff;
             font-family: "proxima nova";
             white-space: nowrap;
-            overflow: visible;
+            overflow: hidden;
             text-overflow: ellipsis;
             align-self: flex-end
         }
 
         .cast-subtitle {
-            width: 348px;
+            width: 800px;
             font-family: "proxima nova";
             font-size: 32px;
             font-style: normal;
@@ -157,7 +152,7 @@
             left: 200px;
             bottom: 115px;
             white-space: nowrap;
-            overflow: visible;
+            overflow: hidden;
             text-overflow: ellipsis;
             align-self: flex-end
         }
@@ -229,26 +224,43 @@
         }
 
         .cast-loading-spinner {
-            -webkit-animation: spin 1s infinite linear;
-            height: 36px;
-            width: 32px;
             position: absolute;
-            background-image: url("assets/buffering.png");
+            left: 48%;
             bottom: 64px;
-            left: 50%;
-            z-index: 1;
-            margin-left: 32px / -2;
+            height: 40px;
+            width: 40px;
+            margin: 0px auto;
+            -webkit-animation: spin .6s infinite linear;
+            border-left: 6px solid rgba(255, 255, 255, 0.6);
+            border-right: 6px solid rgba(255, 255, 255, 0.6);
+            border-bottom: 6px solid rgba(255, 255, 255, 0.6);
+            border-top: 6px solid rgba(89, 186, 243, 0.8);
+            border-radius: 100%;
         }
 
         .cast-buffering-spinner {
-            -webkit-animation: spin 1s infinite linear;
+            -webkit-animation: spin .6s infinite linear;
             height: 36px;
-            width: 32px;
+            width: 36px;
             position: absolute;
-            background-image: url("assets/buffering.png");
-            bottom: 20px;
-            left: 230px;
-            z-index: 1;
+            bottom: 15px;
+            left: 223px;
+            margin: 0px auto;
+            border-left: 6px solid rgba(255, 255, 255, 0.6);
+            border-right: 6px solid rgba(255, 255, 255, 0.6);
+            border-bottom: 6px solid rgba(255, 255, 255, 0.6);
+            border-top: 6px solid rgba(89, 186, 243, 0.8);
+            border-radius: 100%;
+        }
+
+        .cast-wait-msg {
+            display: none;
+            position: absolute;
+            bottom: 45%;
+            left: 35%;
+            font-size: 70px;
+            font-family: "proxima nova";
+            color: rgba(89, 186, 243, 0.8);
         }
 
         .cast-watermark {
@@ -325,25 +337,20 @@
     <div id="kaltura_player" style=" width:98%; height: 98%; position: absolute; z-index: 1;"></div>
     <video id="initial-video-element"></video>
     <div id="logo" class="logo">
-
+        <div class="cast-wait-msg">Please wait...</div>
         <div id="cast-watermark" class="cast-watermark"></div>
         <div id="cast-loading-spinner" class="cast-loading-spinner"></div>
         <div id="cast-gradient" class="cast-gradient"></div>
-
         <div class="cast-overlay">
-
             <div id="cast-media-info">
                 <div id="cast-artwork" class="cast-artwork"></div>
                 <div id="cast-title" class="cast-title"></div>
                 <div id="cast-subtitle" class="cast-subtitle"></div>
                 <div class="cast-separator"></div>
             </div>
-
             <img id="cast-pause-button" src="assets/pause.png" class="cast-state" height="30" width="24">
-            <img id="cast-play-button" src="assets/play.png" class="cast-state" height="30" width="24">
             <div id="cast-state-button-container" class="cast-state-button-container"></div>
             <div id="cast-buffering-spinner" class="cast-buffering-spinner"></div>
-
             <div id="cast-in-play-controls">
                 <div id="cast-current-time" class="cast-current-time"></div>
                 <div id="cast-total-time" class="cast-total-time"></div>
@@ -352,19 +359,18 @@
                     <div class="cast-media-progress-fill"></div>
                 </div>
             </div>
-
             <div id="cast-before-play-controls">
                 <div class="cast-progress-loading-container"></div>
                 <div class="cast-progress-loading-fill"></div>
             </div>
-
         </div>
-
-        <script>
-            $( document ).ready( function () {
-                initReceiver();
-                startReceiver();
-            } );
-        </script>
+    </div>
+</div>
+<script>
+    $( document ).ready( function () {
+        initReceiver();
+        startReceiver();
+    } );
+</script>
 </body>
 </html>
