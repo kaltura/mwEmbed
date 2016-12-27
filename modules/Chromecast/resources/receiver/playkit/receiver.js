@@ -165,6 +165,7 @@ function initReceiver() {
  */
 function startReceiver() {
     ReceiverStateManager.setState( StateManager.State.LAUNCHING );
+
     // Init receiver manager and setting his events
     receiverManager = cast.receiver.CastReceiverManager.getInstance();
     receiverManager.onReady = onReady.bind( this );
@@ -181,9 +182,6 @@ function startReceiver() {
     mediaManager.onEditTracksInfoOrig = mediaManager.onEditTracksInfo.bind( mediaManager );
     mediaManager.onEditTracksInfo = onEditTracksInfo.bind( this );
 
-    mediaManager.onMetadataLoadedOrig = mediaManager.onMetadataLoaded.bind( mediaManager );
-    mediaManager.onMetadataLoaded = onMetadataLoaded.bind( this );
-
     mediaManager.onEndedOrig = mediaManager.onEnded.bind( mediaManager );
     mediaManager.onEnded = onEnded.bind( this );
 
@@ -192,9 +190,6 @@ function startReceiver() {
 
     mediaManager.onPlayOrig = mediaManager.onPlay.bind( mediaManager );
     mediaManager.onPlay = onPlay.bind( this );
-
-    mediaManager.onSeekOrig = mediaManager.onSeek.bind( mediaManager );
-    mediaManager.onSeek = onSeek.bind( this );
 
     mediaManager.onLoadOrig = mediaManager.onLoad.bind( mediaManager );
     mediaManager.onLoad = onLoad.bind( this );
@@ -249,6 +244,7 @@ function onEditTracksInfo( event ) {
         || event.data.activeTrackIds.length === 0 ) {
         return;
     }
+    mediaManager.onEditTracksInfoOrig( event );
     var activeTrackIds = event.data.activeTrackIds;
     var tracks = mediaInfo.tracks;
     kdp.sendNotification( "switchSrc", {
@@ -257,14 +253,6 @@ function onEditTracksInfo( event ) {
         tracks: tracks,
         handler: ReceiverStateManager.onEditTracks.bind( ReceiverStateManager )
     } );
-}
-
-/**
- * Override callback for media manager onMetadataLoaded.
- */
-function onMetadataLoaded( loadInfo ) {
-    ReceiverLogger.log( "MediaManager", "onMetadataLoaded", loadInfo );
-    mediaManager.onMetadataLoadedOrig( loadInfo );
 }
 
 /**
@@ -285,14 +273,6 @@ function onPlay( event ) {
     kdp.kBind( "playing", function () {
         mediaManager.broadcastStatus( true, event.data.requestId );
     } );
-}
-
-/**
- * Override callback for media manager onSeek.
- */
-function onSeek( event ) {
-    ReceiverLogger.log( "MediaManager", "onSeek", event );
-    mediaManager.onSeekOrig( event );
 }
 
 /**
