@@ -1,7 +1,12 @@
 function IdleManager() {
     this.idleTimerId = null;
+    this.CLASS_NAME = "ReceiverIdleManager";
 }
 
+/**
+ * The idle durations for each of the possible states.
+ * @type {{LAUNCHING: number, LOADING: number, PAUSED: number, IDLE: number}}
+ */
 IdleManager.IDLE_TIMEOUT = {
     LAUNCHING: 1000 * 60 * 5, // 5 minutes
     LOADING: 1000 * 60 * 5,  // 5 minutes
@@ -9,10 +14,14 @@ IdleManager.IDLE_TIMEOUT = {
     IDLE: 1000 * 60 * 5      // 5 minutes
 };
 
+/**
+ * Sets the timeout for a given state.
+ * @param state
+ */
 IdleManager.prototype.setIdleTimeout = function ( state ) {
     var time = IdleManager.IDLE_TIMEOUT[ state ];
     if ( time ) {
-        ReceiverLogger.log( "IdleManager", "Setting timeout for state " + state + ". Timeout is " + (IdleManager.IDLE_TIMEOUT[ state ] / 60000) + " minutes." );
+        ReceiverLogger.log( this.CLASS_NAME, "Setting timeout for state " + state + ". Timeout is " + (IdleManager.IDLE_TIMEOUT[ state ] / 60000) + " minutes." );
         if ( this.idleTimerId !== null ) {
             clearTimeout( this.idleTimerId );
             this.idleTimerId = null;

@@ -106,10 +106,6 @@
             display: none;
         }
 
-        #cast-watermark {
-            display: none;
-        }
-
         .cast-overlay {
             display: block;
             position: absolute;
@@ -263,17 +259,6 @@
             color: rgba(89, 186, 243, 0.8);
         }
 
-        .cast-watermark {
-            position: absolute;
-            top: 5%;
-            left: 5%;
-            bottom: 5%;
-            right: 4%;
-            background-position: bottom right;
-            background-repeat: no-repeat;
-            background-image: url("assets/watermark.png");
-        }
-
         .cast-gradient {
             position: absolute;
             height: 320px;
@@ -327,9 +312,11 @@
     <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/mediaplayer/1.0.0/media_player.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"
             integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
-    <script src="app_components/Logger.js"></script>
-    <script src="app_components/IdleMgr.js"></script>
-    <script src="app_components/StateMgr.js"></script>
+    <script src="app_components/ReceiverLogger.js"></script>
+    <script src="app_components/ReceiverUtils.js"></script>
+    <script src="app_components/ReceiverIdleMgr.js"></script>
+    <script src="app_components/ReceiverStateMgr.js"></script>
+    <script src="app_components/ReceiverAdsMgr.js"></script>
     <script src="receiver.js"></script>
 </head>
 <body>
@@ -338,7 +325,6 @@
     <video id="initial-video-element"></video>
     <div id="logo" class="logo">
         <div class="cast-wait-msg">Please wait...</div>
-        <div id="cast-watermark" class="cast-watermark"></div>
         <div id="cast-loading-spinner" class="cast-loading-spinner"></div>
         <div id="cast-gradient" class="cast-gradient"></div>
         <div class="cast-overlay">
@@ -369,7 +355,6 @@
 <script>
     $( document ).ready( function () {
         initReceiver();
-        startReceiver();
     } );
 </script>
 </body>

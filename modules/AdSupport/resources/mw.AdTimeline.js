@@ -295,10 +295,12 @@
                                         // Make sure we pause the video
                                         video.pause();
                                         /* iPad iOS v4.3.1 ignore video pause (probably timing issue) */
-                                        $( video ).bind( 'play.postSequenceComplete', function () {
-                                            video.pause();
-                                            $( video ).unbind( '.postSequenceComplete' );
-                                        } );
+                                        if ( !mw.isChromeCast() ) {
+                                            $( video ).bind( 'play.postSequenceComplete', function () {
+                                                video.pause();
+                                                $( video ).unbind( '.postSequenceComplete' );
+                                            } );
+                                        }
                                     }
                                     onPostRollDone();
                                 });

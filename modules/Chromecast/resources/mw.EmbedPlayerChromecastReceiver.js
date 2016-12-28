@@ -67,6 +67,7 @@
         },
 
         preloadMediaSourceExtension: function () {
+            mw.log( "EmbedPlayerChromecastReceiver::preloadMediaSourceExtension()" );
             if ( this.mediaPlayer !== null ) {
                 this.mediaPlayer.unload();
                 this.mediaPlayer = null;
@@ -80,6 +81,11 @@
             var initStart = this.startTime || 0;
             var mimeType = this.getSource().getMIMEType();
             var licenseUrl = this.buildUdrmLicenseUri( mimeType );
+
+            mw.log( "EmbedPlayerChromecastReceiver::url::" + this.getSrc() );
+            mw.log( "EmbedPlayerChromecastReceiver::initStart::" + initStart );
+            mw.log( "EmbedPlayerChromecastReceiver::mimeType::" + mimeType );
+            mw.log( "EmbedPlayerChromecastReceiver::licenseUrl::" + licenseUrl );
 
             if ( licenseUrl ) {
                 this.mediaHost.licenseUrl = licenseUrl;
@@ -134,8 +140,10 @@
             } else {
                 this.mediaPlayer = new top.cast.player.api.Player( this.mediaHost );
                 if ( this.isLive() ) {
+                    mw.log( "EmbedPlayerChromecastReceiver:: isLive()=true, load mediaPlayer" );
                     this.mediaPlayer.load( this.mediaProtocol, Infinity );
                 } else {
+                    mw.log( "EmbedPlayerChromecastReceiver:: preload mediaPlayer" );
                     this.mediaPlayer.preload( this.mediaProtocol, initStart );
                     this.wasPreload = true;
                 }
@@ -143,6 +151,7 @@
         },
 
         buildUdrmLicenseUri: function ( mimeType ) {
+            mw.log( "EmbedPlayerChromecastReceiver::buildUdrmLicenseUri()" );
             var licenseServer = mw.getConfig( 'Kaltura.UdrmServerURL' );
             var licenseParams = this.mediaElement.getLicenseUriComponent();
             var licenseUri = null;
@@ -173,6 +182,8 @@
          * Apply player bindings for getting events from receiver.js
          */
         addBindings: function () {
+            mw.log( "EmbedPlayerChromecastReceiver::addBindings()" );
+
             var _this = this;
 
             this.bindHelper( "loadstart", function () {
@@ -187,11 +198,11 @@
 
             this.bindHelper( "postEnded", function () {
                 _this.currentTime = _this.getPlayerElement().duration;
-                _this.updatePlayheadStatus();
             } );
         },
 
         switchSrc: function ( event ) {
+            mw.log( "EmbedPlayerChromecastReceiver::switchSrc()", event );
             var type = event.type;
             var tracks = event.tracks;
             switch ( type ) {
@@ -290,6 +301,7 @@
         },
 
         parseTracks: function () {
+            mw.log( "EmbedPlayerChromecastReceiver::parseTracks()" );
             if ( this.mediaProtocol === null ) {
                 return null;
             }
@@ -324,7 +336,7 @@
                     track = new top.cast.receiver.media.Track( trackId, trackType );
                     track.trackContentType = info.mimeType;
                     track.language = info.language;
-                    track.name = info.name;
+                    track.name = info.name || (trackType + '_TRACK_' + trackId);
                     track.customData = { bitrates: info.bitrates, codecs: info.codecs };
                     tracks.push( track );
                 }
@@ -339,11 +351,10 @@
          * Apply media element bindings
          */
         applyMediaElementBindings: function () {
+            mw.log( "EmbedPlayerChromecastReceiver::applyMediaElementBindings()" );
             var _this = this;
-            this.log( "MediaElementBindings" );
             var vid = this.getPlayerElement();
             if ( !vid ) {
-                this.log( " Error: applyMediaElementBindings without player elemnet" );
                 return;
             }
             $.each( _this.nativeEvents, function ( inx, eventName ) {
@@ -367,6 +378,7 @@
          * Player methods
          */
         play: function () {
+            mw.log( "EmbedPlayerChromecastReceiver::play()" );
             if ( this.parent_play() ) {
                 if ( this.wasPreload ) {
                     this.wasPreload = false;
@@ -377,11 +389,13 @@
         },
 
         pause: function () {
+            mw.log( "EmbedPlayerChromecastReceiver::pause()" );
             this.parent_pause();
             this.getPlayerElement().pause();
         },
 
         replay: function () {
+            mw.log( "EmbedPlayerChromecastReceiver::replay(), currentElementState::" + this.getPlayerElementCurrentState() );
             if ( this.getPlayerElementCurrentState() === "end" ) {
                 this.restoreEventPropagation();
                 this.preloadMediaSourceExtension();
@@ -390,8 +404,9 @@
         },
 
         changeMediaCallback: function ( callback ) {
-            this.preloadMediaSourceExtension();
+            mw.log( "EmbedPlayerChromecastReceiver::changeMediaCallback()" );
             this.changeMediaStarted = false;
+            this.preloadMediaSourceExtension();
             if ( callback ) {
                 callback();
             }
@@ -399,6 +414,7 @@
         },
 
         playerSwitchSource: function ( source, switchCallback, doneCallback ) {
+            mw.log( "EmbedPlayerChromecastReceiver::playerSwitchSource()" );
             if ( switchCallback ) {
                 switchCallback( this.getPlayerElement() );
             }
@@ -447,7 +463,6 @@
         // When player started to play
         _onplaying: function () {
             this.triggerHelper( "playing" );
-            this.triggerHelper( 'hidePlayerControls' );
         },
 
         _onplay: function () {
@@ -477,7 +492,6 @@
         _ondurationchange: function ( event, data ) {
             if ( this.playerElement && !isNaN( this.playerElement.duration ) && isFinite( this.playerElement.duration ) ) {
                 this.setDuration( this.getPlayerElement().duration );
-                return;
             }
         },
 
