@@ -95,10 +95,9 @@
 				var sphereMesh = new THREE.Mesh(sphere, sphereMaterial);
 				scene.add(sphereMesh);
 				function render() {
-					//if ( texture && video.readyState >= video.HAVE_CURRENT_DATA ) {
-					//	//_this.ctx2d.drawImage(video, 0, 0, video.width, video.height);
-					//	//texture.needsUpdate = true;
-					//}
+					if ( texture && video.readyState >= video.HAVE_CURRENT_DATA ) {
+						texture.needsUpdate = true;
+					}
 					requestAnimationFrame(render);
 
 					//if(!_this.manualControl){
