@@ -1013,7 +1013,16 @@
 							var selectionCriteria = new google.ima.CompanionAdSelectionSettings();
 							selectionCriteria.resourceType = google.ima.CompanionAdSelectionSettings.ResourceType.ALL;
 							selectionCriteria.creativeType = google.ima.CompanionAdSelectionSettings.CreativeType.ALL;
-							selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.IGNORE;
+							switch( this.getConfig( 'companionSizeCriteria' ) ){
+								case 'SELECT_NEAR_MATCH' :
+									selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.SELECT_NEAR_MATCH;
+									break;
+								case 'IGNORE' :
+									selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.IGNORE;
+									break;
+								default:
+									selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.SELECT_EXACT_MATCH;
+							}
 							companionAds = ad.getCompanionAds(adSlotWidth, adSlotHeight, selectionCriteria);
 						} catch(e) {
 							mw.log("Error: DoubleClick could not access getCompanionAds");

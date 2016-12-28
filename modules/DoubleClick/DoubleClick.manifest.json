@@ -68,6 +68,31 @@
                 "filter": "companions",
                 "initvalue": "Comp_300x250:300:250;Comp_728x90:728:90;"
             },
+			"companionSizeCriteria": {
+				"label": "Size Criteria",
+				"doc": "Available choices for size selection criteria: Select Exact Match ( default ) - Specifies that only companions that match the size of the companion ad slot exactly should be chosen. Select Near Match - Specifies that any companion close to the size of the companion ad slot should be chosen. Ignore Size - Specifies that size should be ignored when choosing companions.",
+				"type": "enum",
+				"enum": [
+					"SELECT_EXACT_MATCH",
+					"SELECT_NEAR_MATCH",
+					"IGNORE"
+				],
+				"initvalue": "SELECT_EXACT_MATCH",
+				"options": [
+					{
+						"label": "Select Exact Match",
+						"value": "SELECT_EXACT_MATCH"
+					},
+					{
+						"label": "Select Near Match",
+						"value": "SELECT_NEAR_MATCH"
+					},
+					{
+						"label": "Ignore Size",
+						"value": "IGNORE"
+					}
+				]
+			},
             "adsManagerLoadedTimeout": {
                 "doc": "Timer for timed checking if adsManager was loaded(in milliseconds)",
                 "initvalue": 5000,
