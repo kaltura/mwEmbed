@@ -1032,55 +1032,63 @@
                         var adSlotHeight = companionsArr[ 2 ];
                         var companionAds = [];
 
-                        try {
-                            var selectionCriteria = new google.ima.CompanionAdSelectionSettings();
-                            selectionCriteria.resourceType = google.ima.CompanionAdSelectionSettings.ResourceType.ALL;
-                            selectionCriteria.creativeType = google.ima.CompanionAdSelectionSettings.CreativeType.ALL;
-                            selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.IGNORE;
-                            companionAds = ad.getCompanionAds( adSlotWidth, adSlotHeight, selectionCriteria );
-                        } catch ( e ) {
-                            mw.log( "Error: DoubleClick could not access getCompanionAds" );
-                        }
-                        // match companions to targets
-                        if ( companionAds.length > 0 ) {
-                            var companionAd = companionAds[ 0 ];
-                            // Get HTML content from the companion ad.
-                            var content = companionAd.getContent();
-                            this.showCompanion( companionID, content );
-                        }
-                    }
-                }
-            }
-        },
-        showCompanion: function ( companionID, content ) {
-            // Check the iframe parent target:
-            try {
-                var targetElm = window[ 'parent' ].document.getElementById( companionID );
-                if ( targetElm ) {
-                    targetElm.innerHTML = content;
-                }
-            } catch ( e ) {
-                mw.log( "Error: DoubleClick could not access parent iframe" );
-            }
-        },
-        addAdMangerListeners: function () {
-            var _this = this;
-            var adsListener = function ( eventType, callback ) {
-                _this.adsManager.addEventListener(
-                    google.ima.AdEvent.Type[ eventType ],
-                    function ( event ) {
-                        mw.log( "DoubleClick::AdsEvent:" + eventType );
-                        if ( event.type === google.ima.AdEvent.Type.STARTED ) {
-                            // Get the ad from the event and display companions.
-                            _this.displayCompanions( event.getAd() );
-                        }
-                        if ( $.isFunction( callback ) ) {
-                            callback( event );
-                        }
-                    },
-                    false
-                );
-            };
+						try {
+							var selectionCriteria = new google.ima.CompanionAdSelectionSettings();
+							selectionCriteria.resourceType = google.ima.CompanionAdSelectionSettings.ResourceType.ALL;
+							selectionCriteria.creativeType = google.ima.CompanionAdSelectionSettings.CreativeType.ALL;
+							switch( this.getConfig( 'companionSizeCriteria' ) ){
+								case 'SELECT_NEAR_MATCH' :selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.SELECT_NEAR_MATCH;
+									break;
+								case 'IGNORE' :
+									selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.IGNORE;
+									break;
+								default:
+									selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.SELECT_EXACT_MATCH;
+							}
+							companionAds = ad.getCompanionAds(adSlotWidth, adSlotHeight, selectionCriteria);
+						} catch(e) {
+							mw.log("Error: DoubleClick could not access getCompanionAds");
+						}
+						// match companions to targets
+						if (companionAds.length > 0){
+							var companionAd = companionAds[0];
+							// Get HTML content from the companion ad.
+							var content = companionAd.getContent();
+							this.showCompanion(companionID, content);
+						}
+					}
+				}
+			}
+		},
+		showCompanion: function(companionID, content){
+			// Check the iframe parent target:
+			try{
+				var targetElm = window['parent'].document.getElementById( companionID );
+				if( targetElm ){
+					targetElm.innerHTML = content;
+				}
+			} catch( e ){
+				mw.log( "Error: DoubleClick could not access parent iframe" );
+			}
+		},
+		addAdMangerListeners: function(){
+			var _this = this;
+			var adsListener = function( eventType, callback ){
+				_this.adsManager.addEventListener(
+					google.ima.AdEvent.Type[ eventType ],
+					function( event ){
+						mw.log( "DoubleClick::AdsEvent:" + eventType );
+						if (event.type === google.ima.AdEvent.Type.STARTED) {
+							// Get the ad from the event and display companions.
+							_this.displayCompanions(event.getAd());
+						}
+						if( $.isFunction( callback ) ){
+							callback( event );
+						}
+					},
+					false
+				);
+			};
 
             // Add error listener:
             _this.adsManager.addEventListener(

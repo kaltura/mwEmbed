@@ -48,7 +48,6 @@
 			afterInitialSeeking: false,
 			/** type {Number} */
 			levelIndex: -1,
-			version: "v0.5.23",
 
 			/** type {Object} */
 			ptsID3Data: {},
@@ -64,7 +63,7 @@
 			 * Setup the HLS playback engine wrapper with supplied config options
 			 */
 			setup: function () {
-				this.log("version: " + (Hls.version ? Hls.version : this.version));
+				this.log("version: " + Hls.version);
 				mw.setConfig('isHLS_JS', true);
 				this.addBindings();
 			},
