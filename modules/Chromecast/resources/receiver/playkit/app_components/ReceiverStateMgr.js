@@ -8,6 +8,7 @@ function StateManager() {
     this.currState = null;
     this.idleManager = new IdleManager();
     this.logoUrl = null;
+    this.backgroundColor = null;
     this.isPlaying = false;
     this.isOverlayShown = false;
     this.pauseTimeout = null;
@@ -40,6 +41,39 @@ StateManager.State = {
 };
 
 StateManager.prototype = {
+
+    configure: function ( config ) {
+        if ( config.fadeOutPauseTime && $.isNumeric( config.fadeOutPauseTime ) ) {
+            this.PAUSE_TIMEOUT_DURATION = config.fadeOutPauseTime * 1000;
+        }
+        if ( config.switchingAudioTracksMsg && typeof (config.switchingAudioTracksMsg) === 'string' ) {
+            this.waitMsg.text( config.switchingAudioTracksMsg );
+        }
+        if ( config.switchingAudioTracksMsgColor ) {
+            this.waitMsg.css( "color", config.switchingAudioTracksMsgColor );
+        }
+        if ( config.subtitleSize ) {
+            $( '.cast-subtitle' ).css( "font-size", config.subtitleSize + "px" );
+        }
+        if ( config.subtitleFont ) {
+            $( '.cast-subtitle' ).css( "font-family", config.subtitleFont );
+        }
+        if ( config.titleSize ) {
+            $( '.cast-title' ).css( "font-size", config.subtitleSize + "px" );
+        }
+        if ( config.titleFont ) {
+            $( '.cast-title' ).css( "font-family", config.subtitleFont );
+        }
+        if ( config.progressFillColor ) {
+            $( '.cast-progress-loading-fill' ).css( "background-color", config.progressFillColor );
+            $( '.cast-media-progress-fill' ).css( "background-color", config.progressFillColor );
+        }
+        if ( config.spinnerFillColor ) {
+            $( '.cast-buffering-spinner' ).css( "background-color", config.spinnerFillColor );
+            $( '.cast-loading-spinner' ).css( "background-color", config.spinnerFillColor );
+        }
+        this.idleManager.configure( config );
+    },
 
     /**
      * Sets the new state of the receiver application.
@@ -161,7 +195,7 @@ StateManager.prototype = {
     _handleStateScreen: function ( opt_afterSeek ) {
         switch ( this.currState ) {
             case StateManager.State.LAUNCHING:
-                this._setLogo();
+                this._onLaunching();
                 break;
             case StateManager.State.IDLE:
                 this._onIdle();
@@ -184,6 +218,15 @@ StateManager.prototype = {
     },
 
     /**
+     * Handles the launching state.
+     * @private
+     */
+    _onLaunching: function () {
+        this._setLogo();
+        this._setBackgroundColor();
+    },
+
+    /**
      * Sets the receiver's idle screen logo.
      * If a query string with a logoUrl key added to the
      * receiver application's url it will set it. Else,
@@ -202,6 +245,19 @@ StateManager.prototype = {
             this.logoUrl = this.KALTURA_DEFAULT_LOGO_URL;
         }
         this.logoDiv.css( 'background-image', 'url(' + this.logoUrl + ')' );
+    },
+
+    /**
+     * Sets the background color of the idle screen.
+     * @private
+     */
+    _setBackgroundColor: function () {
+        var backgroundColor = ReceiverUtils.getQueryVariable( 'backgroundColor' );
+        if ( backgroundColor ) {
+            ReceiverLogger.log( this.CLASS_NAME, "Setting background color: " + backgroundColor );
+            this.backgroundColor = backgroundColor;
+            this.logoDiv.css( 'background-color', this.backgroundColor );
+        }
     },
 
     /**
@@ -230,6 +286,9 @@ StateManager.prototype = {
         this.isPlaying = false;
         this.logoDiv.css( 'background', '' );
         this.logoDiv.css( 'background-image', 'url(' + this.logoUrl + ')' );
+        if ( this.backgroundColor ) {
+            this.logoDiv.css( 'background-color', this.backgroundColor );
+        }
         this.logoDiv.fadeIn();
     },
 

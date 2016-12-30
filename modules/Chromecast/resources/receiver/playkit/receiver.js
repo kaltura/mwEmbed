@@ -63,21 +63,51 @@ var mediaElement;
  * The receiver's embed player flashvars.
  */
 var receiverFlashVars = {
-    "dash": { 'plugin': false },
-    "multiDrm": { 'plugin': false },
-    "embedPlayerChromecastReceiver": { 'plugin': true },
-    "chromecast": { 'plugin': false },
-    "playlistAPI": { 'plugin': false },
-    "controlBarContainer": { 'hover': false },
-    "volumeControl": { 'plugin': false },
-    "titleLabel": { 'plugin': false },
-    "fullScreenBtn": { 'plugin': false },
-    "scrubber": { 'plugin': false },
-    "audioSelector": { 'plugin': false },
-    "sourceSelector": { 'plugin': false },
-    "closedCaptions": { 'plugin': false },
-    "largePlayBtn": { 'plugin': false },
-    "mediaProxy": { "mediaPlayFrom": 0 },
+    "dash": {
+        'plugin': false
+    },
+    "multiDrm": {
+        'plugin': false
+    },
+    "embedPlayerChromecastReceiver": {
+        'plugin': true
+    },
+    "chromecast": {
+        'plugin': false
+    },
+    "playlistAPI": {
+        'plugin': false
+    },
+    "controlBarContainer": {
+        'plugin': false
+    },
+    "volumeControl": {
+        'plugin': false
+    },
+    "titleLabel": {
+        'plugin': false
+    },
+    "fullScreenBtn": {
+        'plugin': false
+    },
+    "scrubber": {
+        'plugin': false
+    },
+    "audioSelector": {
+        'plugin': false
+    },
+    "sourceSelector": {
+        'plugin': false
+    },
+    "closedCaptions": {
+        'plugin': false
+    },
+    "largePlayBtn": {
+        'plugin': false
+    },
+    "mediaProxy": {
+        "mediaPlayFrom": 0
+    },
     "autoPlay": true
 };
 /**
@@ -238,14 +268,15 @@ function onLoad( event ) {
     // Player not initialized yet
     if ( embedPlayerInitialized.is( EmbedPhase.Pending ) ) {
         ReceiverLogger.log( "MediaManager", "Embed player isn't initialized yet. Starting dynamic embed.", event );
+        configure( event.data.media.customData.receiverConfig );
         ReceiverStateManager.setState( StateManager.State.LOADING );
         embedPlayerInitialized.setState( EmbedPhase.Started );
         embedPlayer( event );
 
         // Player start to initialized but didn't finished
     } else if ( embedPlayerInitialized.is( EmbedPhase.Started ) ) {
-        // TODO: Add request to queue and when loading finished perform changeMedia?
-        // Do not respect requests while player is loading
+        // Embed player from scratch
+        embedPlayer( event );
     }
 
     // Player already initialized
@@ -273,16 +304,34 @@ function onLoad( event ) {
     }
 }
 
+/**
+ * Configures the receiver configuration from the sender.
+ */
+function configure( config ) {
+    if ( config ) {
+        ReceiverLogger.log( "MediaManager", "configure", config );
+        ReceiverStateManager.configure( config );
+    }
+}
+
+/**
+ * Replays the video on the same entry id.
+ * @param embedConfig
+ */
 function doReplay( embedConfig ) {
     ReceiverLogger.log( "MediaManager", "Embed player already initialized with the same entry. Start replay.", embedConfig );
     $( window ).trigger( "onReceiverReplay" );
     kdp.sendNotification( "doReplay" );
 }
 
+/**
+ * Change media with a different entry id.
+ * @param embedConfig
+ */
 function doChangeMedia( embedConfig ) {
     ReceiverLogger.log( "MediaManager", "Embed player already initialized with different entry. Change media.", embedConfig );
     var adsPluginEnabledNext = !!(embedConfig.flashVars && embedConfig.flashVars.doubleClick && embedConfig.flashVars.doubleClick.adTagUrl !== '');
-    var adsPluginEnabledNow = kdp.evaluate( 'doubleClick.plugin' );
+    var adsPluginEnabledNow = kdp.evaluate( '{doubleClick.plugin}' );
 
     if ( adsPluginEnabledNow && adsPluginEnabledNext ) {
         ReceiverLogger.log( "MediaManager", "doChangeMedia - before: ads, now: ads" );

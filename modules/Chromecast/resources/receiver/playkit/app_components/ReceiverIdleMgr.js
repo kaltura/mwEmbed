@@ -4,31 +4,65 @@ function IdleManager() {
 }
 
 /**
+ *
+ * @type {number}
+ */
+IdleManager.MINUTE_MULT = 1000 * 60;
+
+/**
  * The idle durations for each of the possible states.
  * @type {{LAUNCHING: number, LOADING: number, PAUSED: number, IDLE: number}}
  */
 IdleManager.IDLE_TIMEOUT = {
-    LAUNCHING: 1000 * 60 * 5, // 5 minutes
-    LOADING: 1000 * 60 * 5,  // 5 minutes
-    PAUSED: 1000 * 60 * 20,  // 20 minutes
-    IDLE: 1000 * 60 * 5      // 5 minutes
+    LAUNCHING: IdleManager.MINUTE_MULT * 5, // 5 minutes
+    LOADING: IdleManager.MINUTE_MULT * 5,  // 5 minutes
+    PAUSED: IdleManager.MINUTE_MULT * 20,  // 20 minutes
+    IDLE: IdleManager.MINUTE_MULT * 5      // 5 minutes
 };
 
 /**
  * Sets the timeout for a given state.
  * @param state
  */
-IdleManager.prototype.setIdleTimeout = function ( state ) {
-    var time = IdleManager.IDLE_TIMEOUT[ state ];
-    if ( time ) {
-        ReceiverLogger.log( this.CLASS_NAME, "Setting timeout for state " + state + ". Timeout is " + (IdleManager.IDLE_TIMEOUT[ state ] / 60000) + " minutes." );
-        if ( this.idleTimerId !== null ) {
+IdleManager.prototype = {
+
+    configure: function ( config ) {
+        if ( config.loadingTimeout && $.isNumeric( config.loadingTimeout ) ) {
+            IdleManager.IDLE_TIMEOUT.LOADING = config.loadingTimeout * IdleManager.MINUTE_MULT;
+            if ( ReceiverStateManager.getState() === StateManager.State.LOADING ) {
+                this.setIdleTimeout( StateManager.State.LOADING );
+            }
+        }
+        if ( config.pausedTimeout && $.isNumeric( config.pausedTimeout ) ) {
+            IdleManager.IDLE_TIMEOUT.PAUSED = config.pausedTimeout * IdleManager.MINUTE_MULT;
+            if ( ReceiverStateManager.getState() === StateManager.State.PAUSED ) {
+                this.setIdleTimeout( StateManager.State.PAUSED );
+            }
+        }
+        if ( config.idleTimeout && $.isNumeric( config.idleTimeout ) ) {
+            IdleManager.IDLE_TIMEOUT.IDLE = config.idleTimeout * IdleManager.MINUTE_MULT;
+            if ( ReceiverStateManager.getState() === StateManager.State.IDLE ) {
+                this.setIdleTimeout( StateManager.State.IDLE );
+            }
+        }
+    },
+
+    setIdleTimeout: function ( state ) {
+        var _this = this;
+        var time = IdleManager.IDLE_TIMEOUT[ state ];
+        if ( time ) {
+            ReceiverLogger.log( this.CLASS_NAME, "Setting timeout for state " + state + ". Timeout is " + (IdleManager.IDLE_TIMEOUT[ state ] / 60000) + " minutes." );
+            if ( this.idleTimerId !== null ) {
+                clearTimeout( this.idleTimerId );
+                this.idleTimerId = null;
+            }
+            this.idleTimerId = setTimeout( function () {
+                ReceiverLogger.log( _this.CLASS_NAME, "Timeout has been passed! stopping receiver." );
+                receiverManager.stop();
+            }, time );
+        } else {
             clearTimeout( this.idleTimerId );
             this.idleTimerId = null;
         }
-        this.idleTimerId = setTimeout( function () {
-            ReceiverLogger.log( "IdleManager", "Timeout has been passed! stopping receiver." );
-            receiverManager.stop();
-        }, time );
     }
 };

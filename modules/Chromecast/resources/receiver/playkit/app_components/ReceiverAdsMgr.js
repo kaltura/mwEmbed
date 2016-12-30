@@ -1,21 +1,21 @@
 var ReceiverAdsManager = null;
 
 $( window ).bind( 'onReceiverKDPReady', function ( event ) {
-    ReceiverLogger.log( this.CLASS_NAME, "event-->onReceiverKDPReady", { 'adsEnabled?': kdp.evaluate( '{doubleClick.plugin}' ) } );
+    ReceiverLogger.log( "ReceiverAdsManager", "event-->onReceiverKDPReady", { 'adsEnabled?': kdp.evaluate( '{doubleClick.plugin}' ) } );
     if ( kdp.evaluate( '{doubleClick.plugin}' ) ) {
         ReceiverAdsManager = new AdsManager();
     }
 } );
 
 $( window ).bind( 'onReceiverReplay', function () {
-    ReceiverLogger.log( this.CLASS_NAME, "event-->onReceiverReplay" );
+    ReceiverLogger.log( "ReceiverAdsManager", "event-->onReceiverReplay" );
     if ( ReceiverAdsManager ) {
         ReceiverAdsManager.destroy();
     }
 } );
 
 $( window ).bind( 'onReceiverChangeMedia', function ( event, withAds ) {
-    ReceiverLogger.log( this.CLASS_NAME, "event-->onReceiverChangeMedia", { "withAds": withAds } );
+    ReceiverLogger.log( "ReceiverAdsManager", "event-->onReceiverChangeMedia", { "withAds": withAds } );
     if ( withAds ) {
         ReceiverAdsManager = new AdsManager();
     } else if ( ReceiverAdsManager ) {
@@ -167,7 +167,7 @@ AdsManager.prototype = {
      * @private
      */
     _onPause: function ( event ) {
-        ReceiverLogger.log( this.CLASS_NAME, "onPause", event );
+        ReceiverLogger.log( this.CLASS_NAME, "_onPause", event );
         kdp.sendNotification( "doPause" );
         if ( this.adsInfo.isPlayingAd ) {
             // We have an issue that if sender pause in middle of an ad it sending the wrong status (PLAYING)
@@ -227,7 +227,7 @@ AdsManager.prototype = {
      * @private
      */
     _onAdErrorEvent: function () {
-        ReceiverLogger.error( this.CLASS_NAME, "adErrorEvent" );
+        ReceiverLogger.error( this.CLASS_NAME, "_onAdErrorEvent" );
     },
 
     /**
