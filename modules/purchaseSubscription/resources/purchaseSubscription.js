@@ -51,7 +51,7 @@
 			this.bind("onEndedDone", function(){
 				setTimeout(function(){_this.show();},100);
 			});
-			this.bind("onEndedDone", function(){
+			this.bind("onChangeMedia", function(){
 				_this.initializedView = false;
 			});
 		},
