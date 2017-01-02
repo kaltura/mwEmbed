@@ -48,8 +48,8 @@
 
 		addBindings:function(){
 			var _this = this;
-			this.bind("onEndedDone", function(){
-				setTimeout(function(){_this.show();},100);
+			this.bind("onEndedDone onpause", function(){
+				setTimeout(function(){_this.showScreen();},100);
 			});
 			this.bind("onChangeMedia", function(){
 				_this.initializedView = false;
