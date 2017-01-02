@@ -54,20 +54,26 @@
 			this.bind("onChangeMedia", function(){
 				_this.initializedView = false;
 			});
-		},
-
-		show: function(){
-			this.toggleScreen();
-			if (!this.initializedView) {
-				this.initializedView = true;
-				$(this.$screen).find(".content").slick({
-					slidesToShow: 1,
-					autoplay: true,
-					autoplaySpeed: 2000,
-					pauseOnHover: true,
-					infinite: true
-				});
-			}
+			this.bind('showScreen', function (event, screenName) {
+				if ( screenName === _this.pluginName ){
+					_this.getScreen().then(function(screen){
+						$(screen).find(".content").slick({
+							slidesToShow: 1,
+							autoplay: true,
+							autoplaySpeed: 2000,
+							pauseOnHover: true,
+							infinite: true
+						});
+					});
+				}
+			});
+			this.bind('hideScreen', function (event, screenName) {
+				if ( screenName === _this.pluginName ){
+					_this.getScreen().then(function(screen){
+						$(screen).find(".content").slick('unslick');
+					});
+				}
+			});
 		},
 
 		getTemplateData: function () {
