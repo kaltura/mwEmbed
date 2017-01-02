@@ -17,7 +17,7 @@
 				},
 				{
 					title: "Stranger Things",
-					synopsis: "\"Stranger Things\" has become Netflix's latest smash hit. The first season of the series, set in the 1980s, from brothers Matt and Ross Duffer (\"Wayward Pines\"), which is set to return for a second season in 2017, follows the disappearance of a young boy and the monstrous chain of events it launches in the small town.",
+					synopsis: "\"Stranger Things\" has become Netflix's latest smash hit. The first season of the series, set in the 1980s, from brothers Matt and Ross Duffer (\"Wayward Pines\"), which is set to return for a second season in 2017.",
 					"imageUrl": "http://preprod-mediago.s3.amazonaws.com/hackaton2016/stranger.jpg",
 					linkBack: "http://preprod-mediago.s3.amazonaws.com/hackaton2016/watchmovie.html"
 				},
@@ -29,13 +29,13 @@
 				},
 				{
 					title: "Rick & Morti",
-					synopsis: "\"Stranger Things\" has become Netflix's latest smash hit. The first season of the series, set in the 1980s, from brothers Matt and Ross Duffer (\"Wayward Pines\"), which is set to return for a second season in 2017, follows the disappearance of a young boy and the monstrous chain of events it launches in the small town.",
+					synopsis: "Rick Sanchez (voiced by Justin Roiland) – An eccentric and alcoholic mad scientist who is the father of Beth, the father-in-law of Jerry, and the maternal grandfather of Morty and Summer. His irresponsible tendencies lead Beth and Jerry to worry about the safety of their son Morty.",
 					"imageUrl": "http://preprod-mediago.s3.amazonaws.com/hackaton2016/rick.png",
 					linkBack: "http://preprod-mediago.s3.amazonaws.com/hackaton2016/watchmovie.html"
 				},
 				{
 					title: "Westworld",
-					synopsis: "Westworld is an American science fiction western thriller television series created by Jonathan Nolan and Lisa Joy for HBO. It is based on the 1973 film of the same name, which was written and directed by American novelist Michael Crichton, and to a lesser extent on the 1976 sequel Futureworld. It is the second TV series based on the two films",
+					synopsis: "Westworld is an American science fiction western thriller television series created by Jonathan Nolan and Lisa Joy for HBO.",
 					"imageUrl": "http://preprod-mediago.s3.amazonaws.com/hackaton2016/westworld.jpg",
 					linkBack: "http://preprod-mediago.s3.amazonaws.com/hackaton2016/watchmovie.html"
 				}
