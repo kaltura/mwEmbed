@@ -5,6 +5,7 @@
 			templatePath: 'purchaseSubscription',
 			purchaseOfferItems: []
 		},
+		initializedView: false,
 		setup: function(){
 			//Plugin setup, all actions which needs to be done on plugin loaded and before playerReady event
 			this.addBindings();
@@ -49,19 +50,24 @@
 			var _this = this;
 			this.bind("onEndedDone", function(){
 				setTimeout(function(){_this.show();},100);
-
+			});
+			this.bind("onEndedDone", function(){
+				_this.initializedView = false;
 			});
 		},
 
 		show: function(){
 			this.toggleScreen();
-			$(this.$screen).find(".content").slick({
-				slidesToShow: 1,
-				autoplay: true,
-				autoplaySpeed: 2000,
-				pauseOnHover: true,
-				infinite: true
-			});
+			if (!this.initializedView) {
+				this.initializedView = true;
+				$(this.$screen).find(".content").slick({
+					slidesToShow: 1,
+					autoplay: true,
+					autoplaySpeed: 2000,
+					pauseOnHover: true,
+					infinite: true
+				});
+			}
 		},
 
 		getTemplateData: function () {
