@@ -10,7 +10,7 @@
 			this.addBindings();
 			this.setConfig("purchaseOfferItems", [
 				{
-					title: "Start Wars",
+					title: "Star Wars",
 					synopsis: "The story begins thirty years after the events of Star Wars: Episode VI Return of the Jedi. The First Order has risen from the ashes of the Galactic Empire and is opposed by General Leia Organa and the Resistance, both of which seek to find the missing Jedi Master Luke Skywalker.",
 					"imageUrl": "http://preprod-mediago.s3.amazonaws.com/hackaton2016/super.jpg",
 					linkBack: "http://preprod-mediago.s3.amazonaws.com/hackaton2016/watchmovie.html"
