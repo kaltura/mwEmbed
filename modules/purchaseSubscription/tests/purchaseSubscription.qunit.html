@@ -24,7 +24,15 @@
             "controlBarContainer": {
                 "hover": true
             },
-            purchaseSubscription:{plugin:true}
+            purchaseSubscription:{plugin:true},
+            'share': {
+                'plugin': true,
+                'parent': "topBarContainer",
+                'order': 3,
+                'socialShareURL': 'smart',
+                'socialNetworks': 'facebook,twitter,googleplus,email,linkedin,sms',
+                'embedCodeTemplate': '<iframe src="//cdnapi.kaltura.com/p/{mediaProxy.entry.partnerId}/sp/{mediaProxy.entry.partnerId}00/embedIframeJs/uiconf_id/{configProxy.kw.uiConfId}/partner_id/{mediaProxy.entry.partnerId}?iframeembed=true&playerId={configProxy.targetId}&entry_id={mediaProxy.entry.id}&flashvars[streamerType]=auto" width="560" height="395" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0"></iframe>'
+            },
         },
         //"entry_id": "1_sf5ovm7u"
         "entry_id": "1_v34oba5k" // Entry with captions
