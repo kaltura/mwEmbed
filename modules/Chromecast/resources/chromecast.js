@@ -112,7 +112,7 @@
 			this.bind('chromecastGetCurrentTime', function(){_this.getCurrentTime();});
 			this.bind('chromecastSetVolume', function(e, percent){_this.setVolume(e,percent);});
 			this.bind('chromecastSeek', function(e, percent){_this.seekMedia(percent);});
-			this.bind('stopCasting', function(){_this.toggleCast();});
+			this.bind('toggleCasting', function(){_this.toggleCast();});
 			this.bind('chromecastBackToLive', function(){
 					if (_this.getCurrentTime() > 0){
 						_this.loadMedia();
