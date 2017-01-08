@@ -217,6 +217,7 @@
         showScreen:function(){
             this.embedPlayer.pause();
             this._super();
+            $(".screen.quiz").attr('aria-live', 'polite'); // make the quiz screen a live region
         },
 
         ssWelcome: function () {
@@ -246,11 +247,14 @@
                             break;
                     }
                 });
-
-            $(".confirm-box").html(gM('mwe-quiz-continue')).show()
+                console.log("about to take something from player");
+                
+            $(".ivqContainer").attr("title", "Kaltura Video Quiz "+_this.embedPlayer.evaluate( '{mediaProxy.entry.name}' ));
+            
+            $(".confirm-box").html(gM('mwe-quiz-continue')).show().attr("tabindex", "0").attr("title", "Click to start the quiz")
                 .on('click', function () {
                     _this.KIVQModule.checkIfDone(-1);
-                });
+                }).focus();
         },
 
         ssAlmostDone: function (unAnsweredArr) {
@@ -310,12 +314,14 @@
             if (cPo.question.length < 68){
                 $(".display-question").addClass("padding7");
             }
-            $(".display-question").text(cPo.question);
+            $(".display-question").text(cPo.question).attr('tabindex', 0).focus();
+            //$(".display-question").attr('title', "Question number "+questionNr);
             $.each(cPo.answeres, function (key, value) {
                 var div= $("<div class ='single-answer-box-bk'>"
                 + "<div class ='single-answer-box-txt' id="
                 + key + "><p></p></div></div>");
                 div.find('p').text(value);
+                div.attr('tabindex', 0).attr('role', 'button').attr('title', 'Answer number '+(key+1));
                 div.appendTo('.answers-container');
             });
 
@@ -451,13 +457,13 @@
             var _this = this;
             $('.single-answer-box-txt#'+_this.selectedAnswer +'')
                 .parent().addClass("wide")
-                .addClass('single-answer-box-bk-apply')
+                .addClass('single-answer-box-bk-apply').removeAttr('role').removeAttr('tabindex')
                 .children().removeClass('single-answer-box-txt')
                 .addClass(function(){
                     $(this).addClass('single-answer-box-txt-wide')
                         .after($('<div></div>')
                             .addClass("single-answer-box-apply qContinue")
-                            .text(gM('mwe-quiz-continue'))
+                            .text(gM('mwe-quiz-continue')).attr('role', 'button').attr('title', 'click to choose answer and continue').attr('tabindex', 0).focus()
                     )
                 });
         },
@@ -491,8 +497,10 @@
             $('.single-answer-box-bk').off().on('click',function(e){
 
                 if ($(this).hasClass('disable')) {return false};
-
+                console.log("going through here on keyboard click");
+                console.log(e.target.className);
                 if (e.target.className === 'single-answer-box-apply qContinue' ){
+                    console.log("going through here on keyboard click - but what about the target??");
                     e.stopPropagation();
                     $('.single-answer-box-bk').addClass('disable');
                     $('.single-answer-box-apply').fadeOut(100,function(){
@@ -514,14 +522,15 @@
                     });
 
                     $(this).addClass("wide")
-                        .addClass('single-answer-box-bk-apply')
+                        .addClass('single-answer-box-bk-apply').removeAttr('role').removeAttr('tabindex')
                         .children().removeClass('single-answer-box-txt')
                         .addClass(function(){
                             $(this).addClass('single-answer-box-txt-wide')
                                 .after($('<div></div>')
                                     .addClass("single-answer-box-apply qContinue")
-                                    .text(gM('mwe-quiz-continue'))
-                            )
+                                    .text(gM('mwe-quiz-continue')).attr('role', 'button').attr('aria-description', 'click to choose answer and continue').attr('tabindex', 0).focus()
+                            );
+                    
                         });
                     _this.selectedAnswer =  $('.single-answer-box-txt-wide').attr('id');
                 }
@@ -584,6 +593,7 @@
                         _this.KIVQModule.checkIfDone(questionNr)
                     });
                 }
+                $(".ftr-right").attr('tabindex', 0).attr('role', 'button').attr('title', 'move to next question');
             }
         },
         displayBubbles:function(){
@@ -633,6 +643,7 @@
                 .on('click', '.quizDone-cont', function () {
                     _this.KIVQModule.quizEndScenario();
                 });
+            $('.quizDone-cont').attr('tabindex', 0).attr('role', 'button').attr('title', 'click to end quiz now').focus();
         }
     }));
 })(window.mw, window.jQuery);
