@@ -251,6 +251,7 @@
 				}
 			};
 			var onImaLoadFailed = function( errorCode ){
+				errorCode = errorCode ? errorCode : "ImaLoadFailed";
 				mw.log( "Error::DoubleClick Loading Error: " + errorCode );
 				_this.onAdError(errorCode);
 				_this.embedPlayer.unbindHelper('prePlayAction' + _this.bindPostfix);

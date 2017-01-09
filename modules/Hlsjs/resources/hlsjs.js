@@ -576,7 +576,11 @@
 					this.unbind("seeking");
 					this.hls.attachMedia(this.getPlayer().getPlayerElement());
 				}
-				this.getPlayer().play();
+				var dcConfig = this.getPlayer().getKalturaConfig("doubleClick");
+				var adTagUrl = dcConfig.adTagUrl || dcConfig.prerollUrl;
+				if (!(mw.isAndroid() && adTagUrl)) {
+					this.getPlayer().play();
+				}
 				if ($.isFunction(switchCallback)) {
 					switchCallback();
 				}
