@@ -225,16 +225,20 @@
 				var audioTracks = this.getTracksByType("audio");
 				if (audioTracks && audioTracks.length > 0) {
 					var audioTrackData = {languages: []};
+					var audioTrackLangs = {};
 					$.each(audioTracks, function (index, audioTrack) {
-						audioTrackData.languages.push({
-							'kind': 'audioTrack',
-							'language': audioTrack.language,
-							'srclang': audioTrack.language,
-							'label': audioTrack.language,
-							'title': audioTrack.language,
-							'id': audioTrack.id,
-							'index': audioTrackData.languages.length
-						});
+						if (audioTrackLangs[audioTrack.language] === undefined) {
+							audioTrackLangs[audioTrack.language] = 1;
+							audioTrackData.languages.push({
+								'kind': 'audioTrack',
+								'language': audioTrack.language,
+								'srclang': audioTrack.language,
+								'label': audioTrack.language,
+								'title': audioTrack.language,
+								'id': audioTrack.id,
+								'index': audioTrackData.languages.length
+							});
+						}
 					});
 					mw.log("Dash::" + audioTracks.length + " audio tracks were found: ", audioTracks);
 					this.onAudioTracksReceived(audioTrackData);
