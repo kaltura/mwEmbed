@@ -20,11 +20,7 @@
 
 			defaultConfig: {
 				withCredentials : false,
-				options: {
-					//debug:true
-					liveSyncDurationCount: 3,
-					liveMaxLatencyDurationCount: 6
-				},
+				options: {},
 				maxErrorRetryCount: 2,
 				hlsLogs: false
 			},
@@ -115,13 +111,7 @@
 					//Set streamerType to hls
 					this.embedPlayer.streamerType = 'hls';
 					
-					var hlsConfig = this.getConfig("options");
-					//Apply withCredentials if set to true
-					if(this.getConfig("withCredentials")){
-						hlsConfig.xhrSetup = function(xhr, url) {
-							xhr.withCredentials = true;
-						}
-					}
+					var hlsConfig = this.getHlsConfig();
 					//Init the HLS playback engine
 					this.hls = new Hls(hlsConfig);
 
@@ -144,6 +134,25 @@
 						this.hls.attachMedia(this.getPlayer().getPlayerElement());
 					}.bind(this));
 				}
+			},
+			getHlsConfig: function(){
+				var defaultConfig = {
+					//debug:true
+					liveSyncDurationCount: 3,
+					liveMaxLatencyDurationCount: 6
+				};
+
+				var options = this.getConfig("options");
+
+				var hlsConfig = $.extend({}, defaultConfig, options);
+
+				//Apply withCredentials if set to true
+				if(this.getConfig("withCredentials")){
+					hlsConfig.xhrSetup = function(xhr, url) {
+						xhr.withCredentials = true;
+					};
+				}
+				return hlsConfig;
 			},
 			/**
 			 * Register HLS playback engine events
@@ -528,14 +537,16 @@
 			},
 
 			onLiveOffSyncChanged: function (event, status) {
-				if (this.getConfig("options") && !this.defaultLiveMaxLatencyDurationCount) {
-					// Storing the default value as it configured in the defaultConfig for backing to live
-					this.defaultLiveMaxLatencyDurationCount = this.getConfig("options").liveMaxLatencyDurationCount;
-				}
-				if (status) { // going to offSync - liveMaxLatencyDurationCount should be infinity
-					this.hls.config.liveMaxLatencyDurationCount = Hls.DefaultConfig["liveMaxLatencyDurationCount"];
-				} else { // back to live - restore the default as it configured in the defaultConfig
-					this.hls.config.liveMaxLatencyDurationCount = this.defaultLiveMaxLatencyDurationCount;
+				if (this.LoadHLS) {
+					if (this.getConfig("options") && !this.defaultLiveMaxLatencyDurationCount) {
+						// Storing the default value as it configured in the defaultConfig for backing to live
+						this.defaultLiveMaxLatencyDurationCount = this.getConfig("options").liveMaxLatencyDurationCount;
+					}
+					if (status) { // going to offSync - liveMaxLatencyDurationCount should be infinity
+						this.hls.config.liveMaxLatencyDurationCount = Hls.DefaultConfig["liveMaxLatencyDurationCount"];
+					} else { // back to live - restore the default as it configured in the defaultConfig
+						this.hls.config.liveMaxLatencyDurationCount = this.defaultLiveMaxLatencyDurationCount;
+					}
 				}
 			},
 
