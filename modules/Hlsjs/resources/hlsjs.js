@@ -526,15 +526,19 @@
 			 * Override player method for back to live mode
 			 */
 			backToLive: function () {
-				var _this = this;
-				var vid = this.getPlayer().getPlayerElement();
-				this.embedPlayer.goingBackToLive = true;
-				vid.currentTime = vid.duration - (this.fragmentDuration || 10) * 3;
-                _this.getPlayer().triggerHelper('movingBackToLive');
-                _this.once( 'seeked', function () {
+                var _this = this;
+                var vid = this.getPlayer().getPlayerElement();
+                this.embedPlayer.goingBackToLive = true;
+                vid.currentTime = vid.duration - (this.fragmentDuration || 10) * 3;
+                _this.getPlayer().triggerHelper( 'movingBackToLive' );
+                if ( this.embedPlayer.isDVR() ) {
+                    _this.once( 'seeked', function () {
+                        _this.embedPlayer.goingBackToLive = false;
+                    } );
+                } else {
                     _this.embedPlayer.goingBackToLive = false;
-                } );
-			},
+                }
+            },
 
 			onLiveOffSyncChanged: function (event, status) {
 				if (this.LoadHLS) {
