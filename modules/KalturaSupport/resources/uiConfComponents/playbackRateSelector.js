@@ -213,7 +213,7 @@
 			if (source.indexOf("playbackRate") !== -1){
 				base = base.substr(0,base.lastIndexOf("playbackRate")-1);
 			}
-			var newSrc = base + "/playbackRate/" + this.currentSpeed + fileName;
+			var newSrc = base + "/playbackrate/" + this.currentSpeed + fileName;
 			this.updatePlaybackRate( newSpeed );
 
 			if (mw.isMobileDevice()){
