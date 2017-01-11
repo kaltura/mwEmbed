@@ -612,6 +612,11 @@
                 _this.addRightClickBinding();
             });
 
+            b('onChangeMedia', function () {
+                $interface.removeClass(adPlaybackState);
+                $interface.removeClass("seeking-state");
+            });
+
             b('AdSupport_StartAdPlayback', function () {
                 $interface.addClass(adPlaybackState);
             });
