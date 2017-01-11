@@ -561,14 +561,13 @@
 			switchSrc: function (source) {
 				if (source !== -1) {
 					var sourceIndex = this.getPlayer().getSourceIndex(source);
-					if (sourceIndex != null) {
+					if (sourceIndex !== null) {
 						this.isLevelSwitching = true;
 						this.levelIndex = sourceIndex;
-						if (this.hls.currentLevel == sourceIndex) {
+                        if ( !this.hls.autoLevelEnabled && this.hls.currentLevel === sourceIndex ) {
 							this.onLevelSwitch(Hls.Events.LEVEL_SWITCH, {level: sourceIndex});
 							this.onFragChanged(Hls.Events.LEVEL_LOADED, {frag: {level: sourceIndex}});
 							this.getPlayer().currentBitrate = source.getBitrate();
-							this.getPlayer().triggerHelper('bitrateChange', source.getBitrate());
 						} else {
 							this.hls.nextLevel = sourceIndex;
 						}
