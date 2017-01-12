@@ -282,16 +282,19 @@ function onLoad( event ) {
     // Player already initialized
     else if ( embedPlayerInitialized.is( EmbedPhase.Completed ) ) {
 
+        // Reset progress bar
+        ReceiverStateManager.onProgress( 0, 0 );
+
+        // Rest mediaPlayFrom if needed
+        kdp.setKDPAttribute( 'mediaProxy', 'mediaPlayFrom', 0 );
+
+        // Set app state as idle
+        ReceiverStateManager.setState( StateManager.State.IDLE );
+
         // Show media metadata when ready
         loadMetadataPromise.then( function ( showPreview ) {
             ReceiverStateManager.onShowMediaMetadata( showPreview );
         } );
-
-        // Reset progress bar
-        ReceiverStateManager.onProgress( 0, 0 );
-
-        // Set app state as idle
-        ReceiverStateManager.setState( StateManager.State.IDLE );
 
         var embedConfig = event.data.media.customData.embedConfig;
         // If same entry is sent then reload, else perform changeMedia
@@ -300,7 +303,6 @@ function onLoad( event ) {
         } else {
             doChangeMedia( embedConfig );
         }
-
     }
 }
 
@@ -340,8 +342,6 @@ function doChangeMedia( embedConfig ) {
 
     } else if ( !adsPluginEnabledNow && adsPluginEnabledNext ) {
         ReceiverLogger.log( "MediaManager", "doChangeMedia - before: no ads, now: ads" );
-        // TODO: Set doubleClick plugin with the adTagUrl
-        // TODO: Maybe always set doubleClick in embedPlayer?
         // Seems that this scenario is not possible right now
         // Play without ads here also
         $( window ).trigger( "onReceiverChangeMedia", false );
@@ -351,7 +351,6 @@ function doChangeMedia( embedConfig ) {
         $( window ).trigger( "onReceiverChangeMedia", false );
         kdp.setKDPAttribute( 'doubleClick', 'adTagUrl', '' );
     }
-
     kdp.sendNotification( "changeMedia", { "entryId": embedConfig[ 'entryID' ] } );
 }
 
@@ -449,8 +448,7 @@ function setMediaElementEvents() {
 }
 
 function onMetadataLoaded() {
-    //TODO: Take media metadata in the receiver?
-    /*
+    /* TODO: Handle media metadata in the receiver side?
      var entry = kdp.evaluate( '{mediaProxy.entry}' );
      var metadata = {};
      metadata.title = entry.name;
@@ -533,6 +531,9 @@ function getFlashVars( senderPlayFrom, senderAutoPlay, senderFlashVars ) {
         // Embed the media info params from onLoad event into mwEmbedChromecastReceiver
         if ( $.isNumeric( senderPlayFrom ) ) {
             receiverFlashVars.mediaProxy.mediaPlayFrom = senderPlayFrom;
+            if ( senderPlayFrom > 0 && senderFlashVars.doubleClick ) {
+                senderFlashVars.doubleClick.adTagUrl = '';
+            }
         }
         if ( typeof senderAutoPlay === 'boolean' ) {
             receiverFlashVars.autoPlay = senderAutoPlay;

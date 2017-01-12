@@ -108,6 +108,23 @@ var ReceiverUtils = {
      */
     _getMediaImageUrl: function ( metadata ) {
         var images = metadata.images || [];
-        return images && images[ 0 ] && images[ 0 ][ 'url' ];
+        var res = 2 / 3;
+        var bestIndex = 0;
+        var bestDelta = null;
+        for ( var i = 0; i < images.length; i++ ) {
+            var curImage = images[ i ];
+            if ( curImage.width && curImage.height ) {
+                var curRes = curImage.width / curImage.height;
+                var curDelta = curRes - res;
+                if ( (bestDelta === null || curDelta < bestDelta) && curDelta >= 0 ) {
+                    bestDelta = curDelta;
+                    bestIndex = i;
+                }
+            }
+        }
+        if ( !images[ bestIndex ] ) {
+            return null;
+        }
+        return images[ bestIndex ].url;
     }
 };

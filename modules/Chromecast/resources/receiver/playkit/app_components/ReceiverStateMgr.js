@@ -132,7 +132,7 @@ StateManager.prototype = {
      */
     onSeekStart: function () {
         if ( this.isPlaying ) {
-            this._clearTimeouts();
+            this._clearPauseTimeout();
             if ( this.pauseBtn.is( ":visible" ) ) {
                 this._toggleComponents( 'hide', [ this.pauseBtn, this.stateBtnContainer ] );
             }
@@ -278,12 +278,13 @@ StateManager.prototype = {
         this.loadingSpinner.fadeIn();
     },
 
+
     /**
      * IDLE state handling.
      * @private
      */
     _onIdle: function () {
-        this.isPlaying = false;
+        this._resetScreen();
         this.logoDiv.css( 'background', '' );
         this.logoDiv.css( 'background-image', 'url(' + this.logoUrl + ')' );
         if ( this.backgroundColor ) {
@@ -300,7 +301,7 @@ StateManager.prototype = {
      */
     _onPlaying: function ( opt_afterSeek ) {
         if ( this.isPlaying && !opt_afterSeek ) {
-            this._clearTimeouts();
+            this._clearPauseTimeout();
             if ( this.waitMsg.is( ":visible" ) ) {
                 this.waitMsg.fadeOut();
             }
@@ -331,7 +332,7 @@ StateManager.prototype = {
                 }, this.PAUSE_TIMEOUT_DURATION );
             }
         } else {
-            this._clearTimeouts();
+            this._clearPauseTimeout();
             this._toggleComponents( 'show', [ this.gradient, this.mediaInfoContainer ] );
             this.isOverlayShown = true;
             this.pauseTimeout = setTimeout( function () {
@@ -345,11 +346,22 @@ StateManager.prototype = {
      * Clears all the timeouts because of a change in state.
      * @private
      */
-    _clearTimeouts: function () {
+    _clearPauseTimeout: function () {
         if ( this.pauseTimeout !== null ) {
             clearTimeout( this.pauseTimeout );
             this.pauseTimeout = null;
         }
+    },
+
+    /**
+     * Reset all the elements that can be on screen while playing.
+     * @private
+     */
+    _resetScreen: function () {
+        this.isPlaying = false;
+        this._clearPauseTimeout();
+        this._toggleComponents( 'hide', [ this.pauseBtn, this.stateBtnContainer, this.inPlayControls, this.gradient, this.mediaInfoContainer ] );
+        this.isOverlayShown = false;
     },
 
     /**

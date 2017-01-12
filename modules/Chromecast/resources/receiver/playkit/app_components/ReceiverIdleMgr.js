@@ -50,19 +50,16 @@ IdleManager.prototype = {
     setIdleTimeout: function ( state ) {
         var _this = this;
         var time = IdleManager.IDLE_TIMEOUT[ state ];
+        if ( this.idleTimerId !== null ) {
+            clearTimeout( this.idleTimerId );
+            this.idleTimerId = null;
+        }
         if ( time ) {
             ReceiverLogger.log( this.CLASS_NAME, "Setting timeout for state " + state + ". Timeout is " + (IdleManager.IDLE_TIMEOUT[ state ] / 60000) + " minutes." );
-            if ( this.idleTimerId !== null ) {
-                clearTimeout( this.idleTimerId );
-                this.idleTimerId = null;
-            }
             this.idleTimerId = setTimeout( function () {
                 ReceiverLogger.log( _this.CLASS_NAME, "Timeout has been passed! stopping receiver." );
                 receiverManager.stop();
             }, time );
-        } else {
-            clearTimeout( this.idleTimerId );
-            this.idleTimerId = null;
         }
     }
 };
