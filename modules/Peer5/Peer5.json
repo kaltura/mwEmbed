@@ -3,7 +3,8 @@
         "scripts": "resources/mw.Peer5.js",
         "kalturaPluginName": "peer5",
         "dependencies": [
-            "mw.AdTimeline"
+            "mw.KBasePlugin",
+            "mw.hlsjs"
         ]
     }
 }

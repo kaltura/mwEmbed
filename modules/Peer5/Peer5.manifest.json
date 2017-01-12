@@ -1,22 +1,24 @@
 {
     "peer5": {
-        "description": "The Peer5 P2P distribution <a title=\"Peer5\" href=\"http://peer5.com\" target=\"_new\">learn more</a>. <br>\t\t\n\t\tRequirements: Google Chrome version (M26+) Other browsers use HTTP progressive streaming. <br>\n\t\tThe highest bitrate available is used, unless specified otherwise using mediaProxy.preferedFlavorBR param <br>",
+        "description": "The <a title=\"Peer5 company website\" href=\"http://peer5.com\" target=\"_new\">Peer5</a> P2P transport.<br>Requirements: HLS media source and player configuration; in-browser <a title=\"Peer5 company website\" href=\"http://iswebrtcreadyyet.com\" target=\"_new\">WebRTC support</a>. Unsupported browsers fall back to HTTP progressive streaming.",
         "attributes": {
-            "peer5libUrl": {
-                "doc": "The URL to Peer5 SaaS.",
-                "type": "string"
+            "peer5JsUrl": {
+                "type": "url",
+                "doc": "Peer5 customer component script URL (set by the host web page, not for manual setting)",
+                "label": "peer5.js URL (do not set manually, will be overwritten)",
+                "initvalue": "https://peer5.com/peer5.js?id="
             },
-            "url": {
-                "doc": "The video URL to override the existing URL loaded from Kaltura.",
-                "type": "string"
+            "peer5HlsjsPluginJsUrl": {
+                "type": "url",
+                "doc": "Peer5 HLS transport component script URL (set by the host web page, not for manual setting)",
+                "label": "peer5.hlsjs.plugin.js URL (do not set manually, will be overwritten)",
+                "initvalue": "https://peer5.com/peer5.hlsjs.plugin.js"
             },
-            "overlayUI": {
-                "doc": "Flag to enable a visualization overlay.",
-                "type": "boolean"
-            },
-            "proxy": {
-                "doc": "Flag to enable the Peer5 proxy. Set to false only if you are certain your content is compatible. (The default is true.)",
-                "type": "boolean"
+            "setupTimeout": {
+                "type": "number",
+                "doc": "Delay the player setup by this much at worst (in milliseconds, required)",
+                "label": "Setup timeout (ms, required)",
+                "initvalue": "2500"
             }
         }
     }
