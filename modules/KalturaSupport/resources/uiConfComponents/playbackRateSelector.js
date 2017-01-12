@@ -210,10 +210,10 @@
 			if (fileName.indexOf("/a.f4m") === 0){
 				base = base.substr(0,base.length-3);
 			}
-			if (source.indexOf("playbackrate") !== -1){
-				base = base.substr(0,base.lastIndexOf("playbackrate")-1);
+			if (source.indexOf("playbackRate") !== -1){
+				base = base.substr(0,base.lastIndexOf("playbackRate")-1);
 			}
-			var newSrc = base + "/playbackrate/" + this.currentSpeed + fileName;
+			var newSrc = base + "/playbackRate/" + this.currentSpeed + fileName;
 			this.updatePlaybackRate( newSpeed );
 
 			if (mw.isMobileDevice()){
