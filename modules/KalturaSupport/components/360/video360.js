@@ -4,7 +4,14 @@
 	mw.PluginManager.add('video360', mw.KBasePlugin.extend({
 
 		defaultConfig: {
-			moveMultiplier: 0.3
+			moveMultiplier: 0.3,
+			mobileVibrationValue: (mw.isIOS() ? 0.0365 : 1),
+			cameraOptions:{
+				fov: 75,
+				aspect: window.innerWidth / window.innerHeight,
+				near: 0.1,
+				far: 1000
+			}
 		},
 		manualControl: false,
 		longitude: 180,
@@ -13,25 +20,37 @@
 		savedY: 0,
 		savedLongitude: 0,
 		savedLatitude: 0,
-		mobileVibrationValue: (mw.isIOS() ? 0.0365 : 1),
 		enableKeyboardShortcuts: true,
 		keyboardShortcutsMap: {
-			"left": "37",
-			"up": "38",
-			"right": "39",
-			"down": "40"
+			"left":  "65",  // 'A'
+			"up":    "87",  // 'W'
+			"right": "68",  // 'D'
+			"down":  "83"   // 'S'
+		},
+
+		isSafeEnviornment: function () {
+			return !( mw.isIE8() || mw.isIE9() || mw.isIE10Comp() || // old IEs
+				(mw.isIE11() && (mw.getUserOS() === 'Windows 7' || mw.getUserOS() === 'Windows 8')) || // ie11 on win7/8
+				(mw.isIphone() && mw.isIOSBelow10()) || // iPhone and IOS < 10 - doesn't support inline playback
+				mw.isIOSBelow9() ); // IOS < 9 doesn't support webgl
 		},
 
 		setup: function () {
-			// setting up the renderer
-			this.renderer = new THREE.WebGLRenderer();
-
+			this.set360Config();
 			this.addBindings();
+		},
+
+		set360Config:function(){
+			//Get user configuration
+			var userCameraOptions = this.getConfig("cameraOptions");
+			//Deep extend custom config
+			this.cameraOptions = $.extend({}, this.defaultConfig.cameraOptions, userCameraOptions);
 		},
 
 		addBindings: function () {
 			this.bind("playerReady", function () {
 				this.moveMultiplier = this.getConfig("moveMultiplier");
+				this.mobileVibrationValue = this.getConfig("mobileVibrationValue");
 				this.video = this.getPlayer().getPlayerElement();
 				this.video.setAttribute('crossorigin', 'anonymous');
 				$(this.video).css('z-index', '-1');
@@ -55,12 +74,13 @@
 			}.bind(this));
 
 			this.bind("doStop onChangeMedia", function () {
-				//console.info("cancelAnimationFrame");
 				cancelAnimationFrame(this.requestId)
 			}.bind(this));
 
 			this.bind("updateLayout", function () {
-				this.renderer.setSize(window.innerWidth, window.innerHeight);
+				if(this.renderer){
+					this.renderer.setSize(window.innerWidth, window.innerHeight);
+				}
 			}.bind(this));
 
 			this.bind('addKeyBindCallback', function (e, addKeyCallback) {
@@ -69,13 +89,16 @@
 		},
 
 		initComponents: function () {
+			// setting up the renderer
+			this.renderer = new THREE.WebGLRenderer();
 			this.renderer.setSize(window.innerWidth, window.innerHeight);
+
 			this.getPlayer().getVideoDisplay().append(this.renderer.domElement);
 			// creating a new scene
 			this.scene = new THREE.Scene();
 
 			// adding a camera
-			this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+			this.camera = new THREE.PerspectiveCamera(this.cameraOptions.fov, this.cameraOptions.aspect, this.cameraOptions.near, this.cameraOptions.far);
 			this.camera.target = new THREE.Vector3(0, 0, 0);
 
 			// creation of a big sphere geometry
@@ -139,7 +162,6 @@
 			if (this.texture && this.video.readyState >= this.video.HAVE_CURRENT_DATA) {
 				this.texture.needsUpdate = true;
 			}
-			//console.info("requestAnimationFrame");
 			this.requestId = requestAnimationFrame(this.render.bind(this));
 
 			this.updateCamera();
@@ -179,10 +201,6 @@
 				var x = event.rotationRate.alpha;
 				var y = event.rotationRate.beta;
 				var portrait = $(top).height() > $(top).width();
-				//var portrait = window.orientation === 0 || window.orientation === 0;
-				//var landscape = window.orientation === 90 || window.orientation === -90;
-				//var portrait = (typeof event.portrait !== "undefined") ? event.portrait : window.matchMedia("(orientation: portrait)").matches;
-				//var landscape = (typeof event.landscape !== "undefined") ? event.landscape : window.matchMedia("(orientation: landscape)").matches;
 				var orientation = event.orientation || window.orientation;
 
 				if (portrait) {
