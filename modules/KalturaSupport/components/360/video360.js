@@ -1,0 +1,246 @@
+(function (mw, $, THREE) {
+	"use strict";
+
+	mw.PluginManager.add('video360', mw.KBasePlugin.extend({
+
+		defaultConfig: {
+			moveMultiplier: 0.3
+		},
+		manualControl: false,
+		longitude: 180,
+		latitude: 0,
+		savedX: 0,
+		savedY: 0,
+		savedLongitude: 0,
+		savedLatitude: 0,
+		mobileVibrationValue: (mw.isIOS() ? 0.0365 : 1),
+		enableKeyboardShortcuts: true,
+		keyboardShortcutsMap: {
+			"left": "37",
+			"up": "38",
+			"right": "39",
+			"down": "40"
+		},
+
+		setup: function () {
+			// setting up the renderer
+			this.renderer = new THREE.WebGLRenderer();
+
+			this.addBindings();
+		},
+
+		addBindings: function () {
+			this.bind("playerReady", function () {
+				this.moveMultiplier = this.getConfig("moveMultiplier");
+				this.video = this.getPlayer().getPlayerElement();
+				this.video.setAttribute('crossorigin', 'anonymous');
+				$(this.video).css('z-index', '-1');
+				if (mw.isIE11()) {
+					// a workaround for ie11 texture issue
+					// see https://github.com/mrdoob/three.js/issues/7560
+					this.overrideVideoTextureMethod();
+				}
+				this.initComponents();
+			}.bind(this));
+
+			this.bind("firstPlay", function () {
+				this.attachMotionListeners();
+				this.getPlayer().layoutBuilder.removePlayerClickBindings();
+				this.add360logo();
+			}.bind(this));
+
+			this.bind("playing", function () {
+				$(this.video).hide();
+				this.render();
+			}.bind(this));
+
+			this.bind("doStop onChangeMedia", function () {
+				//console.info("cancelAnimationFrame");
+				cancelAnimationFrame(this.requestId)
+			}.bind(this));
+
+			this.bind("updateLayout", function () {
+				this.renderer.setSize(window.innerWidth, window.innerHeight);
+			}.bind(this));
+
+			this.bind('addKeyBindCallback', function (e, addKeyCallback) {
+				this.addKeyboardShortcuts(addKeyCallback);
+			}.bind(this));
+		},
+
+		initComponents: function () {
+			this.renderer.setSize(window.innerWidth, window.innerHeight);
+			this.getPlayer().getVideoDisplay().append(this.renderer.domElement);
+			// creating a new scene
+			this.scene = new THREE.Scene();
+
+			// adding a camera
+			this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+			this.camera.target = new THREE.Vector3(0, 0, 0);
+
+			// creation of a big sphere geometry
+			var sphere = new THREE.SphereGeometry(100, 100, 40);
+			sphere.applyMatrix(new THREE.Matrix4().makeScale(-1, 1, 1));
+			this.texture = new THREE.VideoTexture(this.video);
+			this.texture.minFilter = THREE.LinearFilter;
+			this.texture.magFilter = THREE.LinearFilter;
+
+			// creation of the sphere material
+			var sphereMaterial = new THREE.MeshBasicMaterial();
+			sphereMaterial.map = this.texture;
+
+			// geometry + material = mesh (actual object)
+			var sphereMesh = new THREE.Mesh(sphere, sphereMaterial);
+			this.scene.add(sphereMesh);
+		},
+
+		overrideVideoTextureMethod: function () {
+			THREE.VideoTexture = function (video, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy) {
+				var scope = this;
+
+				scope.video = video;
+				scope.ctx2d = document.createElement('canvas').getContext('2d');
+				var canvas = scope.ctx2d.canvas;
+				canvas.width = video.width;
+				canvas.height = video.height;
+
+				scope.ctx2d.drawImage(scope.video, 0, 0, scope.width, scope.height);
+				THREE.Texture.call(scope, scope.ctx2d.canvas, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy);
+
+				scope.generateMipmaps = false;
+
+				function update() {
+					requestAnimationFrame(update);
+					if (video.readyState >= video.HAVE_CURRENT_DATA) {
+						scope.ctx2d.drawImage(scope.video, 0, 0, scope.video.width, scope.video.height);
+						scope.needsUpdate = true;
+					}
+				}
+
+				update();
+			};
+
+			THREE.VideoTexture.prototype = Object.create(THREE.Texture.prototype);
+			THREE.VideoTexture.prototype.constructor = THREE.VideoTexture;
+		},
+
+		updateCamera: function () {
+			// limiting latitude from -85 to 85 (cannot point to the sky or under your feet)
+			this.latitude = Math.max(-85, Math.min(85, this.latitude));
+
+			// moving the camera according to current latitude (vertical movement) and longitude (horizontal movement)
+			this.camera.target.x = 500 * Math.sin(THREE.Math.degToRad(90 - this.latitude)) * Math.cos(THREE.Math.degToRad(this.longitude));
+			this.camera.target.y = 500 * Math.cos(THREE.Math.degToRad(90 - this.latitude));
+			this.camera.target.z = 500 * Math.sin(THREE.Math.degToRad(90 - this.latitude)) * Math.sin(THREE.Math.degToRad(this.longitude));
+			this.camera.lookAt(this.camera.target);
+		},
+
+		render: function () {
+			if (this.texture && this.video.readyState >= this.video.HAVE_CURRENT_DATA) {
+				this.texture.needsUpdate = true;
+			}
+			//console.info("requestAnimationFrame");
+			this.requestId = requestAnimationFrame(this.render.bind(this));
+
+			this.updateCamera();
+
+			// calling again render function
+			this.renderer.render(this.scene, this.camera);
+		},
+
+		// when the mouse is pressed, we switch to manual control and save current coordinates
+		onDocumentMouseDown: function (event) {
+			this.manualControl = true;
+			this.savedX = event.clientX || event.originalEvent.touches[0].pageX;
+			this.savedY = event.clientY || event.originalEvent.touches[0].pageY;
+			this.savedLongitude = this.longitude;
+			this.savedLatitude = this.latitude;
+		},
+
+		// when the mouse moves, if in manual control we adjust coordinates
+		onDocumentMouseMove: function (event) {
+			if (this.manualControl) {
+				if (event.clientX || event.originalEvent.touches) {
+					this.longitude = (this.savedX - (event.clientX || event.originalEvent.touches[0].pageX)) * this.moveMultiplier + this.savedLongitude;
+				}
+				if (event.clientY || event.originalEvent.touches) {
+					this.latitude = ((event.clientY || event.originalEvent.touches[0].pageY) - this.savedY) * this.moveMultiplier + this.savedLatitude;
+				}
+			}
+		},
+
+		// when the mouse is released, we turn manual control off
+		onDocumentMouseUp: function (event) {
+			this.manualControl = false;
+		},
+
+		onMobileOrientation: function (event) {
+			if (event.rotationRate) {
+				var x = event.rotationRate.alpha;
+				var y = event.rotationRate.beta;
+				var portrait = $(top).height() > $(top).width();
+				//var portrait = window.orientation === 0 || window.orientation === 0;
+				//var landscape = window.orientation === 90 || window.orientation === -90;
+				//var portrait = (typeof event.portrait !== "undefined") ? event.portrait : window.matchMedia("(orientation: portrait)").matches;
+				//var landscape = (typeof event.landscape !== "undefined") ? event.landscape : window.matchMedia("(orientation: landscape)").matches;
+				var orientation = event.orientation || window.orientation;
+
+				if (portrait) {
+					this.longitude = this.longitude - y * this.mobileVibrationValue;
+					this.latitude = this.latitude + x * this.mobileVibrationValue;
+				} else { // landscape
+					var orientationDegree = -90;
+					if (typeof orientation != "undefined") {
+						orientationDegree = orientation;
+					}
+					this.longitude = (orientationDegree == -90) ? this.longitude + x * this.mobileVibrationValue : this.longitude - x * this.mobileVibrationValue;
+					this.latitude = (orientationDegree == -90) ? this.latitude + y * this.mobileVibrationValue : this.latitude - y * this.mobileVibrationValue;
+				}
+			}
+		},
+
+		attachMotionListeners: function () {
+			$(document).on("mousedown touchstart", this.onDocumentMouseDown.bind(this));
+			$(document).on("mousemove touchmove", this.onDocumentMouseMove.bind(this));
+			$(document).on("mouseup touchend", this.onDocumentMouseUp.bind(this));
+			window.addEventListener('devicemotion', this.onMobileOrientation.bind(this));
+		},
+
+		addKeyboardShortcuts: function (addKeyCallback) {
+			addKeyCallback(this.keyboardShortcutsMap.left, function () {
+				this.longitude -= 10 * this.moveMultiplier;
+			}.bind(this));
+			addKeyCallback(this.keyboardShortcutsMap.up, function () {
+				this.latitude += 10 * this.moveMultiplier;
+			}.bind(this));
+			addKeyCallback(this.keyboardShortcutsMap.right, function () {
+				this.longitude += 10 * this.moveMultiplier;
+			}.bind(this));
+			addKeyCallback(this.keyboardShortcutsMap.down, function () {
+				this.latitude -= 10 * this.moveMultiplier;
+			}.bind(this));
+		},
+
+		add360logo: function () {
+			var img = $('<img />')
+				.attr({
+					'src': '/html5.kaltura/mwEmbed/modules/KalturaSupport/components/360/360.gif'
+				});
+			var logo = $('<div />')
+				.addClass('logo360 bottomRight')
+				.append(img);
+			this.getPlayer().getVideoHolder().append(logo);
+		}
+	}));
+
+	// set EmbedPlayer.WebKitPlaysInline true for iPhone inline playback
+	var playerConfig = window.kalturaIframePackageData.playerConfig;
+	if (playerConfig) {
+		if (!playerConfig.vars) {
+			playerConfig.vars = {};
+		}
+		playerConfig.vars["EmbedPlayer.WebKitPlaysInline"] = true;
+		mw.setConfig('KalturaSupport.PlayerConfig', playerConfig);
+	}
+
+})(window.mw, window.jQuery, window.THREE);
