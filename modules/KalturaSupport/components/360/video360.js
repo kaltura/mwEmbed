@@ -224,7 +224,7 @@
 		add360logo: function () {
 			var img = $('<img />')
 				.attr({
-					'src': '/html5.kaltura/mwEmbed/modules/KalturaSupport/components/360/360.gif'
+					'src': '360.gif'
 				});
 			var logo = $('<div />')
 				.addClass('logo360 bottomRight')
