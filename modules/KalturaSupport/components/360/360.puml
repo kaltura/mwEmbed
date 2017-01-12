@@ -1,0 +1,29 @@
+@startuml
+title __360° Flow__\n
+participant mw.EmbedPlayer.js as Player
+participant video360.js as 360
+participant OperationSystem as os
+activate Player
+activate os
+Player -> 360: "playerReady"
+activate  360
+360 -> 360: initComponents()
+...
+|||
+Player -> 360: "firstPlay"
+loop
+360 -> 360: render()
+end
+os -> 360: "mousemove/touchmove\n     /devicemotion/keypress"
+360 -> 360: updateCamera()
+|||
+...
+|||
+Player -> 360: "stop/changeMedia"
+360 -> 360: stopRender()
+|||
+|||
+deactivate Player
+deactivate 360
+deactivate os
+@enduml

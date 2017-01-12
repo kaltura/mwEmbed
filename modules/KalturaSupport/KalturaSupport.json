@@ -255,7 +255,7 @@
 		"kalturaPluginName": "logo"
 	},
   "video360": {
-    "scripts": "components/video360.js",
+    "scripts": ["components/360/video360.js"],
     "dependencies": ["threejs","mw.KBasePlugin"],
     "kalturaPluginName": "video360"
   },
