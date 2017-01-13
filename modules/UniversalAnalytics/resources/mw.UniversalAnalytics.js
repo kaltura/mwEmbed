@@ -200,7 +200,7 @@
 			this.duringChangeMediaFlag = false;
 
 
-            ga('send', 'event', trackingArgs[0], trackingArgs[1], trackingArgs[2], trackingArgs[3]);
+            ga('send', 'event', trackingArgs[0], trackingArgs[1], trackingArgs[2], trackingArgs[3], trackingArgs[4]);
 
 			// Send the event to the monitor ( if set in the initial options )
 			if (this.getConfig('trackEventMonitor')) {
@@ -295,6 +295,14 @@
 			}else{
 				trackEvent.push(undefined);
 			}
+
+			var fieldParams = {};
+			if ( this.isInteractiveEvent(methodName) ){
+				fieldParams.nonInteraction = false;
+			}else{
+				fieldParams.nonInteraction = true;
+			}
+			trackEvent.push(fieldParams);
 
 			return trackEvent;
 		},
