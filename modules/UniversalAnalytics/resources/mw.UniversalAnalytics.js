@@ -142,6 +142,9 @@
 				_this.embedPlayer.unbindHelper(_this.bindPostFix);
 				_this.duringChangeMediaFlag = true;
 			});
+			_this.embedPlayer.addJsListener('UniversalAnalyticsEvent' + _this.bindPostFix, function (data) {
+				_this.UniversalAnalyticsEvent(data);
+			});
 			var playerAlreadyPlayed = false;
 			$.each(_this.eventTrackList, function () {
 				var eventName = this;
@@ -184,6 +187,12 @@
 					break;
 			}
 			return eventName;
+		},
+
+        UniversalAnalyticsEvent: function(AnalyticsEvent){
+		    AnalyticsEvent.eventCategory = this.getConfig("trackingCategory") || this.trackingCategory;
+            ga('send', 'event', AnalyticsEvent);
+            return;
 		},
 
 		playerEvent: function (methodName, data) {
