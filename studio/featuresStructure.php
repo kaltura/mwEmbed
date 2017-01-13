@@ -161,6 +161,7 @@ return array(
 		"children"=> array(
 			"akamaiMediaAnalytics" => "",
 			"googleAnalytics" => "",
+            "universalAnalytics" => "",
 			"comscore" => "",
 			"nielsenCombined" => "",
 			"omnitureOnPage" => "",

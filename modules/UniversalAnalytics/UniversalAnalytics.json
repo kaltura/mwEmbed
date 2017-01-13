@@ -1,0 +1,6 @@
+{
+    "mw.UniversalAnalytics": {
+        "scripts": "resources/mw.UniversalAnalytics.js",
+        "kalturaPluginName": "universalAnalytics"
+    }
+}

@@ -1,0 +1,47 @@
+{
+    "universalAnalytics": {
+        "description": "Supports sending player analytics events to Google.<br>\r\n\t\t",
+        "attributes": {
+            "urchinCode": {
+                "doc": "The Google urchin code i.e. UA-30149691-1",
+                "label": "Google urchin code",
+                "type": "string"
+            },
+            "trackEventMonitor": {
+                "doc": "Function called on parent page for every event.",
+                "label": "Event monitor function name",
+                "type": "string"
+            },
+            "customEvent": {
+                "doc": "Comma separated list of events you want to track.",
+                "label": "Custom events list",
+                "type": "string"
+            },
+            "trackingCategory": {
+                "doc": "Deafult Category sent to Google analytics for all events.",
+                "label": "Events default category",
+                "type": "string"
+            },
+	        "optionalLabel":{
+		        "doc": "The default label to be used for all tracked events.",
+		        "label": "Label override",
+		        "type": "string"
+	        },
+	        "anonymizeIp": {
+		        "doc" : "If the google anonymizeIp flag should be set to anonymize user reports within google analytics.",
+		        "label": "Anonymize Ips",
+		        "type" : "boolean"
+	        },
+	        "allowLinker": {
+		        "doc" : "Enables Google Analytics to do Cross-domain tracking.",
+		        "label": "Allow linker",
+		        "type" : "boolean"
+	        },
+            "disableTrackPageview": {
+                "doc" : "Main logic for Google Analytic tracker code, sends the tracking data back to the Google Analytics servers if enabled.",
+                "label": "Do not allow page tracking",
+                "type" : "boolean"
+            }
+        }
+    }
+}
