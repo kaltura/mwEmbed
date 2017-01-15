@@ -5,8 +5,6 @@
 		defaultConfig: {
 			align: "right",
 			"parent": mw.isMobileDevice() ? 'topBarContainer' : 'controlsContainer',
-			smartContainer: 'morePlugins',
-			smartContainerCloseEvent: 'downloadMedia',
 			displayImportance: "low",
 			downloadName: '{mediaProxy.entry.name}',
 			showTooltip: true,
@@ -20,6 +18,8 @@
 		},
 		setup: function(){
 			var _this = this;
+			this.setConfig('smartContainer', 'morePlugins');
+			this.setConfig('smartContainerCloseEvent', 'downloadMedia');
 			this.bind( 'downloadMedia', function() {
 				_this.downloadMedia();
 			});

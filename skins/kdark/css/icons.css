@@ -208,12 +208,10 @@
 }
 .mobileSkin .icon-play:before {
     text-shadow: 0px 0px 2px rgba(0,0,0,0.10);
-    padding-left: 4px;
     content: "\e907";
 }
 .mobileSkin .icon-pause:before {
     text-shadow: 0px 0px 2px rgba(0,0,0,0.10);
-    padding-left: 2px;
     content: "\e908";
 }
 .mobileSkin .icon-prev:before {
@@ -266,6 +264,9 @@
 }
 .mobileSkin .icon-arrow-left:before {
     content: "\e917";
+}
+.mobileSkin .icon-close:before {
+    content: "\e918";
 }
 
 

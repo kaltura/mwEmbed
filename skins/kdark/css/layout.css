@@ -52,17 +52,22 @@ body {
 	position: static;
 }
 .mobileSkin .topBarContainer{
-    height: 3.6em;
+    height: 4.8em;
     display: none;
     background: transparent;
-    padding-right: 1em;
 }
 .mobileSkin .topBarContainer.open {
     display: block;
-    height: 3.6em;
+    height: 4.8em;
+}
+.mobileSkin.size-small .topBarContainer, .mobileSkin.size-tiny .topBarContainer {
+    display: none;
+}
+.mobileSkin.size-small.fullscreen .topBarContainer, .mobileSkin.size-tiny.fullscreen .topBarContainer {
+    display: block;
 }
 .mobileSkin.pluginsScreenOpened .topBarContainer {
-    display: none;
+    display: none !important;
 }
 .sideBarContainerReminder{
 	padding: 10px;
@@ -182,6 +187,10 @@ body {
     text-shadow: 0px 0px 1px rgba(0,0,0,0.40);
     display: none !important;
 }
+.mobileSkin.size-small .titleLabel{
+    font-size: 1.5em;
+}
+
 .mobileSkin.start-state .titleLabel{
     display: block !important;
 }
@@ -219,10 +228,9 @@ body {
 }
 
 .controlBarContainer.hover {
-	bottom: -3.6em;
+	bottom: -4.2em;
 	z-index: 100;
 }
-
 .controlBarContainer.open {
 	bottom: 0;
 }
@@ -239,9 +247,8 @@ body {
 	font-size: 1.1em;
 }
 .mobileSkin .btn {
-    font-size: 1.6em;
+    font-size: 2.4em;
     width: 2.6em;
-    margin-top: -0.4em;
     color: white;
     outline: 0;
     text-shadow: none;
@@ -318,12 +325,39 @@ body {
     align-items: center;
     flex-flow: row wrap;
 }
+/* Smart container icons */
+.mobileSkin .smartContainer.comp4, .mobileSkin .smartContainer.comp5, .mobileSkin .smartContainer.comp6{
+    height: 80%;
+    top: 15%;
+}
+.mobileSkin .smartContainer.comp2, .mobileSkin .smartContainer.comp4{
+    width: 80%;
+    left: 10%;
+}
+.mobileSkin .smartContainer.comp5, .mobileSkin .smartContainer.comp6{
+    width: 90%;
+    left: 5%;
+}
+@media screen and (orientation:portrait) {
+    .mobileSkin.fullscreen .smartContainer{
+        height: 50%;
+        top: 25%;
+    }
+}
+.mobileSkin .videoHolder .smartContainer .btn{
+    width: 100%;
+    font-size: 3.6em;
+}
+.mobileSkin .videoHolder .smartContainer.comp4 .btn, .mobileSkin .videoHolder .smartContainer.comp5 .btn, .mobileSkin .videoHolder .smartContainer.comp6 .btn{
+    font-size: 3.2em;
+}
+
+.mobileSkin.fullscreen.size-large .videoHolder .smartContainer .btn{
+    font-size: 4.6em;
+}
 .mobileSkin .videoHolder .btn {
     font-size: 2.6em;
     margin-top: 0em;
-}
-.fullscreen.mobileSkin .videoHolder .btn {
-    font-size: 3.6em;
 }
 .mobileSkin .videoHolder .btn.comp {
     position: relative;
@@ -335,11 +369,17 @@ body {
 .btnLabel{
     font-weight: normal;
     font-size: 0.3em;
-   display: none;
+    display: none;
 }
 .mobileSkin .btnLabel{
     font-family: 'Lato', Helvetica, Arial;
     display: block;
+}
+.mobileSkin.size-medium .btnLabel, .mobileSkin.size-large .btnLabel{
+    font-size: 0.4em;
+}
+.mobileSkin.fullscreen .btnLabel{
+    font-size: 0.3em;
 }
 .largePlayBtn {
 	cursor: pointer;
@@ -372,7 +412,7 @@ body {
     height: 3px;
     border-radius: 3px;
     background: rgba(255,255,255,0.8);
-    box-shadow: 0px 0px 2.4px 1.6px rgba(0, 0, 0, 0.12);
+    /*box-shadow: 0px 0px 2.4px 1.6px rgba(0, 0, 0, 0.12);*/
     margin-left: 20px;
     /* Supress pointer events */
     pointer-events: none;
@@ -527,10 +567,12 @@ body {
 }
 .mobileSkin .nextPrevBtn>.btn {
     position: relative;
-    font-size: 1.6em;
     margin-top: -25px;
     height: 50px;
     top: 50%;
+}
+.mobileSkin.fullscreen.size-large .nextPrevBtn>.btn {
+    font-size: 2.6em !important;
 }
 
 .mobileSkin .nextPrevBtn>.btn.icon-prev {
@@ -847,9 +889,13 @@ body {
 
 .mobileSkin .timers{
     font-family: 'Lato', Helvetica, Arial;
+    top: 0px;
     font-weight: bold;
-    font-size: 1em;
+    font-size: 1.2em;
     text-shadow: 0px 0px 2.4px rgba(0, 0, 0, 0.12);
+}
+.mobileSkin.fullscreen .timers{
+    font-size: 1.1em;
 }
 .currentTimeLabel {
 	padding-left: 1em;
@@ -871,6 +917,9 @@ body {
     height: 30px;
     top: inherit;
     text-shadow: 0px 1px 2px rgba(0,0,0,0.20);
+}
+.mobileSkin.start-state.size-small .currentTimeLabel {
+    font-size: 1.2em;
 }
 
 .durationLabel {
@@ -1144,8 +1193,8 @@ body {
     background: transparent;
     border-top: 0px;
     box-shadow: none;
-    height: 3.6em;
-    padding-right: 1em;
+    height: 4.2em;
+    width: 100%;
 }
 .ui-tooltip {
 	background-color: #000000;
@@ -1315,6 +1364,12 @@ body {
     color: #ffffff;
     box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.20);
     outline: none;
+}
+.mobileSkin.size-small .largePlayBtn {
+    font-size: 2.1em;
+    width: 60px;
+    height: 60px;
+    border-radius: 60px;
 }
 .largePlayBtn:hover {
 	background-color: rgba(0,0,0,1);
@@ -1581,10 +1636,12 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
     z-index: 100;
 }
 .mobileSkin .screen .icon-close{
-    width: 4em;
-    height: 4em;
-    right: 1.2em;
-    padding-top: 1.6em;
+    width: 1em;
+    height: 1em;
+    right: 0.3em;
+    top: 0em;
+    font-size: 2.6em;
+    font-weight: normal;
 }
 .screen .icon-close:hover{
     text-shadow: 0px 0px 10px #fff;
@@ -1798,30 +1855,19 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
     cursor : pointer;
     top : 2px;
     right : 2px;
-    width: 50px;
-    height: 50px;
+    width: 50px !important;
+    height: 50px !important;
 
 }
 .closePluginsScreen:active{
     outline: 0;
     border: 0;
 }
-.mobileSkin .btn.closePluginsScreen{
-    position: absolute;
-    font-size: 1.3em;
-    width: 2.6em !important;
-    height: 2.6em !important;
-}
-.fullscreen.mobileSkin .btn.closePluginsScreen{
-    font-size: 1.6em;
-    width: 3.8em !important;
-    height: 3.8em !important;
-}
 .mobileSkin .overlay .closePluginsScreen{
     font-family: 'icomoon' !important;
+    font-size: 2.6em;
+    top: -0.5em;
     position: absolute;
-    margin-top: -1em;
-    right: 0;
     -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 .reportButton{
