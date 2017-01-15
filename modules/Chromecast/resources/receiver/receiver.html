@@ -75,12 +75,12 @@
     </style>
     <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
     <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/mediaplayer/1.0.0/media_player.js"></script>
-    <script src="../../../../mwEmbedLoader.php"></script>
-    <script type="text/javascript" src="mpl.js"></script>
+    <script>document.write("<script type='text/javascript' src='../../../../mwEmbedLoader.php?debug=true&v=" + Date.now() + "'><\/script>");</script>
+    <script>document.write("<script type='text/javascript' src='mpl.js?v=" + Date.now() + "'><\/script>");</script>
 </head>
 
 <body>
-<div id="kaltura_player" style="top: 10px; right: 10px; left: 10px; bottom: 10px; position: absolute; z-index: 2"></div>
+<div id="kaltura_player" style="top: -1000px; left: -1000px; width:200px; height: 200px; position: absolute"></div>
 <div id="messages">
     <div style="font-size:140%; font-weight:bold; margin-left:0px;" id="title">Sample Receiver with Media Player Library for DASH/SS/HLS Streaming with DRMs</div>
     <div>App State: <span id="applicationState">-</span></div>
@@ -116,7 +116,7 @@
     <span>Segment Credentials: <span id="segmentCredentials">false</span></span>
     <span>License Credentials: <span id="licenseCredentials">false</span></span>
 </div>
-<video id="receiverVideoElement" style="height:95%; width:100%"></video>
+<video id="receiverVideoElement" style="height:95%; width:100%; position: absolute"></video>
 <div id="logo"></div>
 <div id="kdebug"></div>
 </body>

@@ -52,6 +52,8 @@
 		// Disable switch source callback
 		disableSwitchSourceCallback: false,
 
+		updateInterval: null,
+
 		// Flag specifying if a mobile device already played. If true - mobile device can autoPlay
 		mobilePlayed: false,
 		// All the native events per:
@@ -1035,7 +1037,7 @@
 				//Run initial update to get active video/audio/caption tracks
 				update();
 				//Validate status every 5 sec
-				setInterval(function () {
+				this.updateInterval = setInterval(function () {
 					update();
 				}, 5000);
 			}
@@ -1355,6 +1357,12 @@
 			} else {
 				this.log("seek target verified");
 				return waitForSeekTargetDeferred.resolve();
+			}
+		},
+		clean: function(){
+			if (this.updateInterval){
+				clearInterval(this.updateInterval);
+				this.updateInterval = null;
 			}
 		},
 		/**

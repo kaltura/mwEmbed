@@ -106,10 +106,6 @@ onload = function () {
 			customData = payload['value'];
 			setDebugMessage('customData', customData);
 		} else if (payload['type'] === 'load') {
-			mediaElement = document.getElementById('receiverVideoElement');
-			mediaElement.autoplay = false;
-			setMediaElementEvents(mediaElement);
-			mediaManager.setMediaElement(mediaElement);
 			setMediaManagerEvents();
 		} else if (payload['type'] === 'embed' && !playerInitialized) {
 			var publisherID = payload['publisherID'];
@@ -125,6 +121,22 @@ onload = function () {
 			}
 			mw.setConfig("chromecastReceiver", true);
 			mw.setConfig("Kaltura.ExcludedModules", "chromecast");
+			var fv = {
+				'controlBarContainer': {
+					'plugin': true,
+					"hover": true
+				},
+				"multiDrm": {
+					'plugin': false
+				},
+				"embedPlayerChromecastReceiver": {
+					'plugin': true
+				},
+				"chromecast": {
+					'plugin': false
+				}
+			};
+			fv = extend(fv, payload['flashVars']);
 			kWidget.embed({
 				"targetId": "kaltura_player",
 				"wid": "_" + publisherID,
@@ -133,34 +145,13 @@ onload = function () {
 					if (!playerInitialized){
 						playerInitialized = true;
 						var kdp = document.getElementById(playerId);
-						kdp.kBind("chromecastReceiverLoaded", function( video ){
-							while(video.attributes.length > 0){
-								video.removeAttribute(video.attributes[0].name);
-							}
-							mediaElement = video;// document.getElementById('vid');
-							mediaElement.autoplay = false;
-							setMediaElementEvents(mediaElement);
-							mediaManager.setMediaElement(mediaElement);
+						kdp.kBind("chromecastReceiverLoaded", function(){
 							setMediaManagerEvents();
 							messageBus.broadcast("readyForMedia");
 						});
 					}
 				},
-				"flashvars": {
-					'controlBarContainer': {
-						'plugin': true,
-						"hover": true
-					},
-					"multiDrm": {
-						'plugin': false
-					},
-					"embedPlayerChromecastReceiver": {
-						'plugin': true
-					},
-					"chromecast": {
-						'plugin': true
-					}
-				},
+				"flashvars": fv,
 				"cache_st": 1438601385,
 				"entry_id": entryID
 			});
@@ -667,6 +658,9 @@ function setMediaElementEvents(mediaElement) {
 
 	});
 	mediaElement.addEventListener('loadeddata', function (e) {
+		if (protocol === null){
+			return;
+		}
 		console.log('######### MEDIA ELEMENT DATA LOADED');
 		setDebugMessage('mediaElementState', 'Data Loaded');
 		messageBus.broadcast("mediaElement:Data Loaded");
@@ -821,6 +815,14 @@ function setDebugMessage(elementId, message) {
  * get media player state
  */
 function getPlayerState() {
-	var playerState = mediaPlayer.getState();
-	setDebugMessage('mediaPlayerState', 'underflow: ' + playerState['underflow']);
+	if (mediaPlayer){
+		var playerState = mediaPlayer.getState();
+		setDebugMessage('mediaPlayerState', 'underflow: ' + playerState['underflow']);
+	}
+}
+function extend(a, b){
+	for(var key in b)
+		if(b.hasOwnProperty(key))
+			a[key] = b[key];
+	return a;
 }
