@@ -162,6 +162,12 @@
 				this.hls.on(Hls.Events.MEDIA_ATTACHED, this.onMediaAttachedHandler);
 				this.onManifestParsedHandler = this.onManifestParsed.bind(this);
 				this.hls.on(Hls.Events.MANIFEST_PARSED, this.onManifestParsedHandler);
+				this.onAudioTracksUpdatedHandler = this.onAudioTracksUpdated.bind(this);
+				this.hls.on(Hls.Events.AUDIO_TRACKS_UPDATED, this.onAudioTracksUpdatedHandler);
+				this.onAudioTrackSwitchingHandler = this.onAudioTrackSwitching.bind(this);
+				this.hls.on(Hls.Events.AUDIO_TRACK_SWITCHING, this.onAudioTrackSwitchingHandler);
+				this.onAudioTrackSwitchedHandler = this.onAudioTrackSwitched.bind(this);
+				this.hls.on(Hls.Events.AUDIO_TRACK_SWITCHED, this.onAudioTrackSwitchedHandler);
 				this.onFragLoadingHandler = this.onFragLoading.bind(this);
 				this.hls.on(Hls.Events.FRAG_LOADING, this.onFragLoadingHandler);
 				this.onFragLoadedHandler = this.onFragLoaded.bind(this);
@@ -295,6 +301,50 @@
 			onManifestParsed: function (event, data) {
 				this.log("manifest loaded, found " + data.levels.length + " quality level");
 				this.addAbrFlavors(data.levels);
+			},
+			/**
+			 * Extract available audio tracks metadata from parsed manifest data
+			 * @param event
+             * @param data
+             */
+			onAudioTracksUpdated: function(event,data) {
+				var audioTracks = this.hls.audioTracks;
+				if (audioTracks && audioTracks.length > 0) {
+					var audioTrackData = {languages: []};
+					var audioTrackLangs = {};
+					$.each(audioTracks, function (index, audioTrack) {
+						if (audioTrackLangs[audioTrack.lang] === undefined) {
+							audioTrackLangs[audioTrack.lang] = 1;
+							audioTrackData.languages.push({
+								'kind': 'audioTrack',
+								'language': audioTrack.lang,
+								'srclang': audioTrack.lang,
+								'label': audioTrack.name,
+								'title': audioTrack.name,
+								'id': audioTrack.id,
+								'index': audioTrackData.languages.length
+							});
+						}
+					});
+					this.log(audioTracks.length + " audio tracks were found: " + JSON.stringify(audioTracks));
+					this.getPlayer().triggerHelper('audioTracksReceived', audioTrackData);
+				}
+			},
+			/**
+			 * Indicate audio track change request has been initiated
+			 * @param event
+             * @param data
+             */
+			onAudioTrackSwitching: function(event,data) {
+				this.log("switching audio track " + JSON.stringify(data));
+			},
+			/**
+			 * Indicate audio track request has ended
+			 * @param event
+             * @param data
+             */
+			onAudioTrackSwitched: function(event,data) {
+				this.log("switched audio track " + JSON.stringify(data));
 			},
 			/**
 			 * Trigger source switch start handler
@@ -490,6 +540,7 @@
 				this.orig_backToLive = this.getPlayer().backToLive;
 				this.orig_switchSrc = this.getPlayer().switchSrc;
 				this.orig_playerSwitchSource = this.getPlayer().playerSwitchSource;
+				this.orig_switchAudioTrack = this.getPlayer().switchAudioTrack;
 				this.orig_load = this.getPlayer().load;
 				this.orig_onerror = this.getPlayer()._onerror;
 				this.orig_ontimeupdate = this.getPlayer()._ontimeupdate;
@@ -502,6 +553,7 @@
 				this.getPlayer().backToLive = this.backToLive.bind(this);
 				this.getPlayer().switchSrc = this.switchSrc.bind(this);
 				this.getPlayer().playerSwitchSource = this.playerSwitchSource.bind(this);
+				this.getPlayer().switchAudioTrack = this.switchAudioTrack.bind(this);
 				this.getPlayer().load = this.load.bind(this);
 				this.getPlayer()._onerror = this._onerror.bind(this);
 				this.getPlayer()._ontimeupdate = this._ontimeupdate.bind(this);
@@ -515,6 +567,7 @@
 				this.getPlayer().backToLive = this.orig_backToLive;
 				this.getPlayer().switchSrc = this.orig_switchSrc;
 				this.getPlayer().playerSwitchSource = this.orig_playerSwitchSource;
+				this.getPlayer().switchAudioTrack = this.orig_switchAudioTrack;
 				this.getPlayer().load = this.orig_load;
 				this.getPlayer()._onerror = this.orig_onerror;
 				this.getPlayer()._ontimeupdate = this.orig_ontimeupdate;
@@ -551,6 +604,16 @@
 					} else { // back to live - restore the default as it configured in the defaultConfig
 						this.hls.config.liveMaxLatencyDurationCount = this.defaultLiveMaxLatencyDurationCount;
 					}
+				}
+			},
+
+			/**
+			 * Override player method for switching audio track tracks
+			 */
+			switchAudioTrack: function (index) {
+				if (this.loaded && (index !== undefined)) {
+					this.hls.audioTrack = index;
+					this.log("onSwitchAudioTrack switch to " + JSON.stringify(this.hls.audioTracks[index]));
 				}
 			},
 
