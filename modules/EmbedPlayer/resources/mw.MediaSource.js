@@ -72,10 +72,12 @@
 		'assetid',
 		'bandwidth',
 		'srclang',
-		'data-custom_data',
-		'data-signature',
-		'data-contentId',
-		'data-flavors'
+		//DRM info
+		'custom_data',
+		'signature',
+		'contentId',
+		'flavors',
+        'fpsCertificate'
 
 	]);
 
@@ -455,6 +457,9 @@
 					break;
 				case 'srt':
 					return 'text/x-srt';
+					break;
+				case 'vtt':
+					return 'text/vtt';
 					break;
 				case 'flv':
 					return 'video/x-flv';

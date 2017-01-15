@@ -1,53 +1,52 @@
 (function ( mw, $ ) {
 	"use strict";
-	mw.dualScreenControlBar = function (settings){
-		this.$controlBar = null;
-		this.embedPlayer = settings.embedPlayer;
-		this.templatePath = settings.templatePath;
-		this.menuFadeout = settings.menuFadeout;
-		this.cssClass = settings.cssClass;
-		this.controlBarComponents = {
+	mw.dualScreen = mw.dualScreen || {};
+
+	mw.dualScreen.dualScreenControlBar = mw.KBaseComponent.extend({
+		defaultConfig: {
+			'templatePath': 'dualScreenControlBar',
+			'menuFadeout': 5000
+		},
+		"controlBarComponents": {
 			sideBySide: {
 				id: 'sideBySide',
-				title: 'Side By Side',
+				title: gM("ks-DUAL-SCREEN-SBS"),
 				event: "SbS"
 			},
 			singleView: {
 				id: 'singleView',
-				title: 'Single View',
+				title: gM("ks-DUAL-SCREEN-HIDE"),
 				event: "hide"
 			},
 			pip: {
 				id: 'pip',
-				title: 'Picture In Picture',
+				title: gM("ks-DUAL-SCREEN-PIP"),
 				event: "PiP"
 			},
 			switchView: {
 				id: 'switchView',
-				title: 'Toggle View',
+				title: gM("ks-DUAL-SCREEN-SWITCH"),
 				event: "switchView"
 			}
-		};
-		this.disabled = false;
-		this.getComponent();
-		this.addBindings();
-	};
+		},
+		disabled: false,
 
-	mw.dualScreenControlBar.prototype = {
-		bind: function(name, handler){
-			this.embedPlayer.bindHelper(name, handler);
+		nativeAppTooltip: "Switching content<br/>on current view<br/>is not yet<br/>supported.<br/><br/>Try single view",
+		setup: function() {
+			this.postFix = "." + this.pluginName;
+			this.addBindings();
 		},
 		getComponent: function ( ) {
 			if ( !this.$controlBar ) {
-				var rawHTML = window.kalturaIframePackageData.templates[ this.templatePath ];
+				var rawHTML = window.kalturaIframePackageData.templates[ this.getConfig("templatePath")];
 				var transformedHTML = mw.util.tmpl( rawHTML );
 				transformedHTML = transformedHTML({buttons: this.controlBarComponents});
 				this.$controlBar = $( '<div />' )
-					.addClass( 'controlBar componentOff' + this.cssClass )
+					.addClass( 'controlBar componentOff dualScreen' + this.getCssClass() )
 					.append(transformedHTML);
-				this.embedPlayer.getInterface().append( this.$controlBar );
 				//If top bar exist then position controlBar under it
-				if (this.embedPlayer.getTopBarContainer().length) {
+				var noControls = this.embedPlayer.isMobileSkin() ? 2 : 0;
+				if (this.embedPlayer.getTopBarContainer().length && this.embedPlayer.getTopBarContainer().children().length !== noControls) {
 					var height = this.embedPlayer.getTopBarContainer().height();
 					this.$controlBar.css("top", height + "px");
 				}
@@ -57,81 +56,117 @@
 			}
 			return this.$controlBar;
 		},
-
+		getControlBarDropShadow: function() {
+			var _this = this;
+			if (!this.$controlBarDropShadow) {
+				this.$controlBarDropShadow = $("<div class='dualScreen controlBarShadow componentAnimation'></div>")
+					.addClass('componentOff')
+					.on("click mouseover mousemove mouseout touchstart touchend", function (e) {
+						_this.embedPlayer.triggerHelper(e);
+				});
+			}
+			return this.$controlBarDropShadow;
+		},
 		addBindings: function () {
 			//Set control bar visiblity handlers
 			var _this = this;
+			//TODO:hook these events to layoutbuilder events
 			this.embedPlayer.getInterface()
-				.on( 'mousemove touchstart', function(){
+				.on( 'mousemove' + this.postFix +' touchstart' + this.postFix, function(){
 					_this.show();
 				})
-				.on( 'mouseleave', function(){
+				.on( 'mouseleave' + this.postFix, function(){
 					if (!mw.isMobileDevice()){
 						_this.hide();
 					}
 				});
 
-			this.bind("dualScreenControlsHide", function(){
-				_this.hide();
-			});
-			this.bind("dualScreenControlsShow", function(){
-				_this.show();
-			});
-			this.bind("dualScreenControlsDisable", function(){
-				_this.disable();
-			});
-			this.bind("dualScreenControlsEnable", function(){
-				_this.enable();
-			});
-
 			//add drop shadow containers for control bar
-			this.embedPlayer.getVideoHolder()
-				.prepend($("<div class='dualScreen controlBarShadow componentAnimation'></div>")
-					.addClass('componentOff')
-					.on("click mouseover mousemove mouseout touchstart touchend", function(e){
-						_this.embedPlayer.triggerHelper(e);
-					})
-			);
+			this.embedPlayer.getVideoHolder().prepend(this.getControlBarDropShadow());
 
 			//Cache buttons
 			var buttons = _this.getComponent().find( "span" );
 			var switchBtn = buttons.filter('[data-type="switch"]');
 			//Attach control bar action handlers
 			_this.getComponent()
-				.on( 'click touchstart', 'li > span', function (e) {
+				.on( 'click' + this.postFix + ' touchstart' + this.postFix, 'li > span', function (e) {
 					e.stopPropagation();
 					e.preventDefault();
+
+					_this.changeButtonsStyles(this.id);
+
 					var btn = _this.controlBarComponents[this.id];
-					var obj = $(this);
-					//Change state button disabled state
-					if (obj.data("type") === "state") {
-						buttons.removeClass( "disabled" );
-						obj.addClass( "disabled" );
-					}
-					if (mw.isNativeApp()){
-						if (this.id === _this.controlBarComponents.pip.id){
-							switchBtn
-								.addClass("disabled")
-								.tooltip( "option", "content", nativeAppTooltip);
-						} else if(this.id === _this.controlBarComponents.singleView.id){
-							switchBtn.tooltip( "option", "content", _this.controlBarComponents.switchView.title);
-						}
-					}
 					if (btn && btn.event){
-						_this.embedPlayer.triggerHelper("dualScreenStateChange", btn.event);
+						_this.embedPlayer.triggerHelper("dualScreenStateChange", {action : btn.event, invoker : 'dualScreenControlBar'});
 					}
+
 					return false;
 				} );
 
 			if (mw.isNativeApp()){
-				var nativeAppTooltip = "Switching content<br/>on current view<br/>is not yet<br/>supported.<br/><br/>Try single view";
-				switchBtn.addClass("disabled" )
-					.attr("title", nativeAppTooltip );
+				switchBtn.addClass("disabled" ).attr("title", _this.nativeAppTooltip );
 			}
 
 			//Set tooltips
 			buttons.attr('data-show-tooltip', true);
 			this.embedPlayer.layoutBuilder.setupTooltip(buttons, "arrowTop");
+
+			// listen to state change and update buttons style accordingly
+			_this.bind( 'dualScreenStateChange', function(e, state){
+
+				var eventToCompare;
+				var invoker;
+				if (typeof state === 'object')
+				{
+					eventToCompare = state.action;
+					invoker = state.invoker;
+				}else {
+					eventToCompare = state;
+				}
+
+				if (invoker === 'dualScreenControlBar')
+				{
+					// the state change was invoked by this component so no need to handle that notification
+					return;
+				}
+
+				for(var prop in _this.controlBarComponents)
+				{
+					var item = _this.controlBarComponents[prop];
+					if (item.event === eventToCompare)
+					{
+						_this.changeButtonsStyles(prop);
+					}
+				}
+
+			});
+		},
+		/**
+		 * Changes the style of the buttons according to the selected view mode.
+		 * This affect they layout only and doesn't change the player state.
+		 * @param activeButtonId
+         */
+		changeButtonsStyles : function(activeButtonId)
+		{
+			var _this = this;
+			var buttons = _this.getComponent().find( "span" );
+			var switchBtn = buttons.filter('[data-type="switch"]');
+
+			var obj = $(_this.getComponent().find('#' + activeButtonId)[0]);
+			//Change state button disabled state
+			if (obj.data("type") === "state") {
+				buttons.removeClass( "disabled" );
+				obj.addClass( "disabled" );
+			}
+			if (mw.isNativeApp()){
+				if (activeButtonId=== _this.controlBarComponents.pip.id){
+					switchBtn
+						.addClass("disabled")
+						.tooltip( "option", "content", _this.nativeAppTooltip);
+				} else if(activeButtonId === _this.controlBarComponents.singleView.id){
+					switchBtn.tooltip( "option", "content", _this.controlBarComponents.switchView.title);
+				}
+			}
 		},
 		disable: function () {
 			clearTimeout(this.getComponent().handleTouchTimeoutId);
@@ -164,8 +199,31 @@
 				}
 				this.getComponent().handleTouchTimeoutId = setTimeout( function () {
 					_this.hide();
-				}, this.menuFadeout );
+				}, this.getConfig("menuFadeout"));
 			}
+		},
+		set: function(id){
+			if (id) {
+				var component = this.getComponent();
+				var buttons = $("span[data-type=state]", component);
+				buttons.not("#" + id).removeClass("disabled");
+				buttons.filter("#" + id).addClass("disabled");
+				if (mw.isNativeApp()) {
+					var switchBtn = $('span[data-type="switch"]', component);
+					switchBtn
+						.addClass("disabled")
+						.tooltip("option", "content", this.nativeAppTooltip);
+				}
+			}
+		},
+		destroy: function() {
+			this.embedPlayer.unbindHelper(this.postFix);
+			this.getComponent().off(this.postFix);
+			this.embedPlayer.getInterface().off(this.postFix);
+			this.getComponent().remove();
+			this.getControlBarDropShadow().remove();
+			this.$controlBar = null;
+			this.$controlBarDropShadow = null;
 		}
-	};
+	});
 })( window.mw, window.jQuery );

@@ -9,10 +9,9 @@
 </head>
 <body>
 <h2> MediaGo Skin </h2>
-
-<div id="kaltura_player" style="width:800px;height:440px;"></div>
+<div id="kaltura_player" style="width:800px;height:450px;"></div>
 <script>
-	kWidget.featureConfig({
+	kWidget.embed({
 		'targetId': 'kaltura_player',
 		'wid': '_243342',
 		'uiconf_id' : '12905712',
@@ -36,7 +35,8 @@
 			},
 			"volumeControl":{
 				"layout": "vertical",
-				"order": 40
+                "align": "right",
+				"order": 52
 			},
 			"durationLabel":{
 				"prefix":" "
@@ -44,7 +44,73 @@
 			"loadingSpinner":{
 				"customSpinner": true,
 				"className": "ottSpinner"
+			},
+			'closedCaptions': {
+				'layout': 'ontop',
+				'useCookie': true,
+				'defaultLanguageKey': 'en',
+				'whiteListLanguagesCodes': 'en,es,fr,jp',
+				'fontsize': 12,
+				'bg' : '0x335544',
+				'fontFamily' : 'Arial',
+				'fontColor' : '0xFFFFFF',
+				'useGlow' : 'false',
+				'glowBlur': 4,
+				'glowColor': '0x133693',
+				'showEmbeddedCaptions': false,
+				'visible': false,
+				"plugin":true
+			},
+			'audioSelector': {
+				'plugin':true
+			},
+			'closedCaptions': {
+				'layout': 'ontop',
+				'useCookie': true,
+				'defaultLanguageKey': 'en',
+				'whiteListLanguagesCodes': 'en,es,fr,jp',
+				'fontsize': 12,
+				'bg' : '0x335544',
+				'fontFamily' : 'Arial',
+				'fontColor' : '0xFFFFFF',
+				'useGlow' : 'false',
+				'glowBlur': 4,
+				'glowColor': '0x133693',
+				'showEmbeddedCaptions': false,
+				'visible': false,
+				"plugin":true
+			},
+			'smartContainer': {
+				'plugin': true,
+				'tooltip': 'Language Settings',
+				'iconClass': 'icon-globe',
+				'align': 'right',
+				"order": 53,
+				'config':{
+					'plugins':[
+						{
+							'pluginName':'closedCaptions',
+							'properties':[
+								{
+									'property':'captions',
+									'label': 'Language:',
+									'type': 'enum'
+								}
+							]
+						},{
+							'pluginName':'audioSelector',
+							'properties':[
+								{
+									'property':'sources',
+									'label': 'Audio:',
+									'type': 'enum'
+								}
+							]
+						}
+					]
+				}
 			}
+
 		}
 	});
 </script>

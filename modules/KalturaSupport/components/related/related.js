@@ -7,17 +7,22 @@
 			order: 4,
 			align: "right",
 			tooltip: gM('mwe-embedplayer-related'),
+			title: gM('mwe-embedplayer-related'),
+			smartContainer: 'morePlugins',
+			smartContainerCloseEvent: 'hideScreen',
 			showTooltip: true,
 			itemsLimit: 12,
 			displayOnPlaybackDone: true,
 			autoContinueEnabled: true,
 			autoContinueTime: null,
+			sendContextWithPlaylist: false,
 			templatePath: 'components/related/related.tmpl.html',
 			playlistId: null,
 			formatCountdown : false,
 			clickUrl : null,
 			enableAccessControlExclusion:false,
-			storeSession: false
+			storeSession: false,
+			openInNewTab: false
 		},
 		viewedEntries: [],
 		iconBtnClass: 'icon-related',
@@ -56,7 +61,6 @@
 						$(this).width("100%");
 						$(this).height("100%");
 					});
-					_this.resizeThumbs();
 				},200);
 
 			});
@@ -68,7 +72,6 @@
 						$(this).width("100%");
 						$(this).height("100%");
 					});
-					_this.resizeThumbs();
 				},200);
 			});
 
@@ -77,8 +80,9 @@
 					if ( _this.error ) {
 						return;
 					}
-					_this.showScreen();
+					_this.showScreen(true);
 					if( _this.getConfig('autoContinueEnabled') && _this.getConfig('autoContinueTime') ){
+						_this.embedPlayer.playlist = true;
 						_this.startTimer();
 					}
 				});
@@ -87,10 +91,25 @@
 			this.bind('replayEvent preSequence', function(){
 				_this.stopTimer();
 			});
+
+			this.bind('preShowScreen', function (event, screenName) {
+				if ( screenName === "related" ){
+					_this.embedPlayer.disablePlayControls(['playPauseBtn']);
+				}
+			});
+			this.bind('preHideScreen', function (event, screenName) {
+				if ( screenName === "related" ){
+					_this.embedPlayer.enablePlayControls();
+					_this.embedPlayer.triggerHelper("showLargePlayBtn");
+				}
+			});
 		},
 
-		showScreen: function(){
+		showScreen: function(auto){
 			var _this = this;
+			if ( auto !== true){
+				this.embedPlayer.triggerHelper("relatedOpen");
+			}
 			this._super(); // this is an override of showScreen in mw.KBaseScreen.js - call super
 			if (this.numOfEntries > 0 && this.loadedThumbnails < this.numOfEntries) { // related data was loaded but thumbnails were not loaded yet
 				$('.item-inner').each(function () {
@@ -126,8 +145,8 @@
 					if (heightOffset > 0) {
 						$img.css("margin-top", heightOffset * (-1) + 'px');
 					} else {
-						$img.width($img.width() * divHeight / $img.height());
 						$img.height(divHeight);
+						$img.width($img.width() * divHeight / $img.height());
 						widthOffset = ($img.width() - divWidth) / 2;
 						$img.css("margin-left", widthOffset * (-1) + 'px');
 					}
@@ -136,8 +155,8 @@
 					if (widthOffset > 0) {
 						$img.css("margin-left", widthOffset * (-1) + 'px');
 					} else {
-						$img.height($img.height() * divWidth / $img.width());
 						$img.width(divWidth);
+						$img.height($img.height() * divWidth / $img.width());
 						heightOffset = ($img.height() - divHeight) / 2;
 						$img.css("margin-top", heightOffset * (-1) + 'px');
 					}
@@ -160,7 +179,7 @@
 					_this.stopTimer();
 					// Make sure we change media only if related is visible and we have next item
 					if( _this.isScreenVisible() && _this.templateData && _this.templateData.nextItem ){
-						_this.changeMedia( null, {entryId: _this.templateData.nextItem.id} );
+						_this.changeMedia( null, {entryId: _this.templateData.nextItem.id},true );
 					}
 				}
 			};
@@ -215,7 +234,7 @@
 		updateTemplateData: function( data ){
 			this.numOfEntries = data.length;
 			// make sure entries that were already viewed are the last in the data array
-			if ( this.viewedEntries.length <= data.length ){
+			if ( this.viewedEntries.length < data.length ){
 				for (var i = 0; i < this.viewedEntries.length; i++){
 					for (var j = 0; j < data.length; j++){
 						if (data[j].id === this.viewedEntries[i]){ // entry was already viewed - move it to the last place in the data array
@@ -237,7 +256,7 @@
 			var _this = this;
 			// check for valid playlist id:
 			if( this.getConfig( 'playlistId' ) ){
-				return this.getEntriesFromPlaylistId( this.getConfig( 'playlistId' ), callback);
+				return this.getEntriesFromPlaylistId( this.getConfig( 'playlistId' ), callback , this.getConfig( 'sendContextWithPlaylist' ) );
 			}
 			// check for entry list:
 			if( this.getConfig( 'entryList' ) ){
@@ -340,13 +359,14 @@
 			}
 		},
 
-		changeMedia: function( e, data ){
+		changeMedia: function( e, data, auto ){
 			this.stopTimer();
 			var _this = this;
 			// update the selected entry:
 			if( data && data.entryId ){
 				this.setConfig('selectedEntryId', data.entryId );
 			}
+			this.updateViewedEntries(data.entryId);
 			//look for the entry in case this is a click
 			if(this.getConfig('clickUrl')){
 				if(this.templateData.nextItem.id && this.templateData.nextItem.id == data.entryId ){
@@ -363,23 +383,28 @@
 					}
 				}
 			}
-
+			data["autoSelected"] = (auto === true);
 			this.getPlayer().sendNotification('relatedVideoSelect', data);
 
-			if(this.getConfig('clickUrl')){
-				this.updateViewedEntries(data.id);
+			if( this.getConfig('clickUrl') ){
+
 				try {
-					window.parent.location.href = this.getConfig('clickUrl');
+					if( this.getConfig( 'openInNewTab' ) === true ) {
+						window.open(this.getConfig('clickUrl'), '_blank');
+					}
+					else {
+						window.parent.location.href = this.getConfig('clickUrl');
+					}
 					return;
 				}catch(err){
 					window.open(this.getConfig('clickUrl'));
 					return;
 				}
+
 			}
 
 			this.getPlayer().sendNotification('changeMedia', data);
 			this.bind('onChangeMediaDone', function(){
-				_this.updateViewedEntries(data.entryId);
 				if (_this.getPlayer().canAutoPlay()) {
 					_this.getPlayer().play();
 				}
@@ -406,7 +431,7 @@
 
 			if( property == 'timeRemaining' ){
 				if( this.getConfig('formatCountdown')){
-					var timeFormat = mw.KDPMapping.prototype.formatFunctions.timeFormat;
+					var timeFormat = mw.util.formaters().get('timeFormat');
 					this.getScreen().then(function(screen){
 						screen.find('.remaining').html(timeFormat(value));
 					});
@@ -473,6 +498,9 @@
 				});
 			}
 			return defer;
+		},
+		closeScreen: function(){
+			this.hideScreen();
 		}
 	}));
 

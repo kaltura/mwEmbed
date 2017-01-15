@@ -57,10 +57,28 @@ kWidget.api.prototype = {
 	getKs: function(){
 		return this.ks;
 	},
+	forceKs:function(wid,callback,errorCallback){
+		if( this.getKs() ){
+			callback( this.getKs() );
+			return true;
+		}
+		var _this = this;
+		// Add the Kaltura session ( if not already set )
+		var ksParam = {
+			'action' : 'startwidgetsession',
+			'widgetId': wid
+		};
+		// add in the base parameters:
+		var param = kWidget.extend( { 'service' : 'session' }, this.baseParam, ksParam );
+		this.doRequest( param, function( data ){
+			_this.ks = data.ks;
+			callback( _this.ks );
+		},null,errorCallback);
+	},
 	/**
 	 * Do an api request and get data in callback
 	 */
-	doRequest: function ( requestObject, callback,skipKS, errorCallback  ){
+	doRequest: function ( requestObject, callback,skipKS, errorCallback, withProxyData){
 		var _this = this;
 		var param = {};
 		var globalCBName = null;
@@ -107,7 +125,8 @@ kWidget.api.prototype = {
 			clearTimeout(timeoutError);
 			// check if the base param was a session
             data = data || [];
-            if( data.length > 1 && param[ '1:service' ] == 'session' ){
+            if( data.length > 1 && param[ '1:service' ] == 'session' && !withProxyData){ // in case of proxyData (OTT) we request a session but KS doesn't exist
+																						 // so the response doesn't contain it so don't handle
 				//Set the returned ks
 	            _this.setKs(data[0].ks);
 	            // if original request was not a multirequest then directly return the data object
@@ -130,7 +149,7 @@ kWidget.api.prototype = {
 		// Access-Control-Allow-Origin:* most browsers support this. 
 		// ( old browsers with large api payloads are not supported )
 		var userAgent = navigator.userAgent.toLowerCase();
-		var forceJSONP = ( userAgent.indexOf('msie 8') !== -1 || userAgent.indexOf('msie 9') !== -1 || userAgent.indexOf('msie 10') !== -1 );
+		var forceJSONP = document.documentMode && document.documentMode <= 10;
 		try {
 			if ( forceJSONP ){
 				throw "forceJSONP";
@@ -179,9 +198,7 @@ kWidget.api.prototype = {
 		var response = data;
 		try {
 			response = JSON.parse( data );
-		}catch(e){
-			console.log("Error parsing JSON");
-		}
+		}catch(e){}
 		return response;
 	},
 	xhrGet: function( url, param, callback ){
@@ -281,6 +298,9 @@ kWidget.api.prototype = {
 		}
 		if( serviceType && serviceType == 'liveStats' &&  mw.getConfig( 'Kaltura.LiveStatsServiceUrl' ) ) {
 			serviceUrl = mw.getConfig( 'Kaltura.LiveStatsServiceUrl' );
+		}
+		if( serviceType && serviceType == 'analytics' &&  mw.getConfig( 'Kaltura.AnalyticsUrl' ) ) {
+			serviceUrl = mw.getConfig( 'Kaltura.AnalyticsUrl' );
 		}
 		return serviceUrl + mw.getConfig( 'Kaltura.ServiceBase' ) + serviceType;
 	},

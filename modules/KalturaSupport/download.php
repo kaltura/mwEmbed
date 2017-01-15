@@ -74,7 +74,7 @@ class downloadEntry {
 				$filename = $flavorId . $extension;
 			}
 
-			if( $mediaType ==! 2 ){
+			if( $mediaType !== 2 ){
 				$options = new KalturaFlavorAssetUrlOptions();
 				$options->fileName = $filename;
 
@@ -288,7 +288,7 @@ class downloadEntry {
 		if( $kResultObject->request->getServiceConfig( 'UseManifestUrls' ) ){
 			foreach($this->sources as & $source ){
 				if( isset( $source['src'] )){
-					$source['src'] .= '?ks=' . $kResultObject->client->getKS() . '&referrer=' . $this->getReferer();
+					$source['src'] .= '?ks=' . $kResultObject->client->getKS() . '&referrer=' . $this->getReferer().'&playSessionId='.$this->getPlaySession();
 				}
 			}
 		}
@@ -307,6 +307,11 @@ class downloadEntry {
 			return $_GET['referrer'];
 		} else {
 			return base64_encode( $this->getResultObject()->request->getReferer() );
+		}
+	}
+	private function getPlaySession(){
+		if( isset($_GET['playSessionId']) ) {
+			return $_GET['playSessionId'];
 		}
 	}
 	public function getSourceForUserAgent(){
@@ -431,6 +436,9 @@ class downloadEntry {
 		if( isset($_GET['flavorID']) && $_GET['flavorID'] != null){
 			$flavorID = $_GET['flavorID'];
 		}
+		if( isset($_GET['flavorParamsId'] ) && $_GET['flavorParamsId'] != null ){
+			$flavorParamsId = $_GET['flavorParamsId'];
+		}
 
 		$src = false;
 		$kResultObject = $this->getResultObject();
@@ -443,15 +451,25 @@ class downloadEntry {
 			// ENUM mapping here: https://www.kaltura.com/api_v3/testmeDoc/index.php?object=KalturaMediaType
 			return $resultObject['meta']->downloadUrl . '/a.jpg' . '?ks=' . $kResultObject->client->getKS() . '&referrer=' . $this->getReferer();
 		}
-
-		if ( isset( $flavorID ) ) {
+		
+		
+		if( isset( $flavorParamsId) ){
+			foreach( $resultObject['contextData']->flavorAssets as $source ){
+				if( isset($source->flavorParamsId) && $source->flavorParamsId == $flavorParamsId){
+					$src = $this->getSourceUrl($kResultObject, $resultObject, $source);
+				}
+			}
+		} 
+		
+		if ( isset( $flavorID ) && !$src ) {
 			// flavor ID overrides preferred bitrate so look for it first
 			foreach( $resultObject['contextData']->flavorAssets as $source ){
 				if( isset($source->id) && $source->id == $flavorID){
 					$src = $this->getSourceUrl($kResultObject, $resultObject, $source);
 				}
 			}
-		} else if ( isset( $preferredBitrate ) ) {
+		} 
+		if ( isset( $preferredBitrate ) && !$src ) {
 			// if the user specified 0 - return the source
 			if ($preferredBitrate == 0){
 				foreach( $resultObject['contextData']->flavorAssets as $source ){

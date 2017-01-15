@@ -53,8 +53,8 @@
 			receiver.on('getCurrentTime', function( callback ){
 				callback( player.currentTime );
 			})
-			receiver.on('setLoop', function(){
-				player.loop = true;
+			receiver.on('setLoop', function( value ){
+				player.loop = value
 			});
 			receiver.on('getLoop', function( callback ){
 				callback( player.loop );
@@ -77,7 +77,8 @@
 					'duration': player.duration
 				});
 			});
-			this.bind('onEndedDone', function(){
+			// use "postEnded" not onEndDone, because when loop is active onEndDone is not triggered.
+			this.bind('postEnded', function(){
 				receiver.emit('ended');
 			});
 			this.bind('seeked', function(){

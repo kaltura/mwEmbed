@@ -12,11 +12,13 @@
  * We can't cleanly store these values per library since player library is sometimes
  * loaded post player detection
  */
+
+
 //Native Mobile player
-var nativeComponentPlayerVideo = new mw.MediaPlayer( 'nativeComponentPlayer', ['video/h264', 'video/mp4', 'application/vnd.apple.mpegurl', 'video/wvm'], 'NativeComponent' );
+var nativeComponentPlayerVideo = new mw.MediaPlayer( 'nativeComponentPlayer', window.kNativeSdk && window.kNativeSdk.allFormats, 'NativeComponent' );
 
 // Flash based players:
-var kplayer = new mw.MediaPlayer('kplayer', ['video/live', 'video/kontiki', 'video/wvm', 'video/x-flv', 'video/h264', 'video/mp4', 'audio/mpeg', 'application/x-shockwave-flash', 'application/vnd.apple.mpegurl'], 'Kplayer');
+var kplayer = new mw.MediaPlayer('kplayer', ['video/live', 'video/kontiki', 'video/x-flv', 'video/h264', 'video/mp4', 'audio/mpeg', 'application/x-shockwave-flash', 'application/vnd.apple.mpegurl'], 'Kplayer');
 // Silverlight
 var splayer = new mw.MediaPlayer('splayer', ['video/playreadySmooth', 'video/ism', 'video/multicast', 'video/h264', 'video/mp4'], 'Silverlight');
 
@@ -27,7 +29,6 @@ var appleVdnPlayer = new mw.MediaPlayer( 'appleVdn', ['application/vnd.apple.mpe
 var wvmPlayer = new mw.MediaPlayer( 'wvmNative', ['video/wvm'], 'Native');
 var mp3NativePlayer = new mw.MediaPlayer( 'mp3Native', ['audio/mpeg', 'audio/mp3'], 'Native' );
 var webmNativePlayer = new mw.MediaPlayer( 'webmNative', ['video/webm'], 'Native' );
-var chromecastPlayer = new mw.MediaPlayer( 'chromecast', ['video/mp4'], 'Chromecast' );
 
 // Image Overlay player ( extends native )
 var imageOverlayPlayer = new mw.MediaPlayer( 'imageOverlay', ['image/jpeg', 'image/png'], 'ImageOverlay' );
@@ -71,6 +72,10 @@ mw.EmbedTypes = {
 
 	getNativeComponentPlayerVideo: function(){
 		return nativeComponentPlayerVideo;
+	},
+
+	getNativeImageOverlayPlayer: function(){
+		return imageOverlayPlayer;
 	},
 
 	/**

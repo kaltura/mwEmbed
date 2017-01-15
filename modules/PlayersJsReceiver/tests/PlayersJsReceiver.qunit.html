@@ -18,12 +18,13 @@
 	<meta name="twitter:image" content="https://cdnsecakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_sf5ovm7u/version/100003/width/400">
 	<meta name="twitter:player" content="https://cdnapisec.kaltura.com/p/243342/sp/24334200/embedIframeJs/uiconf_id/28685261/partner_id/243342?iframeembed=true&playerId=kaltura_player&entry_id=1_sf5ovm7u">
 	
-
 </head>
 <body>
 	<h2> Player.js iframe receiver </h2>
-	<iframe id="kaltura_player" src="../../../mwEmbedFrame.php/p/243342/uiconf_id/28685261/entry_id/1_sf5ovm7u?wid=_243342&iframeembed=true&playerId=kaltura_player&entry_id=1_sf5ovm7u&flashvars[autoPlay]=false"	
-	style="width:600px;height:374px;border:none;"></iframe> <br>
+	<iframe id="kaltura_player" src="../../../mwEmbedFrame.php/p/243342/uiconf_id/28685261/entry_id/1_sf5ovm7u?wid=_243342&iframeembed=true&playerId=kaltura_player&entry_id=1_sf5ovm7u
+	&flashvars[autoPlay]=false
+	&flashvars[playersJsReceiver.plugin]=true"
+	style="width:600px;height:340px;border:none;"></iframe> <br>
 	
 	<div id="kdoc-more-desc">Demonstrates iFrame players.js API. 
 	This Receiver API is enabled default to maximize compatibility with players.js / embed.ly embeds.
@@ -36,7 +37,7 @@
 	var player = new playerjs.Player( document.getElementById('kaltura_player') );
 	var supportedMethods = [ 'play', 'pause', 'getPaused', 'mute', 
 		'unmute', 'getMuted', 'setVolume .5', 'getVolume', 'getDuration', 
-		'setCurrentTime 10s', 'getCurrentTime', 'setLoop', 'getLoop'
+		'setCurrentTime 10s', 'getCurrentTime', 'setLoop true', 'getLoop'
 	];
 	var supportedEvents = ['progress', 'timeupdate', 'play', 'pause', 'ended', 'seeked', 'error'];
 	$('#methods').text('Loading ...');
@@ -52,6 +53,10 @@
 					}
 					if( method == 'setVolume .5'){
 						player.setVolume('.5')
+						return;
+					}
+					if( method == 'setLoop true'){
+						player.setLoop( true );
 						return;
 					}
 					player[method](function(value){

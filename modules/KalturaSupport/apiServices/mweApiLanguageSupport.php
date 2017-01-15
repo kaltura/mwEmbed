@@ -11,11 +11,11 @@ class mweLanguageSupport {
 		// get the list of language names
 		require_once( dirname( __FILE__ ) . '/../../../includes/languages/Names.php' );
 		// get all the message supported in embedPlayer
-		include( dirname( __FILE__ ) . '/../../EmbedPlayer/EmbedPlayer.i18n.php' );
+		$messages = json_decode( file_get_contents(dirname( __FILE__ ) .'/../../EmbedPlayer/EmbedPlayer.i18n.json'), TRUE );
 		$embedPlayerMessages = $messages;
 		
 		// get all the messages supported in KalturaSupport:
-		include( dirname( __FILE__ ) . '/../KalturaSupport.i18n.php' );
+		$messages = json_decode( file_get_contents(dirname( __FILE__ ) .'/../KalturaSupport.i18n.json'), TRUE );
 		$kMessages = $messages;
 
 		// sort language keys A-Z: 
@@ -42,10 +42,10 @@ class mweLanguageSupport {
 class mweLanguageKeys {
 	function run(){
 		// get all the message supported in embedPlayer
-		include( dirname( __FILE__ ) . '/../../EmbedPlayer/EmbedPlayer.i18n.php' );
+		$messages = json_decode( file_get_contents(dirname( __FILE__ ) .'/../../EmbedPlayer/EmbedPlayer.i18n.json'), TRUE );
 		$embedPlayerMessages = $messages['en'];
 		// get all the messages supported in KalturaSupport:
-        include( dirname( __FILE__ ) . '/../KalturaSupport.i18n.php' );
+		$messages = json_decode( file_get_contents(dirname( __FILE__ ) .'/../KalturaSupport.i18n.json'), TRUE );
         $kMessages = $messages['en'];
         echo json_encode(array_merge($embedPlayerMessages, $kMessages));
 	}

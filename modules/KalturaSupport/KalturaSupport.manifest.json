@@ -46,6 +46,11 @@
                 "initvalue": true,
                 "type": "boolean"
             },
+            "enableOptionsMenu": {
+                "doc": "Should captions styling menu be enabled.",
+                "initvalue": false,
+                "type": "boolean"
+            },
             "useCookie": {
                 "doc": "Should cookies be used to store user language.",
                 "type": "boolean"
@@ -308,6 +313,11 @@
                 "type": "boolean",
                 "initvalue": true
             },
+	        "includeHeader": {
+                "doc": "Display playlist header, including title, number of clips and playlist controls.",
+                "type": "boolean",
+                "initvalue": true
+            },
             "autoContinue": {
                 "doc": "If the playlist should autocontinue.",
                 "type": "boolean"
@@ -437,13 +447,6 @@
                 "type": "boolean",
                 "initvalue": true
             },
-            "0": {
-                "doc": "Preferred flavor bitrate",
-                "label": "Preferred flavor bitrate",
-                "type": "number",
-                "initvalue": 1600,
-                "model": "config.uiVars.mediaProxy.preferedFlavorBR"
-            },
             "displayMode": {
                 "doc": "Configure the display mode to set the type of information to display in the source selector's menu: size, bit-rate or both.",
                 "type": "enum",
@@ -467,6 +470,16 @@
                     "value": "sizebitrate"
                   }
                 ]
+            }
+        }
+    },
+    "audioSelector": {
+        "description": "Enables users to select multiple audio tracks.",
+        "attributes": {
+            "plugin": {
+                "doc": "If the audio selector should be activated.",
+                "label": "Enable audio selector",
+                "type": "hiddenValue"
             }
         }
     },
@@ -539,6 +552,18 @@
                 "doc": "Preferred bitrate for the downloaded movie source (when Flavor ID is not specified). Keep empty for the highest bitrate. Enter '0' for the original movie source file",
                 "type": "string",
                 "initvalue": ""
+            },
+            "downloadName": {
+                "label": "Download name",
+                "doc" : "Defines the name of the downloaded file",
+                "type": "string",
+                "initvalue": ""
+            },
+            "flavorParamsId": {
+                "label": "Preferred params id",
+                "doc" : "Defines the flavor params id, from the transcoding settings",
+                "type": "number",
+                "initvalue": ""
             }
         }
     },
@@ -557,6 +582,15 @@
     "mediaProxy.preferedFlavorBR": {
         "doc": "The initial bitrate to be selected.",
         "type": "number"
+    },
+    "mediaProxy":{
+      "description": "To override mediaProxy object.",
+      "attributes": {
+         "entryCuePoints":{
+             "doc":"To override entry supplied cuePoints.",
+             "type": "json"
+         }
+      }
     },
     "segmentScrubber.plugin": {
         "doc": "Virtaulzies the playhead to selected segment of time.",
@@ -653,7 +687,7 @@
         "description": "The Kaltura custom logo plugin.",
         "attributes": {
             "watermarkPath": {
-                "doc": "URL path to plugin image.",
+                "doc": "URL path to plugin image. For default controls height, logo can be 20 by 20 pixel png.",
                 "type": "url"
             },
             "watermarkClickPath": {
@@ -731,6 +765,13 @@
                 "initvalue": "#AFAFAF",
                 "player-refresh": "theme.bufferedSliderColor",
                 "doc": "Slider buffer color",
+                "type": "color"
+            },
+            "timeLabelColor": {
+                "label": "Time label color",
+                "initvalue": "#ffffff",
+                "player-refresh": "theme.timeLabelColor",
+                "doc": "Time label color",
                 "type": "color"
             },
             "buttonsIconColorDropShadow": {
@@ -816,6 +857,11 @@
                 "doc": "Display Embed code.",
                 "initvalue": true,
                 "type": "boolean"
+            },
+            "embedCodeTemplate":{
+                "doc": "Enables the customization of the embed code template, leave empty to use iframe default.",
+                "initvalue": "",
+                "type": "hiddenValue"
             },
             "allowTimeOffset": {
                 "doc": "Allow setting a time offset for the entry.",
@@ -1137,8 +1183,8 @@
         }
     },
     "skipBtn": {
-        "label": "Vast skip button",
-        "description": "Vast skip button settings",
+        "label": "Skip button",
+        "description": "Vast / DoubleClick skip button settings",
         "attributes": {
             "skipBtn": {
                 "doc": "Skip button label.",
@@ -1157,8 +1203,8 @@
         }
     },
     "skipNotice": {
-        "label": "Vast skip notice",
-        "description": "Vast skip notice",
+        "label": "Skip notice",
+        "description": "Vast / DoubleClick skip notice",
         "attributes": {
             "text": {
                 "doc": "Skip notice text (can use evaluated expressions)",
@@ -1170,8 +1216,8 @@
         }
     },
     "noticeMessage": {
-        "label": "Vast notice message",
-        "description": "Vast notice message",
+        "label": "Notice message",
+        "description": "Vast / DoubleClick notice message",
         "attributes": {
             "text": {
                 "doc": "Notice message (can use evaluated expressions)",
@@ -1478,7 +1524,7 @@
 			},
 			"layout": {
 				"doc": "Volume slider layout.",
-				"type": "hiddenvalue",
+				"type": "enum",
 				"enum": [
 					"horizontal",
 					"vertical"
@@ -1676,6 +1722,47 @@
             }
         }
     },
+    "dualScreen": {
+        "label": "Dual Screen",
+        "description": "The Kaltura Player is the front-end interface used to view captured videos and/or presentations. The Kaltura Player provides you with multiple interactive viewing options, such as Picture-in-Picture, Side-by-Side, and other displays",
+        "attributes": {
+            "defaultDualScreenViewId": {
+                "label": "Default Layout",
+                "doc": "Default Layout",
+                "type": "enum",
+                "enum": [
+                    "sbs-parent-in-right",
+                    "sbs-parent-in-left",
+                    "pip-parent-in-small",
+                    "pip-parent-in-large",
+                    "parent-only",
+                    "no-parent"
+                ],
+                "initvalue": "pip-parent-in-small",
+                "options": [
+                    {
+                        "label": "Side by Side / parent in right",
+                        "value": "sbs-parent-in-right"
+                    },{
+                        "label": "Side by Side / parent in left",
+                        "value": "sbs-parent-in-left"
+                    },{
+                        "label": "Picture in Picture / parent in small view",
+                        "value": "pip-parent-in-small"
+                    },{
+                        "label": "Picture in Picture / parent in large view",
+                        "value": "pip-parent-in-large"
+                    },{
+                        "label": "Parent Only",
+                        "value": "parent-only"
+                    },{
+                        "label": "No Parent",
+                        "value": "no-parent"
+                    }
+                ]
+            }
+        }
+    },
     "airPlay": {
         "description": "Enables wireless streaming of audio, video, and photos, together with related metadata between devices, for iOS.",
         "type": "featuremenu",
@@ -1687,18 +1774,18 @@
         "type": "featuremenu",
         "model": "config.plugins.nativeCallout",
         "attributes": {
-            "storeUrl": {
-                "doc": "The URL for the app market",
+            "androidApplinkBaseURL": {
+                "doc": "Base URL for applink, Android.",
                 "initvalue": "",
                 "type": "string"
             },
-            "mimeName": {
-                "doc": "The linker for opening your native app",
+            "iosApplinkBaseURL": {
+                "doc": "Base URL for applink, iOS.",
                 "initvalue": "",
                 "type": "string"
             },
-            "iframeUrl": {
-                "doc": "iFrame URL",
+            "appInstallLandingPage": {
+                "doc": "Landing page for app install; shown if applink URL is not a web page.",
                 "initvalue": "",
                 "type": "string"
             }
@@ -1773,6 +1860,11 @@
                 "type": "boolean",
                 "initvalue": true
             },
+            "sendContextWithPlaylist": {
+                "doc": "Send context with the playlist (_KDP_CTXPL sends this automatically)",
+                "type": "boolean",
+                "initvalue": false
+            },
             "autoContinueEnabled": {
                 "doc": "Should the Next Item be automatically played.",
                 "type": "boolean"
@@ -1784,7 +1876,7 @@
         }
     },
     "strings": {
-        "description": "Enables overwriting player strings. For full string keys listing, review the <a href=\"http://player.kaltura.com/docs/Strings\" target=\"_blank\">Strings documentation page</a>",
+        "description": "Enables overwriting player strings.<br>For full string keys listing, review the <a href=\"http://player.kaltura.com/docs/Strings\" target=\"_blank\">Strings documentation page.</a><br>You can override strings seperately for different locales by adding the locale code before the string key and then a dot. For more info, look at the <a href=\"http://player.kaltura.com/modules/KalturaSupport/tests/StringsLocale.html\" target=\"_blank\">Strings locale demo.</a>",
         "type": "featuremenu",
         "label": "Strings",
         "model": "config.plugins.strings",

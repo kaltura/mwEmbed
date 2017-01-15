@@ -20,9 +20,25 @@
 		if( ! mw.config.get('debug') === true ) {
 			return ;
 		}
+		// Exit if a filter is defined and the string is filtered out
+		if( mw.config.get('debugFilter') !== null ) {
+			if ( string.match( mw.config.get('debugFilter') ) === null ){
+				return;
+			}
+		}
 		// Allow log messages to use a configured prefix
 		if ( mw.config.exists( 'mw.log.prefix' ) ) {
 			string = mw.config.get( 'mw.log.prefix' ) + '> ' + string;
+		}
+		if ( mw.config.get('debugTarget') !== null ){
+			var target = $("#" + mw.config.get('debugTarget'), window.parent.document);
+			if ( target.length ){
+				var html = target.html() ? target.html() + "<br>" : "";
+				target.html( html + string );
+				if ( mw.config.get('autoScrollDebugTarget') === true ){
+					target.scrollTop( Number.MAX_VALUE );
+				}
+			}
 		}
 		// Try to use an existing console
 		if ( window && typeof window.console !== 'undefined' &&
@@ -34,7 +50,6 @@
 			} else {
 				console.log($.makeArray( arguments ));
 			}
-
 		}
 		// the injected log caused issues in IE iframes
 		/*else {

@@ -80,7 +80,7 @@ function jsKalturaPlayerTest( videoId ){
 				"plugin": true,
 				"switchOnResize": false,
 				"simpleFormat": true,
-                'displayMode' : 'sizebitrate'
+				'displayMode' : 'sizebitrate'
 			},
 			'mediaProxy.preferedFlavorBR': 1600
 		},
@@ -93,7 +93,18 @@ function jsKalturaPlayerTest( videoId ){
 		}
 	})
 </script>
-
-
+<div style="clear:both"></div>
+<h3> Flavor selection criteria </h3>
+There are several factors that influence initial bitrate selection and whether "auto" adaptive bitrate can be enabled or not.
+<br>
+You can see the flavor selection logic in <a href="https://github.com/kaltura/mwEmbed/blob/master/modules/EmbedPlayer/resources/mw.MediaElement.js#L208" target="_new">code here</a>.
+Basically the flow is as follows: <br>
+1) Filters playable sources, <br>
+2) Filters via playable adaptive streaming source where adaptive streaming is active.( DASH, HLS, SmoothStreaming or HDS)<br>
+The preferred bitrate will be passed into the adaptive stream initial flavor logic. <br>
+3) User selected or player configured preferred bitrate is used to select nearest target. <br>
+4) A subset of flavors are defined that don't need a plugin to be played. <br>
+5) A flavor matching the embed size of the player is selected against flavor subset.  <br>
+6) If no native playback flavors was selected, the first compatible flavor is selected. 
 </body>
 </html>

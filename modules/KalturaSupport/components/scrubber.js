@@ -19,26 +19,37 @@
 
 		waitForFirstPlay: false,
 		updateEnabled: true,
+        liveEdge: 98,
 
 		isSliderPreviewEnabled: function () {
-			
-			return this.getConfig("sliderPreview") && !this.isDisabled && !this.embedPlayer.isLive();
+			return this.getConfig("sliderPreview") && !this.isDisabled;
 		},
 		setup: function (embedPlayer) {
+			if ( this.embedPlayer.isMobileSkin() ){
+				this.setConfig('parent','controlsContainer');
+				this.setConfig('showOnlyTime',true);
+			}
 			// make sure insert mode reflects parent type:
 			if (this.getConfig('parent') == 'controlsContainer') {
 				this.setConfig('insertMode', 'lastChild');
 			}
+            //new DVR layout: no time label, only negative live edge offset at the mousemove over the scrubber
+            if(this.embedPlayer.isDVR()){
+                this.setConfig('showOnlyTime',true);
+            }
 			this.addBindings();
-			if (this.isSliderPreviewEnabled()) {
+            if (this.isSliderPreviewEnabled()) {
 				this.setupThumbPreview();
 			}
 		},
 		addBindings: function () {
 			var _this = this;
 			this.bind('durationChange', function (event, duration) {
-				_this.duration = duration;
+                _this.duration = duration;
 			});
+            this.bind('seeked', function () {
+                _this.justSeeked = true;
+            });
 
 			// check if parent is controlsContainer
 			if (this.getConfig('parent') == 'controlsContainer') {
@@ -122,6 +133,11 @@
 					_this.updateEnabled = true;
 				}
 			});
+            this.bind("onPlayerStateChange", function (e, newState, oldState) {
+                if(newState === 'pause') {
+                    _this.paused = true;
+                }
+            });
 		},
 		bindUpdatePlayheadPercent: function () {
 			var _this = this;
@@ -141,7 +157,63 @@
 			});
 		},
 		updatePlayheadUI: function (val) {
-            this.getComponent().slider('option', 'value', val);
+            if( this.getPlayer().isPlaying() && !this.paused && this.embedPlayer.isDVR() ) {
+				this.checkForLiveEdge();
+                if( !this.getPlayer().isLiveOffSynch()) {
+                    this.getComponent().slider('option', 'value', 999);
+                    return;
+                }
+            }
+			if( this.embedPlayer.isDVR() ) {
+				if ( this.duration < 1800 ) {
+					var relativeEdge = this.calculateRelativeLiveEdge(val);
+					if ( !relativeEdge ) {
+						this.getComponent().slider('option', 'value', val);
+					}
+				}
+			} else {
+				this.getComponent().slider('option', 'value', val);
+			}
+            if(this.paused && this.getPlayer().isPlaying()){
+                this.paused = false;
+            }
+		},
+        checkForLiveEdge: function (){
+            if(this.justSeeked){
+                this.justSeeked = false;
+                return;
+            }
+            var playHeadPercent = (this.getPlayHeadComponent().position().left + this.getPlayHeadComponent().width()/2) / this.getComponent().width();
+            playHeadPercent = parseInt(playHeadPercent*100);
+            if( this.getPlayer().isLiveOffSynch() && playHeadPercent >= this.liveEdge ){
+                this.getPlayer().setLiveOffSynch(false);
+            }
+        },
+		calculateRelativeLiveEdge: function ( val ) {
+			if ( this.duration < 50 ) {
+				return val > 700;
+			}
+			if ( this.duration < 100 ) {
+				return val > 800;
+			}
+			if ( this.duration < 200 ) {
+				return val > 850;
+			}
+			if ( this.duration < 500 ) {
+				return val > 900;
+			}
+			if ( this.duration < 900 ) {
+				return val > 950;
+			}
+			if ( this.duration < 1200 ) {
+				return val > 970;
+			}
+			if ( this.duration < 1400 ) {
+				return val > 980;
+			}
+			if ( this.duration < 1650 ) {
+				return val > 990;
+			}
 		},
 		setupThumbPreview: function () {
 			var _this = this;
@@ -196,7 +268,7 @@
 		},
 		loadThumbnails: function (callback) {
 			var _this = this;
-			if (this.getConfig("showOnlyTime")) {
+			if ( this.embedPlayer.isLive() || this.getConfig("showOnlyTime")) {
 				this.loadedThumb = true;
 			}
 			if (!this.loadedThumb) {
@@ -219,16 +291,18 @@
 			if( this.getConfig('thumbSlicesUrl')  ){
 				return this.getConfig('thumbSlicesUrl');
 			}
+			var thumbReq = {
+				'partner_id': this.embedPlayer.kpartnerid,
+				'uiconf_id': this.embedPlayer.kuiconfid,
+				'entry_id': this.embedPlayer.kentryid,
+				'width': this.getConfig("thumbWidth"),
+				'vid_slices': this.getSliceCount(this.duration)
+			}
+			if ( this.getPlayer().getFlashvars( 'loadThumbnailWithKs' )  ){
+				thumbReq[ 'ks' ] = this.getPlayer().getFlashvars('ks');
+			}
 			// else get thumb slices from helper:
-			return kWidget.getKalturaThumbUrl(
-					{
-						'partner_id': this.embedPlayer.kpartnerid,
-						'uiconf_id': this.embedPlayer.kuiconfid,
-						'entry_id': this.embedPlayer.kentryid,
-						'width': this.getConfig("thumbWidth"),
-						'vid_slices': this.getSliceCount(this.duration)
-					}
-				);
+			return kWidget.getKalturaThumbUrl( thumbReq );
 		},
 		showThumbnailPreview: function (data) {
 			var showOnlyTime = this.getConfig("showOnlyTime");
@@ -253,6 +327,9 @@
 			var previewWidth = $sliderPreview.width();
 			var previewHeight = $sliderPreview.height();
 			var top = $(".scrubber").position().top - previewHeight - 10;
+			if ( this.embedPlayer.isMobileSkin() ){
+				top -= 25;
+			}
 
 			if (!showOnlyTime) {
 				sliderLeft = data.x - previewWidth / 2;
@@ -274,11 +351,10 @@
 				$(".arrow").hide();
 			}
 
-			var perc = data.val / 1000;
+            var perc = data.val / 1000;
 			perc = perc > 1 ? 1 : perc;
-			var currentTime = this.duration * perc;
+			var currentTime = Math.floor(this.duration * perc);
 			var thumbWidth = showOnlyTime ? $sliderPreviewTime.width() : this.getConfig("thumbWidth");
-
 			$sliderPreview.css({top: top, left: sliderLeft });
 			if (!showOnlyTime) {
 				$sliderPreview.css({'background-image': 'url(\'' + this.getThumbSlicesUrl() + '\')',
@@ -288,13 +364,29 @@
 			} else {
 				$sliderPreview.css("border", "0px");
 			}
-			$(".playHead .arrow").css("left", thumbWidth / 2 - 6);
-			$sliderPreviewTime.text(kWidget.seconds2npt(currentTime));
+			$(".scrubber .arrow").css("left", thumbWidth / 2 - 4);
+
+            var timeText;
+            if( this.embedPlayer.isDVR() ){
+                if( this.getPlayer().isLiveOffSynch() && parseInt(perc*100) > this.liveEdge ){
+                    timeText = 'LIVE';
+                }else {
+                    timeText = "-" + kWidget.seconds2npt(this.duration - currentTime);
+                }
+            }else{
+                timeText = kWidget.seconds2npt(currentTime);
+            }
+            $sliderPreviewTime.text(timeText);
 			$sliderPreviewTime.css({bottom: 2, left: thumbWidth / 2 - $sliderPreviewTime.width() / 2 + 3});
 			$sliderPreview.css("width", thumbWidth);
 
 			if (kWidget.isIE8()) {
 				$sliderPreview.css("height", 43);
+			}
+			if ($sliderPreview.width() > 0){
+				$sliderPreview.css("visibility","visible");
+			}else{
+				$sliderPreview.css("visibility","hidden");
 			}
 			$sliderPreview.show();
 		},
@@ -315,7 +407,7 @@
 				start: function (event, ui) {
 					embedPlayer.userSlide = true;
 					// Release the mouse when player is not focused
-					$(_this.getPlayer()).one('hidePlayerControls', function () {
+					$(_this.getPlayer()).one('hidePlayerControls onFocusOutOfIframe', function () {
 						$(document).trigger('mouseup');
 					});
 				},
@@ -332,6 +424,7 @@
 					if (embedPlayer.userSlide) {
 						embedPlayer.userSlide = false;
 						embedPlayer.seeking = true;
+						embedPlayer.triggerHelper("userInitiatedSeek", seekTime);
 						embedPlayer.seek(seekTime);
 					}
 				}
@@ -351,6 +444,9 @@
 				$slider.html('<span class="accessibilityLabel">' + title + '</span>');
 			}
 		},
+        getPlayHeadComponent: function () {
+            return this.getComponent().find('.playHead');
+        },
 		getComponent: function () {
 			var _this = this;
 			if (!this.$el) {
@@ -378,6 +474,9 @@
 						'width': this.getConfig('minWidth')
 					});
 				}
+				this.$el.on("mouseup", function(){
+					_this.hideThumbnailPreview();
+				});
 			}
 			return this.$el;
 		}

@@ -67,6 +67,21 @@ return array(
 				"label" => "Player Dimensions",
 				"endline" => "true"
 			),
+            array(
+                "player-refresh"=> "false",
+                "label" => "Update Version Automatically",
+                "helpnote" => "Automatically update this player when a new player version is available",
+                "type" => "checkbox",
+                "endline" => "true",
+                "model" => "autoUpdate"
+            ),
+			array(
+				"label" => "Enable new mobile skin",
+				"helpnote" => "Caution: Turning on Mobile skin will override any existing custom CSS",
+				"type" => "checkbox",
+				"endline" => "true",
+				"model" => "config.uiVars.EmbedPlayer.EnableMobileSkin"
+			),
 			array(
 				"label" => "Automatically play video on page load",
 				"type" => "checkbox",
@@ -85,6 +100,13 @@ return array(
                 "endline" => "true",
                 "model" => "config.plugins.controlBarContainer.hover"
             ),
+//            array(
+//               "label" => "Localization code:",
+//                "type" => "text",
+//                "size" => "small",
+//                "endline" => "true",
+//                "model" => "config.enviornmentConfig.localizationCode"
+//            ),
 			array(
 				"label" => "Last Update",
 				"type" => "readonly",
@@ -107,6 +129,13 @@ return array(
                 "endline" => "false",
                 "model" => "config.uiVars.enableTooltips"
             ),
+//            array(
+//                "label" => "Simulate Mobile",
+//                "type" => "checkbox",
+//                "initvalue" => false,
+//                "endline" => "false",
+//                "model" => "config.uiVars.EmbedPlayer.SimulateMobile"
+//            ),
 			"titleLabel" => "",
 			"logo" => "",
 			"loadingSpinner" => "",
@@ -118,6 +147,7 @@ return array(
 			"share" => "",
 			"playersJsReceiver" => "",
 			"related" => "",
+			"dualScreen" => "",
 			"playlistAPI" => "",
 			"nextPrevBtn" => ""
 		)
@@ -135,6 +165,7 @@ return array(
 			"nielsenCombined" => "",
 			"omnitureOnPage" => "",
 			"statistics" => "",
+			"youbora" => ""
 		)
 	),
 	"monetization"=> array(
@@ -153,11 +184,11 @@ return array(
             ),
 			"bumper" => "",
 			"vast" => "",
-			"skipBtn" => "",
-			"skipNotice" => "",
-			"noticeMessage" => "",
 			"doubleClick" => "",
-			"freeWheel" => ""
+			"freeWheel" => "",
+			"skipBtn" => "",
+            "skipNotice" => "",
+            "noticeMessage" => ""
 		)
 	),
 	"plugins"=> array(
@@ -172,11 +203,10 @@ return array(
 			"moderation" => "",
 			"playbackRateSelector" => "",
 			"restrictUserAgent" => "",
-			"widevine" => "",
 			"multiDrm" => "",
 			"sourceSelector" => "",
+			"audioSelector" => "",
 			"download" => "",
-			"nativeCallout" => "",
 			"strings" => "",
 			"uiVars" => ""
 		)

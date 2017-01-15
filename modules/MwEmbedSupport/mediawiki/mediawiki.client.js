@@ -8,31 +8,40 @@
 	var userAgent = navigator.userAgent;
 
 	mw.isMobileDevice = function () {
-		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() || mw.isAndroid() || mw.isWindowsPhone() || mw.getConfig("EmbedPlayer.ForceNativeComponent") === true )
+		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() || mw.isAndroid() || mw.isWindowsPhone() || mw.getConfig("EmbedPlayer.ForceNativeComponent") === true || mw.getConfig("EmbedPlayer.SimulateMobile") === true )
 	};
 	mw.isNativeApp = function () {
 		return mw.getConfig("EmbedPlayer.ForceNativeComponent");
 	};
 	mw.isIphone = function () {
-		return ( mw.getConfig("EmbedPlayer.ForceNativeComponent") !== true && navigator.userAgent.indexOf('iPhone') != -1 && !mw.isIpad() ) || mw.isIpod();
+		return ( mw.getConfig("EmbedPlayer.ForceNativeComponent") !== true && userAgent.indexOf('iPhone') != -1 && !mw.isIpad() ) || mw.isIpod();
 	};
 	mw.isIE = function () {
-		return (/msie/.test(userAgent.toLowerCase()) || /trident/.test(navigator.userAgent.toLowerCase()));
+		return (/msie/.test(userAgent.toLowerCase()) || /trident/.test(userAgent.toLowerCase()));
+	};
+	mw.isChromeCast = function(){
+		return (/CrKey/.test(userAgent));
 	};
 	mw.isIE7 = function () {
 		return (/msie 7/.test(userAgent.toLowerCase()));
 	};
 	mw.isIE8 = function () {
-		return (/msie 8/.test(userAgent.toLowerCase()));
+		return document.documentMode === 8;
 	};
 	mw.isIE9 = function () {
-		return (/msie 9/.test(userAgent.toLowerCase()));
+		return document.documentMode === 9;
 	};
     mw.isIE11 = function () {
-        return (/trident\/7.0/.test(navigator.userAgent.toLowerCase()));
+        return (/trident\/7.0/.test(userAgent.toLowerCase()));
+    };
+	mw.isEdge = function () {
+        return (/edge/.test(userAgent.toLowerCase()));
     };
 	mw.isDesktopSafari = function () {
-		return (/safari/).test(userAgent.toLowerCase()) && !mw.isMobileDevice() && !mw.isChrome();
+		return mw.isSafari() && !mw.isMobileDevice();
+	};
+	mw.isSafari = function () {
+		return (/safari/).test(userAgent.toLowerCase()) && !mw.isChrome() && !mw.isEdge();
 	};
 	mw.isIE9Comp = function () {
 		return (/msie 7/.test(userAgent.toLowerCase()) && /trident\/5/.test(userAgent.toLowerCase()));
@@ -51,44 +60,64 @@
 	mw.isIpad = function () {
 		return ( userAgent.indexOf('iPad') != -1 );
 	};
+	mw.isIpad2 = function () {
+		return ( mw.isIpad() && window.devicePixelRatio && window.devicePixelRatio < 2 );
+	};
 	mw.isIpad3 = function () {
 		return  /OS 3_/.test(userAgent) && mw.isIpad();
 	};
+	
+	// Note on those Android checks: Windows Phone browser has "Android" in its userAgent.
+	// https://msdn.microsoft.com/en-us/library/hh869301%28v=vs.85%29.aspx
+	// So the Android checks must make sure the string does not include "Windows".
+	
 	mw.isAndroid44 = function () {
-		return ( userAgent.indexOf('Android 4.4') != -1 );
+		return ( userAgent.indexOf('Android 4.4') != -1  && userAgent.indexOf('Windows') === -1 );
 	};
 	mw.isAndroid43 = function () {
-		return ( userAgent.indexOf('Android 4.3') != -1 );
+		return ( userAgent.indexOf('Android 4.3') != -1  && userAgent.indexOf('Windows') === -1 );
 	};
 	mw.isAndroid42 = function () {
-		return ( userAgent.indexOf('Android 4.2') != -1 );
+		return ( userAgent.indexOf('Android 4.2') != -1  && userAgent.indexOf('Windows') === -1 );
 	};
 	mw.isAndroid41 = function () {
-		return ( userAgent.indexOf('Android 4.1') != -1 );
+		return ( userAgent.indexOf('Android 4.1') != -1  && userAgent.indexOf('Windows') === -1 );
 	};
 	mw.isAndroid40 = function () {
-		return ( userAgent.indexOf('Android 4.0') != -1 );
+		return ( userAgent.indexOf('Android 4.0') != -1  && userAgent.indexOf('Windows') === -1 );
 	};
 	mw.isAndroid2 = function () {
-		return ( userAgent.indexOf('Android 2.') != -1 );
+		return ( userAgent.indexOf('Android 2.') != -1  && userAgent.indexOf('Windows') === -1 );
 	};
 	mw.isAndroid = function () {
-		return ( userAgent.indexOf('Android') != -1 );
+		return ( userAgent.indexOf('Android') != -1 && userAgent.indexOf('Windows') === -1);
 	};
 	mw.isAndroid4andUp = function () {
-		return ( (userAgent.indexOf('Android 4.') != -1) || (userAgent.indexOf('Android 5.') != -1) );
+		return ( (userAgent.indexOf('Android 4.') != -1) || (userAgent.indexOf('Android 5.') != -1) || (userAgent.indexOf('Android 6.') != -1) ) && userAgent.indexOf('Windows') === -1;
 	};
+
+	mw.isSamsungStockBrowser = function () {
+		return ( (userAgent.indexOf('SamsungBrowser') != -1) );
+	};
+	
 	mw.isFirefox = function () {
 		return ( userAgent.indexOf('Firefox') != -1 );
 	};
 	mw.isChrome = function () {
-		return ( userAgent.indexOf('Chrome') != -1 );
+		return ( userAgent.indexOf('Chrome') != -1 && !mw.isEdge() );
 	};
 	mw.isAndroidNativeBrowser = function () {
 		return (mw.isAndroid() && !mw.isFirefox() && !mw.isChrome());
 	};
 	mw.isAndroidChromeNativeBrowser = function () {
 		return ( mw.isAndroid() && mw.isChrome() );
+	};
+	mw.isOldAndroidChromeNativeBrowser = function () {
+		var regExpResult = userAgent.match(/Chrome\/([0-9][0-9])/);
+		if ( regExpResult instanceof Array && regExpResult.length > 1 ){
+			return mw.isAndroidChromeNativeBrowser() && parseInt( regExpResult[1] ) < 30;
+		}
+		return false;
 	};
 	mw.isMobileChrome = function () {
 		return ( mw.isAndroid4andUp()
@@ -97,7 +126,7 @@
 			)
 	};
 	mw.isWindowsPhone = function () {
-		return (  userAgent.indexOf('Windows Phone') != -1 );
+		return userAgent.indexOf('Windows Phone') != -1 ;
 	};
 	mw.isIOS = function () {
 		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() );
@@ -128,6 +157,25 @@
 		// Known Limitation - It will return false for iOS8 Simulator
 		return ( /OS 8_/.test(userAgent) || /Version\/8/.test(userAgent) ) && mw.isIOS();
 	};
+	mw.isIOS9 = function () {
+		// Known Limitation - It will return false for iOS9 Simulator
+		return ( /OS 9_/.test(userAgent) || /Version\/9/.test(userAgent) ) && mw.isIOS();
+	};
+
+	mw.isIOS10 = function () {
+		// Known Limitation - It will return false for iOS10 Simulator
+		return ( /OS 10_/.test(userAgent) || /Version\/10/.test(userAgent) ) && mw.isIOS();
+	};
+
+	mw.isIOSBelow9 = function () {
+		// mw.isIOSV() methods check mw.isIOS(), but because of the OR operator it will be checked multiple times. 
+		// Short-circuit to save many calls.
+		return mw.isIOS() && (mw.isIOS3() || mw.isIOS4() || mw.isIOS5() || mw.isIOS6() || mw.isIOS7() || mw.isIOS8());
+	};
+	
+	mw.isIOSAbove7 = function () {
+		return mw.isIOS8() || mw.isIOS9() || mw.isIOS10();
+	};
 
 	mw.isSilk = function () {
 		return /\bSilk\b/.test(userAgent);
@@ -148,7 +196,40 @@
 	};
 
 	mw.isTouchDevice = function () {
-		return !!('ontouchstart' in window);
+		return !!('ontouchstart' in window)  || ( mw.getConfig("EmbedPlayer.EnableMobileSkin") === true && mw.getConfig("EmbedPlayer.SimulateMobile") === true);
+	};
+	/**
+	 * platform detection
+	 */
+	mw.isMacintosh = function() {
+		return navigator.platform.indexOf('Mac') > -1
+	};
+	mw.isWindows = function() {
+		return navigator.platform.indexOf('Win') > -1
+	};
+	//Returns a strings of the user's OS
+	mw.getUserOS = function() {
+		var os = "";
+		var nAgt = navigator.userAgent;
+		var clientStrings = [
+			{s:'Windows 10', r:/(Windows 10.0|Windows NT 10.0)/},
+			{s:'Windows 8.1', r:/(Windows 8.1|Windows NT 6.3)/},
+			{s:'Windows 8', r:/(Windows 8|Windows NT 6.2)/},
+			{s:'Windows 7', r:/(Windows 7|Windows NT 6.1)/},
+			{s:'Android', r:/Android/},
+			{s:'Linux', r:/(Linux|X11)/},
+			{s:'iOS', r:/(iPhone|iPad|iPod)/},
+			{s:'Mac OS X', r:/Mac OS X/},
+			{s:'Mac OS', r:/(MacPPC|MacIntel|Mac_PowerPC|Macintosh)/},
+		];
+		for (var id in clientStrings) {
+			var cs = clientStrings[id];
+			if (cs.r.test(nAgt)) {
+				os = cs.s;
+				break;
+			}
+		}
+		return os;
 	};
 
 	/**
@@ -216,7 +297,7 @@
 
 		// Desktop safari flash has "power saving bug" as well as cross domain request issues
 		// by default we disable flash on desktop safari.
-		if (mw.isDesktopSafari() && !mw.getConfig('ForceFlashOnDesktopSafari') ) {
+		if ( ( mw.isDesktopSafari() && !mw.getConfig('ForceFlashOnDesktopSafari') ) || mw.isEdge() ) {
 			return false;
 		}
 		var majorVersion = this.getFlashVersion().split(',').shift();

@@ -137,6 +137,11 @@
 		onKeyDown: function( e ){
 			var ranCallback = false;
 			var keyCode = e.keyCode || e.which;
+
+			//we need to ignore shortcuts if text area or input have input (space, P are not support to be triggered)
+			if ( $("*:focus").is("textarea, input") ) {
+				return true;
+			}
 			// Handle combinations
 			if (this.enableComboKeyBindings) {
 				if ( e.ctrlKey && e.altKey && keyCode !== this.CTRL_KEY_CODE && keyCode !== this.ALT_KEY_CODE && !ranCallback ) {
@@ -226,7 +231,7 @@
 				return false;
 			}
 			var notificationName = ( this.getPlayer().isPlaying() ) ? 'doPause' : 'doPlay';
-			this.getPlayer().sendNotification( notificationName );
+			this.getPlayer().sendNotification( notificationName,{'userInitiated': true} );
 			return false;
 		},
 		seek: function( seekType, direction ){
@@ -281,7 +286,7 @@
 			}
 		},
 		closeFullscreenkeyCallback: function(){
-			if( this.getPlayer().getInterface().hasClass('fullscreen') ){
+			if( this.getPlayer().getInterface().hasClass('fullscreen') && this.getPlayer().layoutBuilder.fullScreenManager.inFullScreen ){
 				this.getPlayer().toggleFullscreen();
 			}
 		},
@@ -292,10 +297,10 @@
 			this.getPlayer().seek(0);
 		},
 		gotoEndKeyCallback: function(){
-			if( !this.canSeek ) {
+			if( !this.canSeek || this.getPlayer().currentState === 'end') {
 				return false;
 			}
-			this.getPlayer().seek(this.getPlayer().getDuration());
+			this.getPlayer().seek(this.getPlayer().getDuration()-1);
 		},
 		getOpenedMenu: function(){
 			var openedMenu = null;

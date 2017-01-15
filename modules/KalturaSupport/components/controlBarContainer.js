@@ -7,8 +7,12 @@
 		},
 
 		keepOnScreen: false,
+		screenOpen: false,
 
 		setup: function(){
+			if (this.embedPlayer.isMobileSkin()){
+				this.setConfig("hover", true);
+			}
 			// Exit if we're using native controls
 			if( this.getPlayer().useNativePlayerControls() ) {
 				this.getPlayer().enableNativeControls();
@@ -29,9 +33,13 @@
 			this.bind( 'showInlineDownloadLink', function(){
 				_this.hide();
 			});
-			this.bind( 'layoutBuildDone ended', function(){
+			this.bind( 'ended', function(){
 				_this.show();
-
+			});
+			this.bind( 'layoutBuildDone', function(){
+				if (!_this.embedPlayer.isMobileSkin()){
+					_this.show();
+				}
 			});
 
 			// Bind hover events
@@ -45,11 +53,28 @@
 					_this.hide();
 				});
 				this.bind( 'onComponentsHoverDisabled', function(){
-					_this.keepOnScreen = true;
-					_this.show();
+					if (!_this.embedPlayer.layoutBuilder.displayOptionsMenuFlag){
+						_this.keepOnScreen = true;
+						_this.show();
+					}
 				});
-				this.bind( 'onComponentsHoverEnabled', function(){
+				this.bind( 'hideScreen closeMenuOverlay', function(){
+					_this.screenOpen = false;
+					if (!_this.embedPlayer.paused){
+						_this.keepOnScreen = false;
+						_this.hide();
+					}else{
+						_this.show();
+					}
+				});
+				this.bind( 'onComponentsHoverEnabled displayMenuOverlay', function(){
 					_this.keepOnScreen = false;
+					_this.hide();
+				});
+				this.bind( 'showScreen', function(){
+					_this.screenOpen = true;
+					_this.keepOnScreen = false;
+					_this.forceOnScreen = false;
 					_this.hide();
 				});
 				this.bind( 'onHideSideBar', function(){
@@ -62,13 +87,26 @@
 				this.getPlayer().isControlsVisible = true;
 			}
 		},
+		onConfigChange: function( property, value ){
+			switch( property ) {
+				case 'visible':
+					if( value ) {
+						this.getComponent().show();
+					} else {
+						this.getComponent().hide();
+					}
+					break;
+			}
+		},
 		show: function(){
 			this.getPlayer().isControlsVisible = true;
-			this.getComponent().addClass( 'open' );
-			// Trigger the screen overlay with layout info:
-			this.getPlayer().triggerHelper( 'onShowControlBar', {
-				'bottom' : this.getComponent().height() + 15
-			} );
+			if ( !this.screenOpen ) {
+				this.getComponent().addClass('open');
+				// Trigger the screen overlay with layout info:
+				this.getPlayer().triggerHelper('onShowControlBar', {
+					'bottom': this.getComponent().height() + 15
+				});
+			}
 			var $interface = this.embedPlayer.getInterface();
 			$interface.removeClass( 'player-out' );
 		},
@@ -97,7 +135,7 @@
 						.on("mouseenter", function(){
 							_this.forceOnScreen = true;
 						})
-						.on("mouseleave", function(){
+						.on("mouseleave click", function(){
 							_this.forceOnScreen = false;
 						});
 					this.embedPlayer.getVideoHolder().addClass('hover');

@@ -1,7 +1,7 @@
 /*
  * The "kaltura player" embedPlayer interface for multi DRM
  */
-(function (mw, $) {
+(function (mw, $, videojs) {
 	"use strict";
 
 	mw.EmbedPlayerMultiDRM = {
@@ -83,6 +83,13 @@
 
 		streamerType: 'dash',
 
+		manifestLoaded: false,
+		dashContextUpdated: false,
+		isSeekable: false,
+		isResolvingUrl: false,
+
+		detectPluginIntervalLoops: 3,
+
 		// Native player supported feature set
 		supports: {
 			'playHead': true,
@@ -93,11 +100,35 @@
 			'volumeControl': true,
 			'overlays': true
 		},
-		setup: function (readyCallback){
+		setup: function (readyCallback, failCallback){
 			this._propagateEvents = true;
 			mw.log('EmbedPlayerMultiDRM:: Setup');
 			this.initDashPlayer(readyCallback);
+
+			var _this = this;
+			this.detectPluginInterval = setInterval(function () {
+				_this.detectPlugin(failCallback);
+			}, 500);
 		},
+
+		detectPlugin: function (failCallback) {
+			mw.log("EmbedPlayerMultiDRM::detectPlugin::detect loop " + this.detectPluginIntervalLoops);
+
+			if( this.detectPluginIntervalLoops === 0 ){
+				if ( !this.pluginDetected ) {
+					mw.log("EmbedPlayerMultiDRM::detectPlugin::failed to detecting Silverlight plugin");
+					failCallback(); //trigger fail callback -> goes to the EmbedPlayer in order to displayAlert with ks-PLUGIN-BLOCKED message
+				}
+				this.cleanInterval(this.detectPluginInterval); // stop trying to detect plugin
+			}
+			this.detectPluginIntervalLoops--;
+		},
+
+		cleanInterval: function (interval) {
+			clearInterval(interval);
+			interval = null;
+		},
+
 		/**
 		 * Updates the supported features given the "type of player"
 		 */
@@ -123,6 +154,10 @@
 		supportsVolumeControl: function () {
 			return  !( mw.isIpad() || mw.isAndroid() || mw.isMobileChrome() || this.useNativePlayerControls() )
 		},
+		changeMedia: function(){
+			this.manifestLoaded = false;
+			this.parent_changeMedia();
+		},
 		changeMediaCallback: function (callback) {
 			// Check if we have source
 			if (!this.getSource()) {
@@ -130,6 +165,7 @@
 				return;
 			}
 			var _this = this;
+			this.isSeekable = false;
 			// If switching a Persistent native player update the source:
 			// ( stop and play won't refresh the source  )
 			_this.switchPlaySource(this.getSource(), function () {
@@ -141,15 +177,32 @@
 					_this.pause();
 					_this.updatePosterHTML();
 				}
-				if (!(mw.isIOS7() && mw.isIphone())) {
-					_this.changeMediaCallback = null;
-				}
 				callback();
 			});
 		},
 		disablePlayer: function () {
 			$(this.getPlayerElement()).css('position', 'static');
 		},
+		clean: function ( ) {
+			this.manifestLoaded = false;
+			this.dashPlayerInitialized = false;
+			if ( this.detectPluginInterval ) {
+				this.cleanInterval(this.detectPluginInterval);
+			}
+			if (this.updateStateInterval ) {
+				this.cleanInterval(this.updateStateInterval);
+			}
+			this.removeBindings();
+			videojs(this.pid).safeDispose();
+		},
+
+		removeBindings: function(){
+			this.unbindHelper('switchAudioTrack' + this.bindPostfix);
+			this.unbindHelper('changeEmbeddedTextTrack' + this.bindPostfix);
+			this.unbindHelper('closedCaptionsDisplayed' + this.bindPostfix);
+			this.unbindHelper('closedCaptionsHidden' + this.bindPostfix);
+		},
+
 		/**
 		 * Return the embed code
 		 */
@@ -183,10 +236,7 @@
 					_this.getNativePlayerHtml()
 				);
 
-				this.initDashPlayer();
-				this.updateDashContext();
-				// Directly run postEmbedActions ( if playerElement is not available it will retry )
-				this.postEmbedActions();
+				this.initDashPlayer(this.postEmbedActions.bind(this));
 			}
 
 		},
@@ -194,33 +244,53 @@
 			if (!this.dashPlayerInitialized) {
 				var _this = this;
 				this.dashPlayerInitialized = true;
-				this.playerElement = mw.dash.player( this.pid, {
+				this.playerElement = videojs( this.pid, {
 					autoplay: false,
 					controls: false,
+					preload: "none",
 					height: "100%",
 					width: "100%",
+					dasheverywhere: this.getDrmConfig(),
 					plugins: {
 						audiotracks: {},
 						texttracks: {}
 					},
 					techOrder: ['dasheverywhere']
 				}, function(){
+					_this.pluginDetected = true; // used in order to clear detectPlugin interval
+					_this.cleanInterval(_this.detectPluginInterval); // stop trying to detect plugin
+
 					_this.playerElement = this;
 					var el = $(_this.playerElement.el() );
 					//Hide native player UI
 					el.find(".vjs-poster, .vjs-control-bar, .vjs-big-play-button" ).css("display", "none");
-					el.attr('data-src', _this.getSrc());
-					//Set schedule while paused to true to allow buffering when in paused state
-					_this.playerElement.mediaPlayer.setScheduleWhilePaused(true);
-					_this.updateDashContext();
-					callback();
+					//Set specific playback engine settings
+					if (_this.playerElement.getActiveTech() == "dashjs") {
+						//Set schedule while paused to true to allow buffering when in paused state
+						_this.playerElement.mediaPlayer.setScheduleWhilePaused(true);
+
+						//Need to know if manifest was loaded before allowing playback to start
+						this.one("manifestLoaded", function () {
+							_this.manifestLoaded = true;
+						});
+						callback();
+					} else {
+						setTimeout(function(){
+							callback();
+						}, 0);
+					}
+					//In IE and Edge source is preloaded, so defer this until we request play for the first time
+					//IF autoplay is set then play flow will call update context
+					if (!_this.dashContextUpdated && !_this.autoplay && (!mw.isEdge() && !mw.isIE())) {
+						_this.updateDashContext();
+					}
 				} );
-				this.bindHelper('switchAudioTrack', function (e, data) {
+				this.bindHelper('switchAudioTrack' + this.bindPostfix, function (e, data) {
 					if (_this.getPlayerElement()) {
 						_this.getPlayerElement().setActiveTrack("audio", data.index);
 					}
 				});
-				this.bindHelper('changeEmbeddedTextTrack', function (e, data) {
+				this.bindHelper('changeEmbeddedTextTrack' + this.bindPostfix, function (e, data) {
 					if (_this.getPlayerElement()) {
 						var stats = _this.getPlayerElement().getPlaybackStatistics();
 						if (stats.text.activeTrack != data.index){
@@ -228,32 +298,69 @@
 						}
 					}
 				});
-				this.bindHelper('closedCaptionsDisplayed', function () {
+				this.bindHelper('closedCaptionsDisplayed'+ this.bindPostfix, function () {
 					_this.getPlayerElement().textTrackDisplay.show();
 				});
-				this.bindHelper('closedCaptionsHidden', function () {
+				this.bindHelper('closedCaptionsHidden' + this.bindPostfix, function () {
 					_this.getPlayerElement().textTrackDisplay.hide();
 				});
-
 			}
 		},
 		updateDashContext: function(){
-			if (this.getPlayerElement() && this.getSrc()) {
-				this.playerElement.loadVideo( this.getSrc(), this.getDrmConfig() );
+			var _this = this;
+			this.dashContextUpdated = true;
+			//If we have a source to set and playback element is ready and we are not already resolving a URL
+			//then resolve the URL and set the playback source
+			if (this.getPlayerElement() && this.getSrc() && !this.isResolvingUrl) {
+				this.isResolvingUrl = true;
+				this.resolveSrcURL( this.getSrc() ).then( function(source){
+					_this.manifestLoaded = false;
+					_this.isResolvingUrl = false;
+					var el = $(_this.playerElement.el() );
+					el.attr('data-src', _this.getSrc());
+					_this.playerElement.loadVideo( source, _this.getDrmConfig() );
+				}, function(){
+					_this.isResolvingUrl = false;
+					//Report on playManifest redirect error
+					_this.log("Failed resolving playManifest request: " + _this.getSrc());
+					_this.triggerHelper('embedPlayerError');
+				} );
 			}
+		},
+		waitForManifestLoaded: function(){
+			var manifestLoadedDeferred = $.Deferred();
+			if (this.manifestLoaded || (this.playerElement.getActiveTech() == "dashcs")){
+				return manifestLoadedDeferred.resolve();
+			} else {
+				var _this = this;
+				this.playerElement.one("manifestLoaded", function () {
+					_this.manifestLoaded = true;
+					//Prevent issues with stack order when issuing autoplay or play command right after playerReady
+					setTimeout(function(){
+						manifestLoadedDeferred.resolve();
+					},0);
+				});
+			}
+			return manifestLoadedDeferred;
 		},
 		getDrmConfig: function(){
 			var drmConfig = this.getKalturaConfig('multiDrm');
-			var licenseBaseUrl = mw.getConfig('Kaltura.UdrmServerURL');
-			if (!licenseBaseUrl) {
-				this.log('Error:: failed to retrieve UDRM license URL ');
+			//Check for user defined DRM server else use uDRM
+			var overrideDrmServerURL = mw.getConfig('Kaltura.overrideDrmServerURL');
+			if (overrideDrmServerURL) {
+				drmConfig.widevineLicenseServerURL = overrideDrmServerURL;
+				drmConfig.playReadyLicenseServerURL = overrideDrmServerURL;
+			} else {
+				var licenseBaseUrl = mw.getConfig('Kaltura.UdrmServerURL');
+				if (!licenseBaseUrl) {
+					this.log('Error:: failed to retrieve UDRM license URL ');
+				}
+
+				//TODO: error handling in case of error
+				var licenseData = this.mediaElement.getLicenseUriComponent();
+				drmConfig.widevineLicenseServerURL = licenseBaseUrl + "/cenc/widevine/license?" + licenseData;
+				drmConfig.playReadyLicenseServerURL = licenseBaseUrl + "/cenc/playready/license?" + licenseData;
 			}
-
-			var vendor = this.getLicenseVendor();
-
-			//TODO: error handling in case of error
-			var licenseData = this.getLicenseData();
-			drmConfig.widevineLicenseServerURL = licenseBaseUrl + "/cenc/" + vendor + "/license?" + licenseData;
 			drmConfig.assetId = this.kentryid;
 			drmConfig.variantId = this.mediaElement.selectedSource && this.mediaElement.selectedSource.getAssetId();
 			var config = {};
@@ -261,7 +368,7 @@
 			if (this.shouldGeneratePssh()) {
 				config.widevineHeader = {
 					"provider": "castlabs",
-					"contentId": this.getAuthenticationToken( ),
+					"contentId": this.mediaElement.getAuthenticationToken( ),
 					"policy": ""
 				};
 			}
@@ -289,33 +396,6 @@
 				res = false;
 			}
 			return res;
-		},
-		getLicenseData: function(){
-			var licenseData = {
-				custom_data: this.mediaElement.selectedSource["custom_data"],
-				signature: this.mediaElement.selectedSource["signature"]
-			};
-			if (this.mediaElement.selectedSource.flavors){
-				licenseData.files = encodeURIComponent(window.btoa(this.mediaElement.selectedSource.flavors));
-			}
-
-			var licenseDataString = "";
-			if (licenseData) {
-				$.each( licenseData, function ( key, val ) {
-					licenseDataString += key + "=" + val + "&";
-				} );
-			}
-			return licenseDataString;
-		},
-		getLicenseVendor: function(){
-			var vendor;
-			if (mw.isChrome()){
-				vendor = "widevine";
-			}
-			return vendor;
-		},
-		getAuthenticationToken: function(){
-			return this.mediaElement.selectedSource["contentId"];
 		},
 		/**
 		 * Get the native player embed code.
@@ -462,7 +542,7 @@
 
 			_this.boundedEventHandler = _this.boundedEventHandler || _this.nativeEventsHandler.bind(this);
 			$.each(_this.nativeEvents, function (inx, eventName) {
-				if (mw.isIOS8() && mw.isIphone() && eventName === "seeking") {
+				if (mw.isIOSAbove7() && mw.isIphone() && eventName === "seeking") {
 					return;
 				}
 
@@ -473,7 +553,7 @@
 			// make sure we propagating events, and the current instance is in the correct closure.
 			if (this._propagateEvents && this.instanceOf === this.instanceOf) {
 				var argArray = $.makeArray(arguments);
-				//if (eventName!=="timeupdate" && eventName!=="progress") console.info(eventName);
+				//if (e.type!=="timeupdate" && e.type!=="progress") console.info(e.type);
 				// Check if there is local handler:
 				if (this[ '_on' + e.type ]) {
 					this[ '_on' + e.type ].apply(this, argArray);
@@ -495,7 +575,48 @@
 					// opera does not have buffered.end zero index support ?
 				}
 			}
+
+
+			if (mw.getConfig("monitorDropFrames") && this.playerElement && this.playerElement.contentEl ){
+				try {
+					var vidObj = $( this.playerElement.contentEl() ).find( "video" )[0];
+					if (typeof vidObj.getVideoPlaybackQuality === 'function') {
+						var videoPlaybackQuality = this.video.getVideoPlaybackQuality();
+						this.checkFPS( videoPlaybackQuality.droppedVideoFrames , videoPlaybackQuality.totalVideoFrames );
+					} else {
+						this.checkFPS( vidObj.webkitDroppedFrameCount , vidObj.webkitDecodedFrameCount );
+					}
+				} catch(exception){
+					this.log("error occur in checkFPS " + exception);
+				}
+			}
 			_this.parent_monitor();
+		},
+		checkFPS: function ( droppedFrames, decodedFrames) {
+			var currentTime = performance.now();
+			if (decodedFrames) {
+				if (this.lastTime) {
+					var currentPeriod = currentTime - this.lastTime,
+						currentDropped = droppedFrames - this.lastDroppedFrames,
+						currentDecoded = decodedFrames - this.lastDecodedFrames,
+						droppedFPS = 1000 * currentDropped / currentPeriod;
+					if (droppedFPS > 0) {
+						this.log('checkFPS : droppedFPS/decodedFPS:' + droppedFPS/(1000 * currentDecoded / currentPeriod));
+						if ( currentDropped > (mw.getConfig("fpsDroppedMonitoringThreshold") || 0.2)  * currentDecoded ) {
+							var currentLevel = this.getCurrentQuality();
+							this.log('drop FPS ratio greater than max allowed value for currentLevel: ' + currentLevel);
+							if (currentLevel > 0 ) {
+								currentLevel = currentLevel - 1;
+								this.getPlayerElement().mediaPlayer.setAutoSwitchQuality(false);
+								this.setQualityByIndex(currentLevel);
+							}
+						}
+					}
+				}
+				this.lastTime = currentTime;
+				this.lastDroppedFrames = droppedFrames;
+				this.lastDecodedFrames = decodedFrames;
+			}
 		},
 		/**
 		 * Issue a seeking request.
@@ -510,7 +631,7 @@
 				this.hidePlayerOffScreen();
 			}
 
-			if ( seekTime === 0 && this.isLive() && mw.isIpad() && !mw.isIOS8() ) {
+			if ( seekTime === 0 && this.isLive() && mw.isIpad() && !mw.isIOSAbove7() ) {
 				//seek to 0 doesn't work well on live on iOS < 8
 				seekTime = 0.01;
 				this.log( "doSeek: fix seekTime to 0.01" );
@@ -525,6 +646,11 @@
 		canSeek: function(deferred, callbackCount){
 			var vid = this.getPlayerElement();
 			var checkVideoStateDeferred = deferred || $.Deferred();
+
+			if (this.isSeekable){
+				return checkVideoStateDeferred.resolve();
+			}
+
 			var _this = this;
 			if( !callbackCount ){
 				callbackCount = 0;
@@ -535,56 +661,82 @@
 				this.playing = true;
 			}
 
-			// some initial calls to prime the seek:
-			if (vid.currentTime() === 0 && callbackCount === 0) {
-				// when seeking turn off preload none and issue a load call.
-				vid.preload('auto');
-//				vid.load();
+			//If DRM context is not yet updated then update it now, this happens in late binding
+			//situations(IE/EDGE, autoplay, or when seek is issued very early)
+			if (!this.dashContextUpdated) {
+				this.updateDashContext();
 			}
 
-			var vidObj = $(vid.contentEl() ).find("video")[0];
+			if (this.playerElement.getActiveTech() == "dashjs") {
+				// some initial calls to prime the seek:
+				if (vid.currentTime() === 0 && callbackCount === 0) {
+					// when seeking turn off preload none and issue a load call.
+					vid.preload('auto');
+				}
 
-			if ( (vidObj && vidObj.readyState < 3) || (this.getDuration() === 0)) {
-				// if on the first call ( and video not ready issue load, play
-				if (callbackCount == 0 && vid.paused()) {
-					this.stopEventPropagation();
+				var vidObj = $(vid.contentEl()).find("video")[0];
+				//Always wait for manifest loaded before trying to initiate a seek request
+				//otherwise it will cause the dash player engine to throw an exception
+				this.waitForManifestLoaded().then(function () {
+					if ((vidObj && vidObj.readyState < 3) || (_this.getDuration() === 0)) {
+						// if on the first call ( and video not ready issue load, play
+						if ((callbackCount == 0) && vid.paused()) {
+							_this.stopEventPropagation();
 
-					var eventName = mw.isIOS() ? "canplaythrough.seekPrePlay" : "canplay.seekPrePlay";
-					$(vidObj).off(eventName).one(eventName, function () {
-						_this.restoreEventPropagation();
-						if (vid.duration() > 0) {
-							_this.log("player can seek");
-							clearTimeout( _this.canSeekTimeout );
-							this.canSeekTimeout = null;
-							setTimeout( function () {
-								return checkVideoStateDeferred.resolve();
-							}, 10 );
-						} else {
-							_this.log("player can't seek - video duration not available, wait for video duration update");
+							var eventName = mw.isIOS() ? "canplaythrough.seekPrePlay" : "canplay.seekPrePlay";
+							$(vidObj).off(eventName).one(eventName, function () {
+								_this.restoreEventPropagation();
+								if (vid.duration() > 0) {
+									_this.log("player can seek");
+									clearTimeout(_this.canSeekTimeout);
+									_this.canSeekTimeout = null;
+									setTimeout(function () {
+										_this.isSeekable = true;
+										return checkVideoStateDeferred.resolve();
+									}, 10);
+								} else {
+									_this.log("player can't seek - video duration not available, wait for video duration update");
+								}
+							});
+							_this.log("player can't seek - try to init video element ready state");
+							vid.play();
 						}
-					});
-					this.log("player can't seek - try to init video element ready state");
-					vid.play();
-				}
-				// Try to seek for 15 seconds:
-				if (callbackCount >= 15) {
-					this.log("Error:: with seek request, media never in ready state");
-					return checkVideoStateDeferred.resolve();
-				}
-				// manually trigger the loadedmetadata since stopEventPropagation was called but we must have this event triggered during seek operation (SUP-4237)
-				$(vidObj).off('loadedmetadata.seekPrePlay').one('loadedmetadata.seekPrePlay', function () {
-					_this._onloadedmetadata();
+						// Try to seek for 15 seconds:
+						if (callbackCount >= 15) {
+							_this.log("Error:: with seek request, media never in ready state");
+							_this.isSeekable = false;
+							return checkVideoStateDeferred.resolve();
+						}
+						// manually trigger the loadedmetadata since stopEventPropagation was called but we must have this event triggered during seek operation (SUP-4237)
+						$(vidObj).off('loadedmetadata.seekPrePlay').one('loadedmetadata.seekPrePlay', function () {
+							_this._onloadedmetadata();
+						});
+						_this.log("player can't seek - wait video element ready state");
+						_this.canSeekTimeout = setTimeout(function () {
+							_this.canSeekTimeout = null;
+							_this.canSeek(checkVideoStateDeferred, callbackCount + 1);
+						}, 1000);
+					} else {
+						setTimeout(function () {
+							_this.log("player can seek");
+							_this.isSeekable = true;
+							return checkVideoStateDeferred.resolve();
+						}, 10);
+					}
 				});
-				this.log("player can't seek - wait video element ready state");
-				this.canSeekTimeout = setTimeout(function () {
-					this.canSeekTimeout = null;
-					_this.canSeek(checkVideoStateDeferred, callbackCount + 1);
-				}, 1000);
 			} else {
-				setTimeout(function(){
+				var resolve = function(){
 					_this.log("player can seek");
+					_this.isSeekable = true;
 					return checkVideoStateDeferred.resolve();
-				}, 10);
+				};
+				//In dashcs there's no manifestLoaded event so rely on loadedmetadata event to know if ready to seek
+				if (_this.mediaLoadedFlag){
+					resolve();
+				} else {
+					_this.playerElement.one("loadedmetadata", resolve);
+					_this.getPlayerElement().play();
+				}
 			}
 			return checkVideoStateDeferred;
 		},
@@ -619,10 +771,11 @@
 			var src = source.getSrc();
 			var vid = this.getPlayerElement();
 			var switchBindPostfix = '.playerSwitchSource';
+			this.dashContextUpdated = false;
 			this.isPauseLoading = false;
 
 			// Make sure the switch source is different:
-			if (!src || src == vid.src() || $(vid.el() ).attr('data-src') === src) {
+			if (!src || $(vid.el() ).attr('data-src') === src) {
 				if ($.isFunction(switchCallback)) {
 					switchCallback(vid);
 				}
@@ -648,15 +801,8 @@
 			this.previousTime = 0;
 			if (vid) {
 				try {
-					// Remove all old switch player bindings
-					$(vid).unbind(switchBindPostfix);
-
 					// pause before switching source
 					vid.pause();
-
-					var originalControlsState = vid.controls;
-					// Hide controls ( to not display native play button while switching sources )
-					vid.removeAttribute('controls');
 
 					// dissable seeking ( if we were in a seeking state before the switch )
 					if (_this.isFlavorSwitching) {
@@ -676,37 +822,12 @@
 					// hide the player offscreen while we switch
 					_this.hidePlayerOffScreen();
 
-					// restore position once we have metadata
-					$(vid).bind('loadedmetadata' + switchBindPostfix, function () {
-						$(vid).unbind('loadedmetadata' + switchBindPostfix);
-						_this.log(" playerSwitchSource> loadedmetadata callback for:" + src);
-						// ( do not update the duration )
-						// Android and iOS <5 gives bogus duration, depend on external metadata
-
-						// keep going towards playback! if  switchCallback has not been called yet
-						// we need the "playing" event to trigger the switch callback
-						if (!mw.isIOS71() && $.isFunction(switchCallback) && !_this.isVideoSiblingEnabled()) {
-							vid.play();
-						} else {
-							_this.removeBlackScreen();
-						}
-					});
-
-					$(vid).bind('pause' + switchBindPostfix, function () {
-						_this.log("playerSwitchSource> received pause during switching, issue play to continue source switching!")
-						$(vid).unbind('pause' + switchBindPostfix);
-						vid.play();
-					});
-
 					var handleSwitchCallback = function () {
-						//Clear pause binding on switch exit in case it wasn't triggered.
-						$(vid).unbind('pause' + switchBindPostfix);
 						// restore video position ( now that we are playing with metadata size  )
 						_this.restorePlayerOnScreen();
 						// play hide loading spinner:
 						_this.hideSpinner();
 						// Restore
-						vid.controls = originalControlsState;
 						_this.ignoreNextError = false;
 						_this.ignoreNextNativeEvent = false;
 						// check if we have a switch callback and issue it now:
@@ -716,23 +837,13 @@
 							switchCallback(vid);
 							switchCallback = null;
 						}
+						_this.removeBlackScreen();
 					};
-
-					// once playing issue callbacks:
-					$(vid).bind('playing' + switchBindPostfix, function () {
-						$(vid).unbind('playing' + switchBindPostfix);
-						_this.log(" playerSwitchSource> playing callback: " + vid.currentTime);
-						handleSwitchCallback();
-						setTimeout(function () {
-							_this.removeBlackScreen();
-						}, 100);
-
-					});
 
 					// Add the end binding if we have a post event:
 					if ($.isFunction(doneCallback)) {
 						var sentDoneCallback = false;
-						$(vid).bind('ended' + switchBindPostfix, function (event) {
+						var endedHandler = function () {
 							if (_this.disableSwitchSourceCallback) {
 								return;
 							}
@@ -743,65 +854,43 @@
 							}
 							sentDoneCallback = true;
 							// remove end binding:
-							$(vid).unbind(switchBindPostfix);
+							vid.off("ended", endedHandler);
 							// issue the doneCallback
 							doneCallback();
-
-							// Support loop for older iOS
-							// Temporarily disabled pending more testing or refactor into a better place.
-							//if ( _this.loop ) {
-							//	vid.play();
-							//}
 							return false;
-						});
+						};
+						vid.one('ended', endedHandler);
 
 						// Check if ended event was fired on chrome (android devices), if not fix by time difference approximation
 						if (mw.isMobileChrome()) {
-							$(vid).bind('timeupdate' + switchBindPostfix, function (e) {
+							var timeupdateHandler = function (e) {
 								var _this = this;
-								var timeDiff = this.duration - this.currentTime;
+								var timeDiff = this.duration() - this.currentTime();
 
-								if (timeDiff < 0.5 && this.duration != 0) {
+								if (timeDiff < 0.5 && this.duration() != 0) {
 									_this.mobileChromeTimeoutID = setTimeout(function () {
 										_this.mobileChromeTimeoutID = null;
 										// Check if timeDiff was changed in the last 2 seconds
 										if (timeDiff <= (_this.duration - _this.currentTime)) {
 											_this.log('playerSwitchSource> error in getting ended event, issue doneCallback directly.');
 											if (!sentDoneCallback) {
-												$(vid).unbind(switchBindPostfix);
+												vid.off("timeupdate", timeupdateHandler);
 												sentDoneCallback = true;
 												doneCallback();
 											}
 										}
 									}, 2000);
 								}
-							});
+							};
+							vid.on('timeupdate', timeupdateHandler);
 						}
 					}
 
+					this.waitForManifestLoaded().then(function(){
+						handleSwitchCallback();
+					});
 					//Update dash player context
 					this.updateDashContext();
-					// issue the play request:
-					vid.play();
-					if (mw.isIOS()) {
-						setTimeout(function () {
-							handleSwitchCallback();
-						}, 100);
-					}
-					// check if ready state is loading or doing anything ( iOS play restriction )
-					// give iOS 5 seconds to ~start~ loading media
-					setTimeout(function () {
-						// Check that the player got out of readyState 0
-						if (vid.readyState === 0 && $.isFunction(switchCallback) && !_this.canAutoPlay()) {
-							_this.log(" Error: possible play without user click gesture, issue callback");
-							// hand off to the swtich callback method.
-							handleSwitchCallback();
-							// make sure we are in a pause state ( failed to change and play media );
-							_this.pause();
-						}
-					}, 10000);
-
-
 				} catch (e) {
 					this.log("Error: switching source playback failed");
 				}
@@ -811,23 +900,38 @@
 		 * play method calls parent_play to update the interface
 		 */
 		play: function () {
-			var duration = parseInt(this.duration, 10).toFixed(2);
-			var curTime = parseInt(this.getPlayerElementTime(), 10).toFixed(2);
-			if (( this.currentState === "end" ) ||
-				( this.currentState === "pause" && duration === curTime && this.getPlayerElementTime() > 0 )) {
+			if (this.shouldHandleReplay()) {
 				this.stopPlayAfterSeek = false;
 				this.seek(0.01, false);
 			} else {
 				if ( this.parent_play() ) {
-					var _this = this;
-					setTimeout( function () {
+					var play = function () {
+						_this.paused = false;
 						_this.getPlayerElement().play();
 						_this.monitor();
-					}, (this.mediaLoadedFlag ? 100 : 2000) );
+					};
+					var _this = this;
+					//If source isn't set yet then load now, this is used for deferred loading in browsers (IE, Edge)
+					//which don't respect preload=none
+					var el = $(this.playerElement.el());
+					if (el.attr('data-src') !== this.getSrc()){
+						this.updateDashContext();
+
+					}
+					//Make sure manifest is loaded before calling play, this is especially important for
+					//very large manifests which take time to parse!
+					this.waitForManifestLoaded().then(play);
 				} else {
 					mw.log( "EmbedPlayerMultiDRM:: parent play returned false, don't issue play on player element" );
 				}
 			}
+		},
+
+		shouldHandleReplay: function(){
+			var duration = parseInt(this.duration, 10).toFixed(2);
+			var curTime = parseInt(this.getPlayerElementTime(), 10).toFixed(2);
+			return (( this.currentState === "end" ) ||
+				( this.currentState === "pause" && duration === curTime && this.getPlayerElementTime() > 0 ));
 		},
 
 		/**
@@ -841,36 +945,23 @@
 			}
 			this.parent_pause();
 		},
-
+		/**
+		 * load method calls parent_load to start fetching media from server, in case of DRM the license request will be handled as well
+		 */
+		load: function () {
+			//this.getPlayerElement().load();
+		},
 
 		/**
 		 * Handle the native paused event
 		 */
-		onPause: function () {
+		_onpause: function () {
 			var _this = this;
 			this.playing = false;
-			if (this.ignoreNextNativeEvent) {
-				this.ignoreNextNativeEvent = false;
-				return;
-			}
 			var timeSincePlay = Math.abs(this.absoluteStartPlayTime - new Date().getTime());
 			this.log(" OnPaused:: propagate:" + this._propagateEvents +
-			' time since play: ' + timeSincePlay + ' duringSeek:' + this.seeking);
-			// Only trigger parent pause if more than MonitorRate time has gone by.
-			// Some browsers trigger native pause events when they "play" or after a src switch
-			if (!this.seeking && !this.userSlide
-				&&
-				timeSincePlay > mw.getConfig('EmbedPlayer.MonitorRate')
-			) {
-				_this.parent_pause();
-				// in iphone when we're back from the native payer we need to show the image with the play button
-				if (mw.isIphone()) {
-					_this.updatePosterHTML();
-				}
-			} else {
-				// try to continue playback:
-				this.getPlayerElement().play();
-			}
+				' time since play: ' + timeSincePlay + ' duringSeek:' + this.seeking);
+
 		},
 
 		/**
@@ -894,6 +985,11 @@
 			}
 			// Set firstEmbedPlay state to false to avoid initial play invocation :
 			this.ignoreNextNativeEvent = false;
+
+			//Emulate playing event for silverlight
+			if (this.playerElement.getActiveTech() == "dashcs") {
+				this.triggerHelper("playing");
+			}
 		},
 		_ondurationchange: function (event, data) {
 			this.setDuration(this.getPlayerElement().duration());
@@ -909,33 +1005,45 @@
 			// Update if there's no duration or actual media duration is not the same as the metadata duration
 			this.updateVideoDuration();
 
+			//Update volume
+			this.setVolume(this.volume);
+
 			//Check and add manifest data
-			this.addSubtitleTracks();
-			this.addAudioTracks();
-			this.addAbrFlavors();
+			if (this.playerElement.getActiveTech() == "dashjs") {
+				this.addSubtitleTracks();
 
-			var _this = this;
-			var update = function(){
-				var player = _this.getPlayerElement();
-				//Get Playback statistics
-				var stats = player.getPlaybackStatistics();
+				this.addAudioTracks();
+				this.addAbrFlavors();
 
-				var videoData = stats.video.activeTrack;
-				if (videoData){
-				}
-				var audioData = stats.audio.activeTrack;
-				if (audioData){
-					_this.onAudioTrackSelected({index: audioData.id});
-				}
-				var textData = stats.text.activeTrack;
-				if (textData){
-				}
-			};
-			//Run initial update to get active video/audio/caption tracks
-			update();
-			//Validate status every 5 sec
-			setInterval(function(){update();}, 5000);
+				var _this = this;
+				var update = function () {
+					var player = _this.getPlayerElement();
+					//Get Playback statistics
+					var stats = player.getPlaybackStatistics();
 
+					var videoData = stats.video;
+					if (videoData) {
+						var updatedBitrate = (videoData.bandwidth / 1024);
+						if (_this.currentBitrate !== updatedBitrate){
+							_this.currentBitrate = updatedBitrate;
+							_this.triggerHelper('bitrateChange', _this.currentBitrate);
+						}
+					}
+					var audioData = stats.audio.activeTrack;
+					if (audioData) {
+						_this.onAudioTrackSelected({index: audioData.id});
+					}
+					var textData = stats.text.activeTrack;
+					if (textData) {
+					}
+				};
+				//Run initial update to get active video/audio/caption tracks
+				update();
+				//Validate status every 5 sec
+				_this.updateStateInterval = setInterval(function () {
+					update();
+				}, 5000);
+			}
 			// Check if in "playing" state and we are _propagateEvents events and continue to playback:
 			if (!this.paused && this._propagateEvents) {
 				this.getPlayerElement().play();
@@ -952,6 +1060,14 @@
 				this.mediaLoadedFlag = true;
 			}
 		},
+		_onratechange: function(e){
+			if ( this.getPlayerElement().playbackRate() === 0 && !this.paused && !this.seeking && !this.buffering ){
+				this.bufferStart();
+			}
+			if ( this.getPlayerElement().playbackRate() > 0 && this.buffering ){
+				this.bufferEnd();
+			}
+		},
 		updateVideoDuration: function(){
 			var player = this.getPlayerElement();
 			var duration = player.duration();
@@ -961,7 +1077,7 @@
 				&& !isNaN(duration)
 				&&
 				isFinite(duration)
-			) {
+				) {
 				this.log('onloadedmetadata metadata ready Update duration:' + duration + ' old dur: ' + this.getDuration());
 				this.setDuration(this.playerElement.duration());
 			}
@@ -1008,7 +1124,7 @@
 			var player = this.getPlayerElement();
 			var stats = player.getPlaybackStatistics();
 			var videoData = stats.video.activeTrack;
-			if (videoData.representations){
+			if (videoData && videoData.representations){
 				var representations = videoData.representations;
 				if (representations && representations.length > 0){
 					var flavors = representations.map(function(rep){
@@ -1028,39 +1144,26 @@
 				}
 			}
 		},
-		getSources: function(){
-			// check if manifest defined flavors have been defined:
-			if( this.manifestAdaptiveFlavors.length ){
-				return this.manifestAdaptiveFlavors;
-			}
-			return this.parent_getSources();
-		},
-		getSourceIndex: function (source) {
-			var sourceIndex = null;
-			$.each( this.getSources(), function( currentIndex, currentSource ) {
-				if (source.getAssetId() == currentSource.getAssetId()) {
-					sourceIndex = currentIndex;
-					return false;
-				}
-			});
-			// check for null, a zero index would evaluate false
-			if( sourceIndex == null ){
-				this.log("Error could not find source: " + source.getSrc());
-			}
-			return sourceIndex;
-		},
 		switchSrc: function (source) {
 			if( source !== -1 ){
 				this.getPlayerElement().mediaPlayer.setAutoSwitchQuality(false);
 				var sourceIndex = this.getSourceIndex(source);
-				if (sourceIndex) {
-					this.getPlayerElement().mediaPlayer.setQualityFor( "video", sourceIndex );
+				if (sourceIndex != null) {
+					this.setQualityByIndex(sourceIndex,source);
 				}
 			} else {
 				this.getPlayerElement().mediaPlayer.setAutoSwitchQuality(true);
 			}
 		},
+		setQualityByIndex:function(sourceIndex,source){
+			this.getPlayerElement().mediaPlayer.setQualityFor( "video", sourceIndex );
+			this.currentBitrate = source.getBitrate();
+			this.triggerHelper('bitrateChange', source.getBitrate());
+		},
 
+		getCurrentQuality:function(){
+			return this.getPlayerElement().mediaPlayer.getQualityFor( "video" );
+		},
 
 		onAudioTracksReceived: function (data) {
 			this.triggerHelper('audioTracksReceived', data);
@@ -1111,6 +1214,11 @@
 		 */
 		_onended: function () {
 			if (this.getPlayerElement()) {
+				if (this.getPlayerElement().getActiveTech() == "dashcs"){
+					this.mediaLoadedFlag = false;
+					this.isSeekable = false;
+				}
+				this.paused = true;
 				this.log('onended:' + this.playerElement.currentTime() + ' real dur:' + this.getDuration() + ' ended ' + this._propagateEvents);
 				if (this._propagateEvents && !this.isLive()) {
 					this.onClipDone();
@@ -1144,9 +1252,15 @@
 									break;
 								case 'LICENSE_ACQUISITION_ERROR':
 									errorMessage = gM("DRM_LICENSE_ACQUISITION_ERROR");
+								case 'KEY_SYSTEM_ERROR':
+									errorMessage = gM("DRM_KEY_SYSTEM_ERROR");
 									break;
 							}
-							_this.triggerHelper('embedPlayerError', [ {errorMessage: errorMessage} ]);
+							_this.triggerHelper('embedPlayerError', [ {
+								errorMessage: errorMessage,
+								code: playerError.code,
+								subtype: playerError.subtype
+							} ]);
 						}
 						error.code = playerError.code;
 						error.subtype = playerError.subtype;
@@ -1163,8 +1277,8 @@
 			// don't handle seek event on Android native browser
 			var nua = navigator.userAgent;
 			var is_native_android_browser = ((nua.indexOf('Mozilla/5.0') > -1 &&
-			nua.indexOf('Android ') > -1 &&
-			nua.indexOf('AppleWebKit') > -1) && !(nua.indexOf('Chrome') > -1));
+				nua.indexOf('Android ') > -1 &&
+				nua.indexOf('AppleWebKit') > -1) && !(nua.indexOf('Chrome') > -1));
 
 			if (is_native_android_browser) {
 				return;
@@ -1172,7 +1286,7 @@
 			this.log("onSeeking " + this.seeking + ' new time: ' + this.getPlayerElement().currentTime());
 			if (this.seeking && Math.round(this.getPlayerElement().currentTime - this.currentSeekTargetTime) > 2) {
 				this.log("Error: Seek time mismatch: target:" + this.getPlayerElement().currentTime +
-				' actual ' + this.currentSeekTargetTime + ', note apple HLS can only seek to 10 second targets');
+					' actual ' + this.currentSeekTargetTime + ', note apple HLS can only seek to 10 second targets');
 			}
 			// Trigger the html5 seeking event
 			//( if not already set from interface )
@@ -1221,10 +1335,10 @@
 			// we don't want to trigger the seek event for these "fake" onseeked triggers
 			if ((this.mediaElement.selectedSource.getMIMEType() === 'application/vnd.apple.mpegurl') &&
 				( ( Math.abs(this.currentSeekTargetTime - this.getPlayerElement().currentTime) > 2) ||
-				( this.currentSeekTargetTime > 0.01 && ( mw.isIpad() && !mw.isIOS8() ) ) ) ) {
+					( this.currentSeekTargetTime > 0.01 && ( mw.isIpad() && !mw.isIOSAbove7() ) ) ) ) {
 
 				this.log( "Error: seeked triggred with time mismatch: target:" +
-				this.currentSeekTargetTime + ' actual:' + this.getPlayerElement().currentTime );
+					this.currentSeekTargetTime + ' actual:' + this.getPlayerElement().currentTime );
 
 				if( !callbackCount ){
 					callbackCount = 0;
@@ -1240,7 +1354,7 @@
 							if ( (Math.abs( _this.currentSeekTargetTime - _this.getPlayerElement().currentTime() ) > 2) &&
 								callbackCount <= 15 ) {
 								setTimeout( function () {
-									timeupdateCallback( callbackCount++ );
+									timeupdateCallback( ++callbackCount );
 								}, 100 );
 							} else {
 								if ( callbackCount > 15 ) {
@@ -1272,9 +1386,8 @@
 		setPlayerElementVolume: function (percent) {
 			if (this.getPlayerElement()) {
 				// Disable mute if positive volume
-				if (percent != 0 ) {
-					this.getPlayerElement().muted(false);
-				}
+				this.getPlayerElement().muted( percent === 0 );
+
 				this.getPlayerElement().volume(percent);
 			}
 		},
@@ -1291,4 +1404,4 @@
 			}
 		}
 	};
-})(mediaWiki, jQuery);
+})(mediaWiki, jQuery, window.videojs);

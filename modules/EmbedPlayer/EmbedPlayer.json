@@ -1,6 +1,7 @@
 {
     "mw.MediaElement": {
-        "scripts": "resources/mw.MediaElement.js"
+        "scripts": "resources/mw.MediaElement.js",
+        "dependencies": "base64_encode"
     },
     "mw.MediaPlayer": {
         "scripts": "resources/mw.MediaPlayer.js"
@@ -36,6 +37,7 @@
             "mediawiki.jqueryMsg",
             "screenfull",
             "mw.EmbedPlayerNative",
+            "mw.EmbedPlayerKplayer",
             "mw.EmbedPlayerImageOverlay",
             "mw.EmbedPlayerNativeComponent",
             "mw.MediaElement",
@@ -66,7 +68,12 @@
         ]
     },
     "mw.EmbedPlayerKplayer": {
-        "scripts": "resources/mw.EmbedPlayerKplayer.js"
+        "scripts": "resources/mw.EmbedPlayerKplayer.js",
+        "dependencies": [
+            "mw.KWidgetSupport",
+            "base64_encode",
+            "base64_decode"
+        ]
     },
     "mw.EmbedPlayerGeneric": {
         "scripts": "resources/mw.EmbedPlayerGeneric.js"

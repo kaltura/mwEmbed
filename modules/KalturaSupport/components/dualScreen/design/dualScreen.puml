@@ -1,0 +1,36 @@
+@startuml
+
+skinparam handwritten true
+
+class dualScreen << (S,#FF7700) Singleton >>
+class dualScreenControlBar
+class fsm
+class display
+class EmbedPlayer
+class SecondPlayer
+
+
+dualScreen "1" *--> "2" display
+dualScreen "1" *--> "2" players
+dualScreen *--> fsm
+dualScreen *--> dualScreenControlBar
+
+fsm -> display
+dualScreenControlBar -> fsm
+
+players <-- EmbedPlayer
+players <-- SecondPlayer
+SecondPlayer <-- ImagePlayer
+SecondPlayer <-- VideoPlayer
+players -left-> display
+
+ImagePlayer *--> ImageSync
+VideoPlayer *--> VideoSync
+
+skinparam class {
+	BackgroundColor #DDDDDD
+	ArrowColor black
+	BorderColor #DDDDDD
+}
+
+@enduml

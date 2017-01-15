@@ -168,7 +168,7 @@ $.widget( "ui.slider", $.ui.mouse, {
 		}
 
 		this.elementSize = {
-			width: window["resizeScrubberIE11"]===true ? $(window).width() : this.element.outerWidth(), //IE11 iframe fullscreen fix (KMS-4606)
+			width:  this.element.outerWidth(),
 			height: this.element.outerHeight()
 		};
 		this.elementOffset = this.element.offset();

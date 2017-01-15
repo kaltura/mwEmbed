@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+	<title>DFP Runtime Cuepoints</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+  </head>
+  <body>
+	<h1>DFP Runtime Cuepoints</h1>
+	<br>
+<div id="kaltura_player" style="width:400px;height:330px;"></div>
+<script>
+	kWidget.embed({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id' : '12905712',
+		'entry_id' : '0_uka1msg4',
+		'flashvars': {
+			'doubleClick':{
+				'plugin':true,
+				'trackCuePoints': true
+			},
+			'mediaProxy':{
+				'entryCuePoints': [{
+					"protocolType": 1,
+					"adType": 1, 
+					"cuePointType": "adCuePoint.Ad",
+					"startTime": 5000,
+					"sourceUrl": "http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&cust_params=sample_ct%3Dlinear&correlator=[timestamp]"
+				}]
+			}
+		},
+	})
+</script>
+	<h3> How to set DFP cuePoints at Runtime </h3>
+	CuePoints at Runtime work by partial mediaProxy override. Here you can see a <a href="https://www.kaltura.com/api_v3/testmeDoc/index.php?object=KalturaCuePoint" target="_new">cuePoint object</a> added with startTime 5 seconds.
+	<pre class="prettyprint linenums">
+kWidget.embed({
+	'targetId': 'myVideoTarget',
+	'wid': '_243342',
+	'uiconf_id' : '12905712',
+	'entry_id' : '0_uka1msg4',
+	'flashvars': {
+		'doubleClick':{
+			'plugin':true,
+			'trackCuePoints': true
+		},
+		'mediaProxy':{
+			'entryCuePoints': [{
+				"protocolType": 1,
+				"adType": 1, 
+				"cuePointType": "adCuePoint.Ad",
+				"startTime": 5000,
+				"sourceUrl": "http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&cust_params=sample_ct%3Dlinear&correlator=[timestamp]"
+			}]
+		}
+	},
+);
+</pre>
+  </body>
+</html>

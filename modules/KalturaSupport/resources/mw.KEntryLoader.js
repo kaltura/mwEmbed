@@ -29,16 +29,19 @@ mw.KEntryLoader.prototype = {
 		// Normalize flashVars
 		kProperties.flashvars = kProperties.flashvars || {};
 
+
 		if( this.getCacheKey( kProperties ) && this.playerLoaderCache[ this.getCacheKey( kProperties ) ] ){
-			mw.log( "KApi:: playerLoader load from cache: " + !!( this.playerLoaderCache[ this.getCacheKey( kProperties ) ] ) );
+		mw.log( "KApi:: playerLoader load from cache: " + !!( this.playerLoaderCache[ this.getCacheKey( kProperties ) ] ) );
 			callback( this.playerLoaderCache[ this.getCacheKey( kProperties ) ] );
 			return ;
 		}
 		// Local method to fill the cache key and run the associated callback
 		var fillCacheAndRunCallback = function( namedData ){
-			_this.playerLoaderCache[ _this.getCacheKey( kProperties ) ] = namedData;
+			if ( !mw.getConfig("EmbedPlayer.DisableEntryCache") ) {
+				_this.playerLoaderCache[_this.getCacheKey( kProperties )] = namedData;
+			}
 			callback( namedData );
-		}
+		};
 
 		// If we don't have entryId and referenceId return an error
 		if( !kProperties.flashvars.referenceId && !kProperties.entry_id ) {
@@ -73,6 +76,14 @@ mw.KEntryLoader.prototype = {
 				baseEntryRequestObj['filter:idEqual'] = kProperties.entry_id;
 			}
 		}
+
+		var withProxyData = false;
+		// Filter by proxy data
+		if(kProperties.proxyData){
+			baseEntryRequestObj['filter:freeText'] = JSON.stringify(kProperties.proxyData);
+			withProxyData = true;
+		}
+
 		requestObject.push(baseEntryRequestObj);
 		var streamerType = kProperties.flashvars.streamerType || 'http';
 		var flavorTags = kProperties.flashvars.flavorTags || 'all';
@@ -116,15 +127,14 @@ mw.KEntryLoader.prototype = {
 				'filter:entryIdEqual' : entryIdValue
 			});
 		}
-		_this.getNamedDataFromRequest( requestObject, fillCacheAndRunCallback );
+		_this.getNamedDataFromRequest( requestObject, fillCacheAndRunCallback, withProxyData);
 	},
-
 	/**
-	 * Do the player data Request and populate named dat
+	 * Do the player data Request and populate named data
 	 * @pram {object} requestObject Request object
 	 * @parm {function} callback Function called with named data
 	 */
-	getNamedDataFromRequest: function( requestObject, callback ){
+	getNamedDataFromRequest: function( requestObject, callback , withProxyData){
 		var _this = this;
 		// Do the request and pass along the callback
 		this.clinet.doRequest( requestObject, function( data ){
@@ -156,7 +166,7 @@ mw.KEntryLoader.prototype = {
 				namedData['entryCuePoints'] = data[ dataIndex ].objects;
 			}
 			callback( namedData );
-		});
+		}, undefined, undefined, withProxyData);
 	},
 	convertCustomDataXML: function( data ){
 		var result = {};
@@ -166,7 +176,7 @@ mw.KEntryLoader.prototype = {
 			$.each( $xml, function(inx, node){
 				result[ node.nodeName ] = node.textContent;
 			});
-		}
+		} 
 		return result;
 	},
 	/**

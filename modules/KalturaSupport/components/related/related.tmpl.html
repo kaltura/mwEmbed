@@ -1,8 +1,9 @@
+<div class="relatedContainer">
 <div class="item featured" data-entry-id="<%=nextItem.id%>" data-click="changeMedia">
 	<div class="item-inner">
 		<div class="title">
 			<% if( self.getConfig('autoContinueTime') ) { %>
-			Next <span class="time">in: 
+			Next <span class="time">in:
 					<span class="remaining">{related.timeRemaining|timeFormat}</span>
 				</span><br />
 			<% } %>
@@ -21,3 +22,4 @@
 	</div>
 </div>
 <% }); %>
+</div>

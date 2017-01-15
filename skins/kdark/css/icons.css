@@ -1,77 +1,26 @@
 @font-face {
 	font-family: 'icomoon';
 	src: url('../fonts/icomoon.eot');
-	src: url('../fonts/icomoon.eot?#iefix') format('embedded-opentype'), url('../fonts/icomoon.woff') format('woff'), url('../fonts/icomoon.ttf') format('truetype'), url('../fonts/icomoon.svg#icomoon') format('svg');
+	src: url('../fonts/icomoon.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/icomoon.woff') format('woff'),
+         url('../fonts/icomoon.ttf') format('truetype'),
+         url('../fonts/icomoon.svg?#icomoon') format('svg');
 	font-weight: normal;
 	font-style: normal;
 }
 
-/* Use the following CSS code if you want to use data attributes for inserting your icons */
-[data-icon]:before {
-	font-family: 'icomoon';
-	content: attr(data-icon);
-	speak: none;
-	font-weight: normal;
-	font-variant: normal;
-	text-transform: none;
-	line-height: 1;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-}
+[class^="icon-"], [class*=" icon-"] {
+    font-family: 'icomoon';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
 
-/* Use the following CSS code if you want to have a class per icon */
-/*
-Instead of a list of all class selectors,
-you can use the generic selector below, but it's slower:
-[class*="icon-"] {
-*/
-.icon-fullscreen-exit-alt,
-.icon-fullscreen-alt,
-.icon-contract,
-.icon-related,
-.icon-cc,
-.icon-cog,
-.icon-expand,
-.icon-info,
-.icon-volume-mute,
-.icon-volume-low,
-.icon-volume-high,
-.icon-share,
-.icon-replay,
-.icon-like,
-.icon-checkmark,
-.icon-unlike,
-.icon-play,
-.icon-pause,
-.icon-expand2,
-.icon-flag,
-.icon-camera,
-.icon-download,
-.icon-close,
-.icon-ad,
-.icon-list,
-.icon-chromecast,
-.icon-next,
-.icon-prev,
-.icon-duration,
-.icon-start_time,
-.icon-chapterMenu,
-.icon-clear,
-.icon-magnifyGlass,
-.icon-switchSource,
-.icon-off-air,
-.icon-on-air,
-.icon-toggle,
-.icon-locator,
-.icon-toggleAll{
-	font-family: 'icomoon';
-	speak: none;
-	font-style: normal;
-	font-weight: normal;
-	font-variant: normal;
-	text-transform: none;
-	line-height: 1;
-	-webkit-font-smoothing: antialiased;
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .icon-volume-mute:before {
@@ -101,7 +50,12 @@ you can use the generic selector below, but it's slower:
 .icon-checkmark:before {
 	content: "\e606";
 }
-
+.icon-check:before {
+	content: "\e606";
+}
+.icon-caret:before {
+	content: "\e624";
+}
 .icon-cc:before {
 	content: "\e607";
 }
@@ -179,12 +133,10 @@ you can use the generic selector below, but it's slower:
 }
 
 .icon-next:before {
-	font-size: 16px;
 	content: "\e61b";
 }
 
 .icon-prev:before {
-	font-size: 16px;
 	content: "\e61a";
 }
 
@@ -227,4 +179,95 @@ you can use the generic selector below, but it's slower:
 .icon-toggleAll:before {
     content: "\e626";
 }
+.icon-audio:before {
+    content: "\e627";
+}
+.icon-new-tab:before {
+    content: "\e628";
+}
+.mobileSkin .icon-cog:before {
+    content: "\e900";
+}
+.mobileSkin .icon-share:before {
+    content: "\e901";
+}
+.mobileSkin .icon-more:before {
+    content: "\e902";
+}
+.mobileSkin .icon-chromecast:before {
+    content: "\e903";
+}
+.mobileSkin .icon-airplay:before {
+    content: "\e904";
+}
+.mobileSkin .icon-contract:before {
+    content: "\e905";
+}
+.mobileSkin .icon-expand:before {
+    content: "\e906";
+}
+.mobileSkin .icon-play:before {
+    text-shadow: 0px 0px 2px rgba(0,0,0,0.10);
+    content: "\e907";
+}
+.mobileSkin .icon-pause:before {
+    text-shadow: 0px 0px 2px rgba(0,0,0,0.10);
+    content: "\e908";
+}
+.mobileSkin .icon-prev:before {
+    content: "\e909";
+}
+.mobileSkin .icon-next:before {
+    content: "\e90a";
+}
+.mobileSkin .icon-richmedia:before {
+    content: "\e90b";
+}
+.mobileSkin .icon-info:before {
+    content: "\e90c";
+}
+.mobileSkin .icon-cc:before {
+    content: "\e90d";
+}
+.mobileSkin .icon-speedrate:before {
+    content: "\e90e";
+}
+.mobileSkin .icon-flag:before {
+    content: "\e90f";
+}
+.mobileSkin .icon-attachments:before {
+    content: "\e910";
+}
+.mobileSkin .icon-download:before {
+    content: "\e911";
+}
+.mobileSkin .icon-swap:before {
+    content: "\e912";
+}
+.mobileSkin .icon-mainslide:before {
+    content: "\e913";
+}
+.mobileSkin .icon-single:before {
+    content: "\e914";
+}
+.mobileSkin .icon-split:before {
+    content: "\e915";
+}
+.mobileSkin .icon-viewpoint:before {
+    content: "\e916";
+}
+.mobileSkin .icon-related:before {
+    content: "\e91c";
+}
+.mobileSkin .icon-ad:before {
+    content: "\e91e";
+}
+.mobileSkin .icon-arrow-left:before {
+    content: "\e917";
+}
+.mobileSkin .icon-close:before {
+    content: "\e918";
+}
+
+
 

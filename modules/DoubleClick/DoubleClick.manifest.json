@@ -2,17 +2,34 @@
     "doubleClick": {
         "label": "DoubleClick",
         "description": "DoubleClick for Publishers (DFP) Video provides publishers with a platform \r\n\t\tto increase revenue from video advertising as well as manage costs. Fully integrated with DFP,\r\n\t\t publishers can now manage their entire display advertising through one platform, with video at its core.\r\n\t\t Learn more about <a href=\"http://www.google.com/doubleclick/publishers/solutions/video.html\" target=\"_blank\">DFP video solutions</a>",
+	    "type": "menu",
+	    "sections": {
+		    "type": "tabs",
+		    "tabset": [
+			    {
+				    "label": "DFP Trafficking",
+				    "active": true,
+				    "key": "dfp",
+				    "children": [
+
+				    ]
+			    },
+			    {
+				    "label": "VAST Trafficking",
+				    "key": "vast",
+				    "children": [
+
+				    ]
+			    }
+		    ],
+		    "title": "Trafficking"
+	    },
         "attributes": {
             "adTagUrl": {
                 "label": "Ad tag URL",
-                "doc": "The DoubleClick DFP VAST ad tag URL (can include multiple nested VAST URLs). ",
-                "type": "url"
-            },
-            "enableCountDown": {
-                "label": "Enable notice message",
-                "doc": "When checked, a notice message displays during ad playback",
-                "initvalue": false,
-                "type": "boolean"
+                "doc": "The DoubleClick DFP VAST ad tag URL (can include multiple nested VAST URLs).",
+                "type": "url",
+	            "section": "dfp"
             },
             "pauseAdOnClick": {
                 "label": "Pause ad on clicked",
@@ -20,12 +37,12 @@
                 "initvalue": true,
                 "type": "boolean"
             },
-            "countdownText": {
-                "label": "Notice message",
-                "doc": "Notice message to be displayed during ad playback. Can contain evaluated expressions using curly brackets",
-                "initvalue": "",
-                "type": "string"
-            },
+	        "leadWithFlash": {
+		        "label": "Lead with flash",
+		        "doc": "If the flash based DFP runtime should be used where flash is available.",
+		        "type": "boolean",
+		        "initvalue": false
+	        },
             "contentId": {
                 "doc": "The contentId, used by DoubleClick plugin API, generally the entry ID, but can also be custom metadata mapping",
                 "type": "string"
@@ -56,18 +73,32 @@
                 "initvalue": 5000,
                 "type": "hiddenValue"
             },
-            "leadWithFlash": {
-                "label": "Lead with flash",
-                "doc": "If the flash based DFP runtime should be used where flash is available.",
-                "type": "boolean",
-                "initvalue": true
-            },
-            "debugMode": {
-                "label": "Debug mode",
-                "doc": "If the DFP IMA3 SDK debug mode should be used.",
-                "type": "boolean",
-                "initvalue": false
-            }
+	        "trackCuePoints": {
+		        "doc": "If entry cuepoints should be tracked for midroll or overlay ad requests.",
+		        "type": "boolean",
+		        "section": "vast"
+	        },
+	        "prerollUrl": {
+		        "doc": "The pre-roll VAST ad tag XML URL.",
+		        "label": "Preroll URL",
+		        "type": "url",
+		        "section": "vast"
+	        },
+	        "postrollUrl": {
+		        "label": "Postroll URL",
+		        "doc": "The post-roll VAST ad tag XML URL",
+		        "type": "url",
+		        "section": "vast"
+	        },
+	        "timeout": {
+		        "doc": "The timeout in seconds, for displaying an overlay VAST ad.",
+		        "type": "number",
+		        "section": "over",
+		        "min": 0,
+		        "initvalue": 5,
+		        "max": 1000,
+		        "section": "vast"
+	        }
         }
     }
 }

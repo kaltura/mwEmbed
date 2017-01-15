@@ -3,6 +3,7 @@ body {
 	/*Disable the default behavior of an Anchor in jQuery Mobile (iOS)*/
 	-webkit-touch-callout: none ; /* disable the iOS popup when long-press on a link */
 	-webkit-user-select: none ; /* disable selection/copy of UIWebView */
+	-webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 }
 .topBarContainer {
 	position: absolute;
@@ -168,7 +169,7 @@ body {
 	transition: bottom 0.2s ease-in;
 }
 .mobile .controlBarContainer {
-	height: 42px !important;
+	height: 48px !important;
 }
 .mobile.fullscreen .controlBarContainer {
 	height: 64px !important;
@@ -188,7 +189,7 @@ body {
 }
 
 button, a{
-	outline: none !important;
+	outline: 0 !important;
 }
 button::-moz-focus-inner {
 	border: 0;
@@ -266,9 +267,7 @@ button::-moz-focus-inner {
 .end-state .largePlayBtn:before {
 	content: "\e605" !important;
 }
-.mobile.start-state .largePlayBtn {
-	display: block !important;
-}
+
 .mobile.pause-state .largePlayBtn {
 	display: block !important;
 }
@@ -279,16 +278,22 @@ button::-moz-focus-inner {
 .mobile.player-out .largePlayBtn {
 	display: none !important;
 }
+.mobile.seeking-state .largePlayBtn {
+	display: none !important;
+}
+.mobile.start-state .largePlayBtn {
+    display: block !important;
+}
 .scrubber {
 	position: relative;
-	height: 3px;
+	height: 6px;
 	border-radius: 1.5px;
 	background-color: rgba(255,255,255,0.3);
 	cursor: pointer;
 	margin-left: 10px;
 	margin-right: 8px;
 	display: inline-block !important;
-	top: -7px;
+	top: -4px;
 }
 .scrubber div{
 	border-radius: 2px;
@@ -306,14 +311,14 @@ button::-moz-focus-inner {
 }
 .sliderPreview .arrow{
 	display: block !important;
-	margin-left: -30px;
+	margin-left: 10px;
 	bottom: -4px !important;
 }
 .sliderPreview {
 	position: absolute !important;
-	width: 36px !important;
 	height: 24px !important;
 	padding-left: 12px !important;
+	padding-right: 6px !important;
 	margin-left: -10px !important;
 	z-index: 9999999999 !important;
 	background-color: #ffffff !important;
@@ -358,7 +363,7 @@ button::-moz-focus-inner {
 	z-index: 100;
 	position: absolute;
 	left: 0;
-	top: -6px;
+	top: -5px;
 	width: 28px;
 	height: 28px;
 	border-radius: 50%;
@@ -499,12 +504,167 @@ button::-moz-focus-inner {
 	width: 0px;
 	height: 0px;
 }
+.smartContainerMenu{
+	background-color: rgba(255,255,255,0.9);
+	border-radius: 3px;
+	position: absolute;
+	color: #666666;
+	z-index: 10;
+	width: 320px;
+}
+.mobile .smartContainerMenu{
+	background-color: rgba(0,0,0,0.6);
+	border-radius: 0px;
+	position: absolute;
+	color: #ffffff;
+	z-index: 10;
+	width: 100%;
+	height: 100%;
+	left: 0px;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-box-pack: center;
+	-moz-box-pack: center;
+	-ms-flex-pack: center;
+	-webkit-justify-content: center;
+	justify-content: center;
+	-webkit-box-align: center;
+	-moz-box-align: center;
+	-ms-flex-align: center;
+	-webkit-align-items: center;
+	align-items: center;
+}
+.smartContainerMenu p{
+	margin-top: 30px;
+	margin-bottom: 30px;
+}
+.smartContainerMenu .pluginIcon{
+	display: none;
+}
+.mobile .smartContainerMenu .pluginIcon{
+	display: block;
+	font-size: 5em;
+	padding-left: 1em;
+	padding-right: 1em;
+}
+.mobile.size-small .smartContainerMenu .pluginIcon{
+	font-size: 3em;
+	padding-left: 0.75em;
+	padding-right: 0.75em;
+}
+.mobile .smartContainerMenu .pluginPropertyLabel{
+	display: none;
+}
+.mobile .smartContainerMenu .fakeCombo{
+	display: none;
+}
+.mobile .smartContainerMenu .hidden{
+	position: absolute;
+	visibility: visible;
+	width: 130px;
+	height: 100px;
+	margin-top: -100px;
+	opacity: 0;
+	-webkit-appearance: menulist-button;
+}
+.smartContainerMenu label{
+	letter-spacing: 0px;
+}
+
+.smartContainerMenu .pluginPropertyLabel{
+	color: #666666;
+	margin-left: 30px;
+	font-size: 17px;
+}
+.smartContainerMenu label{
+	color: #555555;
+	font-size: 12px;
+}
+.smartContainerMenu .pluginProperty.checkbox{
+	width: 14px;
+	margin-top: 30px;
+}
+.smartContainerMenu .hidden{
+	position: absolute;
+	visibility: hidden;
+	width: 0px;
+	height: 0px;
+}
+.smartContainerMenu .fakeCombo{
+	font-size: 11px;
+	font-weight: bold;
+	letter-spacing: 2px;text-transform: uppercase;
+	padding-top: 12px;
+	padding-bottom: 12px;
+	padding-left: 14px;
+	padding-right: 14px;
+	color: #999999;
+	border: 1px solid #999999;
+	border-radius: 3px;
+	width: 130px;
+	float: right;
+	margin-right: 30px;
+	margin-top: -8px;
+	cursor: pointer;
+}
+.smartContainerMenu .fakeCombo>i{
+	font-size: 8px;
+	float: right;
+	margin-top: 2px;
+}
+.smartContainerMenu ul{
+	background-color: white;
+	border: 1px solid #999999;
+	width: 138px;
+	float: right;
+	margin-right: 30px;
+	border-radius: 3px;
+	padding-right: 10px;
+	padding-left: 10px;
+	position: relative;
+	display: none;
+}
+.smartContainerMenu li{
+	list-style-type: none;
+	color: #666666;
+	font-size: 16px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #cccccc;
+	padding-left: 0px;
+	cursor: pointer;
+	height: 18px;
+}
+.smartContainerMenu li:hover{
+	font-weight: bold;
+}
+.smartContainerMenu li.last{
+	border-bottom: 0px;
+}
+.smartContainerMenu li.active{
+	font-weight: bold;
+}
+.smartContainerMenu li>i{
+	font-size: 9px;
+	float: right;
+	margin-top: 2px;
+	display: none;
+}
+.smartContainerMenu li.active>i{
+	display: block;
+}
 .timers {
 	position: relative;
 	font-size: 12px;
 	display: inline;
 	font-family: Helvetica,Arial;
-	top: -5px;
+	top: -3px;
 }
 /* specific FireFox CSS fixes */
 @-moz-document url-prefix(){
@@ -695,6 +855,7 @@ button::-moz-focus-inner {
 .mobile.fullscreen .controlsContainer {
 	margin-top: 28px !important;
 }
+
 .ui-tooltip {
 	background-color: #000000;
 	background-repeat: repeat-x;
@@ -803,8 +964,8 @@ button::-moz-focus-inner {
 	font-size: 20px;
 	background-color: rgba(255,255,255,0.18);
 	color: rgba(255,255,255,0.6);
+	outline: 0;
 }
-
 .btn:hover {
 	/*
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
@@ -835,7 +996,11 @@ button::-moz-focus-inner {
 }
 
 .btn:focus {
-	outline: 1px dotted #999;
+	outline: 1px solid #66CCFF;
+}
+
+.mobile .btn:focus {
+	outline: none;
 }
 
 .scrubber.disabled {
@@ -989,14 +1154,23 @@ button::-moz-focus-inner {
 	margin-left: 16px;
 	margin-right: 12px;
 }
+.smartContainer{
+	font-size: 26px;
+	margin-top: 2px;
+	width: 46px;
+	background-color: transparent;
+}
+.smartContainer:hover{
+	background-color: transparent;
+}
 .fullScreenBtn{
 	font-size: 26px;
 	margin-right: 16px;
 	margin-top: 2px;
-	width: 26px;
+    width: 46px;
 	background-color: transparent;
 }
-.mobile .fullScreenBtn{
+.mobile .controlsContainer .comp{
 	font-size: 18px !important;
 	margin-top: -14px !important;
 }
@@ -1243,7 +1417,8 @@ button::-moz-focus-inner {
 
 .AlertContainerTransparent{
     background-color : transparent;
-    position: fixed;
+    position: absolute;
+    width: 80%;
     top: 50%;
     left: 50%;
     -webkit-transform: translate(-50%, -50%);
@@ -1270,6 +1445,17 @@ button::-moz-focus-inner {
 	-o-filter: blur(5px);
 	-ms-filter: blur(5px);
 	filter: blur(5px);
+}
+.vpaidContainer{
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 2000;
+	width: 100%;
+	height: 100%;
+}
+.blackBackground{
+	background-color: #000000;
 }
 @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
 @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }

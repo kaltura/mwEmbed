@@ -3,19 +3,38 @@
 	mw.PluginManager.add( 'moderation', mw.KBaseScreen.extend({
 
 		defaultConfig: {
-			"parent": "controlsContainer",
+			"parent": mw.isMobileDevice() ? 'topBarContainer' : 'controlsContainer',
 		 	"order": 62,
 		 	"displayImportance": "low",
 		 	"align": "right",
 		 	"showTooltip": true,
-
-		 	"tooltip": "Report",
-		 	"reasonSex": "Sexual Content",
-		 	"reasonViolence": "Violent Or Repulsive",
-		 	"reasonHarmful": "Harmful Or Dangerous Act",
-		 	"reasonSpam": "Spam / Commercials"
+			"smartContainer": 'morePlugins',
+			"smartContainerCloseEvent": 'closeMenuOverlay',
+			"title": gM("ks-MODERATION-REPORT"),
+			"header": gM("ks-MODERATION-HEADER"),
+			"text": gM("ks-MODERATION-TEXT"),
+			"placeholder": gM("ks-MODERATION-PLACEHOLDER"),
+		 	"tooltip": gM("ks-MODERATION-REPORT"),
+		 	"reasonSex": gM("ks-MODERATION-REASON-SEX"),
+		 	"reasonViolence": gM("ks-MODERATION-REASON-VIOLENCE"),
+		 	"reasonHarmful": gM("ks-MODERATION-REASON-HARMFUL"),
+		 	"reasonSpam": gM("ks-MODERATION-REASON-SPAM")
 		},
 
+		setup: function () {
+			this.addBindings();
+		},
+
+		addBindings: function () {
+			this.bind('onChangeMedia', $.proxy(function () {
+				this.getPlayer().triggerHelper( 'onEnableKeyboardBinding' );
+				$(this.getPlayer().getPlayerElement()).removeClass( "blur" );
+				this.getPlayer().getPlayerPoster().removeClass( "blur" );
+			}, this));
+		},
+		getScreen: function(){
+			return $.Deferred().resolve(this.screen);
+		},
 		drawModal: function() {
 			if (this.isDisabled) return;
 			var _this = this;
@@ -27,33 +46,29 @@
 
 			// Disable space key binding to enable entering "space" inside the textarea
 		 	this.getPlayer().triggerHelper( 'onDisableKeyboardBinding' );
-
 		 	var $header = $( '<h2 />' ).text(this.getConfig( 'header' ));
 			var $moderationMessage = $( '<div />' ).append(
 				$( '<span />' ).text(this.getConfig( 'text' )),
-				$( '<div />' ).append(
-					$( '<select />' )
-						.attr( 'id','flagType' )
-						.append(
-							$( '<option />' ).attr( 'value', 1 ).text( _this.getConfig( 'reasonSex' ) ),
-							$( '<option />' ).attr( 'value', 2 ).text( _this.getConfig( 'reasonViolence' ) ),
-							$( '<option />' ).attr( 'value', 3 ).text( _this.getConfig( 'reasonHarmful' ) ),
-							$( '<option />' ).attr( 'value', 4 ).text( _this.getConfig( 'reasonSpam' ) )
-						)
-					),
+				$('<div></div>').append(
+						$('<i></i>')
+							.addClass("icon-toggle")).append(
+				$( '<select />' )
+					.attr( 'id','flagType' )
+					.append(
+						$( '<option />' ).attr( 'value', 1 ).text( _this.getConfig( 'reasonSex' ) ),
+						$( '<option />' ).attr( 'value', 2 ).text( _this.getConfig( 'reasonViolence' ) ),
+						$( '<option />' ).attr( 'value', 3 ).text( _this.getConfig( 'reasonHarmful' ) ),
+						$( '<option />' ).attr( 'value', 4 ).text( _this.getConfig( 'reasonSpam' ) )
+					)
+					.css({'width': '100%', 'height': '26px', 'margin-top': '10px'})),
 				$( '<textarea />' )
 					.attr( 'id', 'flagComments' )
-					.css({'width': '95%', 'height': '50px', 'margin-top': '5px'}),
+					.attr( 'placeholder', gM("ks-MODERATION-PLACEHOLDER" ))
+					.css({'width': '100%', 'height': '40px', 'margin-top': '10px'}),
 				$('<div/>' ).append(
-				$('<button />')
-					.addClass( 'ui-state-default ui-corner-all copycode' )
-					.text("Cancel")
-					.click(function(){
-						_this.closeModal();
-					}),
-				$( '<button />' )
-					.addClass( 'ui-state-default ui-corner-all copycode' )
-					.text( 'Submit' )
+					$( '<div />' )
+					.addClass( 'reportButton right' )
+					.text( gM("ks-MODERATION-SUBMIT") )
 					.click(function() {
 						_this.submitFlag({
 							'flagType': $( '#flagType' ).val(),
@@ -61,33 +76,43 @@
 						});
 					}) )
 			);
-
+			if (mw.isAndroid()){
+				$moderationMessage.find(".icon-toggle").remove();
+			}
 			var $moderationScreen = $( '<div />' ).append($header, $moderationMessage );
 
 			var closeCallback = function() {
 				// Enable space key binding
+				_this.hideScreen();
 				_this.getPlayer().triggerHelper( 'onEnableKeyboardBinding' );
+				$(_this.getPlayer().getPlayerElement()).removeClass( "blur" );
+				_this.getPlayer().getPlayerPoster().removeClass( "blur" );
 				if( isPlaying ) {
 					_this.getPlayer().play();
 				}
 			};
+			this.screen = $moderationScreen;
+			this.showScreen();
 
 			this.showModal($moderationScreen, closeCallback);
 		},
 		showModal: function(screen, closeCallback){
 			this.getPlayer().disablePlayControls();
 			this.getPlayer().layoutBuilder.displayMenuOverlay( screen, closeCallback );
+			$(this.getPlayer().getPlayerElement()).addClass("blur");
+			this.getPlayer().getPlayerPoster().addClass("blur");
+			this.getPlayer().triggerHelper( 'moderationOpen' );
 		},
 		closeModal: function(){
 			this.getPlayer().enablePlayControls();
+			$( this.getPlayer().getPlayerElement() ).removeClass( "blur" );
+			this.getPlayer().getPlayerPoster().removeClass( "blur" );
 			this.getPlayer().layoutBuilder.closeMenuOverlay();
 		},
 		submitFlag: function(flagObj) {
 			var _this = this;
-
-			this.getPlayer().layoutBuilder.closeMenuOverlay();
+			this.getPlayer().triggerHelper( 'moderationSubmit', flagObj.flagType );
 			this.getPlayer().addPlayerSpinner();
-
 			this.getKalturaClient().doRequest( {
 				'service' : 'baseentry',
 				'action' : 'flag',
@@ -99,11 +124,11 @@
 				_this.getPlayer().hideSpinner();
 				var $flagScreen = $( '<div />' )
 					.append(
-						$( '<h3 />' ).text( 'Thank you for sharing your concerns' ),
+						$( '<h3 />' ).text( gM("ks-MODERATION-THANKS") ),
 						$( '<div />' ).append(
-							$( '<button />' )
-								.addClass( 'ui-state-default ui-corner-all copycode' )
-								.text( 'Done' )
+							$( '<div />' )
+								.addClass( 'reportButton' )
+								.text( gM("ks-MODERATION-DONE") )
 								.click(function() {
 									_this.getPlayer().triggerHelper( 'onEnableKeyboardBinding' );
 									_this.closeModal();
@@ -111,6 +136,11 @@
 						)
 					);
 				_this.getPlayer().layoutBuilder.displayMenuOverlay( $flagScreen );
+			},
+			false,
+			function(error){
+				_this.log("Error sending report to server: " + error);
+				_this.getPlayer().layoutBuilder.closeMenuOverlay();
 			});
 		},
 		getComponent: function(){

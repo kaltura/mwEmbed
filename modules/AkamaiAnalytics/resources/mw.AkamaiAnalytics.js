@@ -162,7 +162,9 @@
 				}
 				dataObject['playerLoadtime'] = embedPlayer.evaluate( '{playerStatusProxy.loadTime}' );
 				_this.sendEventLog( 'playerLoadtime', dataObject['playerLoadtime'] );
-				embedPlayer.getPlayerElement().sendNotification( 'setMediaAnalyticsData', dataObject );
+				if( embedPlayer.getPlayerElement() ){
+					embedPlayer.getPlayerElement().sendNotification( 'setMediaAnalyticsData', dataObject );
+				}
 			});
 		},
 
@@ -185,26 +187,14 @@
 		} ,
 
 		getConfigPath: function() {
-			// Check for configuration override
-			var configPath = null;
-			if ( this.getConfig( 'configPath' ) ) {
-				configPath = this.getConfig( 'configPath' );
-			}
 			// Akamai has a special https url ( does not support protocol relative urls )
 			if ( this.isHttps() ) {
-				// If configuration override includes https use it
-				if ( configPath && ( configPath.indexOf( 'https' ) != -1 ) ) {
-					return configPath;
-				}
-				// If configuration path is not overriden or overriden with insecure URL, use default secure location
-				return this.defaultConfigPathHTTPS;
+				// If configuration path is not overridden use default secure location
+				return this.getConfig( 'securedConfigPath') || this.defaultConfigPathHTTPS;
 			}
-			// The default config path for kaltura akami account
-			if ( configPath ){
-				return configPath;
-			}
+			//  If configuration path is not overridden use default location
 
-			return this.defaultConfigPath;
+			return this.getConfig( 'configPath' ) || this.defaultConfigPath;
 		},
 
 		getConfig: function( attr )  {

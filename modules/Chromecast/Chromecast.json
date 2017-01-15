@@ -1,7 +1,6 @@
 {
     "chromecast": {
         "scripts": [
-            "resources/chromecastLib.js",
             "resources/chromecast.js"
         ],
         "dependencies": "mw.KBaseComponent",
@@ -11,5 +10,9 @@
     },
     "mw.EmbedPlayerChromecast": {
         "scripts": "resources/mw.EmbedPlayerChromecast.js"
-    }
+    },
+	"mw.EmbedPlayerChromecastReceiver": {
+		"scripts": "resources/mw.EmbedPlayerChromecastReceiver.js",
+		"kalturaPluginName": "embedPlayerChromecastReceiver"
+	}
 }

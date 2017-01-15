@@ -8,7 +8,8 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 			'visible': true,
 			'disableable': true,
 			'showTooltip': false,
-			'accessibilityLabels': true
+			'accessibilityLabels': true,
+			'hideWhenEmpty':false
 		};
 	},
 
@@ -30,6 +31,9 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 			this.componentType = pluginName;
 		}
 		this._addBindings();
+		if( this.getConfig('hideWhenEmpty') == true ){
+				this.setConfig('visible', false)
+		}
 	},
 	_addBindings: function(){
 		var _this = this;

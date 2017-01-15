@@ -1,3 +1,9 @@
+.vjs-text-track-display{
+    display: inherit !important;
+}
+.vjs-text-track{
+    display: inherit !important;
+}
 div[class^="vjs-"] {
     display: none;
 }

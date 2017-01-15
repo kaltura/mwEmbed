@@ -1,0 +1,131 @@
+.qnaInterface .qnaQuestionArea{
+    background-color: #00b4d1;
+    overflow: hidden;
+    height: 88px;
+}
+
+.qnaInterface .qnaQuestionBox{
+    background-color: #00b4d1;
+    width: 100%;
+    height: 60px;
+    -webkit-box-shadow:	0px 7px 10px 0px rgba(0, 0, 0, 0.09);
+    -moz-box-shadow:	0px 7px 10px 0px rgba(0, 0, 0, 0.09);
+    box-shadow:			0px 7px 10px 0px rgba(0, 0, 0, 0.09);
+}
+
+.qnaInterface .qnaQuestionTextArea{
+    background-color: transparent;
+    font-family: 'Lato', Helvetica, Arial;
+    font-size: 13px;
+    line-height: 14px;
+    text-align: left;
+    color: #ffffff;
+    border: transparent;
+    border: none;
+    margin-top: 10px;
+    -webkit-box-shadow:	none;
+    -moz-box-shadow:	none;
+    box-shadow:			none;
+    resize: none;
+    overflow: hidden;
+    height: 40px;
+    /* Firefox */
+    width: -moz-calc(100% - 45px);
+    /* WebKit */
+    width: -webkit-calc(100% - 45px);
+    /* Opera */
+    width: -o-calc(100% - 45px);
+    /* Standard */
+    width: calc(100% - 45px);
+}
+
+.qnaInterface .qnaPipeLabel{
+    background-color: transparent;
+    font-family: 'Lato', Helvetica, Arial;
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 14px;
+    text-align: left;
+    color: #ffffff;
+    border: transparent;
+    border: none;
+    margin-top: 13px;
+    -webkit-box-shadow:	none;
+    -moz-box-shadow:	none;
+    box-shadow:			none;
+    width: 4px;
+    margin-left: 10px;
+    float: left;
+    cursor: default;
+}
+
+.qnaInterface .qnaButtonsPipeLabel{
+    background-color: transparent;
+    font-family: 'Lato', Helvetica, Arial;
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 12px;
+    text-align: left;
+    color: #ffffff;
+    border: transparent;
+    border: none;
+    margin-top: 3px;
+    -webkit-box-shadow:	none;
+    -moz-box-shadow:	none;
+    box-shadow:			none;
+    margin-left: 5px;
+    margin-right: 5px;
+    float: right;
+}
+
+.qnaInterface .qnaQuestionButtonsArea{
+    background-color: transparent;
+    width: 100%;
+    height: 28px;
+}
+
+.qnaInterface .qnaPluginButton{
+}
+
+.qnaInterface .qnaButtonsContainer{
+    position: relative;
+    width: 100%;
+    float: right;
+    margin-right: 12px;
+    padding-top: 5px;
+    display:inline-block
+}
+
+.qnaInterface .controlBarBtn{
+    background-color: transparent;
+    border: none;
+    line-height: 12px;
+    text-align: left;
+    font-family: 'Lato', Helvetica, Arial;
+    font-size: 12px;
+    color: #ffffff;
+    float: right;
+    margin-top: 2px;
+}
+
+.qnaInterface .controlBarBtn:hover {
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);;
+}
+
+.qnaInterface .qnaCancelButton{
+    font-weight: 300;
+}
+
+.qnaInterface .qnaSendButton{
+    font-weight: 500;
+}
+
+.qnaInterface .qnaQuestionTextAreaTyping{
+    color: #ffffff;
+    font-weight: 300;
+}
+
+.qnaInterface .qnaQuestionTextAreaNotTyping{
+    color: rgba(255, 240, 240, 0.61);
+    font-weight: 300;
+}

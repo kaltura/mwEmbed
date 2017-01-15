@@ -132,13 +132,33 @@
 			'desc' => 'Triggered when the player enters a play state. This event be triggered multiple times during a single playback session.
 				For example, playerPlayed will be triggered between ads and when the user plays content after pausing it.'
 		),
-		'playerSeekStart' => array(
+		'userInitiatedPlay' => array(
 			'callbackArgs' => 'None',
+			'desc' => 'Triggered when the player enters a play state due to user action. For example, when user clicked the play button.'
+		),
+		'userInitiatedPause' => array(
+			'callbackArgs' => 'None',
+			'desc' => 'Triggered when the player enters a pause state due to user action. For example, when user clicked the pause button.'
+		),
+		'preSeek' => array(
+			'callbackArgs' => 'seekTime: The target time to seek to',
+			'desc' => 'Notify about a seek activity that is about to start'
+		),
+		'seek' => array(
+			'callbackArgs' => 'currentTime: The player current time when the seek operation starts',
 			'desc' => 'Notify about a seek activity that started'
 		),
-		'playerSeekEnd' => array(
-			'callbackArgs' => 'None',
+		'seeked' => array(
+			'callbackArgs' => 'seekedTime: The time that the player actually seeked to',
 			'desc' => 'Notify that the seek activity has finished'
+		),
+		'userInitiatedSeek' => array(
+			'callbackArgs' => 'None',
+			'desc' => 'Triggered when the player performs a seek operation due to user action. For example, when user moves the scrubber head or clicks the scrubber track.'
+		),
+		'monitorEvent' => array(
+			'callbackArgs' => 'None',
+			'desc' => 'Triggers few times a second while the player plays. Used to update the play head and for sync tasks. The exact event interval is defined by the <a href="#EmbedPlayer.MonitorRate">EmbedPlayer.MonitorRate</a> Flashvar.'
 		),
 		'playerUpdatePlayhead' => array(
 			'callbackArgs' => 'Player current time',
@@ -196,6 +216,15 @@
 		'bufferChange' => array(
 			'callbackArgs' => 'true / false',
 			'desc' => 'Dispatches when the player starts or stops buffering'
+		),
+		'bufferStartEvent' => array(
+			'desc' => 'Dispatches when the player starts buffering',
+			'example' => '../modules/KalturaSupport/tests/PlayerBufferTest.qunit.html'
+		),
+		'bufferEndEvent' => array(
+			'callbackArgs' => 'bufferTime: The amount of time since last buffer start event.',
+			'desc' => 'Dispatches when the player starts buffering',
+			'example' => '../modules/KalturaSupport/tests/PlayerBufferTest.qunit.html'
 		),
 		'scrubberDragStart' => array(
 			'callbackArgs' => 'None',
@@ -313,6 +342,11 @@
 		'adStart' => array(
 			'callbackArgs' => 'timeSlot: pre / post / mid / main (see SequenceContextType class)',
 			'desc' => 'Defines the value of the type property of an ad start notification'
+		),
+		'onAdPlay' => array(
+			'callbackArgs' => 'Ad ID, Ad System, Ad Type, Ad Position, Ad Duration, Ad Pod Position, Ad Pod start time, Ad title, Trafficking Parameters (DoubleClick only)',
+			'desc' => 'Dispatched when the ad starts to play. Use this event to get the ad property values',
+			'example' => '../modules/DoubleClick/tests/DoubleClickAdEvents.qunit.html'
 		),
 		'adClick' => array(
 			'callbackArgs' => 'timeSlot: pre / post / mid / main (see SequenceContextType class)',

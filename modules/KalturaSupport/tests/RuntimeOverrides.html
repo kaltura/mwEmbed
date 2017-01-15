@@ -16,7 +16,6 @@
 	<div id="kaltura_player" style="width:600px;height:338px;"></div>
 	
 	<script>
-	
 		var customRelatedEntries =[{  
 				"id":"1_18leun9q",
 				"name":"World Office Sports - Swivel Chair Sprint (Source)",
@@ -157,16 +156,58 @@
 		"</div>\n" + 
 		"<% }); %>";
 		
-		var shareTemplate = "<div class='panel-right'>\n" + 
-		"\t<h3>Custom Share:</h3>\n" +
-		"\t<input value=\"<%= share.getConfig('shareURL') %>\" />\n" +
-		"\t<div class=\"divider\"></div>" +
-		"\t<ul>\n" +
-		"\t\t<% $.each(networks, function(idx, network){ %>\n" +
-			"\t\t\t<li><a href=\"<%=network.url%>\" data-click=\"openPopup\">\n\t\t\t\t<span class=\"<%=network.cssClass%>\" title=\"<%=network.name%>\"></span>\n\t\t\t\t</a>\n\t\t\t</li>\n" +
-		"\t\t<% }); %>\n" +
-		"\t</ul>\n" + 
+		var shareTemplate ="<span class=\"share-close icon-share-close\"  data-click=\"closeScreen\"></span>\n" + 
+		"<div class='panel-center'>\n" + 
+		"<h3>Custom share:</h3>\n" +
+		"	<span class=\"share-alert\"></span>\n" + 
+		"	<div class=\"share-icons-scroller\">\n" + 
+		"		<div class=\"icon-play back-btn noselection\"></div>\n" + 
+		"		<div class=\"icon-play next-btn noselection\"></div>\n" + 
+		"		<div class=\"share-icons-container\">\n" + 
+		"			<% $.each(networks, function(idx, network){ %>\n" + 
+		"				<div class=\"icon-border PIE\">\n" + 
+		"					<a href=\"<%=encodeURIComponent(network.template)%>\" data-click=\"openPopup\">\n" + 
+		"						<% if( network.icon != \"\" ) { %>\n" + 
+		"							<img class=\"share-network custom-share-network\" title=\"<%=network.name%>\" src=\"<%=network.icon%>\">\n" + 
+		"						<% }else{ %>\n" + 
+		"							<span class=\"<%=network.cssClass%> share-network\" title=\"<%=network.name%>\" id=\"<%=idx%>\"></span>\n" + 
+		"						<% } %>\n" + 
+		"					</a>\n" + 
+		"				</div>\n" + 
+		"			<% }); %>\n" + 
+		"		</div>\n" + 
+		"	</div>\n" + 
+		"	<% if( socialShareEnabled) { %>\n" + 
+		"		<div class=\"share-input-container share-container\">\n" + 
+		"			<input class=\"shareembed-input share-input\" value=\"<%= share.getConfig('shareURL') %>\"/>\n" + 
+		"			<!--div class=\"share-copy-btn\" data-target=\".share-input\"><%=share.locale.copyLbl%></div>\n" + 
+		"			<div class=\"icon-share-Yes share-v-icon\"></div-->\n" + 
+		"		</div>\n" + 
+		"		<% if( allowTimeOffset) { %>\n" + 
+		"			<div class=\"share-input-container share-offset-container\">\n" + 
+		"				<span class=\"share-label noselection\"><%=share.locale.startTimeLbl%></span>\n" + 
+		"				<input value=\"00:00\" class=\"shareembed-input share-offset\"/>\n" + 
+		"			</div>\n" + 
+		"		<% } %>\n" + 
+		"	<% } %>\n" + 
+		"	<% if( embedEnabled) { %>\n" + 
+		"		<div class=\"share-input-container embed-container\">\n" + 
+		"			<input class=\"shareembed-input embed-input\"/>\n" + 
+		"			<!--div class=\"share-copy-btn\" data-target=\".embed-input\"><%=share.locale.copyLbl%></div>\n" + 
+		"			<div class=\"icon-share-Yes share-v-icon\"></div-->\n" + 
+		"		</div>\n" + 
+		"		<div class=\"share-input-container embed-offset-container\">\n" + 
+		"			<% if( allowTimeOffset) { %>\n" + 
+		"				<span class=\"share-label noselection\"><%=share.locale.startTimeLbl%></span>\n" + 
+		"				<input value=\"00:00\" class=\"shareembed-input share-offset\"/>\n" + 
+		"			<% } %>\n" + 
+		"			<% if( allowSecuredEmbed) { %>\n" + 
+		"				<label class=\"share-secure-lbl noselection\"><input class=\"share-secured\" type=\"checkbox\" name=\"securedCB\" value=\"secured\"><%=share.locale.secureEmbedLbl%></label>\n" + 
+		"			<% } %>\n" + 
+		"		</div>\n" + 
+		"	<% } %>\n" + 
 		"</div>";
+	
 		
 		function doPlayerEmbed(){
 			if( jsonConfig.plugins.infoScreen ){

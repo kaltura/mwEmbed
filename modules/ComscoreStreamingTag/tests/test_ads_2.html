@@ -1,0 +1,61 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>ComscoreStreamingTag Module - ads </title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+</head>
+<body>
+<h1>ComscoreStreamingTag Plugin - advertising</h1>
+<br>
+<div id="myVideoTarget" style="float:left;padding-left:10px;width:400px;height:330px;"></div>
+<i>Analytics events:</i> ( only html5 )<br />
+<textarea id="analyticsLog" rows='15' style="width:450px;"></textarea>
+</div>
+
+<div style="clear:both"></div>
+
+
+<script>
+	kWidget.featureConfig({
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '13306622',
+		'entry_id' : '0_uka1msg4',
+		'flashvars': {
+			"vast": {
+				"prerollUrl" : "http://projects.kaltura.com/MichalR/vast3_demo.xml",
+				"numPreroll" : "1",
+				"prerollStartWith" : "1",
+				"prerollInterval" : "1",
+				"preSequence" : "1",
+				"numPostroll" : "1",
+				"postSequence" : "1",
+				"overlayUrl" : "http://projects.kaltura.com/MichalR/vast_overlay.xml",
+				"overlayStartAt" : "20",
+				"overlayInterval" : "300",
+				"timeout" : "4"
+			},
+			'adsOnReplay':true,
+			'comScoreStreamingTag':{
+				'debug': true,
+				'plugin': true,
+				'asyncInit': 'true',
+				'position': "before",
+				'relativeTo': "video",
+				'trackEventMonitor': 'trackEvent',
+				'c2':"1234567",
+				'labelMapping':'test_1="test value",test_2={mediaProxy.entry.description}',
+				'persistentLabels':'test_0="something else"'
+			}
+		}
+	})
+
+	window['trackEvent'] = function( eventObj ){
+		$( "#analyticsLog" ).append( 'comScore Event:' + JSON.stringify( eventObj) + "\n\n" );
+	}
+</script>
+<br>
+</body>
+</html>

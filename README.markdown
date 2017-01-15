@@ -1,4 +1,4 @@
-## Library Overview
+## Library Overview 
 
 __Kaltura's HTML5 Media Library__ enables you leverage a unified configuration and development API for both HTML5 and Flash. It enables delivery of rich on page and in player experiences backed by robust metadata and per device asset delivery of the [kaltura platform](http://corp.kaltura.com/). It supports a [wide range of features](http://html5video.org/kaltura-player/docs/), an external and internal plugin model, advanced html5 player, and custom skins. 
 
@@ -20,7 +20,7 @@ Can't find what your looking for in the documentation, ran into an issue check t
 
 ## Hacking on mwEmbed
 
-* Pull requests can be sent to <a href="https://github.com/kaltura/mwEmbed/">our git hub repo</a>. 
+* Pull requests can be sent to <a href="https://github.com/kaltura/mwEmbed/">our git hub repo</a>. Pull requests should be open against the master branch.
 * Our coding conventions <a href="http://www.mediawiki.org/wiki/Manual:Coding_conventions/JavaScript">follow mediaWiki js guidelines</a>. 
 * See [getting strated guide](http://knowledge.kaltura.com/kaltura-player-toolkit-theme-skin-and-plugins-guide)
 * Also see [Yeoman project](https://github.com/kaltura/generator-kalturaplayer-module) for auto generating skeleton kaltura player plugins.  
@@ -44,6 +44,8 @@ Can't find what your looking for in the documentation, ran into an issue check t
 * [Resource Loader](https://www.mediawiki.org/wiki/ResourceLoader)
 * [jQuery](http://jquery.com/) 
 * [bootstrap](http://getbootstrap.com/) -- for documentation pages
+* [Shaka Player](https://github.com/google/shaka-player) -- for project page
+* [hls.js](https://github.com/dailymotion/hls.js) -- for project page
 
 ## Library Features
 

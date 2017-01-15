@@ -30,6 +30,8 @@ $wgKalturaCDNUrl = wgGetUrl('cdn_host');
 $wgKalturaStatsServiceUrl = wgGetUrl('stats_host');
 // Default Live Stats URL
 $wgKalturaLiveStatsServiceUrl = wgGetUrl('live_stats_host');
+// Default Kaltura Analytics URL
+$wgKalturaAnalyticsServiceUrl = wgGetUrl('analytics_host');
 
 // SSL host names
 if( $wgHTTPProtocol == 'https' ){
@@ -37,6 +39,7 @@ if( $wgHTTPProtocol == 'https' ){
 	$wgKalturaCDNUrl = wgGetUrl('cdn_host_https');
 	$wgKalturaStatsServiceUrl = wgGetUrl('stats_host_https');
 	$wgKalturaLiveStatsServiceUrl = wgGetUrl('live_stats_host_https');
+	$wgKalturaAnalyticsServiceUrl = wgGetUrl('analytics_host_https');
 
 }
 
@@ -46,8 +49,10 @@ $wgCDNAssetPath = $wgKalturaCDNUrl;
 // Default Kaltura Cache Path
 $wgScriptCacheDirectory = $kConf->get('cache_root_path') . '/html5/' . $wgKalturaVersion;
 
-$wgLoadScript = $wgKalturaServiceUrl . '/html5/html5lib/' . $wgKalturaVersion . '/load.php';
-$wgResourceLoaderUrl = $wgLoadScript;
+if (strpos($_SERVER["HTTP_HOST"], "kaltura.com")){
+	$wgLoadScript = $wgKalturaServiceUrl . '/html5/html5lib/' . $wgKalturaVersion . '/load.php';
+	$wgResourceLoaderUrl = $wgLoadScript;
+}
 
 // Salt for proxy the user IP address to Kaltura API
 if( $kConf->hasParam('remote_addr_header_salt') ) {

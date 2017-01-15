@@ -1,0 +1,75 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>External Logger</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<style>
+    #kdebug{
+        width: 700px;
+        height: 300px;
+        background-color: #cacaca;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        border: 1px solid black;
+        font-family: Arial;
+        font-size: 11px;
+    }
+</style>
+<body>
+<h2> External Logger </h2>
+This test page demonstrates the usage of a DIV as an external logger.<br>
+The following properties can be set:
+<ul>
+    <li><b>debug</b>: When set to true, debug messages are logged.</li>
+    <li><b>debugTarget</b>: The ID of the external logger DOM element. </li>
+    <li><b>autoScrollDebugTarget</b>: When set to true, the external logger is auto scrolled. Default is false.</li>
+    <li><b>debugFilter</b>: A string or regular expression used to filter the logged messages.</li>
+</ul>
+<div id="kaltura_player" style="width:400px;height:330px;"></div>
+<script>
+    function embed(){
+        $("#kdebug").empty();
+        mw.setConfig("debug",$("#debug").is(":checked"));
+        mw.setConfig("debugTarget","kdebug");
+        mw.setConfig("autoScrollDebugTarget",$("#autoScroll").is(":checked"));
+        mw.setConfig("debugFilter",$("#filter").val().toString());
+        kWidget.embed({
+            'targetId': 'kaltura_player',
+            'wid': '_243342',
+            'uiconf_id' : '12905712',
+            'entry_id' : '0_uka1msg4',
+            'flashvars': {
+                'autoPlay': true
+            }
+        });
+    }
+
+    $(function() {
+        embed();
+    });
+</script>
+
+<br>
+Logger:
+<p style="border: 1px solid black; width: 380px; padding: 10px;">
+<label><input type="checkbox" id="debug" checked> debug</label>
+<label><input type="checkbox" id="autoScroll" checked> autoScrollDebugTarget</label>
+<label>Filter: <input type="text" id="filter" style="width: 200px; font-size: 12px; height: 18px; margin-top: 8px" value="Analytics"></label>
+    <button onclick="embed()">Refresh Player</button>
+</p>
+<div id="kdebug"></div>
+<br>
+Sample embed code:
+<pre class="prettyprint linenums">
+mw.setConfig("debug",true);
+mw.setConfig("debugTarget","kdebug");
+mw.setConfig("autoScrollDebugTarget",true);
+mw.setConfig("debugFilter","Analytics");
+kWidget.embed({<br/>	'targetId': 'kaltura_player',<br/>	'wid': '_243342',<br/>	'uiconf_id' : '12905712',<br/>	'entry_id' : '0_uka1msg4',<br/>	'flashvars': {<br/>		'autoPlay': true<br/>	}<br/>});
+</pre>
+</body>
+</html>

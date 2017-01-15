@@ -106,9 +106,24 @@
 			// If have no components, hide
 			this.bind('layoutBuildDone', function(){
 				if( !_this.getComponent().children().length ){
-					_this.destroy();
+					_this.getComponent().hide();
+					_this.getComponentReminder().hide();
 				}
 			});
+			this.bind('onChangeMedia', function(){
+				_this.close();
+			});
+			this.bind('onChangeMediaDone layoutChange', function(){
+				var children = _this.getComponent().children();
+				if( children.length && (children.filter('*[data-visibility="visible"]').length > 0 )) {
+					_this.getComponent().show();
+					_this.getComponentReminder().show();
+				} else {
+					_this.getComponent().hide();
+					_this.getComponentReminder().hide();
+				}
+			});
+
 			this.bind( 'layoutBuildDone ended', function(){
 				_this.setHeight();
 				_this.showReminder();
@@ -197,7 +212,8 @@
 		},
 		setHeight: function(){
 			var height = this.getPlayer().getHeight() - this.getPlayer().getControlBarContainer().height();
-			if (this.getPlayer().getTopBarContainer().length){
+			var noControls = this.getPlayer().isMobileSkin() ? 2 : 0;
+			if (this.getPlayer().getTopBarContainer().length && this.getPlayer().getTopBarContainer().children().length !== noControls) {
 				height -= this.getPlayer().getTopBarContainer().height();
 				//If topbar exist then add top value
 				this.getComponent().css('top', this.getPlayer().getTopBarContainer().height());

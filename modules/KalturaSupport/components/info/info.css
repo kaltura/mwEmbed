@@ -1,0 +1,111 @@
+.screen.infoScreen{
+    font-family: 'Lato', Helvetica, Arial;
+}
+.infoScreen .title{
+    font-size: 2.1em;
+    font-weight: bold;
+    color: rgb(255, 255, 255);
+    margin-bottom: 0.7em;
+}
+
+.infoScreen .screen-content {
+    padding: 0.7em;
+    position: relative;
+    height: 100%;
+}
+.infoScreen .created {
+    font-size: 0.8em;
+    margin-left: 0.5em;
+}
+
+.infoScreen .description {
+    font-size: 1em;
+    margin-top: 1.5em;
+}
+.infoScreen .plays {
+    font-size: 0.8em;
+    margin-left: 0.5em;
+}
+
+.fullscreen .infoScreen .title{
+    font-size: 4.2em;
+}
+.fullscreen .infoScreen .created {
+    font-size: 1.6em;
+    margin-left: 1em;
+}
+.fullscreen .infoScreen .description {
+    font-size: 2em;
+    margin-top: 3em;
+}
+.fullscreen .infoScreen .plays {
+    font-size: 1.6em;
+    margin-left: 1em;
+}
+
+.fullscreen .fullscreen-video-size-small .infoScreen .title{
+    font-size: 2em;
+}
+.fullscreen .fullscreen-video-size-small .infoScreen .created {
+    font-size: 0.7em;
+    margin-left: 0.5em;
+}
+.fullscreen .fullscreen-video-size-small .infoScreen .description {
+    font-size: 1em;
+    margin-top: 1.5em;
+}
+.fullscreen .fullscreen-video-size-small .infoScreen .plays {
+    font-size: 0.7em;
+    margin-left: 0.5em;
+}
+
+
+.infoScreen .infoScreenPanel{
+    width: 80%;
+    margin-left: 10%;
+    text-align: left;
+    top: 15%;
+    position: absolute;
+    height: 85%;
+    overflow-y: auto;
+}
+@font-face {
+    font-family: 'info';
+    src:url('fonts/info.eot?6jqndw');
+    src:url('fonts/info.eot?6jqndw#iefix') format('embedded-opentype'),
+    url('fonts/info.ttf?6jqndw') format('truetype'),
+    url('fonts/info.woff?6jqndw') format('woff'),
+    url('fonts/info.svg?6jqndw#icomoon') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+[class^="icon-infoScreen-"], [class*=" icon-infoScreen"] {
+    font-family: 'info' !important;
+    font-size: 16px;
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-infoScreen-clock:before {
+    content: "\e901";
+    position: relative;
+    top: 0.1em;
+}
+.icon-infoScreen-eye:before {
+    content: "\e900";
+    position: relative;
+    top: 0.1em;
+    margin-left: 2.5em;
+}
+
+.fullscreen .fullscreen-video-size-small .infoScreen .icon-infoScreen-eye:before {
+    margin-left: 1em;
+}

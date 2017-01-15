@@ -12,7 +12,8 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 		accessibleVolumeChange: 0.1,
 		showSlider: true,
         pinVolumeBar: false,
-		useCookie: true
+		useCookie: true,
+		uniquePlayerCookie: false
 
 	},
 	icons: {
@@ -24,7 +25,7 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 	setup: function( embedPlayer ) {
 		this.addBindings();
 		var _this = this;
-		this.cookieName = this.pluginName + '_volumeValue';
+		this.cookieName = _this.getConfig( 'uniquePlayerCookie' ) ? this.pluginName + '_volumeValue_' + this.embedPlayer.kuiconfid : this.pluginName + '_volumeValue';
 		this.bind( 'playerReady ' , function () {
 			if ( (_this.getConfig( 'useCookie' ) && $.cookie( _this.cookieName ) ) ) {
 				var volumeValue = parseInt( $.cookie( _this.cookieName ) );
@@ -65,12 +66,27 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 			max: 100,
 			slide: function( event, ui ){
 				_this.getPlayer().setVolume( (ui.value / 100) , true );
+				_this.updateTooltipAndAccessibility(ui.value);
 			},
 			change: function( event, ui ) {
 				_this.getPlayer().setVolume( (ui.value / 100) , true );
+				_this.updateTooltipAndAccessibility(ui.value);
+			},
+			start: function( event, ui ) {
+				_this.getPlayer().preMuteVolume = (ui.value / 100);
 			}
 		};
 	},
+	updateTooltipAndAccessibility: function (value) {
+		if (this.getPlayer().isMuted() || value === 0) {
+			this.updateTooltip(gM('mwe-embedplayer-volume-unmute'));
+			this.setAccessibility(this.getBtn(), gM('mwe-embedplayer-volume-unmute'));
+		} else {
+			this.updateTooltip(gM('mwe-embedplayer-volume-mute'));
+			this.setAccessibility(this.getBtn(), gM('mwe-embedplayer-volume-mute'));
+		}
+	},
+
 	addBindings: function() {
 		var _this = this;
 		var mouseOverSlider = false;
@@ -117,14 +133,8 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 		}
 		// Add click bindings
 		this.getBtn().click( function() {
-			if( !_this.getPlayer().isMuted() ){
-				_this.updateTooltip(gM( 'mwe-embedplayer-volume-unmute' ));
-				_this.setAccessibility(_this.getBtn(), gM( 'mwe-embedplayer-volume-unmute' ));
-			} else {
-				_this.updateTooltip(gM( 'mwe-embedplayer-volume-mute' ));
-				_this.setAccessibility(_this.getBtn(), gM( 'mwe-embedplayer-volume-mute' ));
-			}
 			_this.getPlayer().toggleMute();
+			_this.updateTooltipAndAccessibility();
 			if ( _this.updateFirstMute ){
 				_this.updateFirstMute = false;
 				_this.updateVolumeUI(1);
@@ -201,8 +211,9 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 						.attr( {'title': gM( 'mwe-embedplayer-volume-mute' ) ,'id': 'muteBtn'});
 			this.setAccessibility($btn, gM( 'mwe-embedplayer-volume-mute' ));
 			// Add the volume control icon
-			var $sliderContainer = $( '<div />' ).addClass( 'sliderContainer' );
+			var $sliderContainer = $( '<div />' ).addClass( 'sliderContainer');
 			if (this.getConfig("layout")=="vertical"){
+				$sliderContainer.append($( '<div />' ).addClass( 'arrow' ));
 				$sliderContainer.append($( '<div />' ).addClass( 'slider' ));
 			}else{
 				$sliderContainer = $( '<div />' ).addClass( 'slider' );

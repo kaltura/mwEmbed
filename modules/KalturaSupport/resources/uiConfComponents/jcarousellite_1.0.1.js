@@ -267,6 +267,9 @@
 					}, animationOptions)
 				);
 			}
+			this.jCarouselLiteGo = function( inx ){
+				return go( inx );
+			};
 		});
 	};
 

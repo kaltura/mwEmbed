@@ -1,0 +1,109 @@
+{
+  "heartbeat": {
+    "label": "Adobe Heartbeat",
+    "description": "Adobe Heartbeat collects and aggregates video metrics. Adobe Heartbeat supports a dynamic set of attributes based on events you want to track and data you want to associate with each event.",
+    "attributes": {
+      "visitorId": {
+        "doc": "The Marketing Cloud visitor ID service provides a universal visitor ID across Marketing Cloud solutions (visitorId).",
+        "label": "Adobe Marketing Cloud visitor ID. Required.",
+        "type": "string"
+      },
+      "visitorTrackingServer": {
+        "doc": "Adobe Analytics tracking server (visitorTrackingServer)",
+        "label": "Adobe Visitor Tracking Server",
+        "type": "string"
+      },
+      "appMeasurementAccount": {
+        "doc": "Adobe Analytics AppMeasurement account (appMeasurementAccount <rsid>)",
+        "label": "Adobe Analytics AppMeasurement account",
+        "type": "string"
+      },
+      "appMeasurementTrackingServer": {
+        "doc": "Adobe Analytics AppMeasurement tracking server (appMeasurementTrackingServer)",
+        "label": "Adobe Analytics AppMeasurement tracking server",
+        "type": "string"
+      },
+      "appMeasurementPageName": {
+        "doc": "Adobe Analytics AppMeasurement page name (appMeasurementPageName)",
+        "label": "Adobe Analytics AppMeasurement page name",
+        "type": "string"
+      },
+      "appMeasurementCharSet": {
+        "doc": "Adobe Analytics AppMeasurement char set (appMeasurementCharSet)",
+        "label": "Adobe Analytics AppMeasurement char set",
+        "type": "string"
+      },
+      "appMeasurementVisitorID": {
+        "doc": "Adobe Analytics AppMeasurement Visitor ID (appMeasurementVisitorID)",
+        "label": "Adobe Analytics AppMeasurement Visitor ID",
+        "type": "string"
+      },
+      "heartbeatTrackingServer": {
+        "doc": "Adobe Heartbeat tracking server (heartbeatTrackingServer)",
+        "label": "Adobe Heartbeat tracking server",
+        "type": "string"
+      },
+      "heartbeatPublisher": {
+        "doc": "Each customer is provided an ID that is associated with a configuration file on the heartbeat server. This file is configured by an Adobe representative. (heartbeatPublisher)",
+        "label": "Adobe Heartbeat publisher",
+        "type": "string"
+      },
+      "heartbeatChannel":{
+        "doc": "Adobe Heartbeat Channel (heartbeatChannel)",
+        "label": "Adobe Heartbeat Channel",
+        "type": "string"
+      },
+      "heartbeatOVP":{
+        "doc": "Adobe Heartbeat OVP (heartbeatOVP)",
+        "label": "Adobe Heartbeat OVP",
+        "type": "string"
+      },
+      "heartbeatSDK":{
+        "doc": "Adobe Heartbeat SDK (heartbeatSDK)",
+        "label": "Adobe Heartbeat SDK",
+        "type": "string"
+      },
+      "heartbeatSSL":{
+        "doc": "Adobe Heartbeat SSL (heartbeatSSL)",
+        "label": "Adobe Heartbeat SSL",
+        "type": "boolean",
+        "initvalue": false
+      },
+      "heartbeatQuietMode":{
+        "doc": "Adobe Heartbeat QuietMode (heartbeatQuietMode)",
+        "label": "Adobe Heartbeat QuietMode",
+        "type": "boolean",
+        "initvalue": false
+      },
+      "heartbeatDebugLogging":{
+        "doc": "Adobe Heartbeat debug logging (heartbeatDebugLogging)",
+        "label": "Adobe Heartbeat debug logging",
+        "type": "boolean",
+        "initvalue": false
+      },
+      "heartbeatLibDebugLogging":{
+        "doc": "Adobe Heartbeat lib debug logging (heartbeatLibDebugLogging)",
+        "label": "Adobe Heartbeat lib debug logging",
+        "type": "boolean",
+        "initvalue": false
+      },
+      "adobeAnalyticsDebugLogging":{
+        "doc": "Adobe Analytics debug logging (adobeAnalyticsDebugLogging)",
+        "label": "Adobe Analytics debug logging",
+        "type": "boolean",
+        "initvalue": false
+      },
+      "AdobeVideoPlayerPluginDebugLogging":{
+        "doc": "Adobe video player plugin debug logging (AdobeVideoPlayerPluginDebugLogging)",
+        "label": "Adobe video player plugin debug logging",
+        "type": "boolean",
+        "initvalue": false
+      },
+      "trackEventMonitor":{
+        "doc": "A global callback function for logging Adobe Heartbeat events.",
+        "label": "Event monitor function name",
+        "type": "string"
+      }
+    }
+  }
+}

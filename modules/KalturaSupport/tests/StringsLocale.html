@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Player localized strings override</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+	<!--<meta name="apple-itunes-app" content="app-id=304878510">-->
+</head>
+<body>
+	<h1>Player localized strings override</h1>
+	<p>
+		In this demo, player strings are being overridden by Flashvars using the "strings" plugin.<br>
+		The strings plugin can also be configured according to localization codes.<br>
+		For the following player, the keys and values are specified for English ("en") and Spanish ("es"):<br>
+		<pre>
+'flashvars': {
+    "localizationCode": 'es',
+    "strings":{
+        "en":{
+            "mwe-embedplayer-play_clip": "Click to play",
+            "mwe-embedplayer-pause_clip": "Click to pause",
+            "mwe-embedplayer-player_fullscreen": "Enter full screen"
+        },
+        "es":{
+            "mwe-embedplayer-play_clip": "Reproducir clip",
+            "mwe-embedplayer-pause_clip": "Pausar clip",
+            "mwe-embedplayer-player_fullscreen": "Pantalla completa"
+        }
+    }
+}
+		</pre>
+	Hover over the play and full-screen buttons to see the new tooltip values. Change the localization key from "es" to "en" to see the per-locale change.
+	</p>
+	<div id="kaltura_player" style="width: 585px; height: 330px;float: left;"></div>
+	<br style="clear: both;" /><br />
+<script>
+
+	kWidget.featureConfig({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id' : '21099702',
+		'flashvars': {
+            "localizationCode": 'es',
+			"confFilePath": "{libPath}/modules/KalturaSupport/tests/confFiles/jsonConfig.json",
+			"related.playlistId": "1_qui13sz2",
+			"strings":{
+                "en":{
+                    "mwe-embedplayer-play_clip": "Click to play",
+                    "mwe-embedplayer-pause_clip": "Click to pause",
+                    "mwe-embedplayer-player_fullscreen": "Enter full screen"
+                },
+                "es":{
+                    "mwe-embedplayer-play_clip": "Reproducir clip",
+                    "mwe-embedplayer-pause_clip": "Pausar clip",
+                    "mwe-embedplayer-player_fullscreen": "Pantalla completa"
+                }
+			}
+		},
+		"entry_id": "0_c0r624gh"
+	});
+</script>
+
+	<br>
+	<b>The following keys are available:</b>
+	<br><br>
+	<table id="languageList" border="1" width="100%" cellspacing="0" cellpadding="5" style="border-collapse: collapse" bordercolor="#C0C0C0">
+		<tr><td bgcolor="#CDECFE" width="350px">Key</td><td bgcolor="#CDECFE">Default Value (English)</td></tr>
+	</table>
+	<script>
+		$.getJSON('../../../services.php?service=languageKeys', function(data){
+			$.each( data, function(key, obj){
+				$('#languageList').append(
+					$('<tr>').addClass( obj.support )
+						.append(
+							$('<td>').append( '<a href="#' + key + '" name="' + key + '">' + key +'</a>' ),
+							$('<td>').text( obj )
+					)
+				)
+			});
+
+		})
+	</script>
+
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style type="text/css">
+        body {
+            overflow:hidden;
+        }
+        video {
+            height:auto;
+            width:100%;
+            text-align: center;
+            border:0px solid silver;
+            display: block;
+            vertical-align: middle;
+            color: #FFFFFF;
+            background-color: #000000;
+            font-weight: bold;
+            font-family: Verdana, Geneva, sans-serif;
+            font-size:40px;
+            float:left;
+            z-index: 0;
+            position:absolute;
+        }
+        #messages {
+            color: #FFFFFF;
+            float: left;
+            top:10px;
+            left:20px;
+            margin-left: 5px;
+            margin-top:  5px;
+            z-index:3;
+            position:absolute;
+            font-weight: bold;
+            font-size: 80%;
+            width:95%;
+            background-color: rgba(0,0,0,0.5);
+            opacity:0.6;
+            display: none;
+        }
+        #messages span {
+            font-weight: normal;
+        }
+        #logo {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: url('kalturalogo.png');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+            display: none;
+            z-index: 2;
+            -webkit-transition: opacity 1s ease-in-out;
+            -moz-transition: opacity 1s ease-in-out;
+            -ms-transition: opacity 1s ease-in-out;
+            -o-transition: opacity 1s ease-in-out;
+            opacity: 1;
+        }
+        #kdebug{
+            position: absolute;
+            right: 0px;
+            bottom: 0px;
+            width: 700px;
+            height: 300px;
+            background-color: #cacaca;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            border: 1px solid black;
+            font-family: Arial;
+            font-size: 11px;
+            z-index: 10;
+            display: none;
+        }
+        #videoHolder{
+            position: absolute;
+            width: 96%;
+            right: 2%;
+            height: 98%;
+        }
+    </style>
+    <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
+    <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/mediaplayer/1.0.0/media_player.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script>document.write("<script type='text/javascript' src='mpl.js?v=" + Date.now() + "'><\/script>");</script>
+</head>
+
+<body>
+<div id="kaltura_player" style=" width:98%; height: 98%; position: absolute;z-index: 1; visibility: hidden;"></div>
+<div id="messages">
+    <div style="font-size:140%; font-weight:bold; margin-left:0px;" id="title">Sample Receiver with Media Player Library for DASH/SS/HLS Streaming with DRMs</div>
+    <div>App State: <span id="applicationState">-</span></div>
+    <div>Sender Count: <span id="senderCount">0</span></div>
+    <div>Media Element State: <span  id="mediaElementState">-</span></div>
+    <div>Volume State: <span  id="volumeMessage">Starting volume, unchanged at 0.5</span></div>
+    <hr>
+    <div>Cast Receiver Manager Message: <span  id="castReceiverManagerMessage">-</span></div>
+    <hr>
+    <div>Media Manager Message: <span  id="mediaManagerMessage">-</span></div>
+    <hr>
+    <div>Message Bus Message: <span  id="messageBusMessage">-</span></div>
+    <hr>
+    <div style="font-size:110%;font-weight:bold;">Media Player Library: Player - Host - Protocol</div>
+    <div>Media Player State: <span id="mediaPlayerState">-</span></div>
+    <div>Media Host State: <span id="mediaHostState">-</span></div>
+    <div>Media Protocol: <span id="mediaProtocol">-</span></div>
+    <div>Stream Count: <span id="streamCount"></span></div>
+    <div>Video Stream Index: <span id="videoStreamIndex"></span></div>
+    <div>Video Codecs: <span id="streamVideoCodecs"></span></div>
+    <div>Video Bitrates: <span id="streamVideoBitrates"></span></div>
+    <div>Video Bitrates Index: <span id="videoQualityIndex"></span></div>
+    <div>Video Quality Bandwidth: <span id="streamVideoQuality"></span></div>
+    <div>Audio Stream Index: <span id="audioStreamIndex"></span></div>
+    <div>Audio Codecs: <span id="streamAudioCodecs"></span></div>
+    <div>Audio Bitrates: <span id="streamAudioBitrates"></span></div>
+    <div>Audio Bitrates Index: <span id="audioQualityIndex"></span></div>
+    <div>Audio Quality Bandwidth: <span id="streamAudioQuality"></span></div>
+    <div>Captions: <span id="captions"></span></div>
+    <div>License Server URL: <span id="licenseUrl"></span></div>
+    <div>Custom Data: <span id="customData"></span></div>
+    <span>Manifest Credentials: <span id="manifestCredentials">false</span></span>
+    <span>Segment Credentials: <span id="segmentCredentials">false</span></span>
+    <span>License Credentials: <span id="licenseCredentials">false</span></span>
+</div>
+<div id="videoHolder">
+    <video id="receiverVideoElement" style="height:98%; width:100%; position: absolute" autoplay="autoplay"></video>
+</div>
+<div id="logo"></div>
+<div id="kdebug"></div>
+</body>
+</html>

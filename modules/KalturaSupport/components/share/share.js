@@ -8,6 +8,7 @@
 			order: 5,
 			align: "right",
 			tooltip:  gM( 'mwe-embedplayer-share' ),
+			title:  gM( 'mwe-embedplayer-share' ),
 			showTooltip: true,
 			displayImportance: 'medium',
 			templatePath: 'components/share/share.tmpl.html',
@@ -74,7 +75,7 @@
 					"barColor": '#394F8F'
 				}
 			},
-			embedCodeTemplate: '<iframe src="//cdnapi.kaltura.com/p/{mediaProxy.entry.partnerId}/sp/{mediaProxy.entry.partnerId}00/embedIframeJs/uiconf_id/{configProxy.kw.uiConfId}/partner_id/{mediaProxy.entry.partnerId}?iframeembed=true&playerId={configProxy.targetId}&entry_id={mediaProxy.entry.id}&flashvars[streamerType]=auto" width="560" height="395" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0"></iframe>',
+			embedCodeTemplate: '<iframe src="' + mw.getConfig("Kaltura.ServiceUrl") + '/p/{mediaProxy.entry.partnerId}/sp/{mediaProxy.entry.partnerId}00/embedIframeJs/uiconf_id/{configProxy.kw.uiConfId}/partner_id/{mediaProxy.entry.partnerId}?iframeembed=true&playerId={configProxy.targetId}&entry_id={mediaProxy.entry.id}&flashvars[streamerType]=auto" width="560" height="395" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0"></iframe>',
 			embedOptions: {
 				"streamerType": "auto",
 				"uiconfID": null,
@@ -102,6 +103,11 @@
 			// disable embed option on mobile and native
 			if ( mw.isMobileDevice() || mw.isNativeApp() ){
 				this.setConfig( 'embedEnabled' , false );
+			}
+
+			// force parent to be topBarContainer on mobile
+			if (this.embedPlayer.isMobileSkin()){
+				this.setConfig( 'parent' , 'topBarContainer' );
 			}
 		},
 
@@ -142,9 +148,6 @@
 					_this.getScreen().then(function(screen){
 						screen.addClass('semiTransparentBkg'); // add semi-transparent background for share plugin screen only. Won't affect other screen based plugins
 						_this.shareScreenOpened = true;
-						// add blur effect to video and poster
-						$("#"+embedPlayer.getPlayerElement().id).addClass("blur");
-						embedPlayer.getPlayerPoster().addClass("blur");
 						// prevent keyboard key actions to allow typing in share screen fields
 						embedPlayer.triggerHelper( 'onDisableKeyboardBinding' );
 						// disable all player controls except play button, scrubber and volume control
@@ -164,6 +167,14 @@
 					});
 				}
 			});
+			this.bind('showScreen', function (event, screenName) {
+				if ( screenName === "share" ){
+					_this.getScreen().then(function(screen){
+						$( "#" + embedPlayer.getPlayerElement().id ).addClass("blur");
+						embedPlayer.getPlayerPoster().addClass("blur");
+					});
+				}
+			});
 			this.bind('preHideScreen', function (event, screenName) {
 				if ( screenName === "share" ){
 					if ( !_this.enablePlayDuringScreen ){
@@ -174,6 +185,12 @@
 					// re-enable player controls
 					if ( !embedPlayer.isInSequence() ){
 						embedPlayer.enablePlayControls();
+						embedPlayer.triggerHelper("showLargePlayBtn");
+					}
+					// remove blur
+					if (embedPlayer.getPlayerElement()) {
+						$( "#" + embedPlayer.getPlayerElement().id ).removeClass( "blur" );
+						embedPlayer.getPlayerPoster().removeClass( "blur" );
 					}
 				}
 			});
@@ -209,7 +226,7 @@
 
 			this.bind( 'onpause', function(event, data){
 				if ( _this.shareScreenOpened ){
-					$("#"+embedPlayer.getPlayerElement().id).addClass("blur");
+					$( "#" + embedPlayer.getPlayerElement().id ).addClass("blur");
 					embedPlayer.getPlayerPoster().addClass("blur");
 				}
 			});
@@ -227,14 +244,6 @@
 					}
 				}
 			});
-		},
-
-		hideScreen: function(){
-			this._super();
-			if (this.getPlayer().getPlayerElement()) {
-				$( "#" + this.getPlayer().getPlayerElement().id ).removeClass( "blur" );
-				this.getPlayer().getPlayerPoster().removeClass( "blur" );
-			}
 		},
 
 		getTemplateData: function () {
@@ -271,8 +280,13 @@
 						$(".share-icons-container").hide().show(); // force refresh for IE8 :(
 					});
 				}
-				$(this).select();
-			});
+			})
+			.on('mouseup', function (e) {
+					e.preventDefault();
+				})
+			.on('click', function () {
+					this.setSelectionRange(0, 9999);
+				});
 
 			$(".embed-input").on("click", function(){
 				if ( $(".embed-offset-container").css("display") === "none" ){
@@ -284,8 +298,14 @@
 						$(".share-icons-container").hide().show(); // force refresh for IE8 :(
 					});
 				}
-				$(this).select();
+			})
+			.on('mouseup', function (e) {
+				e.preventDefault();
+			})
+			.on('click', function () {
+				this.setSelectionRange(0, 9999);
 			});
+
 			this.restrictNPTFields();
 			// handle time offset for share link
 			$(".share-offset-container>.share-offset").on("propertychange change keyup input paste", function(event){
@@ -304,22 +324,28 @@
 			});
 
 			// handle secured embed
-			$(".share-secured").on("click", function(){
-				var embedCode = $(".embed-input").val();
-				if ($(this).is(':checked')){
-					embedCode = embedCode.split("cdnapi.kaltura.com").join("cdnapisec.kaltura.com");
-				}else{
-					embedCode = embedCode.split("cdnapisec.kaltura.com").join("cdnapi.kaltura.com");
-				}
-				$(".embed-input").val(embedCode);
-			});
+			if ( mw.getConfig("Kaltura.ServiceUrl").indexOf(".kaltura.com") !== -1 ){
+				$(".share-secured").on("click", function(){
+					var embedCode = $(".embed-input").val();
+					if ($(this).is(':checked')){
+						embedCode = embedCode.split("http://cdnapi.kaltura.com").join("https://cdnapisec.kaltura.com");
+					}else{
+						embedCode = embedCode.split("https://cdnapisec.kaltura.com").join("http://cdnapi.kaltura.com");
+					}
+					$(".embed-input").val(embedCode);
+				});
+				$('.share-secured').prop('checked', mw.getConfig("Kaltura.ServiceUrl").indexOf("https") === 0); // initial check state according to ServiceUrl
+			}else{
+				// on prem - hide the security checkbox as the security settings are derived from the ServiceUrl
+				$(".share-secured, .share-secure-lbl").hide();
+			}
 
 			// handle scroll buttons
 			var deltaScroll = $(".share-icons-container .icon-border").width() + parseInt($(".share-icons-container .icon-border").css("margin-right"))*2;
 			$(".share-icons-scroller .next-btn").on("click", function(){
 				$(".share-icons-scroller .back-btn").show();
 				$('.share-icons-container').animate({scrollLeft: '+='+deltaScroll }, 300, function(){
-					if ($('.share-icons-container').scrollLeft()/deltaScroll === ($(".icon-border").length - 5) ){
+					if (Math.round($('.share-icons-container').scrollLeft()/deltaScroll) === ($(".icon-border").length - 5) ){
 						$(".share-icons-scroller .next-btn").hide();
 					}
 				});
@@ -335,7 +361,12 @@
 			});
 			setTimeout(function(){
 				_this.addScroll(); // add scroll for social network icons if needed
-			},0)
+			},0);
+
+			// close button override
+			$(".share .icon-close").on("mousedown", function(e){
+				_this.closeScreen();
+			});
 
 		},
 
@@ -402,6 +433,10 @@
 			return true;
 		},
 		closeScreen: function(){
+			if (this.getPlayer().getPlayerElement()) {
+				$(  "#" + this.getPlayer().getPlayerElement().id ).removeClass( "blur" );
+				this.getPlayer().getPlayerPoster().removeClass( "blur" );
+			}
 			$(".embed-offset-container").hide();
 			$(".embed-container>.share-copy-btn").hide();
 			$(".share-offset-container").hide();
@@ -427,9 +462,11 @@
 			var url = network.url;
 			url = decodeURIComponent(url);        // url was encoded to keep curly brackets for template tokens
 			url = this.getPlayer().evaluate(url); // replace tokens
-
+			url = url.replace('#','%23'); // encode hash sign to keep time offset
+			var networks = this.getConfig('shareConfig');
+			// send event for analytics
+			$( embedPlayer ).trigger( "socialShareEvent", networks[network.id] );
 			if (mw.isNativeApp()) {
-				var networks = this.getConfig('shareConfig');
 				var id = network.id;
 				var shareParams = {
 					actionType: 'share',
@@ -449,14 +486,14 @@
 					// close the window if this is an email
 					if (url.indexOf("mailto") === 0){
 						setTimeout(function(){
-							opener.close();
+							if (opener && typeof opener.close === 'function') {
+								opener.close();
+							}
 						},2000);
 					}
 				}
 				return false;
 			}
-			// send event for analytics
-			$( embedPlayer ).trigger( "socialShareEvent" );
 		},
 		getThumbnailURL: function () {
 			return kWidgetSupport.getKalturaThumbnailUrl({

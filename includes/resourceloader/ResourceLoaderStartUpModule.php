@@ -119,7 +119,7 @@ class ResourceLoaderStartUpModule extends ResourceLoaderModule {
 
 		// Register sources
 		$out .= $resourceLoader->makeLoaderSourcesScript( $resourceLoader->getSources() );
-		
+
 		// Register modules
 		foreach ( $resourceLoader->getModuleNames() as $name ) {
 			$module = $resourceLoader->getModule( $name );
@@ -165,6 +165,10 @@ class ResourceLoaderStartUpModule extends ResourceLoaderModule {
 				}
 			}
 		}
+		global $wgScriptCacheDirectory, $wgMwEmbedVersion;
+		$cachePath = $wgScriptCacheDirectory . '/registrations.' .
+        			$wgMwEmbedVersion . $_GET['skin'] . $_GET['lang'] . '.min.json';
+			@file_put_contents($cachePath, json_encode($registrations));
 		$out .= ResourceLoader::makeLoaderRegisterScript( $registrations );
 
 		wfProfileOut( __METHOD__ );
@@ -184,19 +188,19 @@ class ResourceLoaderStartUpModule extends ResourceLoaderModule {
 		if ( $context->getOnly() === 'scripts' ) {
 
 			// The core modules:
-			$modules = array( 'jquery', 'mediawiki' );
+			$modules = array( 'jquery', 'mediawiki');
 			wfRunHooks( 'ResourceLoaderGetStartupModules', array( &$modules ) );
 
 			// Get the latest version
 			$version = 0;
-			
+
 			foreach ( $modules as $moduleName ) {
 				$version = max( $version,
 					$context->getResourceLoader()->getModule( $moduleName )->getModifiedTime( $context )
 				);
 			}
-			
-			
+
+
 			// Build load query for StartupModules
 			$query = array(
 				'modules' => ResourceLoader::makePackedModulesString( $modules ),
@@ -214,15 +218,27 @@ class ResourceLoaderStartUpModule extends ResourceLoaderModule {
 			$registrations = self::getModuleRegistrations( $context );
 			$out .= "var startUp = function() {\n" .
 				"\tmw.config = new " . Xml::encodeJsCall( 'mw.Map', array( $wgLegacyJavaScriptGlobals ) ) . "\n" .
-				"\t$registrations\n" . 
+				"\t$registrations\n" .
 				"\t" . Xml::encodeJsCall( 'mw.config.set', array( $configuration ) ) .
 				"};\n";
 
-			// Conditional script injection
-			$out .= "if ( isCompatible() ) {\n" .
-				"\t" . Xml::encodeJsCall( 'writeScript', array(  $wgLoadScript . '?' . wfArrayToCGI( $query )  ) ) .
-				"}\n" .
-				"delete isCompatible;";
+				$fauxRequest = new WebRequest;
+				$modulesToLoad = array();
+				$resourceLoader =   $context->getResourceLoader();
+                 foreach ( $modules as $moduleName ) {
+                      $modulesToLoad[$moduleName] =  $resourceLoader->getModule( $moduleName );
+                 }
+                $s = $context->getResourceLoader()->makeModuleResponse( new MwEmbedResourceLoaderContext( $context->getResourceLoader(), $fauxRequest ) ,
+                    $modulesToLoad,
+                    array()
+                );
+                $out.=$s;
+
+//			// Conditional script injection
+//			$out .= "if ( isCompatible() ) {\n" .
+//				"\t" . Xml::encodeJsCall( 'writeScript', array(  $wgLoadScript . '?' . wfArrayToCGI( $query )  ) ) .
+//				"}\n" .
+//				"delete isCompatible;";
 		}
 
 		return $out;

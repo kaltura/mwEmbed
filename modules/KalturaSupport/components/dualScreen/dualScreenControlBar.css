@@ -1,7 +1,7 @@
 .controlBar{
     padding-top: 10px;
     padding-right: 10px;
-    z-index: 3;
+    z-index: 1003;
     cursor: pointer;
     position: absolute;
     top: 0;
@@ -81,7 +81,8 @@ ul.inline, ol.inline {
     background: -o-linear-gradient(top, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.2) 20%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.05) 80%, rgba(0,0,0,0) 100%);
     background: -ms-linear-gradient(top, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.2) 20%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.05) 80%, rgba(0,0,0,0) 100%);
     background: linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.2) 20%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.05) 80%, rgba(0,0,0,0) 100%);
-    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=10) progid:DXImageTransform.Microsoft.gradient( startColorstr='#000000', endColorstr='#000000', GradientType=0 );
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FF000000', endColorstr='#15000000', GradientType=0 );
+    -ms-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FF000000', endColorstr='#15000000', GradientType=0 );
     position: absolute;
     width: 100%;
     height: 100%;

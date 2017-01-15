@@ -11,53 +11,33 @@
 <div id="kaltura_player" style="width: 500px; height: 323px;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject">
 </div>
 
-<div>
-	<Label> Change Audio Track: </Label>
-	<select id="tracksList" onchange="switchTrack()"/>
-</div>
+
 
 <script>
 	var kdp;
-	function onTracksReceived( data ) {
-		if ( data.languages && data.languages.length > 0 ) {
-			var tracks = data.languages;
-			$.each(tracks, function(){
-				$('<option />')
-						.attr('value', this.index)
-						.html(this.label)
-						.appendTo('#tracksList');
-			});
-		}
-	}
 
-	function onTrackSelected( data ) {
-		if ( data.index < $('#tracksList option').size() && data.index != $('#tracksList').val() ) {
-			$('#tracksList').val(data.index);
-		}
-	}
-
-	function switchTrack() {
-		kdp.sendNotification('switchAudioTrack', {index: $('#tracksList').val() });
-	}
 
 	mw.setConfig("KalturaSupport.LeadWithHTML5", true);
 	mw.setConfig("LeadWithHLSOnFlash", true);
 
-	
-	kWidget.embed({
+
+	kWidget.featureConfig({
 		"targetId": "kaltura_player",
 		"wid": "_243342",
 		"uiconf_id": "12905712",
 		"flashvars": {
+			"audioSelector": {
+				"plugin": true
+			},
 			"streamerType": "auto",
 			"mediaProxy": {
-	  			'entry':{
-	 				'name': "Obama Video",
-	 				"thumbnailUrl": "http://www.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_2kbfzmku/version/100000/width/560"
-	 			},
-	 			'sources':[
-			  		{
-			  			'type' : 'application/vnd.apple.mpegurl',
+				'entry':{
+					'name': "Obama Video",
+					"thumbnailUrl": "http://www.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_2kbfzmku/version/100000/width/560"
+				},
+				'sources':[
+					{
+						'type' : 'application/vnd.apple.mpegurl',
 						'src' : 'http://pa-www.kaltura.com/content/shared/erank/multi_audio.m3u8'
 					}
 				]
@@ -69,6 +49,7 @@
 			kdp.addJsListener( 'audioTracksReceived', 'onTracksReceived' );
 			kdp.addJsListener( 'audioTrackIndexChanged', 'onTrackSelected' );
 		}
+
 	});
 </script>
 </body>

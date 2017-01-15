@@ -1,7 +1,8 @@
 {
     "en": {
-        "DRM_LICENSE_ACQUISITION_ERROR": "We're sorry, you don’t have a valid license for this video.",
+        "DRM_LICENSE_ACQUISITION_ERROR": "We're sorry, you don't have a valid license for this video.",
         "DRM_SEGMENT_LOAD_ERROR": "We're sorry, a network error occurred, segment didn't load.",
-        "DRM_MANIFEST_LOAD_ERROR": "We're sorry, a network error occurred, manifest didn't load."
+        "DRM_MANIFEST_LOAD_ERROR": "We're sorry, a network error occurred, manifest didn't load.",
+        "DRM_KEY_SYSTEM_ERROR": "This content is DRM protected, please use the latest browser that supports content protection"
     }
 }

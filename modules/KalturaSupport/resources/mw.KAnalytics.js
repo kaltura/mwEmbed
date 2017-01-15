@@ -32,6 +32,11 @@ mw.KAnalytics.prototype = {
 	// Start Time
 	startReportTime: 0,
 
+	//delay the stats call in x sec
+	delay:0,
+
+    histroyEvent : {},
+    histroyEventCount:{},
 	kEventTypes : {
 		'WIDGET_LOADED' : 1,
 		'MEDIA_LOADED' : 2,
@@ -70,18 +75,31 @@ mw.KAnalytics.prototype = {
 	 * 			kalturaClient Kaltura client object for the api session.
 	 */
 	init: function( embedPlayer ) {
+		var _this = this;
 		// set the version of html5 player
 		this.version = mw.getConfig( 'version' );
+        if (!mw.KAnalytics.totalEventCount)  {
+            mw.KAnalytics.totalEventCount = 0;
+        }
 		// Setup the local reference to the embed player
 		this.embedPlayer = embedPlayer;
 		if( ! this.kClient ) {
 			this.kClient = mw.kApiGetPartnerClient( embedPlayer.kwidgetid );
+			this.delay = this.embedPlayer.getKalturaConfig( 'statistics' , 'delay' ) ? this.embedPlayer.getKalturaConfig( 'statistics' , 'delay' ) * 1000 : 0;
 		}
 		// Remove any old bindings:
 		$( embedPlayer ).unbind( this.bindPostFix );
 
-		// Setup the initial state of some flags
-		this.resetPlayerflags();
+		$( embedPlayer ).bind( 'playerReady' + this.bindPostFix, function(){
+			// Setup the initial state of some flags
+			_this.resetPlayerflags();
+		});
+
+        $( embedPlayer ).bind( 'changeMedia' + this.bindPostFix, function() {
+            // Setup the initial state of some flags
+            _this.histroyEvent = {};
+            _this.histroyEventCount = {};
+        });
 
 		// Add relevant hooks for reporting beacons
 		this.bindPlayerEvents();
@@ -93,7 +111,7 @@ mw.KAnalytics.prototype = {
 		this._p100Once = false;
 		this.hasSeeked = false;
 		this.lastSeek = 0;
-	},
+    },
 	/**
 	 * Get the current report set
 	 *
@@ -110,7 +128,6 @@ mw.KAnalytics.prototype = {
 
 		// get the id for the given event:
 		var eventKeyId = this.kEventTypes[ KalturaStatsEventKey ];
-
 		// Generate the status event
 		var eventSet = {
 			'eventType'			: eventKeyId,
@@ -139,7 +156,21 @@ mw.KAnalytics.prototype = {
 			eventSet[ 'entryId' ] = this.embedPlayer.getSrc();
 		}
 
-		// Set the 'event:uiconfId'
+        if (this.histroyEvent[eventSet[ 'entryId' ]]   == null)
+        {
+            this.histroyEvent[eventSet[ 'entryId' ]] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+        }
+
+        if (this.histroyEventCount[eventSet[ 'entryId' ]]   == null)
+        {
+            this.histroyEventCount[eventSet[ 'entryId' ]] = 0;
+        }
+        this.histroyEvent[eventSet[ 'entryId' ]][eventKeyId - 1] = 1;
+        this.histroyEventCount[eventSet[ 'entryId' ]]++;
+        mw.KAnalytics.totalEventCount++;
+
+        eventSet[ 'historyEvents' ] = this.histroyEvent[eventSet[ 'entryId' ]].join('') + '-' + this.histroyEventCount[eventSet[ 'entryId' ]] + '-' + mw.KAnalytics.totalEventCount ;
+        // Set the 'event:uiconfId'
 		if( this.embedPlayer.kuiconfid ) {
 			eventSet[ 'uiconfId' ] = this.embedPlayer.kuiconfid;
 		}
@@ -165,9 +196,15 @@ mw.KAnalytics.prototype = {
 				eventSet[ flashVarEvents[ fvKey ] ] = encodeURIComponent( this.embedPlayer.getKalturaConfig('statistics', fvKey ) );
 			}
 		}
+		// hideUserId will remove the userId from the analytics call EVEN if the embed code sends one (unless hashedUserId is in use)
+		if(this.embedPlayer.getKalturaConfig( 'statistics' , 'hideUserId') && eventSet.userId){
+			delete(eventSet.userId);
+		}
+
 
 		// Add referrer parameter
-		eventSet[ 'referrer' ] = encodeURIComponent( mw.getConfig('EmbedPlayer.IframeParentUrl') );
+		var pageReferrer =  mw.getConfig('EmbedPlayer.IsFriendlyIframe') ? mw.getConfig('EmbedPlayer.IframeParentUrl') : document.referrer;
+		eventSet[ 'referrer' ] = encodeURIComponent( pageReferrer );
 
 		// Add in base service and action calls:
 		var eventRequest = {'service' : 'stats', 'action' : 'collect'};
@@ -190,12 +227,19 @@ mw.KAnalytics.prototype = {
 				// error in calling parent page event
 			}
 		}
-		if (this.embedPlayer.getFlashvars('ks')){
+		//hideKS is an attribute that will prevent the request from sending the KS even if the embed code receives one
+		if (this.embedPlayer.getFlashvars('ks') && !this.embedPlayer.getKalturaConfig( 'statistics' , 'hideKs') ){
 			eventRequest['ks'] = this.embedPlayer.getFlashvars('ks');
 		}
 
 		// Do the api request:
-		this.kClient.doRequest( eventRequest, null, true );
+		if (this.delay) {
+			setTimeout( function () {
+				_this.kClient.doRequest( eventRequest , null , true );
+			} , this.delay );
+		} else {
+			this.kClient.doRequest( eventRequest , null , true );
+		}
 	},
 
 	/**
@@ -301,7 +345,6 @@ mw.KAnalytics.prototype = {
 		// Set the seek and time percent:
 		var percent = embedPlayer.currentTime / embedPlayer.duration;
 		var seekPercent = this.lastSeek/ embedPlayer.duration;
-
 
 		// Send updates based on logic present in StatisticsMediator.as
 		if ( !embedPlayer.isLive() ){

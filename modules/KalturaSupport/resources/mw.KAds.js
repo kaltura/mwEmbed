@@ -38,6 +38,9 @@
 
 			_this.embedPlayer = embedPlayer;
 
+			// Setup the ad loader:
+			_this.adLoader = new mw.AdLoader( embedPlayer );
+
 			// Setup the ad player:
 			_this.adPlayer = new mw.KAdPlayer( embedPlayer );
 
@@ -117,6 +120,10 @@
 				mw.log( "KAds::All ads have been loaded" );
 				callback();
 			});
+			// disable overlays on native devices
+			if (embedPlayer.useNativePlayerControls()){
+				_this.embedPlayer.setKalturaConfig('vast', 'supportOverlays', false);
+			}
 		},
 		handleAdsOnPlay: function( embedPlayer ){
 			var _this = this;
@@ -189,7 +196,7 @@
 				return ;
 			}
 			// Load Ad
-			mw.AdLoader.load( cuePoint.sourceUrl, function( adConf ){
+			_this.adLoader.load( cuePoint.sourceUrl, function( adConf ){
 				if( ! adConf ) {
 					return ;
 				}
@@ -260,7 +267,7 @@
 
 			var baseDisplayConf = this.getBaseDisplayConf();
 
-			mw.AdLoader.load( cuePoint.sourceUrl, function( adConf ){
+			_this.adLoader.load( cuePoint.sourceUrl, function( adConf ){
 				// No Ad configuration, continue playback
 				if( ! adConf ){
 					// Ad skip re-enable play controls:
@@ -280,7 +287,7 @@
 				$.extend( adsCuePointConf, baseDisplayConf );
 
 				var originalSource = embedPlayer.getSource();
-				var seekTime = parseFloat( cuePoint.startTime / 1000 );
+				var seekTime = embedPlayer.currentTime;
 				var oldDuration = embedPlayer.duration;
 
 				// Set switch back function
@@ -317,12 +324,6 @@
 							} else if(  adType == 'midroll' ){
 								embedPlayer.hidePlayerOffScreen();
 								embedPlayer.addPlayerSpinner();
-
-								// on iOS player we can set current time only while playing
-								if( mw.isIOS() ) {
-									mw.log( "KAds:: doneCallback:: if iOS first play then setCurrentTime");
-									embedPlayer.play();
-								}
 
 								embedPlayer.unbindHelper("seeked.midroll").bindOnceHelper("seeked.midroll", function () {
 									if( !mw.isIOS() ) {
@@ -476,7 +477,7 @@
 					// Disable UI while playing ad
 					_this.embedPlayer.adTimeline.updateUiForAdPlayback( adType );
 
-					mw.AdLoader.load( _this.getAdUrl( adType ), function( adDisplayConf ){
+					_this.adLoader.load( _this.getAdUrl( adType ), function( adDisplayConf ){
 						var adConf = $.extend(adConfig, _this.getBaseAdConf( adType ), adDisplayConf );
 						_this.adPlayer.display( adConf, function(){
 							// play next ad
@@ -541,7 +542,7 @@
 				)
 			};
 
-			$( embedPlayer ).bind( 'monitorEvent', function(){
+			$( embedPlayer ).bind( 'monitorEvent' + this.bindPostfix, function(){
 				if( (embedPlayer.currentTime > overlayConfig.start) && (embedPlayer.currentTime < overlayConfig.end) && !startOvelrayDisplayed && !embedPlayer.evaluate('{sequenceProxy.isInSequence}') ){
 					lastDisplay = embedPlayer.currentTime;
 					startOvelrayDisplayed = true;
@@ -620,7 +621,7 @@
 				if( _this.getConfig( adType + 'Url' ) ){
 					loadQueueCount++;
 					// Load and parse the adXML into displayConf format
-					mw.AdLoader.load( _this.getAdUrl( adType ) , function( adDisplayConf ){
+					_this.adLoader.load( _this.getAdUrl( adType ) , function( adDisplayConf ){
 						mw.log("KalturaAds loaded: " + adType );
 						loadQueueCount--;
 						addAdCheckLoadDone( adType,  $.extend({}, _this.getBaseAdConf( adType ), adDisplayConf ));

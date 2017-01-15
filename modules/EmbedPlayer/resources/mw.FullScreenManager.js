@@ -22,7 +22,7 @@
 		/**
 		 * Check if we're in Fullscreen
 		 * @return {boolean)
-	 */
+	    */
 		isInFullScreen: function() {
 			return this.inFullScreen;
 		},
@@ -33,6 +33,12 @@
 		 *  restoreWindowPlayer to restore window mode
 		 */
 		toggleFullscreen: function() {
+			this.embedPlayer.triggerHelper( 'onToggleFullscreen');
+
+			if (mw.getConfig('EmbedPlayer.ExternalFullScreenControl')){
+				return;
+			}
+
 			// Do normal in-page fullscreen handling:
 			if( this.isInFullScreen() ){
 				this.restoreWindowPlayer();
@@ -108,6 +114,11 @@
 			this.verticalScrollPosition = (doc.all ? doc.scrollTop : context.pageYOffset);
 			// Add fullscreen class to interface:
 			$interface.addClass( 'fullscreen' );
+			// trigger the open fullscreen event:
+			$( embedPlayer ).trigger( 'onOpenFullScreen' );
+			if ( mw.getConfig('EmbedPlayer.ExternalFullScreenControl') ){
+				return; // don't execute the actual full screen as it is done by external control
+			}
 			var callFullScreenAPI = function() {
 				if( !(screenfull && screenfull.enabled(doc)) ){
 					return;
@@ -132,7 +143,7 @@
 				screenfull.request(fsTarget, doc);
 			};
 			// Check for native support for fullscreen and we are in an iframe server
-			if( !this.fullScreenApiExcludes() && screenfull && screenfull.enabled(doc) ) {
+			if( !this.fullScreenApiExcludes() && screenfull && screenfull.enabled(doc) && !mw.isOldAndroidChromeNativeBrowser()) {
 				callFullScreenAPI();
 			} else {
 				if(!this.fullScreenApiExcludes() && mw.isAndroidChromeNativeBrowser()){
@@ -164,8 +175,6 @@
 				e.preventDefault();
 			});
 
-			// trigger the open fullscreen event:
-			$( embedPlayer ).trigger( 'onOpenFullScreen' );
 		},
 
 		/**
@@ -277,7 +286,7 @@
 			var updateSizeByDevice = function() {
 				if ( mw.isAndroid() ) {
 					setTimeout(updateTargetSize, 10);
-				} else if (mw.isIOS8()){
+				} else if (mw.isIOSAbove7()){
 					setTimeout(updateTargetSize, 500);
 				} else{
 					updateTargetSize();
@@ -501,7 +510,7 @@
 		},
 
 		getFsTarget: function(){
-			if( mw.getConfig('EmbedPlayer.IsIframeServer' ) && mw.getConfig('EmbedPlayer.IsFriendlyIframe') && !mw.isMobileChrome()){
+			if( (mw.getConfig('EmbedPlayer.IsIframeServer' ) && mw.getConfig('EmbedPlayer.IsFriendlyIframe')) ||  mw.isOldAndroidChromeNativeBrowser()){
 				// For desktops that supports native fullscreen api, give iframe as a target
 				var targetId;
 				if( screenfull && screenfull.enabled() ) {
@@ -541,6 +550,13 @@
 			// remove the fullscreen interface
 			embedPlayer.getInterface().removeClass( 'fullscreen' );
 
+			// Trigger the onCloseFullscreen event:
+			$( embedPlayer ).trigger( 'onCloseFullScreen' );
+
+			if ( mw.getConfig('EmbedPlayer.ExternalFullScreenControl') ){
+				return; // don't execute the actual full screen exit as it is done by external control
+			}
+
 			// Check for native support for fullscreen and support native fullscreen restore
 			var docTarget = this.getDocTarget();
 			if ( !this.fullScreenApiExcludes() && screenfull && screenfull.enabled(docTarget) ) {
@@ -553,8 +569,6 @@
 			// Unbind events
 			$( document ).unbind( this.bindPostfix );
 
-			// Trigger the onCloseFullscreen event:
-			$( embedPlayer ).trigger( 'onCloseFullScreen' );
 		},
 
 		fullScreenApiExcludes: function(){

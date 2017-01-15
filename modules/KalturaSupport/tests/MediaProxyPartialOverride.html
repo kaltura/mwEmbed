@@ -1,0 +1,75 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>MediaProxy Partial Override</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+
+</head>
+<body>
+<h2> MediaProxy Partial Override </h2>
+<p>
+    This page demonstrates overriding only some of the media proxy properties in order to display a poster and video files from remote location.<br>
+    The video title and descriptions are also set to custom values.
+</p>
+<div id="kaltura_player" style="width:560px;height:395px;"></div>
+<script>
+	kWidget.embed({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id' : '12905712',
+        "flashvars": {
+            'titleLabel':{
+                'plugin': true
+            },
+            'mediaProxy': {
+                'entry':{
+                    'name': "External video: Wildlife",
+                    "description": "Description here",
+                    "thumbnailUrl": 'http://projects.kaltura.com/amir/mediaproxy_override/poster.jpg'
+                },
+                'sources':[
+                    {
+                        "src":"http://projects.kaltura.com/amir/mediaproxy_override/wildlife-small.mp4",
+                        "width":"640",
+                        "height":"360",
+                        "bandwidth":"9688824",
+                        "type":"video/mp4; codecs=\"avc1.42E01E, mp4a.40.2"
+                    }
+                ]
+            }
+        }
+	});
+</script>
+<br>
+<pre>
+kWidget.embed({
+    'targetId': 'kaltura_player',
+    'wid': '_243342',
+    'uiconf_id' : '12905712',
+    'flashvars': {
+        'titleLabel':{
+            'plugin': true
+        },
+        'mediaProxy': {
+            'entry':{
+                'name': "External video: Wildlife",
+                "description": "Description here",
+                "thumbnailUrl": 'http://projects.kaltura.com/amir/mediaproxy_override/poster.jpg'
+            },
+            'sources':[
+                {
+                    "src":"http://projects.kaltura.com/amir/mediaproxy_override/wildlife-small.mp4",
+                    "width":"640",
+                    "height":"360",
+                    "bandwidth":"9688824",
+                    "type":"video/mp4; codecs=\"avc1.42E01E, mp4a.40.2"
+                }
+            ]
+        }
+    }
+});
+</pre>
+</body>
+</html>
