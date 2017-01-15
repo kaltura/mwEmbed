@@ -128,11 +128,31 @@
                 }
             }.bind( this );
 
-            this.mediaHost.onError = function () {
+            this.mediaHost.onError = function ( errorCode ) {
+                var message;
                 if ( this.mediaPlayer !== null ) {
                     this.mediaPlayer.unload();
                     this.mediaPlayer = null;
                 }
+                switch ( errorCode ) {
+                    case 1:
+                        message = 'Error media playback';
+                        break;
+                    case 2:
+                        message = 'Error fetching the keys or decrypting the content';
+                        break;
+                    case 3:
+                        message = 'Network error';
+                        break;
+                    case 4:
+                        message = 'Error loading or parsing the manifest';
+                        break;
+                    case 0:
+                    default:
+                        message = 'Unknown player error';
+                        break;
+                }
+                this.triggerHelper( 'embedPlayerError', { message: message } );
             }.bind( this );
 
             if ( this.mediaProtocol === null ) {

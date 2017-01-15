@@ -188,6 +188,9 @@ function startReceiver() {
     mediaManager.onLoadOrig = mediaManager.onLoad.bind( mediaManager );
     mediaManager.onLoad = onLoad.bind( this );
 
+    mediaManager.onErrorOrig = mediaManager.onError.bind( mediaManager );
+    mediaManager.onError = onError.bind( this );
+
     // Init message bus and setting his event
     messageBus = receiverManager.getCastMessageBus( 'urn:x-cast:com.kaltura.cast.player' );
     messageBus.onMessage = onMessage.bind( this );
@@ -196,6 +199,14 @@ function startReceiver() {
 }
 
 /***** Media Manager Events *****/
+
+/**
+ * Override callback for media manager onError.
+ */
+function onError( e ) {
+    broadcastError( e );
+    mediaManager.onErrorOrig( e );
+}
 
 /**
  * Override callback for media manager onMediaStatus.
@@ -396,7 +407,7 @@ function onMessage( event ) {
         var msgType = payload.type;
         MessageBusMap[ msgType ]( payload );
     } catch ( e ) {
-        ReceiverLogger.error( "MessageBus", e.message );
+        broadcastError( e );
     }
 }
 
@@ -501,6 +512,10 @@ function addBindings() {
             mediaManager.setMediaInformation( mediaInfo );
         }
     } );
+
+    kdp.kBind( "embedPlayerError", function ( e ) {
+        broadcastError( e );
+    } );
 }
 
 /**
@@ -546,6 +561,16 @@ function getFlashVars( senderPlayFrom, senderAutoPlay, senderFlashVars ) {
         return ReceiverUtils.extend( receiverFlashVars, senderFlashVars );
     }
     catch ( e ) {
+        broadcastError( e );
         return receiverFlashVars;
     }
+}
+
+/**
+ * Broadcasts an error object thorough the broadcastStatus API.
+ * @param e
+ */
+function broadcastError( e ) {
+    ReceiverLogger.error( "MediaManager", "broadcastError", e );
+    mediaManager.broadcastStatus( true, null, { error: e } );
 }
