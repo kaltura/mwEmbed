@@ -203,9 +203,10 @@ function startReceiver() {
 /**
  * Override callback for media manager onError.
  */
-function onError( e ) {
-    broadcastError( e );
-    mediaManager.onErrorOrig( e );
+function onError( error ) {
+    ReceiverLogger.error( "MediaManager", "onError" );
+    broadcastError( error );
+    mediaManager.onErrorOrig( error );
 }
 
 /**
@@ -406,8 +407,8 @@ function onMessage( event ) {
         var payload = JSON.parse( event.data );
         var msgType = payload.type;
         MessageBusMap[ msgType ]( payload );
-    } catch ( e ) {
-        broadcastError( e );
+    } catch ( error ) {
+        broadcastError( error );
     }
 }
 
@@ -513,8 +514,8 @@ function addBindings() {
         }
     } );
 
-    kdp.kBind( "embedPlayerError", function ( e ) {
-        broadcastError( e );
+    kdp.kBind( "embedPlayerError", function ( error ) {
+        broadcastError( error );
     } );
 }
 
@@ -560,17 +561,17 @@ function getFlashVars( senderPlayFrom, senderAutoPlay, senderFlashVars ) {
         }
         return ReceiverUtils.extend( receiverFlashVars, senderFlashVars );
     }
-    catch ( e ) {
-        broadcastError( e );
+    catch ( error ) {
+        broadcastError( error );
         return receiverFlashVars;
     }
 }
 
 /**
  * Broadcasts an error object thorough the broadcastStatus API.
- * @param e
+ * @param error
  */
-function broadcastError( e ) {
-    ReceiverLogger.error( "MediaManager", "broadcastError", e );
-    mediaManager.broadcastStatus( true, null, { error: e } );
+function broadcastError( error ) {
+    ReceiverLogger.error( "MediaManager", "broadcastError", error );
+    mediaManager.broadcastStatus( true, null, { error: error } );
 }
