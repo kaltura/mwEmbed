@@ -79,10 +79,21 @@
 			this.parent_pause();
 		},
 
-		switchPlaySource: function( source, switchCallback, doneCallback ){
+		changeMediaCallback: function (callback) {
+			var _this = this;
+			// Check if we have source
+			if (!this.getSource()) {
+				callback();
+				return;
+			}
+			this.switchPlaySource(this.getSource(), function () {
+				_this.updatePosterHTML();
+				callback();
+			});
+		},
+		switchPlaySource: function( source, switchCallback ){
 			$(this).trigger("chromecastSwitchMedia", [source.src, source.mimeType]);
 			this.vid.mediaLoadedCallback = switchCallback;
-			this.vid.mediaFinishedCallback = doneCallback;
 		},
 
 		mediaLoaded: function(mediaSession){
