@@ -59,11 +59,14 @@
         textStreamIndex: -1,
 
         setup: function ( readyCallback ) {
-            this.setPlayerElement( document.querySelector( 'video' ) );
+            var _this = this;
+            this.getPlayerElement().setAttribute( "preload", "auto" );
             this.addBindings();
             this.applyMediaElementBindings();
-            this.preloadMediaSourceExtension();
-            readyCallback();
+            $.getScript( "//www.gstatic.com/cast/sdk/libs/mediaplayer/1.0.0/media_player.js" ).then( function () {
+                _this.preloadMediaSourceExtension();
+                readyCallback();
+            } );
         },
 
         preloadMediaSourceExtension: function () {
@@ -73,7 +76,7 @@
                 this.mediaPlayer = null;
             }
 
-            this.mediaHost = new top.cast.player.api.Host( {
+            this.mediaHost = new cast.player.api.Host( {
                 'mediaElement': this.getPlayerElement(),
                 'url': this.getSrc()
             } );
@@ -93,13 +96,13 @@
 
             switch ( mimeType ) {
                 case "application/vnd.apple.mpegurl":
-                    this.mediaProtocol = top.cast.player.api.CreateHlsStreamingProtocol( this.mediaHost );
+                    this.mediaProtocol = cast.player.api.CreateHlsStreamingProtocol( this.mediaHost );
                     break;
                 case "application/dash+xml":
-                    this.mediaProtocol = top.cast.player.api.CreateDashStreamingProtocol( this.mediaHost );
+                    this.mediaProtocol = cast.player.api.CreateDashStreamingProtocol( this.mediaHost );
                     break;
                 case "video/playreadySmooth":
-                    this.mediaProtocol = top.cast.player.api.CreateSmoothStreamingProtocol( this.mediaHost );
+                    this.mediaProtocol = cast.player.api.CreateSmoothStreamingProtocol( this.mediaHost );
                     break;
             }
 
@@ -158,7 +161,7 @@
             if ( this.mediaProtocol === null ) {
                 // Call on original handler
             } else {
-                this.mediaPlayer = new top.cast.player.api.Player( this.mediaHost );
+                this.mediaPlayer = new cast.player.api.Player( this.mediaHost );
                 if ( this.isLive() ) {
                     mw.log( "EmbedPlayerChromecastReceiver:: isLive()=true, load mediaPlayer" );
                     this.mediaPlayer.load( this.mediaProtocol, Infinity );
@@ -207,7 +210,6 @@
             var _this = this;
 
             this.bindHelper( "loadstart", function () {
-                _this._propagateEvents = true;
                 _this.stopped = false; // To always support autoPlay
             } );
 
@@ -283,15 +285,15 @@
         },
 
         isAudioTrack: function ( track ) {
-            return track.type === top.cast.receiver.media.TrackType.AUDIO;
+            return track.type === cast.receiver.media.TrackType.AUDIO;
         },
 
         isTextTrack: function ( track ) {
-            return track.type === top.cast.receiver.media.TrackType.TEXT;
+            return track.type === cast.receiver.media.TrackType.TEXT;
         },
 
         isVideoTrack: function ( track ) {
-            return track.type === top.cast.receiver.media.TrackType.VIDEO;
+            return track.type === cast.receiver.media.TrackType.VIDEO;
         },
 
         disableTextTrack: function ( activeTrackId ) {
