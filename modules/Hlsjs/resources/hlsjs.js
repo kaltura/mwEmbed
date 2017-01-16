@@ -20,11 +20,7 @@
 
 			defaultConfig: {
 				withCredentials : false,
-				options: {
-					//debug:true
-					liveSyncDurationCount: 3,
-					liveMaxLatencyDurationCount: 6
-				},
+				options: {},
 				maxErrorRetryCount: 2,
 				hlsLogs: false
 			},
@@ -48,7 +44,6 @@
 			afterInitialSeeking: false,
 			/** type {Number} */
 			levelIndex: -1,
-			version: "v0.5.23",
 
 			/** type {Object} */
 			ptsID3Data: {},
@@ -64,7 +59,7 @@
 			 * Setup the HLS playback engine wrapper with supplied config options
 			 */
 			setup: function () {
-				this.log("version: " + (Hls.version ? Hls.version : this.version));
+				this.log("version: " + Hls.version);
 				mw.setConfig('isHLS_JS', true);
 				this.addBindings();
 			},
@@ -116,13 +111,7 @@
 					//Set streamerType to hls
 					this.embedPlayer.streamerType = 'hls';
 					
-					var hlsConfig = this.getConfig("options");
-					//Apply withCredentials if set to true
-					if(this.getConfig("withCredentials")){
-						hlsConfig.xhrSetup = function(xhr, url) {
-							xhr.withCredentials = true;
-						}
-					}
+					var hlsConfig = this.getHlsConfig();
 					//Init the HLS playback engine
 					this.hls = new Hls(hlsConfig);
 
@@ -145,6 +134,25 @@
 						this.hls.attachMedia(this.getPlayer().getPlayerElement());
 					}.bind(this));
 				}
+			},
+			getHlsConfig: function(){
+				var defaultConfig = {
+					//debug:true
+					liveSyncDurationCount: 3,
+					liveMaxLatencyDurationCount: 6
+				};
+
+				var options = this.getConfig("options");
+
+				var hlsConfig = $.extend({}, defaultConfig, options);
+
+				//Apply withCredentials if set to true
+				if(this.getConfig("withCredentials")){
+					hlsConfig.xhrSetup = function(xhr, url) {
+						xhr.withCredentials = true;
+					};
+				}
+				return hlsConfig;
 			},
 			/**
 			 * Register HLS playback engine events
@@ -518,27 +526,31 @@
 			 * Override player method for back to live mode
 			 */
 			backToLive: function () {
-				var _this = this;
-				var vid = this.getPlayer().getPlayerElement();
-				this.embedPlayer.goingBackToLive = true;
-				vid.currentTime = vid.duration - (this.fragmentDuration || 10) * 3;
-				//for some reason on Mac the isLive client response is a little bit delayed, so in order to get update
-				// liveUI properly, we need to delay "movingBackToLive" helper
-				setTimeout(function () {
-					_this.getPlayer().triggerHelper('movingBackToLive');
-					_this.embedPlayer.goingBackToLive = false;
-				}, 1000);
-			},
+                var _this = this;
+                var vid = this.getPlayer().getPlayerElement();
+                this.embedPlayer.goingBackToLive = true;
+                vid.currentTime = vid.duration - (this.fragmentDuration || 10) * 3;
+                _this.getPlayer().triggerHelper( 'movingBackToLive' );
+                if ( this.embedPlayer.isDVR() ) {
+                    _this.once( 'seeked', function () {
+                        _this.embedPlayer.goingBackToLive = false;
+                    } );
+                } else {
+                    _this.embedPlayer.goingBackToLive = false;
+                }
+            },
 
 			onLiveOffSyncChanged: function (event, status) {
-				if (this.getConfig("options") && !this.defaultLiveMaxLatencyDurationCount) {
-					// Storing the default value as it configured in the defaultConfig for backing to live
-					this.defaultLiveMaxLatencyDurationCount = this.getConfig("options").liveMaxLatencyDurationCount;
-				}
-				if (status) { // going to offSync - liveMaxLatencyDurationCount should be infinity
-					this.hls.config.liveMaxLatencyDurationCount = Hls.DefaultConfig["liveMaxLatencyDurationCount"];
-				} else { // back to live - restore the default as it configured in the defaultConfig
-					this.hls.config.liveMaxLatencyDurationCount = this.defaultLiveMaxLatencyDurationCount;
+				if (this.LoadHLS) {
+					if (this.getConfig("options") && !this.defaultLiveMaxLatencyDurationCount) {
+						// Storing the default value as it configured in the defaultConfig for backing to live
+						this.defaultLiveMaxLatencyDurationCount = this.getConfig("options").liveMaxLatencyDurationCount;
+					}
+					if (status) { // going to offSync - liveMaxLatencyDurationCount should be infinity
+						this.hls.config.liveMaxLatencyDurationCount = Hls.DefaultConfig["liveMaxLatencyDurationCount"];
+					} else { // back to live - restore the default as it configured in the defaultConfig
+						this.hls.config.liveMaxLatencyDurationCount = this.defaultLiveMaxLatencyDurationCount;
+					}
 				}
 			},
 
@@ -549,18 +561,17 @@
 			switchSrc: function (source) {
 				if (source !== -1) {
 					var sourceIndex = this.getPlayer().getSourceIndex(source);
-					if (sourceIndex != null) {
-						this.isLevelSwitching = true;
-						this.levelIndex = sourceIndex;
-						if (this.hls.currentLevel == sourceIndex) {
-							this.onLevelSwitch(Hls.Events.LEVEL_SWITCH, {level: sourceIndex});
-							this.onFragChanged(Hls.Events.LEVEL_LOADED, {frag: {level: sourceIndex}});
-							this.getPlayer().currentBitrate = source.getBitrate();
-							this.getPlayer().triggerHelper('bitrateChange', source.getBitrate());
-						} else {
-							this.hls.nextLevel = sourceIndex;
-						}
-					}
+					if ( sourceIndex !== null ) {
+                        this.levelIndex = sourceIndex;
+                        if ( !(this.hls.autoLevelEnabled || this.isLevelSwitching) && (this.hls.currentLevel === sourceIndex) ) {
+                            this.onLevelSwitch( Hls.Events.LEVEL_SWITCH, { level: sourceIndex } );
+                            this.onFragChanged( Hls.Events.LEVEL_LOADED, { frag: { level: sourceIndex } } );
+                            this.getPlayer().currentBitrate = source.getBitrate();
+                        } else {
+                            this.hls.nextLevel = sourceIndex;
+                            this.isLevelSwitching = true;
+                        }
+                    }
 				} else {
 					this.hls.nextLevel = -1;
 				}

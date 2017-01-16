@@ -255,7 +255,7 @@
 		"kalturaPluginName": "logo"
 	},
   "video360": {
-    "scripts": "components/video360.js",
+    "scripts": ["components/360/video360.js"],
     "dependencies": ["threejs","mw.KBasePlugin"],
     "kalturaPluginName": "video360"
   },
@@ -483,5 +483,11 @@
 		"scripts": "components/reportError.js",
 		"dependencies": "mw.KBaseComponent",
 		"kalturaPluginName": "reportError"
+	},
+	"kgitGuard": {
+		"scripts": "components/kgitGuard/kgitGuard.js",
+		"styles": "components/kgitGuard/kgitGuard.css",
+		"dependencies": "mw.KBasePlugin",
+		"kalturaPluginName": "kgitGuard"
 	}
 }
