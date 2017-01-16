@@ -1328,7 +1328,7 @@ HTML;
 
 <script type="text/javascript">
     var customCSS = <?php echo $customCss ?>;
-    if (['kWidget'] && !window['kWidget'].isMobileDevice() && customCSS){
+    if (['kWidget'] && !window['kWidget'].isMobileDevice() && customCSS || window['kWidget'].isIOS() || window['kWidget'].isAndroid()){
         var head = document.head || document.getElementsByTagName('head')[0];
         var customStyle = document.createElement('style');
         customStyle.type = 'text/css';
