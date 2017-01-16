@@ -178,6 +178,7 @@
 						}
 						this.$mediaListContainer.addClass( "k-" + this.getLayout() );
 					} catch ( e ) {
+						this.$mediaListContainer = $().parent().find( ".onpagePlaylistInterface" );
 						mw.log( "Error: "+ this.pluginName +" could not access parent iframe" );
 					}
 				} else {
