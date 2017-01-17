@@ -161,7 +161,7 @@ if( $wgHTTPProtocol == 'https' ){
 // Default Kaltura Stats url
 $wgKalturaStatsServiceUrl = 'http://stats.kaltura.com';
 if( $wgHTTPProtocol == 'https' ){
-	$wgKalturaStatsServiceUrl = 'https://www.kaltura.com';
+	$wgKalturaStatsServiceUrl = 'https://stats.kaltura.com';
 }
 
 // Default Kaltura service url:
