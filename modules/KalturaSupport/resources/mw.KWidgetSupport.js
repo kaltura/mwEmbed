@@ -148,7 +148,7 @@ mw.KWidgetSupport.prototype = {
 			if (mw.getConfig('thumbnailUrl')) {
 				thumbUrl = embedPlayer.evaluate(mw.getConfig('thumbnailUrl'));
 			}
-			var alt = gM('mwe-embedplayer-video-thumbnail-for', embedPlayer.evaluate('{mediaProxy.entry.name}'));
+			var alt = gM('mwe-embedplayer-video-thumbnail-for', kWidget.sanitize(embedPlayer.evaluate('{mediaProxy.entry.name}')));
 			embedPlayer.updatePoster( thumbUrl, alt );
 			embedPlayer.isAudioPlayer = ( embedPlayer.kalturaPlayerMetaData.mediaType === 5 );
 		});
