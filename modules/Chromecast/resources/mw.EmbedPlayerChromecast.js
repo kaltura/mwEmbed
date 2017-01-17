@@ -56,6 +56,10 @@
 			return this.currentTime;
 		},
 
+		isDVR: function () {
+			return false;
+		},
+
 		clipDone: function() {
 			mw.log("Chromecast::clip done");
 			if (this.vid.mediaFinishedCallback){
@@ -101,7 +105,6 @@
 			});
 		},
 		switchPlaySource: function( source, switchCallback ){
-			$(this).trigger("chromecastSwitchMedia", [source.src, source.mimeType]);
 			this.vid.mediaLoadedCallback = switchCallback;
 		},
 

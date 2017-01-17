@@ -323,6 +323,9 @@
 			_this.viewEventInterval = null;
 		},
 		startViewTracking :function(){
+			if (this.viewEventInterval){
+				this.stopViewTracking();
+			}
 			var _this = this;
 			var playerEvent = this.PlayerEvent;
 			_this.startTime = null;
@@ -414,6 +417,7 @@
 			});
 			this.eventIndex += 1;
 			this.embedPlayer.triggerHelper( 'analyticsEvent' , statsEvent);
+			this.log("Trigger analyticsEvent type = "+statsEvent.eventType);
 			this.kClient.doRequest( eventRequest, function(data){
 				try {
 					if (!_this.startTime ) {

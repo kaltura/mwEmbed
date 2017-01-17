@@ -26,48 +26,67 @@
 					'target': '_blank'
 				});
 			});
-			
+
 			this.bind('onChangeMediaDone playerReady onpause onEndedDone onRemovePlayerSpinner showPlayerControls showLargePlayBtn', function(e){
 				if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() && !_this.embedPlayer.isPauseLoading ){
-					_this.getComponent().removeClass("icon-pause").addClass("icon-play");
+					if (mw.isChromeCast()){
+						_this.getComponent().removeClass("icon-play").addClass("icon-pause");
+						if (e.type !== "onpause" && e.type !== "playerReady"){
+							return;
+						}
+					} else {
+						_this.getComponent().removeClass( "icon-pause" ).addClass( "icon-play" );
+					}
 					_this.show();
 				}
 			});
 
 			this.bind('onShowControlBar', function(){
-				if( !mw.isIE8() && _this.getConfig("togglePause") && _this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() ){
+				if( !mw.isIE8() && _this.getConfig("togglePause") && (_this.embedPlayer.isPlaying() || mw.isChromeCast()) && !_this.embedPlayer.isInSequence() ){
 					_this.getComponent().removeClass("icon-play").addClass("icon-pause");
 					_this.show();
 				}
 			});
-			this.bind('playing AdSupport_StartAdPlayback onAddPlayerSpinner onHideControlBar onChangeMedia', function(e){
+			this.bind('playing AdSupport_StartAdPlayback onHideControlBar onChangeMedia', function(e){
 				_this.hide();
+			});
+			this.bind('onAddPlayerSpinner showScreen', function(e){
+				_this.hide(true);
 			});
 			this.bind('onPlayerStateChange', function(e, newState, oldState){
 				if( newState == 'load' || newState == 'play' ){
 					_this.hide(true);
 				}
-				if( newState == 'pause' && _this.getPlayer().isPauseLoading ){
+				if( newState == 'pause' && _this.getPlayer().isPauseLoading && !mw.isChromeCast()){
 					_this.hide();
 				}
 			});
-			this.bind( 'hideScreen', function(){
+			this.bind( 'hideScreen closeMenuOverlay', function(){
 				if (mw.isMobileDevice() && _this.getPlayer().paused){
 					_this.show();
 				}
 			});
-            this.bind('liveOnline', function(){
-                if( _this.getPlayer().isLive && !_this.getPlayer().isDVR() ) {
-                    _this.hide();
-                }
-            });
+			this.bind('liveOnline', function(){
+				if( _this.getPlayer().isLive && !_this.getPlayer().isDVR() ) {
+					_this.hide();
+				}
+			});
 		},
 		show: function(){
-			if ( !this.isDisabled ) {
-				if (this.embedPlayer.isMobileSkin() && this.embedPlayer.changeMediaStarted){
-					return; // prevent showing large play button on top of the spinner when using mobile skin and changing media
+			if ( !this.isDisabled && !this.embedPlayer.layoutBuilder.displayOptionsMenuFlag ) {
+				if (this.embedPlayer.isMobileSkin() && (this.embedPlayer.changeMediaStarted || this.embedPlayer.buffering || this.embedPlayer.isInSequence())){
+					return; // prevent showing large play button on top of the spinner when using mobile skin and changing media or during ads
 				}
-				this.getComponent().show();
+
+				if (this.embedPlayer.isMobileSkin()){
+					if (mw.isIOS8()){
+						this.getComponent().fadeIn('fast').css('display', "-webkit-flex");
+					}else{
+						this.getComponent().fadeIn('fast').css('display', "flex");
+					}
+				} else {
+					this.getComponent().css('display', "block");
+				}
 			}
 			this.shouldShow = true;
 		},
@@ -77,6 +96,11 @@
 		},
 		hideComponent: function( force ) {
 			if( force || !this.isPersistantPlayBtn() ) {
+				//Need to cancel animation if hiding right after showing button in mobile skin
+				//cause in show we use animation in mobile skin
+				if (this.embedPlayer.isMobileSkin()){
+					this.getComponent().stop();
+				}
 				this.getComponent().hide();
 			}
 		},
@@ -108,24 +132,21 @@
 			this.hideComponent();
 		},
 		getComponent: function() {
-			var _this = this;
-			var eventName = 'click';
-			if ( mw.isAndroid() ){
-				eventName += ' touchstart';
-			}
 			if( !this.$el ) {
+				var _this = this;
+				var eventName = 'click';
 				this.$el = $( '<a />' )
-							.attr( {
-								'tabindex': '-1',
-								'href' : '#',
-								'title' : gM( 'mwe-embedplayer-play_clip' ),
-								'class'	: "icon-play " + this.getCssClass()
-							} )
-							.hide()
-							// Add play hook:
-							.on(eventName, function(e) {
-								_this.clickButton(e);
-							} );
+					.attr( {
+						'tabindex': '-1',
+						'href' : '#',
+						'title' : gM( 'mwe-embedplayer-play_clip' ),
+						'class'	: "icon-play " + this.getCssClass()
+					} )
+					.hide()
+					// Add play hook:
+					.on(eventName, function(e) {
+						_this.clickButton(e);
+					} );
 				if ( !mw.isWindowsPhone() ){
 					this.$el.addClass("largePlayBtnBorder");
 				}

@@ -26,6 +26,9 @@
 		// The monitor interval index:
 		adMonitor: null,
 
+        // Flag to indicate whether the ad is skippable
+        adSkippable: null,
+
 		shouldPausePlaylist: false,
 
 		// store the ad start time
@@ -36,7 +39,7 @@
 
 		// flag for using a chromeless player - move control to KDP DoubleClick plugin
 		isChromeless: false,
-		 //flag for using native mobile IMA SDK
+		//flag for using native mobile IMA SDK
 		isNativeSDK: false,
 		// for Chromeless only: save entry duration during midrolls so we can update it when midroll is finished
 		entryDuration: null,
@@ -60,7 +63,6 @@
 		// Flag to enable/ disable timeout for iOS5/ iOS6 when ad is clicked
 		isAdClickTimeoutEnabled: false,
 
-		playerIsReady: false,
 		imaLoaded: false,
 		prePlayActionTriggered: false,
 
@@ -92,6 +94,10 @@
 		chromelessAdManagerLoadedId: null,
 
 		init: function( embedPlayer, callback, pluginName ){
+			if (embedPlayer.casting || mw.getConfig("EmbedPlayer.UseExternalAdPlayer") === true){
+				callback();
+				return;
+			}
 			var _this = this;
 			if (mw.getConfig( 'localizationCode' )){
 				_this.localizationCode = mw.getConfig( 'localizationCode' );
@@ -192,14 +198,6 @@
 				_this.adTagUrl = _this.getConfig( 'prerollUrlJS' );
 			}
 
-			this.embedPlayer.bindHelper( 'playerReady' + this.bindPostfix, function(event){
-				_this.playerIsReady = true;
-				if ( _this.imaLoaded ){
-					mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
-					_this.requestAds();
-				}
-			});
-
 			this.embedPlayer.bindHelper('prePlayAction' + this.bindPostfix, function( e, prePlay ){
 				//This code executed only if prePlayAction triggered before imaLoaded (since imaLoaded does unbinding for 'prePlayAction'),
 				//So we should block the player until the ima will loaded.
@@ -208,12 +206,11 @@
 				_this.prePlayActionTriggered = true;
 			});
 
-			// Load double click ima per doc:
-			this.loadIma( function(){
+			var onImaLoadSuccess = function() {
 				_this.imaLoaded = true;
 				_this.embedPlayer.unbindHelper('prePlayAction' + _this.bindPostfix);
 				// Determine if we are in managed or kaltura point based mode.
-				if ( _this.localizationCode ){
+				if (_this.localizationCode) {
 					google.ima.settings.setLocale(_this.localizationCode);
 				}
 				// set player type and version
@@ -223,15 +220,15 @@
 
 				// Set num of redirects for VAST wrapper ads, higher means bigger latency!
 				var numRedirects = _this.getConfig("numRedirects");
-				if(numRedirects) {
+				if (numRedirects) {
 					google.ima.settings.setNumRedirects(numRedirects);
 				}
 
 				// Check for adPattern
-				if ( _this.getConfig( 'adPattern' ) ) {
+				if (_this.getConfig('adPattern')) {
 					var adIndex = _this.getAdPatternIndex();
-					mw.log( "DoubleClick:: adPattern: " + _this.getConfig( 'adPattern' ) + " on index: " + adIndex );
-					if ( adIndex === 'A' ) {
+					mw.log("DoubleClick:: adPattern: " + _this.getConfig('adPattern') + " on index: " + adIndex);
+					if (adIndex === 'A') {
 						// Managed bindings
 						_this.addManagedBinding();
 					}
@@ -240,19 +237,41 @@
 					_this.addManagedBinding();
 				}
 
-				if ( _this.playerIsReady ) {
+				var requestAdsAndPlay = function () {
 					_this.requestAds();
-					if ( _this.prePlayActionTriggered ){
+					if (_this.prePlayActionTriggered) {
 						_this.embedPlayer.play();
 					}
+				};
+
+				if (_this.embedPlayer.changeMediaStarted) {
+					setTimeout(requestAdsAndPlay, 100)
+				} else {
+					requestAdsAndPlay();
 				}
-			}, function( errorCode ){
+			};
+			var onImaLoadFailed = function( errorCode ){
 				mw.log( "Error::DoubleClick Loading Error: " + errorCode );
+				_this.onAdError(errorCode);
 				_this.embedPlayer.unbindHelper('prePlayAction' + _this.bindPostfix);
 				if ( _this.prePlayActionTriggered ){
 					_this.embedPlayer.play();
 				}
-			});
+			};
+			try{
+				if (top.google && top.google.ima){
+					window.google = top.google;
+				}
+			}
+			catch(e){}
+			if (this.getConfig("useExternalImaLib") && window.google && window.google.ima){
+				mw.log("Google IMA lib already loaded");
+				onImaLoadSuccess();
+			} else {
+				// Load double click ima per doc:
+				mw.log("Google IMA lib loading");
+				this.loadIma(onImaLoadSuccess, onImaLoadFailed);
+			}
 
 			var restoreOnInit = function(){
 				_this.destroy();
@@ -386,7 +405,7 @@
 		loadIma:function( successCB, failureCB ){
 			var _this = this;
 			var isLoaded = false;
-			var timeoutVal = _this.getConfig("adsManagerLoadedTimeout") || 5000;
+			var timeoutVal = _this.getConfig("adsManagerLoadedTimeout") || (mw.isChromeCast() ? 15000 : 5000);
 			mw.log( "DoubleClick::loadIma: start timer for adsManager loading check: " + timeoutVal + "ms");
 			setTimeout(function(){
 				if ( !isLoaded ){
@@ -409,6 +428,12 @@
 				} );
 		},
 		startAdsManager: function(){
+			if (this.embedPlayer.casting){
+				this.embedPlayer.adTimeline.restorePlayer( null, true);
+				this.destroy();
+				this.addSkipSupport();
+				return;
+			}
 			// Initialize the ads manager. In case of ad playlist with a preroll, the preroll will start playing immediately.
 			this.adsManager.init( this.embedPlayer.getWidth(), this.embedPlayer.getHeight(), google.ima.ViewMode.NORMAL);
 			this.adsManager.setVolume( this.embedPlayer.getPlayerElementVolume() );
@@ -509,6 +534,11 @@
 				}
 			});
 
+			_this.embedPlayer.bindHelper('casting' + this.bindPostfix, function () {
+				_this.embedPlayer.adTimeline.restorePlayer( null, true);
+				_this.destroy();
+			});
+
 			_this.embedPlayer.bindHelper('AdSupport_StartAdPlayback' + this.bindPostfix, function (event) {
 				if (_this.isChromeless){
 					_this.embedPlayer.getPlayerElement().sendNotification("hideContent");
@@ -534,6 +564,20 @@
 					}
 				}
 			});
+
+			_this.embedPlayer.bindHelper('cancelAllAds' + this.bindPostfix, function (event) {
+				mw.log( "DoubleClick::cancelAllAds event called." );
+				_this.destroy();
+			});
+
+			_this.embedPlayer.bindHelper('onChangeMedia' + this.bindPostfix, function (event) {
+				if(_this.embedPlayer.isInSequence()){
+					mw.log( "DoubleClick::changeMedia event called. Calling Destroy." );
+					_this.destroy();
+					_this.isdestroy = true;
+				}
+			});
+
 
 			if (_this.embedPlayer.isMobileSkin()){
 				_this.embedPlayer.bindHelper('onShowControlBar' + this.bindPostfix, function (event) {
@@ -579,17 +623,14 @@
 				_this.resumeAd(isLinear)
 			});
 			$(".adCover").remove();
-			if (this.isChromeless){
+			if (!mw.isIphone()){
 				$(".videoDisplay").prepend(adCover);
-			}else{
-				if (!mw.isIphone()){
-					$(this.getAdContainer()).append(adCover);
-				}
 			}
 			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
 
 			if (isLinear && !this.isNativeSDK) {
-				this.embedPlayer.enablePlayControls(["scrubber","share","infoScreen","related","playlistAPI","nextPrevBtn","sourceSelector"]);
+				this.clearSkipTimeout();
+				this.embedPlayer.enablePlayControls(["scrubber","share","infoScreen","related","playlistAPI","nextPrevBtn","sourceSelector","qualitySettings","morePlugins"]);
 			} else {
 				_this.embedPlayer.pause();
 			}
@@ -613,6 +654,9 @@
 				$(".adCover").remove();
 				$(this.embedPlayer).trigger("onPlayerStateChange", ["play", this.embedPlayer.currentState]);
 				if (isLinear) {
+                    if (!_this.adSkippable) {
+                        this.resumeSkipSupport();
+                    }
 					this.embedPlayer.disablePlayControls();
 				} else {
 					_this.embedPlayer.play();
@@ -650,6 +694,15 @@
 			// Set the content element to player element:
 			return this.embedPlayer.getPlayerElement();
 		},
+		addCountdownNotice: function () {
+			if (this.getConfig('countdownText') && this.embedPlayer.getInterface().find(".ad-notice-label").length == 0) {
+				// Add the notice target:
+				this.embedPlayer.getVideoHolder().append(
+					$('<span />')
+						.addClass('ad-component ad-notice-label')
+				);
+			}
+		},
 		getAdContainer: function(){
 			if( !$('#' + this.getAdContainerId() ).length ){
 				this.embedPlayer.getVideoHolder().after(
@@ -661,14 +714,7 @@
 							'left' : '0px'
 						})
 				);
-				if ( this.getConfig( 'countdownText' )){
-					this.embedPlayer.getInterface().find("#"+this.getAdContainerId()).append(
-						$('<span />')
-							.addClass( 'ad-component ad-notice-label' )
-							.css({"position": "fixed","margin-bottom": 36+"px"})
-							.hide()
-					)
-				}
+				this.addCountdownNotice();
 			}
 			return $('#' + this.getAdContainerId() ).get(0);
 		},
@@ -700,7 +746,7 @@
 		},
 		addSkipSupport: function(){
 			var _this = this;
-			if ( this.embedPlayer.getRawKalturaConfig('skipBtn') && this.embedPlayer.getVideoHolder().find(".ad-skip-btn").length === 0){
+			if ( this.embedPlayer.getRawKalturaConfig('skipBtn') && this.embedPlayer.getRawKalturaConfig('skipBtn', 'plugin') && this.embedPlayer.getVideoHolder().find(".ad-skip-btn").length === 0){
 				var label = "Skip Ad";
 				if( this.embedPlayer.getKalturaConfig( 'skipBtn', 'label' ) ){
 					label = this.embedPlayer.getKalturaConfig( 'skipBtn', 'label' );
@@ -717,9 +763,6 @@
 							if ( _this.isChromeless ){
 								_this.embedPlayer.getPlayerElement().sendNotification( 'skipAd' );
 							}else{
-								if (_this.adPaused){
-									_this.resumeAd(true);
-								}
 								_this.adsManager.stop();
 								if (_this.currentAdSlotType === "postroll" && _this.getConfig( 'adTagUrl' ) ){
 									_this.restorePlayer(true);
@@ -737,26 +780,45 @@
 					);
 				}
 			}
+			this.embedPlayer.bindHelper('chromecastReceiverAdOpen' + this.bindPostfix, function (event) {
+				_this.showSkipBtn();
+			});
+			this.embedPlayer.bindHelper('chromecastReceiverAdComplete' + this.bindPostfix, function (event) {
+				_this.hideSkipBtn();
+			});
 		},
-		showSkipBtn: function(){
-			if( this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' ) ){
-				$(".ad-skip-label").show();
-				this.skipTimeoutId = setTimeout(function(){
-					$(".ad-skip-btn").show();
-					$(".ad-skip-label").hide();
-				},parseFloat(this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' ) * 1000))
-			}else{
-				$(".ad-skip-btn").show();
-				$(".ad-skip-label").hide();
-			}
-		},
-		hideSkipBtn: function(){
-			if( this.skipTimeoutId !== null ){
-				clearTimeout(this.skipTimeoutId);
-				this.skipTimeoutId = null;
-			}
-			$(".ad-skip-btn").hide();
-		},
+        resumeSkipSupport: function () {
+            if (this.embedPlayer.getKalturaConfig('skipBtn', 'skipOffset')) {
+                var timePassed = (this.duration - this.adPreviousTimeLeft) * 1000;
+                this.startSkipTimeout((this.embedPlayer.getKalturaConfig('skipBtn', 'skipOffset') * 1000) - timePassed);
+            }
+        },
+        showSkipBtn: function () {
+            if (this.embedPlayer.getKalturaConfig('skipBtn', 'skipOffset')) {
+                $(".ad-skip-label").show();
+                this.startSkipTimeout(parseFloat(this.embedPlayer.getKalturaConfig('skipBtn', 'skipOffset') * 1000));
+            } else {
+                $(".ad-skip-btn").show();
+                $(".ad-skip-label").hide();
+            }
+        },
+        hideSkipBtn: function () {
+            this.clearSkipTimeout();
+            $(".ad-skip-btn").hide();
+            $(".ad-skip-label").hide();
+        },
+        clearSkipTimeout: function () {
+            if (this.skipTimeoutId !== null) {
+                clearTimeout(this.skipTimeoutId);
+                this.skipTimeoutId = null;
+            }
+        },
+        startSkipTimeout: function (time) {
+            this.skipTimeoutId = setTimeout(function () {
+                $(".ad-skip-btn").show();
+                $(".ad-skip-label").hide();
+            }, time);
+        },
 		/**
 		 * Adds custom params to ad url.
 		 */
@@ -855,7 +917,7 @@
 				adsRequest.adTagUrl = encodeURIComponent(adsRequest.adTagUrl);
 				this.embedPlayer.getPlayerElement().sendNotification( 'requestAds', adsRequest );
 				mw.log( "DoubleClick::requestAds: Chromeless player request ad from KDP plugin");
-				var timeout = this.getConfig("adsManagerLoadedTimeout") || 5000;
+				var timeout = this.getConfig("adsManagerLoadedTimeout") || (mw.isChromeCast() ? 15000 : 5000);
 				this.chromelessAdManagerLoadedId = setTimeout(function(){
 					mw.log( "DoubleClick::Error: AdsManager failed to load by Flash plugin after " + timeout + " seconds.");
 					_this.restorePlayer(true);
@@ -865,7 +927,7 @@
 			}
 
 			if ( this.isNativeSDK ) {
-				this.embedPlayer.getPlayerElement().attr( 'doubleClickRequestAds', this.getConfig( 'adTagUrl' ));
+				this.embedPlayer.getPlayerElement().attr( 'doubleClickRequestAds', adTagUrl);
 				mw.log( "DoubleClick::requestAds: Native SDK player request ad ");
 				return;
 			}
@@ -910,7 +972,7 @@
 			mw.log( 'DoubleClick:: onAdsManagerLoaded' );
 
 			var adsRenderingSettings = new google.ima.AdsRenderingSettings();
-			if (!this.getConfig("adTagUrl")){
+			if (!this.adTagUrl){
 				adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true; // for manual VAST, get the SDK to restore the player
 			}
 			if ( this.getConfig( 'enableCountDown' ) === true){
@@ -948,7 +1010,20 @@
 						var companionAds = [];
 
 						try {
-							companionAds = ad.getCompanionAds(adSlotWidth, adSlotHeight, {resourceType: google.ima.CompanionAdSelectionSettings.ResourceType.STATIC, creativeType: google.ima.CompanionAdSelectionSettings.CreativeType.IMAGE});
+							var selectionCriteria = new google.ima.CompanionAdSelectionSettings();
+							selectionCriteria.resourceType = google.ima.CompanionAdSelectionSettings.ResourceType.ALL;
+							selectionCriteria.creativeType = google.ima.CompanionAdSelectionSettings.CreativeType.ALL;
+							switch( this.getConfig( 'companionSizeCriteria' ) ){
+								case 'SELECT_NEAR_MATCH' :
+									selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.SELECT_NEAR_MATCH;
+									break;
+								case 'IGNORE' :
+									selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.IGNORE;
+									break;
+								default:
+									selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.SELECT_EXACT_MATCH;
+							}
+							companionAds = ad.getCompanionAds(adSlotWidth, adSlotHeight, selectionCriteria);
 						} catch(e) {
 							mw.log("Error: DoubleClick could not access getCompanionAds");
 						}
@@ -1048,7 +1123,7 @@
 				var currentAdSlotType = _this.isLinear ? _this.currentAdSlotType : "overlay";
 				$("#" + _this.getAdContainerId()).show();
 				// dispatch adOpen event
-				$( _this.embedPlayer).trigger( 'onAdOpen',[adData.adId, adData.adSystem, currentAdSlotType, adData.adPodInfo ? adData.adPodInfo.adPosition : 0] );
+				$( _this.embedPlayer).trigger( 'onAdOpen',[adData.adId, adData.adSystem, currentAdSlotType, adData.adPodInfo ? adData.adPodInfo.adPosition : 0, adData.linear] );
 
 				_this.duration= _this.adsManager.getRemainingTime();
 				if (_this.duration >= 0) {
@@ -1056,6 +1131,7 @@
 				}
 				var size = _this.getPlayerSize();
 				_this.adsManager.resize( size.width, size.height, google.ima.ViewMode.NORMAL );
+				_this.adsManager.setVolume( _this.embedPlayer.getPlayerElementVolume() );
 				if ( _this.isLinear ) {
 					// Hide player content
 					_this.hideContent();
@@ -1081,6 +1157,11 @@
 				if( mw.isIpad() && _this.embedPlayer.getPlayerElement().paused ) {
 					_this.embedPlayer.getPlayerElement().play();
 				}
+				if ( currentAdSlotType === "overlay" && _this.getConfig("timeout") ){ // support timeout Flashvar for overlays
+					setTimeout(function(){
+						_this.adsManager.stop();
+					}, parseFloat( _this.getConfig("timeout") ) * 1000);
+				}
                 var adPosition =  0;
                 if ( ad.getAdPodInfo() && ad.getAdPodInfo().getAdPosition() ){ adPosition = ad.getAdPodInfo().getAdPosition(); }
 				if ( _this.isLinear && adPosition === 1){
@@ -1101,7 +1182,7 @@
 				// Check for ad Stacking ( two starts in less then 250ms )
 				if( lastAdStartTime !== null &&
 					new Date().getTime() - lastAdStartTime < 250
-					){
+				){
 					mw.log("ERROR:: Stacking Ad STARTED! :" + ( lastAdStartTime - new Date().getTime() ) );
 					// Not sure what we should do here:
 					// 1) we can't unload manager since we have to play back the active ads
@@ -1116,8 +1197,9 @@
 				// update the last ad start time:
 				lastAdStartTime = new Date().getTime();
 				_this.adActive = true;
+                _this.adSkippable = ad.isSkippable();
 				if (_this.isLinear) {
-					if (!ad.isSkippable()){
+					if (!_this.adSkippable){
 						_this.showSkipBtn();
 					}
 					_this.playingLinearAd = true;
@@ -1189,6 +1271,7 @@
 			});
 			// Resume content:
 			adsListener( 'CONTENT_RESUME_REQUESTED', function(){
+				$(_this.embedPlayer).trigger('onContentResumeRequested');
 				_this.playingLinearAd = false;
 				// Update slot type, if a preroll switch to midroll
 				if( _this.currentAdSlotType === 'preroll' ){
@@ -1263,13 +1346,7 @@
 						if (_this.isChromeless) {
 							$(".mwEmbedPlayer").hide();
 						}
-						if (_this.getConfig('countdownText') && _this.embedPlayer.getInterface().find(".ad-notice-label").length == 0) {
-							// Add the notice target:
-							_this.embedPlayer.getVideoHolder().append(
-								$('<span />')
-									.addClass('ad-component ad-notice-label')
-							);
-						}
+						_this.addCountdownNotice();
 						// Send a notification to trigger associated events and update ui
 						_this.embedPlayer.paused = false;
 					}else{
@@ -1478,10 +1555,11 @@
 							$( embedPlayer ).trigger( "onPlayerStateChange", ["pause", embedPlayer.currentState] );
 							break;
 						case 'doPlay':
+							embedPlayer.paused = false;
+							embedPlayer.stopped = false;
 							if (_this.adPaused){
 								_this.adPaused = false;
 								_this.adsManager.resume();
-								embedPlayer.paused = false;
 								$( embedPlayer ).trigger( 'onplay' );
 								$( embedPlayer ).trigger( "onPlayerStateChange", ["play", embedPlayer.currentState] );
 								_this.monitorAdProgress();
@@ -1565,7 +1643,7 @@
 			if (this.adsManager && $.isFunction( this.adsManager.unload ) ) {
 				this.adsManager.unload();
 			}
-			if (this.embedPlayer.isInSequence()){
+			if (this.embedPlayer.isInSequence() || (this.embedPlayer.autoplay && this.embedPlayer.canAutoPlay())){
 				this.restorePlayer(this.contentDoneFlag);
 				this.embedPlayer.play();
 			}else{
@@ -1573,17 +1651,17 @@
 			}
 		},
 		restorePlayer: function( onContentComplete, adPlayed ){
-			if (this.isdestroy && this.getConfig("adTagUrl")){ // DFP trafficed and already destroyed
+			if (this.isdestroy && this.adTagUrl){ // DFP trafficed and already destroyed
 				return;
 			}
 			mw.log("DoubleClick::restorePlayer: content complete:" + onContentComplete);
 			var _this = this;
 			this.adActive = false;
+			this.embedPlayer.getInterface().find(".ad-notice-label").remove();
 			if (this.isChromeless){
 				if (_this.isLinear || _this.adLoaderErrorFlag){
 					$(".mwEmbedPlayer").show();
 				}
-				this.embedPlayer.getInterface().find(".ad-notice-label").remove();
 				this.embedPlayer.getPlayerElement().redrawObject(50);
 			}else{
 				if (_this.isLinear !== false || _this.adLoaderErrorFlag){
@@ -1645,11 +1723,12 @@
 		destroy:function(){
 			// remove any old bindings:
 			var _this = this;
-			if ( this.getConfig("adTagUrl") || this.currentAdSlotType === "postroll" ){
+			this.hideSkipBtn();
+			if ( this.adTagUrl || this.currentAdSlotType === "postroll" ){
 				this.embedPlayer.unbindHelper( this.bindPostfix );
 			}
 			if (!this.isChromeless){
-				if ( this.getConfig("adTagUrl") && this.playingLinearAd ) {
+				if ( this.adTagUrl && this.playingLinearAd ) {
 					this.restorePlayer(true);
 				}
 				$(".ad-skip-btn").remove(); // remove skip button from the DOM

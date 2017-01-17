@@ -221,6 +221,8 @@ class UiConfResult {
 			"sideBarContainer" => array(),
 			"liveAnalytics"=>array(),
 			"kAnalony"=>array(),
+			"hlsjs"=>array(),
+			"kgitGuard"=>array()
 			//"playersJsReceiver" => array()
 		);
 
@@ -556,7 +558,8 @@ class UiConfResult {
 			"id3Tag" => array(),
 			"liveCore" => array(),
 			"liveStatus" => array(),
-			"reportError" => array()
+			"reportError" => array(),
+            "hlsjs"=>array()
 		);
 
 		$closedCaptionPlugin = array(

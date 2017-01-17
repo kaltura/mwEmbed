@@ -53,11 +53,12 @@
 			screenShown: false,
 			currentScreenNameShown: "",
 			externalControlManager : null,
-			setup: function ( ) {
+			isViewModeLocked : false, //indicating if current view mode state is locked by external application.
+
+		setup: function ( ) {
 				this.initConfig();
 				this.initDisplays();
 				this.initFSM();
-				this.initExternalControlManager();
 				this.addBindings();
 			},
 			isSafeEnviornment: function () {
@@ -76,6 +77,8 @@
 					if (_this.syncEnabled){
 						_this.initView();
 						_this.initControlBar();
+						_this.initExternalControlManager();
+
 						if (_this.secondPlayer.canRender()) {
 							_this.log("render condition are met - initializing");
 							_this.checkRenderConditions();
@@ -125,10 +128,14 @@
 
 				//Disable/enable plugin view on screen plugins and ads actions
 				this.bind( "AdSupport_StartAdPlayback", function (e, screenName) {
-					_this.minimizeView("disabledScreen");
+					if ( !_this.getPlayer().isAudio() ) {
+						_this.minimizeView("disabledScreen");
+					}
 				} );
 				this.bind( "AdSupport_EndAdPlayback", function (e, screenName) {
-					_this.restoreView("disabledScreen");
+					if ( !_this.getPlayer().isAudio() ) {
+						_this.restoreView("disabledScreen");
+					}
 				} );
 				this.bind( "preShowScreen", function (e, screenName) {
 					_this.minimizeView(screenName);
@@ -139,22 +146,43 @@
 
 				//Consume view state events
 				this.bind( 'dualScreenStateChange', function(e, state){
-					_this.fsm.consumeEvent( state );
+					if(!_this.disabled && _this.controlBar && !_this.getPlayer().isAudio()) {
+						//update view mode lock state if needed
+						var currentLockState = _this.isViewModeLocked;
+						if(typeof e === 'object' && state.lockState) {
+							switch (state.lockState){
+								case mw.dualScreen.display.STATE.LOCKED:
+									_this.isViewModeLocked = true;
+									_this.controlBar.hide();
+									_this.controlBar.disable();
+									break;
+								case mw.dualScreen.display.STATE.UNLOCKED:
+									_this.isViewModeLocked = false;
+									_this.controlBar.enable();
+									_this.controlBar.show();
+									break;
+							}
+						}
+						//consume event if view state is not locked.
+						//also consume events with locked state if previous state was unlocked
+						if(!_this.isViewModeLocked || !currentLockState) {
+							_this.fsm.consumeEvent( state );
+						}
+					}
 				});
-
 				//Listen to events which affect controls view state
 				this.bind( 'showPlayerControls' , function(){
-						if (!_this.disabled) {
+						if (_this.canManipulateControlViews()) {
 							_this.controlBar.show();
 						}
 				});
 				this.bind( 'onplay', function () {
-						if (!_this.disabled && !_this.getPlayer().isAudio()) {
+						if (_this.canManipulateControlViews()) {
 							_this.controlBar.enable();
 						}
 				} );
 				this.bind( 'onpause ended playerReady', function () {
-						if (!_this.disabled && _this.controlBar && !_this.getPlayer().isAudio()) {
+						if (_this.canManipulateControlViews()) {
 							_this.controlBar.show();
 							_this.controlBar.disable();
 						}
@@ -168,15 +196,16 @@
 				});
 				this.bind( 'stopDisplayInteraction', function() {
 					//Only enable and show if controlBar was enabled before transition
-					if ( !wasDisabled ) {
+					if ( !wasDisabled && !_this.isViewModeLocked) {
 						_this.controlBar.enable();
-						_this.controlBar.show();
+                        _this.controlBar.show();
 					}
 					_this.getPlayer().enablePlayControls();
 				});
 
 				this.bind("onChangeMedia", function(){
 					if ( _this.syncEnabled && !_this.disabled){
+						_this.isViewModeLocked = false;
 						//Reset the displays view
 						if (_this.fsm.getStatus() !== "PiP") {
 							_this.fsm.consumeEvent('PiP');
@@ -184,6 +213,9 @@
 						if (!_this.displays.getPrimary().isMain){
 							_this.fsm.consumeEvent('switchView');
 						}
+
+						_this.destroyExternalControlManager();
+
 						//Reset the control bar
 						if (_this.controlBar) {
 							_this.controlBar.destroy();
@@ -204,6 +236,13 @@
 					});
 				}
 			},
+
+			canManipulateControlViews : function()
+			{
+				var _this = this;
+				return !_this.disabled && _this.controlBar && !_this.getPlayer().isAudio() && !_this.isViewModeLocked;
+			},
+
 			addKeyboardShortcuts: function (addKeyCallback) {
 				var _this = this;
 				// Add q Sign for next state
@@ -258,7 +297,7 @@
 					_this.bind("displayTransitionEnded", function ( ) {
 						if ( transitionHandlerSet ) {
 							transitionHandlerSet = false;
-							if (!_this.disabled && !_this.getPlayer().isAudio()) {
+							if (_this.canManipulateControlViews()) {
 								_this.controlBar.show();
 							}
 							_this.displays.disableTransitions();
@@ -274,10 +313,19 @@
 			},
 			initExternalControlManager : function()
 			{
+				mw.log("dualScreen.initExternalControlManager(): creating new instance of external control manager");
 				var _this = this;
 
 				this.externalControlManager = new mw.dualScreen.externalControlManager(this.getPlayer(), function () {
 				}, "dualScreenExternalControlManager");
+			},
+			destroyExternalControlManager : function()
+			{
+				if (this.externalControlManager) {
+					mw.log("dualScreen.destroyExternalControlManager(): removing existing instance of external control manager");
+					this.externalControlManager.destroy();
+					this.externalControlManager = null;
+				}
 			},
 			initDisplays: function () {
 				var _this = this;
@@ -394,26 +442,24 @@
 						break;
 				}
 
+				if (_this.getPlayer().isAudio()){
+					defaultDualScreenViewId = 'no-parent';
+				}
+
 				// the following code is warpped with timeout to make sure it happens in a separated event loop cycle.
 				// otherwise autoplay might not work.
 				setTimeout( function () {
 
-					if (defaultDualScreenViewId)
-					{
-						if ( _this.externalControlManager ) {
+					if ( _this.externalControlManager ) {
+
+						if (defaultDualScreenViewId)
+						{
 							_this.externalControlManager.setViewById(defaultDualScreenViewId);
-							_this.externalControlManager.initialize();
 						}
 
-						//if (_this.getPlayer().isAudio()){
-						//	// The product removed explicit handling for such a scenario
-						//}
-					}else
-					{
-						if ( _this.externalControlManager ) {
-							_this.externalControlManager.initialize();
-						}
+						_this.externalControlManager.start();
 					}
+
 				}, 1000 );
 			},
 
@@ -424,23 +470,25 @@
 				this.controlBar.disable();
 			},
 			enableView: function(){
-				this.displays.getMainDisplay().obj.css("visibility", "");
-				this.displays.getAuxDisplay().obj.css("visibility", "");
-				if (!this.getPlayer().isAudio()) {
-					this.controlBar.enable();
-					this.controlBar.show();
+				var _this = this;
+				_this.displays.getMainDisplay().obj.css("visibility", "");
+				_this.displays.getAuxDisplay().obj.css("visibility", "");
+				if (_this.canManipulateControlViews()) {
+					_this.controlBar.enable();
+                    _this.controlBar.show();
 				}
 			},
 			minimizeView: function(screenName){
-				this.screenShown = true;
-				if (this.render) {
-					this.currentScreenNameShown = screenName;
-					if (!this.disabled && !this.getPlayer().isAudio()) {
-						this.controlBar.enable();
-						this.controlBar.hide();
-						this.controlBar.disable();
+				var _this = this;
+				_this.screenShown = true;
+				if (_this.render) {
+					_this.currentScreenNameShown = screenName;
+					if (_this.canManipulateControlViews()) {
+						_this.controlBar.enable();
+						_this.controlBar.hide();
+						_this.controlBar.disable();
 					}
-					this.minimizeSecondDisplay();
+					_this.minimizeSecondDisplay();
 				}
 			},
 			restoreView: function(screenName){
@@ -453,9 +501,9 @@
 					//only then preShowScreen
 					var _this = this;
 					setTimeout(function(){
-						if (!_this.screenShown && !_this.disabled && !_this.getPlayer().isAudio()) {
+						if (_this.canManipulateControlViews()) {
 							_this.controlBar.enable();
-							_this.controlBar.show();
+                            _this.controlBar.show();
 						}
 					}, 100);
 				}
@@ -663,7 +711,8 @@
 					at: location[0]+location[1],
 					of: $( this.getPlayer().getInterface() )
 				});
-			}
+			},
+
 		} )
 	);
 }

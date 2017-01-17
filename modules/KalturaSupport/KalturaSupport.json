@@ -13,7 +13,8 @@
 			"matchMedia",
 			"mw.KEntryLoader",
 			"mw.KDPMapping",
-			"mw.KCuePoints"
+			"mw.KCuePoints",
+			"polyfill_Array_filter"
 		],
 		"kalturaLoad": "always",
 		"messageFile": "KalturaSupport.i18n.json"
@@ -90,13 +91,13 @@
 			"components/dualScreen/dualScreenControlBar.js",
 			"components/dualScreen/displays.js",
 			"components/dualScreen/display.js",
-			"components/dualScreen/dualScreenCuePointsManager.js",
 			"components/dualScreen/dualScreenExternalControlManager.js",
 			"components/dualScreen/imagePlayer.js",
 			"components/dualScreen/videoPlayer.js",
 			"components/dualScreen/videoSync.js",
 			"components/dualScreen/fsm.js",
-			"components/dualScreen/dualScreenStatesConfig.js"
+			"components/dualScreen/dualScreenStatesConfig.js",
+			"resources/webcast/cuePointsManager.js"
 		],
 		"styles": [
 			"components/dualScreen/dualScreen.css",
@@ -254,7 +255,7 @@
 		"kalturaPluginName": "logo"
 	},
   "video360": {
-    "scripts": "components/video360.js",
+    "scripts": ["components/360/video360.js"],
     "dependencies": ["threejs","mw.KBasePlugin"],
     "kalturaPluginName": "video360"
   },
@@ -276,14 +277,21 @@
 		"templates": "components/nativeCallout/nativeCallout.tmpl.html"
 	},
 	"closedCaptions": {
-		"scripts": "resources/mw.ClosedCaptions.js",
+		"scripts": [
+			"resources/mw.ClosedCaptions.js",
+			"components/cvaa/cvaa.js"
+		],
 		"dependencies": [
 			"mw.KBaseComponent",
+			"mw.KBaseScreen",
 			"mw.TextSource",
 			"mw.Language.names"
 		],
 		"kalturaPluginName": "closedCaptions",
+		"styles": "components/cvaa/cvaa.css",
+		"templates": "components/cvaa/cvaa.tmpl.html",
 		"messageFile": "../TimedText/TimedText.i18n.json"
+
 	},
 	"infoScreen": {
 		"scripts": "components/info/info.js",
@@ -475,5 +483,11 @@
 		"scripts": "components/reportError.js",
 		"dependencies": "mw.KBaseComponent",
 		"kalturaPluginName": "reportError"
+	},
+	"kgitGuard": {
+		"scripts": "components/kgitGuard/kgitGuard.js",
+		"styles": "components/kgitGuard/kgitGuard.css",
+		"dependencies": "mw.KBasePlugin",
+		"kalturaPluginName": "kgitGuard"
 	}
 }

@@ -106,7 +106,7 @@
 				}
 
 				// prevent iframe resize layout refresh  on iOS8
-				if ( mw.isIOS8_9() ){
+				if ( mw.isIOSAbove7() ){
 					_this.redrawOnResize = false;
 				}
 
@@ -487,7 +487,7 @@
 				_this.loadingEntry = false; // Update the loadingEntry flag//
 
 				// play clip that was selected when autoPlay=false. if autoPlay=true, the embedPlayer will do that for us.
-				if (!_this.getConfig("autoPlay") && mobileAutoPlay && embedPlayer.canAutoPlay() && !embedPlayer.isInSequence()) {
+				if ( (!_this.getConfig("autoPlay") && mobileAutoPlay && embedPlayer.canAutoPlay() && !embedPlayer.isInSequence()) || embedPlayer.casting) {
 					setTimeout(function(){
 						embedPlayer.play();
 					},500); // timeout is required when loading live entries
@@ -567,7 +567,6 @@
 		setMultiplePlayLists: function () {
 			if ( this.playerIsReady && this.playlistSet.length > 1 ) {
 				var _this = this;
-				var maxClips = parseInt( this.getConfig( 'MaxClips' ) );
 				if ( this.getComponent().find( ".playlistSelector" ).length == 0 ) { // UI wasn't not created yet
 					this.getComponent().find( ".k-vertical" ).find( ".playlistTitle, .playlistDescription" ).addClass( "multiplePlaylists" );
 					this.getComponent().find( ".dropDownIcon" ).on( "click", function () {
@@ -579,12 +578,10 @@
 					} );
 					this.getMedialistComponent().prepend( '<div class="playlistSelector"></div>' );
 					$.each( this.playlistSet, function ( i, el ) {
-						var numOfClips = el.content.split( "," ).length;
-						numOfClips = numOfClips > maxClips ? maxClips : numOfClips; // support MaxClips Flashvar
 						if ( _this.getLayout() === "vertical" ) {
-							_this.getComponent().find( ".playlistSelector" ).append( '<br><div data-index="' + i + '" class="playlistItem"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription multiplePlaylists">' + numOfClips + ' ' + gM( 'mwe-embedplayer-videos' ) + '</span></div>' );
+							_this.getComponent().find( ".playlistSelector" ).append( '<br><div data-index="' + i + '" class="playlistItem"><span class="k-playlistTitle"> ' + el.name + '</span></div>' );
 						} else {
-							_this.getComponent().find( ".playlistSelector" ).append( '<div data-index="' + i + '" class="playlistItem k-horizontal"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription multiplePlaylists">' + numOfClips + ' ' + gM( 'mwe-embedplayer-videos' ) + '</span></div>' );
+							_this.getComponent().find( ".playlistSelector" ).append( '<div data-index="' + i + '" class="playlistItem k-horizontal"><span class="k-playlistTitle"> ' + el.name + '</span></div>' );
 						}
 					} );
 					this.getComponent().find( ".playlistItem" ).on( "click", function () {
@@ -680,8 +677,8 @@
 			}
 			this.addMediaItems( items );   // prepare the data to be compatible with KBaseMediaList
 			this.getMedialistHeaderComponent().empty();
-			// try to get number of clips from the content property if exists. If not - take from items array
-			var numOfClips = this.playlistSet[playlistIndex].content ? this.playlistSet[playlistIndex].content.split(",").length : this.playlistSet[playlistIndex].items.length
+			// First playlist will always have items in it, other playlists will populate the items array after selection.
+			var numOfClips = this.playlistSet[playlistIndex].items.length;
 			if ( this.getLayout() === "vertical" ) {
 				this.getMedialistHeaderComponent().prepend( '<span class="playlistTitle">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription">' + numOfClips + ' ' + gM( 'mwe-embedplayer-videos' ) + '</span>' );
 				this.getMedialistHeaderComponent().prepend( '<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist' ) + '"></div>' );
@@ -691,7 +688,7 @@
 				this.getMedialistHeaderComponent().prepend( '<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist' ) + '"></div>' );
 				this.getMedialistHeaderComponent().height(this.getConfig('horizontalHeaderHeight'));
 			}
-			if ( this.getConfig( 'showControls' ) === true ) {
+			if ( this.getConfig( 'showControls' ) === true && !this.embedPlayer.isMobileSkin() ) {
 				this.getMedialistHeaderComponent().prepend( '<div class="playlistControls k-' + this.getLayout() + '"><div class="prevBtn playlistBtn"></div><div class="nextBtn playlistBtn"></div></div>' );
 				this.getMedialistHeaderComponent().find( ".playlistControls .nextBtn" ).on( "click", function () {
 					_this.playNext(true)

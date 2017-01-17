@@ -106,8 +106,8 @@
 			var requestCuePoints = cuePoints || this.getCuePoints();
 			var thumbCuePoint = $.grep(requestCuePoints, function (cuePoint) {
 				return (cuePoint.cuePointType == 'thumbCuePoint.Thumb');
-			})
-			var loadThumbnailsWithReferrer = this.embedPlayer.getFlashvars( 'loadThumbnailWithReferrer' );
+			});
+			var loadThumbnailWithReferrer = this.embedPlayer.getFlashvars( 'loadThumbnailWithReferrer' );
 			var referrer = window.kWidgetSupport.getHostPageUrl();
 			//Create request data only for cuepoints that have assetId
 			$.each(thumbCuePoint, function (index, item) {
@@ -120,8 +120,9 @@
 							'id': item.assetId
 						}
 					);
+					responseArray.push(item);
 				}
-				responseArray[index] = item;
+
 			});
 
 			if (requestArray.length) {
@@ -131,14 +132,18 @@
 					if (requestArray.length === 1){
 						data = [data];
 					}
-					$.each(data, function (index, res) {
-						if (!_this.isValidResult(res)) {
-							data[index] = null;
+					$.each(data, function (index, thumbnailUrl) {
+						if (_this.isValidResult(thumbnailUrl)) {
+							var resItem = responseArray[index];
+							if (resItem){
+								resItem.thumbnailUrl = thumbnailUrl;
+								if (loadThumbnailWithReferrer){
+									resItem.thumbnailUrl += '?options:referrer=' + referrer;
+								}
+							}
 						}
 					});
-					$.each(thumbCuePoint, function (index, item) {
-						item.thumbnailUrl = loadThumbnailsWithReferrer ? data[index] + '?options:referrer=' + referrer : data[index];
-					});
+
 					if (callback) {
 						callback();
 					}
@@ -237,10 +242,12 @@
 
 				var thumbNewCuePoints = [];
 				var codeNewCuePoints = [];
+				var playerNewCuePoints = [];
 				//Only add new cuepoints
 				$.each(rawCuePoints, function (id, rawCuePoint) {
 					if (!_this.associativeCuePoints[rawCuePoint.id]) {
 						_this.associativeCuePoints[rawCuePoint.id] = rawCuePoint;
+						playerNewCuePoints.push(rawCuePoint);
 
 						if (rawCuePoint.cuePointType === 'codeCuePoint.Code')
 						{
@@ -251,10 +258,14 @@
 					}
 				});
 
-				if (thumbNewCuePoints.length > 0) {
-					var cuePoints = this.getCuePoints();
+				if (playerNewCuePoints.length > 0)
+				{
+					var playerCuePoints = this.getCuePoints();
 					//update cuepoints
-					$.merge(cuePoints, thumbNewCuePoints);
+					$.merge(playerCuePoints, playerNewCuePoints);
+				}
+				if (thumbNewCuePoints.length > 0) {
+
 					//update midpoint cuepoints
 					$.merge(this.midCuePointsArray, thumbNewCuePoints);
 					//Request thumb asset only for new cuepoints
@@ -328,9 +339,9 @@
 			// Bind to monitorEvent to trigger the cue points events and update he nextCuePoint
 			$(embedPlayer).bind(
 				"monitorEvent" + this.bindPostfix +
-					" seeked" + this.bindPostfix +
-					" onplay" + this.bindPostfix +
-					" KalturaSupport_ThumbCuePointsUpdated" + this.bindPostfix,
+				" seeked" + this.bindPostfix +
+				" onplay" + this.bindPostfix +
+				" KalturaSupport_ThumbCuePointsUpdated" + this.bindPostfix,
 				function (e) {
 					var currentTime = embedPlayer.getPlayerElementTime() * 1000;
 					//In case of seeked the current cuepoint needs to be updated to new seek time before
@@ -398,7 +409,7 @@
 		 * @param {Number} time Time in milliseconds
 		 */
 		getNextCuePoint: function (time) {
-            if (!isNaN(time) && time >= 0) {
+			if (!isNaN(time) && time >= 0) {
 
 				var cuePoints = this.midCuePointsArray;
 				// Start looking for the cue point via time, return FIRST match:

@@ -104,6 +104,11 @@
 			if ( mw.isMobileDevice() || mw.isNativeApp() ){
 				this.setConfig( 'embedEnabled' , false );
 			}
+
+			// force parent to be topBarContainer on mobile
+			if (this.embedPlayer.isMobileSkin()){
+				this.setConfig( 'parent' , 'topBarContainer' );
+			}
 		},
 
 		setShareConfig: function() {
@@ -180,6 +185,7 @@
 					// re-enable player controls
 					if ( !embedPlayer.isInSequence() ){
 						embedPlayer.enablePlayControls();
+						embedPlayer.triggerHelper("showLargePlayBtn");
 					}
 					// remove blur
 					if (embedPlayer.getPlayerElement()) {
@@ -274,8 +280,13 @@
 						$(".share-icons-container").hide().show(); // force refresh for IE8 :(
 					});
 				}
-				$(this).select();
-			});
+			})
+			.on('mouseup', function (e) {
+					e.preventDefault();
+				})
+			.on('click', function () {
+					this.setSelectionRange(0, 9999);
+				});
 
 			$(".embed-input").on("click", function(){
 				if ( $(".embed-offset-container").css("display") === "none" ){
@@ -287,8 +298,14 @@
 						$(".share-icons-container").hide().show(); // force refresh for IE8 :(
 					});
 				}
-				$(this).select();
+			})
+			.on('mouseup', function (e) {
+				e.preventDefault();
+			})
+			.on('click', function () {
+				this.setSelectionRange(0, 9999);
 			});
+
 			this.restrictNPTFields();
 			// handle time offset for share link
 			$(".share-offset-container>.share-offset").on("propertychange change keyup input paste", function(event){

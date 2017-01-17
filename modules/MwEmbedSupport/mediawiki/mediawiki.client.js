@@ -19,6 +19,9 @@
 	mw.isIE = function () {
 		return (/msie/.test(userAgent.toLowerCase()) || /trident/.test(userAgent.toLowerCase()));
 	};
+	mw.isChromeCast = function(){
+		return (/CrKey/.test(userAgent));
+	};
 	mw.isIE7 = function () {
 		return (/msie 7/.test(userAgent.toLowerCase()));
 	};
@@ -35,7 +38,10 @@
         return (/edge/.test(userAgent.toLowerCase()));
     };
 	mw.isDesktopSafari = function () {
-		return (/safari/).test(userAgent.toLowerCase()) && !mw.isMobileDevice() && !mw.isChrome();
+		return mw.isSafari() && !mw.isMobileDevice();
+	};
+	mw.isSafari = function () {
+		return (/safari/).test(userAgent.toLowerCase()) && !mw.isChrome() && !mw.isEdge();
 	};
 	mw.isIE9Comp = function () {
 		return (/msie 7/.test(userAgent.toLowerCase()) && /trident\/5/.test(userAgent.toLowerCase()));
@@ -89,13 +95,16 @@
 	mw.isAndroid4andUp = function () {
 		return ( (userAgent.indexOf('Android 4.') != -1) || (userAgent.indexOf('Android 5.') != -1) || (userAgent.indexOf('Android 6.') != -1) ) && userAgent.indexOf('Windows') === -1;
 	};
-	
+
+	mw.isSamsungStockBrowser = function () {
+		return ( (userAgent.indexOf('SamsungBrowser') != -1) );
+	};
 	
 	mw.isFirefox = function () {
 		return ( userAgent.indexOf('Firefox') != -1 );
 	};
 	mw.isChrome = function () {
-		return ( userAgent.indexOf('Chrome') != -1 );
+		return ( userAgent.indexOf('Chrome') != -1 && !mw.isEdge() );
 	};
 	mw.isAndroidNativeBrowser = function () {
 		return (mw.isAndroid() && !mw.isFirefox() && !mw.isChrome());
@@ -149,8 +158,13 @@
 		return ( /OS 8_/.test(userAgent) || /Version\/8/.test(userAgent) ) && mw.isIOS();
 	};
 	mw.isIOS9 = function () {
-		// Known Limitation - It will return false for iOS8 Simulator
+		// Known Limitation - It will return false for iOS9 Simulator
 		return ( /OS 9_/.test(userAgent) || /Version\/9/.test(userAgent) ) && mw.isIOS();
+	};
+
+	mw.isIOS10 = function () {
+		// Known Limitation - It will return false for iOS10 Simulator
+		return ( /OS 10_/.test(userAgent) || /Version\/10/.test(userAgent) ) && mw.isIOS();
 	};
 
 	mw.isIOSBelow9 = function () {
@@ -158,9 +172,13 @@
 		// Short-circuit to save many calls.
 		return mw.isIOS() && (mw.isIOS3() || mw.isIOS4() || mw.isIOS5() || mw.isIOS6() || mw.isIOS7() || mw.isIOS8());
 	};
-	
-	mw.isIOS8_9 = function () {
-		return mw.isIOS8() || mw.isIOS9();
+
+	mw.isIOSBelow10 = function () {
+		return mw.isIOSBelow9() || mw.isIOS9();
+	};
+
+	mw.isIOSAbove7 = function () {
+		return mw.isIOS8() || mw.isIOS9() || mw.isIOS10();
 	};
 
 	mw.isSilk = function () {
@@ -182,7 +200,40 @@
 	};
 
 	mw.isTouchDevice = function () {
-		return !!('ontouchstart' in window);
+		return !!('ontouchstart' in window)  || ( mw.getConfig("EmbedPlayer.EnableMobileSkin") === true && mw.getConfig("EmbedPlayer.SimulateMobile") === true);
+	};
+	/**
+	 * platform detection
+	 */
+	mw.isMacintosh = function() {
+		return navigator.platform.indexOf('Mac') > -1
+	};
+	mw.isWindows = function() {
+		return navigator.platform.indexOf('Win') > -1
+	};
+	//Returns a strings of the user's OS
+	mw.getUserOS = function() {
+		var os = "";
+		var nAgt = navigator.userAgent;
+		var clientStrings = [
+			{s:'Windows 10', r:/(Windows 10.0|Windows NT 10.0)/},
+			{s:'Windows 8.1', r:/(Windows 8.1|Windows NT 6.3)/},
+			{s:'Windows 8', r:/(Windows 8|Windows NT 6.2)/},
+			{s:'Windows 7', r:/(Windows 7|Windows NT 6.1)/},
+			{s:'Android', r:/Android/},
+			{s:'Linux', r:/(Linux|X11)/},
+			{s:'iOS', r:/(iPhone|iPad|iPod)/},
+			{s:'Mac OS X', r:/Mac OS X/},
+			{s:'Mac OS', r:/(MacPPC|MacIntel|Mac_PowerPC|Macintosh)/},
+		];
+		for (var id in clientStrings) {
+			var cs = clientStrings[id];
+			if (cs.r.test(nAgt)) {
+				os = cs.s;
+				break;
+			}
+		}
+		return os;
 	};
 
 	/**

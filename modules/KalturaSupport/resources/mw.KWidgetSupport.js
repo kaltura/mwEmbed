@@ -174,32 +174,33 @@ mw.KWidgetSupport.prototype = {
 		});
 
 		// Example how to override embedPlayerError handler
-
-		embedPlayer.shouldHandlePlayerError = false;
-		embedPlayer.bindHelper( 'embedPlayerError' , function ( event , data , doneCallback ) {
-			var displayedAcError = false;
-			// check for AC error:
-			if ( mw.getConfig("manualProvider") ) {
-				embedPlayer.shouldHandlePlayerError = true;
-				embedPlayer.handlePlayerError(data);
-				return;
-			}
-			_this.getEntryIdSourcesFromApi( embedPlayer , embedPlayer.kentryid , function ( sources ) {
-				// no sources, or access control error.
-				if ( !sources || sources.message ) {
-					embedPlayer.showErrorMsg( sources );
-					displayedAcError = true;
-					doneCallback();
-				}
-			} );
-			// give the above access control message 3 seconds to resolve; else show default network error
-			setTimeout( function () {
-				if ( displayedAcError ) {
+		if (!this.isEmbedServicesEnabled(kalturaIframePackageData.entryResult)){
+			embedPlayer.shouldHandlePlayerError = false;
+			embedPlayer.bindHelper( 'embedPlayerError' , function ( event , data , doneCallback ) {
+				var displayedAcError = false;
+				// check for AC error:
+				if ( mw.getConfig( "manualProvider" ) ) {
+					embedPlayer.shouldHandlePlayerError = true;
+					embedPlayer.handlePlayerError( data );
 					return;
 				}
-				embedPlayer.handlePlayerError( data , true );
-			} , 3000 );
-		} );
+				_this.getEntryIdSourcesFromApi( embedPlayer , embedPlayer.kentryid , function ( sources ) {
+					// no sources, or access control error.
+					if ( !sources || sources.message ) {
+						embedPlayer.showErrorMsg( sources );
+						displayedAcError = true;
+						doneCallback();
+					}
+				} );
+				// give the above access control message 3 seconds to resolve; else show default network error
+				setTimeout( function () {
+					if ( displayedAcError ) {
+						return;
+					}
+					embedPlayer.handlePlayerError( data , true );
+				} , 3000 );
+			} );
+		}
 
 		// Support mediaPlayFrom, mediaPlayTo properties
 		embedPlayer.bindHelper( 'Kaltura_SetKDPAttribute', function(e, componentName, property, value){
@@ -490,8 +491,11 @@ mw.KWidgetSupport.prototype = {
 				if (flavorPartnerData["default"] === "true"){
 					flavorAssetObj["default"] = true;
 				}
-				var drmData = _this.getFlavorAssetDrmData(flavorAsset.id, flavorDrmData);
-				$.extend(flavorAssetObj, drmData);
+
+				_this.attachFlavorAssetDrmData(flavorAssetObj, flavorAsset.id, flavorDrmData);
+				if (flavorAssetObj.type === "application/vnd.apple.mpegurl") {
+					flavorAssetObj.fpsCertificate = _this.getFairplayCert(playerData);
+				}
 				flavorAssets.push( flavorAssetObj );
 			}
 		} );
@@ -501,7 +505,7 @@ mw.KWidgetSupport.prototype = {
 			playerData.meta.partnerData["isLive"] == "true" ) {
 			embedPlayer.setLive( true );
 		}
-
+		embedPlayer.setKalturaConfig('originalProxyData', embedPlayer.getKalturaConfig('proxyData'));
 		//Set proxyData response data
 		embedPlayer.setKalturaConfig( 'proxyData', playerData.meta.partnerData);
 	},
@@ -510,9 +514,11 @@ mw.KWidgetSupport.prototype = {
 		if (srcURL && srcURL.toLowerCase().indexOf("playmanifest") === -1){
 			return srcURL;
 		}
-
+        var nativeVersion = mw.getConfig("nativeVersion");
+        nativeVersion = (nativeVersion != null && nativeVersion.length > 0) ? '_' + nativeVersion : '';
+        var clientTag = 'html5:v' + window[ 'MWEMBED_VERSION' ] + nativeVersion;
 		var qp = ( srcURL.indexOf('?') === -1) ? '?' : '&';
-		return srcURL + qp + 'playSessionId=' + this.getGUID();
+		return srcURL + qp + 'playSessionId=' + this.getGUID() + '&clientTag=' + clientTag;
 	},
 	updateVodPlayerData: function(embedPlayer, playerData){
 		embedPlayer.setLive( false );
@@ -1137,7 +1143,7 @@ mw.KWidgetSupport.prototype = {
 				_this.handlePlayerData( embedPlayer, entryResult );
 				//if we dont have special widgetID or the KS is defined continue as usual
 				var kpartnerid = embedPlayer.kpartnerid ? embedPlayer.kpartnerid : "";
-				if ( "_" + kpartnerid == playerRequest.widget_id || _this.kClient.getKs() ) {
+				if ( this.isEmbedServicesEnabled(entryResult) || "_" + kpartnerid == playerRequest.widget_id || _this.kClient.getKs() ) {
 					callback( entryResult );
 				}else{
 					//if we have special widgetID and we dont have a KS - ask for KS before continue the process
@@ -1655,15 +1661,38 @@ mw.KWidgetSupport.prototype = {
 				var validClipAspect = this.getValidAspect(deviceSources);
 				var lowResolutionDevice = (mw.isMobileDevice() && mw.isDeviceLessThan480P() && iphoneAdaptiveFlavors.length);
 				var targetFlavors;
-				if (androidNativeAdaptiveFlavors.length && mw.isNativeApp() && mw.isAndroid()){
-					//Android h264b
-					targetFlavors = androidNativeAdaptiveFlavors;
-				} else if (lowResolutionDevice){
-					//iPhone
-					targetFlavors = iphoneAdaptiveFlavors;
+				if (mw.getConfig('Kaltura.ForceHighResFlavors')){
+					mw.log( 'KWidgetSupport::Forcing High resolution flavours');
+					if (ipadAdaptiveFlavors.length || dashAdaptiveFlavors.length) {
+						mw.log( 'KWidgetSupport::High resolution flavours found');
+						targetFlavors = ipadAdaptiveFlavors;
+						if (dashAdaptiveFlavors.length) {
+							//Concat the dash and ipadNew tags and filter duplicates
+							targetFlavors = targetFlavors.concat(dashAdaptiveFlavors);
+							for(var i=0; i<targetFlavors.length; ++i) {
+								for(var j=i+1; j<targetFlavors.length; ++j) {
+									if(targetFlavors[i] === targetFlavors[j])
+										targetFlavors.splice(j--, 1);
+								}
+							}
+						}
+					} else {
+						mw.log( 'KWidgetSupport::High resolution flavours not found - will use low resolution flavours');
+						targetFlavors = iphoneAdaptiveFlavors;
+					}
 				} else {
-					//iPad
-					targetFlavors = ipadAdaptiveFlavors;
+					if (androidNativeAdaptiveFlavors.length && mw.isNativeApp() && mw.isAndroid()) {
+						//Android h264b
+						targetFlavors = androidNativeAdaptiveFlavors;
+					} else if (lowResolutionDevice) {
+						//iPhone
+						targetFlavors = iphoneAdaptiveFlavors;
+					} else if (mw.isMobileDevice() || dashAdaptiveFlavors.length == 0) {
+						//iPad
+						targetFlavors = ipadAdaptiveFlavors;
+					} else {
+						targetFlavors = dashAdaptiveFlavors;
+					}
 				}
 				var assetId = targetFlavors[0];
 
@@ -1687,8 +1716,7 @@ mw.KWidgetSupport.prototype = {
 
 		}
 
-		//Only support ABR on-the-fly for DRM protected entries
-		if( mw.getConfig('Kaltura.UseFlavorIdsUrls') && !$.isEmptyObject(flavorDrmData)) {
+		if( mw.getConfig('Kaltura.UseFlavorIdsUrls') ) {
 			var validClipAspect = this.getValidAspect(deviceSources);
 			//Only add mpeg dash CENC on the fly if dash sources exist
 			if (dashAdaptiveFlavors.length) {
@@ -1708,7 +1736,8 @@ mw.KWidgetSupport.prototype = {
 			}
 			//Only add playready on the fly if pre-encrypted doesn't exist
 			if ((iphoneAdaptiveFlavors.length || ipadAdaptiveFlavors.length) &&
-				this.getSourcesByAttribute(deviceSources, "type", "video/playreadySmooth").length === 0) {
+				this.getSourcesByAttribute(deviceSources, "type", "video/playreadySmooth").length === 0  &&
+				!$.isEmptyObject(flavorDrmData)) {
 				var targetFlavors = ipadAdaptiveFlavors.length ? ipadAdaptiveFlavors : iphoneAdaptiveFlavors;
 				var assetId = targetFlavors[0];
 				var ismSource = this.generateAbrSource({
@@ -1745,7 +1774,7 @@ mw.KWidgetSupport.prototype = {
 				(mw.isAndroid() && !mw.isNativeApp()) &&
 				hasH264Flavor &&
 				!mw.getConfig( 'Kaltura.LeadHLSOnAndroid' ) ) {
-			deviceSources = this.removeAdaptiveFlavors( deviceSources );
+			deviceSources = this.removeHlsFlavor( deviceSources );
 		}
 
 		// PRemove adaptive sources on Windows Phone
@@ -1759,7 +1788,7 @@ mw.KWidgetSupport.prototype = {
 			this.originalStreamerType &&
 			this.originalStreamerType !== "hls" &&
 			 mw.getConfig("LeadWithHLSOnFlash") === null 	){
-			    deviceSources = this.removeAdaptiveFlavors( deviceSources );
+			    deviceSources = this.removeHlsFlavor( deviceSources );
 		}
 
 		//TODO: Remove duplicate webm and h264 flavors
@@ -1820,7 +1849,7 @@ mw.KWidgetSupport.prototype = {
 	},
 	getFairplayCert: function(playerData){
 		var publicCertificate = null;
-		if (playerData.contextData.pluginData &&
+		if (playerData && playerData.contextData && playerData.contextData.pluginData &&
 			playerData.contextData.pluginData.KalturaFairplayEntryContextPluginData &&
 			playerData.contextData.pluginData.KalturaFairplayEntryContextPluginData.publicCertificate){
 			publicCertificate = playerData.contextData.pluginData.KalturaFairplayEntryContextPluginData.publicCertificate;
@@ -1862,6 +1891,13 @@ mw.KWidgetSupport.prototype = {
 		return value.replace(/\+/g, "-").replace(/\//g, "_");
 	},
 	removeAdaptiveFlavors: function( sources ){
+		this.removeHlsFlavor(sources);
+		this.removeDashFlavor(sources);
+		this.removedAdaptiveFlavors = true;
+		return sources;
+	},
+
+	removeHlsFlavor: function( sources ){
 		for( var i =0 ; i < sources.length; i++ ){
 			if( sources[i].type == 'application/vnd.apple.mpegurl' ){
 				// Remove the current source:
@@ -1869,9 +1905,20 @@ mw.KWidgetSupport.prototype = {
 				i--;
 			}
 		}
-		this.removedAdaptiveFlavors = true;
 		return sources;
 	},
+
+	removeDashFlavor: function( sources ){
+		for( var i =0 ; i < sources.length; i++ ){
+			if(	sources[i].type == "application/dash+xml" ){
+				// Remove the current source:
+				sources.splice( i, 1 );
+				i--;
+			}
+		}
+		return sources;
+	},
+
 	getValidAspect: function( sources ){
 		var _this = this;
 		for( var i=0; i < sources.length; i++ ){

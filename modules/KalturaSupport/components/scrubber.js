@@ -327,6 +327,9 @@
 			var previewWidth = $sliderPreview.width();
 			var previewHeight = $sliderPreview.height();
 			var top = $(".scrubber").position().top - previewHeight - 10;
+			if ( this.embedPlayer.isMobileSkin() ){
+				top -= 25;
+			}
 
 			if (!showOnlyTime) {
 				sliderLeft = data.x - previewWidth / 2;
@@ -350,7 +353,7 @@
 
             var perc = data.val / 1000;
 			perc = perc > 1 ? 1 : perc;
-			var currentTime = this.duration * perc;
+			var currentTime = Math.floor(this.duration * perc);
 			var thumbWidth = showOnlyTime ? $sliderPreviewTime.width() : this.getConfig("thumbWidth");
 			$sliderPreview.css({top: top, left: sliderLeft });
 			if (!showOnlyTime) {

@@ -12,8 +12,10 @@
 			"showTooltip": true,
 			"labelWidthPercentage": 33,
 			"defaultStream": -1, // -1 is auto
-			"maxNumOfStream": 4,
 			"enableKeyboardShortcuts": true,
+			"smartContainer": "qualitySettings",
+			'smartContainerCloseEvent': 'switchAudioTrack',
+			"title": gM( 'mwe-embedplayer-select_audio'),
 			"keyboardShortcutsMap": {
 				"nextStream": 221,   // Add ] Sign for next stream
 				"prevStream": 219,   // Add [ Sigh for previous stream
@@ -55,10 +57,11 @@
 					var tracks = data.languages;
 					_this.streams = tracks;
 					_this.setStream(_this.getDefaultStream());
-					_this.getComponent().find("ul").show();
 					_this.buildMenu();
 					_this.streamsReady = true;
-					_this.onEnable();
+					if (data.languages.length > 1){
+						_this.onEnable();
+					}
 				}
 			});
 
@@ -134,6 +137,12 @@
 				//this.destroy();
 				return;
 			}
+
+			if (this.streams.length === 1) {
+				this.log("Only one audio stream, disabling menu");
+				//this.destroy();
+				return;
+			}
 			var items = [];
 			$.each(this.streams, function (streamIndex, stream) {
 				_this.addStreamToMenu(streamIndex, stream);
@@ -189,7 +198,7 @@
 		getComponent: function () {
 			var _this = this;
 			if (!this.$el) {
-				var $menu = $('<ul />').hide();
+				var $menu = $('<ul />');
 				//TODO: need icon from Shlomit!
 				var $button = $('<button />')
 					.addClass('btn icon-audio')

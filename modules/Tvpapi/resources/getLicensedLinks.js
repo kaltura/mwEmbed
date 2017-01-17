@@ -29,7 +29,7 @@
 		getMediaLicenseLink: function(event, source){
 			var url = this.getRequestUrl();
 			if (url) {
-				var sessionData = source.src.match(/([&|\?]?playSessionId=[0-9a-zA-Z|\-]+)/ig);
+				var sessionData = source.src.match(/([&|\?]?playSessionId=[0-9a-zA-Z|\-]+)&clientTag=html5:v[0-9_\.|dev|a-zA-Z]+/ig);
 				if (sessionData && sessionData.length) {
 					source.src = source.src.replace( sessionData[0] , '' );
 				}
@@ -57,7 +57,9 @@
 							}
 							source.src = mediaLink;
 						} else {
-							_this.getPlayer().triggerHelper('tvpapiNoSubscription', [res]);
+							setTimeout(function(){
+								_this.getPlayer().triggerHelper('tvpapiNoSubscription', [res]);
+							},0)
 						}
 					},
 					function (xmlHttpRequest, status) {

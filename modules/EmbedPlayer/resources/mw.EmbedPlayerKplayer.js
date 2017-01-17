@@ -665,9 +665,9 @@
 				this.flashActivationRequired = false;
 				$(this).show();
 			}
-            if(this.isLive() && !this.isDVR()){
+            if(this.isLive()){
                 $(this).trigger('timeupdate');
-                return; //for Live + no DVR the flashCurrentTime will be updated through id3Tag
+                return; //for Live the flashCurrentTime will be updated through id3Tag
             }
 			if (this.seeking) {
 				this.seeking = false;
@@ -795,13 +795,10 @@
 		},
 
 		onBufferChange: function (buffering) {
-			//vod buffer is already being monitored by EmbedPlayer.js
-			if (this.isLive()) {
-				if (buffering) {
-					this.bufferStart();
-				} else {
-					this.bufferEnd();
-				}
+			if (buffering) {
+				this.bufferStart();
+			} else {
+				this.bufferEnd();
 			}
 		},
 
@@ -936,8 +933,11 @@
                 clientTag = clientTag.slice(0, clientTag.indexOf("&"))
                 srcUrl = srcUrl + "&" + clientTag;
             }
-
-			var refObj = {src: srcUrl};
+			
+			var sourceElm = $('<source />')
+				.attr( {src: srcUrl} )
+				.get( 0 );
+			var refObj = new mw.MediaSource(sourceElm);
 			this.triggerHelper('SourceSelected', refObj);
 			deferred.resolve(refObj.src);
 			return deferred;
@@ -1056,7 +1056,12 @@
 		},
         getCurrentBufferLength: function(){
             return parseInt(this.playerObject.getCurrentBufferLength()); //return buffer length in seconds
-        }
+        },
+
+		bufferHandling: function(){
+			// Nothing here, only overwrite the super bufferHandling method.
+			// The buffer handling here made by Flash itself, by listening to "bufferChange" event.
+		}
 	};
 
 })(mediaWiki, jQuery);

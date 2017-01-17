@@ -15,7 +15,7 @@
             "hideSource": false,
 			"title": gM( 'mwe-embedplayer-select_source' ),
 			'smartContainer': 'qualitySettings',
-			'smartContainerCloseEvent': 'SourceChange'
+			'smartContainerCloseEvent': 'newSourceSelected'
 		},
 
 		isDisabled: false,
@@ -89,7 +89,7 @@
 						},1000);
 						//if we're working with kplayer - mp4 can't be seeked - so disable this feature
 						//this only effect native for now
-						if (_this.embedPlayer.instanceOf === "Native" && !_this.embedPlayer.isInSequence() ) {
+						if (_this.embedPlayer.instanceOf === "Native" && !_this.embedPlayer.isInSequence() && _this.embedPlayer.streamerType === 'http') {
 							// TODO add additional logic for "auto" where multiple bitrates
 							// exist at the same resolution.
 							var selectedSource = _this.embedPlayer.mediaElement.autoSelectSource(_this.embedPlayer.supportsURLTimeEncoding(), _this.embedPlayer.startTime, _this.embedPlayer.pauseTime);
@@ -97,7 +97,7 @@
 								_this.embedPlayer.switchSrc( selectedSource );
 							}
 						} else {
-							mw.log( "sourceSelector - switchOnResize is ignored - Can't switch source since not using native player or during ad playback");
+							mw.log( "sourceSelector - switchOnResize is ignored - Do not switch source since using Adaptive Bitrate or during ad playback");
 						}
 					}
 				});
@@ -253,7 +253,14 @@
 				this.addAutoToMenu();
 				return true;
 			}
-			//HLS, HDS
+
+	        //Dash
+	        if( ( this.getPlayer().streamerType === "dash" ) ){
+		        this.addAutoToMenu();
+		        return true;
+	        }
+
+	        //HLS, HDS
             if (mw.isNativeApp()) {
             	this.sourcesList = [];
                 this.addAutoToMenu();
@@ -265,10 +272,13 @@
                     return true;
                 }
                 this.addAutoToMenu();
-                return false;
+	            if ( this.getPlayer().streamerType == "hls" ) {
+		            return true;
+	            }
+	            return false;
             }
 
-			if ( this.getPlayer().streamerType == "http" && mw.isDesktopSafari() ){
+			if ( this.getPlayer().streamerType == "http" ){
 				this.addAutoToMenu();
 				return false;
 			}

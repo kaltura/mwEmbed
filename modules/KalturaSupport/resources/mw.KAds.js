@@ -287,7 +287,7 @@
 				$.extend( adsCuePointConf, baseDisplayConf );
 
 				var originalSource = embedPlayer.getSource();
-				var seekTime = parseFloat( cuePoint.startTime / 1000 );
+				var seekTime = embedPlayer.currentTime;
 				var oldDuration = embedPlayer.duration;
 
 				// Set switch back function
@@ -324,12 +324,6 @@
 							} else if(  adType == 'midroll' ){
 								embedPlayer.hidePlayerOffScreen();
 								embedPlayer.addPlayerSpinner();
-
-								// on iOS player we can set current time only while playing
-								if( mw.isIOS() ) {
-									mw.log( "KAds:: doneCallback:: if iOS first play then setCurrentTime");
-									embedPlayer.play();
-								}
 
 								embedPlayer.unbindHelper("seeked.midroll").bindOnceHelper("seeked.midroll", function () {
 									if( !mw.isIOS() ) {

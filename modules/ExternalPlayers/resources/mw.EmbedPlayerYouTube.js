@@ -79,18 +79,22 @@
 						_this.hasEnded = true;
 						break;
 					case YT.PlayerState.PLAYING:
-						_this.ytMobilePlayed = true;
+						//hide the poster
+						$(".playerPoster").hide();
+						$('.blackBoxHide').hide();
 						if (_this.hasEnded){
 							_this.hasEnded = false;
 							return;
 						}
+						if ( mw.isMobileDevice() && !_this.ytMobilePlayed){
+							_this.play();
+							$(".largePlayBtn").css("opacity",1);
+						}
+						_this.ytMobilePlayed = true;
 						_this.triggerHelper("onPlayerStateChange",["play"]);
 						// hide the player container so that youtube click through work
 						$(_this).width("100%");
 						$(_this).hide();
-						//hide the poster
-						$(".playerPoster").hide();
-						$('.blackBoxHide').hide();
 						stateName = "playing";
 						// update duraiton
 						_this.setDuration();
@@ -103,9 +107,6 @@
 						}
 						break;
 					case YT.PlayerState.PAUSED:
-						if (mw.isMobileDevice()){
-							$(".largePlayBtn").hide();
-						}
 						stateName = "paused";
 						_this.triggerHelper("onPlayerStateChange",["pause"]);
 						_this.parent_pause();
@@ -335,7 +336,7 @@
 				// embed iframe ( native skin in iOS )
 				$('.videoHolder').append('<div id="'+this.pid+'"></div>');
 				var tag = document.createElement('script');
-				tag.src = "//www.youtube.com/iframe_api";
+				tag.src = "https://www.youtube.com/iframe_api";
 				tag.id = "youTubeLib";
 				var firstScriptTag = document.getElementsByTagName('script')[0];
 				firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
@@ -404,7 +405,6 @@
 		changeMediaCallback: function (callback) {
 			var _this = this;
 			if (mw.isMobileDevice()){
-				$(".largePlayBtn").css("opacity",0);
 				$(".mwEmbedPlayer").width(0);
 			}
 			this.playerReady.promise().then(function(){
@@ -517,8 +517,10 @@
 		play: function(){
 			var _this = this;
 			if(this._playContorls) {
-				if (this.hasEnded) {
-					if (mw.isMobileDevice()) {
+				// on mobile devices, disable prerolls as the user must click the Youtube play button and we can't initialize our video tag without a user gesture
+				if ( mw.isMobileDevice() ){
+					this.preSequenceFlag = true;
+					if (this.hasEnded) {
 						$(".largePlayBtn").hide();
 						$(".mwEmbedPlayer").hide();
 					}

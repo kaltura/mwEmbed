@@ -1,0 +1,46 @@
+<html>
+<head>
+    <title>Web cast demo</title>
+    <script type="text/javascript" src="/html5.kaltura/mwEmbed/tests/qunit/qunit-bootstrap.js"></script>
+    <script type="text/javascript" src="/html5.kaltura/mwEmbed/mwEmbedLoader.php"></script>
+    <script type="text/javascript" src="/html5.kaltura/mwEmbed/docs/js/doc-bootstrap.js"></script>
+
+    <meta charset=UTF-8>
+
+    <script type="text/javascript" src="config.js"></script>
+
+</head>
+<body>
+<div id="kaltura_player" style="width: 100%; height: 100%;float: left;"></div>
+<div id="qnaListHolder" style="width: 300px; height: 330px; float:left; float: left"></div>
+<script>
+
+
+    //    mw.setConfig( 'Kaltura.ServiceUrl' , 'http://lbd.kaltura.com' );
+    kWidget.featureConfig({
+        'targetId': 'kaltura_player',
+        'wid': '1_w20qjaju',
+        'uiconf_id' : '25906281',
+        'flashvars': {
+            'qna': qna,
+            'autoPlay' : true,
+            "Share": {
+                plugin: true
+            },
+            "chapters": {
+                plugin: true
+            }, "dualScreen": {
+                plugin: true
+            },
+            "EmbedPlayer.LiveCuepoints" : true,
+            'webcastPolls': {
+                plugin: true
+            }
+        },
+        'entry_id': "1_6z0qos51"
+
+    });
+
+</script>
+</body>
+</html>

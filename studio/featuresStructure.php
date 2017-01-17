@@ -67,6 +67,21 @@ return array(
 				"label" => "Player Dimensions",
 				"endline" => "true"
 			),
+            array(
+                "player-refresh"=> "false",
+                "label" => "Update Version Automatically",
+                "helpnote" => "Automatically update this player when a new player version is available",
+                "type" => "checkbox",
+                "endline" => "true",
+                "model" => "autoUpdate"
+            ),
+			array(
+				"label" => "Enable new mobile skin",
+				"helpnote" => "Caution: Turning on Mobile skin will override any existing custom CSS",
+				"type" => "checkbox",
+				"endline" => "true",
+				"model" => "config.uiVars.EmbedPlayer.EnableMobileSkin"
+			),
 			array(
 				"label" => "Automatically play video on page load",
 				"type" => "checkbox",
@@ -190,6 +205,7 @@ return array(
 			"restrictUserAgent" => "",
 			"multiDrm" => "",
 			"sourceSelector" => "",
+			"audioSelector" => "",
 			"download" => "",
 			"strings" => "",
 			"uiVars" => ""

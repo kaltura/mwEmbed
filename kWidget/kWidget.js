@@ -196,7 +196,7 @@
 					window.location.host != 'localhost'
 				) {
 					if (console && console.error) {
-						console.error("Error: Using non-prodcution version of kaltura player library. Please see http://knowledge.kaltura.com/production-player-urls")
+						console.error("Error: Using non-production version of kaltura player library. Please see http://knowledge.kaltura.com/production-player-urls")
 					}
 				}
 			}
@@ -383,6 +383,12 @@
 			// Check if we have flashvars object
 			if (!settings.flashvars) {
 				settings.flashvars = {};
+			}
+
+			if (this.isMobileDevice()){
+				if (settings.flashvars['layout']){
+					settings.flashvars.layout['skin'] = "kdark";
+				}
 			}
 
 			if ( document.URL.indexOf('forceKalturaNativeComponentPlayer') !== -1 ||
@@ -657,9 +663,12 @@
 					var kdp = document.getElementById(playerId);
 					kdp.kBind('mediaReady', function () {
 						setTimeout(function () {
-							kdp.sendNotification('doPlay');
-						}, 100);
+							if (_this.isMobileDevice()) {
+								kdp.sendNotification('doPlay');
+							}
+						}, 0);
 					});
+
 					if (typeof orgEmbedCallback == 'function') {
 						orgEmbedCallback(playerId);
 					}
@@ -964,8 +973,6 @@
 			iframe.scrolling = "no";
 			iframe.name = iframeId;
 			iframe.className = 'mwEmbedKalturaIframe';
-			iframe.setAttribute('aria-labelledby', 'Player ' + targetId);
-			iframe.setAttribute('aria-describedby', 'The Kaltura Dynamic Video Player');
 			// IE8 requires frameborder attribute to hide frame border:
 			iframe.setAttribute('frameborder', '0');
 
@@ -1064,7 +1071,11 @@
 					delete settings.flashvars.jsonConfig;
 					url += '?' + this.getIframeRequest(widgetElm, settings);
 					requestData = {"jsonConfig": jsonConfig};
+					url += "&protocol=" + location.protocol.slice(0, -1);
+				} else {
+					url += "?protocol=" + location.protocol.slice(0, -1);
 				}
+
 				$.ajax({
 					type: "POST",
 					dataType: 'text',
@@ -1080,6 +1091,7 @@
 				})
 			} else {
 				var iframeUrl = this.getIframeUrl() + '?' + iframeRequest;
+				iframeUrl += "&protocol=" + location.protocol.slice(0, -1);
 				// Store iframe urls
 				this.iframeUrls[ targetId ] = iframeUrl;
 				// do an iframe payload request:
@@ -1827,9 +1839,11 @@
 		 * Checks for mobile devices
 		 **/
 		isMobileDevice: function () {
-			return (this.isIOS() || this.isAndroid() || this.isWindowsDevice() || mw.getConfig("EmbedPlayer.ForceNativeComponent"));
+			return (this.isIOS() || this.isAndroid() || this.isWindowsDevice() || mw.getConfig("EmbedPlayer.ForceNativeComponent")  || mw.getConfig("EmbedPlayer.SimulateMobile") === true );
 		},
-
+		isChromeCast: function(){
+			return (/CrKey/.test(navigator.userAgent));
+		},
 		/**
 		 * Checks if a given uiconf_id is html5 or not
 		 * @param {string} uiconf_id The uiconf id to check against user player agent rules
