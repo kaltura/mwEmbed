@@ -301,7 +301,9 @@
 			onManifestParsed: function (event, data) {
 				this.log("manifest loaded, found " + data.levels.length + " quality level");
 				this.addAbrFlavors(data.levels);
-				this.handleFailover(data.levels);
+				if( this.backupExists(data.levels) ) {
+					this.configFailoverSettings();
+				}
 			},
 			/**
 			 * Extract available audio tracks metadata from parsed manifest data
@@ -391,14 +393,6 @@
 				}
 			},
 
-			handleFailover: function (levels) {
-				if ( this.backupExists(levels) ) {
-					// for seamless failover
-					this.hls.config.fragLoadingMaxRetry = 1;
-					this.hls.config.levelLoadingMaxRetry = 1;
-				}
-			},
-
 			backupExists: function (levels) {
 				for ( var i = 0; i < levels.length; i++ ) {
 					if ( levels[i].url && levels[i].url.length > 1) {
@@ -406,6 +400,12 @@
 					}
 				}
 				return false;
+			},
+
+			configFailoverSettings: function () {
+				// for seamless failover
+				this.hls.config.fragLoadingMaxRetry = 1;
+				this.hls.config.levelLoadingMaxRetry = 1;
 			},
 
 			/**
