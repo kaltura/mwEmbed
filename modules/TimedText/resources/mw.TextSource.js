@@ -438,7 +438,9 @@
 					}
 					if( caption ){
 						// concatenate text lines to html text
-						caption['content'] = s.slice(2).join("<br>");
+						caption['content'] = s.slice(2).reduce(function(ac, current) {
+							return ac + "<p>" + current + "</p>";
+						}, "");
 					}
 				} else {
 					// file format error or comment lines
