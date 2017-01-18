@@ -278,11 +278,6 @@
 	            return false;
             }
 
-			if ( this.getPlayer().streamerType == "http" ){
-				this.addAutoToMenu();
-				return false;
-			}
-
 			if( this.getPlayer().streamerType != "http" ){ //add and select Auto for adaptive bitrate
                 this.addAutoToMenu();
             }
