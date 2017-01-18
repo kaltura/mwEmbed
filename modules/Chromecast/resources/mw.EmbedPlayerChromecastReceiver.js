@@ -285,15 +285,15 @@
         },
 
         isAudioTrack: function ( track ) {
-            return track.type === cast.receiver.media.TrackType.AUDIO;
+            return track.type === top.cast.receiver.media.TrackType.AUDIO;
         },
 
         isTextTrack: function ( track ) {
-            return track.type === cast.receiver.media.TrackType.TEXT;
+            return track.type === top.cast.receiver.media.TrackType.TEXT;
         },
 
         isVideoTrack: function ( track ) {
-            return track.type === cast.receiver.media.TrackType.VIDEO;
+            return track.type === top.cast.receiver.media.TrackType.VIDEO;
         },
 
         disableTextTrack: function ( activeTrackId ) {
@@ -521,6 +521,9 @@
             if ( this._propagateEvents ) {
                 this.onClipDone();
             }
+        },
+
+        playSegment: function () {
         }
     };
 })( mediaWiki, jQuery );
