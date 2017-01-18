@@ -206,10 +206,10 @@
          */
         addBindings: function () {
             mw.log( "EmbedPlayerChromecastReceiver::addBindings()" );
-
             var _this = this;
 
             this.bindHelper( "loadstart", function () {
+                _this._propagateEvents = true;
                 _this.stopped = false; // To always support autoPlay
             } );
 

@@ -517,6 +517,10 @@ function addBindings() {
     kdp.kBind( "embedPlayerError", function ( error ) {
         broadcastError( error );
     } );
+
+    kdp.kBind( "playing", function () {
+        mediaManager.broadcastStatus( true );
+    } );
 }
 
 /**
