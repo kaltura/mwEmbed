@@ -1,6 +1,6 @@
 <div class="cvaa-container">
 
-	<span class="icon-arrow cvaa--hide"></span>
+	<span class="icon-arrow"></span>
 
 	<!--main-->
 	<div class="cvaa-main cvaa--show">
@@ -8,7 +8,7 @@
 		<div class="cvaa-row">
 			<span>Enable caption</span>
 			<div class="cvaa-main__switch">
-				<input class="cvaa-main__switch-checkbox" type="checkbox" name="cvaa-switch"  id="k-cvaa-switch" checked>
+				<input class="cvaa-main__switch-checkbox" type="checkbox" name="cvaa-switch" id="k-cvaa-switch" checked>
 				<label class="cvaa-main__switch-label" for="k-cvaa-switch">
 					<span class="cvaa-main__switch-label__inner"></span>
 					<span class="cvaa-main__switch-label__btn"></span>
@@ -17,7 +17,7 @@
 		</div>
 		<div class="cvaa-row">
 			<span>Languages</span>
-			<select name="captions" class="cvaa-main__lang-dropdown">
+			<select name="captions" class="cvaa-dropdown">
 				<option value="English">English</option>
 			</select>
 		</div>
@@ -27,7 +27,7 @@
 	</div>
 
 	<!--advanced-->
-	<div class="cvaa-adv cvaa--hide">
+	<div class="cvaa-adv">
 		<p class="cvaa-header">Advanced options</p>
 		<div class="cvaa-row cvaa-row--center">
 			<button class="cvaa-btn default">Default</button>
@@ -41,7 +41,7 @@
 	</div>
 
 	<!--custom-->
-	<div class="cvaa-cstm cvaa--hide">
+	<div class="cvaa-cstm">
 		<p class="cvaa-header">Custom captions</p>
 		<div class="cvaa-row cvaa-row--center">
 			<div class="cvaa-btn-label">
@@ -62,6 +62,81 @@
 			</div>
 		</div>
 	</div>
+
+	<!--Size-->
+	<div class="cvaa-size">
+		<p class="cvaa-header">Size</p>
+		<div class="cvaa-row cvaa-row--center">
+			<div class="cvaa-btn-label">
+				<button class="cvaa-btn small cvaa-size__small-btn cvaa-selected icon-check">A</button>
+				<span>Small</span>
+			</div>
+			<div class="cvaa-btn-label">
+				<button class="cvaa-btn small cvaa-size__medium-btn">A</button>
+				<span>Medium</span>
+			</div>
+			<div class="cvaa-btn-label">
+				<button class="cvaa-btn small cvaa-size__large-btn">A</button>
+				<span>Large</span>
+			</div>
+			<div class="cvaa-btn-label">
+				<button class="cvaa-btn small cvaa-size__exlarge-btn">A</button>
+				<span class="cvaa-size__xl-label">Extra Large</span>
+			</div>
+		</div>
+	</div>
+
+	<!--Font-->
+	<div class="cvaa-font">
+		<p class="cvaa-header">Font</p>
+		<div class="cvaa-row">
+			<span>Font family</span>
+			<select name="captions" class="cvaa-dropdown">
+				<option value="English">Sans serif</option>
+			</select>
+		</div>
+		<div class="cvaa-row">
+			<span>Font style</span>
+			<select name="captions" class="cvaa-dropdown">
+				<option value="English">None</option>
+			</select>
+		</div>
+	</div>
+
+	<!--Background-->
+	<div class="cvaa-bg">
+		<p class="cvaa-header">Background</p>
+
+		<div class="cvaa-row cvaa-row--center">
+			<% $.each(cvaaOptions.color, function(idx, property){ %>
+			<button class="cvaa-btn small <%=property.text%>" value="<%=property.prop%>"></button>
+			<% }); %>
+		</div>
+
+		<div class="cvaa-row cvaa-row--center">
+			<select name="opacity" class="cvaa-dropdown">
+				<option value="English">Opacity</option>
+			</select>
+		</div>
+	</div>
+
+	<!--Color-->
+	<div class="cvaa-color">
+		<p class="cvaa-header">Color</p>
+
+		<div class="cvaa-row cvaa-row--center">
+			<% $.each(cvaaOptions.color, function(idx, property){ %>
+			<button class="cvaa-btn small <%=property.text%>" value="<%=property.prop%>">A</button>
+			<% }); %>
+		</div>
+
+		<div class="cvaa-row cvaa-row--center">
+			<select name="opacity" class="cvaa-dropdown">
+				<option value="English">Opacity</option>
+			</select>
+		</div>
+	</div>
+
 
 	<div class="cvaa-footer">
 		<div class="cvaa-footer__preview"></div>

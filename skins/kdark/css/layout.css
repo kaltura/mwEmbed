@@ -1201,11 +1201,11 @@ body {
     display: none !important;
 }
 .closedCaptions > .dropdown-menu {
-	overflow-y:auto;
-	overflow-x:hidden;
-	max-height:200px;
-	width:auto;
-	max-width:140px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	max-height: 100px;
+	width: auto;
+	max-width: 140px;
 }
 
 .dropup .dropdown-submenu > .dropdown-menu {

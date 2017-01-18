@@ -46,11 +46,19 @@
             cvaaMenus: {
                 main: "cvaa-main",
                 adv: "cvaa-adv",
-                cstm: "cvaa-cstm"
+                cstm: "cvaa-cstm",
+                size: "cvaa-size",
+                font: "cvaa-font",
+                bg: "cvaa-bg",
+                color: "cvaa-color"
             },
             cvaaOptions: {
                 "edgeStyle": [
-                    {"prop": 1, "text": "None", "value": "none"},
+                    {
+                        "prop": 1,
+                        "text": "None",
+                        "value": "none"
+                    },
                     {
                         "prop": 2,
                         "text": "Drop shadow",
@@ -163,10 +171,6 @@
         addScreenBindings: function () {
             var _this = this;
 
-            // $(".cvaa .icon-close").on("mousedown", function (e) {
-            //     _this.resetSettingsToLast();
-            // });
-
             $(".cvaa .icon-arrow").on("mousedown", function () {
                 _this.cvaaMenuChanged(_this.previousScreen);
             });
@@ -177,6 +181,22 @@
 
             $(".cvaa .cvaa-adv__cstmoptions-btn").on("mousedown", function () {
                 _this.cvaaMenuChanged(_this.cvaaMenus["cstm"]);
+            });
+
+            $(".cvaa .cvaa-cstm__size-btn").on("mousedown", function () {
+                _this.cvaaMenuChanged(_this.cvaaMenus["size"]);
+            });
+
+            $(".cvaa .cvaa-cstm__font-btn").on("mousedown", function () {
+                _this.cvaaMenuChanged(_this.cvaaMenus["font"]);
+            });
+
+            $(".cvaa .cvaa-cstm__bg-btn").on("mousedown", function () {
+                _this.cvaaMenuChanged(_this.cvaaMenus["bg"]);
+            });
+
+            $(".cvaa .cvaa-cstm__color-btn").on("mousedown", function () {
+                _this.cvaaMenuChanged(_this.cvaaMenus["color"]);
             });
         },
 
@@ -257,20 +277,24 @@
                 case "cvaa-adv":
                     this.previousScreen = this.cvaaMenus["main"];
                     break;
+
+                case "cvaa-cstm":
+                    this.previousScreen = this.cvaaMenus["adv"];
+                    break;
             }
 
         },
 
         showHideScreens: function () {
-            $(".cvaa ." + this.previousScreen).removeClass("cvaa--show").addClass("cvaa--hide");
-            $(".cvaa ." + this.currentScreen).removeClass("cvaa--hide").addClass("cvaa--show");
+            $(".cvaa ." + this.previousScreen).removeClass("cvaa--show");
+            $(".cvaa ." + this.currentScreen).addClass("cvaa--show");
         },
 
         showHideBackBtn: function () {
             if (this.currentScreen !== this.cvaaMenus["main"]) {
-                $(".cvaa-container .icon-arrow").removeClass("cvaa--hide").addClass("cvaa--show");
+                $(".cvaa-container .icon-arrow").addClass("cvaa--show");
             } else {
-                $(".cvaa-container .icon-arrow").removeClass("cvaa--show").addClass("cvaa--hide");
+                $(".cvaa-container .icon-arrow").removeClass("cvaa--show");
             }
         },
 
@@ -502,36 +526,6 @@
 
             this.getPlayer().triggerHelper("newCaptionsStyles", this.cvaaSentSettings);
             this.hideScreen();
-        },
-        resetCvaaSettings: function () {
-            this.getPlayer().setCookie('cvaaSavedSettings', null, {
-                expires: -1,
-                path: '/',
-                domain: ''
-            });
-
-            this.resetSettingsToLast();
-            this.getPlayer().triggerHelper("newCaptionsStyles", this.cvaaSentSettings);
-        },
-        resetSettingsToLast: function () {
-            this.firstInit = true;
-            this.getCurrentSettings();
-            this.initPreviewUpdate();
-            this.resetSliders();
-        },
-        resetSliders: function () {
-            //reset sliders and sliders labels
-            $("#kFontOpacity").slider("option", "value", this.currentFontOpacity);
-            $("#kFontOpacityVal").val(this.currentFontOpacity);
-
-            $("#kBackgroundOpacity").slider("option", "value", this.currentBackgroundOpacity);
-            $("#kBackgroundOpacityVal").val(this.currentBackgroundOpacity);
-
-            $("#kWindowOpacity").slider("option", "value", this.currentWindowOpacity);
-            $("#kWindowOpacityVal").val(this.currentWindowOpacity);
-
-            $("#kFontSize").slider("option", "value", this.currentFontSize);
-            $("#kFontSizeVal").val(this.currentFontSize);
         },
         addOptionsBtn: function () {
             return {

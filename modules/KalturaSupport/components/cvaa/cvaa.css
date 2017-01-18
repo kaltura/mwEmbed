@@ -1,13 +1,28 @@
 /*------------------SCREEN Template-------------------*/
+.videoHolder .screen.cvaa.semiTransparentBkg {
+	padding-top: 1em;
+}
+
+.videoHolder .cvaa .screen-content .icon-close {
+	right: 0.8em;
+}
+
 .cvaa .screen-content {
 	position: relative;
 	height: 100%;
 }
 
 .cvaa .screen-content .tmpl{
-	font-family: Lato;
+	font-family: Helvetica Neue Regular, Lato-Regular ,Lato;
 	font-size: 16px;
 	line-height: 30px;
+}
+
+.cvaa-main, .cvaa-adv,
+.cvaa-cstm, .cvaa-size,
+.cvaa-bg, .cvaa-color,
+.cvaa-font, .icon-arrow {
+	display: none;
 }
 
 /*------------------BUTTONS-------------------*/
@@ -19,15 +34,16 @@
 }
 
 .cvaa-btn {
-	width: 80px;
-	height: 36px;
+	display: inline-block;
+	width: 78px;
+	height: 34px;
 	border: 1px solid rgba(255,255,255,0.5);
 	border-radius: 3px;
+	margin: 5px;
 }
 
 .cvaa-btn.small {
 	width: 48px;
-	height: 34px;
 }
 
 .cvaa-btn-text {
@@ -44,12 +60,38 @@
 	display: inline-block;
 	vertical-align: top;
 	text-align: center;
-	margin: 0 12px 0 12px;
 }
 
 .cvaa-btn-label span {
 	display: block;
 	font-size: 12px;
+}
+
+.cvaa-dropdown {
+	width: 115px;
+	height: 34px;
+	background-color: rgba(255,255,255,0);
+	border: 1px solid rgba(255,255,255,0.5);
+	color: #fff;
+	border-radius: 3px;
+	float: right;
+	font-size: inherit;
+}
+
+/*need to add icon-check for this to show the v*/
+.cvaa .cvaa-btn.cvaa-selected:before {
+	content: "\e606";
+	display: block;
+	font-size: 0.6em;
+	line-height: 17px;
+	color: #FFFFFF;
+	width: 16px;
+	height: 16px;
+	background-color: #01c2ff;
+	position: absolute;
+	top: 4px;
+	right: 4px;
+	border-radius: 50%;
 }
 
 /*------------------TEMPLATE LAYOUT-------------------*/
@@ -67,21 +109,18 @@
 }
 
 .cvaa-row {
-	width: 350px;
-	height: 60px;
-	margin: 0 auto;
+	width: 260px;
+	height: 100%;
+	margin: 0 auto 15px;
 	display: block;
 }
 
 .cvaa-row--center {
+	width: 100%;
 	text-align: center;
 }
 
 /*------------------HIDE/SHOW MENUS-------------------*/
-.cvaa--hide {
-	display: none;
-}
-
 .cvaa--show {
 	display: block;
 }
@@ -95,28 +134,33 @@
 	font-size: 1.2em;
 	top: 0;
 	left: 0;
+	margin: 0;
 }
 
-.icon-arrow {
+.cvaa .icon-arrow {
 	position: absolute;
-	top: 0;
-	font-size: 1.4em;
-	left: 1.2em;
+	top: -0.2em;
+	font-size: 1.6em;
+	left: 0.4em;
 	cursor: pointer;
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 	z-index: 100;
 }
 
-.icon-arrow:before {
+.cvaa .icon-arrow:before {
 	content: "\e917";
 }
 
 /*------------------MAIN SCREEN-------------------*/
 
+.cvaa-main {
+	margin-top: 30px;
+}
+
 /*switch button start*/
 .cvaa-main__switch {
 	position: relative;
-	width: 76px;
+	width: 58px;
 	float: right;
 	-webkit-user-select:none;
 	-moz-user-select:none;
@@ -142,35 +186,35 @@
 	display: block;
 	float: left;
 	width: 50%;
-	height: 34px;
+	height: 26px;
 	padding: 0;
-	line-height: 34px;
-	font-size: 16px;
+	line-height: 26px;
+	font-size: 11px;
 	color: white;
 	box-sizing: border-box;
 }
 .cvaa-main__switch-label__inner:before {
 	content: "ON";
-	padding-left: 11px;
+	padding-left: 8px;
 	background-color: #01C2FF;
 	color: #FFFFFF;
 }
 .cvaa-main__switch-label__inner:after {
 	content: "OFF";
-	padding-right: 7px;
+	padding-right: 6px;
 	background-color: #EEEEEE;
 	color: #999999;
 	text-align: right;
 }
 .cvaa-main__switch-label__btn {
 	display: block;
-	width: 25px;
-	margin: 3px;
+	width: 20px;
+	margin: 2px;
 	background: #FFFFFF;
 	position: absolute;
 	top: 0;
 	bottom: 0;
-	right: 40px;
+	right: 30px;
 	border: 2px solid ;
 	border-radius: 31px;
 	transition: all 0.3s ease-in 0s;
@@ -183,18 +227,11 @@
 }
 /*switch button end*/
 
-.cvaa-main__lang-dropdown {
-	width: 115px;
-	height: 34px;
-	background-color: rgba(255,255,255,0);
-	border: 1px solid rgba(255,255,255,0.5);
-	color: #fff;
-	border-radius: 3px;
-	float: right;
-	font-size: inherit;
+/*------------------ADVANCED SCREEN-------------------*/
+.cvaa-adv {
+	margin-top: 30px;
 }
 
-/*------------------ADVANCED SCREEN-------------------*/
 .cvaa-btn.cvaa-adv__cstmoptions-btn {
 	margin: 0 auto;
 	display: block;
@@ -209,7 +246,6 @@
 	background: #ffffff;
 	color: #000000;
 	border-color: #ffffff;
-	margin: 0 25px 0 25px;
 }
 
 .cvaa-btn.preset2 {
@@ -221,7 +257,54 @@
 /*------------------CUSTOM CAPTIONS SCREEN-------------------*/
 .cvaa-cstm .cvaa-cstm__bg-label {
 	position: absolute;
-	left: -25%;
+}
+
+.cvaa-cstm .cvaa-btn.small {
+	background-color: transparent;
+}
+
+/*------------------SIZE SCREEN-------------------*/
+.cvaa-size .cvaa-size__xl-label {
+	position: absolute;
+	width: 75px;
+	left: -5%;
+}
+
+.cvaa-size .cvaa-btn.small {
+	background-color: transparent;
+}
+
+.cvaa-size__small-btn {
+	font-size: 0.9em;
+}
+
+.cvaa-size__medium-btn {
+	font-size: 1.2em;
+}
+
+.cvaa-size__large-btn {
+	font-size: 1.5em;
+}
+
+.cvaa-size__exlarge-btn {
+	font-size: 1.8em;
+}
+
+.cvaa-size .cvaa-btn {
+	line-height: 0;
+	color: #ffffff;
+}
+
+/*------------------FONT SCREEN-------------------*/
+.cvaa-font .cvaa-dropdown {
+	width: 150px;
+}
+
+/*------------------BACKGROUND/COLOR SCREEN-------------------*/
+.cvaa-bg .cvaa-dropdown,
+.cvaa-color .cvaa-dropdown{
+	margin: 0 auto;
+	float: none;
 }
 
 /*------------------FOOTER-------------------*/
@@ -232,4 +315,76 @@
 
 .cvaa-footer__preview {
 
+}
+/*------------------BTN COLORS-------------------*/
+.cvaa-color .cvaa-btn,
+.cvaa-bg .cvaa-btn {
+	border: solid 1px #ffffff;
+	padding: 4px;
+	border-radius: 4px;
+	background-clip: content-box;
+}
+
+.cvaa-color .cvaa-btn.White {
+	background-color: transparent;
+	color: #ffffff;
+}
+.cvaa-btn.White{
+	background-color: #ffffff;
+}
+
+.cvaa-color .cvaa-btn.Yellow {
+	background-color: transparent;
+	color: #ffff00;
+}
+.cvaa-btn.Yellow{
+	background-color: #ffff00;
+}
+
+.cvaa-color .cvaa-btn.Green {
+	background-color: transparent;
+	color: #00ff00;
+}
+.cvaa-btn.Green{
+	background-color: #00ff00;
+}
+
+.cvaa-color .cvaa-btn.Cyan {
+	background-color: transparent;
+	color: #00ffff;
+}
+.cvaa-btn.Cyan{
+	background-color: #00ffff;
+}
+
+.cvaa-color .cvaa-btn.Blue {
+	background-color: transparent;
+	color: #0000ff;
+}
+.cvaa-btn.Blue{
+	background-color: #0000ff;
+}
+
+.cvaa-color .cvaa-btn.Magenta {
+	background-color: transparent;
+	color: #ff00ff;
+}
+.cvaa-btn.Magenta{
+	background-color: #ff00ff;
+}
+
+.cvaa-color .cvaa-btn.Red {
+	background-color: transparent;
+	color: #ff0000;
+}
+.cvaa-btn.Red{
+	background-color: #ff0000;
+}
+
+.cvaa-color .cvaa-btn.Black {
+	background-color: transparent;
+	color: #000000;
+}
+.cvaa-btn.Black{
+	background-color: #000000;
 }
