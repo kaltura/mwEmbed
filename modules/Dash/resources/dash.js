@@ -387,7 +387,7 @@
 					this.getPlayer().currentSeekTargetTime = seekTimeTarget;
 					this.getPlayer().getPlayerElement().currentTime = seekTimeTarget;
 				} else {
-					this.orig_doSeek(seekTime);
+					this.orig_doSeek.call(this.getPlayer(), seekTime);
 				}
 			},
 
