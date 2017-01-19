@@ -59,7 +59,9 @@
 					_this.setStream(_this.getDefaultStream());
 					_this.buildMenu();
 					_this.streamsReady = true;
-					_this.onEnable();
+					if (data.languages.length > 1){
+						_this.onEnable();
+					}
 				}
 			});
 
@@ -132,6 +134,12 @@
 
 			if (!this.streams.length) {
 				this.log("Error with getting streams");
+				//this.destroy();
+				return;
+			}
+
+			if (this.streams.length === 1) {
+				this.log("Only one audio stream, disabling menu");
 				//this.destroy();
 				return;
 			}

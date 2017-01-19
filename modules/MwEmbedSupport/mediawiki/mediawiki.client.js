@@ -95,7 +95,10 @@
 	mw.isAndroid4andUp = function () {
 		return ( (userAgent.indexOf('Android 4.') != -1) || (userAgent.indexOf('Android 5.') != -1) || (userAgent.indexOf('Android 6.') != -1) ) && userAgent.indexOf('Windows') === -1;
 	};
-	
+
+	mw.isSamsungStockBrowser = function () {
+		return ( (userAgent.indexOf('SamsungBrowser') != -1) );
+	};
 	
 	mw.isFirefox = function () {
 		return ( userAgent.indexOf('Firefox') != -1 );
@@ -169,7 +172,11 @@
 		// Short-circuit to save many calls.
 		return mw.isIOS() && (mw.isIOS3() || mw.isIOS4() || mw.isIOS5() || mw.isIOS6() || mw.isIOS7() || mw.isIOS8());
 	};
-	
+
+	mw.isIOSBelow10 = function () {
+		return mw.isIOSBelow9() || mw.isIOS9();
+	};
+
 	mw.isIOSAbove7 = function () {
 		return mw.isIOS8() || mw.isIOS9() || mw.isIOS10();
 	};

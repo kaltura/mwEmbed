@@ -17,6 +17,7 @@ require_once( dirname( __FILE__ ) . '/Client/KalturaClientHelper.php' );
 require_once( dirname( __FILE__ ) . '/KalturaLogger.php' );
 // Include Kaltura Cache
 require_once( dirname( __FILE__ ) . '/Cache/kFileSystemCacheWrapper.php');
+require_once( dirname( __FILE__ ) . '/Cache/kMemcacheCacheWrapper.php');
 require_once( dirname( __FILE__ ) . '/Cache/kNoCacheWrapper.php');
 require_once( dirname( __FILE__ ) . '/KalturaCache.php');
 require_once( dirname( __FILE__ ) . '/KalturaUtils.php');
@@ -59,10 +60,18 @@ $container['file_cache_adapter'] = $container->share(function ($c) {
 	$fileCache->init($c['cache_directory'], 'iframe', 2, false, $c['cache_expiry'], true);
 	return $fileCache;
 });
+
+$container['memcache_cache_adapter'] = $container->share(function ($c) {
+	global $wgMemcacheConfiguration;
+	$memCache = new kMemcacheCacheWrapper();
+	$memCache->init($wgMemcacheConfiguration['host'], $wgMemcacheConfiguration['port'], $wgMemcacheConfiguration['flags']);
+	return $memCache;
+});
+
 $container['cache_helper'] = $container->share(function ($c) {
 
 	// Choose which cache adapter to use
-	global $wgEnableScriptDebug, $wgKalturaForceResultCache;
+	global $wgEnableScriptDebug, $wgKalturaForceResultCache,$wgUseMemcache;
 	$useCache = !$wgEnableScriptDebug;
 	// Force cache flag ( even in debug )
 	if( $wgKalturaForceResultCache === true){
@@ -74,8 +83,11 @@ $container['cache_helper'] = $container->share(function ($c) {
 	if( intval($request->getCacheSt()) > time()  && intval($request->getCacheSt()) < time() + 900 ) {
  		$useCache = false;
 	}
-
-	$className = ($useCache) ? 'file_cache_adapter' : 'no_cache_adapter';
+	$cacheProvider = 'file_cache_adapter';
+	if ($wgUseMemcache){
+		$cacheProvider = 'memcache_cache_adapter';
+	}
+	$className = ($useCache) ? $cacheProvider : 'no_cache_adapter';
 	return new KalturaCache( $c[ $className ], $c['cache_expiry'] );
 });
 

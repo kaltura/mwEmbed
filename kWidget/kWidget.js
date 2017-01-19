@@ -196,7 +196,7 @@
 					window.location.host != 'localhost'
 				) {
 					if (console && console.error) {
-						console.error("Error: Using non-prodcution version of kaltura player library. Please see http://knowledge.kaltura.com/production-player-urls")
+						console.error("Error: Using non-production version of kaltura player library. Please see http://knowledge.kaltura.com/production-player-urls")
 					}
 				}
 			}
@@ -973,8 +973,6 @@
 			iframe.scrolling = "no";
 			iframe.name = iframeId;
 			iframe.className = 'mwEmbedKalturaIframe';
-			iframe.setAttribute('aria-labelledby', 'Player ' + targetId);
-			iframe.setAttribute('aria-describedby', 'The Kaltura Dynamic Video Player');
 			// IE8 requires frameborder attribute to hide frame border:
 			iframe.setAttribute('frameborder', '0');
 
@@ -1073,7 +1071,11 @@
 					delete settings.flashvars.jsonConfig;
 					url += '?' + this.getIframeRequest(widgetElm, settings);
 					requestData = {"jsonConfig": jsonConfig};
+					url += "&protocol=" + location.protocol.slice(0, -1);
+				} else {
+					url += "?protocol=" + location.protocol.slice(0, -1);
 				}
+
 				$.ajax({
 					type: "POST",
 					dataType: 'text',
@@ -1089,6 +1091,7 @@
 				})
 			} else {
 				var iframeUrl = this.getIframeUrl() + '?' + iframeRequest;
+				iframeUrl += "&protocol=" + location.protocol.slice(0, -1);
 				// Store iframe urls
 				this.iframeUrls[ targetId ] = iframeUrl;
 				// do an iframe payload request:
