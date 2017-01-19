@@ -48,6 +48,14 @@
                 this.kMediaGroup( group, filtereds[ group ] );
             }.bind(this));
         },
+        setMediaGroup: function (elements) {
+            var mediagroupId = this.getPlayer().pid + '_kMediaGroup';
+            this.embedPlayer.setAttribute('kMediaGroupMaster', 'true');
+            this.kMediaGroup(mediagroupId, elements.concat(this.embedPlayer).map(function (element) {
+                element.setAttribute('kMediaGroup', mediagroupId);
+                return element;
+            }));
+        },
 
         kMediaGroup: function( group, elements ) {
 
