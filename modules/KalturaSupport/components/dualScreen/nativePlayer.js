@@ -16,6 +16,7 @@
         init: function init(stream, embedPlayer, readyCallback) {
             this.stream = stream;
             this.embedPlayer = embedPlayer;
+            this.muted = true;
 
             $(this).attr({
                 muted: true,
