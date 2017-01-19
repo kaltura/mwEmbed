@@ -1,6 +1,6 @@
 <div class="cvaa-container">
 
-	<span class="icon-arrow"></span>
+	<span tabindex="0" role="button" class="icon-arrow"></span>
 
 	<!--main-->
 	<div class="cvaa-main cvaa--show">
@@ -8,7 +8,8 @@
 		<div class="cvaa-row">
 			<span>Enable caption</span>
 			<div class="cvaa-main__switch">
-				<input class="cvaa-main__switch-checkbox" type="checkbox" name="cvaa-switch" id="k-cvaa-switch" checked>
+				<input tabindex="0" role="button" class="cvaa-main__switch-checkbox" type="checkbox" name="cvaa-switch"
+					   id="k-cvaa-switch" checked>
 				<label class="cvaa-main__switch-label" for="k-cvaa-switch">
 					<span class="cvaa-main__switch-label__inner"></span>
 					<span class="cvaa-main__switch-label__btn"></span>
@@ -45,19 +46,19 @@
 		<p class="cvaa-header">Custom captions</p>
 		<div class="cvaa-row cvaa-row--center">
 			<div class="cvaa-btn-label">
-				<button class="cvaa-btn small cvaa-cstm__size-btn"></button>
+				<button class="cvaa-btn small icvaa-font-size cvaa-cstm__size-btn"></button>
 				<span>Size</span>
 			</div>
 			<div class="cvaa-btn-label">
-				<button class="cvaa-btn small cvaa-cstm__color-btn"></button>
+				<button class="cvaa-btn small icvaa-font-color cvaa-cstm__color-btn"></button>
 				<span>Color</span>
 			</div>
 			<div class="cvaa-btn-label">
-				<button class="cvaa-btn small cvaa-cstm__font-btn"></button>
+				<button class="cvaa-btn small icvaa-font-family cvaa-cstm__font-btn"></button>
 				<span>Font</span>
 			</div>
 			<div class="cvaa-btn-label">
-				<button class="cvaa-btn small cvaa-cstm__bg-btn"></button>
+				<button class="cvaa-btn small icvaa-font-color cvaa-cstm__bg-btn"></button>
 				<span class="cvaa-cstm__bg-label">Background</span>
 			</div>
 		</div>
@@ -67,22 +68,13 @@
 	<div class="cvaa-size">
 		<p class="cvaa-header">Size</p>
 		<div class="cvaa-row cvaa-row--center">
+			<% $.each(cvaaOptions.size, function(idx, property){ %>
 			<div class="cvaa-btn-label">
-				<button class="cvaa-btn small cvaa-size__small-btn cvaa-selected icon-check">A</button>
-				<span>Small</span>
+				<button name="cvaa-size" value="<%=property.prop%>"
+						class="cvaa-btn small <%=property.btnClass%> icvaa-letter-size"></button>
+				<span class="<%=property.labelClass%>"><%=property.text%></span>
 			</div>
-			<div class="cvaa-btn-label">
-				<button class="cvaa-btn small cvaa-size__medium-btn">A</button>
-				<span>Medium</span>
-			</div>
-			<div class="cvaa-btn-label">
-				<button class="cvaa-btn small cvaa-size__large-btn">A</button>
-				<span>Large</span>
-			</div>
-			<div class="cvaa-btn-label">
-				<button class="cvaa-btn small cvaa-size__exlarge-btn">A</button>
-				<span class="cvaa-size__xl-label">Extra Large</span>
-			</div>
+			<% }); %>
 		</div>
 	</div>
 
@@ -91,14 +83,18 @@
 		<p class="cvaa-header">Font</p>
 		<div class="cvaa-row">
 			<span>Font family</span>
-			<select name="captions" class="cvaa-dropdown">
-				<option value="English">Sans serif</option>
+			<select name="cvaa-font" class="cvaa-dropdown cvaa-family">
+				<% $.each(cvaaOptions.family, function(idx, property){ %>
+				<option value="<%=property.prop%>"><%=property.text%></option>
+				<% }); %>
 			</select>
 		</div>
 		<div class="cvaa-row">
 			<span>Font style</span>
-			<select name="captions" class="cvaa-dropdown">
-				<option value="English">None</option>
+			<select name="cvaa-style" class="cvaa-dropdown cvaa-style">
+				<% $.each(cvaaOptions.edgeStyle, function(idx, property){ %>
+				<option value="<%=property.prop%>"><%=property.text%></option>
+				<% }); %>
 			</select>
 		</div>
 	</div>
@@ -109,13 +105,15 @@
 
 		<div class="cvaa-row cvaa-row--center">
 			<% $.each(cvaaOptions.color, function(idx, property){ %>
-			<button class="cvaa-btn small <%=property.text%>" value="<%=property.prop%>"></button>
+			<button name="cvaa-bg" value="<%=property.prop%>" class="cvaa-btn small <%=property.text%>"></button>
 			<% }); %>
 		</div>
 
 		<div class="cvaa-row cvaa-row--center">
-			<select name="opacity" class="cvaa-dropdown">
-				<option value="English">Opacity</option>
+			<select name="cvaa-bg-opacity" class="cvaa-dropdown cvaa-bg-opacity">
+				<% $.each(cvaaOptions.opacity, function(idx, property){ %>
+				<option value="<%=property.prop%>"><%=property.text%></option>
+				<% }); %>
 			</select>
 		</div>
 	</div>
@@ -126,13 +124,16 @@
 
 		<div class="cvaa-row cvaa-row--center">
 			<% $.each(cvaaOptions.color, function(idx, property){ %>
-			<button class="cvaa-btn small <%=property.text%>" value="<%=property.prop%>">A</button>
+			<button name="cvaa-color" value="<%=property.prop%>"
+					class="cvaa-btn small icvaa-letter-size <%=property.text%>"><span></span></button>
 			<% }); %>
 		</div>
 
 		<div class="cvaa-row cvaa-row--center">
-			<select name="opacity" class="cvaa-dropdown">
-				<option value="English">Opacity</option>
+			<select name="cvaa-color-opacity" class="cvaa-dropdown cvaa-color-opacity">
+				<% $.each(cvaaOptions.opacity, function(idx, property){ %>
+				<option value="<%=property.prop%>"><%=property.text%></option>
+				<% }); %>
 			</select>
 		</div>
 	</div>

@@ -12,8 +12,9 @@
 	height: 100%;
 }
 
-.cvaa .screen-content .tmpl{
-	font-family: Helvetica Neue Regular, Lato-Regular ,Lato;
+.cvaa .screen-content .tmpl,
+.cvaa-btn-label span {
+	font-family: Helvetica Neue Regular, Lato-Regular, Lato;
 	font-size: 16px;
 	line-height: 30px;
 }
@@ -26,18 +27,12 @@
 }
 
 /*------------------BUTTONS-------------------*/
-.cvaa-btn,
-.cvaa-btn-text {
-	font-size: inherit;
-	font-family: inherit;
-	cursor: pointer;
-}
-
 .cvaa-btn {
+	position: relative;
 	display: inline-block;
 	width: 78px;
 	height: 34px;
-	border: 1px solid rgba(255,255,255,0.5);
+	border: 1px solid rgba(255, 255, 255, 0.5);
 	border-radius: 3px;
 	margin: 5px;
 }
@@ -55,6 +50,13 @@
 	text-decoration: underline;
 }
 
+.cvaa-btn,
+.cvaa-btn-text {
+	font-size: inherit;
+	font-family: inherit;
+	cursor: pointer;
+}
+
 .cvaa-btn-label {
 	position: relative;
 	display: inline-block;
@@ -68,34 +70,18 @@
 }
 
 .cvaa-dropdown {
-	width: 115px;
+	width: 144px;
 	height: 34px;
-	background-color: rgba(255,255,255,0);
-	border: 1px solid rgba(255,255,255,0.5);
+	background-color: rgba(255, 255, 255, 0);
+	border: 1px solid rgba(255, 255, 255, 0.5);
 	color: #fff;
 	border-radius: 3px;
 	float: right;
 	font-size: inherit;
 }
 
-/*need to add icon-check for this to show the v*/
-.cvaa .cvaa-btn.cvaa-selected:before {
-	content: "\e606";
-	display: block;
-	font-size: 0.6em;
-	line-height: 17px;
-	color: #FFFFFF;
-	width: 16px;
-	height: 16px;
-	background-color: #01c2ff;
-	position: absolute;
-	top: 4px;
-	right: 4px;
-	border-radius: 50%;
-}
-
 /*------------------TEMPLATE LAYOUT-------------------*/
-.cvaa .screen-content .tmpl{
+.cvaa .screen-content .tmpl {
 	display: table;
 	width: 100%;
 	height: 100%;
@@ -109,7 +95,7 @@
 }
 
 .cvaa-row {
-	width: 260px;
+	width: 300px;
 	height: 100%;
 	margin: 0 auto 15px;
 	display: block;
@@ -162,25 +148,30 @@
 	position: relative;
 	width: 58px;
 	float: right;
-	-webkit-user-select:none;
-	-moz-user-select:none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
 	-ms-user-select: none;
 }
+
 .cvaa-main__switch-checkbox {
-	display: none;
+	opacity: 0;
+	position: absolute;
 }
+
 .cvaa-main__switch-label {
 	display: block;
 	overflow: hidden;
 	cursor: pointer;
 	border-radius: 31px;
 }
+
 .cvaa-main__switch-label__inner {
 	display: block;
 	width: 200%;
 	margin-left: -100%;
 	transition: margin 0.3s ease-in 0s;
 }
+
 .cvaa-main__switch-label__inner:before,
 .cvaa-main__switch-label__inner:after {
 	display: block;
@@ -193,12 +184,14 @@
 	color: white;
 	box-sizing: border-box;
 }
+
 .cvaa-main__switch-label__inner:before {
 	content: "ON";
-	padding-left: 8px;
+	padding-left: 10px;
 	background-color: #01C2FF;
 	color: #FFFFFF;
 }
+
 .cvaa-main__switch-label__inner:after {
 	content: "OFF";
 	padding-right: 6px;
@@ -206,30 +199,39 @@
 	color: #999999;
 	text-align: right;
 }
+
 .cvaa-main__switch-label__btn {
 	display: block;
-	width: 20px;
-	margin: 2px;
+	width: 16px;
+	margin: 3px;
 	background: #FFFFFF;
 	position: absolute;
 	top: 0;
 	bottom: 0;
 	right: 30px;
-	border: 2px solid ;
+	border: 2px solid;
 	border-radius: 31px;
 	transition: all 0.3s ease-in 0s;
 }
+
 .cvaa-main__switch-checkbox:checked + .cvaa-main__switch-label .cvaa-main__switch-label__inner {
 	margin-left: 0;
 }
+
 .cvaa-main__switch-checkbox:checked + .cvaa-main__switch-label .cvaa-main__switch-label__btn {
 	right: 0;
 }
+
 /*switch button end*/
 
 /*------------------ADVANCED SCREEN-------------------*/
 .cvaa-adv {
 	margin-top: 30px;
+}
+
+.cvaa-adv .cvaa-btn:after{
+	top: -4px;
+	right: -4px;
 }
 
 .cvaa-btn.cvaa-adv__cstmoptions-btn {
@@ -254,6 +256,24 @@
 	border-color: #000000;
 }
 
+.cvaa-cstm__bg-btn, .cvaa-cstm__size-btn,
+.cvaa-cstm__font-btn, .cvaa-cstm__color-btn {
+	font-size: 1.6em;
+}
+
+.cvaa-cstm__size-btn, .cvaa-cstm__font-btn,
+.cvaa-cstm__bg-btn {
+	color: #ffffff;
+}
+
+.cvaa-cstm__color-btn {
+	color: #01C2FF
+}
+
+.cvaa-cstm .cvaa-btn.small.cvaa-cstm__bg-btn {
+	background-color: #01C2FF;
+}
+
 /*------------------CUSTOM CAPTIONS SCREEN-------------------*/
 .cvaa-cstm .cvaa-cstm__bg-label {
 	position: absolute;
@@ -267,7 +287,7 @@
 .cvaa-size .cvaa-size__xl-label {
 	position: absolute;
 	width: 75px;
-	left: -5%;
+	left: -10%;
 }
 
 .cvaa-size .cvaa-btn.small {
@@ -275,7 +295,7 @@
 }
 
 .cvaa-size__small-btn {
-	font-size: 0.9em;
+	font-size: 0.8em;
 }
 
 .cvaa-size__medium-btn {
@@ -283,11 +303,11 @@
 }
 
 .cvaa-size__large-btn {
-	font-size: 1.5em;
+	font-size: 1.6em;
 }
 
 .cvaa-size__exlarge-btn {
-	font-size: 1.8em;
+	font-size: 2em;
 }
 
 .cvaa-size .cvaa-btn {
@@ -295,18 +315,23 @@
 	color: #ffffff;
 }
 
-/*------------------FONT SCREEN-------------------*/
-.cvaa-font .cvaa-dropdown {
-	width: 150px;
-}
-
 /*------------------BACKGROUND/COLOR SCREEN-------------------*/
 .cvaa-bg .cvaa-dropdown,
-.cvaa-color .cvaa-dropdown{
+.cvaa-color .cvaa-dropdown {
 	margin: 0 auto;
 	float: none;
 }
 
+.cvaa-color .cvaa-btn:before {
+	font-size: 1.5em;
+}
+
+
+.cvaa-color .cvaa-btn:after,
+.cvaa-bg .cvaa-btn:after {
+	top: -4px;
+	right: -4px;
+}
 /*------------------FOOTER-------------------*/
 
 .cvaa-footer {
@@ -316,6 +341,7 @@
 .cvaa-footer__preview {
 
 }
+
 /*------------------BTN COLORS-------------------*/
 .cvaa-color .cvaa-btn,
 .cvaa-bg .cvaa-btn {
@@ -329,7 +355,8 @@
 	background-color: transparent;
 	color: #ffffff;
 }
-.cvaa-btn.White{
+
+.cvaa-btn.White {
 	background-color: #ffffff;
 }
 
@@ -337,7 +364,8 @@
 	background-color: transparent;
 	color: #ffff00;
 }
-.cvaa-btn.Yellow{
+
+.cvaa-btn.Yellow {
 	background-color: #ffff00;
 }
 
@@ -345,7 +373,8 @@
 	background-color: transparent;
 	color: #00ff00;
 }
-.cvaa-btn.Green{
+
+.cvaa-btn.Green {
 	background-color: #00ff00;
 }
 
@@ -353,7 +382,8 @@
 	background-color: transparent;
 	color: #00ffff;
 }
-.cvaa-btn.Cyan{
+
+.cvaa-btn.Cyan {
 	background-color: #00ffff;
 }
 
@@ -361,7 +391,8 @@
 	background-color: transparent;
 	color: #0000ff;
 }
-.cvaa-btn.Blue{
+
+.cvaa-btn.Blue {
 	background-color: #0000ff;
 }
 
@@ -369,7 +400,8 @@
 	background-color: transparent;
 	color: #ff00ff;
 }
-.cvaa-btn.Magenta{
+
+.cvaa-btn.Magenta {
 	background-color: #ff00ff;
 }
 
@@ -377,7 +409,8 @@
 	background-color: transparent;
 	color: #ff0000;
 }
-.cvaa-btn.Red{
+
+.cvaa-btn.Red {
 	background-color: #ff0000;
 }
 
@@ -385,6 +418,60 @@
 	background-color: transparent;
 	color: #000000;
 }
-.cvaa-btn.Black{
+
+.cvaa-btn.Black {
 	background-color: #000000;
+}
+
+/*------------------Fonts-------------------*/
+@font-face {
+	font-family: 'icvaa';
+	src: url('fonts/icvaa.eot?edpuz4');
+	src: url('fonts/icvaa.eot?#iefixedpuz4') format('embedded-opentype'),
+	url('fonts/icvaa.woff?edpuz4') format('woff'),
+	url('fonts/icvaa.ttf?edpuz4') format('truetype'),
+	url('fonts/icvaa.svg?edpuz4#icvaa') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+[class^="icvaa-"], [class*=" icvaa-"] {
+	font-family: 'icvaa';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+}
+
+.icvaa-check:after {
+	content: "\e900";
+	display: block;
+	font-size: 0.8em;
+	line-height: 17px;
+	color: #FFFFFF;
+	width: 16px;
+	height: 16px;
+	background-color: #01c2ff;
+	position: absolute;
+	top: 0;
+	right: 0;
+	border-radius: 50%;
+}
+
+.icvaa-font-color:before {
+	content: "\e901";
+}
+
+.icvaa-font-family:before {
+	content: "\e902";
+}
+
+.icvaa-font-size:before {
+	content: "\e903";
+}
+
+.icvaa-letter-size:before {
+	content: "\e904";
 }

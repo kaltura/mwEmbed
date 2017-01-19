@@ -662,7 +662,6 @@
 				.html($(caption.content)
 					.addClass('caption')
 					.css('pointer-events', 'auto')
-					.css("background-color", (this.customStyle && this.customStyle.windowColor) ? this.customStyle.windowColor : "none")
 				);
 
 			this.displayTextTarget($textTarget);
@@ -686,16 +685,10 @@
 				.attr('data-capId', capId)
 				.hide();
 
-			var $windowTarget = $('<div />')
-				.css("background-color", (this.customStyle && this.customStyle.windowColor) ? this.customStyle.windowColor : "none")
-				.addClass('trackWindow');
-
 			// Update text ( use "html" instead of "text" so that subtitle format can
 			// include html formating
 			// TOOD we should scrub this for non-formating html
-
 			$textTarget.append(
-				$windowTarget.append(
 				$('<span />')
 					.addClass('ttmlStyled')
 					.css('pointer-events', 'auto')
@@ -707,7 +700,6 @@
 							.css('position', 'relative')
 							.html(caption.content)
 					)
-				)
 			);
 
 			// Add/update the lang option

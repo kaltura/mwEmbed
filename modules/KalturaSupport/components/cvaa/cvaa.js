@@ -10,15 +10,13 @@
             usePreviewPlayer: false,
             previewPlayerEnabled: false,
             useCookie: true,
-            cvaaDefaultSettings: {
+            cvaaPresetDefault: {
                 fontFamily: "Arial, Roboto, Arial Unicode Ms, Helvetica, Verdana, PT Sans Caption, sans-serif",
                 fontColor: "#ffffff",
                 fontOpacity: 100,
                 fontSize: 12,
                 backgroundColor: "#000000",
-                backgroundOpacity: 75,
-                windowColor: "#ffffff",
-                windowOpacity: 0,
+                backgroundOpacity: 0,
                 edgeStyle: "none"
             },
             cvaaPreset1: {
@@ -27,9 +25,7 @@
                 fontOpacity: 100,
                 fontSize: 12,
                 backgroundColor: "#ffffff",
-                backgroundOpacity: 75,
-                windowColor: "#ffffff",
-                windowOpacity: 0,
+                backgroundOpacity: 100,
                 edgeStyle: "none"
             },
             cvaaPreset2: {
@@ -38,90 +34,48 @@
                 fontOpacity: 100,
                 fontSize: 12,
                 backgroundColor: "#000000",
-                backgroundOpacity: 75,
-                windowColor: "#ffffff",
-                windowOpacity: 0,
+                backgroundOpacity: 100,
                 edgeStyle: "none"
             },
-            cvaaMenus: {
-                main: "cvaa-main",
-                adv: "cvaa-adv",
-                cstm: "cvaa-cstm",
-                size: "cvaa-size",
-                font: "cvaa-font",
-                bg: "cvaa-bg",
-                color: "cvaa-color"
-            },
             cvaaOptions: {
-                "edgeStyle": [
-                    {
-                        "prop": 1,
-                        "text": "None",
-                        "value": "none"
-                    },
-                    {
-                        "prop": 2,
-                        "text": "Drop shadow",
-                        "value": "rgb(34, 34, 34) 2px 2px 3px, rgb(34, 34, 34) 2px 2px 4px, rgb(34, 34, 34) 2px 2px 5px"
-                    },
-                    {
-                        "prop": 3,
-                        "text": "Raised",
-                        "value": "rgb(34, 34, 34) 1px 1px, rgb(34, 34, 34) 2px 2px, rgb(34, 34, 34) 3px 3px"
-                    },
-                    {
-                        "prop": 4,
-                        "text": "Depressed",
-                        "value": "rgb(204, 204, 204) 1px 1px, rgb(204, 204, 204) 0px 1px, rgb(34, 34, 34) -1px -1px, rgb(34, 34, 34) 0px -1px"
-                    },
-                    {
-                        "prop": 5,
-                        "text": "Outlined",
-                        "value": "rgb(34, 34, 34) 0px 0px 4px, rgb(34, 34, 34) 0px 0px 4px, rgb(34, 34, 34) 0px 0px 4px, rgb(34, 34, 34) 0px 0px 4px"
-                    }
+                "size":[
+                    {"prop": 1, "value": "12", "text": "Small",       "labelClass": "",                    "btnClass": "cvaa-size__small-btn" },
+                    {"prop": 2, "value": "16", "text": "Medium",      "labelClass": "",                    "btnClass": "cvaa-size__medium-btn" },
+                    {"prop": 3, "value": "20", "text": "Large",       "labelClass": "",                    "btnClass": "cvaa-size__large-btn" },
+                    {"prop": 4, "value": "25", "text": "Extra Large", "labelClass": "cvaa-size__xl-label", "btnClass": "cvaa-size__exlarge-btn" }
                 ],
-                "color": [
-                    {"prop": 1, "text": "White", "value": "#ffffff"},
-                    {"prop": 2, "text": "Yellow", "value": "#ffff00"},
-                    {"prop": 3, "text": "Green", "value": "#00ff00"},
-                    {"prop": 4, "text": "Cyan", "value": "#00ffff"},
-                    {"prop": 5, "text": "Blue", "value": "#0000ff"},
-                    {"prop": 6, "text": "Magenta", "value": "#ff00ff"},
-                    {"prop": 7, "text": "Red", "value": "#ff0000"},
-                    {"prop": 8, "text": "Black", "value": "#000000"}
+                "edgeStyle":[
+                    {"prop": 1, "text":"None", 			"value":	"none"},
+                    {"prop": 2, "text":"Drop shadow",	"value":	"rgb(34, 34, 34) 2px 2px 3px, rgb(34, 34, 34) 2px 2px 4px, rgb(34, 34, 34) 2px 2px 5px"},
+                    {"prop": 3, "text":"Raised", 		"value":	"rgb(34, 34, 34) 1px 1px, rgb(34, 34, 34) 2px 2px, rgb(34, 34, 34) 3px 3px"},
+                    {"prop": 4, "text":"Depressed", 	"value":	"rgb(204, 204, 204) 1px 1px, rgb(204, 204, 204) 0px 1px, rgb(34, 34, 34) -1px -1px, rgb(34, 34, 34) 0px -1px"},
+                    {"prop": 5, "text":"Outlined",		"value":	"rgb(34, 34, 34) 0px 0px 4px, rgb(34, 34, 34) 0px 0px 4px, rgb(34, 34, 34) 0px 0px 4px, rgb(34, 34, 34) 0px 0px 4px"}
                 ],
-                "family": [
-                    {
-                        "prop": 1,
-                        "text": "Monospaced Serif",
-                        "value": "Courier New, Courier, Nimbus Mono L, Cutive Mono, monospace"
-                    },
-                    {
-                        "prop": 2,
-                        "text": "Proportional Serif",
-                        "value": "Times New Roman, Times, Georgia, Cambria, PT Serif Caption, serif"
-                    },
-                    {
-                        "prop": 3,
-                        "text": "Monospaced Sans-Serif",
-                        "value": "Lucida Console, Deja Vu Sans Mono, Monaco, Consolas, PT Mono, monospace"
-                    },
-                    {
-                        "prop": 4,
-                        "text": "Proportional Sans-Serif",
-                        "value": "Arial, Roboto, Arial Unicode Ms, Helvetica, Verdana, PT Sans Caption, sans-serif"
-                    },
-                    {"prop": 5, "text": "Casual", "value": "Comic Sans MS, Impact, Handlee, fantasy"},
-                    {
-                        "prop": 6,
-                        "text": "Cursive",
-                        "value": "Monotype Corsiva, URW Chancery L, Apple Chancery, Dancing Script, cursive"
-                    },
-                    {
-                        "prop": 7,
-                        "text": "Small Capitals",
-                        "value": "Verdana ,Arial Unicode Ms, Arial, Helvetica, Marcellus SC, sans-serif"
-                    }
+                "color":[
+                    {"prop": 1, "text":"White", 	"value":	"#ffffff"},
+                    {"prop": 2, "text":"Yellow",	"value":	"#ffff00"},
+                    {"prop": 3, "text":"Green",		"value":	"#00ff00"},
+                    {"prop": 4, "text":"Cyan",		"value":	"#00ffff"},
+                    {"prop": 5, "text":"Blue",		"value":	"#0000ff"},
+                    {"prop": 6, "text":"Magenta",	"value":	"#ff00ff"},
+                    {"prop": 7, "text":"Red",		"value":	"#ff0000"},
+                    {"prop": 8, "text":"Black",		"value":	"#000000"}
+                ],
+                "family":[
+                    {"prop": 1, "text":"Monospaced Serif",			"value":	"Courier New, Courier, Nimbus Mono L, Cutive Mono, monospace"},
+                    {"prop": 2, "text":"Proportional Serif",		"value":	"Times New Roman, Times, Georgia, Cambria, PT Serif Caption, serif"},
+                    {"prop": 3, "text":"Monospaced Sans-Serif", 	"value":	"Lucida Console, Deja Vu Sans Mono, Monaco, Consolas, PT Mono, monospace"},
+                    {"prop": 4, "text":"Proportional Sans-Serif",	"value":	"Arial, Roboto, Arial Unicode Ms, Helvetica, Verdana, PT Sans Caption, sans-serif"},
+                    {"prop": 5, "text":"Casual", 					"value":	"Comic Sans MS, Impact, Handlee, fantasy"},
+                    {"prop": 6, "text":"Cursive", 					"value":	"Monotype Corsiva, URW Chancery L, Apple Chancery, Dancing Script, cursive"},
+                    {"prop": 7, "text":"Small Capitals",			"value":	"Verdana ,Arial Unicode Ms, Arial, Helvetica, Marcellus SC, sans-serif"}
+                ],
+                "opacity": [
+                    {"prop": 1, "text": "Opacity 0%", "value": 0},
+                    {"prop": 2, "text": "Opacity 25%", "value": 25},
+                    {"prop": 3, "text": "Opacity 50%", "value": 50},
+                    {"prop": 4, "text": "Opacity 75%", "value": 75},
+                    {"prop": 5, "text": "Opacity 100%", "value": 100}
                 ]
             }
         },
@@ -129,74 +83,55 @@
             "fontSizelabel": gM('mwe-cvaa-fontSize'),
             "fontOplabel": gM('mwe-cvaa-fontOpacity'),
             "backgroundOpLabel": gM('mwe-cvaa-backgroundOpacity'),
-            "windowOplabel": gM('mwe-cvaa-windowOpacity'),
             "fontColorlabel": gM('mwe-cvaa-fontColor'),
             "backgroundColorlabel": gM('mwe-cvaa-backgroundColor'),
-            "windowColorlabel": gM('mwe-cvaa-windowColor'),
             "fontFamilylabel": gM('mwe-cvaa-fontFamily'),
             "edgeStylelabel": gM('mwe-cvaa-edgeStyle'),
             "optionsBtnLabel": gM('mwe-cvaa-options'),
             "captionsPreviewText": gM('mwe-cvaa-previewText')
         },
-        previousScreen: "",
-        currentScreen: "",
-
-        cvaaSettingsObj: null,
-        cvaaMenus: null,
-        cvaaSavedSettings: null,
-        cvaaSentSettings: null,
-
+        previousScreen: "cvaa-main",
+        currentScreen: "cvaa-main",
         firstInit: true,
-        handlersAreSet: false,
 
-        currentFontFamily: null,
-        currentFontColor: null,
+        cvaaSavedSettings: {},
+        cvaaSentSettings: {},
+
+        currentFontFamily: "",
+        currentFontColor: "",
         currentFontOpacity: null,
         currentFontSize: null,
-        currentBackgroundColor: null,
+        currentBackgroundColor: "",
         currentBackgroundOpacity: null,
-        currentWindowColor: null,
-        currentWindowOpacity: null,
-        currentEdgeStyle: null,
+        currentEdgeStyle: "",
 
         setup: function () {
-            this.cvaaMenus = this.getConfig("cvaaMenus");
-            this.currentScreen = this.cvaaMenus["main"];
-            this.previousScreen = this.cvaaMenus["main"];
-
-            this.cvaaSettingsObj = this.getConfig("cvaaOptions");
             this.addBindings();
         },
 
         addScreenBindings: function () {
             var _this = this;
 
+            var cvaaMenus = [
+                { name: "cvaa-adv",   btnClass: "cvaa-main__advoptions-btn" },
+                { name: "cvaa-cstm",  btnClass: "cvaa-adv__cstmoptions-btn" },
+                { name: "cvaa-size",  btnClass: "cvaa-cstm__size-btn" },
+                { name: "cvaa-font",  btnClass: "cvaa-cstm__font-btn" },
+                { name: "cvaa-bg",    btnClass: "cvaa-cstm__bg-btn" },
+                { name: "cvaa-color", btnClass: "cvaa-cstm__color-btn" }];
+
             $(".cvaa .icon-arrow").on("mousedown", function () {
                 _this.cvaaMenuChanged(_this.previousScreen);
             });
 
-            $(".cvaa .cvaa-main__advoptions-btn").on("mousedown", function () {
-                _this.cvaaMenuChanged(_this.cvaaMenus["adv"]);
+            $(".cvaa .icon-close").on("mousedown", function () {
+                _this.cvaaMenuChanged("cvaa-main");
             });
 
-            $(".cvaa .cvaa-adv__cstmoptions-btn").on("mousedown", function () {
-                _this.cvaaMenuChanged(_this.cvaaMenus["cstm"]);
-            });
-
-            $(".cvaa .cvaa-cstm__size-btn").on("mousedown", function () {
-                _this.cvaaMenuChanged(_this.cvaaMenus["size"]);
-            });
-
-            $(".cvaa .cvaa-cstm__font-btn").on("mousedown", function () {
-                _this.cvaaMenuChanged(_this.cvaaMenus["font"]);
-            });
-
-            $(".cvaa .cvaa-cstm__bg-btn").on("mousedown", function () {
-                _this.cvaaMenuChanged(_this.cvaaMenus["bg"]);
-            });
-
-            $(".cvaa .cvaa-cstm__color-btn").on("mousedown", function () {
-                _this.cvaaMenuChanged(_this.cvaaMenus["color"]);
+            $.each(cvaaMenus, function (index, menu) {
+                $(".cvaa ." + menu.btnClass).on("mousedown", function () {
+                    _this.cvaaMenuChanged(menu.name);
+                });
             });
         },
 
@@ -215,16 +150,10 @@
                 });
             });
 
-            this.bind('onChangeMedia', function () {
-                _this.handlersAreSet = false;
-            });
-
             this.bind('preShowScreen', function (event, screenName) {
 
                 _this.initPreviewUpdate();
-                if (!_this.handlersAreSet) {
-                    _this.setUpHandlers();
-                }
+                _this.setUpHandlers();
 
                 if (screenName === "cvaa") {
                     _this.getScreen().then(function (screen) {
@@ -262,6 +191,20 @@
             });
         },
 
+        getCurrentSettings: function (template) {
+            if ( this.getConfig('useCookie') && $.cookie('cvaaSavedSettings') ) {
+                this.cvaaSentSettings = JSON.parse($.cookie('cvaaSavedSettings'));
+            } else {
+                var currentTemplate = template ? this.getConfig(template) : this.getConfig("cvaaPresetDefault");
+                this.cvaaSentSettings = $.extend(true, {}, currentTemplate);
+            }
+
+            if ( this.firstInit ) {
+                this.firstInit = false;
+                this.cvaaSavedSettings = $.extend(true, {}, this.cvaaSentSettings);
+            }
+        },
+
         cvaaMenuChanged: function (newScreen) {
             this.previousScreen = this.currentScreen;
             this.currentScreen = newScreen;
@@ -275,14 +218,13 @@
             //set correct previous screen for general screens
             switch (newScreen) {
                 case "cvaa-adv":
-                    this.previousScreen = this.cvaaMenus["main"];
+                    this.previousScreen = "cvaa-main";
                     break;
 
                 case "cvaa-cstm":
-                    this.previousScreen = this.cvaaMenus["adv"];
+                    this.previousScreen = "cvaa-adv";
                     break;
             }
-
         },
 
         showHideScreens: function () {
@@ -291,96 +233,109 @@
         },
 
         showHideBackBtn: function () {
-            if (this.currentScreen !== this.cvaaMenus["main"]) {
+            if (this.currentScreen !== "cvaa-main") {
                 $(".cvaa-container .icon-arrow").addClass("cvaa--show");
             } else {
                 $(".cvaa-container .icon-arrow").removeClass("cvaa--show");
             }
         },
 
+        setUpHandlers: function () {
+            var _this = this;
+
+            var presets = [
+                { name: "cvaaPresetDefault", btnClass: "default"},
+                { name: "cvaaPreset1", btnClass: "preset1"},
+                { name: "cvaaPreset2", btnClass: "preset2"}];
+
+            //presets
+            $.each(presets, function (index, preset) {
+                $(".cvaa-adv ." + preset.btnClass).on("click keydown", function () {
+                    if (event.which === 32 || event.which === 13 || event.type == "click") {
+                        $(this).addClass('icvaa-check').siblings().removeClass('icvaa-check');
+                        _this.templateCvaaSettings(preset.name);
+                    }
+                });
+            });
+
+            //size buttons
+            $(".cvaa-size .cvaa-btn").on('click keydown', function (event) {
+                if (event.which === 32 || event.which === 13 || event.type == "click") {
+                    $(this).parent().addClass('icvaa-check').siblings().removeClass('icvaa-check');
+                    _this.updateSettingsAndPreview(this.name, $(this).val());
+                    _this.saveCvaaSettings();
+                }
+            });
+            //color and bg-color buttons
+            $(".cvaa-color .cvaa-btn, .cvaa-bg .cvaa-btn").on('click keydown', function (event) {
+                if (event.which === 32 || event.which === 13 || event.type == "click") {
+                    $(this).addClass('icvaa-check').siblings().removeClass('icvaa-check');
+                    _this.updateSettingsAndPreview(this.name, $(this).val());
+                    _this.saveCvaaSettings();
+                }
+            });
+
+            //font-family
+            $(".cvaa-color .cvaa-dropdown, .cvaa-bg .cvaa-dropdown, .cvaa-font .cvaa-dropdown").on("change keydown", function (event) {
+                if (event.which === 32 || event.which === 13 || event.type == "change") {
+                    _this.updateSettingsAndPreview(this.name, $(this).val());
+                    _this.saveCvaaSettings();
+                }
+            });
+        },
+
         updateSettingsAndPreview: function (option, value) {
             var selectedItem;
             switch (option) {
-                case "kFontFamily":
-                    selectedItem = this.getValueByProp("family", value);
+                case "cvaa-font":
+                    selectedItem = this.getValueOrProp("family", value, "prop");
                     this.updatePreview("text", "font-family", selectedItem);
                     this.cvaaSentSettings.fontFamily = selectedItem;
                     this.cvaaSavedSettings.fontFamily = selectedItem;
                     break;
-                case "kFontColor":
-                    this.currentFontColor = this.getValueByProp("color", value);
+                case "cvaa-style":
+                    selectedItem = this.getValueOrProp("edgeStyle", value, "prop");
+                    this.updatePreview("text", "text-shadow", selectedItem);
+                    this.cvaaSentSettings.edgeStyle = selectedItem;
+                    this.cvaaSavedSettings.edgeStyle = selectedItem;
+                    break;
+                case "cvaa-color":
+                    this.currentFontColor = this.getValueOrProp("color", value, "prop");
                     selectedItem = this.rgb2rgba(this.hex2rgb(this.currentFontColor), this.currentFontOpacity);
                     this.updatePreview("text", "color", selectedItem);
                     this.cvaaSentSettings.fontColor = selectedItem;
                     this.cvaaSavedSettings.fontColor = this.currentFontColor;
                     break;
-                case "kFontOpacity":
-                    this.currentFontOpacity = value;
+                case "cvaa-color-opacity":
+                    this.currentFontOpacity = this.getValueOrProp("opacity", value, "prop");
                     selectedItem = this.rgb2rgba(this.hex2rgb(this.currentFontColor), this.currentFontOpacity);
                     this.updatePreview("text", "color", selectedItem);
                     this.cvaaSentSettings.fontColor = selectedItem;
                     this.cvaaSavedSettings.fontOpacity = this.currentFontOpacity;
                     break;
-                case "kFontSize":
-                    this.currentFontSize = value;
-                    this.updatePreview("text", "font-size", this.getFontSize(this.currentFontSize));
-                    this.cvaaSentSettings.fontSize = this.getFontSize(this.currentFontSize);
-                    this.cvaaSavedSettings.fontSize = this.currentFontSize;
-                    break;
-                case "kBackgroundColor":
-                    this.currentBackgroundColor = this.getValueByProp("color", value);
+                case "cvaa-bg":
+                    this.currentBackgroundColor = this.getValueOrProp("color", value, "prop");
                     selectedItem = this.rgb2rgba(this.hex2rgb(this.currentBackgroundColor), this.currentBackgroundOpacity);
                     this.updatePreview("text", "background-color", selectedItem);
                     this.cvaaSentSettings.backgroundColor = selectedItem;
                     this.cvaaSavedSettings.backgroundColor = this.currentBackgroundColor;
                     break;
-                case "kBackgroundOpacity":
-                    this.currentBackgroundOpacity = value;
+                case "cvaa-bg-opacity":
+                    this.currentBackgroundOpacity = this.getValueOrProp("opacity", value, "prop");
                     selectedItem = this.rgb2rgba(this.hex2rgb(this.currentBackgroundColor), this.currentBackgroundOpacity);
                     this.updatePreview("text", "background-color", selectedItem);
                     this.cvaaSentSettings.backgroundColor = selectedItem;
                     this.cvaaSavedSettings.backgroundOpacity = this.currentBackgroundOpacity;
                     break;
-                case "kWindowColor":
-                    this.currentWindowColor = this.getValueByProp("color", value);
-                    selectedItem = this.rgb2rgba(this.hex2rgb(this.currentWindowColor), this.currentWindowOpacity);
-                    this.updatePreview("window", "background-color", selectedItem);
-                    this.cvaaSentSettings.windowColor = selectedItem;
-                    this.cvaaSavedSettings.windowColor = this.currentWindowColor;
-                    break;
-                case "kWindowOpacity":
-                    this.currentWindowOpacity = value;
-                    selectedItem = this.rgb2rgba(this.hex2rgb(this.currentWindowColor), this.currentWindowOpacity);
-                    this.updatePreview("window", "background-color", selectedItem);
-                    this.cvaaSentSettings.windowColor = selectedItem;
-                    this.cvaaSavedSettings.windowOpacity = this.currentWindowOpacity;
-                    break;
-                case "kEdgeStyle":
-                    selectedItem = this.getValueByProp("edgeStyle", value);
-                    this.updatePreview("text", "text-shadow", selectedItem);
-                    this.cvaaSentSettings.edgeStyle = selectedItem;
-                    this.cvaaSavedSettings.edgeStyle = selectedItem;
+                case "cvaa-size":
+                    this.currentFontSize = this.getValueOrProp("size", value, "prop");
+                    this.updatePreview("text", "font-size", this.getFontSize(this.currentFontSize));
+                    this.cvaaSentSettings.fontSize = this.getFontSize(this.currentFontSize);
+                    this.cvaaSavedSettings.fontSize = this.currentFontSize;
                     break;
             }
         },
-        getValueByProp: function (option, propValue) {
-            var cvaaOptions = this.cvaaSettingsObj[option];
 
-            for (var i = 0; i < cvaaOptions.length; i++) {
-                if (cvaaOptions && cvaaOptions[i].prop == propValue) {
-                    return cvaaOptions[i].value;
-                }
-            }
-        },
-        getPropByValue: function (option, value) {
-            var cvaaOptions = this.cvaaSettingsObj[option];
-
-            for (var i = 0; i < cvaaOptions.length; i++) {
-                if (cvaaOptions && cvaaOptions[i].value == value) {
-                    return cvaaOptions[i].prop;
-                }
-            }
-        },
         updatePreview: function (element, option, value) {
             switch (element) {
                 case "window":
@@ -391,113 +346,62 @@
                     break;
             }
         },
-        getCurrentSettings: function () {
-            var _this = this;
 
-            _this.cvaaSentSettings = _this.getConfig('useCookie') && $.cookie('cvaaSavedSettings') ?
-                JSON.parse($.cookie('cvaaSavedSettings')) :
-                $.extend(true, {}, _this.getConfig("cvaaDefaultSettings"));
-
-            if (_this.firstInit) {
-                _this.firstInit = false;
-                _this.cvaaSavedSettings = $.extend(true, {}, _this.cvaaSentSettings);
-            }
-        },
         initPreviewUpdate: function () {
             var _this = this;
 
             //set default font family
             _this.currentFontFamily = _this.cvaaSavedSettings.fontFamily;
-            $("#kFontFamily").val(_this.getPropByValue("family", _this.cvaaSentSettings.fontFamily));
+            $(".cvaa-font .cvaa-family").val(_this.getValueOrProp("family", _this.cvaaSentSettings.fontFamily, "value"));
             _this.updatePreview("text", "font-family", _this.cvaaSentSettings.fontFamily);
+
+            //set default edge style - text shadow
+            _this.currentEdgeStyle = _this.cvaaSavedSettings.edgeStyle;
+            $(".cvaa-font .cvaa-style").val(_this.getValueOrProp("edgeStyle", _this.cvaaSentSettings.edgeStyle, "value"));
+            _this.updatePreview("text", "text-shadow", _this.cvaaSentSettings.edgeStyle);
 
             //set default font color and opacity
             _this.currentFontColor = _this.cvaaSavedSettings.fontColor;
             _this.currentFontOpacity = _this.cvaaSavedSettings.fontOpacity;
+            $(".cvaa-color .cvaa-color-opacity").val(_this.getValueOrProp("opacity", _this.currentFontOpacity, "value"));
             _this.cvaaSentSettings.fontColor = _this.rgb2rgba(_this.hex2rgb(_this.currentFontColor), _this.currentFontOpacity);
-            $("#kFontColor[value='" + _this.getPropByValue("color", _this.cvaaSavedSettings.fontColor) + "']").addClass('active').siblings().removeClass('active');
+            $(".cvaa-color .cvaa-btn[value='" + _this.getValueOrProp("color", _this.cvaaSavedSettings.fontColor, "value") + "']").addClass('icvaa-check').siblings().removeClass('icvaa-check');
             _this.updatePreview("text", "color", _this.cvaaSentSettings.fontColor);
-
-            //set default font size
-            _this.currentFontSize = _this.cvaaSavedSettings.fontSize;
-            _this.cvaaSentSettings.fontSize = this.getFontSize(_this.currentFontSize);
-            _this.updatePreview("text", "font-size", _this.cvaaSentSettings.fontSize);
 
             //set default background color and opacity
             _this.currentBackgroundColor = _this.cvaaSavedSettings.backgroundColor;
             _this.currentBackgroundOpacity = _this.cvaaSavedSettings.backgroundOpacity;
+            $(".cvaa-bg .cvaa-bg-opacity").val(_this.getValueOrProp("opacity", _this.currentBackgroundOpacity, "value"));
             _this.cvaaSentSettings.backgroundColor = _this.rgb2rgba(_this.hex2rgb(_this.currentBackgroundColor), _this.currentBackgroundOpacity);
-            $("#kBackgroundColor[value='" + _this.getPropByValue("color", _this.cvaaSavedSettings.backgroundColor) + "']").addClass('active').siblings().removeClass('active');
+            $(".cvaa-bg .cvaa-btn[value='" + _this.getValueOrProp("color", _this.cvaaSavedSettings.backgroundColor, "value") + "']").addClass('icvaa-check').siblings().removeClass('icvaa-check');
             _this.updatePreview("text", "background-color", _this.cvaaSentSettings.backgroundColor);
 
-            //set default window color and opacity
-            _this.currentWindowColor = _this.cvaaSavedSettings.windowColor;
-            _this.currentWindowOpacity = _this.cvaaSavedSettings.windowOpacity;
-            _this.cvaaSentSettings.windowColor = _this.rgb2rgba(_this.hex2rgb(_this.currentWindowColor), _this.currentWindowOpacity);
-            $("#kWindowColor[value='" + _this.getPropByValue("color", _this.cvaaSavedSettings.windowColor) + "']").addClass('active').siblings().removeClass('active');
-            _this.updatePreview("window", "background-color", _this.cvaaSentSettings.windowColor);
-
-            //set default edge style - text shadow
-            _this.currentEdgeStyle = _this.cvaaSavedSettings.edgeStyle;
-            $("#kEdgeStyle").val(_this.getPropByValue("edgeStyle", _this.cvaaSentSettings.edgeStyle));
-            _this.updatePreview("text", "text-shadow", _this.cvaaSentSettings.edgeStyle);
+            //set default font size
+            _this.currentFontSize = _this.cvaaSavedSettings.fontSize;
+            _this.cvaaSentSettings.fontSize = this.getFontSize(_this.currentFontSize);
+            $(".cvaa-size .cvaa-btn[value='" + _this.getValueOrProp("size", _this.cvaaSavedSettings.fontSize, "value") + "']").parent().addClass('icvaa-check').siblings().removeClass('icvaa-check');
+            _this.updatePreview("text", "font-size", _this.cvaaSentSettings.fontSize);
 
             //send styles to captions plugin
             _this.getPlayer().triggerHelper("newCaptionsStyles", _this.cvaaSentSettings);
         },
-        setUpHandlers: function () {
-            var _this = this;
-            _this.handlersAreSet = true;
-            var dropdowns = ["kFontFamily", "kEdgeStyle"];
 
-            //set sliders
-            // $.map(_this.cvaaSettingsObj.sliders, function(el) { return el })
-            // 	.map(function(element){
-            // 		var sliderHolder = $( "#" + element.selector );
-            // 		sliderHolder.slider({
-            // 			value:	_this.cvaaSavedSettings[element["default"]],
-            // 			min:	element.min,
-            // 			max:	element.max,
-            // 			slide: function( event, ui ) {
-            // 				$( "#" + element.selector + "Val" ).val( ui.value );
-            // 				_this.updateSettingsAndPreview(element.selector, ui.value);
-            // 			}
-            // 		});
-            // 		//set initial value
-            // 		$( "#" + element.selector + "Val" ).val(sliderHolder.slider( "value" ));
-            // 	});
+        getValueOrProp: function (option, property, type) {
+            var cvaaSettings = this.getConfig("cvaaOptions");
+            var cvaaOptions = cvaaSettings[option];
 
-            //set color pickers
-            // $(".colorContainer li").on('click keydown', function (event) {
-            // 	if(event.which === 32 || event.which === 13 || event.type == "click"){
-            // 		$(this).addClass('active').siblings().removeClass('active');
-            // 		_this.updateSettingsAndPreview($(this)[0].id, $(this).val());
-            // 	}
-            // });
-
-            //set dropdowns
-            // dropdowns.map(function(option){
-            // 	$("#" + option).on("change keydown", function (event) {
-            // 		if(event.which === 32 ||event.which === 13 || event.type == "change"){
-            // 			_this.updateSettingsAndPreview($(this)[0].id, $(this).val());
-            // 		}
-            // 	});
-            // });
-
-            //set save button
-            _this.getPlayer().getInterface().find(".saveCvaaSettings").click(function () {
-                _this.saveCvaaSettings();
-            });
-
-            //set reset button
-            _this.getPlayer().getInterface().find(".resetCvaaSettings").click(function () {
-                _this.resetCvaaSettings();
-            });
+            for (var i = 0; i < cvaaOptions.length; i++) {
+                if (cvaaOptions && cvaaOptions[i][type] == property) {
+                    return type == "prop" ? cvaaOptions[i].value : cvaaOptions[i].prop;
+                }
+            }
         },
+
         hex2rgb: function (hex) {
             hex = hex.replace('#', '');
             return [parseInt(hex.substring(0, 2), 16), parseInt(hex.substring(2, 4), 16), parseInt(hex.substring(4, 6), 16)];
         },
+
         rgb2rgba: function (color, opacity) {
             if (opacity !== undefined) {
                 return 'rgba(' + color.join(',') + ',' + opacity / 100 + ')';
@@ -505,6 +409,7 @@
                 return 'rgb(' + color.join(',') + ')';
             }
         },
+
         getFontSize: function (fontsize) {
             // Translate to em size so that font-size parent percentage
             // base on http://pxtoem.com/
@@ -517,6 +422,7 @@
                 emFontMap[fontsize] + 'em' :
                 (  fontsize > 24 ) ? emFontMap[24] + 'em' : emFontMap[6];
         },
+
         saveCvaaSettings: function () {
             this.getPlayer().setCookie('cvaaSavedSettings', JSON.stringify(this.cvaaSavedSettings), {
                 expires: 356,
@@ -525,20 +431,35 @@
             });
 
             this.getPlayer().triggerHelper("newCaptionsStyles", this.cvaaSentSettings);
-            this.hideScreen();
         },
+
+        templateCvaaSettings: function(template){
+            this.getPlayer().setCookie( 'cvaaSavedSettings' ,null , {
+                expires : -1,
+                path : '/',
+                domain : ''
+            });
+
+            this.firstInit = true;
+            this.getCurrentSettings(template);
+            this.initPreviewUpdate();
+            this.getPlayer().triggerHelper("newCaptionsStyles", this.cvaaSentSettings);
+        },
+
         addOptionsBtn: function () {
             return {
                 "optionsLabel": this.locale.optionsBtnLabel,
                 "optionsEvent": "openCvaaOptions"
             }
         },
+
         getTemplateData: function () {
             return {
                 'cvaa': this,
-                'cvaaOptions': this.cvaaSettingsObj
+                'cvaaOptions': this.getConfig("cvaaOptions")
             };
         },
+
         isSafeEnviornment: function () {
             return !mw.isIphone() && !mw.isIE8();
         }
