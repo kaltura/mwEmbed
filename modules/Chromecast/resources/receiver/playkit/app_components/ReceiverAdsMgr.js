@@ -197,8 +197,12 @@ AdsManager.prototype = {
                     break;
                 case -1:
                     var mediaInfo = mediaManager.getMediaInformation();
-                    if ( mediaInfo && mediaInfo.duration ) {
-                        this.adsInfo.adsBreakInfo.push( mediaInfo.duration );
+                    if ( mediaInfo ) {
+                        if ( mediaInfo.duration ) {
+                            this.adsInfo.adsBreakInfo.push( mediaInfo.duration );
+                        } else {
+                            //TODO: How to get entry duration in OTT in that point?
+                        }
                     }
                     break;
                 default:

@@ -363,7 +363,10 @@ function doChangeMedia( embedConfig ) {
         $( window ).trigger( "onReceiverChangeMedia", false );
         kdp.setKDPAttribute( 'doubleClick', 'adTagUrl', '' );
     }
-    kdp.sendNotification( "changeMedia", { "entryId": embedConfig[ 'entryID' ] } );
+    kdp.sendNotification( "changeMedia", {
+        "entryId": embedConfig[ 'entryID' ],
+        "proxyData": embedConfig[ 'flashVars' ][ 'proxyData' ]
+    } );
 }
 
 /***** Receiver Manager Events *****/

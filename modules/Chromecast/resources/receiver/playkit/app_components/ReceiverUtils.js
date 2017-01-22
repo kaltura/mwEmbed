@@ -109,22 +109,26 @@ var ReceiverUtils = {
     _getMediaImageUrl: function ( metadata ) {
         var images = metadata.images || [];
         var res = 2 / 3;
-        var bestIndex = 0;
         var bestDelta = null;
+        var bestUrl = null;
         for ( var i = 0; i < images.length; i++ ) {
             var curImage = images[ i ];
             if ( curImage.width && curImage.height ) {
                 var curRes = curImage.width / curImage.height;
-                var curDelta = curRes - res;
-                if ( (bestDelta === null || curDelta < bestDelta) && curDelta >= 0 ) {
+                var curDelta = Math.abs( curRes - res );
+                if ( bestDelta === null || curDelta < bestDelta ) {
+                    bestUrl = curImage.url.replace( 'width/' + curImage.width, 'width/150' ).replace( 'height/' + curImage.height, 'height/250' );
                     bestDelta = curDelta;
-                    bestIndex = i;
                 }
             }
         }
-        if ( !images[ bestIndex ] ) {
+        if ( !images[ 0 ] ) {
             return null;
+        } else {
+            if ( bestUrl ) {
+                return bestUrl;
+            }
+            return images[ 0 ].url;
         }
-        return images[ bestIndex ].url;
     }
 };
