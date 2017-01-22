@@ -264,6 +264,13 @@ mw.EmbedPlayerNativeComponent = {
 	},
 
 	/**
+	 * returns true if device can auto play
+	 */
+	canAutoPlay: function(){
+		return true;
+	},
+
+	/**
 	 * Handle the native play event
 	 */
 	_onplay: function(){
