@@ -13,20 +13,14 @@
 }
 
 .cvaa .screen-content .tmpl,
-.cvaa-btn-label span {
+.cvaa-btn-label span,
+.cvaa-btn, .cvaa-btn-text {
 	font-family: Helvetica Neue Regular, Lato-Regular, Lato;
 	font-size: 16px;
 	line-height: 30px;
 }
 
-.cvaa-main, .cvaa-adv,
-.cvaa-cstm, .cvaa-size,
-.cvaa-bg, .cvaa-color,
-.cvaa-font, .icon-arrow {
-	display: none;
-}
-
-/*------------------BUTTONS-------------------*/
+/*------------------BUTTONS/DROPDOWNS-------------------*/
 .cvaa-btn {
 	position: relative;
 	display: inline-block;
@@ -38,7 +32,7 @@
 }
 
 .cvaa-btn.small {
-	width: 48px;
+	width: 58px;
 }
 
 .cvaa-btn-text {
@@ -52,8 +46,6 @@
 
 .cvaa-btn,
 .cvaa-btn-text {
-	font-size: inherit;
-	font-family: inherit;
 	cursor: pointer;
 }
 
@@ -104,6 +96,13 @@
 .cvaa-row--center {
 	width: 100%;
 	text-align: center;
+}
+
+.cvaa-main, .cvaa-adv,
+.cvaa-cstm, .cvaa-size,
+.cvaa-bg, .cvaa-color,
+.cvaa-font, .icon-arrow {
+	display: none;
 }
 
 /*------------------HIDE/SHOW MENUS-------------------*/
@@ -229,6 +228,15 @@
 	margin-top: 30px;
 }
 
+.cvaa-adv .custom {
+	display: none;
+}
+
+.cvaa-adv .cvaa-btn {
+	font-size: 14px !important;
+	padding: 2px;
+}
+
 .cvaa-adv .cvaa-btn:after{
 	top: -4px;
 	right: -4px;
@@ -256,9 +264,18 @@
 	border-color: #000000;
 }
 
+/*------------------CUSTOM CAPTIONS SCREEN-------------------*/
+.cvaa-cstm .cvaa-cstm__bg-label {
+	position: absolute;
+}
+
 .cvaa-cstm__bg-btn, .cvaa-cstm__size-btn,
 .cvaa-cstm__font-btn, .cvaa-cstm__color-btn {
 	font-size: 1.6em;
+}
+
+.cvaa-cstm .cvaa-btn.small {
+	background-color: transparent;
 }
 
 .cvaa-cstm__size-btn, .cvaa-cstm__font-btn,
@@ -272,15 +289,6 @@
 
 .cvaa-cstm .cvaa-btn.small.cvaa-cstm__bg-btn {
 	background-color: #01C2FF;
-}
-
-/*------------------CUSTOM CAPTIONS SCREEN-------------------*/
-.cvaa-cstm .cvaa-cstm__bg-label {
-	position: absolute;
-}
-
-.cvaa-cstm .cvaa-btn.small {
-	background-color: transparent;
 }
 
 /*------------------SIZE SCREEN-------------------*/
@@ -325,7 +333,6 @@
 .cvaa-color .cvaa-btn:before {
 	font-size: 1.5em;
 }
-
 
 .cvaa-color .cvaa-btn:after,
 .cvaa-bg .cvaa-btn:after {
@@ -448,8 +455,8 @@
 .icvaa-check:after {
 	content: "\e900";
 	display: block;
-	font-size: 0.8em;
-	line-height: 17px;
+	font-size: 0.7em;
+	line-height: 18px;
 	color: #FFFFFF;
 	width: 16px;
 	height: 16px;

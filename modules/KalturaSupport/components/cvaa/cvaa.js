@@ -17,7 +17,8 @@
                 fontSize: 12,
                 backgroundColor: "#000000",
                 backgroundOpacity: 0,
-                edgeStyle: "none"
+                edgeStyle: "none",
+                currentPreset: "default"
             },
             cvaaPreset1: {
                 fontFamily: "Arial, Roboto, Arial Unicode Ms, Helvetica, Verdana, PT Sans Caption, sans-serif",
@@ -26,7 +27,8 @@
                 fontSize: 12,
                 backgroundColor: "#ffffff",
                 backgroundOpacity: 100,
-                edgeStyle: "none"
+                edgeStyle: "none",
+                currentPreset: "preset1"
             },
             cvaaPreset2: {
                 fontFamily: "Arial, Roboto, Arial Unicode Ms, Helvetica, Verdana, PT Sans Caption, sans-serif",
@@ -35,7 +37,8 @@
                 fontSize: 12,
                 backgroundColor: "#000000",
                 backgroundOpacity: 100,
-                edgeStyle: "none"
+                edgeStyle: "none",
+                currentPreset: "preset2"
             },
             cvaaOptions: {
                 "size":[
@@ -76,6 +79,12 @@
                     {"prop": 3, "text": "Opacity 50%", "value": 50},
                     {"prop": 4, "text": "Opacity 75%", "value": 75},
                     {"prop": 5, "text": "Opacity 100%", "value": 100}
+                ],
+                "presets": [
+                    {"prop": 1, "text": "Default", "value": "default"},
+                    {"prop": 2, "text": "Sample", "value": "preset1"},
+                    {"prop": 3, "text": "Sample", "value": "preset2"},
+                    {"prop": 4, "text": "Custom", "value": "custom"}
                 ]
             }
         },
@@ -104,6 +113,7 @@
         currentBackgroundColor: "",
         currentBackgroundOpacity: null,
         currentEdgeStyle: "",
+        currentPreset: "",
 
         setup: function () {
             this.addBindings();
@@ -191,12 +201,13 @@
             });
         },
 
-        getCurrentSettings: function (template) {
-            if ( this.getConfig('useCookie') && $.cookie('cvaaSavedSettings') ) {
+        getCurrentSettings: function (preset) {
+            var currentPreset = preset ? this.getConfig(preset) : this.getConfig("cvaaPresetDefault");
+
+            if (this.getConfig('useCookie') && $.cookie('cvaaSavedSettings') && currentPreset == "custom") {
                 this.cvaaSentSettings = JSON.parse($.cookie('cvaaSavedSettings'));
             } else {
-                var currentTemplate = template ? this.getConfig(template) : this.getConfig("cvaaPresetDefault");
-                this.cvaaSentSettings = $.extend(true, {}, currentTemplate);
+                this.cvaaSentSettings = $.extend(true, {}, currentPreset);
             }
 
             if ( this.firstInit ) {
@@ -246,14 +257,16 @@
             var presets = [
                 { name: "cvaaPresetDefault", btnClass: "default"},
                 { name: "cvaaPreset1", btnClass: "preset1"},
-                { name: "cvaaPreset2", btnClass: "preset2"}];
+                { name: "cvaaPreset2", btnClass: "preset2"},
+                { name: "custom", btnClass: "custom"}];
 
             //presets
             $.each(presets, function (index, preset) {
                 $(".cvaa-adv ." + preset.btnClass).on("click keydown", function () {
                     if (event.which === 32 || event.which === 13 || event.type == "click") {
-                        $(this).addClass('icvaa-check').siblings().removeClass('icvaa-check');
-                        _this.templateCvaaSettings(preset.name);
+                        $(this).parent().addClass('icvaa-check').siblings().removeClass('icvaa-check');
+                        _this.useCvaaPreset(preset.name);
+                        _this.saveCvaaSettings();
                     }
                 });
             });
@@ -289,62 +302,69 @@
             switch (option) {
                 case "cvaa-font":
                     selectedItem = this.getValueOrProp("family", value, "prop");
-                    this.updatePreview("text", "font-family", selectedItem);
+                    this.updatePreview("font-family", selectedItem);
                     this.cvaaSentSettings.fontFamily = selectedItem;
                     this.cvaaSavedSettings.fontFamily = selectedItem;
+                    this.updatePresetToCustom();
                     break;
                 case "cvaa-style":
                     selectedItem = this.getValueOrProp("edgeStyle", value, "prop");
-                    this.updatePreview("text", "text-shadow", selectedItem);
+                    this.updatePreview("text-shadow", selectedItem);
                     this.cvaaSentSettings.edgeStyle = selectedItem;
                     this.cvaaSavedSettings.edgeStyle = selectedItem;
+                    this.updatePresetToCustom();
                     break;
                 case "cvaa-color":
                     this.currentFontColor = this.getValueOrProp("color", value, "prop");
                     selectedItem = this.rgb2rgba(this.hex2rgb(this.currentFontColor), this.currentFontOpacity);
-                    this.updatePreview("text", "color", selectedItem);
+                    this.updatePreview("color", selectedItem);
                     this.cvaaSentSettings.fontColor = selectedItem;
                     this.cvaaSavedSettings.fontColor = this.currentFontColor;
+                    this.updatePresetToCustom();
                     break;
                 case "cvaa-color-opacity":
                     this.currentFontOpacity = this.getValueOrProp("opacity", value, "prop");
                     selectedItem = this.rgb2rgba(this.hex2rgb(this.currentFontColor), this.currentFontOpacity);
-                    this.updatePreview("text", "color", selectedItem);
+                    this.updatePreview("color", selectedItem);
                     this.cvaaSentSettings.fontColor = selectedItem;
                     this.cvaaSavedSettings.fontOpacity = this.currentFontOpacity;
+                    this.updatePresetToCustom();
                     break;
                 case "cvaa-bg":
                     this.currentBackgroundColor = this.getValueOrProp("color", value, "prop");
                     selectedItem = this.rgb2rgba(this.hex2rgb(this.currentBackgroundColor), this.currentBackgroundOpacity);
-                    this.updatePreview("text", "background-color", selectedItem);
+                    this.updatePreview("background-color", selectedItem);
                     this.cvaaSentSettings.backgroundColor = selectedItem;
                     this.cvaaSavedSettings.backgroundColor = this.currentBackgroundColor;
+                    this.updatePresetToCustom();
                     break;
                 case "cvaa-bg-opacity":
                     this.currentBackgroundOpacity = this.getValueOrProp("opacity", value, "prop");
                     selectedItem = this.rgb2rgba(this.hex2rgb(this.currentBackgroundColor), this.currentBackgroundOpacity);
-                    this.updatePreview("text", "background-color", selectedItem);
+                    this.updatePreview("background-color", selectedItem);
                     this.cvaaSentSettings.backgroundColor = selectedItem;
                     this.cvaaSavedSettings.backgroundOpacity = this.currentBackgroundOpacity;
+                    this.updatePresetToCustom();
                     break;
                 case "cvaa-size":
                     this.currentFontSize = this.getValueOrProp("size", value, "prop");
-                    this.updatePreview("text", "font-size", this.getFontSize(this.currentFontSize));
+                    this.updatePreview("font-size", this.getFontSize(this.currentFontSize));
                     this.cvaaSentSettings.fontSize = this.getFontSize(this.currentFontSize);
                     this.cvaaSavedSettings.fontSize = this.currentFontSize;
+                    this.updatePresetToCustom();
                     break;
             }
         },
 
-        updatePreview: function (element, option, value) {
-            switch (element) {
-                case "window":
-                    this.getPlayer().getInterface().find("#previewWindow").css(option, value);
-                    break;
-                case "text":
-                    this.getPlayer().getInterface().find("#previewText").css(option, value);
-                    break;
-            }
+        updatePresetToCustom: function () {
+            this.cvaaSentSettings.currentPreset = "custom";
+            this.cvaaSavedSettings.currentPreset = "custom";
+            this.customPreviewUpdate();
+        },
+
+        updatePreview: function (option, value) {
+            this.getPlayer().getInterface().find(".cvaa-footer__preview").css(option, value);
+            this.getPlayer().getInterface().find(".cvaa-adv .custom").css(option, value);
         },
 
         initPreviewUpdate: function () {
@@ -353,37 +373,55 @@
             //set default font family
             _this.currentFontFamily = _this.cvaaSavedSettings.fontFamily;
             $(".cvaa-font .cvaa-family").val(_this.getValueOrProp("family", _this.cvaaSentSettings.fontFamily, "value"));
-            _this.updatePreview("text", "font-family", _this.cvaaSentSettings.fontFamily);
+            _this.updatePreview("font-family", _this.cvaaSentSettings.fontFamily);
 
             //set default edge style - text shadow
             _this.currentEdgeStyle = _this.cvaaSavedSettings.edgeStyle;
             $(".cvaa-font .cvaa-style").val(_this.getValueOrProp("edgeStyle", _this.cvaaSentSettings.edgeStyle, "value"));
-            _this.updatePreview("text", "text-shadow", _this.cvaaSentSettings.edgeStyle);
+            _this.updatePreview("text-shadow", _this.cvaaSentSettings.edgeStyle);
 
             //set default font color and opacity
             _this.currentFontColor = _this.cvaaSavedSettings.fontColor;
             _this.currentFontOpacity = _this.cvaaSavedSettings.fontOpacity;
             $(".cvaa-color .cvaa-color-opacity").val(_this.getValueOrProp("opacity", _this.currentFontOpacity, "value"));
             _this.cvaaSentSettings.fontColor = _this.rgb2rgba(_this.hex2rgb(_this.currentFontColor), _this.currentFontOpacity);
-            $(".cvaa-color .cvaa-btn[value='" + _this.getValueOrProp("color", _this.cvaaSavedSettings.fontColor, "value") + "']").addClass('icvaa-check').siblings().removeClass('icvaa-check');
-            _this.updatePreview("text", "color", _this.cvaaSentSettings.fontColor);
+            $(".cvaa-color .cvaa-btn[value='" + _this.getValueOrProp("color", _this.cvaaSavedSettings.fontColor, "value") + "']")
+                .addClass('icvaa-check').siblings().removeClass('icvaa-check');
+            _this.updatePreview("color", _this.cvaaSentSettings.fontColor);
 
             //set default background color and opacity
             _this.currentBackgroundColor = _this.cvaaSavedSettings.backgroundColor;
             _this.currentBackgroundOpacity = _this.cvaaSavedSettings.backgroundOpacity;
             $(".cvaa-bg .cvaa-bg-opacity").val(_this.getValueOrProp("opacity", _this.currentBackgroundOpacity, "value"));
             _this.cvaaSentSettings.backgroundColor = _this.rgb2rgba(_this.hex2rgb(_this.currentBackgroundColor), _this.currentBackgroundOpacity);
-            $(".cvaa-bg .cvaa-btn[value='" + _this.getValueOrProp("color", _this.cvaaSavedSettings.backgroundColor, "value") + "']").addClass('icvaa-check').siblings().removeClass('icvaa-check');
-            _this.updatePreview("text", "background-color", _this.cvaaSentSettings.backgroundColor);
+            $(".cvaa-bg .cvaa-btn[value='" + _this.getValueOrProp("color", _this.cvaaSavedSettings.backgroundColor, "value") + "']")
+                .addClass('icvaa-check').siblings().removeClass('icvaa-check');
+            _this.updatePreview("background-color", _this.cvaaSentSettings.backgroundColor);
 
             //set default font size
             _this.currentFontSize = _this.cvaaSavedSettings.fontSize;
             _this.cvaaSentSettings.fontSize = this.getFontSize(_this.currentFontSize);
-            $(".cvaa-size .cvaa-btn[value='" + _this.getValueOrProp("size", _this.cvaaSavedSettings.fontSize, "value") + "']").parent().addClass('icvaa-check').siblings().removeClass('icvaa-check');
-            _this.updatePreview("text", "font-size", _this.cvaaSentSettings.fontSize);
+            $(".cvaa-size .cvaa-btn[value='" + _this.getValueOrProp("size", _this.cvaaSavedSettings.fontSize, "value") + "']")
+                .parent().addClass('icvaa-check').siblings().removeClass('icvaa-check');
+            _this.updatePreview("font-size", _this.cvaaSentSettings.fontSize);
+
+            //set current preset and custom btn
+            _this.customPreviewUpdate();
 
             //send styles to captions plugin
             _this.getPlayer().triggerHelper("newCaptionsStyles", _this.cvaaSentSettings);
+        },
+
+        customPreviewUpdate: function () {
+            $(".cvaa-adv .cvaa-btn[value='" + this.getValueOrProp("presets", this.cvaaSavedSettings.currentPreset, "value") + "']")
+                .parent().addClass('icvaa-check').siblings().removeClass('icvaa-check');
+
+            if (this.cvaaSavedSettings.currentPreset == "custom") {
+                $(".cvaa-adv .custom").show();
+                $(".cvaa-adv .cvaa-adv__cstmoptions-btn").html("Edit custom captions");
+            } else {
+                $(".cvaa-adv .cvaa-adv__cstmoptions-btn").html("Custom captions");
+            }
         },
 
         getValueOrProp: function (option, property, type) {
@@ -433,15 +471,9 @@
             this.getPlayer().triggerHelper("newCaptionsStyles", this.cvaaSentSettings);
         },
 
-        templateCvaaSettings: function(template){
-            this.getPlayer().setCookie( 'cvaaSavedSettings' ,null , {
-                expires : -1,
-                path : '/',
-                domain : ''
-            });
-
+        useCvaaPreset: function(preset){
             this.firstInit = true;
-            this.getCurrentSettings(template);
+            this.getCurrentSettings(preset);
             this.initPreviewUpdate();
             this.getPlayer().triggerHelper("newCaptionsStyles", this.cvaaSentSettings);
         },

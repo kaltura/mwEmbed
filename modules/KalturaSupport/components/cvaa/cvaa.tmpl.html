@@ -31,13 +31,16 @@
 	<div class="cvaa-adv">
 		<p class="cvaa-header">Advanced options</p>
 		<div class="cvaa-row cvaa-row--center">
-			<button class="cvaa-btn default">Default</button>
-			<button class="cvaa-btn preset1">Sample</button>
-			<button class="cvaa-btn preset2">Sample</button>
+			<% $.each(cvaaOptions.presets, function(idx, property){ %>
+			<div class="cvaa-btn-label">
+				<button name="cvaa-size" value="<%=property.prop%>"
+						class="cvaa-btn small <%=property.value%>"><%=property.text%></button>
+			</div>
+			<% }); %>
 		</div>
 
 		<div class="cvaa-row cvaa-row--center">
-			<button class="cvaa-btn-text cvaa-adv__cstmoptions-btn">Custom options</button>
+			<button class="cvaa-btn-text cvaa-adv__cstmoptions-btn"></button>
 		</div>
 	</div>
 
