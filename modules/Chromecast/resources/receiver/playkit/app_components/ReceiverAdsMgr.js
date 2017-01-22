@@ -157,7 +157,7 @@ AdsManager.prototype = {
         if ( this.allAdsCompleted ) {
             mediaManager.onEndedOrig();
         } else {
-            mediaManager.broadcastStatus( true );
+            mediaManager.broadcastStatus( false );
         }
     },
 
@@ -172,12 +172,12 @@ AdsManager.prototype = {
         if ( this.adsInfo.isPlayingAd ) {
             // We have an issue that if sender pause in middle of an ad it sending the wrong status (PLAYING)
             // We need to understand the root cause
-            mediaManager.broadcastStatus( true, null, {
+            mediaManager.broadcastStatus( false, null, {
                 forceStatus: StateManager.State.PAUSED,
                 adsInfo: this.adsInfo
             } );
         } else {
-            mediaManager.broadcastStatus( true );
+            mediaManager.broadcastStatus( false );
         }
     },
 
@@ -219,6 +219,7 @@ AdsManager.prototype = {
             ReceiverLogger.log( this.CLASS_NAME, "_onDurationChange", { 'newDuration': event.newValue } );
             mediaInfo.duration = event.newValue;
             mediaManager.setMediaInformation( mediaInfo );
+            mediaManager.broadcastStatus( true );
         }
     },
 

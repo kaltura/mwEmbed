@@ -254,7 +254,7 @@ function onEditTracksInfo( event ) {
 function onPause( event ) {
     ReceiverLogger.log( "MediaManager", "onPause", event );
     kdp.sendNotification( "doPause" );
-    mediaManager.broadcastStatus( true );
+    mediaManager.broadcastStatus( false );
 }
 
 /**
@@ -452,7 +452,7 @@ function embedPlayer( event ) {
  * Done for UI handling.
  */
 function setMediaElementEvents() {
-    mediaElement.addEventListener( 'loadedmetadata', onMetadataLoaded.bind( this ), false );
+    // mediaElement.addEventListener( 'loadedmetadata', onMetadataLoaded.bind( this ), false );
     mediaElement.addEventListener( 'canplay', onCanPlay.bind( this ), false );
     mediaElement.addEventListener( 'timeupdate', onProgress.bind( this ), false );
     mediaElement.addEventListener( 'seeking', onSeekStart.bind( this ), false );
@@ -511,6 +511,7 @@ function addBindings() {
         if ( mediaInfo ) {
             mediaInfo.tracks = tracksInfo.tracks;
             mediaManager.setMediaInformation( mediaInfo );
+            mediaManager.broadcastStatus( true );
         }
     } );
 
@@ -519,7 +520,7 @@ function addBindings() {
     } );
 
     kdp.kBind( "playing", function () {
-        mediaManager.broadcastStatus( true );
+        mediaManager.broadcastStatus( false );
     } );
 }
 
@@ -577,5 +578,6 @@ function getFlashVars( senderPlayFrom, senderAutoPlay, senderFlashVars ) {
  */
 function broadcastError( error ) {
     ReceiverLogger.error( "MediaManager", "broadcastError", error );
-    mediaManager.broadcastStatus( true, null, { error: error } );
+    mediaManager.broadcastStatus( false, null, { error: error } );
+    ReceiverStateManager.setState( StateManager.State.IDLE );
 }

@@ -91,6 +91,7 @@
             mw.log( "EmbedPlayerChromecastReceiver::licenseUrl::" + licenseUrl );
 
             if ( licenseUrl ) {
+                this.mediaHost.protectionSystem = cast.player.api.ContentProtection.WIDEVINE;
                 this.mediaHost.licenseUrl = licenseUrl;
             }
 
