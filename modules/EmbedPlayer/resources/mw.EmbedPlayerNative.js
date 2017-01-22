@@ -96,7 +96,7 @@
 		setup: function (readyCallback) {
 			var _this = this;
 			this._propagateEvents = true;
-			if (mw.isIpad()) {
+			if (mw.isIpad() || mw.isEdge()) {
 				this.getPlayerElement().removeAttribute("poster");
 			}
 			$(this.getPlayerElement()).css('position', 'absolute');

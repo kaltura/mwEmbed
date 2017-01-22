@@ -301,6 +301,9 @@
 			onManifestParsed: function (event, data) {
 				this.log("manifest loaded, found " + data.levels.length + " quality level");
 				this.addAbrFlavors(data.levels);
+				if( this.backupExists(data.levels) ) {
+					this.configFailoverSettings();
+				}
 			},
 			/**
 			 * Extract available audio tracks metadata from parsed manifest data
@@ -389,6 +392,22 @@
 					//mw.log("hlsjs :: onFragChanged | startPTS = " + mw.seconds2npt(data.frag.startPTS) + " >> endPTS = " + mw.seconds2npt(data.frag.endPTS) + " | url = " + data.frag.url);
 				}
 			},
+
+			backupExists: function (levels) {
+				for ( var i = 0; i < levels.length; i++ ) {
+					if ( levels[i].url && levels[i].url.length > 1) {
+						return true;
+					}
+				}
+				return false;
+			},
+
+			configFailoverSettings: function () {
+				// for seamless failover
+				this.hls.config.fragLoadingMaxRetry = 1;
+				this.hls.config.levelLoadingMaxRetry = 1;
+			},
+
 			/**
 			 * Error handler
 			 * @param event
