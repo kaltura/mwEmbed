@@ -124,7 +124,7 @@ mw.KWidgetSupport.prototype = {
 
 			downloadUrlCallback( downloadUrl );
 		});
-		
+
 		// Add hook for check player sources to use local kEntry ID source check:
 		embedPlayer.bindHelper( 'checkPlayerSourcesEvent', function( event, callback ) {
 			_this.originalStreamerType = embedPlayer.getKalturaConfig( null, 'streamerType' ) ? embedPlayer.getKalturaConfig( null, 'streamerType' ) : 'http';
@@ -135,7 +135,7 @@ mw.KWidgetSupport.prototype = {
 		embedPlayer.bindHelper( 'KalturaSupport_EntryDataReady', function() {
 			// Set duration
 			embedPlayer.setDuration( embedPlayer.kalturaPlayerMetaData.duration );
-			
+
 			// Update thumbnail
 			var thumbUrl = _this.getKalturaThumbnailUrl({
 				url: embedPlayer.evaluate('{mediaProxy.entry.thumbnailUrl}'),
@@ -166,7 +166,7 @@ mw.KWidgetSupport.prototype = {
 		embedPlayer.bindHelper( 'getShareIframeSrc', function( event, callback ){
 			var uiconf_id = (embedPlayer.kuiconfid) ? '/uiconf_id/' + embedPlayer.kuiconfid : '';
 			var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php';
-			iframeUrl +='/wid/' + embedPlayer.kwidgetid + uiconf_id + 
+			iframeUrl +='/wid/' + embedPlayer.kwidgetid + uiconf_id +
 				'/entry_id/' + embedPlayer.kentryid + '/' +
 				'?' + kWidget.flashVarsToUrl( embedPlayer.getFlashvars() );
 			// return the iframeUrl via the callback:
@@ -316,34 +316,34 @@ mw.KWidgetSupport.prototype = {
 	isLive: function(playerData){
 		return playerData.meta && ( playerData.meta.type == 7 || playerData.meta.type == 8 );
 	},
-	updateLivePlayerData: function(embedPlayer, playerData){
+	updateLivePlayerData: function(embedPlayer, playerData) {
 		var isStreamSupported = false;
 
-		if ( this.isOnlyHlsSources(playerData) ) {
+		if (this.isOnlyHlsSources(playerData)) {
 			mw.setConfig("LeadWithHLSOnFlash", true);
 		}
 
-		if ( playerData &&  playerData.meta &&
+		if (playerData && playerData.meta &&
 			(playerData.meta.sourceType === "32" ||
 			playerData.meta.sourceType === "33") &&
             !mw.getConfig('forceHDS') ){
 
-			mw.setConfig("LeadWithHLSOnFlash",true);
-            mw.setConfig("isLiveKalturaHLS",true);
+			mw.setConfig("LeadWithHLSOnFlash", true);
+			mw.setConfig("isLiveKalturaHLS", true);
 
 		}
 
 		var legacyMulticastSource = this.getLegacyLiveMulticastSource(playerData);
-		if (legacyMulticastSource){
-			this.addLiveEntrySource( embedPlayer, playerData.meta, false, true, 'multicast_silverlight');
+		if (legacyMulticastSource) {
+			this.addLiveEntrySource(embedPlayer, playerData.meta, false, true, false,'multicast_silverlight');
 			isStreamSupported = true;
-			embedPlayer.setLive( true );
+			embedPlayer.setLive(true);
 		}
 
-		if (embedPlayer.getFlashvars("LeadWithUnicastToMulticast")===true) {
-			this.addLiveEntrySource( embedPlayer, playerData.meta, false, true, 'applehttp_to_mc');
+		if (embedPlayer.getFlashvars("LeadWithUnicastToMulticast") === true) {
+			this.addLiveEntrySource(embedPlayer, playerData.meta, false, true, false, 'applehttp_to_mc');
 			isStreamSupported = true;
-			embedPlayer.setLive( true );
+			embedPlayer.setLive(true);
 			if (embedPlayer.getFlashvars("disableMulticastFallback")) {
 
 				//don't keep collecting
@@ -356,18 +356,30 @@ mw.KWidgetSupport.prototype = {
 			mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'application/vnd.apple.mpegurl' ).length ) {
 			// Add live stream source
 			//if we're gettting the source from manual provider(mediaProxy) - add them directly
-			if (this.isManualProvider(playerData)){
+			if (this.isManualProvider(playerData)) {
 				this.addManualProviderSources(embedPlayer, playerData);
-				embedPlayer.setLive( true );
+				embedPlayer.setLive(true);
 			} else {
-				this.addLiveEntrySource( embedPlayer, playerData.meta, false, false, 'applehttp' );
+				this.addLiveEntrySource(embedPlayer, playerData.meta, false, false, false, 'applehttp');
 				// Set live property to true
-				embedPlayer.setLive( true );
+				embedPlayer.setLive(true);
 			}
+		} else if(this.hasDashSourcse(playerData) &&
+				mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'application/dash+xml' ).length ) {
+				// Add live stream source
+				//if we're geting the source from manual provider(mediaProxy) - add them directly
+				if (this.isManualProvider(playerData)){
+					this.addManualProviderSources(embedPlayer, playerData);
+					embedPlayer.setLive( true );
+				} else {
+					this.addLiveEntrySource( embedPlayer, playerData.meta, false, false, true, 'mpegdash' );
+					// Set live property to true
+					embedPlayer.setLive( true );
+				}
 		} else if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
 			var streamerType = this.resolveFlashStreamerType(embedPlayer, playerData);
 			// Add live stream source
-			this.addLiveEntrySource( embedPlayer, playerData.meta, true, false, streamerType );
+			this.addLiveEntrySource( embedPlayer, playerData.meta, true, false, false, streamerType );
 
 			// Set live property to true
 			embedPlayer.setLive( true );
@@ -423,6 +435,9 @@ mw.KWidgetSupport.prototype = {
 		return (playerData.meta.hlsStreamUrl ||
 				this.hasLivestreamConfig( playerData, 'hls' ) ||
 				this.hasLivestreamConfig( playerData, 'applehttp' )	);
+	},
+	hasDashSourcse: function(playerData){
+		return this.hasLivestreamConfig( playerData, 'mpegdash' );
 	},
 	isManualProvider: function(playerData){
 		return (playerData.entry && playerData.entry.manualProvider);
@@ -514,9 +529,11 @@ mw.KWidgetSupport.prototype = {
 		if (srcURL && srcURL.toLowerCase().indexOf("playmanifest") === -1){
 			return srcURL;
 		}
-
+        var nativeVersion = mw.getConfig("nativeVersion");
+        nativeVersion = (nativeVersion != null && nativeVersion.length > 0) ? '_' + nativeVersion : '';
+        var clientTag = 'html5:v' + window[ 'MWEMBED_VERSION' ] + nativeVersion;
 		var qp = ( srcURL.indexOf('?') === -1) ? '?' : '&';
-		return srcURL + qp + 'playSessionId=' + this.getGUID();
+		return srcURL + qp + 'playSessionId=' + this.getGUID() + '&clientTag=' + clientTag;
 	},
 	updateVodPlayerData: function(embedPlayer, playerData){
 		embedPlayer.setLive( false );
@@ -639,11 +656,11 @@ mw.KWidgetSupport.prototype = {
 					'vars' : {}
 				};
 			}
-			// check for var update ( no top level plugin ) 
+			// check for var update ( no top level plugin )
 			if( ! pluginName ){
 				embedPlayer.playerConfig['vars'][key] = value;
-			} else if( 
-				! embedPlayer.playerConfig[ 'plugins' ][ pluginName ] 
+			} else if(
+				! embedPlayer.playerConfig[ 'plugins' ][ pluginName ]
 			){
 				// Plugin doesn't exists -> create it
 				embedPlayer.playerConfig[ 'plugins' ][ pluginName ] = objectSet;
@@ -734,7 +751,7 @@ mw.KWidgetSupport.prototype = {
 			if( _this.getPluginConfig( embedPlayer, 'strings', localeMsgKey ) ) {
 				return _this.getPluginConfig( embedPlayer, 'strings', localeMsgKey );
 			}
-			// NOTE msgKey is used instead of localeMsgKey ( since default mw messages uses resource loader localization ) 
+			// NOTE msgKey is used instead of localeMsgKey ( since default mw messages uses resource loader localization )
 			if ( mw.messages.exists( msgKey ) ) {
 				return gM( msgKey );
 			}
@@ -873,7 +890,7 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.inline = true;
 		}
 
-		
+
 		// Check for autoMute:
 		var autoMute = getAttr( 'autoMute' );
 		if( autoMute && !mw.isMobileDevice()){
@@ -1022,13 +1039,13 @@ mw.KWidgetSupport.prototype = {
 		} else {
 			return undefined;
 		}
-		
+
 		return returnConfig;
 	},
 	postProcessConfig: function( embedPlayer, config ){
 		var _this = this;
 		var returnSet = $.extend( {}, config );
-		
+
 		$.each( returnSet, function( attrName, value ) {
 			// Unescape values that would come in from flashvars
 			if( value && ( typeof value === 'string' ) ){
@@ -1292,7 +1309,7 @@ mw.KWidgetSupport.prototype = {
 	},
 	addSources: function( embedPlayer, sources ){
 		$.each(sources, function( inx, source){
-			embedPlayer.mediaElement.tryAddSource( 
+			embedPlayer.mediaElement.tryAddSource(
 				$('<source />')
 				.attr( source )
 				.get( 0 )
@@ -1534,7 +1551,7 @@ mw.KWidgetSupport.prototype = {
 				source['data-flavorid'] = 'ogg';
 				source['type'] = 'video/ogg';
 			}
-	
+
 			// Check for webm source
 			if( asset.fileExt && asset.containerFormat && ( asset.fileExt == 'webm'
 					||
@@ -1574,7 +1591,7 @@ mw.KWidgetSupport.prototype = {
 				source['data-flavorid'] = 'wvm';
 				source['type'] = 'video/wvm';
 				source['disableQueryString'] = true;
-			} 
+			}
 
 			if ( asset.tags && asset.tags == 'kontiki'){
 				source['src'] = src + '/a.mp4';
@@ -1659,17 +1676,38 @@ mw.KWidgetSupport.prototype = {
 				var validClipAspect = this.getValidAspect(deviceSources);
 				var lowResolutionDevice = (mw.isMobileDevice() && mw.isDeviceLessThan480P() && iphoneAdaptiveFlavors.length);
 				var targetFlavors;
-				if (androidNativeAdaptiveFlavors.length && mw.isNativeApp() && mw.isAndroid()){
-					//Android h264b
-					targetFlavors = androidNativeAdaptiveFlavors;
-				} else if (lowResolutionDevice){
-					//iPhone
-					targetFlavors = iphoneAdaptiveFlavors;
-				} else if (mw.isMobileDevice() || dashAdaptiveFlavors.length == 0){
-					//iPad
-					targetFlavors = ipadAdaptiveFlavors;
-				}  else {
-					targetFlavors = dashAdaptiveFlavors;
+				if (mw.getConfig('Kaltura.ForceHighResFlavors')){
+					mw.log( 'KWidgetSupport::Forcing High resolution flavours');
+					if (ipadAdaptiveFlavors.length || dashAdaptiveFlavors.length) {
+						mw.log( 'KWidgetSupport::High resolution flavours found');
+						targetFlavors = ipadAdaptiveFlavors;
+						if (dashAdaptiveFlavors.length) {
+							//Concat the dash and ipadNew tags and filter duplicates
+							targetFlavors = targetFlavors.concat(dashAdaptiveFlavors);
+							for(var i=0; i<targetFlavors.length; ++i) {
+								for(var j=i+1; j<targetFlavors.length; ++j) {
+									if(targetFlavors[i] === targetFlavors[j])
+										targetFlavors.splice(j--, 1);
+								}
+							}
+						}
+					} else {
+						mw.log( 'KWidgetSupport::High resolution flavours not found - will use low resolution flavours');
+						targetFlavors = iphoneAdaptiveFlavors;
+					}
+				} else {
+					if (androidNativeAdaptiveFlavors.length && mw.isNativeApp() && mw.isAndroid()) {
+						//Android h264b
+						targetFlavors = androidNativeAdaptiveFlavors;
+					} else if (lowResolutionDevice) {
+						//iPhone
+						targetFlavors = iphoneAdaptiveFlavors;
+					} else if (mw.isMobileDevice() || dashAdaptiveFlavors.length == 0) {
+						//iPad
+						targetFlavors = ipadAdaptiveFlavors;
+					} else {
+						targetFlavors = dashAdaptiveFlavors;
+					}
 				}
 				var assetId = targetFlavors[0];
 
@@ -1805,7 +1843,7 @@ mw.KWidgetSupport.prototype = {
 					'&clientTag=' + clientTag;
 			}
 		});
-		
+
 		return deviceSources;
 	},
 	generateAbrSource: function(options){
@@ -1919,7 +1957,7 @@ mw.KWidgetSupport.prototype = {
 	 * @param streamerType
 	 * @param callback
 	 */
-	addLiveEntrySource: function( embedPlayer, entry, isFlash, isSilverlight, streamerType ) {
+	addLiveEntrySource: function( embedPlayer, entry, isFlash, isSilverlight, isDash, streamerType ) {
 		var _this = this;
 		var extension;
 		var mimeType;
@@ -1937,7 +1975,13 @@ mw.KWidgetSupport.prototype = {
 			extension = 'f4m';
 			protocol = 'http';
 			mimeType = 'video/multicast';
-
+		} else if ( isDash ) {
+			extension = 'mpd';
+			protocol = mw.getConfig('Kaltura.Protocol');
+			if( !protocol ){
+				protocol = window.location.protocol.replace(':','');
+			}
+			mimeType = 'application/dash+xml';
 		} else {
 			embedPlayer.setFlashvars( 'streamerType', 'http' );
 			extension = 'm3u8';

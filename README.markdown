@@ -44,6 +44,8 @@ Can't find what your looking for in the documentation, ran into an issue check t
 * [Resource Loader](https://www.mediawiki.org/wiki/ResourceLoader)
 * [jQuery](http://jquery.com/) 
 * [bootstrap](http://getbootstrap.com/) -- for documentation pages
+* [Shaka Player](https://github.com/google/shaka-player) -- for project page
+* [hls.js](https://github.com/dailymotion/hls.js) -- for project page
 
 ## Library Features
 

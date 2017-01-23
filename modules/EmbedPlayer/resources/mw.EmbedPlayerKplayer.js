@@ -110,6 +110,15 @@
                     if (mw.getConfig("hlsLiveSegmentBuffer")) {
                         hlsPluginConfiguration["liveSegmentBuffer"] = mw.getConfig("hlsLiveSegmentBuffer");
                     }
+                    if (mw.getConfig("hlsMaxReliabilityRecordSize")) {
+                        hlsPluginConfiguration["maxReliabilityRecordSize"] = mw.getConfig("hlsMaxReliabilityRecordSize");
+                    }
+                    if (mw.getConfig("hlsMaxDownSwitchLimit")) {
+                        hlsPluginConfiguration["maxDownSwitchLimit"] = mw.getConfig("hlsMaxDownSwitchLimit");
+                    }
+                    if (mw.getConfig("hlsMaxUpSwitchLimit")) {
+                        hlsPluginConfiguration["maxUpSwitchLimit"] = mw.getConfig("hlsMaxUpSwitchLimit");
+                    }
                     if (mw.getConfig("hlsInitialBufferTime")) {
                         hlsPluginConfiguration["initialBufferTime"] = mw.getConfig("hlsInitialBufferTime");
                     }
@@ -656,9 +665,9 @@
 				this.flashActivationRequired = false;
 				$(this).show();
 			}
-            if(this.isLive() && !this.isDVR()){
+            if(this.isLive()){
                 $(this).trigger('timeupdate');
-                return; //for Live + no DVR the flashCurrentTime will be updated through id3Tag
+                return; //for Live the flashCurrentTime will be updated through id3Tag
             }
 			if (this.seeking) {
 				this.seeking = false;

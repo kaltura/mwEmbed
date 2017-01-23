@@ -2,8 +2,8 @@
 	"use strict";
 
 	//Currently use native support when available, e.g. Safari desktop
-	if (Hls.isSupported() && !mw.isDesktopSafari() && !mw.getConfig("disableHLSOnJs")) {
-		var orig_supportsFlash = mw.supportsFlash;
+	if (Hls.isSupported() && !mw.isNativeApp() && !mw.isChromeCast() && !mw.isDesktopSafari() && !mw.isSamsungStockBrowser() && !mw.getConfig("disableHLSOnJs")) {
+		var orig_supportsFlash = mw.supportsFlash.bind(mw);
 		mw.supportsFlash = function () {
 			return false;
 		};
@@ -19,11 +19,9 @@
 		var hlsjs = mw.KBasePlugin.extend({
 
 			defaultConfig: {
-				options: {
-					//debug:true
-					liveSyncDurationCount: 3,
-					liveMaxLatencyDurationCount: 6
-				},
+				withCredentials : false,
+				options: {},
+				maxErrorRetryCount: 2,
 				hlsLogs: false
 			},
 
@@ -39,10 +37,13 @@
 			/** type {boolean} */
 			loaded: false,
 			/** type {boolean} */
+			mediaAttached: false,
+			/** type {boolean} */
 			isLevelSwitching: false,
+			/** type {boolean} */
+			afterInitialSeeking: false,
 			/** type {Number} */
 			levelIndex: -1,
-			version: "v0.5.23",
 
 			/** type {Object} */
 			ptsID3Data: {},
@@ -58,7 +59,7 @@
 			 * Setup the HLS playback engine wrapper with supplied config options
 			 */
 			setup: function () {
-				this.log("version: " + Hls.version ? Hls.version : this.version);
+				this.log("version: " + Hls.version);
 				mw.setConfig('isHLS_JS', true);
 				this.addBindings();
 			},
@@ -68,7 +69,6 @@
 			addBindings: function () {
 				this.bind("SourceChange", this.isNeeded.bind(this));
 				this.bind("playerReady", this.initHls.bind(this));
-				this.bind("seeking", this.onSeekBeforePlay.bind(this));
 				this.bind("onChangeMedia", this.clean.bind(this));
 				this.bind("onLiveOffSynchChanged", this.onLiveOffSyncChanged.bind(this));
 				if (mw.getConfig("hlsLogs")) {
@@ -81,6 +81,7 @@
 			isNeeded: function () {
 				if (this.getPlayer().mediaElement.selectedSource.mimeType === "application/vnd.apple.mpegurl") {
 					this.LoadHLS = true;
+					this.embedPlayer.streamerType = 'http';
 				} else {
 					this.LoadHLS = false;
 				}
@@ -96,6 +97,7 @@
 					this.unRegisterHlsEvents();
 					this.restorePlayerMethods();
 					this.hls.detachMedia();
+					this.mediaAttached = false;
 					this.hls.destroy();
 					this.hls = null;
 				}
@@ -108,8 +110,10 @@
 					this.log("Init");
 					//Set streamerType to hls
 					this.embedPlayer.streamerType = 'hls';
+					
+					var hlsConfig = this.getHlsConfig();
 					//Init the HLS playback engine
-					this.hls = new Hls(this.getConfig("options"));
+					this.hls = new Hls(hlsConfig);
 
 					this.loaded = true;
 					//Reset the error recovery counter
@@ -119,12 +123,36 @@
 
 					this.registerHlsEvents();
 					this.overridePlayerMethods();
-
+					$(this.getPlayer().getPlayerElement()).one("canplay", function(){
+						// The initial seeking to the live edge has finished.
+						this.afterInitialSeeking = true;
+					}.bind(this));
+					this.bind("seeking", this.onSeekBeforePlay.bind(this));
 					this.bind("firstPlay", function () {
+						this.unbind("firstPlay");
 						this.unbind("seeking");
 						this.hls.attachMedia(this.getPlayer().getPlayerElement());
 					}.bind(this));
 				}
+			},
+			getHlsConfig: function(){
+				var defaultConfig = {
+					//debug:true
+					liveSyncDurationCount: 3,
+					liveMaxLatencyDurationCount: 6
+				};
+
+				var options = this.getConfig("options");
+
+				var hlsConfig = $.extend({}, defaultConfig, options);
+
+				//Apply withCredentials if set to true
+				if(this.getConfig("withCredentials")){
+					hlsConfig.xhrSetup = function(xhr, url) {
+						xhr.withCredentials = true;
+					};
+				}
+				return hlsConfig;
 			},
 			/**
 			 * Register HLS playback engine events
@@ -134,6 +162,12 @@
 				this.hls.on(Hls.Events.MEDIA_ATTACHED, this.onMediaAttachedHandler);
 				this.onManifestParsedHandler = this.onManifestParsed.bind(this);
 				this.hls.on(Hls.Events.MANIFEST_PARSED, this.onManifestParsedHandler);
+				this.onAudioTracksUpdatedHandler = this.onAudioTracksUpdated.bind(this);
+				this.hls.on(Hls.Events.AUDIO_TRACKS_UPDATED, this.onAudioTracksUpdatedHandler);
+				this.onAudioTrackSwitchingHandler = this.onAudioTrackSwitching.bind(this);
+				this.hls.on(Hls.Events.AUDIO_TRACK_SWITCHING, this.onAudioTrackSwitchingHandler);
+				this.onAudioTrackSwitchedHandler = this.onAudioTrackSwitched.bind(this);
+				this.hls.on(Hls.Events.AUDIO_TRACK_SWITCHED, this.onAudioTrackSwitchedHandler);
 				this.onFragLoadingHandler = this.onFragLoading.bind(this);
 				this.hls.on(Hls.Events.FRAG_LOADING, this.onFragLoadingHandler);
 				this.onFragLoadedHandler = this.onFragLoaded.bind(this);
@@ -191,6 +225,7 @@
 			onMediaAttached: function () {
 				this.log("Media attached");
 				//Once media is attached load the manifest
+				this.mediaAttached = true;
 				var selectedSource = this.getPlayer().getSrc();
 				if (selectedSource) {
 					this.getPlayer().resolveSrcURL(selectedSource).then(
@@ -266,6 +301,53 @@
 			onManifestParsed: function (event, data) {
 				this.log("manifest loaded, found " + data.levels.length + " quality level");
 				this.addAbrFlavors(data.levels);
+				if( this.backupExists(data.levels) ) {
+					this.configFailoverSettings();
+				}
+			},
+			/**
+			 * Extract available audio tracks metadata from parsed manifest data
+			 * @param event
+             * @param data
+             */
+			onAudioTracksUpdated: function(event,data) {
+				var audioTracks = this.hls.audioTracks;
+				if (audioTracks && audioTracks.length > 0) {
+					var audioTrackData = {languages: []};
+					var audioTrackLangs = {};
+					$.each(audioTracks, function (index, audioTrack) {
+						if (audioTrackLangs[audioTrack.lang] === undefined) {
+							audioTrackLangs[audioTrack.lang] = 1;
+							audioTrackData.languages.push({
+								'kind': 'audioTrack',
+								'language': audioTrack.lang,
+								'srclang': audioTrack.lang,
+								'label': audioTrack.name,
+								'title': audioTrack.name,
+								'id': audioTrack.id,
+								'index': audioTrackData.languages.length
+							});
+						}
+					});
+					this.log(audioTracks.length + " audio tracks were found: " + JSON.stringify(audioTracks));
+					this.getPlayer().triggerHelper('audioTracksReceived', audioTrackData);
+				}
+			},
+			/**
+			 * Indicate audio track change request has been initiated
+			 * @param event
+             * @param data
+             */
+			onAudioTrackSwitching: function(event,data) {
+				this.log("switching audio track " + JSON.stringify(data));
+			},
+			/**
+			 * Indicate audio track request has ended
+			 * @param event
+             * @param data
+             */
+			onAudioTrackSwitched: function(event,data) {
+				this.log("switched audio track " + JSON.stringify(data));
 			},
 			/**
 			 * Trigger source switch start handler
@@ -310,21 +392,53 @@
 					//mw.log("hlsjs :: onFragChanged | startPTS = " + mw.seconds2npt(data.frag.startPTS) + " >> endPTS = " + mw.seconds2npt(data.frag.endPTS) + " | url = " + data.frag.url);
 				}
 			},
+
+			backupExists: function (levels) {
+				for ( var i = 0; i < levels.length; i++ ) {
+					if ( levels[i].url && levels[i].url.length > 1) {
+						return true;
+					}
+				}
+				return false;
+			},
+
+			configFailoverSettings: function () {
+				// for seamless failover
+				this.hls.config.fragLoadingMaxRetry = 1;
+				this.hls.config.levelLoadingMaxRetry = 1;
+			},
+
 			/**
 			 * Error handler
 			 * @param event
 			 * @param data
 			 */
 			onError: function (event, data) {
+				this.log("Error: " + data.type + ", " + data.details);
 				//TODO: Need to decide when we dispatch player bug to be shown to viewer
-				if (data.fatal) {
-					switch (data.type) {
-						case Hls.ErrorTypes.NETWORK_ERROR:
+				if (this.mediaErrorRecoveryCounter > this.getConfig("maxErrorRetryCount")){
+					this.handleUnRecoverableError(data);
+					return;
+				}
+				switch (data.type) {
+					case Hls.ErrorTypes.NETWORK_ERROR:
+						if (data.fatal) {
 							// try to recover network error
 							this.log("fatal network error encountered, try to recover");
 							this.hls.startLoad();
-							break;
-						case Hls.ErrorTypes.MEDIA_ERROR:
+							this.mediaErrorRecoveryCounter += 1;
+						} else {
+							//Fallback to flash if there's network error and we detect protocol mismatch
+							//which is probably causing Mixed content warning in the browser
+							if (this.isProtocolMismatch(data)) {
+								this.log("Error: protocol mismatch - probably caused by mixed content warning");
+								this.handleUnRecoverableError(data);
+							}
+						}
+
+						break;
+					case Hls.ErrorTypes.MEDIA_ERROR:
+						if (data.fatal) {
 							if (this.mediaErrorRecoveryCounter > 1) {
 								this.log("fatal media error encountered, try to recover - switch audio codec");
 								//Try to switch audio codec if first recoverMediaError call didn't work
@@ -333,28 +447,68 @@
 							this.log("fatal media error encountered, try to recover");
 							this.hls.recoverMediaError();
 							this.mediaErrorRecoveryCounter += 1;
-							break;
-						default:
-							// cannot recover
-							this.log("fatal media error encountered, cannot recover");
-							this.clean();
-							if (mw.supportsFlash()) {
-								this.log("Try flash fallback");
-								this.fallbackToFlash();
-							} else {
-								mw.log("MediaError error code: " + error);
-								this.triggerHelper('embedPlayerError', [data]);
+						} else {
+							switch (data.details) {
+								case Hls.ErrorDetails.BUFFER_STALLED_ERROR:
+									this.getPlayer().bufferStart();
+									break;
 							}
-							break;
+						}
+						break;
+					default:
+						//AKA Hls.ErrorTypes.OTHER_ERROR
+						if (data.fatal) {
+							// cannot recover
+							this.handleUnRecoverableError(data);
+						}
+						break;
+				}
+			},
+			isProtocolMismatch: function(data) {
+				var protocolMismatch = false;
+				var hostPageProtocol = this.getProtocol(kWidgetSupport.getHostPageUrl());
+				var currentUrl = null;
+
+				switch (data.details) {
+					case Hls.ErrorDetails.FRAG_LOAD_ERROR:
+						currentUrl = data.frag.url;
+						break;
+					case Hls.ErrorDetails.MANIFEST_LOAD_ERROR:
+					case Hls.ErrorDetails.LEVEL_LOAD_ERROR:
+						currentUrl = data.url;
+						break;
+				}
+
+				if (currentUrl !== null) {
+					var urlProtocol = this.getProtocol(currentUrl);
+					if (urlProtocol !== hostPageProtocol) {
+						protocolMismatch = true;
 					}
+				}
+				return protocolMismatch;
+			},
+			getProtocol: function(url){
+				try {
+					var parser = document.createElement('a');
+					parser.href = url;
+					return parser.protocol;
+				} catch (e){
+					return "";
+				}
+			},
+			handleUnRecoverableError: function(data){
+				this.log("fatal media error encountered, cannot recover: " + data.type + ", " + data.details);
+				this.clean();
+				if (orig_supportsFlash()) {
+					this.log("Try flash fallback");
+					this.fallbackToFlash();
 				} else {
-					switch (data.details) {
-						case Hls.ErrorDetails.BUFFER_STALLED_ERROR:
-							this.getPlayer().bufferStart();
-							break;
-					}
-					//If not fatal then log issue, we can switch case errors for specific issues
-					this.log("Error: " + data.type + ", " + data.details);
+					var errorObj = {
+						message : JSON.stringify(data),
+						// hls fatal error code could be either Network Error (1000) or Media Errors (3000)
+						code : data.type === "networkError" ? "1000" : "3000"
+					};
+					this.getPlayer().triggerHelper('embedPlayerError', errorObj);
 				}
 			},
 			fallbackToFlash: function () {
@@ -405,15 +559,25 @@
 				this.orig_backToLive = this.getPlayer().backToLive;
 				this.orig_switchSrc = this.getPlayer().switchSrc;
 				this.orig_playerSwitchSource = this.getPlayer().playerSwitchSource;
+				this.orig_switchAudioTrack = this.getPlayer().switchAudioTrack;
 				this.orig_load = this.getPlayer().load;
 				this.orig_onerror = this.getPlayer()._onerror;
 				this.orig_ontimeupdate = this.getPlayer()._ontimeupdate;
+				if (this.getPlayer()._onseeking) {
+					this.orig_onseeking = this.getPlayer()._onseeking.bind(this.getPlayer());
+				}
+				if (this.getPlayer()._onseeked) {
+					this.orig_onseeked = this.getPlayer()._onseeked.bind(this.getPlayer());
+				}
 				this.getPlayer().backToLive = this.backToLive.bind(this);
 				this.getPlayer().switchSrc = this.switchSrc.bind(this);
 				this.getPlayer().playerSwitchSource = this.playerSwitchSource.bind(this);
+				this.getPlayer().switchAudioTrack = this.switchAudioTrack.bind(this);
 				this.getPlayer().load = this.load.bind(this);
 				this.getPlayer()._onerror = this._onerror.bind(this);
 				this.getPlayer()._ontimeupdate = this._ontimeupdate.bind(this);
+				this.getPlayer()._onseeking = this._onseeking.bind(this);
+				this.getPlayer()._onseeked = this._onseeked.bind(this);
 			},
 			/**
 			 * Disable override player methods for HLS playback
@@ -422,36 +586,53 @@
 				this.getPlayer().backToLive = this.orig_backToLive;
 				this.getPlayer().switchSrc = this.orig_switchSrc;
 				this.getPlayer().playerSwitchSource = this.orig_playerSwitchSource;
+				this.getPlayer().switchAudioTrack = this.orig_switchAudioTrack;
 				this.getPlayer().load = this.orig_load;
 				this.getPlayer()._onerror = this.orig_onerror;
 				this.getPlayer()._ontimeupdate = this.orig_ontimeupdate;
+				this.getPlayer()._onseeking = this.orig_onseeking;
+				this.getPlayer()._onseeked = this.orig_onseeked;
 			},
 			//Overidable player methods, "this" is bound to HLS plugin instance!
 			/**
 			 * Override player method for back to live mode
 			 */
 			backToLive: function () {
-				var _this = this;
-				var vid = this.getPlayer().getPlayerElement();
-				this.embedPlayer.goingBackToLive = true;
-				vid.currentTime = vid.duration - (this.fragmentDuration || 10) * 3;
-				//for some reason on Mac the isLive client response is a little bit delayed, so in order to get update
-				// liveUI properly, we need to delay "movingBackToLive" helper
-				setTimeout(function () {
-					_this.getPlayer().triggerHelper('movingBackToLive');
-					_this.embedPlayer.goingBackToLive = false;
-				}, 1000);
-			},
+                var _this = this;
+                var vid = this.getPlayer().getPlayerElement();
+                this.embedPlayer.goingBackToLive = true;
+                vid.currentTime = vid.duration - (this.fragmentDuration || 10) * 3;
+                _this.getPlayer().triggerHelper( 'movingBackToLive' );
+                if ( this.embedPlayer.isDVR() ) {
+                    _this.once( 'seeked', function () {
+                        _this.embedPlayer.goingBackToLive = false;
+                    } );
+                } else {
+                    _this.embedPlayer.goingBackToLive = false;
+                }
+            },
 
 			onLiveOffSyncChanged: function (event, status) {
-				if (this.getConfig("options") && !this.defaultLiveMaxLatencyDurationCount) {
-					// Storing the default value as it configured in the defaultConfig for backing to live
-					this.defaultLiveMaxLatencyDurationCount = this.getConfig("options").liveMaxLatencyDurationCount;
+				if (this.LoadHLS) {
+					if (this.getConfig("options") && !this.defaultLiveMaxLatencyDurationCount) {
+						// Storing the default value as it configured in the defaultConfig for backing to live
+						this.defaultLiveMaxLatencyDurationCount = this.getConfig("options").liveMaxLatencyDurationCount;
+					}
+					if (status) { // going to offSync - liveMaxLatencyDurationCount should be infinity
+						this.hls.config.liveMaxLatencyDurationCount = Hls.DefaultConfig["liveMaxLatencyDurationCount"];
+					} else { // back to live - restore the default as it configured in the defaultConfig
+						this.hls.config.liveMaxLatencyDurationCount = this.defaultLiveMaxLatencyDurationCount;
+					}
 				}
-				if (status) { // going to offSync - liveMaxLatencyDurationCount should be infinity
-					this.hls.config.liveMaxLatencyDurationCount = Hls.DefaultConfig["liveMaxLatencyDurationCount"];
-				} else { // back to live - restore the default as it configured in the defaultConfig
-					this.hls.config.liveMaxLatencyDurationCount = this.defaultLiveMaxLatencyDurationCount;
+			},
+
+			/**
+			 * Override player method for switching audio track tracks
+			 */
+			switchAudioTrack: function (index) {
+				if (this.loaded && (index !== undefined)) {
+					this.hls.audioTrack = index;
+					this.log("onSwitchAudioTrack switch to " + JSON.stringify(this.hls.audioTracks[index]));
 				}
 			},
 
@@ -462,18 +643,17 @@
 			switchSrc: function (source) {
 				if (source !== -1) {
 					var sourceIndex = this.getPlayer().getSourceIndex(source);
-					if (sourceIndex != null) {
-						this.isLevelSwitching = true;
-						this.levelIndex = sourceIndex;
-						if (this.hls.currentLevel == sourceIndex) {
-							this.onLevelSwitch(Hls.Events.LEVEL_SWITCH, {level: sourceIndex});
-							this.onFragChanged(Hls.Events.LEVEL_LOADED, {frag: {level: sourceIndex}});
-							this.getPlayer().currentBitrate = source.getBitrate();
-							this.getPlayer().triggerHelper('bitrateChange', source.getBitrate());
-						} else {
-							this.hls.nextLevel = sourceIndex;
-						}
-					}
+					if ( sourceIndex !== null ) {
+                        this.levelIndex = sourceIndex;
+                        if ( !(this.hls.autoLevelEnabled || this.isLevelSwitching) && (this.hls.currentLevel === sourceIndex) ) {
+                            this.onLevelSwitch( Hls.Events.LEVEL_SWITCH, { level: sourceIndex } );
+                            this.onFragChanged( Hls.Events.LEVEL_LOADED, { frag: { level: sourceIndex } } );
+                            this.getPlayer().currentBitrate = source.getBitrate();
+                        } else {
+                            this.hls.nextLevel = sourceIndex;
+                            this.isLevelSwitching = true;
+                        }
+                    }
 				} else {
 					this.hls.nextLevel = -1;
 				}
@@ -490,6 +670,11 @@
 			 * Override player callback after changing media
 			 */
 			playerSwitchSource: function (src, switchCallback, doneCallback) {
+				if (!this.mediaAttached){
+					this.unbind("firstPlay");
+					this.unbind("seeking");
+					this.hls.attachMedia(this.getPlayer().getPlayerElement());
+				}
 				this.getPlayer().play();
 				if ($.isFunction(switchCallback)) {
 					switchCallback();
@@ -526,10 +711,24 @@
 				}
 			},
 
+			_onseeking: function(){
+				// if this is the initial seeking which hls performs to the live edge - do nothing
+				if(this.afterInitialSeeking){
+					this.orig_onseeking();
+				}
+			},
+
+			_onseeked: function () {
+				// if this is the initial seeking which hls performs to the live edge - do nothing
+				if(this.afterInitialSeeking){
+					this.orig_onseeked();
+				}
+			},
+
 			onSeekBeforePlay: function(){
 				if(this.LoadHLS){
-					this.unbind("seeking");
 					this.unbind("firstPlay");
+					this.unbind("seeking");
 					this.hls.attachMedia(this.getPlayer().getPlayerElement());
 				}
 			},

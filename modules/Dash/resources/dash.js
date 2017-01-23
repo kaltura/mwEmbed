@@ -4,7 +4,7 @@
 		shaka.polyfill.installAll();
 	}
 	if (shaka.Player.isBrowserSupported() &&
-		!mw.getConfig( "EmbedPlayer.ForceNativeComponent" ) &&
+		!mw.getConfig("EmbedPlayer.ForceNativeComponent") &&
 		!mw.isDesktopSafari() &&
 		!mw.isAndroid()) {
 		$(mw).bind('EmbedPlayerUpdateMediaPlayers', function (event, mediaPlayers) {
@@ -46,7 +46,6 @@
 			addBindings: function () {
 				this.bind("SourceChange", this.isNeeded.bind(this));
 				this.bind("playerReady", this.initShaka.bind(this));
-				this.bind("seeking", this.onSeekBeforePlay.bind(this));
 				this.bind("switchAudioTrack", this.onSwitchAudioTrack.bind(this));
 				this.bind("selectClosedCaptions", this.onSwitchTextTrack.bind(this));
 				this.bind("onChangeMedia", this.clean.bind(this));
@@ -58,6 +57,7 @@
 			isNeeded: function () {
 				if (this.getPlayer().mediaElement.selectedSource.mimeType === "application/dash+xml") {
 					this.LoadShaka = true;
+					this.embedPlayer.streamerType = 'http';
 				} else {
 					this.LoadShaka = false;
 				}
@@ -68,7 +68,7 @@
 			 */
 			initShaka: function () {
 				if (this.LoadShaka && !this.loaded) {
-					this.log("Init shaka");
+					this.log("Init shaka version " + shaka.Player.version);
 
 					//Set streamerType to dash
 					this.embedPlayer.streamerType = 'dash';
@@ -81,12 +81,9 @@
 
 					this.setEmbedPlayerConfig(this.getPlayer());
 
-					// vtt.js override the VTTCue to wrong format for shaka, so set the original VTTCue
-					window.VTTCue = this.getPlayer().getOriginalVTTCue();
-
-					if(this.destroyPromise){
+					if (this.destroyPromise) {
 						// after change media we should wait till the destroy promise will be resolved
-						this.destroyPromise.then(function(){
+						this.destroyPromise.then(function () {
 							this.log("The player has been destroyed");
 							this.destroyPromise = null;
 							this.manifestLoaded = false;
@@ -137,7 +134,7 @@
 				return drmConfig;
 			},
 
-			createPlayer: function(){
+			createPlayer: function () {
 				// Create a Player instance.
 				var player = new shaka.Player(this.getPlayer().getPlayerElement());
 
@@ -148,13 +145,22 @@
 
 				this.registerShakaEvents();
 
-				this.bind("firstPlay", function(){
+				var unbindAndLoadManifest = function () {
+					this.unbind("firstPlay");
 					this.unbind("seeking");
 					this.loadManifest();
-				}.bind(this));
+				}.bind(this);
+
+				this.bind("firstPlay", function () {
+					unbindAndLoadManifest();
+				});
+
+				this.bind("seeking", function () {
+					unbindAndLoadManifest();
+				});
 			},
 
-			registerShakaEvents: function(){
+			registerShakaEvents: function () {
 				player.addEventListener('error', this.onErrorEvent.bind(this));
 				player.addEventListener('adaptation', this.onAdaptation.bind(this));
 			},
@@ -162,7 +168,7 @@
 			loadManifest: function () {
 				var _this = this;
 				var selectedSource = this.getPlayer().getSrc();
-				if(!this.manifestLoaded){
+				if (!this.manifestLoaded) {
 					this.manifestLoaded = true;
 					this.log('Loading manifest...');
 					this.getPlayer().resolveSrcURL(selectedSource)
@@ -170,6 +176,7 @@
 							selectedSource = manifestSrc;
 						})
 						.always(function () {  // both success or error
+								player.configure(_this.getDefaultDashConfig()["shakaConfig"]);
 								// Try to load a manifest.
 								player.load(selectedSource).then(function () {
 									// This runs if the asynchronous load is successful.
@@ -218,16 +225,20 @@
 				var audioTracks = this.getTracksByType("audio");
 				if (audioTracks && audioTracks.length > 0) {
 					var audioTrackData = {languages: []};
+					var audioTrackLangs = {};
 					$.each(audioTracks, function (index, audioTrack) {
-						audioTrackData.languages.push({
-							'kind': 'audioTrack',
-							'language': audioTrack.language,
-							'srclang': audioTrack.language,
-							'label': audioTrack.language,
-							'title': audioTrack.language,
-							'id': audioTrack.id,
-							'index': audioTrackData.languages.length
-						});
+						if (audioTrackLangs[audioTrack.language] === undefined) {
+							audioTrackLangs[audioTrack.language] = 1;
+							audioTrackData.languages.push({
+								'kind': 'audioTrack',
+								'language': audioTrack.language,
+								'srclang': audioTrack.language,
+								'label': audioTrack.language,
+								'title': audioTrack.language,
+								'id': audioTrack.id,
+								'index': audioTrackData.languages.length
+							});
+						}
 					});
 					mw.log("Dash::" + audioTracks.length + " audio tracks were found: ", audioTracks);
 					this.onAudioTracksReceived(audioTrackData);
@@ -275,9 +286,9 @@
 						player.selectTrack(selectedAbrTrack, false);
 						this.getPlayer().triggerHelper("sourceSwitchingStarted", this.currentBitrate);
 						var _this = this;
-						setTimeout(function(){
+						setTimeout(function () {
 							_this.getPlayer().triggerHelper("sourceSwitchingEnd", Math.round(source.getBitrate()));
-						},1000);
+						}, 1000);
 						mw.log("Dash::switchSrc to ", selectedAbrTrack);
 					}
 				} else { // "Auto" option is selected
@@ -294,9 +305,22 @@
 			 * Override player callback after changing media
 			 */
 			playerSwitchSource: function (src, switchCallback, doneCallback) {
-				this.getPlayer().play();
-				if ($.isFunction(switchCallback)) {
-					switchCallback();
+				var loadManifestAfterSwitchSource = function () {
+					this.unbind("firstPlay");
+					this.unbind("seeking");
+					this.loadManifest();
+					this.getPlayer().play();
+					if ($.isFunction(switchCallback)) {
+						switchCallback();
+					}
+				}.bind(this);
+
+				if (this.destroyPromise) {
+					this.destroyPromise.then(function () {
+						loadManifestAfterSwitchSource();
+					}.bind(this));
+				} else {
+					loadManifestAfterSwitchSource();
 				}
 			},
 
@@ -319,31 +343,68 @@
 			},
 
 			onSwitchAudioTrack: function (event, data) {
-				var selectedAudioTracks = this.getTracksByType("audio")[data.index];
-				player.configure({
-					preferredAudioLanguage: selectedAudioTracks.language
-				});
-				mw.log("Dash::onSwitchAudioTrack switch to ", selectedAudioTracks);
-			},
-
-			onSwitchTextTrack: function (event, data) {
-				if (data === "Off") {
-					player.setTextTrackVisibility(false);
-					this.log("onSwitchTextTrack disable subtitles");
-				} else {
+				if (this.loaded) {
+					var selectedAudioTracks = this.getTracksByType("audio")[data.index];
 					player.configure({
-						preferredTextLanguage: data
+						preferredAudioLanguage: selectedAudioTracks.language
 					});
-					this.log("onSwitchTextTrack switch to " + data);
+					mw.log("Dash::onSwitchAudioTrack switch to ", selectedAudioTracks);
 				}
 			},
 
-			onSeekBeforePlay: function(){
-				this.unbind("seeking");
-				this.unbind("firstPlay");
-				this.loadManifest();
+			onSwitchTextTrack: function (event, data) {
+				if (this.loaded) {
+					if (data === "Off") {
+						player.setTextTrackVisibility(false);
+						this.log("onSwitchTextTrack disable subtitles");
+					} else {
+						player.configure({
+							preferredTextLanguage: data
+						});
+						this.log("onSwitchTextTrack switch to " + data);
+					}
+				}
 			},
 
+			_ondurationchange: function (event, data) {
+				if (this.getPlayer().isLive() && this.getPlayer().isDVR()) {
+					// The live stream duration is not relative, therefore the time preview shown by the scrubber (in DVR) is incorrect.
+					// We have to calculate the relative duration by the time range.
+					var seekRange = player.seekRange();
+					this.getPlayer().setDuration(seekRange.end - seekRange.start);
+				} else {
+					this.orig_ondurationchange(event, data);
+				}
+			},
+
+			doSeek: function (seekTime) {
+				if (this.getPlayer().isLive() && this.getPlayer().isDVR()) {
+					// In live stream the vid.currentTime is not relative, therefore the seek time target from the scrubber (in DVR) is incorrect.
+					// We have to calculate the seek time target for the vid.currentTime by the delta between the relative duration and the relative seek time target.
+					var delta = this.getPlayer().getDuration() - seekTime;
+					var seekRange = player.seekRange();
+					var seekTimeTarget = seekRange.end - delta;
+					this.getPlayer().currentSeekTargetTime = seekTimeTarget;
+					this.getPlayer().getPlayerElement().currentTime = seekTimeTarget;
+				} else {
+					this.orig_doSeek.call(this.getPlayer(), seekTime);
+				}
+			},
+
+			backToLive: function () {
+				this.getPlayer().goingBackToLive = true;
+				var seekRange = player.seekRange();
+				this.getPlayer().getPlayerElement().currentTime = seekRange.end;
+				this.getPlayer().triggerHelper('movingBackToLive');
+				if (this.getPlayer().isDVR()) {
+					var _this = this;
+					this.once('seeked', function () {
+						_this.getPlayer().goingBackToLive = false;
+					});
+				} else {
+					this.getPlayer().goingBackToLive = false;
+				}
+			},
 
 			onErrorEvent: function (event) {
 				// Extract the shaka.util.Error object from the event.
@@ -353,11 +414,17 @@
 			/**
 			 * Error handler
 			 * @param event
-			 * @param data
 			 */
-			onError: function (event, data) {
-				var errorData = data ? data.type + ", " + data.details : event;
-				mw.log("Dash::Error: " , errorData);
+			onError: function (error) {
+				var errorMessage = error.name === "TypeError" ? error.stack : JSON.stringify(error);
+				var errorObj = {
+					message: errorMessage
+				};
+				if (error.category) {
+					errorObj.code = error.category + "000";
+				}
+				this.getPlayer().triggerHelper('embedPlayerError', errorObj);
+				mw.log("Dash::Error: ", error);
 			},
 
 			/**
@@ -374,13 +441,13 @@
 				}
 			},
 
-			onAdaptation: function(){
+			onAdaptation: function () {
 				var selectedAbrTrack = this.getTracksByType("video").filter(function (abrTrack) {
 					return abrTrack.active;
 				})[0];
-				if(selectedAbrTrack){
+				if (selectedAbrTrack) {
 					var currentBitrate = Math.round(selectedAbrTrack.bandwidth / 1024);
-					if(this.currentBitrate !== currentBitrate){
+					if (this.currentBitrate !== currentBitrate) {
 						this.currentBitrate = currentBitrate;
 						this.embedPlayer.triggerHelper('bitrateChange', currentBitrate);
 						this.log('The bitrate has changed to ' + currentBitrate);
@@ -397,11 +464,17 @@
 				this.orig_load = this.getPlayer().load;
 				this.orig_parseTracks = this.getPlayer().parseTracks;
 				this.orig_switchAudioTrack = this.getPlayer().switchAudioTrack;
+				this.orig_ondurationchange = this.getPlayer()._ondurationchange;
+				this.orig_backToLive = this.getPlayer().backToLive;
+				this.orig_doSeek = this.getPlayer().doSeek;
 				this.getPlayer().switchSrc = this.switchSrc.bind(this);
 				this.getPlayer().playerSwitchSource = this.playerSwitchSource.bind(this);
 				this.getPlayer().load = this.load.bind(this);
 				this.getPlayer().parseTracks = this.parseTracks.bind(this);
 				this.getPlayer().switchAudioTrack = this.switchAudioTrack.bind(this);
+				this.getPlayer()._ondurationchange = this._ondurationchange.bind(this);
+				this.getPlayer().backToLive = this.backToLive.bind(this);
+				this.getPlayer().doSeek = this.doSeek.bind(this);
 			},
 			/**
 			 * Disable override player methods for Dash playback
@@ -412,8 +485,10 @@
 				this.getPlayer().load = this.orig_load;
 				this.getPlayer().parseTracks = this.orig_parseTracks;
 				this.getPlayer().switchAudioTrack = this.orig_switchAudioTrack;
+				this.getPlayer()._ondurationchange = this.orig_ondurationchange;
+				this.getPlayer().backToLive = this.orig_backToLive;
+				this.getPlayer().doSeek = this.orig_doSeek;
 			}
-
 		});
 
 		mw.PluginManager.add('Dash', dash);
@@ -422,7 +497,7 @@
 		var playerConfig = window.kalturaIframePackageData.playerConfig;
 		if (playerConfig && playerConfig.plugins && !playerConfig.plugins["dash"]) {
 			playerConfig.plugins["dash"] = {
-				plugin : true
+				plugin: true
 			};
 			mw.setConfig('KalturaSupport.PlayerConfig', playerConfig);
 		}

@@ -35,6 +35,7 @@
 		textSources: [],
 		defaultBottom: 15,
 		lastActiveCaption: null,
+		updateLayoutEventFired: false,
 		ended: false,
 
 		setup: function(){
@@ -68,7 +69,7 @@
 			this.embedPlayer.bindHelper("propertyChangedEvent", function(event, data){
 				if ( data.plugin === _this.pluginName ){
 					if ( data.property === "captions" ){
-						_this.getMenu().$el.find("li a[title="+data.value+"]").click();
+						_this.getMenu().$el.find("li a")[data.value].click();
 					}
 				}
 			});
@@ -193,7 +194,11 @@
 				}
 			});
 
-			this.bind( 'updateLayout', function(){
+			this.bind( 'updateLayout', function() {
+				if (_this.updateLayoutEventFired) {
+					// avoid infinite loop.
+					return;
+				}
 				if (_this.getConfig("displayCaptions") == true){
 					_this.updateTextSize();
 				}
@@ -230,6 +235,10 @@
 			});
 			this.bind( 'newCaptionsStyles', function (e, stylesObj){
 				_this.customStyle = stylesObj;
+			});
+			this.bind( 'onChangeMedia', function (e, stylesObj){
+				//Reset UI state on change media
+				_this.getBtn().show();
 			});
 		},
 		addTextSource: function(captionData){
@@ -274,7 +283,7 @@
 				var _this = this;
 				// give time for the dom to update: 
 				setTimeout(function(){
-					_this.updateBelowVideoCaptionContainer();	
+					_this.updateBelowVideoCaptionContainer();
 				},50)
 			}
 		},
@@ -491,10 +500,12 @@
 			var captionsSrc;
 			if( mw.isIphone() && !mw.getConfig('disableTrackElement') && !this.getConfig('forceLoadLanguage') || this.getConfig("forceWebVTT") ) {
 				// getting generated vtt file from dfxp/srt
+				var ks = _this.getFlashvars('ks');
 				captionsSrc = mw.getConfig('Kaltura.ServiceUrl') +
 							"/api_v3/index.php/service/caption_captionasset/action/serveWebVTT/captionAssetId/" +
 							dbTextSource.id +
 							"/segmentIndex/-1/version/2/captions.vtt";
+				captionsSrc += ks ? '/ks/' + ks : '';
 			} else {
 				captionsSrc = this.getCaptionURL( dbTextSource.id ) + '/.' + dbTextSource.fileExt;
 			}
@@ -824,10 +835,11 @@
 				'width' :  _this.embedPlayer.getInterface().width(),
 				'height' : _this.embedPlayer.getInterface().height()
 			}) / 100 ) *  mw.getConfig( 'TimedText.BelowVideoBlackBoxHeight' );
-			$cc.css( 'height',  height + 'px')
-			
+			$cc.css( 'height',  height + 'px');
 			// update embedPlayer layout per updated caption container size.
+			this.updateLayoutEventFired = true;
 			 _this.embedPlayer.doUpdateLayout();
+			this.updateLayoutEventFired = false;
 		},		
 		/**
 		 * Gets a text size percent relative to about 30 columns of text for 400

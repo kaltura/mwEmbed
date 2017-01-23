@@ -32,6 +32,7 @@
 					"containment": "parent"
 				},
 				"mobileTag": null,
+				"forceMuxedOnMobileDevices": true,
 				"menuFadeout": 5000,
 				"resizeHandlesFadeout": 5000,
 				"mainViewDisplay": 0, // DONT USE THIS - obslete... 1 - Main stream, 2 - Presentation
@@ -174,11 +175,9 @@
 				//Consume view state events
 				this.bind( 'dualScreenStateChange', function(e, state){
 					_this.fsm.consumeEvent( state );
-				});
 
-				// disable drag & drop for mobile devices
-				if (!mw.isMobileDevice()) {
-					this.bind('postDualScreenTransition', function () {
+					// disable drag & drop for mobile devices
+					if (!mw.isMobileDevice()) {
 						var currentState = _this.fsm.currentState.name;
 						var primary = _this.displays.getPrimary();
 						var secondary = _this.displays.getSecondary();
@@ -196,11 +195,12 @@
 						} else {
 							main.enableDroppable();
 						}
-					});
-				}
+					}
+				});
 
-				this.bind('dualScreenChangeMasterStream', function (event, stream) {
-					_this.changeStream('master', stream);
+				this.bind('dualScreenChangeMainDisplayStream', function (event, stream) {
+					var primaryIsMain = mw.isMobileDevice() || (_this.displays.getPrimary() === _this.displays.getMainDisplay());
+					_this.changeStream(primaryIsMain ? 'master' : 'slave', stream);
 				});
 
 				this.bind('displayDropped', function (event, display, draggable) {
@@ -285,6 +285,7 @@
 				});
 				this.bind("onChangeStreamDone", function(){
 					_this.syncEnabled = true;
+					_this.updateStreams();
 				});
 
 				if (this.getConfig('enableKeyboardShortcuts')) {
@@ -444,16 +445,19 @@
 						draggable: _this.getConfig( 'draggable' )
 					});
 					this.initDisplays();
-                }, "dualScreenDisplays");
+				}, "dualScreenDisplays");
 			},
 			initControlBar: function(){
 				if ( !this.controlBar && !this.getPlayer().isAudio()) {
-                    var _this = this;
                     this.loadControlBar();
-                    this.getSwitchingStreams().then(function (streams) {
-                        _this.controlBar.setStreams(streams);
-                    });
+                    this.updateStreams();
 				}
+			},
+			updateStreams: function () {
+				var _this = this;
+				this.controlBar && this.getSwitchingStreams().then(function (streams) {
+					_this.controlBar.setStreams(streams);
+				});
 			},
 			getSwitchingStreams: function () {
 				var _this = this;
@@ -617,7 +621,7 @@
 				this.screenShown = true;
 				if (this.render) {
 					this.currentScreenNameShown = screenName;
-					if (!this.disabled && !this.getPlayer().isAudio()) {
+					if (!this.disabled && !this.getPlayer().isAudio() && this.controlBar) {
 						this.controlBar.enable();
 						this.controlBar.hide();
 						this.controlBar.disable();
@@ -645,7 +649,7 @@
 				}
 			},
 			minimizeSecondDisplay: function(){
-			    if (!this.auxScreenMinimized) {
+			    if (!this.auxScreenMinimized && this.displays.isInitialized()) {
 					this.auxScreenMinimized = true;
 				    var primaryIsMain = (this.displays.getPrimary() === this.displays.getMainDisplay());
 					if (!(primaryIsMain && this.fsm.getStatus() === "hide")) {
@@ -979,9 +983,7 @@
 					}
 				}
 
-				this.controlBar && this.getSwitchingStreams().then(function (streams) {
-					_this.controlBar.setStreams(streams);
-				});
+				this.updateStreams();
 			},
 			tryInitSecondPlayer: function () {
 				var mobileTag = this.getConfig('mobileTag');
@@ -990,14 +992,27 @@
 				var promise;
 
 				if (mw.isMobileDevice()) {
-					promise = this.initSecondPlayer(true)
-						.then(null, function () {
-							return mobileTag ?
-								utils.filterStreamsByTag(mobileTag)
-									.then(function (streams) {
-										utils.setStream(streams[0], true);
-									}) :
-								$.Deferred().reject();
+					var forceMosaic = this.getConfig('forceMuxedOnMobileDevices') ||
+						(mw.isIOS() && (navigator.userAgent.indexOf('iPad') === -1));
+					promise = (forceMosaic ? $.Deferred().reject() : this.initSecondPlayer(true))
+						.then(function (res) {
+							if (mobileTag) {
+								utils.setConfig({
+									streamSelectorConfig: {
+										ignoreTag: mobileTag
+									}
+								});
+
+								_this.updateStreams();
+							}
+
+							return res;
+						}, function () {
+							mobileTag && utils.filterStreamsByTag(mobileTag).then(function (streams) {
+								utils.setStream(streams[0], forceMosaic, true);
+							});
+
+							return $.Deferred().reject();
 						});
 				} else {
 					if (mobileTag) {

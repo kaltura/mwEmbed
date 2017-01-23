@@ -204,8 +204,7 @@
 		},
 		show: function (isFlashMode) {
             if ( !isFlashMode ) {
-                this.obj.css('transform', '');
-                this.obj.removeClass('hiddenScreen');
+                this.obj.css('transform', '').removeClass('hiddenScreen');
             } else {
                 //FlashMode only - take care of flash obj (seek through hidden flash player will be very slow, so we need to bring at least several pixels inside the visible area of the player frame)
                 var _this = this;
@@ -217,7 +216,7 @@
                 this.obj.removeClass('componentOff').addClass('componentOn');
                 this.enableTransition();
                 setTimeout(function () {
-                    _this.obj.removeClass('hidden10pxScreen hiddenScreen');
+                    _this.obj.css('transform', '').removeClass('hidden10pxScreen hiddenScreen');
                 }, 500); //it takes time to update width/height/top/left css properties and this is the reason for half second delly.
             }
 		},
@@ -264,7 +263,10 @@
 			if (target.data('droppable')) {
 				target
 					.droppable('enable')
-					.droppable('option', 'greedy', !useParentAsTarget);
+					.droppable('option', {
+						greedy: !useParentAsTarget,
+						drop: $.proxy(this.onDrop, this)
+					});
 			} else {
 				target
 					.data('droppable', true)
@@ -285,6 +287,10 @@
 	mw.dualScreen.display.TYPE = {
 		PRIMARY: "primary",
 		SECONDARY: "secondary"
+	};
+	mw.dualScreen.display.STATE = {
+		LOCKED: "locked",
+		UNLOCKED: "unlocked"
 	};
 }
 )( window.mw, window.jQuery );
