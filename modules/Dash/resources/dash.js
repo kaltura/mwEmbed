@@ -82,6 +82,13 @@
 					this.setEmbedPlayerConfig(this.getPlayer());
 
 					if (this.destroyPromise) {
+						// Firefox 50 and chrome 51 has an issue with mediaSource when preload attr is none
+						// see https://bugs.chromium.org/p/chromium/issues/detail?id=539707
+						//     https://bugzilla.mozilla.org/show_bug.cgi?id=1211752
+						// we store the previews preload value and restore it on clean method.
+						this.preloadVal = $(this.getPlayer().getPlayerElement()).attr("preload");
+						$(this.getPlayer().getPlayerElement()).attr("preload",true);
+
 						// after change media we should wait till the destroy promise will be resolved
 						this.destroyPromise.then(function () {
 							this.log("The player has been destroyed");
@@ -437,6 +444,9 @@
 					this.loaded = false;
 					this.currentBitrate = null;
 					this.destroyPromise = player.destroy();
+					if(this.preloadVal){
+						$(this.getPlayer().getPlayerElement()).attr("preload",this.preloadVal);
+					}
 					this.restorePlayerMethods();
 				}
 			},
