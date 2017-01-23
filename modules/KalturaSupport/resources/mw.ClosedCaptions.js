@@ -58,6 +58,13 @@
 				if(!this.optionsMenu.isSafeEnviornment()){
 					this.setConfig('enableOptionsMenu', false );
 				}
+
+                this.bind( 'playerReady', function() {
+                    if (_this.getConfig( 'displayCaptions') === false){
+                        _this.getPlayer().triggerHelper( "closedCaptionsHidden" );
+                    }
+				});
+
 			}
 
 			if( (this.embedPlayer.isOverlayControls() && !this.embedPlayer.getInterface().find( '.controlBarContainer' ).is( ':hidden' )) || this.embedPlayer.useNativePlayerControls() ){
@@ -182,14 +189,14 @@
 				}
 			});
 
-			this.bind( 'showClosedCaptions preHideScreen hideMobileComponents', function(){
-				if( !_this.embedPlayer.changeMediaStarted && _this.getConfig('displayCaptions') === false && _this.selectedSource ){
+			this.bind( 'showClosedCaptions preHideScreen hideMobileComponents', function(e, screen){
+				if( !_this.embedPlayer.changeMediaStarted && _this.getConfig('displayCaptions') === false && _this.selectedSource && screen !=="cvaa" ){
 					_this.setConfig('displayCaptions', true);
 				}
 			});
 
-			this.bind( 'hideClosedCaptions preShowScreen showMobileComponents', function(){
-				if( _this.getConfig('displayCaptions') === true ){
+			this.bind( 'hideClosedCaptions preShowScreen showMobileComponents', function(e, screen){
+				if( _this.getConfig('displayCaptions') === true && screen !=="cvaa" ){
 					_this.setConfig('displayCaptions', false);
 				}
 			});

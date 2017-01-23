@@ -110,6 +110,7 @@
         },
         previousScreen: "cvaa-main",
         currentScreen: "cvaa-main",
+        closedCaptionsDisplayed: "",
 
         cvaaSettings: {},
         currentFontFamily: "",
@@ -146,6 +147,16 @@
                 _this.cvaaMenuChanged("cvaa-main");
             });
 
+            $(".cvaa .cvaa-main__switch").on("change", function () {
+                if ($(".cvaa .cvaa-main__switch-checkbox").is(":checked")) {
+                    _this.closedCaptionsDisplayed = true;
+                    _this.getPlayer().triggerHelper("showClosedCaptions");
+                } else {
+                    _this.closedCaptionsDisplayed = false;
+                    _this.getPlayer().triggerHelper("hideClosedCaptions");
+                }
+            });
+
             $.each(cvaaMenus, function (index, menu) {
                 $(".cvaa ." + menu.btnClass).on("mousedown", function () {
                     _this.cvaaMenuChanged(menu.name);
@@ -161,6 +172,14 @@
                _this.getCurrentSettings();
             });
 
+            this.bind('closedCaptionsDisplayed', function () {
+                _this.closedCaptionsDisplayed = true;
+            });
+
+            this.bind('closedCaptionsHidden', function () {
+                _this.closedCaptionsDisplayed = false;
+            });
+
             this.bind('openCvaaOptions', function () {
                 _this.getScreen().then(function (screen) {
                     _this.toggleScreen();
@@ -174,6 +193,13 @@
 
                 if (screenName === "cvaa") {
                     _this.getScreen().then(function (screen) {
+
+                        if (_this.closedCaptionsDisplayed == true) {
+                            $(".cvaa .cvaa-main__switch-checkbox").prop('checked', true);
+                        } else {
+                            $(".cvaa .cvaa-main__switch-checkbox").prop('checked', false);
+                        }
+
                         screen.addClass('semiTransparentBkg');
                         // prevent keyboard key actions to allow typing in share screen fields
                         embedPlayer.triggerHelper('onDisableKeyboardBinding');
