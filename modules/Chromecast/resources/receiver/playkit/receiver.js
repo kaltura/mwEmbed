@@ -365,7 +365,7 @@ function doChangeMedia( embedConfig ) {
     }
     kdp.sendNotification( "changeMedia", {
         "entryId": embedConfig[ 'entryID' ],
-        "proxyData": embedConfig[ 'flashVars' ][ 'proxyData' ]
+        "proxyData": embedConfig[ 'flashVars' ] ? embedConfig[ 'flashVars' ][ 'proxyData' ] : undefined
     } );
 }
 
