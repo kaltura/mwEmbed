@@ -64,7 +64,6 @@
             this.addBindings();
             this.applyMediaElementBindings();
             $.getScript( "//www.gstatic.com/cast/sdk/libs/mediaplayer/1.0.0/media_player.js" ).then( function () {
-                _this.preloadMediaSourceExtension();
                 readyCallback();
             } );
         },

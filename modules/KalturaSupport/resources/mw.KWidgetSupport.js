@@ -224,7 +224,9 @@ mw.KWidgetSupport.prototype = {
 			if (segmentChange) {
 				window.timeoutID = setTimeout(function () {
 					$(embedPlayer).trigger("playSegmentEvent", [embedPlayer.startTime, embedPlayer.pauseTime]);
-					embedPlayer.playSegment(embedPlayer.startTime, embedPlayer.pauseTime);
+					if ($.isFunction(embedPlayer.playSegment)) {
+                        embedPlayer.playSegment( embedPlayer.startTime, embedPlayer.pauseTime );
+                    }
 				}, 100);
 			}
 		});

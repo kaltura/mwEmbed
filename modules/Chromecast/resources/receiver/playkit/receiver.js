@@ -1,8 +1,4 @@
 /**
- * Promise for loading metadata process.
- */
-var loadMetadataPromise;
-/**
  * The embed process phases.
  * @type {{Pending: number, Started: number, Completed: number}}
  */
@@ -58,58 +54,6 @@ var messageBus;
  * The Kaltura video element.
  */
 var mediaElement;
-
-/**
- * The receiver's embed player flashvars.
- */
-var receiverFlashVars = {
-    "dash": {
-        'plugin': false
-    },
-    "multiDrm": {
-        'plugin': false
-    },
-    "embedPlayerChromecastReceiver": {
-        'plugin': true
-    },
-    "chromecast": {
-        'plugin': false
-    },
-    "playlistAPI": {
-        'plugin': false
-    },
-    "controlBarContainer": {
-        'plugin': false
-    },
-    "volumeControl": {
-        'plugin': false
-    },
-    "titleLabel": {
-        'plugin': false
-    },
-    "fullScreenBtn": {
-        'plugin': false
-    },
-    "scrubber": {
-        'plugin': false
-    },
-    "audioSelector": {
-        'plugin': false
-    },
-    "sourceSelector": {
-        'plugin': false
-    },
-    "closedCaptions": {
-        'plugin': false
-    },
-    "largePlayBtn": {
-        'plugin': false
-    },
-    "mediaProxy": {
-        "mediaPlayFrom": 0
-    },
-    "autoPlay": true
-};
 /**
  * The application logger.
  */
@@ -141,6 +85,10 @@ var MessageBusMap = {
         } );
     }
 };
+/**
+ * Promise for the embed player process.
+ */
+var embedPlayerPromise;
 
 /**
  * Initialized the receiver with the relevant data before starting.
@@ -155,18 +103,56 @@ function initReceiver() {
         cast.receiver.logger.setLevelValue( cast.receiver.LoggerLevel.DEBUG );
     }
     ReceiverStateManager = new StateManager();
+    ReceiverStateManager.setState( StateManager.State.LAUNCHING );
+    // Take embed params out of the query string
+    var uiConfId = ReceiverUtils.getQueryVariable( 'uiConfId' );
+    var partnerId = ReceiverUtils.getQueryVariable( 'partnerId' );
+    startEmbed( uiConfId, partnerId );
+    ReceiverStateManager.setState( StateManager.State.IDLE );
     startReceiver();
+}
+
+/**
+ * Loading the Kaltura player into the Chromecast device.
+ * @param uiConfId
+ * @param partnerId
+ */
+function startEmbed( uiConfId, partnerId ) {
+    ReceiverLogger.log( "receiver.js", "Embed player isn't initialized yet. Starting dynamic embed.", {
+        'uiConfId': uiConfId,
+        'partnerId': partnerId
+    } );
+    embedPlayerPromise = $.Deferred();
+    embedPlayerInitialized.setState( EmbedPhase.Started );
+    var fullEmbedLoaderPath = ReceiverUtils.resolve( '../../../../../mwEmbedLoader.php', window.location.href );
+    $.getScript( fullEmbedLoaderPath ).then( function () {
+        setConfiguration();
+        kWidget.embed( {
+            "targetId": "kaltura_player",
+            "wid": "_" + partnerId,
+            "uiconf_id": uiConfId,
+            "readyCallback": function ( playerID ) {
+                kdp = document.getElementById( playerID );
+                $( '#initial-video-element' ).remove();
+                mediaElement = $( kdp ).contents().contents().find( 'video' )[ 0 ];
+                mediaManager.setMediaElement( mediaElement );
+                $( window ).trigger( "onReceiverKDPReady" );
+                setMediaElementEvents();
+                addBindings();
+                embedPlayerPromise.resolve();
+            },
+            "flashvars": ReceiverFlashVars,
+            "cache_st": 1438601385
+        } );
+    } );
 }
 
 /**
  * Starts the receiver application and opening a new session.
  */
 function startReceiver() {
-    ReceiverStateManager.setState( StateManager.State.LAUNCHING );
-
     // Init receiver manager and setting his events
     receiverManager = cast.receiver.CastReceiverManager.getInstance();
-    receiverManager.onReady = onReady.bind( this );
     receiverManager.onSenderConnected = onSenderConnected.bind( this );
     receiverManager.onSenderDisconnected = onSenderDisconnected.bind( this );
 
@@ -271,51 +257,61 @@ function onPlay( event ) {
 function onLoad( event ) {
     ReceiverLogger.log( "MediaManager", "onLoad" );
 
-    // If the sender send us the media metadata, we start to load it.
-    // else, we will wait until onloadmetadata will raise and then we will load it our self.
-    if ( event.data.media.metadata ) {
-        loadMetadataPromise = ReceiverUtils.loadMediaMetadata( event.data.media.metadata );
-    }
-
-    // Player not initialized yet
-    if ( embedPlayerInitialized.is( EmbedPhase.Pending ) ) {
-        ReceiverLogger.log( "MediaManager", "Embed player isn't initialized yet. Starting dynamic embed.", event );
+    if ( !embedPlayerInitialized.is( EmbedPhase.Completed ) ) {
         configure( event.data.media.customData.receiverConfig );
         ReceiverStateManager.setState( StateManager.State.LOADING );
-        embedPlayerInitialized.setState( EmbedPhase.Started );
-        embedPlayer( event );
-
-        // Player start to initialized but didn't finished
-    } else if ( embedPlayerInitialized.is( EmbedPhase.Started ) ) {
-        // Embed player from scratch
-        embedPlayer( event );
     }
 
-    // Player already initialized
-    else if ( embedPlayerInitialized.is( EmbedPhase.Completed ) ) {
+    // Show media metadata when ready
+    ReceiverUtils.loadMediaMetadata( event.data.media.metadata ).then( function ( showPreview ) {
+        ReceiverStateManager.onShowMediaMetadata( showPreview );
+    } );
 
-        // Reset progress bar
-        ReceiverStateManager.onProgress( 0, 0 );
+    var embedConfig = event.data.media.customData.embedConfig;
 
-        // Rest mediaPlayFrom if needed
-        kdp.setKDPAttribute( 'mediaProxy', 'mediaPlayFrom', 0 );
+    // Wait for the embed player process to finish
+    embedPlayerPromise.then( function () {
+        if ( !kdp.evaluate( '{mediaProxy.entry.id}' ) ) {
+            embedPlayerInitialized.setState( EmbedPhase.Completed );
 
-        // Set app state as idle
-        ReceiverStateManager.setState( StateManager.State.IDLE );
+            var senderFlashVars = embedConfig.flashVars;
+            var senderCurrentTime = event.data.currentTime;
+            var senderAutoPlay = event.data.autoplay;
 
-        // Show media metadata when ready
-        loadMetadataPromise.then( function ( showPreview ) {
-            ReceiverStateManager.onShowMediaMetadata( showPreview );
-        } );
+            if ( senderFlashVars && senderFlashVars.doubleClick && senderFlashVars.doubleClick.plugin ) {
+                kdp.setKDPAttribute( 'doubleClick', 'adTagUrl', senderFlashVars.doubleClick.adTagUrl );
+            }
+            if ( $.isNumeric( senderCurrentTime ) ) {
+                kdp.setKDPAttribute( 'mediaProxy', 'mediaPlayFrom', senderCurrentTime );
+                if ( senderCurrentTime > 0 ) {
+                    kdp.setKDPAttribute( 'doubleClick', 'adTagUrl', '' );
+                }
+            }
+            if ( typeof senderAutoPlay === 'boolean' ) {
+                kdp.setKDPAttribute( 'autoPlay', senderAutoPlay );
+            }
 
-        var embedConfig = event.data.media.customData.embedConfig;
-        // If same entry is sent then reload, else perform changeMedia
-        if ( kdp.evaluate( '{mediaProxy.entry.id}' ) === embedConfig[ 'entryID' ] ) {
-            doReplay( embedConfig );
+            kdp.sendNotification( "changeMedia", {
+                "entryId": embedConfig[ 'entryID' ],
+                "proxyData": embedConfig[ 'flashVars' ] ? embedConfig[ 'flashVars' ][ 'proxyData' ] : undefined
+            } );
         } else {
-            doChangeMedia( embedConfig );
+            // Reset progress bar
+            ReceiverStateManager.onProgress( 0, 0 );
+
+            // Rest mediaPlayFrom if needed
+            kdp.setKDPAttribute( 'mediaProxy', 'mediaPlayFrom', 0 );
+
+            // Set app state as idle
+            ReceiverStateManager.setState( StateManager.State.IDLE );
+
+            if ( kdp.evaluate( '{mediaProxy.entry.id}' ) === embedConfig[ 'entryID' ] ) {
+                doReplay( embedConfig );
+            } else {
+                doChangeMedia( embedConfig );
+            }
         }
-    }
+    } );
 }
 
 /**
@@ -372,14 +368,6 @@ function doChangeMedia( embedConfig ) {
 /***** Receiver Manager Events *****/
 
 /**
- * Override callback for receiver manager onReady.
- */
-function onReady() {
-    ReceiverLogger.log( "ReceiverManager", "Receiver is ready." );
-    ReceiverStateManager.setState( StateManager.State.IDLE );
-}
-
-/**
  * Override callback for receiver manager onSenderConnected.
  */
 function onSenderConnected( event ) {
@@ -416,64 +404,14 @@ function onMessage( event ) {
 }
 
 /**
- * Loading the embed player to the Chromecast device.
- * @param event
- */
-function embedPlayer( event ) {
-    ReceiverLogger.log( "MediaManager", "embedPlayer", event.data.media.customData.embedConfig );
-    var embedInfo = event.data.media.customData.embedConfig;
-    var embedLoaderLibPath = embedInfo.lib ? embedInfo.lib + "mwEmbedLoader.php" : "../../../../../mwEmbedLoader.php";
-    $.getScript( embedLoaderLibPath )
-        .then( function () {
-            setConfiguration( embedInfo );
-            kWidget.embed( {
-                "targetId": "kaltura_player",
-                "wid": "_" + embedInfo.publisherID,
-                "uiconf_id": embedInfo.uiconfID,
-                "readyCallback": function ( playerID ) {
-                    loadMetadataPromise.then( function ( showPreview ) {
-                        ReceiverStateManager.onShowMediaMetadata( showPreview );
-                    } );
-                    kdp = document.getElementById( playerID );
-                    $( '#initial-video-element' ).remove();
-                    mediaElement = $( kdp ).contents().contents().find( 'video' )[ 0 ];
-                    mediaManager.setMediaElement( mediaElement );
-                    $( window ).trigger( "onReceiverKDPReady" );
-                    setMediaElementEvents();
-                    addBindings();
-                    embedPlayerInitialized.setState( EmbedPhase.Completed );
-                },
-                "flashvars": getFlashVars( event.data.currentTime, event.data.autoplay, embedInfo.flashVars ),
-                "cache_st": 1438601385,
-                "entry_id": embedInfo.entryID
-            } );
-        } );
-}
-
-/**
  * Sets the necessary events for the media element.
  * Done for UI handling.
  */
 function setMediaElementEvents() {
-    // mediaElement.addEventListener( 'loadedmetadata', onMetadataLoaded.bind( this ), false );
     mediaElement.addEventListener( 'canplay', onCanPlay.bind( this ), false );
     mediaElement.addEventListener( 'timeupdate', onProgress.bind( this ), false );
     mediaElement.addEventListener( 'seeking', onSeekStart.bind( this ), false );
     mediaElement.addEventListener( 'seeked', onSeekEnd.bind( this ), false );
-}
-
-function onMetadataLoaded() {
-    /* TODO: Handle media metadata in the receiver side?
-     var entry = kdp.evaluate( '{mediaProxy.entry}' );
-     var metadata = {};
-     metadata.title = entry.name;
-     metadata.subtitle = entry.description;
-     metadata.images = [ {
-     'url': entry.thumbnailUrl
-     } ];
-
-     loadMetadataPromise = ReceiverUtils.loadMediaMetadata( metadata );
-     */
 }
 
 /**
@@ -529,50 +467,14 @@ function addBindings() {
 
 /**
  * Sets the configuration for the embed player.
- * @param embedInfo
  */
-function setConfiguration( embedInfo ) {
+function setConfiguration() {
     mw.setConfig( "EmbedPlayer.HidePosterOnStart", true );
-    if ( embedInfo.debugKalturaPlayer || debugKalturaPlayer ) {
+    if ( debugKalturaPlayer ) {
         mw.setConfig( "debug", true );
     }
     mw.setConfig( "chromecastReceiver", true );
     mw.setConfig( "Kaltura.ExcludedModules", "chromecast" );
-}
-
-/**
- * Merge between the receiver's constant flashvars and the flashvars
- * that been sent from the sender who opened the session.
- * The sender usually will need to send ks or proxyData.
- * The sender can override playFrom and autoPlay flashvars.
- * @param senderPlayFrom
- * @param senderAutoPlay
- * @param senderFlashVars
- * @returns object
- */
-function getFlashVars( senderPlayFrom, senderAutoPlay, senderFlashVars ) {
-    try {
-        // Embed the media info params from onLoad event into mwEmbedChromecastReceiver
-        if ( $.isNumeric( senderPlayFrom ) ) {
-            receiverFlashVars.mediaProxy.mediaPlayFrom = senderPlayFrom;
-            if ( senderPlayFrom > 0 && senderFlashVars.doubleClick ) {
-                senderFlashVars.doubleClick.adTagUrl = '';
-            }
-        }
-        if ( typeof senderAutoPlay === 'boolean' ) {
-            receiverFlashVars.autoPlay = senderAutoPlay;
-        }
-        if ( !senderFlashVars ) {
-            return receiverFlashVars;
-        } else if ( typeof senderFlashVars === 'string' ) {
-            senderFlashVars = JSON.parse( senderFlashVars );
-        }
-        return ReceiverUtils.extend( receiverFlashVars, senderFlashVars );
-    }
-    catch ( error ) {
-        broadcastError( error );
-        return receiverFlashVars;
-    }
 }
 
 /**
