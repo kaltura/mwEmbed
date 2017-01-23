@@ -247,18 +247,18 @@
 	display: block;
 }
 
-.cvaa-btn.default {
+.cvaa-btn.cvaaDefault {
 	background: transparent;
 	color: #ffffff;
 }
 
-.cvaa-btn.preset1 {
+.cvaa-btn.cvaaPreset1 {
 	background: #ffffff;
 	color: #000000;
 	border-color: #ffffff;
 }
 
-.cvaa-btn.preset2 {
+.cvaa-btn.cvaaPreset2 {
 	background: #000000;
 	color: #ffff00;
 	border-color: #000000;
@@ -342,7 +342,12 @@
 /*------------------FOOTER-------------------*/
 
 .cvaa-footer {
-
+	display: none;
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 5px;
+	text-align: center;
 }
 
 .cvaa-footer__preview {
