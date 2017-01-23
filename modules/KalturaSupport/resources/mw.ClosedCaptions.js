@@ -688,7 +688,9 @@
 
 			var $windowTarget = $('<div />')
 				.css("background-color", (this.customStyle && this.customStyle.windowColor) ? this.customStyle.windowColor : "none")
-				.addClass('trackWindow');
+				.addClass('trackWindow')
+				.attr('dir', "auto");
+
 
 			// Update text ( use "html" instead of "text" so that subtitle format can
 			// include html formating
