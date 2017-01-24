@@ -106,9 +106,11 @@
 		<p class="cvaa-header">Background</p>
 
 		<div class="cvaa-row cvaa-row--center">
+			<div class="cvaa-leftArrow cvaa-arrow"><</div>
 			<% $.each(cvaaOptions.color, function(idx, property){ %>
 			<button name="cvaa-bg" value="<%=property.prop%>" class="cvaa-btn small <%=property.text%>"></button>
 			<% }); %>
+			<div class="cvaa-rightArrow cvaa-arrow">></div>
 		</div>
 
 		<div class="cvaa-row cvaa-row--center">
@@ -123,12 +125,13 @@
 	<!--Color-->
 	<div class="cvaa-color">
 		<p class="cvaa-header">Color</p>
-
 		<div class="cvaa-row cvaa-row--center">
+			<div class="cvaa-leftArrow cvaa-arrow"><</div>
 			<% $.each(cvaaOptions.color, function(idx, property){ %>
 			<button name="cvaa-color" value="<%=property.prop%>"
 					class="cvaa-btn small icvaa-letter-size <%=property.text%>"><span></span></button>
 			<% }); %>
+			<div class="cvaa-rightArrow cvaa-arrow">></div>
 		</div>
 
 		<div class="cvaa-row cvaa-row--center">

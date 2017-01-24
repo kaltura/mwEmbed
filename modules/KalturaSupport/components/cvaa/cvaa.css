@@ -361,6 +361,71 @@
 }
 
 /*------------------BTN COLORS-------------------*/
+
+/* Handle small screens paging */
+@media (max-height: 220px) {
+	.cvaa-bg .cvaa-row.cvaa-row--center .Black,
+	.cvaa-bg .cvaa-row.cvaa-row--center .Magenta,
+	.cvaa-bg .cvaa-row.cvaa-row--center .Blue,
+	.cvaa-bg .cvaa-row.cvaa-row--center .Red,
+	.cvaa-color .cvaa-row.cvaa-row--center .Black,
+	.cvaa-color .cvaa-row.cvaa-row--center .Magenta,
+	.cvaa-color .cvaa-row.cvaa-row--center .Blue,
+	.cvaa-color .cvaa-row.cvaa-row--center .Red
+	{
+		display: none;
+	}
+	.cvaa-bg .cvaa-row.cvaa-row--center .White,
+	.cvaa-bg .cvaa-row.cvaa-row--center .Yellow,
+	.cvaa-bg .cvaa-row.cvaa-row--center .Green,
+	.cvaa-bg .cvaa-row.cvaa-row--center .Cyan,
+	.cvaa-color .cvaa-row.cvaa-row--center .White,
+	.cvaa-color .cvaa-row.cvaa-row--center .Yellow,
+	.cvaa-color .cvaa-row.cvaa-row--center .Green,
+	.cvaa-color .cvaa-row.cvaa-row--center .Cyan
+	{
+		display: inline-block;;
+	}
+
+	.cvaa-bg.cvaa-alternate-page-view .cvaa-row.cvaa-row--center .Black,
+	.cvaa-bg.cvaa-alternate-page-view .cvaa-row.cvaa-row--center .Magenta,
+	.cvaa-bg.cvaa-alternate-page-view .cvaa-row.cvaa-row--center .Blue,
+	.cvaa-bg.cvaa-alternate-page-view .cvaa-row.cvaa-row--center .Red,
+	.cvaa-color.cvaa-alternate-page-view .cvaa-row.cvaa-row--center .Black,
+	.cvaa-color.cvaa-alternate-page-view .cvaa-row.cvaa-row--center .Magenta,
+	.cvaa-color.cvaa-alternate-page-view .cvaa-row.cvaa-row--center .Blue,
+	.cvaa-color.cvaa-alternate-page-view .cvaa-row.cvaa-row--center .Red
+	{
+		display: inline-block;;
+	}
+	.cvaa-bg.cvaa-alternate-page-view .cvaa-row.cvaa-row--center .White,
+	.cvaa-bg.cvaa-alternate-page-view .cvaa-row.cvaa-row--center .Yellow,
+	.cvaa-bg.cvaa-alternate-page-view .cvaa-row.cvaa-row--center .Green,
+	.cvaa-bg.cvaa-alternate-page-view .cvaa-row.cvaa-row--center .Cyan,
+	.cvaa-color.cvaa-alternate-page-view .cvaa-row.cvaa-row--center .White,
+	.cvaa-color.cvaa-alternate-page-view .cvaa-row.cvaa-row--center .Yellow,
+	.cvaa-color.cvaa-alternate-page-view .cvaa-row.cvaa-row--center .Green,
+	.cvaa-color.cvaa-alternate-page-view .cvaa-row.cvaa-row--center .Cyan
+	{
+		display: none;
+	}
+	.cvaa-arrow{
+		display: block !important;
+	}
+}
+.cvaa-arrow{
+	display: none;
+	position: absolute;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	cursor:pointer;
+	top: 20%;
+}
+.cvaa-rightArrow{
+	right : 0;
+}
+
 .cvaa-color .cvaa-btn,
 .cvaa-bg .cvaa-btn {
 	border: solid 1px #ffffff;

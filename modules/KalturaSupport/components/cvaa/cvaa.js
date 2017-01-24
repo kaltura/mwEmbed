@@ -318,6 +318,11 @@
                     _this.saveCvaaSettings();
                 }
             });
+
+            //paging buttons for colors anf backgrounds
+            $(".cvaa-arrow").on("click", function (event) {
+                $(this).parent().parent().toggleClass("cvaa-alternate-page-view")
+            });
         },
 
         updateSettingsAndPreview: function (option, value) {
