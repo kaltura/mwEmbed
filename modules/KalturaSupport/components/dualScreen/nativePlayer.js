@@ -38,11 +38,14 @@
                 $this.attr('src', this.stream.url);
             } else if (this.streamerType === 'hls') {
                 var hls = new Hls();
-                hls.loadSource(this.stream.url);
+                var _this = this;
                 hls.attachMedia(this);
-                hls.on(Hls.Events.MANIFEST_PARSED, function () {
-                    readyCallback($this[0]);
-                    $this.trigger('loadstart');
+                hls.on(Hls.Events.MEDIA_ATTACHED, function () {
+                    hls.loadSource(_this.stream.url);
+                    hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+                        readyCallback($this[0]);
+                        $this.trigger('loadstart');
+                    });
                 });
             }
         },
@@ -72,6 +75,14 @@
 
         isABR: function isABR() {
             return this.stream.url.indexOf('m3u8') > 0;
+        },
+
+        isSeeking: function isSeeking() {
+            return this.seeking;
+        },
+
+        supportsOptimisticSeeking: function supportsOptimisticSeeking() {
+            return !this.isABR();
         }
     };
 })(window.mw, window.jQuery, window.kWidgetSupport, window.Hls);
