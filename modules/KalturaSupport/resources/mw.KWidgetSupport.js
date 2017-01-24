@@ -2011,7 +2011,7 @@ mw.KWidgetSupport.prototype = {
 				mimeType = 'application/vnd.apple.mpegurl';
 				break;
 			case "dash":
-				embedPlayer.setFlashvars( 'streamerType', 'dash' );
+				embedPlayer.setFlashvars( 'streamerType', 'http' );
 				extension = 'mpd';
 				protocol = mw.getConfig('Kaltura.Protocol');
 				if( !protocol ){

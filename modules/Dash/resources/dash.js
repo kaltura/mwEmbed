@@ -71,7 +71,7 @@
 					this.log("Init shaka version " + shaka.Player.version);
 
 					//Set streamerType to dash
-					this.embedPlayer.streamerType = 'dash';
+					this.embedPlayer.streamerType = 'mpegdash';
 
 					this.loaded = true;
 
@@ -224,6 +224,7 @@
 						};
 					});
 					mw.log("Dash::" + videoTracks.length + " ABR flavors were found: ", videoTracks);
+					this.getPlayer().setKDPAttribute('sourceSelector', 'visible', true);
 					this.getPlayer().onFlavorsListChanged(flavors);
 				}
 			},
