@@ -1203,7 +1203,7 @@ body {
 .closedCaptions > .dropdown-menu {
 	overflow-y: auto;
 	overflow-x: hidden;
-	max-height: 100px;
+	max-height: 120px;
 	width: auto;
 	max-width: 140px;
 }

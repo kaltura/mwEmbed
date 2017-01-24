@@ -3,32 +3,31 @@
 	<span tabindex="0" role="button" class="icon-arrow"></span>
 
 	<!--main-->
-	<div class="cvaa-main cvaa--show">
-		<p class="cvaa-header">Captions</p>
-		<div class="cvaa-row">
-			<span>Enable caption</span>
-			<div class="cvaa-main__switch">
-				<input tabindex="0" role="button" class="cvaa-main__switch-checkbox" type="checkbox" name="cvaa-switch"
-					   id="k-cvaa-switch" checked>
-				<label class="cvaa-main__switch-label" for="k-cvaa-switch">
-					<span class="cvaa-main__switch-label__inner"></span>
-					<span class="cvaa-main__switch-label__btn"></span>
-				</label>
-			</div>
-		</div>
-		<div class="cvaa-row">
-			<span>Languages</span>
-			<select name="captions" class="cvaa-dropdown">
-				<option value="English">English</option>
-			</select>
-		</div>
-		<div class="cvaa-row">
-			<button class="cvaa-btn-text cvaa-main__advoptions-btn">Advanced options</button>
-		</div>
-	</div>
+	<!--<div class="cvaa-main cvaa&#45;&#45;show">-->
+		<!--<p class="cvaa-header">Captions</p>-->
+		<!--<div class="cvaa-row">-->
+			<!--<span>Enable caption</span>-->
+			<!--<div class="cvaa-main__switch">-->
+				<!--<input tabindex="0" role="button" class="cvaa-main__switch-checkbox" type="checkbox" name="cvaa-switch"-->
+					   <!--id="k-cvaa-switch" checked>-->
+				<!--<label class="cvaa-main__switch-label" for="k-cvaa-switch">-->
+					<!--<span class="cvaa-main__switch-label__inner"></span>-->
+					<!--<span class="cvaa-main__switch-label__btn"></span>-->
+				<!--</label>-->
+			<!--</div>-->
+		<!--</div>-->
+		<!--<div class="cvaa-row">-->
+			<!--<span>Languages</span>-->
+			<!--<select name="captions" class="cvaa-dropdown cvaa-main_openmenu">-->
+			<!--</select>-->
+		<!--</div>-->
+		<!--<div class="cvaa-row">-->
+			<!--<button class="cvaa-btn-text cvaa-main__advoptions-btn">Advanced options</button>-->
+		<!--</div>-->
+	<!--</div>-->
 
 	<!--advanced-->
-	<div class="cvaa-adv">
+	<div class="cvaa-adv cvaa--show">
 		<p class="cvaa-header">Advanced options</p>
 		<div class="cvaa-row cvaa-row--center">
 			<% $.each(cvaaOptions.presets, function(idx, property){ %>
@@ -75,7 +74,7 @@
 			<div class="cvaa-btn-label">
 				<button name="cvaa-size" value="<%=property.prop%>"
 						class="cvaa-btn small <%=property.btnClass%> icvaa-letter-size"></button>
-				<span class="<%=property.labelClass%>"><%=property.text%></span>
+				<span><%=property.text%></span>
 			</div>
 			<% }); %>
 		</div>

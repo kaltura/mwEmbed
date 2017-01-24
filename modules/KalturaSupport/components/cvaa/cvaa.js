@@ -51,49 +51,49 @@
             },
             cvaaOptions: {
                 "size":[
-                    {"prop": 1, "value": "12", "text": "Small",       "labelClass": "",                    "btnClass": "cvaa-size__small-btn" },
-                    {"prop": 2, "value": "16", "text": "Medium",      "labelClass": "",                    "btnClass": "cvaa-size__medium-btn" },
-                    {"prop": 3, "value": "20", "text": "Large",       "labelClass": "",                    "btnClass": "cvaa-size__large-btn" },
-                    {"prop": 4, "value": "25", "text": "Extra Large", "labelClass": "cvaa-size__xl-label", "btnClass": "cvaa-size__exlarge-btn" }
+                    { "prop": 1, "value": "12", "text": "Small",       "btnClass": "cvaa-size__small-btn" },
+                    { "prop": 2, "value": "16", "text": "Medium",      "btnClass": "cvaa-size__medium-btn" },
+                    { "prop": 3, "value": "20", "text": "Large",       "btnClass": "cvaa-size__large-btn" },
+                    { "prop": 4, "value": "25", "text": "Extra Large", "btnClass": "cvaa-size__exlarge-btn" }
                 ],
                 "edgeStyle":[
-                    {"prop": 1, "text":"None", 			"value":	"none"},
-                    {"prop": 2, "text":"Drop shadow",	"value":	"rgb(34, 34, 34) 2px 2px 3px, rgb(34, 34, 34) 2px 2px 4px, rgb(34, 34, 34) 2px 2px 5px"},
-                    {"prop": 3, "text":"Raised", 		"value":	"rgb(34, 34, 34) 1px 1px, rgb(34, 34, 34) 2px 2px, rgb(34, 34, 34) 3px 3px"},
-                    {"prop": 4, "text":"Depressed", 	"value":	"rgb(204, 204, 204) 1px 1px, rgb(204, 204, 204) 0px 1px, rgb(34, 34, 34) -1px -1px, rgb(34, 34, 34) 0px -1px"},
-                    {"prop": 5, "text":"Outlined",		"value":	"rgb(34, 34, 34) 0px 0px 4px, rgb(34, 34, 34) 0px 0px 4px, rgb(34, 34, 34) 0px 0px 4px, rgb(34, 34, 34) 0px 0px 4px"}
+                    { "prop": 1, "text":"None",          "value": "none" },
+                    { "prop": 2, "text":"Drop shadow",   "value": "rgb(34, 34, 34) 2px 2px 3px, rgb(34, 34, 34) 2px 2px 4px, rgb(34, 34, 34) 2px 2px 5px" },
+                    { "prop": 3, "text":"Raised",        "value": "rgb(34, 34, 34) 1px 1px, rgb(34, 34, 34) 2px 2px, rgb(34, 34, 34) 3px 3px" },
+                    { "prop": 4, "text":"Depressed",     "value": "rgb(204, 204, 204) 1px 1px, rgb(204, 204, 204) 0px 1px, rgb(34, 34, 34) -1px -1px, rgb(34, 34, 34) 0px -1px" },
+                    { "prop": 5, "text":"Outlined",      "value": "rgb(34, 34, 34) 0px 0px 4px, rgb(34, 34, 34) 0px 0px 4px, rgb(34, 34, 34) 0px 0px 4px, rgb(34, 34, 34) 0px 0px 4px" }
                 ],
                 "color":[
-                    {"prop": 1, "text":"White", 	"value":	"#ffffff"},
-                    {"prop": 2, "text":"Yellow",	"value":	"#ffff00"},
-                    {"prop": 3, "text":"Green",		"value":	"#00ff00"},
-                    {"prop": 4, "text":"Cyan",		"value":	"#00ffff"},
-                    {"prop": 5, "text":"Blue",		"value":	"#0000ff"},
-                    {"prop": 6, "text":"Magenta",	"value":	"#ff00ff"},
-                    {"prop": 7, "text":"Red",		"value":	"#ff0000"},
-                    {"prop": 8, "text":"Black",		"value":	"#000000"}
+                    { "prop": 1, "text":"White",   "value": "#ffffff" },
+                    { "prop": 2, "text":"Yellow",  "value": "#ffff00" },
+                    { "prop": 3, "text":"Green",   "value": "#00ff00" },
+                    { "prop": 4, "text":"Cyan",    "value": "#00ffff" },
+                    { "prop": 5, "text":"Blue",    "value": "#0000ff" },
+                    { "prop": 6, "text":"Magenta", "value": "#ff00ff" },
+                    { "prop": 7, "text":"Red",     "value": "#ff0000" },
+                    { "prop": 8, "text":"Black",   "value": "#000000" }
                 ],
                 "family":[
-                    {"prop": 1, "text":"Monospaced Serif",			"value":	"Courier New, Courier, Nimbus Mono L, Cutive Mono, monospace"},
-                    {"prop": 2, "text":"Proportional Serif",		"value":	"Times New Roman, Times, Georgia, Cambria, PT Serif Caption, serif"},
-                    {"prop": 3, "text":"Monospaced Sans-Serif", 	"value":	"Lucida Console, Deja Vu Sans Mono, Monaco, Consolas, PT Mono, monospace"},
-                    {"prop": 4, "text":"Proportional Sans-Serif",	"value":	"Arial, Roboto, Arial Unicode Ms, Helvetica, Verdana, PT Sans Caption, sans-serif"},
-                    {"prop": 5, "text":"Casual", 					"value":	"Comic Sans MS, Impact, Handlee, fantasy"},
-                    {"prop": 6, "text":"Cursive", 					"value":	"Monotype Corsiva, URW Chancery L, Apple Chancery, Dancing Script, cursive"},
-                    {"prop": 7, "text":"Small Capitals",			"value":	"Verdana ,Arial Unicode Ms, Arial, Helvetica, Marcellus SC, sans-serif"}
+                    { "prop": 1, "text":"Monospaced Serif",        "value": "Courier New, Courier, Nimbus Mono L, Cutive Mono, monospace" },
+                    { "prop": 2, "text":"Proportional Serif",      "value": "Times New Roman, Times, Georgia, Cambria, PT Serif Caption, serif" },
+                    { "prop": 3, "text":"Monospaced Sans-Serif",   "value": "Lucida Console, Deja Vu Sans Mono, Monaco, Consolas, PT Mono, monospace" },
+                    { "prop": 4, "text":"Proportional Sans-Serif", "value": "Arial, Roboto, Arial Unicode Ms, Helvetica, Verdana, PT Sans Caption, sans-serif" },
+                    { "prop": 5, "text":"Casual",                  "value": "Comic Sans MS, Impact, Handlee, fantasy" },
+                    { "prop": 6, "text":"Cursive",                 "value": "Monotype Corsiva, URW Chancery L, Apple Chancery, Dancing Script, cursive" },
+                    { "prop": 7, "text":"Small Capitals",          "value": "Verdana ,Arial Unicode Ms, Arial, Helvetica, Marcellus SC, sans-serif" }
                 ],
                 "opacity": [
-                    {"prop": 1, "text": "Opacity 0%", "value": 0},
-                    {"prop": 2, "text": "Opacity 25%", "value": 25},
-                    {"prop": 3, "text": "Opacity 50%", "value": 50},
-                    {"prop": 4, "text": "Opacity 75%", "value": 75},
-                    {"prop": 5, "text": "Opacity 100%", "value": 100}
+                    { "prop": 1, "text": "Opacity 0%",   "value": 0 },
+                    { "prop": 2, "text": "Opacity 25%",  "value": 25 },
+                    { "prop": 3, "text": "Opacity 50%",  "value": 50 },
+                    { "prop": 4, "text": "Opacity 75%",  "value": 75 },
+                    { "prop": 5, "text": "Opacity 100%", "value": 100 }
                 ],
                 "presets": [
-                    {"prop": 1, "text": "Default", "value": "cvaaDefault"},
-                    {"prop": 2, "text": "Sample", "value": "cvaaPreset1"},
-                    {"prop": 3, "text": "Sample", "value": "cvaaPreset2"},
-                    {"prop": 4, "text": "Custom", "value": "custom"}
+                    { "prop": 1, "text": "Default", "value": "cvaaDefault" },
+                    { "prop": 2, "text": "Sample",  "value": "cvaaPreset1" },
+                    { "prop": 3, "text": "Sample",  "value": "cvaaPreset2" },
+                    { "prop": 4, "text": "Custom",  "value": "custom" }
                 ]
             }
         },
@@ -108,9 +108,10 @@
             "optionsBtnLabel": gM('mwe-cvaa-options'),
             "captionsPreviewText": gM('mwe-cvaa-previewText')
         },
-        previousScreen: "cvaa-main",
-        currentScreen: "cvaa-main",
-        closedCaptionsDisplayed: "",
+        previousScreen: "cvaa-adv",
+        currentScreen: "cvaa-adv",
+        currentLanguageIndex: "",
+        currentLanguage: "",
 
         cvaaSettings: {},
         currentFontFamily: "",
@@ -132,7 +133,6 @@
             var _this = this;
 
             var cvaaMenus = [
-                { name: "cvaa-adv",   btnClass: "cvaa-main__advoptions-btn" },
                 { name: "cvaa-cstm",  btnClass: "cvaa-adv__cstmoptions-btn" },
                 { name: "cvaa-size",  btnClass: "cvaa-cstm__size-btn" },
                 { name: "cvaa-font",  btnClass: "cvaa-cstm__font-btn" },
@@ -144,17 +144,7 @@
             });
 
             $(".cvaa .icon-close").on("mousedown", function () {
-                _this.cvaaMenuChanged("cvaa-main");
-            });
-
-            $(".cvaa .cvaa-main__switch").on("change", function () {
-                if ($(".cvaa .cvaa-main__switch-checkbox").is(":checked")) {
-                    _this.closedCaptionsDisplayed = true;
-                    _this.getPlayer().triggerHelper("showClosedCaptions");
-                } else {
-                    _this.closedCaptionsDisplayed = false;
-                    _this.getPlayer().triggerHelper("hideClosedCaptions");
-                }
+                _this.cvaaMenuChanged("cvaa-adv");
             });
 
             $.each(cvaaMenus, function (index, menu) {
@@ -170,17 +160,13 @@
 
             this.bind('playerReady', function () {
                _this.getCurrentSettings();
+
             });
 
-            this.bind('closedCaptionsDisplayed', function () {
-                _this.closedCaptionsDisplayed = true;
-            });
+            this.bind('openCvaaOptions', function (e, currentLanguageIndex) {
+                _this.currentLanguageIndex = currentLanguageIndex;
+                _this.currentLanguage = _this.getPlayer().getInterface().find(".closedCaptions .dropdown-menu li").eq(_this.currentLanguageIndex).children().attr("title");
 
-            this.bind('closedCaptionsHidden', function () {
-                _this.closedCaptionsDisplayed = false;
-            });
-
-            this.bind('openCvaaOptions', function () {
                 _this.getScreen().then(function (screen) {
                     _this.toggleScreen();
                 });
@@ -193,13 +179,6 @@
 
                 if (screenName === "cvaa") {
                     _this.getScreen().then(function (screen) {
-
-                        if (_this.closedCaptionsDisplayed == true) {
-                            $(".cvaa .cvaa-main__switch-checkbox").prop('checked', true);
-                        } else {
-                            $(".cvaa .cvaa-main__switch-checkbox").prop('checked', false);
-                        }
-
                         screen.addClass('semiTransparentBkg');
                         // prevent keyboard key actions to allow typing in share screen fields
                         embedPlayer.triggerHelper('onDisableKeyboardBinding');
@@ -220,6 +199,10 @@
 
             this.bind('preHideScreen', function (event, screenName) {
                 if (screenName === "cvaa") {
+                    //set correct currently selected language
+                    _this.getPlayer().getInterface().find(".closedCaptions .dropdown-menu li").eq(_this.lastActiveCaption).addClass('active');
+                    _this.getPlayer().getInterface().find(".closedCaptions .mobileMenuSelect").val(_this.currentLanguage);
+
                     if (_this.getPlayer().getPlayerElement()) {
                         $("#" + _this.getPlayer().getPlayerElement().id).removeClass("blur");
                         _this.getPlayer().getPlayerPoster().removeClass("blur");
@@ -242,6 +225,7 @@
                 this.initUpdatePreviewBtn(this.cvaaSettings);
                 currentPreset = this.getCurrentPreset(this.cvaaSettings.currentPreset);
             } else {
+                this.cvaaSettings.currentPreset = "cvaaDefault";
                 currentPreset = $.extend(true, {}, this.getConfig("cvaaDefault"));
             }
 
@@ -270,19 +254,13 @@
             this.showHideScreens();
 
             //set correct previous screen for general screens
-            switch (newScreen) {
-                case "cvaa-adv":
-                    this.previousScreen = "cvaa-main";
-                    break;
-
-                case "cvaa-cstm":
-                    this.previousScreen = "cvaa-adv";
-                    break;
+            if (newScreen == "cvaa-cstm") {
+                this.previousScreen = "cvaa-adv";
             }
         },
 
         showHidePreview: function (currentMenu) {
-            if (currentMenu !== "cvaa-main" && currentMenu !== "cvaa-adv" ) {
+            if ( currentMenu !== "cvaa-adv" ) {
                 this.getPlayer().getInterface().find(".cvaa-footer").show();
             } else {
                 this.getPlayer().getInterface().find(".cvaa-footer").hide();
@@ -295,7 +273,7 @@
         },
 
         showHideBackBtn: function () {
-            if (this.currentScreen !== "cvaa-main") {
+            if (this.currentScreen !== "cvaa-adv") {
                 $(".cvaa-container .icon-arrow").addClass("cvaa--show");
             } else {
                 $(".cvaa-container .icon-arrow").removeClass("cvaa--show");
@@ -336,7 +314,7 @@
                 }
             });
 
-            //font-family
+            //font-family / bg and font opacity
             $(".cvaa-color .cvaa-dropdown, .cvaa-bg .cvaa-dropdown, .cvaa-font .cvaa-dropdown").on("change keydown", function (event) {
                 if (event.which === 32 || event.which === 13 || event.type == "change") {
                     _this.updateSettingsAndPreview(this.name, $(this).val());
