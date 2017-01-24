@@ -283,7 +283,7 @@
 
 .cvaa-cstm__bg-btn, .cvaa-cstm__size-btn,
 .cvaa-cstm__font-btn, .cvaa-cstm__color-btn {
-	font-size: 1.6em;
+	font-size: 1.3em;
 }
 
 .cvaa-cstm .cvaa-btn.small {
@@ -309,19 +309,19 @@
 }
 
 .cvaa-size__small-btn {
-	font-size: 0.8em;
+	font-size: 0.7em;
 }
 
 .cvaa-size__medium-btn {
-	font-size: 1.2em;
+	font-size: 0.9em;
 }
 
 .cvaa-size__large-btn {
-	font-size: 1.6em;
+	font-size: 1.1em;
 }
 
 .cvaa-size__exlarge-btn {
-	font-size: 2em;
+	font-size: 1.3em;
 }
 
 .cvaa-size .cvaa-btn {
@@ -367,6 +367,7 @@
 	padding: 4px;
 	border-radius: 4px;
 	background-clip: content-box;
+	vertical-align: top;
 }
 
 .cvaa-color .cvaa-btn.White {
