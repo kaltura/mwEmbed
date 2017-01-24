@@ -114,7 +114,8 @@
 			"mw.KBaseComponent",
 			"jquery.ui.draggable",
 			"jquery.ui.resizable",
-			"jquery.ui.droppable"
+			"jquery.ui.droppable",
+			"Hlsjs"
 		],
 		"kalturaPluginName": "dualScreen"
 	},

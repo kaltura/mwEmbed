@@ -101,12 +101,12 @@
             return this.seeking;
         },
 
-        isHLS: function isHLS() {
+        isABR: function isABR() {
             return this.autoBitrate;
         },
 
-        isABR: function isABR() {
-            return this.autoBitrate;
+        supportsOptimisticSeeking: function supportsOptimisticSeeking() {
+            return false;
         },
 
         switchSrc: function switchSrc(sourceIndex) {
@@ -198,7 +198,7 @@
             this.bindEvents();
             // this.playerObject.load();
 
-            $.isFunction(readyCallback) && readyCallback();
+            $.isFunction(readyCallback) && readyCallback(this);
 
             this.trigger('loadstart');
             this.trigger('canplay');

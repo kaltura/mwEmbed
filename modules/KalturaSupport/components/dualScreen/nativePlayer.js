@@ -1,4 +1,4 @@
-(function (mw, $, kWidgetSupport) {
+(function (mw, $, kWidgetSupport, Hls) {
     'use strict';
 
     mw.dualScreen = mw.dualScreen || {};
@@ -12,21 +12,42 @@
         stream: null,
         embedPlayer: null,
         supportsPlaybackrate: true,
+        streamerType: 'http',
 
         init: function init(stream, embedPlayer, readyCallback) {
             this.stream = stream;
             this.embedPlayer = embedPlayer;
+            this.streamerType = this.stream.url.indexOf('m3u8') > 0 ? 'hls' : 'http';
+            this.initPlayerElement(readyCallback || $.noop);
+
+            return this;
+        },
+
+        initPlayerElement: function initPlayerElement(readyCallback) {
+            var $this = $(this);
+
             this.muted = true;
 
-            $(this).attr({
+            $this.attr({
                 muted: true,
-                src: this.stream.url,
                 poster: this.getPoster()
             }).addClass('videoPlayer');
 
-            $.isFunction(readyCallback) && readyCallback();
-
-            return this;
+            if (this.streamerType === 'http') {
+                readyCallback(this);
+                $this.attr('src', this.stream.url);
+            } else if (this.streamerType === 'hls') {
+                var hls = new Hls();
+                var _this = this;
+                hls.attachMedia(this);
+                hls.on(Hls.Events.MEDIA_ATTACHED, function () {
+                    hls.loadSource(_this.stream.url);
+                    hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+                        readyCallback($this[0]);
+                        $this.trigger('loadstart');
+                    });
+                });
+            }
         },
 
         setCurrentTime: function setCurrentTime(newTime, stopAfterSeek) {
@@ -53,7 +74,15 @@
         },
 
         isABR: function isABR() {
-            return false;
+            return this.stream.url.indexOf('m3u8') > 0;
+        },
+
+        isSeeking: function isSeeking() {
+            return this.seeking;
+        },
+
+        supportsOptimisticSeeking: function supportsOptimisticSeeking() {
+            return !this.isABR();
         }
     };
-})(window.mw, window.jQuery, window.kWidgetSupport);
+})(window.mw, window.jQuery, window.kWidgetSupport, window.Hls);
