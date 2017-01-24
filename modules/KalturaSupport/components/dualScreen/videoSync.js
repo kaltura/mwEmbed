@@ -141,12 +141,12 @@
                     this.log('seeking :: master to ' + controller.currentSeekTargetTime);
                     eventsMap.onpause(true);
                     slaves.some(function(slave){
-                        if ( slave.isFlash ) {
+                        if (!slave.supportsOptimisticSeeking()) {
                             _this.log("seeking :: slave.pause (FLASH ONLY -> isSyncDelay = true)");
                             _this.isSyncDelay = true; // manually trigger syncDelay, so we won't sync the slave till the master will fire seeked
                         }
 
-                        return slave.isFlash;
+                        return !slave.supportsOptimisticSeeking();
                     });
                 }.bind(this),
                 seeked: function () {
@@ -158,12 +158,12 @@
                     // this.mediaGroupSync(controller, slaves);
 
                     slaves.some(function (slave) {
-                        if (slave.isFlash) {
+                        if (!slave.supportsOptimisticSeeking()) {
                             _this.log("seeked :: slave.play (FLASH ONLY -> isSyncDelay = false)");
                             _this.isSyncDelay = false; // manually reset syncDelay
                         }
 
-                        return slave.isFlash;
+                        return !slave.supportsOptimisticSeeking();
                     });
 
                     eventsMap.onplay(true);
@@ -228,7 +228,7 @@
 
             if ( slaves.length ) {
                 slaves.forEach(function( slave ) {
-                    if ( slave.isFlash && slave.isSeeking() ) {
+                    if ( !slave.supportsOptimisticSeeking() && slave.isSeeking() ) {
                         this.log('mediaGroupSync :: slave is flash and seeking => skip');
                         return;
                     }
@@ -298,7 +298,7 @@
             var _this = this;
             var playing = player.isPlaying();
 
-            if (slave.isFlash) {
+            if (!slave.supportsOptimisticSeeking()) {
                 $(slave).one('seeked', function (event, value) {
                     _this.log('seekSlave :: seeked to ' + value);
                     clearTimeout(seekTimeoutId);

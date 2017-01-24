@@ -105,6 +105,10 @@
             return this.autoBitrate;
         },
 
+        supportsOptimisticSeeking: function supportsOptimisticSeeking() {
+            return false;
+        },
+
         switchSrc: function switchSrc(sourceIndex) {
             this.playerObject.sendNotification('doSwitch', {
                 flavorIndex: sourceIndex
