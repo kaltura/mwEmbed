@@ -20,8 +20,7 @@
                 backgroundColor: "rgba(0,0,0,0)",
                 backgroundHexColor: "#000000",
                 backgroundOpacity: 0,
-                edgeStyle: "none",
-                currentPreset: "cvaaDefault"
+                edgeStyle: "none"
             },
             cvaaPreset1: {
                 fontFamily: "Arial, Roboto, Arial Unicode Ms, Helvetica, Verdana, PT Sans Caption, sans-serif",
@@ -33,8 +32,7 @@
                 backgroundColor: "rgba(255,255,255,1)",
                 backgroundHexColor: "#ffffff",
                 backgroundOpacity: 100,
-                edgeStyle: "none",
-                currentPreset: "cvaaPreset1"
+                edgeStyle: "none"
             },
             cvaaPreset2: {
                 fontFamily: "Arial, Roboto, Arial Unicode Ms, Helvetica, Verdana, PT Sans Caption, sans-serif",
@@ -46,8 +44,7 @@
                 backgroundColor: "rgba(0,0,0,1)",
                 backgroundHexColor: "#000000",
                 backgroundOpacity: 100,
-                edgeStyle: "none",
-                currentPreset: "cvaaPreset2"
+                edgeStyle: "none"
             },
             cvaaOptions: {
                 "size":[
@@ -422,7 +419,7 @@
             this.updatePreview(currentPreset.currentPreset, "font-size", this.currentFontSize);
 
             //set current preset btn
-            $(".cvaa-adv .cvaa-btn[value='" + this.getValueOrProp("presets", currentPreset.currentPreset, "value") + "']").parent().addClass('icvaa-check').siblings().removeClass('icvaa-check');
+            $(".cvaa-adv .cvaa-btn[value='" + this.getValueOrProp("presets", this.cvaaSettings.currentPreset, "value") + "']").parent().addClass('icvaa-check').siblings().removeClass('icvaa-check');
 
             //send styles to captions plugin
             this.getPlayer().triggerHelper("newCaptionsStyles", currentPreset);
