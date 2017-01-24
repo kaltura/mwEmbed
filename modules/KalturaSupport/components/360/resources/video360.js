@@ -240,13 +240,7 @@
 		},
 
 		add360logo: function () {
-			var img = $('<img />')
-				.attr({
-					'src': '360.gif'
-				});
-			var logo = $('<div />')
-				.addClass('logo360 bottomRight')
-				.append(img);
+			var logo = $('<div />').addClass('logo360 bottomRight');
 			this.getPlayer().getVideoHolder().append(logo);
 		}
 	}));

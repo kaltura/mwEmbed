@@ -158,7 +158,7 @@
                 this.bind('resizeEvent', function () {
 					// in WebVTT we have to remove the caption on resizing
 					// for recalculation the caption layout
-                    if ( _this.selectedSource.mimeType === "text/vtt" ) {
+                    if ( _this.selectedSource && _this.selectedSource.mimeType === "text/vtt" ) {
 						mw.log( 'mw.ClosedCaptions:: resizeEvent: remove captions' );
                         _this.getPlayer().getInterface().find('.track').remove();
                     }

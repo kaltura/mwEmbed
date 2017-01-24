@@ -1147,7 +1147,7 @@ HTML;
 		$jsMinContent = JavaScriptMinifier::minify( $jsContent, $wgResourceLoaderMinifierStatementsOnOwnLine );
 	
 		// try to store the cached file: 
-		$this->cache-set($cachePath, $jsMinContent);
+		$this->cache->set($cachePath, $jsMinContent);
 		return $jsMinContent;
 	}
 	/**
