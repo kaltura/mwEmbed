@@ -25,7 +25,7 @@
         startCastTitle: gM( 'mwe-chromecast-startcast' ),
         stopCastTitle: gM( 'mwe-chromecast-stopcast' ),
         savedPlayer: null,
-        savedVolume: null,
+        savedPlaybackParams: null,
         isDisabled: false,
         casting: false,
         remotePlayer: null,
@@ -76,8 +76,8 @@
                     this.launchError.bind( this )
                 );
             } else {
+                this.endSession();
                 this.switchToSavedPlayer();
-                // this.endSession();
             }
         },
 
@@ -112,39 +112,48 @@
 
         switchToChromecastPlayer: function () {
             this.log( "switchToChromecastPlayer" );
+            var _this = this;
             this.casting = true;
             this.embedPlayer.casting = true;
             $( this.embedPlayer ).trigger( 'casting' );
             this.embedPlayer.pause();
+            this.savedPlaybackParams = this.getEmbedPlayerPlaybackParams();
             this.savedPlayer = this.embedPlayer.selectedPlayer;
             this.embedPlayer.selectPlayer( mw.EmbedTypes.mediaPlayers.getPlayerById( 'chromecast' ) );
             this.embedPlayer.updatePlaybackInterface( function () {
-                this.embedPlayer.layoutBuilder.closeAlert();
-                this.getComponent().css( "color", "#35BCDA" );
-                this.updateTooltip( this.stopCastTitle );
-                this.showLoadingMessage();
-                this.embedPlayer.setupRemotePlayer( this.remotePlayer, this.remotePlayerController, this.embedPlayer.volume );
-            }.bind( this ) );
+                _this.embedPlayer.layoutBuilder.closeAlert();
+                _this.getComponent().css( "color", "#35BCDA" );
+                _this.updateTooltip( _this.stopCastTitle );
+                _this.showLoadingMessage();
+                _this.embedPlayer.setupRemotePlayer( _this.remotePlayer, _this.remotePlayerController, _this.savedPlaybackParams );
+            } );
+        },
+
+        getEmbedPlayerPlaybackParams: function () {
+            return {
+                currentTime: this.embedPlayer.getPlayerElementTime(),
+                duration: this.embedPlayer.getDuration(),
+                volume: this.embedPlayer.getPlayerElementVolume()
+            }
         },
 
         switchToSavedPlayer: function () {
             this.log( "switchToSavedPlayer" );
             var _this = this;
-            var savedTime = this.embedPlayer.getPlayerElementTime();
             this.casting = false;
             this.getComponent().css( "color", "white" );
             this.updateTooltip( this.startCastTitle );
             this.embedPlayer.getInterface().find( ".chromecastScreen" ).remove();
+            this.savedPlaybackParams = this.getEmbedPlayerPlaybackParams();
             this.embedPlayer.selectPlayer( this.savedPlayer );
             this.embedPlayer.remotePlayerController.stop();
             this.embedPlayer.castSession.endSession( true );
             this.embedPlayer.updatePlaybackInterface( function () {
                 _this.embedPlayer.enablePlayControls();
                 _this.embedPlayer.canSeek().then( function () {
-                    _this.embedPlayer.seek( savedTime, true );
+                    _this.embedPlayer.seek( _this.savedPlaybackParams.currentTime, true );
                 } );
             } );
-            this.savedPlayer = null;
         },
 
         launchError: function ( errorCode ) {
