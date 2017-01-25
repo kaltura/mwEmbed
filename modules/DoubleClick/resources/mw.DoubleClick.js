@@ -26,6 +26,9 @@
 		// The monitor interval index:
 		adMonitor: null,
 
+        // Flag to indicate whether the ad is skippable
+        adSkippable: null,
+
 		shouldPausePlaylist: false,
 
 		// store the ad start time
@@ -36,7 +39,7 @@
 
 		// flag for using a chromeless player - move control to KDP DoubleClick plugin
 		isChromeless: false,
-		 //flag for using native mobile IMA SDK
+		//flag for using native mobile IMA SDK
 		isNativeSDK: false,
 		// for Chromeless only: save entry duration during midrolls so we can update it when midroll is finished
 		entryDuration: null,
@@ -60,7 +63,6 @@
 		// Flag to enable/ disable timeout for iOS5/ iOS6 when ad is clicked
 		isAdClickTimeoutEnabled: false,
 
-		playerIsReady: false,
 		imaLoaded: false,
 		prePlayActionTriggered: false,
 
@@ -196,14 +198,6 @@
 				_this.adTagUrl = _this.getConfig( 'prerollUrlJS' );
 			}
 
-			this.embedPlayer.bindHelper( 'playerReady' + this.bindPostfix, function(event){
-				_this.playerIsReady = true;
-				if ( _this.imaLoaded ){
-					mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
-					_this.requestAds();
-				}
-			});
-
 			this.embedPlayer.bindHelper('prePlayAction' + this.bindPostfix, function( e, prePlay ){
 				//This code executed only if prePlayAction triggered before imaLoaded (since imaLoaded does unbinding for 'prePlayAction'),
 				//So we should block the player until the ima will loaded.
@@ -212,11 +206,11 @@
 				_this.prePlayActionTriggered = true;
 			});
 
-			var onImaLoadSuccess = function(){
+			var onImaLoadSuccess = function() {
 				_this.imaLoaded = true;
 				_this.embedPlayer.unbindHelper('prePlayAction' + _this.bindPostfix);
 				// Determine if we are in managed or kaltura point based mode.
-				if ( _this.localizationCode ){
+				if (_this.localizationCode) {
 					google.ima.settings.setLocale(_this.localizationCode);
 				}
 				// set player type and version
@@ -226,15 +220,15 @@
 
 				// Set num of redirects for VAST wrapper ads, higher means bigger latency!
 				var numRedirects = _this.getConfig("numRedirects");
-				if(numRedirects) {
+				if (numRedirects) {
 					google.ima.settings.setNumRedirects(numRedirects);
 				}
 
 				// Check for adPattern
-				if ( _this.getConfig( 'adPattern' ) ) {
+				if (_this.getConfig('adPattern')) {
 					var adIndex = _this.getAdPatternIndex();
-					mw.log( "DoubleClick:: adPattern: " + _this.getConfig( 'adPattern' ) + " on index: " + adIndex );
-					if ( adIndex === 'A' ) {
+					mw.log("DoubleClick:: adPattern: " + _this.getConfig('adPattern') + " on index: " + adIndex);
+					if (adIndex === 'A') {
 						// Managed bindings
 						_this.addManagedBinding();
 					}
@@ -243,11 +237,17 @@
 					_this.addManagedBinding();
 				}
 
-				if ( _this.playerIsReady ) {
+				var requestAdsAndPlay = function () {
 					_this.requestAds();
-					if ( _this.prePlayActionTriggered ){
+					if (_this.prePlayActionTriggered) {
 						_this.embedPlayer.play();
 					}
+				};
+
+				if (_this.embedPlayer.changeMediaStarted) {
+					setTimeout(requestAdsAndPlay, 100)
+				} else {
+					requestAdsAndPlay();
 				}
 			};
 			var onImaLoadFailed = function( errorCode ){
@@ -258,8 +258,13 @@
 					_this.embedPlayer.play();
 				}
 			};
-
-			if (window.google && window.google.ima){
+			try{
+				if (top.google && top.google.ima){
+					window.google = top.google;
+				}
+			}
+			catch(e){}
+			if (this.getConfig("useExternalImaLib") && window.google && window.google.ima){
 				mw.log("Google IMA lib already loaded");
 				onImaLoadSuccess();
 			} else {
@@ -618,12 +623,8 @@
 				_this.resumeAd(isLinear)
 			});
 			$(".adCover").remove();
-			if (this.isChromeless){
+			if (!mw.isIphone()){
 				$(".videoDisplay").prepend(adCover);
-			}else{
-				if (!mw.isIphone()){
-					$(this.getAdContainer()).append(adCover);
-				}
 			}
 			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
 
@@ -653,7 +654,9 @@
 				$(".adCover").remove();
 				$(this.embedPlayer).trigger("onPlayerStateChange", ["play", this.embedPlayer.currentState]);
 				if (isLinear) {
-					this.resumeSkipSupport();
+                    if (!_this.adSkippable) {
+                        this.resumeSkipSupport();
+                    }
 					this.embedPlayer.disablePlayControls();
 				} else {
 					_this.embedPlayer.play();
@@ -924,7 +927,7 @@
 			}
 
 			if ( this.isNativeSDK ) {
-				this.embedPlayer.getPlayerElement().attr( 'doubleClickRequestAds', this.getConfig( 'adTagUrl' ));
+				this.embedPlayer.getPlayerElement().attr( 'doubleClickRequestAds', adTagUrl);
 				mw.log( "DoubleClick::requestAds: Native SDK player request ad ");
 				return;
 			}
@@ -1008,9 +1011,18 @@
 
 						try {
 							var selectionCriteria = new google.ima.CompanionAdSelectionSettings();
-							selectionCriteria.resourceType = google.ima.CompanionAdSelectionSettings.ResourceType.STATIC;
-							selectionCriteria.creativeType = google.ima.CompanionAdSelectionSettings.CreativeType.IMAGE;
-							selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.IGNORE;
+							selectionCriteria.resourceType = google.ima.CompanionAdSelectionSettings.ResourceType.ALL;
+							selectionCriteria.creativeType = google.ima.CompanionAdSelectionSettings.CreativeType.ALL;
+							switch( this.getConfig( 'companionSizeCriteria' ) ){
+								case 'SELECT_NEAR_MATCH' :
+									selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.SELECT_NEAR_MATCH;
+									break;
+								case 'IGNORE' :
+									selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.IGNORE;
+									break;
+								default:
+									selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.SELECT_EXACT_MATCH;
+							}
 							companionAds = ad.getCompanionAds(adSlotWidth, adSlotHeight, selectionCriteria);
 						} catch(e) {
 							mw.log("Error: DoubleClick could not access getCompanionAds");
@@ -1170,7 +1182,7 @@
 				// Check for ad Stacking ( two starts in less then 250ms )
 				if( lastAdStartTime !== null &&
 					new Date().getTime() - lastAdStartTime < 250
-					){
+				){
 					mw.log("ERROR:: Stacking Ad STARTED! :" + ( lastAdStartTime - new Date().getTime() ) );
 					// Not sure what we should do here:
 					// 1) we can't unload manager since we have to play back the active ads
@@ -1185,8 +1197,9 @@
 				// update the last ad start time:
 				lastAdStartTime = new Date().getTime();
 				_this.adActive = true;
+                _this.adSkippable = ad.isSkippable();
 				if (_this.isLinear) {
-					if (!ad.isSkippable()){
+					if (!_this.adSkippable){
 						_this.showSkipBtn();
 					}
 					_this.playingLinearAd = true;
@@ -1621,20 +1634,22 @@
 		},
 		// Handler for various ad errors.
 		onAdError: function( errorEvent ) {
-			var errorMsg = ( typeof errorEvent.getError != 'undefined' ) ? errorEvent.getError() : errorEvent;
-			mw.log('DoubleClick:: onAdError: ' + errorMsg );
-			if (!this.adLoaderErrorFlag){
-				$( this.embedPlayer ).trigger("adErrorEvent");
-				this.adLoaderErrorFlag = true;
-			}
-			if (this.adsManager && $.isFunction( this.adsManager.unload ) ) {
-				this.adsManager.unload();
-			}
-			if (this.embedPlayer.isInSequence() || (this.embedPlayer.autoplay && this.embedPlayer.canAutoPlay())){
-				this.restorePlayer(this.contentDoneFlag);
-				this.embedPlayer.play();
-			}else{
-				this.destroy();
+			if (errorEvent) {
+				var errorMsg = ( typeof errorEvent.getError != 'undefined' ) ? errorEvent.getError() : errorEvent;
+				mw.log('DoubleClick:: onAdError: ' + errorMsg );
+				if (!this.adLoaderErrorFlag){
+					$( this.embedPlayer ).trigger("adErrorEvent");
+					this.adLoaderErrorFlag = true;
+				}
+				if (this.adsManager && $.isFunction( this.adsManager.unload ) ) {
+					this.adsManager.unload();
+				}
+				if (this.embedPlayer.isInSequence() || (this.embedPlayer.autoplay && this.embedPlayer.canAutoPlay())){
+					this.restorePlayer(this.contentDoneFlag);
+					this.embedPlayer.play();
+				}else{
+					this.destroy();
+				}
 			}
 		},
 		restorePlayer: function( onContentComplete, adPlayed ){

@@ -221,22 +221,10 @@ class UiConfResult {
 			"sideBarContainer" => array(),
 			"liveAnalytics"=>array(),
 			"kAnalony"=>array(),
+			"hlsjs"=>array(),
+			"kgitGuard"=>array()
 			//"playersJsReceiver" => array()
 		);
-
-		$userAgent = $this->request->getUserAgent();
-
-		if(preg_match('/(?i)msie [5-8]/', $userAgent))
-        {
-            //On IE8 and below disable hlsjs if added
-            if (isset($playerConfig['plugins']) &&
-                isset($playerConfig['plugins']["hlsjs"])){
-                unset ($playerConfig['plugins']["hlsjs"]);
-            }
-        } else {
-            //Add hlsjs by default to bundle if above IE8
-            $basePlugins["hlsjs"] = array();
-        }
 
 		$playerConfig['plugins'] = array_merge_recursive($playerConfig['plugins'], $basePlugins);
 

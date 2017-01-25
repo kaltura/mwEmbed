@@ -1,0 +1,33 @@
+@font-face {
+  font-family: 'polls';
+  src:  url('fonts/polls.eot?g68k8p');
+  src:  url('fonts/polls.eot?g68k8p#iefix') format('embedded-opentype'),
+    url('fonts/polls.ttf?g68k8p') format('truetype'),
+    url('fonts/polls.woff?g68k8p') format('woff'),
+    url('fonts/polls.svg?g68k8p#polls') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="wcicon-"], [class*=" wcicon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'polls' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.wcicon-statistics:before {
+  content: "\e61c";
+}
+.wcicon-stats:before {
+  content: "\e900";
+}
+

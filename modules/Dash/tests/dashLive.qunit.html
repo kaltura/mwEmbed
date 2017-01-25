@@ -1,0 +1,86 @@
+<html>
+<head>
+    <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+    <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+    <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+</head>
+<body>
+<h2>Live Dash</h2>
+<div id="kaltura_player_1453904613" style="width: 560px; height: 395px;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject"></div>
+
+<script>
+    kWidget.embed({
+        "targetId": "kaltura_player_1453904613",
+//        'wid' : '_1897241',
+//        'uiconf_id' : '11140701',
+//        'entry_id' : '1_gffgxm38',
+        'wid' : '_931702',
+        'uiconf_id' : '11140701',
+        'entry_id' : '1_oorxcge2',
+        "flashvars": {
+            "dash" : {
+                "plugin": true
+            },
+            "multiDrm": {
+                "plugin": true,
+                "licenseRequestTimeout": 5000,
+                "manifestRequestTimeout": 5000,
+                "fragmentRequestTimeout": 5000,
+                "ignoreManifestBufferSettings": true,
+                "ABRParameters": {
+                    "downloadRatioSafetyFactor": 1.5,
+                    "qualitySwitchThreshold": 2000,
+                    "bandwidthSafetyFactor" : 1.5,
+                    "minBufferLength": 8,
+                    "maxBufferLength": 15
+                }
+            },
+            "closedCaptions": {
+                "useExternalClosedCaptions":true,
+                "layout": "ontop",
+                "displayCaptions": false,
+                "fontFamily": "Arial",
+                "fontsize": 12,
+                "fontColor": "#000000",
+                "bg": "#ffffff",
+                "useGlow": false,
+                "glowBlur": 0,
+                "glowColor": "#ffffff",
+                "showEmbeddedCaptions": true,
+                "plugin": false
+            }
+        },
+        "cache_st": 1453904613
+
+
+
+
+        ,readyCallback: function(videoid){
+            var kdp = document.getElementById(videoid);
+            kdp.kBind( 'playerReady', function () {
+                kdp.sendNotification("loadExternalClosedCaptions", {
+                    languages: [{
+                        "language": "Hebrew",
+                        "languageCode": "he",
+                        "isDefault": true,
+                        "label": "Hebrew",
+                        "type": "vtt",
+                        "src": "http://localhost/test1.vtt",
+                        "fileExt": "vtt"
+                    },{
+                        "language": "English",
+                        "languageCode": "gg",
+                        "isDefault": true,
+                        "label": "English",
+                        "type": "vtt",
+                        "src": "http://localhost/test.vtt",
+                        "fileExt": "vtt"
+
+                    }]
+                });
+            });
+        }
+    });
+</script>
+</body>
+</html>

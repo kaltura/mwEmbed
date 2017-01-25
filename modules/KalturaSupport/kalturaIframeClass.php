@@ -29,6 +29,8 @@ class kalturaIframeClass {
 		$this->client = $container['client_helper'];
 		$this->utility = $container['utility_helper'];
 		$this->logger = $container['logger'];
+		$this->cache = $container['cache_helper'];
+
 
 		// No entry Id and Reference Id were found
 		if( count( $this->getEntryResult() ) == 0 ) {
@@ -511,13 +513,14 @@ class kalturaIframeClass {
 		// check for language key: 
 		$_GET['lang'] = $this->getLangKey();
 		// include skin and language in cache path, as a custom param needed for startup
-		$cachePath = $wgScriptCacheDirectory . '/startup.' .
+		$cachePath =  '/startup.' .
 			$wgMwEmbedVersion . $_GET['skin'] . $_GET['lang'] . $wgHTTPProtocol . '.' . $_SERVER['SERVER_NAME'] . '.min.js';
 			
 		// check for cached startup:
 		if( !$wgEnableScriptDebug){
-			if( is_file( $cachePath ) ){
-				return file_get_contents( $cachePath );
+			$content = $this->cache->get( $cachePath );
+			if( $content != null  ){
+				return $content;
 			}
 		}
 
@@ -533,7 +536,7 @@ class kalturaIframeClass {
 		if( !$wgEnableScriptDebug ){
 			$s = JavaScriptMinifier::minify( $s, $wgResourceLoaderMinifierStatementsOnOwnLine );
 			// try to store the cached file: 
-			@file_put_contents($cachePath, $s);
+			$this->cache->set($cachePath, $s);
 		}
 		return $s;
 	}
@@ -876,9 +879,10 @@ HTML;
 	function getModulesRegistry(){
 		global $wgScriptCacheDirectory, $wgMwEmbedVersion;
 		$registrations;
-		$cachePath = $wgScriptCacheDirectory . '/registrations.' . $wgMwEmbedVersion . $_GET['skin'] . $_GET['lang'] . '.min.json';
-		if( is_file( $cachePath ) ){
-			$registrations = json_decode(file_get_contents( $cachePath ), true);
+		$cachePath =  '/registrations.' . $wgMwEmbedVersion . $_GET['skin'] . $_GET['lang'] . '.min.json';
+		$content = $this->cache->get($cachePath);
+		if($content != null  ){
+			$registrations = json_decode($content, true);
 		}
 
 		return $registrations;
@@ -1130,10 +1134,11 @@ HTML;
 		// last modified time: 
 		$lmtime =  @filemtime( $resourcePath );
 		// set the cache key
-		$cachePath = $wgScriptCacheDirectory . '/OnPage_' . md5( $resourcePath ) . $lmtime . 'min.js';
-		// check for cached version: 
-		if( is_file( $cachePath) ){
-			return file_get_contents( $cachePath );
+		$cachePath =  '/OnPage_' . md5( $resourcePath ) . $lmtime . 'min.js';
+		// check for cached version:
+		$content = $this->cache->get($cachePath);
+		if( $content != null){
+			return $content;
 		}
 		// Get the JSmin class:
 		require_once( $wgBaseMwEmbedPath . '/includes/libs/JavaScriptMinifier.php' );
@@ -1142,7 +1147,7 @@ HTML;
 		$jsMinContent = JavaScriptMinifier::minify( $jsContent, $wgResourceLoaderMinifierStatementsOnOwnLine );
 	
 		// try to store the cached file: 
-		@file_put_contents($cachePath, $jsMinContent);
+		$this->cache->set($cachePath, $jsMinContent);
 		return $jsMinContent;
 	}
 	/**

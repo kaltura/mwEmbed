@@ -72,8 +72,8 @@
 
 				// handle prerolls
 				if( bumperConfig.preSequence ){
-					$( embedPlayer ).bind( 'AdSupport_bumper' + bumpPostfix, function( event, sequenceProxy ){
-						adConf.type = 'bumper';
+					$( embedPlayer ).bind( 'AdSupport_bumperPreSeq' + bumpPostfix, function( event, sequenceProxy ){
+						adConf.type = 'bumperPreSeq';
 						embedPlayer.adTimeline.updateUiForAdPlayback( adConf.type );
 						sequenceProxy[ bumperConfig.preSequence ] = function( doneCallback ){
 							// bumper triggers play event:
@@ -85,8 +85,8 @@
 
 				// Technically the postroll bumper should be named something else.
 				if( bumperConfig.postSequence ){
-					$( embedPlayer ).bind( 'AdSupport_postroll' + bumpPostfix, function(event, sequenceProxy){
-						adConf.type = 'postroll';
+					$( embedPlayer ).bind( 'AdSupport_bumperPostSeq' + bumpPostfix, function(event, sequenceProxy){
+						adConf.type = 'bumperPostSeq';
 						embedPlayer.adTimeline.updateUiForAdPlayback( adConf.type );
 						sequenceProxy[ bumperConfig.postSequence ] = function( doneCallback ){
 							// Bumper triggers play event:
