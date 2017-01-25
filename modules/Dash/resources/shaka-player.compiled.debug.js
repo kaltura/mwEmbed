@@ -292,3 +292,4 @@ else if (typeof(define)!="undefined" && define.amd)define(function(){return g.sh
 else this.shaka=g.shaka;
 })();
 
+//# sourceMappingURL=shaka-player.compiled.debug.map
