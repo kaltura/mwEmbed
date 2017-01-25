@@ -249,7 +249,9 @@ mw.KWidgetSupport.prototype = {
 	},
 
 	updatePlayerData: function( embedPlayer,  playerData, callback ){
-		// Handle entry data
+        this.handleUiConf( embedPlayer, callback );
+
+        // Handle entry data
 		this.updatePlayerEntryData(embedPlayer, playerData);
 		this.updatePlayerMetaData(embedPlayer, playerData);
 		// Check for playerData error
@@ -277,7 +279,6 @@ mw.KWidgetSupport.prototype = {
 		}
 		// Check access controls ( must come after addPlayerMethods for custom messages )
 		this.initCuePointsService(embedPlayer, playerData);
-		this.handleUiConf( embedPlayer, callback );
 	},
 	updatePlayerContextData: function(embedPlayer, playerData){
 		if( playerData.contextData ){

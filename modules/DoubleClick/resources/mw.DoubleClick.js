@@ -236,16 +236,21 @@
 					// No defined ad pattern always use managed bindings
 					_this.addManagedBinding();
 				}
-
+                var needToRequestAds = true;
 				var requestAdsAndPlay = function () {
-					_this.requestAds();
+                     if (needToRequestAds){
+                         _this.requestAds();
+                     }
 					if (_this.prePlayActionTriggered) {
 						_this.embedPlayer.play();
 					}
 				};
 
-				if (_this.embedPlayer.changeMediaStarted) {
-					setTimeout(requestAdsAndPlay, 100)
+                if (_this.embedPlayer.changeMediaStarted) {
+                    //on change media we want to request the ad while the media is changing
+                    needToRequestAds = false;
+                    _this.requestAds();
+					setTimeout(requestAdsAndPlay, 100);
 				} else {
 					requestAdsAndPlay();
 				}
@@ -266,7 +271,9 @@
 			catch(e){}
 			if (this.getConfig("useExternalImaLib") && window.google && window.google.ima){
 				mw.log("Google IMA lib already loaded");
-				onImaLoadSuccess();
+                setTimeout(function() {
+                    onImaLoadSuccess();
+                },100);
 			} else {
 				// Load double click ima per doc:
 				mw.log("Google IMA lib loading");
