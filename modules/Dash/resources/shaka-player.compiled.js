@@ -292,4 +292,3 @@
     else if (typeof(define)!="undefined" && define.amd)define(function(){return g.shaka});
     else this.shaka=g.shaka;
 })();
-
