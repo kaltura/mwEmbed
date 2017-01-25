@@ -391,17 +391,17 @@
         },
 
         initPreviewUpdate: function (currentPreset) {
-            //set default font family
+            //set font family
             this.currentFontFamily = currentPreset.fontFamily;
             $(".cvaa-font .cvaa-family").val(this.getValueOrProp("family", this.currentFontFamily, "value"));
             this.updatePreview(currentPreset.currentPreset, "font-family", this.currentFontFamily);
 
-            //set default edge style - text shadow
+            //set edge style - text shadow
             this.currentEdgeStyle = currentPreset.edgeStyle;
             $(".cvaa-font .cvaa-style").val(this.getValueOrProp("edgeStyle", this.currentEdgeStyle, "value"));
             this.updatePreview(currentPreset.currentPreset, "text-shadow", this.currentEdgeStyle);
 
-            //set default font color and opacity
+            //set font color and opacity
             this.currentFontHexColor = currentPreset.fontHexColor;
             this.currentFontOpacity = currentPreset.fontOpacity;
             this.currentFontColor = currentPreset.fontColor;
@@ -409,7 +409,7 @@
             $(".cvaa-color .cvaa-btn[value='" + this.getValueOrProp("color", this.currentFontHexColor, "value") + "']").addClass('icvaa-check').siblings().removeClass('icvaa-check');
             this.updatePreview(currentPreset.currentPreset, "color", this.currentFontColor);
 
-            //set default background color and opacity
+            //set background color and opacity
             this.currentBackgroundHexColor = currentPreset.backgroundHexColor;
             this.currentBackgroundOpacity = currentPreset.backgroundOpacity;
             this.currentBackgroundColor = currentPreset.backgroundColor;
@@ -417,7 +417,7 @@
             $(".cvaa-bg .cvaa-btn[value='" + this.getValueOrProp("color", this.currentBackgroundHexColor, "value") + "']").addClass('icvaa-check').siblings().removeClass('icvaa-check');
             this.updatePreview(currentPreset.currentPreset, "background-color", this.currentBackgroundColor);
 
-            //set default font size
+            //set font size
             this.currentFontSize = currentPreset.fontSize;
             this.currentFontPxSize = currentPreset.fontPxSize;
             $(".cvaa-size .cvaa-btn[value='" + this.getValueOrProp("size", this.currentFontPxSize, "value") + "']").parent().addClass('icvaa-check').siblings().removeClass('icvaa-check');
@@ -431,7 +431,7 @@
         },
 
         updatePreview: function (preset, option, value) {
-            if (preset == "custom") {
+            if (preset == "custom" && option !== "font-size") {
                 this.getPlayer().getInterface().find(".cvaa-adv .custom").css(option, value);
             }
 
