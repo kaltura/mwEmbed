@@ -68,6 +68,8 @@
 
 /*
     ]);*/
+
+    var hlsjs=true;
     kWidget.featureConfig({
         'targetId': 'kaltura_player',
         'wid': '_931702',
@@ -78,12 +80,18 @@
                 'plugin': true,
                 isVisible:true
             },
+            'disableHLSOnJs': !hlsjs,
+            "LeadWithHLSOnJs": hlsjs,
+            "LeadWithHLSOnFlash": !hlsjs,
+            "hlsjs": {
+                'plugin': hlsjs
+            }
 
-            LeadWithHLSOnFlash:true
         },
         'entry_id': "1_oorxcge2"
 
     });
+
 
 </script>
 </body>

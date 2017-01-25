@@ -132,12 +132,9 @@
 			this.hideComponent();
 		},
 		getComponent: function() {
-			var _this = this;
-			var eventName = 'click';
-			if ( mw.isAndroid() ){
-				eventName += ' touchstart';
-			}
 			if( !this.$el ) {
+				var _this = this;
+				var eventName = 'click';
 				this.$el = $( '<a />' )
 					.attr( {
 						'tabindex': '-1',

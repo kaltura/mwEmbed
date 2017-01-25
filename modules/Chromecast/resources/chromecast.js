@@ -27,7 +27,7 @@
 			'uiconfid':null,
 			'defaultConfig':true,
 			'disableSenderUI':false,
-			'defaultThumbnail': ''
+			'defaultThumbnail': null
 
 		},
 		isDisabled: false,
@@ -60,6 +60,8 @@
 		adDuration: null,
 		supportedPlugins: ['doubleClick', 'youbora', 'kAnalony', 'related', 'comScoreStreamingTag', 'watermark', 'heartbeat'],
 		chromeLib: null,
+		disableDoubleclick: false,
+		restoreDoubleclick: false,
 
 		setup: function( embedPlayer ) {
 			var _this = this;
@@ -117,7 +119,10 @@
 					}
 			});
 
-			$( this.embedPlayer).bind('chromecastDeviceConnected', function(){
+			$( this.embedPlayer).bind('chromecastDeviceConnected', function(e, proxyEvent, startTime){
+				if (startTime && startTime > 0.01){
+					_this.disableDoubleclick = true;
+				}
 				_this.onRequestSessionSuccess();
 			});
 			$( this.embedPlayer).bind('chromecastDeviceDisConnected', function(){
@@ -141,14 +146,26 @@
 						'entryId': _this.embedPlayer.kentryid
 					}
 				};
-				var proxyData = _this.embedPlayer.getKalturaConfig("proxyData");
-				if (proxyData && proxyData.data){
-					changeMediaMsg.data.proxyData = proxyData.data;
+				if (_this.restoreDoubleclick){
+					_this.sendMessage({'type': 'setKDPAttribute', 'plugin': 'doubleClick', 'property': 'plugin', 'value': true});
+					_this.restoreDoubleclick = false;
+				}
+				var proxyData = _this.getProxyData();
+				if (proxyData){
+					changeMediaMsg.data.proxyData = proxyData;
 				}
 				_this.sendMessage(changeMediaMsg);
 				_this.savedPosition = 0;
 				_this.pendingReplay = false;
 				_this.pendingRelated = false;
+			});
+
+			$( this.embedPlayer).bind('SourceSelected', function(e){
+				var licenseUrl = _this.buildUdrmLicenseUri("application/dash+xml");
+				if (licenseUrl) {
+					_this.sendMessage({'type': 'license', 'value': licenseUrl});
+					_this.log("set license URL to: " + licenseUrl);
+				}
 			});
 
 			$( this.embedPlayer).bind('onAdSkip', function(e){
@@ -196,7 +213,7 @@
 			$(this.embedPlayer).bind('userInitiatedPlay', function(e) {
 				_this.sendMessage({'type': 'notification','event': e.type});
 				if (_this.replay){
-					_this.loadMedia();
+					_this.loadMedia(null, null, true);
 				}
 			});
 
@@ -359,9 +376,13 @@
 						this.inSequence = true;
 						break;
 					case "chromecastReceiverAdComplete":
-						this.embedPlayer.enablePlayControls();
-						this.embedPlayer.triggerHelper("chromecastReceiverAdComplete");
-						this.loadMedia();
+						if (this.inSequence) {
+							this.embedPlayer.enablePlayControls();
+							this.embedPlayer.triggerHelper("chromecastReceiverAdComplete");
+							this.inSequence = false;
+							this.embedPlayer.layoutBuilder.closeAlert();
+							this.playMedia();
+						}
 						break;
 					case "chromecastReceiverAdDuration":
 						this.adDuration = parseInt(message.split('|')[1]);
@@ -378,31 +399,14 @@
 
 			var fv = {};
 			this.supportedPlugins.forEach( function ( plugin ) {
-				if ( !$.isEmptyObject( _this.embedPlayer.getKalturaConfig( plugin ) ) ) {
-					fv[plugin] = _this.embedPlayer.getKalturaConfig( plugin );
+				if ( !$.isEmptyObject( _this.embedPlayer.getRawKalturaConfig( plugin ) ) ) {
+					fv[plugin] = _this.embedPlayer.getRawKalturaConfig( plugin );
 				}
 			} );
 			// add support for custom proxyData for OTT app developers
-			var proxyData = this.getConfig( 'proxyData' );
-			if ( proxyData ) {
-				var recursiveIteration = function ( object ) {
-					for ( var property in object ) {
-						if ( object.hasOwnProperty( property ) ) {
-							if ( typeof object[property] == "object" ) {
-								recursiveIteration( object[property] );
-							} else {
-								object[property] = _this.embedPlayer.evaluate( object[property] );
-							}
-						}
-					}
-				}
-				recursiveIteration( proxyData );
+			var proxyData = this.getProxyData();
+			if(proxyData){
 				fv['proxyData'] = proxyData;
-			} else {
-				var data  = _this.embedPlayer.getKalturaConfig('originalProxyData');
-				if (!$.isEmptyObject(data)) {
-					fv['proxyData'] = data;
-				}
 			}
 
 			// add support for passing ks
@@ -417,7 +421,41 @@
 				fv['scrubber'] = {plugin: true};
 				fv['largePlayBtn'] = {plugin: true};
 			}
+			 if (this.disableDoubleclick && typeof fv['doubleClick'] !== "undefined"){
+				 fv['doubleClick']['plugin'] = false;
+				 this.restoreDoubleclick = true;
+			 }
+			fv.autoPlay = true;
 			return fv;
+		},
+
+		getProxyData: function(){
+			var proxyData = this.getConfig( 'proxyData' );
+			if ( proxyData ) {
+				var _this = this;
+				var recursiveIteration = function ( object ) {
+					for ( var property in object ) {
+						if ( object.hasOwnProperty( property ) ) {
+							if ( typeof object[property] == "object" ) {
+								recursiveIteration( object[property] );
+							} else {
+								object[property] = _this.embedPlayer.evaluate( object[property] );
+							}
+						}
+					}
+				};
+				recursiveIteration( proxyData );
+				return proxyData;
+			} else {
+				var proxyData  = this.embedPlayer.getKalturaConfig('originalProxyData');
+				if (!$.isEmptyObject(proxyData)) {
+					if(proxyData.data){
+						return proxyData.data;
+					} else {
+						return proxyData;
+					}
+				}
+			}
 		},
 
 		onLaunchError: function(error) {
@@ -471,8 +509,9 @@
 
 		onMediaDiscovered: function(how, mediaSession) {
 			var _this = this;
-			this.embedPlayer.layoutBuilder.closeAlert();
-			this.inSequence = false;
+			if (!this.inSequence) {
+				this.embedPlayer.layoutBuilder.closeAlert();
+			}
 			// if page reloaded and in playlist - select the currently playing clip
 			if ( how === 'onRequestSessionSuccess_' && this.embedPlayer.playlist){
 				this.stopApp();
@@ -580,6 +619,10 @@
 		},
 
 		monitor: function(){
+			var mediaDuration = this.getDuration();
+			if (mediaDuration !== this.getPlayer().getDuration()){
+				this.embedPlayer.mediaLoaded(this.currentMediaSession);
+			}
 			this.embedPlayer.updatePlayhead( this.getCurrentTime(), this.inSequence ? this.adDuration : this.mediaDuration );
 		},
 
@@ -605,6 +648,13 @@
 			this.embedPlayer.onPlayerSeekEnd();
 		},
 
+		getDuration: function(){
+			this.mediaDuration = 0;
+			if (this.currentMediaSession){
+				this.mediaDuration = this.currentMediaSession.media.duration;
+			}
+			return this.mediaDuration;
+		},
 		getCurrentTime: function(){
 			this.mediaCurrentTime = this.currentMediaSession.getEstimatedTime();
 			return this.mediaCurrentTime;
@@ -688,7 +738,7 @@
 			}
 		},
 
-		loadMedia: function(url, mime) {
+		loadMedia: function(url, mime, replay) {
 			if (this.isNativeSDK){
 				$( this.embedPlayer ).trigger( 'loadReceiverMedia', [url, mime] );
 				return;
@@ -724,7 +774,8 @@
 						};
 
 						var json = {
-							"payload" : payload
+							"payload" : payload,
+							"replay": replay
 						};
 
 						_this.request.customData = json;
@@ -881,7 +932,7 @@
 		},
 
 		getPlayingScreen: function(){
-			var thumbnail = this.getConfig('defaultThumbnail') !== "" ? this.getConfig('defaultThumbnail') : this.embedPlayer.poster;
+			var thumbnail = (this.getConfig('defaultThumbnail') !== null) ? this.getConfig('defaultThumbnail') : this.embedPlayer.poster;
 			return '<div class="chromecastScreen" style="background-color: rgba(0,0,0,0.7); width: 100%; height: 100%; font-family: Arial; position: absolute">' +
 				'<div class="chromecastPlayback">' +
 				'<div class="chromecastThumbBorder">' +

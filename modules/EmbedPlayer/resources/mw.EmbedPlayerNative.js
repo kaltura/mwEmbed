@@ -6,8 +6,6 @@
 (function (mw, $) {
 	"use strict";
 
-	var originalVTTCue = window.VTTCue;
-
 	mw.EmbedPlayerNative = {
 
 		//Instance Name
@@ -98,11 +96,15 @@
 		setup: function (readyCallback) {
 			var _this = this;
 			this._propagateEvents = true;
+			if (mw.isIpad() || mw.isEdge()) {
+				this.getPlayerElement().removeAttribute("poster");
+			}
 			$(this.getPlayerElement()).css('position', 'absolute');
 			if (this.inline) {
-				$(this.getPlayerElement()).attr('webkit-playsinline', '');
+				$(this.getPlayerElement()).attr('playsinline', '');
 			}
-			readyCallback();
+            this.addBindings();
+            readyCallback();
 
 			// disable network errors on unload:
 			$(window).unload(function () {
@@ -112,22 +114,28 @@
 					_this.layoutBuilder.closeAlert();
 				}
 			});
-            this.addBindings();
 		},
         addBindings: function(){
             var _this = this;
-            this.bindHelper('firstPlay', function(){
+            this.bindHelper('firstPlay' + this.bindPostfix, function(){
                 _this.parseTracks();
             });
-            this.bindHelper('switchAudioTrack', function (e, data) {
+            this.bindHelper('switchAudioTrack' + this.bindPostfix, function (e, data) {
                 _this.switchAudioTrack(data.index);
             });
-            this.bindHelper('liveOnline', function(){
+            this.bindHelper('liveOnline' + this.bindPostfix, function(){
                 if( _this.isLive() && !_this.isDVR() ) {
                     _this.resetSrc = true;
                 }
             });
         },
+
+		removeBindings: function(){
+			this.unbindHelper('firstPlay' + this.bindPostfix);
+			this.unbindHelper('switchAudioTrack' + this.bindPostfix);
+			this.unbindHelper('liveOnline' + this.bindPostfix);
+		},
+
 		/**
 		 * Updates the supported features given the "type of player"
 		 */
@@ -209,7 +217,7 @@
 			_this.bufferStartFlag = false;
 			_this.bufferEndFlag = false;
 
-			$(this).html(
+			$(this.getVideoDisplay()).append(
 				_this.getNativePlayerHtml()
 			);
 
@@ -257,7 +265,7 @@
 
 			return    $('<' + tagName + ' />')
 				// Add the special nativeEmbedPlayer to avoid any rewrites of of this video tag.
-				.addClass('nativeEmbedPlayerPid')
+				.addClass('persistentNativePlayer nativeEmbedPlayerPid')
 				.attr(playerAttribtues)
 				.css(cssSet);
 		},
@@ -411,7 +419,11 @@
 			// some initial calls to prime the seek:
 			if ( ( vid.currentTime === 0 && callbackCount === 0 ) && vid.readyState === 0 ) { //load video again if not loaded yet (vid.readyState === 0)
 				// when seeking turn off preload none and issue a load call.
-				$(vid).attr('preload', 'auto');
+				if(mw.isIpad()){
+					$(vid).attr('preload', 'auto')[0].load();
+				} else {
+					$(vid).attr('preload', 'auto');
+				}
 			}
 
 			var videoReadyState = mw.isIOSAbove7() ? 2 : 1; // on iOS8 wait for video state 1 (dataloaded) instead of 1 (metadataloaded)
@@ -508,7 +520,7 @@
 				this.stop();
 				return false;
 			}
-            if( this.isLive() && !this.isDVR() ){
+			if( this.isLive() && !this.isDVR() ){
                 return this.LiveCurrentTime ? this.LiveCurrentTime : 0;
             }
 			var ct = this.playerElement.currentTime;
@@ -553,13 +565,13 @@
 		 * Android Live doesn't send timeupdate events
 		 * @returns {boolean}
 		 */
-		isTimeUpdateSupported: function () {
-			if (this.isLive() && mw.isAndroid()) {
-				return false;
-			} else {
-				return true;
-			}
-		},
+        isTimeUpdateSupported: function () {
+            if (this.isLive() && (mw.isAndroid() || !this.isDVR())) {
+                return false;
+            } else {
+                return true;
+            }
+        },
 		/**
 		 * playerSwitchSource switches the player source working around a few bugs in browsers
 		 *
@@ -615,8 +627,11 @@
 					vid.removeAttribute('controls');
 
 					// dissable seeking ( if we were in a seeking state before the switch )
-					_this.seeking = false;
-
+					if (_this.isFlavorSwitching) {
+						_this.seeking = true;
+					} else {
+						_this.seeking = false;
+					}
 					// Workaround for 'changeMedia' on Android & iOS
 					// When changing media and not playing entry before spinner is stuck on black screen
 					if (!_this.firstPlay) {
@@ -1046,10 +1061,11 @@
 				var _this = this;
 				this.waitForSeekTarget().then(function(){
 					_this.seeking = false;
+					_this.isFlavorSwitching = false;
 					if (_this._propagateEvents) {
 						if( !_this.isLive() || ( _this.isLive() && _this.isDVR() ) ) {
 							_this.log(" trigger: seeked");
-							_this.triggerHelper('seeked', [_this.currentTime]);
+							_this.triggerHelper('seeked', [_this.playerElement.currentTime]);
 						}
 					}
 					_this.hideSpinner();
@@ -1145,7 +1161,7 @@
 				' time since play: ' + timeSincePlay + ' duringSeek:' + this.seeking);
 			// Only trigger parent pause if more than MonitorRate time has gone by.
 			// Some browsers trigger native pause events when they "play" or after a src switch
-			if (!this.seeking && !this.userSlide
+			if ((!this.seeking || this.isInSequence()) && !this.userSlide
 				&&
 				timeSincePlay > mw.getConfig('EmbedPlayer.MonitorRate')
 				) {
@@ -1341,6 +1357,7 @@
 			var vid = this.getPlayerElement();
 			vid.load();
 			vid.play();
+			this.parseTracks();
             setTimeout( function() {
                 _this.triggerHelper('movingBackToLive'); //for some reason on Mac the isLive client response is a little bit delayed, so in order to get update liveUI properly, we need to delay "movingBackToLive" helper
             }, 1000 );
@@ -1386,18 +1403,17 @@
         parseTracks: function(){
             var vid = this.getPlayerElement();
             this.parseAudioTracks(vid, 0); //0 is for a setTimer counter. Try to catch audioTracks, give up after 5 seconds
-            if(this.isLive() && !this.isDVR()) {
-                //right now we parse metadata textTrack in order to read id3Tag only for live without DVR
-                this.parseTextTracks(vid, 0); //0 is for a setTimer counter. Try to catch textTracks.kind === "metadata, give up after 10 seconds
+            if(this.isLive()) {
+                this.parseTextTracks(vid, 0); //0 is for a setTimer counter. Try to catch textTracks.kind === "metadata", give up after 10 seconds
             }
         },
         parseTextTracks: function(vid, counter){
             var _this = this;
-            setTimeout(function() {
+	        this.parseTextTracksTimeout = setTimeout(function() {
                 if( vid.textTracks.length > 0 ) {
                     for (var i = 0; i < vid.textTracks.length; i++) {
                         if (vid.textTracks[i].kind === "metadata") {
-                            //add id3 tags support (for now only if Live + no DVR)
+                            //add id3 tags support
                             _this.id3Tag(vid.textTracks[i]);
                             vid.textTracks[i].mode = "hidden";
                         }
@@ -1423,7 +1439,7 @@
 						//Parse JSON
 						id3Tag = JSON.parse(id3TagString);
 					} else {
-						id3Tag = JSON.parse(evt.currentTarget.cues[evt.currentTarget.cues.length - 1].value.data);
+						id3Tag = JSON.parse(this.activeCues[0].value.data);
 					}
 					_this.triggerHelper('onId3Tag', id3Tag);
                 }
@@ -1434,7 +1450,7 @@
         },
         parseAudioTracks: function(vid, counter){
             var _this = this;
-            setTimeout (function() {
+	        this.parseAudioTracksTimeout = setTimeout (function() {
                 if( vid.audioTracks && vid.audioTracks.length > 0 ) {
                     var data ={'languages':[]};
                     for (var i = 0; i < vid.audioTracks.length; i++) {
@@ -1495,8 +1511,11 @@
             }
             return 0;
         },
-		getOriginalVTTCue: function(){
-			return originalVTTCue;
+
+		clean:function(){
+			this.removeBindings();
+			clearTimeout(this.parseAudioTracksTimeout);
+			clearTimeout(this.parseTextTracksTimeout);
 		}
 	};
 })(mediaWiki, jQuery);

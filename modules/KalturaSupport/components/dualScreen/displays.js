@@ -84,8 +84,8 @@
                 curMain.disableMain();
                 curAux.toggleMainConfig();
                 curAux.enableMain();
-                this.main = curAux;
-                this.aux = curMain;
+                this.main = curMain;
+                this.aux = curAux;
             },
             hideDisplay: function ( ) {
                 this.getAuxDisplay().hide(this.isFlashMode);
@@ -114,6 +114,10 @@
 
             setFlashMode: function (val) {
                 this.isFlashMode = val;
+            },
+
+            isInitialized: function () {
+                return this.getPrimary().obj && this.getSecondary().obj;
             }
         });
     }

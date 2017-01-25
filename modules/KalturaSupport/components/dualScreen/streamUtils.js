@@ -9,8 +9,11 @@
 
         streamSelectorPromise: null,
         playerReadyFlag: false,
+        streamChanging: false,
+        streams: null,
 
         setup: function setup() {
+            this.streams = null;
             this.addBindings();
         },
 
@@ -21,20 +24,38 @@
                 _this.playerReadyFlag = true;
             });
 
+            this.bind('onChangeStream', function onChangeStream() {
+                _this.streamChanging = true;
+            });
+
+            this.bind('onChangeStreamDone', function onChangeStreamDone() {
+                _this.streamChanging = false;
+            });
+
             this.bind('onChangeMedia', function onChangeMedia() {
-                _this.getStreamSelector().then(function (streamSelector) {
-                    if (!streamSelector.streamChanging) {
-                        _this.log('resetting playerReadyFlag');
-                        _this.playerReadyFlag = false;
-                    }
-                });
+                if (!_this.streamChanging) {
+                    _this.log('resetting playerReadyFlag');
+                    _this.playerReadyFlag = false;
+                    _this.embedPlayer.unbindHelper('.streamUtilsSetStream');
+                }
             });
         },
 
-        setStream: function setStream(stream, pauseAfterwards) {
-            return $.when(stream && this.getStreamSelector().then(function (streamSelector) {
-                return streamSelector.setStream(stream, pauseAfterwards);
-            }));
+        setStream: function setStream(stream, pauseAfterwards, afterFirstPlay) {
+            if (afterFirstPlay) {
+                var player = this.getPlayer();
+                var _this = this;
+                stream && player.bindHelper('firstPlay.streamUtilsSetStream AdSupport_preSequenceComplete.streamUtilsSetStream', function () {
+                    player.unbindHelper('.streamUtilsSetStream');
+                    $.when(_this.getStreamSelector().then(function (streamSelector) {
+                        return streamSelector.setStream(stream, pauseAfterwards);
+                    }));
+                });
+            } else {
+                return $.when(stream && this.getStreamSelector().then(function (streamSelector) {
+                    return streamSelector.setStream(stream, pauseAfterwards);
+                }));
+            }
         },
 
         filterStreamsByTag: function filterStreamsByTag(tag, not) {
@@ -48,10 +69,11 @@
         },
 
         getStreams: function getStreams() {
-            return this.getStreamSelector()
+            var _this = this;
+            return $.when(this.streams || this.getStreamSelector()
                 .then(function (streamSelector) {
-                    return streamSelector.streams;
-                });
+                    return (_this.streams = streamSelector.streams);
+                }));
         },
 
         getPlayableStreamsForSecondPlayer: function getPlayableStreamsForSecondPlayer(secondPlayer) {
@@ -68,7 +90,7 @@
                         .filter(function (stream) {
                             return stream.id !== primaryPlayerStreamId &&
                                 stream.id !== secondPlayerStreamId;
-                        })
+                        });
 
                     var videoUrlPromises = filteredStreams
                         .map(function (stream) {
@@ -170,8 +192,11 @@
         },
 
         findClosestPlayableFlavor: function (source, stream) {
+            var sourceTags = source.tags.split(',');
             var relevantFlavors = stream.data.contextData.flavorAssets.filter(function (flavor) {
-                return flavor.tags === source.tags;
+                return sourceTags.every(function (tag) {
+                    return flavor.tags.split(',').indexOf(tag) !== -1;
+                });
             });
 
             if (!relevantFlavors.length) {
@@ -240,6 +265,7 @@
             });
 
             this._super();
+            this.embedPlayer.unbindHelper('.streamUtilsSetStream');
         }
     });
 })(window.mw, window.jQuery);

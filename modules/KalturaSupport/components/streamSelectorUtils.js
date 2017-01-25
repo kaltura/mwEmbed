@@ -223,6 +223,7 @@
                     callback();
                 };
 
+                var nativeStreamSelector = embedPlayer.plugins['streamSelector'];
                 var onSeeked = function () {
                     //Unfreeze scrubber and time labels after transition between streams
                     embedPlayer.triggerHelper("freezeTimeIndicators", [false]);
@@ -231,6 +232,7 @@
                     //Return poster to allow display of poster on clip done
                     mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
                     _this.streamChanging = false;
+                    nativeStreamSelector && (nativeStreamSelector.streamChanging = false);
                     embedPlayer.triggerHelper('onChangeStreamDone', [_this.currentStream.id]);
 
                     if (pauseAfterwards) {
@@ -279,6 +281,19 @@
                         }
                     }
                 };
+
+                if (nativeStreamSelector) {
+                    var newStream = $.grep(nativeStreamSelector.streams, function (s) {
+                        return s.id === stream.id;
+                    })[0];
+
+                    nativeStreamSelector.streamChanging = true;
+                    if (newStream) {
+                        nativeStreamSelector.currentStream = newStream;
+                        nativeStreamSelector.setActiveMenuItem();
+                    }
+                }
+
                 embedPlayer.changeMedia(changeMediaCallback, checkPlayerSourcesFunction, false);
             } else {
                 this.log("selected stream is already the active stream");

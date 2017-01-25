@@ -63,7 +63,7 @@
             if (!this.videoSync) {
                 this.videoSync = new mw.dualScreen.videoSync(this.getPlayer(), function () {
                 }, "videoSync");
-                this.videoSync.setMediaGroups([this.$el[0]]);
+                this.videoSync.setMediaGroup([this.$el[0]]);
             }
         },
 

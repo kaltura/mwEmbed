@@ -391,7 +391,7 @@
 					isMimeType( "video/ism" )
 				) {
 					resolvedSrc = encodeURIComponent(resolvedSrc);
-					_this.streamerType = 'smoothStream';
+					_this.streamerType = 'sl';
 
 					flashvars.smoothStreamPlayer = true;
 					flashvars.preload = "auto";
@@ -676,6 +676,11 @@
 
 		onError: function ( message ) {
 			var data = {errorMessage: message};
+			var errorPatt = /\d{3,4}/;
+			var errorCode = errorPatt.exec(message);
+			if(errorCode){
+				data.code = errorCode[0];
+			}
 			mw.log( 'EmbedPlayerSPlayer::onError: ' + message );
 			this.triggerHelper( 'embedPlayerError' , [data] );
 		} ,
@@ -710,6 +715,9 @@
 			}
 
 			var errorObj = {message: messageText , title: gM( 'ks-ERROR' )};
+			if(data.code){
+				errorObj.code = data.code;
+			}
 			if ( this.readyCallbackFunc ) {
 				this.setError( errorObj );
 				this.callReadyFunc();
@@ -761,7 +769,7 @@
 		 * load method calls parent_load to start fetching media from server, in case of DRM the license request will be handled as well
 		 */
 		load: function () {
-			if ( this.streamerType !== "smoothStream" ){
+			if ( this.streamerType !== "sl" ){
 				this.playerObject.load();
 			}
 		},
