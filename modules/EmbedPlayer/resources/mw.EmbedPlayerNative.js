@@ -103,7 +103,8 @@
 			if (this.inline) {
 				$(this.getPlayerElement()).attr('playsinline', '');
 			}
-			readyCallback();
+            this.addBindings();
+            readyCallback();
 
 			// disable network errors on unload:
 			$(window).unload(function () {
@@ -113,7 +114,6 @@
 					_this.layoutBuilder.closeAlert();
 				}
 			});
-            this.addBindings();
 		},
         addBindings: function(){
             var _this = this;

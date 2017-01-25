@@ -35,8 +35,9 @@
 				this.getPlayer().audioTrack = {
 					defaultTrack: this.getConfig('defaultStream')
 				};
+			} else {
+				this.setConfig('defaultStream', 0);
 			}
-			this.setConfig('defaultStream', 0);
 		},
 		destroy: function () {
 			this._super();

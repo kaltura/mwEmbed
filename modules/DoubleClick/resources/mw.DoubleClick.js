@@ -1651,50 +1651,50 @@
             _this.updateRemainingAdTime( _this.duration - _this.adsManager.getRemainingTime() );
         },
 
-        updateRemainingAdTime: function ( remainTime ) {
-            if ( this.embedPlayer.getInterface().find( ".ad-skip-label" ).length ) {
-                var offsetRemaining = Math.max( Math.ceil( parseFloat( this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' ) ) - remainTime ), 0 );
-                this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining', offsetRemaining );
-                this.embedPlayer.getInterface().find( ".ad-skip-label" ).text( this.embedPlayer.evaluate( this.embedPlayer.getRawKalturaConfig( 'skipNotice', 'text' ) ) );
-            }
-        },
-        // Handler for various ad errors.
-        onAdError: function ( errorEvent ) {
-            var errorMsg = ( typeof errorEvent.getError != 'undefined' ) ? errorEvent.getError() : errorEvent;
-            mw.log( 'DoubleClick:: onAdError: ' + errorMsg );
-            if ( !this.adLoaderErrorFlag ) {
-                $( this.embedPlayer ).trigger( "adErrorEvent" );
-                this.adLoaderErrorFlag = true;
-            }
-            if ( this.adsManager && $.isFunction( this.adsManager.unload ) ) {
-                this.adsManager.unload();
-            }
-            if ( this.embedPlayer.isInSequence() || (this.embedPlayer.autoplay && this.embedPlayer.canAutoPlay()) ) {
-                this.restorePlayer( this.contentDoneFlag );
-                this.embedPlayer.play();
-            } else {
-                this.destroy();
-            }
-        },
-        restorePlayer: function ( onContentComplete, adPlayed ) {
-            if ( this.isdestroy && this.adTagUrl ) { // DFP trafficed and already destroyed
-                return;
-            }
-            mw.log( "DoubleClick::restorePlayer: content complete:" + onContentComplete );
-            var _this = this;
-            this.adActive = false;
-            this.embedPlayer.getInterface().find( ".ad-notice-label" ).remove();
-            if ( this.isChromeless ) {
-                if ( _this.isLinear || _this.adLoaderErrorFlag ) {
-                    $( ".mwEmbedPlayer" ).show();
-                }
-                this.embedPlayer.getPlayerElement().redrawObject( 50 );
-            } else {
-                if ( _this.isLinear !== false || _this.adLoaderErrorFlag ) {
-                    _this.hideAdContainer( true );
-                }
-            }
-            this.embedPlayer.sequenceProxy.isInSequence = false;
+		updateRemainingAdTime: function(remainTime){
+			if ( this.embedPlayer.getInterface().find(".ad-skip-label").length ){
+				var offsetRemaining = Math.max(Math.ceil(parseFloat(this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' )) - remainTime), 0);
+				this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining', offsetRemaining );
+				this.embedPlayer.getInterface().find(".ad-skip-label").text(this.embedPlayer.evaluate( this.embedPlayer.getRawKalturaConfig('skipNotice','text')) );
+			}
+		},
+		// Handler for various ad errors.
+		onAdError: function( errorEvent ) {
+			if (errorEvent) {var errorMsg = ( typeof errorEvent.getError != 'undefined' ) ? errorEvent.getError() : errorEvent;
+			mw.log('DoubleClick:: onAdError: ' + errorMsg );
+			if (!this.adLoaderErrorFlag){
+				$( this.embedPlayer ).trigger("adErrorEvent");
+				this.adLoaderErrorFlag = true;
+			}
+			if (this.adsManager && $.isFunction( this.adsManager.unload ) ) {
+				this.adsManager.unload();
+			}
+			if (this.embedPlayer.isInSequence() || (this.embedPlayer.autoplay && this.embedPlayer.canAutoPlay())){
+				this.restorePlayer(this.contentDoneFlag);
+				this.embedPlayer.play();
+			}else{
+				this.destroy();}
+			}
+		},
+		restorePlayer: function( onContentComplete, adPlayed ){
+			if (this.isdestroy && this.adTagUrl){ // DFP trafficed and already destroyed
+				return;
+			}
+			mw.log("DoubleClick::restorePlayer: content complete:" + onContentComplete);
+			var _this = this;
+			this.adActive = false;
+			this.embedPlayer.getInterface().find(".ad-notice-label").remove();
+			if (this.isChromeless){
+				if (_this.isLinear || _this.adLoaderErrorFlag){
+					$(".mwEmbedPlayer").show();
+				}
+				this.embedPlayer.getPlayerElement().redrawObject(50);
+			}else{
+				if (_this.isLinear !== false || _this.adLoaderErrorFlag){
+					_this.hideAdContainer(true);
+				}
+			}
+			this.embedPlayer.sequenceProxy.isInSequence = false;
 
             // Check for sequence proxy style restore:
             if ( $.isFunction( this.restorePlayerCallback ) && !onContentComplete ) {

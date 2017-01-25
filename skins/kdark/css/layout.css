@@ -1201,11 +1201,17 @@ body {
     display: none !important;
 }
 .closedCaptions > .dropdown-menu {
-	overflow-y:auto;
-	overflow-x:hidden;
-	max-height:200px;
-	width:auto;
-	max-width:140px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	max-height: 200px;
+	width: auto;
+	max-width: 140px;
+}
+
+@media (max-height: 220px) {
+	.closedCaptions > .dropdown-menu {
+		max-height: 120px;
+	}
 }
 
 .dropup .dropdown-submenu > .dropdown-menu {
@@ -1991,25 +1997,7 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
     -o-transition: top 0.3s ease-in-out;
     transition: top 0.3s ease-in-out;
 }
-.trackWindow{
-    display: inline-block;
-    padding: 5px;
-    margin: 0 15px 0 15px;
- }
 /* used to detect when the css file finished loading */
 .cssChecker{
     display: none !important;
-}
-.logo360{
-	position: absolute;
-}
-.logo360.bottomRight{
-	bottom: 0;
-	right: 0;
-	padding:5px 20px;
-}
-.logo360 img{
-	width: 70px;
-	height: auto;
-	opacity:0.7;
 }

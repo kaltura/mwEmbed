@@ -249,13 +249,13 @@
 		},
         handleAdaptiveBitrateAndContinue: function (){
 			//Silverlight smoothStream
-			if( ( this.getPlayer().streamerType === "smoothStream" ) ){
+			if( ( this.getPlayer().streamerType === "sl" ) ){
 				this.addAutoToMenu();
 				return true;
 			}
 
 	        //Dash
-	        if( ( this.getPlayer().streamerType === "dash" ) ){
+	        if( ( this.getPlayer().streamerType === "mpegdash" ) ){
 		        this.addAutoToMenu();
 		        return true;
 	        }

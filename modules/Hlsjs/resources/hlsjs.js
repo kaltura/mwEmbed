@@ -632,7 +632,7 @@
 			switchAudioTrack: function (index) {
 				if (this.loaded && (index !== undefined)) {
 					this.hls.audioTrack = index;
-					this.log("onSwitchAudioTrack switch to " + JSON.stringify(this.hls.audioTracks[index]));
+					this.log("onSwitchAudioTrack switch to " + this.hls.audioTracks[index].lang);
 				}
 			},
 

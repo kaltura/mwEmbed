@@ -1,0 +1,14 @@
+.logo360{
+    background-image: url(360.gif);
+    background-size: cover;
+    position: absolute;
+    width: 75px;
+    height: 40px;
+    opacity: 0.7;
+    cursor: pointer;
+}
+.logo360.bottomRight{
+    bottom: 0;
+    right: 0;
+    margin: 5px 20px;
+}
