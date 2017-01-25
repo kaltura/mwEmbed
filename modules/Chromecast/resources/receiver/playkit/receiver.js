@@ -455,25 +455,10 @@ function embedPlayer( event ) {
  * Done for UI handling.
  */
 function setMediaElementEvents() {
-    // mediaElement.addEventListener( 'loadedmetadata', onMetadataLoaded.bind( this ), false );
     mediaElement.addEventListener( 'canplay', onCanPlay.bind( this ), false );
     mediaElement.addEventListener( 'timeupdate', onProgress.bind( this ), false );
     mediaElement.addEventListener( 'seeking', onSeekStart.bind( this ), false );
     mediaElement.addEventListener( 'seeked', onSeekEnd.bind( this ), false );
-}
-
-function onMetadataLoaded() {
-    /* TODO: Handle media metadata in the receiver side?
-     var entry = kdp.evaluate( '{mediaProxy.entry}' );
-     var metadata = {};
-     metadata.title = entry.name;
-     metadata.subtitle = entry.description;
-     metadata.images = [ {
-     'url': entry.thumbnailUrl
-     } ];
-
-     loadMetadataPromise = ReceiverUtils.loadMediaMetadata( metadata );
-     */
 }
 
 /**
@@ -555,7 +540,7 @@ function getFlashVars( senderPlayFrom, senderAutoPlay, senderFlashVars ) {
         // Embed the media info params from onLoad event into mwEmbedChromecastReceiver
         if ( $.isNumeric( senderPlayFrom ) ) {
             receiverFlashVars.mediaProxy.mediaPlayFrom = senderPlayFrom;
-            if ( senderPlayFrom > 0 && senderFlashVars.doubleClick ) {
+            if ( senderPlayFrom > 0 && senderFlashVars && senderFlashVars.doubleClick ) {
                 senderFlashVars.doubleClick.adTagUrl = '';
             }
         }
