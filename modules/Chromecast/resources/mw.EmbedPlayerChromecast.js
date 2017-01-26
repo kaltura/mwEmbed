@@ -54,7 +54,65 @@
         setup: function ( readyCallback ) {
             mw.log( 'EmbedPlayerChromecast:: setup' );
             $.extend( this.vid, { 'pause': this.pause, 'play': this.play } );
+            this.addBindings();
             readyCallback();
+        },
+
+        addBindings: function () {
+            this.bindHelper( "switchAudioTrack", this.switchAudioTrack.bind( this ) );
+            this.bindHelper( "selectClosedCaptions", this.switchTextTracks.bind( this ) );
+        },
+
+        switchAudioTrack: function () {
+
+        },
+
+        switchTextTracks: function ( e, label, language ) {
+            var mediaSession = this.castSession.getMediaSession();
+            var activeTrackIds = mediaSession.activeTrackIds || [];
+            var tracks = mediaSession.media.tracks;
+            var trackIdToRemove = null;
+            var trackIdToAdd = null;
+            if ( !tracks ) {
+                return;
+            }
+            if ( label === "Off" ) {
+                $.each( tracks, function ( index, track ) {
+                    if ( track.type === chrome.cast.media.TrackType.TEXT ) {
+                        if ( $.inArray( track.trackId, activeTrackIds ) > -1 ) {
+                            trackIdToRemove = track.trackId;
+                        }
+                    }
+                } );
+            }
+            else {
+                $.each( tracks, function ( index, track ) {
+                    if ( track.type === chrome.cast.media.TrackType.TEXT ) {
+                        if ( track.language !== language && $.inArray( track.trackId, activeTrackIds ) > -1 ) {
+                            trackIdToRemove = track.trackId;
+                        }
+                        else if ( track.language === language && $.inArray( track.trackId, activeTrackIds ) === -1 ) {
+                            trackIdToAdd = track.trackId;
+                        }
+                    }
+                } );
+            }
+            if ( trackIdToRemove ) {
+                var index = activeTrackIds.indexOf( trackIdToRemove );
+                if ( index > -1 ) {
+                    activeTrackIds.splice( index, 1 );
+                }
+            }
+            if ( trackIdToAdd ) {
+                activeTrackIds.push( trackIdToAdd );
+            }
+            var tracksInfoRequest = new chrome.cast.media.EditTracksInfoRequest( activeTrackIds );
+            mediaSession.editTracksInfo( tracksInfoRequest,
+                function () {
+                    mw.log( "EmbedPlayerChromecast:: Text track loaded successfully." );
+                }, function () {
+                    mw.log( "EmbedPlayerChromecast:: Text track loaded failed." );
+                } );
         },
 
         setupRemotePlayer: function ( remotePlayer, remotePlayerController, playbackParams ) {
@@ -69,7 +127,7 @@
             this.updateCurrentTime( playbackParams.currentTime );
             this.setEmbedPlayerVolume( playbackParams.volume, true );
             this.addRemotePlayerBindings();
-            this.loadMedia( true );
+            this.loadMedia();
         },
 
         /**** Remote Player Events ****/
@@ -79,6 +137,14 @@
             $.each( _this.remotePlayerEvents, function ( index, remotePlayerEventType ) {
                 _this.remotePlayerController.addEventListener( remotePlayerEventType,
                     _this.onRemotePlayerEvent.bind( _this ) );
+            } );
+        },
+
+        removeRemotePlayerBindings: function () {
+            var _this = this;
+            $.each( _this.remotePlayerEvents, function ( index, remotePlayerEventType ) {
+                _this.remotePlayerController.removeEventListener( remotePlayerEventType,
+                    _this.onRemotePlayerEvent );
             } );
         },
 
@@ -355,6 +421,7 @@
             mw.log( "EmbedPlayerChromecast:: endPlayback" );
             this.remotePlayerState = this.REMOTE_PLAYER_STATE.IDLE;
             this.stopRemotePlayerMonitor();
+            this.removeRemotePlayerBindings();
             this.updateCurrentTime( this.getDuration() );
             this.updateProgress();
             this.clipDone();
