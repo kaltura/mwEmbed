@@ -1634,20 +1634,22 @@
 		},
 		// Handler for various ad errors.
 		onAdError: function( errorEvent ) {
-			var errorMsg = ( typeof errorEvent.getError != 'undefined' ) ? errorEvent.getError() : errorEvent;
-			mw.log('DoubleClick:: onAdError: ' + errorMsg );
-			if (!this.adLoaderErrorFlag){
-				$( this.embedPlayer ).trigger("adErrorEvent");
-				this.adLoaderErrorFlag = true;
-			}
-			if (this.adsManager && $.isFunction( this.adsManager.unload ) ) {
-				this.adsManager.unload();
-			}
-			if (this.embedPlayer.isInSequence() || (this.embedPlayer.autoplay && this.embedPlayer.canAutoPlay())){
-				this.restorePlayer(this.contentDoneFlag);
-				this.embedPlayer.play();
-			}else{
-				this.destroy();
+			if (errorEvent) {
+				var errorMsg = ( typeof errorEvent.getError != 'undefined' ) ? errorEvent.getError() : errorEvent;
+				mw.log('DoubleClick:: onAdError: ' + errorMsg );
+				if (!this.adLoaderErrorFlag){
+					$( this.embedPlayer ).trigger("adErrorEvent");
+					this.adLoaderErrorFlag = true;
+				}
+				if (this.adsManager && $.isFunction( this.adsManager.unload ) ) {
+					this.adsManager.unload();
+				}
+				if (this.embedPlayer.isInSequence() || (this.embedPlayer.autoplay && this.embedPlayer.canAutoPlay())){
+					this.restorePlayer(this.contentDoneFlag);
+					this.embedPlayer.play();
+				}else{
+					this.destroy();
+				}
 			}
 		},
 		restorePlayer: function( onContentComplete, adPlayed ){

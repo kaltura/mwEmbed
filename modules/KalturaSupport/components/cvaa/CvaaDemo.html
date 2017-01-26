@@ -10,7 +10,7 @@
 </head>
 <body>
 	<h1>Captions styles menu</h1>
-	<div id="kaltura_player" style="width: 660px; height: 460px;float: left;"></div>
+	<div id="kaltura_player" style="width: 640px; height: 360px;float: left;"></div>
 	<br style="clear: both;" /><br />
 	<h1> Caption Styles Api </h1>
 <pre>
@@ -29,22 +29,22 @@
      );
  });
 
-<h3>Additionally you can set up the default styles settings, using "cvaaDefaultSettings" flashvar:</h3>
-        'flashvars': {
-            'cvaa':{
-                'cvaaDefaultSettings': {
-                     'fontFamily': "Arial, Roboto, Arial Unicode Ms, Helvetica, Verdana, PT Sans Caption, sans-serif",
-                     'fontColor': "#ffffff",
-                     'fontOpacity': 100,
-                     'fontSize': 12,
-                     'backgroundColor': "#000000",
-                     'backgroundOpacity': 75,
-                     'windowColor': "#ffffff",
-                     'windowOpacity': 0,
-                     'edgeStyle': "none"
-                 }
+<h3>Additionally you can set up the default styles settings, using "cvaaDefault" flashvar:</h3>
+    'flashvars': {
+        'cvaa':{
+            'cvaaDefault': {
+                 'fontFamily': "Arial, Roboto, Arial Unicode Ms, Helvetica, Verdana, PT Sans Caption, sans-serif",
+                 'fontColor': "#ffffff",
+                 'fontOpacity': 100,
+                 'fontSize': 12,
+                 'backgroundColor': "#000000",
+                 'backgroundOpacity': 75,
+                 'windowColor': "#ffffff",
+                 'windowOpacity': 0,
+                 'edgeStyle': "none"
              }
          }
+     }
 
 <b>NOTE:</b>The caption menu style settings are saved using cookies per page, you can disable cookies,
 However upon page refresh the settings will not be saved and the default will be used.
@@ -64,13 +64,33 @@ To disable cookie for the plugin set the following flashvar to false:
 		'uiconf_id': '20540612',
 		'entry_id': '0_uka1msg4',
 		'flashvars': {
+		    'EmbedPlayer.EnableMobileSkin': true,
 			'disableTrackElement': true,
 			'closedCaptions': {
-				'enableOptionsMenu': true
+				'enableOptionsMenu': true,
+				"hideClosedCaptions": false
 			},
 			'cvaa':{
 				'useCookie': true
 			}
+//            'smartContainer': {
+//                'plugin': true,
+//                'tooltip': 'Global Settings',
+//                'config':{
+//                    'plugins':[
+//                        {
+//                            'pluginName':'closedCaptions',
+//                            'properties':[
+//                                {
+//                                    'property':'captions',
+//                                    'label': 'Language:',
+//                                    'type': 'enum'
+//                                }
+//                            ]
+//                        }
+//                    ]
+//                }
+//            }
 		}
 	});
 </script>
