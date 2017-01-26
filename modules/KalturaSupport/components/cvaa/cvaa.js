@@ -284,7 +284,7 @@
 
             //presets
             $.each(presets, function (index, preset) {
-                $(".cvaa-adv ." + preset).on("click keydown", function () {
+                $(".cvaa-adv ." + preset).on("click keydown", function (event) {
                     if (event.which === 32 || event.which === 13 || event.type == "click") {
                         $(this).parent().addClass('icvaa-check').siblings().removeClass('icvaa-check');
                         _this.cvaaSettings.currentPreset = preset;
@@ -328,7 +328,6 @@
         updateSettingsAndPreview: function (option, value) {
 
             this.setDefaultCustomSettings();
-            this.initUpdatePreviewBtn(this.cvaaSettings);
 
             switch (option) {
                 case "cvaa-font":
@@ -348,7 +347,7 @@
                     break;
                 case "cvaa-color-opacity":
                     this.currentFontOpacity = this.getValueOrProp("opacity", value, "prop");
-                    this.currentFontColor = this.rgb2rgba(this.hex2rgb(this.currentFontColor), this.currentFontOpacity);
+                    this.currentFontColor = this.rgb2rgba(this.hex2rgb(this.currentFontHexColor), this.currentFontOpacity);
                     this.cvaaSettings.fontColor = this.currentFontColor ;
                     this.cvaaSettings.fontOpacity = this.currentFontOpacity;
                     this.updatePreview("custom", "color", this.currentFontColor );
@@ -375,6 +374,11 @@
                     this.updatePreview("custom", "font-size", this.currentFontSize);
                     break;
             }
+
+            this.cvaaSettings.currentPreset = "custom";
+            $(".cvaa-adv .cvaa-btn.custom").parent().addClass('icvaa-check').siblings().removeClass('icvaa-check');
+            this.initUpdatePreviewBtn(this.cvaaSettings);
+            this.initPreviewUpdate(this.cvaaSettings);
         },
 
         setDefaultCustomSettings: function () {
