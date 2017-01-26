@@ -22,7 +22,8 @@
         vid: {
             'readyState': 1
         },
-        mediaInfo: null,
+        remotePlayerMonitorId: null,
+        tracksLoaded: false,
         castContext: null,
         castSession: null,
         remotePlayer: null,
@@ -30,15 +31,11 @@
         remotePlayerController: null,
         receiverName: null,
         remotePlayerEvents: [
-            cast.framework.RemotePlayerEventType.IS_MEDIA_LOADED_CHANGED,
-            cast.framework.RemotePlayerEventType.PLAYER_STATE_CHANGED,
-            cast.framework.RemotePlayerEventType.CURRENT_TIME_CHANGED,
-            cast.framework.RemotePlayerEventType.DURATION_CHANGED,
             cast.framework.RemotePlayerEventType.IS_PAUSED_CHANGED,
             cast.framework.RemotePlayerEventType.VOLUME_LEVEL_CHANGED,
-            cast.framework.RemotePlayerEventType.IS_MUTED_CHANGED,
-            cast.framework.RemotePlayerEventType.MEDIA_INFO_CHANGED
+            cast.framework.RemotePlayerEventType.IS_MUTED_CHANGED
         ],
+        MONITOR_RATE: 1000,
         LOCAL_PLAYER_STATE: {
             START: "start",
             LOAD: "load",
@@ -75,24 +72,6 @@
             this.loadMedia( true );
         },
 
-        /**** Session Events ****/
-
-        onMediaSessionEvent: function ( mediaSessionEvent ) {
-
-        },
-
-        syncMediaSession: function () {
-            var mediaSession = this.castSession.getMediaSession();
-            mw.log( "EmbedPlayerChromecast:: syncMediaSession:: ", mediaSession );
-            if ( mediaSession.customData && mediaSession.customData.adsInfo ) {
-                if ( mediaSession.customData.adsInfo.isPlayingAd ) {
-                    this.disablePlayControls( [ 'playPauseBtn', 'chromecast' ] );
-                } else {
-                    this.enablePlayControls();
-                }
-            }
-        },
-
         /**** Remote Player Events ****/
 
         addRemotePlayerBindings: function () {
@@ -103,33 +82,12 @@
             } );
         },
 
-        removeRemotePlayerBindings: function () {
-            var _this = this;
-            $.each( _this.remotePlayerEvents, function ( index, remotePlayerEventType ) {
-                _this.remotePlayerController.removeEventListener( remotePlayerEventType,
-                    _this.onRemotePlayerEvent );
-            } );
-        },
-
         onRemotePlayerEvent: function ( remotePlayerEvent ) {
             if ( !this.remotePlayer ) {
                 return;
             }
             mw.log( "EmbedPlayerChromecast:: onRemotePlayerEvent", remotePlayerEvent );
             switch ( remotePlayerEvent.type ) {
-                case cast.framework.RemotePlayerEventType.IS_MEDIA_LOADED_CHANGED:
-                    this.onIsMediaLoadedChanged();
-                    break;
-                case cast.framework.RemotePlayerEventType.PLAYER_STATE_CHANGED:
-                    this.onPlayerStateChanged();
-                    this.syncMediaSession();
-                    break;
-                case cast.framework.RemotePlayerEventType.CURRENT_TIME_CHANGED:
-                    this.onCurrentTimeChanged();
-                    break;
-                case cast.framework.RemotePlayerEventType.DURATION_CHANGED:
-                    this.onDurationChanged();
-                    break;
                 case cast.framework.RemotePlayerEventType.IS_PAUSED_CHANGED:
                     this.onIsPausedChanged();
                     break;
@@ -139,38 +97,6 @@
                 case cast.framework.RemotePlayerEventType.IS_MUTED_CHANGED:
                     this.onIsMutedChanged();
                     break;
-                case cast.framework.RemotePlayerEventType.MEDIA_INFO_CHANGED:
-                    this.onMediaInfoChanged();
-                    break;
-            }
-        },
-
-        onIsMediaLoadedChanged: function () {
-            var remoteIsMediaLoaded = this.remotePlayer.isMediaLoaded;
-            mw.log( "EmbedPlayerChromecast:: RemotePlayerEventType -> onIsMediaLoadedChanged:: " + remoteIsMediaLoaded );
-            if ( !remoteIsMediaLoaded ) {
-                if ( this.remotePlayerState === this.REMOTE_PLAYER_STATE.PLAYING ) {
-                    this.endPlayback();
-                }
-            }
-        },
-
-        onCurrentTimeChanged: function () {
-            var remoteCurrentTime = this.remotePlayer.currentTime;
-            if ( remoteCurrentTime > 0 ) {
-                mw.log( "EmbedPlayerChromecast:: RemotePlayerEventType -> onCurrentTimeChanged:: " + remoteCurrentTime );
-                this.updateCurrentTime( remoteCurrentTime );
-                this.updateProgress();
-            }
-        },
-
-        onDurationChanged: function () {
-            var remoteDuration = this.remotePlayer.duration;
-            if ( remoteDuration > 0 ) {
-                mw.log( "EmbedPlayerChromecast:: RemotePlayerEventType -> onDurationChanged:: " + remoteDuration );
-                this.updateCurrentTime( 0 );
-                this.updateDuration( remoteDuration );
-                this.updateProgress();
             }
         },
 
@@ -198,35 +124,9 @@
             }
         },
 
-        onMediaInfoChanged: function () {
-            if ( !this.remotePlayer.mediaInfo ) {
-                return;
-            }
-            mw.log( "EmbedPlayerChromecast:: RemotePlayerEventType -> onMediaInfoChanged:: ", this.remotePlayer.mediaInfo );
-            if ( !this.mediaInfo ) {
-                this.mediaInfo = this.remotePlayer.mediaInfo;
-            }
-            if ( this.mediaInfo.tracks ) {
-                // TODO: Handle tracks
-            }
-        },
-
-        onPlayerStateChanged: function () {
-            var remotePlayerState = this.remotePlayer.playerState;
-            if ( !remotePlayerState ) {
-                return null;
-            }
-            mw.log( "EmbedPlayerChromecast:: RemotePlayerEventType -> onPlayerStateChanged:: " + remotePlayerState );
-            if ( remotePlayerState === this.REMOTE_PLAYER_STATE.PLAYING ) {
-                this.hideSpinner();
-            } else if ( remotePlayerState === this.REMOTE_PLAYER_STATE.BUFFERING ) {
-                this.addPlayerSpinner();
-            }
-        },
-
         /**** Load Media ****/
 
-        loadMedia: function ( firstCast ) {
+        loadMedia: function () {
             mw.log( "EmbedPlayerChromecast:: loadMedia" );
             var contentId;
             this.remotePlayerState = this.REMOTE_PLAYER_STATE.LOADING;
@@ -250,19 +150,96 @@
             mw.log( "EmbedPlayerChromecast:: loadMedia:: Load request sent", loadRequest );
             // Call load media
             this.castContext.getCurrentSession().loadMedia( loadRequest ).then(
-                this.onMediaLoaded.bind( this, firstCast ),
+                this.onMediaLoaded.bind( this ),
                 this.launchError.bind( this )
             );
         },
 
-        onMediaLoaded: function ( firstCast ) {
-            mw.log( "EmbedPlayerChromecast:: onMediaLoaded:: firstCast? " + firstCast );
+        onMediaLoaded: function () {
+            mw.log( "EmbedPlayerChromecast:: onMediaLoaded" );
             var chromeCastSource = this.getChromecastSource();
             if ( chromeCastSource ) {
                 this.mediaElement.setSource( chromeCastSource );
                 this.updateScreen();
-                this.updateDuration( this.remotePlayer.duration );
+                this.startRemotePlayerMonitor();
                 this.play();
+            }
+        },
+
+        monitorRemotePlayer: function () {
+            var mediaSession = this.castSession.getMediaSession();
+            if ( !mediaSession ) {
+                return;
+            }
+            mw.log( "EmbedPlayerChromecast:: monitorRemotePlayer", mediaSession );
+            var customData = mediaSession.customData;
+            var playerState = mediaSession.playerState;
+            var idleReason = mediaSession.idleReason;
+            var currentTime = mediaSession.getEstimatedTime();
+            var duration = mediaSession.media.duration;
+            this.syncPlayerState( playerState, idleReason );
+            this.syncCustomData( customData );
+            this.syncCurrentTime( currentTime );
+            this.syncDuration( duration );
+            this.updateProgress();
+        },
+
+        startRemotePlayerMonitor: function () {
+            mw.log( "EmbedPlayerChromecast:: startRemotePlayerMonitor" );
+            this.stopRemotePlayerMonitor();
+            this.remotePlayerMonitorId =
+                setInterval( this.monitorRemotePlayer.bind( this ), this.MONITOR_RATE );
+        },
+
+        stopRemotePlayerMonitor: function () {
+            mw.log( "EmbedPlayerChromecast:: stopRemotePlayerMonitor" );
+            if ( this.remotePlayerMonitorId !== null ) {
+                clearInterval( this.remotePlayerMonitorId );
+                this.remotePlayerMonitorId = null;
+            }
+        },
+
+        syncCurrentTime: function ( currentTime ) {
+            if ( currentTime > 0 ) {
+                mw.log( "EmbedPlayerChromecast:: syncCurrentTime:: " + currentTime );
+                this.updateCurrentTime( currentTime );
+            }
+        },
+
+        syncDuration: function ( duration ) {
+            if ( duration > 0 ) {
+                mw.log( "EmbedPlayerChromecast:: syncDuration:: " + duration );
+                this.updateDuration( duration );
+            }
+        },
+
+        syncCustomData: function ( customData ) {
+            mw.log( "EmbedPlayerChromecast:: syncCustomData:: ", customData );
+            if ( customData && customData.adsInfo ) {
+                if ( customData.adsInfo.isPlayingAd ) {
+                    this.hideSpinner();
+                    this.disablePlayControls( [ 'playPauseBtn', 'chromecast' ] );
+                } else {
+                    this.enablePlayControls();
+                }
+            }
+        },
+
+        syncPlayerState: function ( playerState, opt_idleReason ) {
+            if ( !playerState ) {
+                return null;
+            }
+            mw.log( "EmbedPlayerChromecast:: syncPlayerState:: ", {
+                'remotePlayerState': this.remotePlayerState,
+                'playerState': playerState,
+                'idleReason': opt_idleReason
+            } );
+            if ( playerState === this.REMOTE_PLAYER_STATE.PLAYING ) {
+                this.hideSpinner();
+            } else if ( playerState === this.REMOTE_PLAYER_STATE.BUFFERING ) {
+                this.addPlayerSpinner();
+            } else if ( playerState === this.REMOTE_PLAYER_STATE.IDLE && opt_idleReason === "FINISHED" ) {
+                this.endPlayback();
             }
         },
 
@@ -271,7 +248,7 @@
         play: function () {
             mw.log( "EmbedPlayerChromecast:: play" );
             if ( this.currentState === this.LOCAL_PLAYER_STATE.END ) {
-                // TODO
+                this.replay();
             } else {
                 this.remotePlayerState = this.REMOTE_PLAYER_STATE.PLAYING;
                 this.embedPlayerPlay();
@@ -295,8 +272,8 @@
 
         replay: function () {
             mw.log( 'EmbedPlayerChromecast:: replay' );
-            this.loadMedia( false );
             this.embedPlayerPlay();
+            this.loadMedia();
         },
 
         /**** Pause ****/
@@ -323,8 +300,10 @@
 
         seek: function ( seekTime ) {
             mw.log( "EmbedPlayerChromecast:: seek to " + seekTime );
+            this.stopRemotePlayerMonitor();
             this.embedPlayerSeek( seekTime );
             this.remotePlayerSeek( seekTime );
+            this.startRemotePlayerMonitor();
         },
 
         embedPlayerSeek: function ( seekTime ) {
@@ -375,6 +354,7 @@
         endPlayback: function () {
             mw.log( "EmbedPlayerChromecast:: endPlayback" );
             this.remotePlayerState = this.REMOTE_PLAYER_STATE.IDLE;
+            this.stopRemotePlayerMonitor();
             this.updateCurrentTime( this.getDuration() );
             this.updateProgress();
             this.clipDone();
@@ -568,9 +548,6 @@
         },
 
         //TODO: Those are leftovers from previous sender - do we really needs them?
-
-        syncCurrentTime: function () {
-        },
 
         monitor: function () {
         },
