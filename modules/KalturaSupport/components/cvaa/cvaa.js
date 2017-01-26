@@ -126,38 +126,12 @@
             this.addBindings();
         },
 
-        addScreenBindings: function () {
-            var _this = this;
-
-            var cvaaMenus = [
-                { name: "cvaa-cstm",  btnClass: "cvaa-adv__cstmoptions-btn" },
-                { name: "cvaa-size",  btnClass: "cvaa-cstm__size-btn" },
-                { name: "cvaa-font",  btnClass: "cvaa-cstm__font-btn" },
-                { name: "cvaa-bg",    btnClass: "cvaa-cstm__bg-btn" },
-                { name: "cvaa-color", btnClass: "cvaa-cstm__color-btn" }];
-
-            $(".cvaa .icon-arrow").on("mousedown", function () {
-                _this.cvaaMenuChanged(_this.previousScreen);
-            });
-
-            $(".cvaa .icon-close").on("mousedown", function () {
-                _this.cvaaMenuChanged("cvaa-adv");
-            });
-
-            $.each(cvaaMenus, function (index, menu) {
-                $(".cvaa ." + menu.btnClass).on("mousedown", function () {
-                    _this.cvaaMenuChanged(menu.name);
-                });
-            });
-        },
-
         addBindings: function () {
             var _this = this;
             var embedPlayer = this.getPlayer();
 
             this.bind('playerReady', function () {
                _this.getCurrentSettings();
-
             });
 
             this.bind('openCvaaOptions', function (e, currentLanguageIndex) {
@@ -170,10 +144,7 @@
             });
 
             this.bind('preShowScreen', function (event, screenName) {
-
                 _this.getCurrentSettings();
-                _this.setUpHandlers();
-
                 if (screenName === "cvaa") {
                     _this.getScreen().then(function (screen) {
                         screen.addClass('semiTransparentBkg');
@@ -211,6 +182,75 @@
                         embedPlayer.enablePlayControls();
                     }
                 }
+            });
+        },
+
+        addScreenBindings: function () {
+            var _this = this;
+
+            var cvaaMenus = [
+                { name: "cvaa-cstm",  btnClass: "cvaa-adv__cstmoptions-btn" },
+                { name: "cvaa-size",  btnClass: "cvaa-cstm__size-btn" },
+                { name: "cvaa-font",  btnClass: "cvaa-cstm__font-btn" },
+                { name: "cvaa-bg",    btnClass: "cvaa-cstm__bg-btn" },
+                { name: "cvaa-color", btnClass: "cvaa-cstm__color-btn" }];
+
+            $(".cvaa .icon-arrow").on("mousedown", function () {
+                _this.cvaaMenuChanged(_this.previousScreen);
+            });
+
+            $(".cvaa .icon-close").on("mousedown", function () {
+                _this.cvaaMenuChanged("cvaa-adv");
+            });
+
+            $.each(cvaaMenus, function (index, menu) {
+                $(".cvaa ." + menu.btnClass).on("mousedown", function () {
+                    _this.cvaaMenuChanged(menu.name);
+                });
+            });
+
+            var presets = [ "cvaaDefault", "cvaaPreset1", "cvaaPreset2", "custom"];
+
+            //presets
+            $.each(presets, function (index, preset) {
+                $(".cvaa-adv ." + preset).on("click keydown", function (event) {
+                    if (event.which === 32 || event.which === 13 || event.type == "click") {
+                        $(this).parent().addClass('icvaa-check').siblings().removeClass('icvaa-check');
+                        _this.cvaaSettings.currentPreset = preset;
+                        _this.initPreviewUpdate(_this.getCurrentPreset(_this.cvaaSettings.currentPreset));
+                        _this.saveCvaaSettings();
+                    }
+                });
+            });
+
+            //size buttons
+            $(".cvaa-size .cvaa-btn").on('click keydown', function (event) {
+                if (event.which === 32 || event.which === 13 || event.type == "click") {
+                    $(this).parent().addClass('icvaa-check').siblings().removeClass('icvaa-check');
+                    _this.updateSettingsAndPreview(this.name, $(this).val());
+                    _this.saveCvaaSettings();
+                }
+            });
+            //color and bg-color buttons
+            $(".cvaa-color .cvaa-btn, .cvaa-bg .cvaa-btn").on('click keydown', function (event) {
+                if (event.which === 32 || event.which === 13 || event.type == "click") {
+                    $(this).addClass('icvaa-check').siblings().removeClass('icvaa-check');
+                    _this.updateSettingsAndPreview(this.name, $(this).val());
+                    _this.saveCvaaSettings();
+                }
+            });
+
+            //font-family / bg and font opacity
+            $(".cvaa-color .cvaa-dropdown, .cvaa-bg .cvaa-dropdown, .cvaa-font .cvaa-dropdown").on("change keydown", function (event) {
+                if (event.which === 32 || event.which === 13 || event.type == "change") {
+                    _this.updateSettingsAndPreview(this.name, $(this).val());
+                    _this.saveCvaaSettings();
+                }
+            });
+
+            //paging buttons for colors and backgrounds
+            $(".cvaa-arrow").on("click", function (event) {
+                $(this).parent().parent().toggleClass("cvaa-alternate-page-view");
             });
         },
 
@@ -275,54 +315,6 @@
             } else {
                 $(".cvaa-container .icon-arrow").removeClass("cvaa--show");
             }
-        },
-
-        setUpHandlers: function () {
-            var _this = this;
-
-            var presets = [ "cvaaDefault", "cvaaPreset1", "cvaaPreset2", "custom"];
-
-            //presets
-            $.each(presets, function (index, preset) {
-                $(".cvaa-adv ." + preset).on("click keydown", function (event) {
-                    if (event.which === 32 || event.which === 13 || event.type == "click") {
-                        $(this).parent().addClass('icvaa-check').siblings().removeClass('icvaa-check');
-                        _this.cvaaSettings.currentPreset = preset;
-                        _this.initPreviewUpdate(_this.getCurrentPreset(_this.cvaaSettings.currentPreset));
-                        _this.saveCvaaSettings();
-                    }
-                });
-            });
-
-            //size buttons
-            $(".cvaa-size .cvaa-btn").on('click keydown', function (event) {
-                if (event.which === 32 || event.which === 13 || event.type == "click") {
-                    $(this).parent().addClass('icvaa-check').siblings().removeClass('icvaa-check');
-                    _this.updateSettingsAndPreview(this.name, $(this).val());
-                    _this.saveCvaaSettings();
-                }
-            });
-            //color and bg-color buttons
-            $(".cvaa-color .cvaa-btn, .cvaa-bg .cvaa-btn").on('click keydown', function (event) {
-                if (event.which === 32 || event.which === 13 || event.type == "click") {
-                    $(this).addClass('icvaa-check').siblings().removeClass('icvaa-check');
-                    _this.updateSettingsAndPreview(this.name, $(this).val());
-                    _this.saveCvaaSettings();
-                }
-            });
-
-            //font-family / bg and font opacity
-            $(".cvaa-color .cvaa-dropdown, .cvaa-bg .cvaa-dropdown, .cvaa-font .cvaa-dropdown").on("change keydown", function (event) {
-                if (event.which === 32 || event.which === 13 || event.type == "change") {
-                    _this.updateSettingsAndPreview(this.name, $(this).val());
-                    _this.saveCvaaSettings();
-                }
-            });
-
-            //paging buttons for colors anf backgrounds
-            $(".cvaa-arrow").on("click", function (event) {
-                $(this).parent().parent().toggleClass("cvaa-alternate-page-view")
-            });
         },
 
         updateSettingsAndPreview: function (option, value) {
