@@ -359,7 +359,7 @@
         },
 
         updateContainerCompsByAvailableSpace: function ($container) {
-            if (!$container.length) return;
+            if ( !$container.length || mw.isChromeCast() ) return;
 
             var _this = this;
             var containerWidth = $container.width();
