@@ -59,44 +59,60 @@
         },
 
         addBindings: function () {
-            this.bindHelper( "switchAudioTrack", this.switchAudioTrack.bind( this ) );
+            this.bindHelper( "switchAudioTrack", this.switchAudioTracks.bind( this ) );
             this.bindHelper( "selectClosedCaptions", this.switchTextTracks.bind( this ) );
         },
 
-        switchAudioTrack: function () {
-
+        switchAudioTracks: function ( e, data ) {
+            var trackId = data.index + 1;
+            var mediaSession = this.castSession.getMediaSession();
+            var activeTrackIds = mediaSession.activeTrackIds || [];
+            var tracks = mediaSession.media.tracks || [];
+            var audioTracks = tracks.filter( function ( track ) {
+                return track.type === chrome.cast.media.TrackType.AUDIO;
+            } );
+            var trackIdToRemove = null;
+            var trackIdToAdd = null;
+            $.each( audioTracks, function ( index, track ) {
+                if ( track.trackId !== trackId && $.inArray( track.trackId, activeTrackIds ) > -1 ) {
+                    trackIdToRemove = track.trackId;
+                }
+                else if ( track.trackId === trackId && $.inArray( track.trackId, activeTrackIds ) === -1 ) {
+                    trackIdToAdd = track.trackId;
+                }
+            } );
+            this.editTracksInfoRequest( mediaSession, activeTrackIds, trackIdToRemove, trackIdToAdd );
         },
 
         switchTextTracks: function ( e, label, language ) {
             var mediaSession = this.castSession.getMediaSession();
             var activeTrackIds = mediaSession.activeTrackIds || [];
-            var tracks = mediaSession.media.tracks;
+            var tracks = mediaSession.media.tracks || [];
+            var textTracks = tracks.filter( function ( track ) {
+                return track.type === chrome.cast.media.TrackType.TEXT;
+            } );
             var trackIdToRemove = null;
             var trackIdToAdd = null;
-            if ( !tracks ) {
-                return;
-            }
             if ( label === "Off" ) {
-                $.each( tracks, function ( index, track ) {
-                    if ( track.type === chrome.cast.media.TrackType.TEXT ) {
-                        if ( $.inArray( track.trackId, activeTrackIds ) > -1 ) {
-                            trackIdToRemove = track.trackId;
-                        }
+                $.each( textTracks, function ( index, track ) {
+                    if ( $.inArray( track.trackId, activeTrackIds ) > -1 ) {
+                        trackIdToRemove = track.trackId;
+                    }
+                } );
+            } else {
+                $.each( textTracks, function ( index, track ) {
+                    if ( track.language !== language && $.inArray( track.trackId, activeTrackIds ) > -1 ) {
+                        trackIdToRemove = track.trackId;
+                    }
+                    else if ( track.language === language && $.inArray( track.trackId, activeTrackIds ) === -1 ) {
+                        trackIdToAdd = track.trackId;
                     }
                 } );
             }
-            else {
-                $.each( tracks, function ( index, track ) {
-                    if ( track.type === chrome.cast.media.TrackType.TEXT ) {
-                        if ( track.language !== language && $.inArray( track.trackId, activeTrackIds ) > -1 ) {
-                            trackIdToRemove = track.trackId;
-                        }
-                        else if ( track.language === language && $.inArray( track.trackId, activeTrackIds ) === -1 ) {
-                            trackIdToAdd = track.trackId;
-                        }
-                    }
-                } );
-            }
+            this.editTracksInfoRequest( mediaSession, activeTrackIds, trackIdToRemove, trackIdToAdd );
+        },
+
+        editTracksInfoRequest: function ( mediaSession, activeTrackIds, trackIdToRemove, trackIdToAdd ) {
             if ( trackIdToRemove ) {
                 var index = activeTrackIds.indexOf( trackIdToRemove );
                 if ( index > -1 ) {
@@ -109,9 +125,9 @@
             var tracksInfoRequest = new chrome.cast.media.EditTracksInfoRequest( activeTrackIds );
             mediaSession.editTracksInfo( tracksInfoRequest,
                 function () {
-                    mw.log( "EmbedPlayerChromecast:: Text track loaded successfully." );
+                    mw.log( "EmbedPlayerChromecast:: editTracksInfoRequest:: Track loaded successfully." );
                 }, function () {
-                    mw.log( "EmbedPlayerChromecast:: Text track loaded failed." );
+                    mw.log( "EmbedPlayerChromecast:: editTracksInfoRequest:: Track loaded failed." );
                 } );
         },
 
@@ -215,7 +231,7 @@
             loadRequest.currentTime = this.getCurrentTime();
             mw.log( "EmbedPlayerChromecast:: loadMedia:: Load request sent", loadRequest );
             // Call load media
-            this.castContext.getCurrentSession().loadMedia( loadRequest ).then(
+            this.castSession.loadMedia( loadRequest ).then(
                 this.onMediaLoaded.bind( this ),
                 this.launchError.bind( this )
             );
@@ -227,9 +243,24 @@
             if ( chromeCastSource ) {
                 this.mediaElement.setSource( chromeCastSource );
                 this.updateScreen();
+                this.setActiveTracks();
                 this.startRemotePlayerMonitor();
                 this.play();
             }
+        },
+
+        setActiveTracks: function () {
+            var _this = this;
+            var mediaSession = this.castSession.getMediaSession();
+            var activeTrackIds = mediaSession.activeTrackIds || [];
+            var tracks = mediaSession.media.tracks || [];
+            $.each( activeTrackIds, function ( index, trackId ) {
+                var track = tracks[ trackId ];
+                if ( track.type === chrome.cast.media.TrackType.TEXT ) {
+                }
+                else if ( track.type === chrome.cast.media.TrackType.AUDIO ) {
+                }
+            } );
         },
 
         monitorRemotePlayer: function () {
@@ -275,6 +306,9 @@
         syncDuration: function ( duration ) {
             if ( duration > 0 ) {
                 mw.log( "EmbedPlayerChromecast:: syncDuration:: " + duration );
+                if ( duration !== this.getDuration() ) {
+                    this.updateCurrentTime( 0 );
+                }
                 this.updateDuration( duration );
             }
         },
@@ -284,7 +318,7 @@
             if ( customData && customData.adsInfo ) {
                 if ( customData.adsInfo.isPlayingAd ) {
                     this.hideSpinner();
-                    this.disablePlayControls( [ 'playPauseBtn', 'chromecast' ] );
+                    this.disablePlayControls( [ 'playPauseBtn', 'chromecast', 'fullScreenBtn', 'volumeControl' ] );
                 } else {
                     this.enablePlayControls();
                 }
@@ -428,7 +462,7 @@
         },
 
         clipDone: function () {
-            mw.log( "EmbedPlayerChromecast:: clip done" );
+            mw.log( "EmbedPlayerChromecast:: clipDone" );
             if ( this.vid.mediaFinishedCallback ) {
                 this.vid.mediaFinishedCallback();
                 this.vid.mediaFinishedCallback = null;
@@ -502,7 +536,7 @@
             } );
             var proxyData = this.getProxyData();
             if ( proxyData ) {
-                fv[ 'proxyData' ] = proxyData;
+                fv[ "proxyData" ] = proxyData;
             }
             if ( this.getFlashvars( "ks" ) ) {
                 fv[ "ks" ] = this.getFlashvars( "ks" );
@@ -512,7 +546,7 @@
 
         getProxyData: function () {
             mw.log( "EmbedPlayerChromecast:: getProxyData" );
-            var proxyData = mw.getConfig( 'proxyData' );
+            var proxyData = mw.getConfig( "proxyData" );
             if ( proxyData ) {
                 var _this = this;
                 var recursiveIteration = function ( object ) {
@@ -529,7 +563,7 @@
                 recursiveIteration( proxyData );
                 return proxyData;
             } else {
-                proxyData = this.getKalturaConfig( 'originalProxyData' );
+                proxyData = this.getKalturaConfig( "originalProxyData" );
                 if ( !$.isEmptyObject( proxyData ) ) {
                     if ( proxyData.data ) {
                         return proxyData.data;
