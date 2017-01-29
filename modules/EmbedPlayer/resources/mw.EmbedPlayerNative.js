@@ -590,7 +590,7 @@
 			this.isPauseLoading = false;
 
 			// Make sure the switch source is different:
-			if (!src || src == vid.src) {
+			if (!src || (src == vid.src && !this.changeMediaStarted)) {
 				if ($.isFunction(switchCallback)) {
 					switchCallback(vid);
 				}
