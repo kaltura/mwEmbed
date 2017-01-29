@@ -440,7 +440,7 @@
 						if (vid.duration > 0) {
 							_this.log("player can seek");
 							clearTimeout( _this.canSeekTimeout );
-							this.canSeekTimeout = null;
+                            _this.canSeekTimeout = null;
 							setTimeout( function () {
 								return checkVideoStateDeferred.resolve();
 							}, 10 );
@@ -469,7 +469,7 @@
 				}
 				this.log("player can't seek - wait video element ready state");
 				this.canSeekTimeout = setTimeout(function () {
-					this.canSeekTimeout = null;
+                    _this.canSeekTimeout = null;
 					_this.canSeek(checkVideoStateDeferred, callbackCount + 1);
 				}, 1000);
 			} else {

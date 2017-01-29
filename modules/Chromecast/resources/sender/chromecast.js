@@ -18,9 +18,7 @@
             'applicationID': "276999A7", // DB6462E9: Chromecast default receiver, 276999A7: Kaltura custom receiver supporting DRM, HLS and smooth streaming
             'showTooltip': true,
             'tooltip': gM( 'mwe-chromecast-chromecast' ),
-            'title': gM( 'mwe-chromecast-chromecast' ),
-            'debugReceiver': false,
-            'disableSenderUI': false
+            'title': gM( 'mwe-chromecast-chromecast' )
         },
         startCastTitle: gM( 'mwe-chromecast-startcast' ),
         stopCastTitle: gM( 'mwe-chromecast-stopcast' ),
@@ -46,17 +44,39 @@
         },
 
         addBindings: function () {
-            this.bind( 'chromecastError', function ( e, errorCode ) {
-                this.launchError( errorCode );
-            }.bind( this ) );
+            this.bind( 'chromecastError', this.launchError.bind( this ) );
+            this.bind( 'castSessionEnded', this.switchToChromecastPlayer.bind( this ) );
         },
 
         toggleCastButton: function ( isAvailable, reason ) {
             this.log( "toggleCastButton: isAvailable=" + isAvailable + ", reason=" + reason );
             if ( isAvailable ) {
+                this.initializeCastApi();
                 this.show();
             } else {
                 this.hide();
+            }
+        },
+
+        initializeCastApi: function () {
+            this.log( "initializeCastApi" );
+            window.chrome = top.chrome || window.chrome;
+            window.cast = top.cast || window.cast;
+
+            var options = {};
+            options.receiverApplicationId = this.getConfig( "applicationID" ).toString();
+            options.autoJoinPolicy = chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED;
+            cast.framework.CastContext.getInstance().setOptions( options );
+
+            this.remotePlayer = new cast.framework.RemotePlayer();
+            this.remotePlayerController = new cast.framework.RemotePlayerController( this.remotePlayer );
+
+            setTimeout( this.checkIfAlreadyConnected.bind( this ), 100 );
+        },
+
+        checkIfAlreadyConnected: function () {
+            if ( this.remotePlayer.isConnected ) {
+                this.switchToChromecastPlayer();
             }
         },
 
@@ -66,9 +86,6 @@
                 return false;
             }
             if ( !this.casting ) {
-                window.chrome = top.chrome || window.chrome;
-                window.cast = top.cast || window.cast;
-                this.initializeCastApi();
                 this.showConnectingMessage();
                 this.embedPlayer.disablePlayControls( [ "chromecast" ] );
                 cast.framework.CastContext.getInstance().requestSession().then(
@@ -76,19 +93,8 @@
                     this.launchError.bind( this )
                 );
             } else {
-                this.endSession();
                 this.switchToSavedPlayer();
             }
-        },
-
-        initializeCastApi: function () {
-            this.log( "initializeCastApi" );
-            var options = {};
-            options.receiverApplicationId = this.getConfig( "applicationID" ).toString();
-            options.autoJoinPolicy = chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED;
-            cast.framework.CastContext.getInstance().setOptions( options );
-            this.remotePlayer = new cast.framework.RemotePlayer();
-            this.remotePlayerController = new cast.framework.RemotePlayerController( this.remotePlayer );
         },
 
         getComponent: function () {
@@ -96,18 +102,9 @@
                 this.$el = $( '<button/>' )
                     .attr( 'title', this.startCastTitle )
                     .addClass( "btn icon-chromecast" + this.getCssClass() )
-                    .click( function () {
-                        this.toggleCast();
-                    }.bind( this ) );
+                    .click( this.toggleCast.bind( this ) );
             }
             return this.$el;
-        },
-
-        endSession: function () {
-            this.log( "endSession" );
-            this.casting = false;
-            this.embedPlayer.remotePlayerController.stop();
-            this.embedPlayer.castContext.getCurrentSession().endSession( true );
         },
 
         switchToChromecastPlayer: function () {
@@ -116,9 +113,9 @@
             this.casting = true;
             this.embedPlayer.casting = true;
             $( this.embedPlayer ).trigger( 'casting' );
-            this.embedPlayer.pause();
             this.savedPlaybackParams = this.getEmbedPlayerPlaybackParams();
             this.savedPlayer = this.embedPlayer.selectedPlayer;
+            this.embedPlayer.clean();
             this.embedPlayer.selectPlayer( mw.EmbedTypes.mediaPlayers.getPlayerById( 'chromecast' ) );
             this.embedPlayer.updatePlaybackInterface( function () {
                 _this.embedPlayer.layoutBuilder.closeAlert();
@@ -140,20 +137,24 @@
         switchToSavedPlayer: function () {
             this.log( "switchToSavedPlayer" );
             var _this = this;
+            var seekTo = this.embedPlayer.currentTime;
+            var stopAfterSeek = (this.embedPlayer.currentState === "pause");
             this.casting = false;
+            this.embedPlayer.shutdownRemotePlayer();
             this.getComponent().css( "color", "white" );
             this.updateTooltip( this.startCastTitle );
             this.embedPlayer.getInterface().find( ".chromecastScreen" ).remove();
-            this.savedPlaybackParams = this.getEmbedPlayerPlaybackParams();
             this.embedPlayer.selectPlayer( this.savedPlayer );
-            this.embedPlayer.remotePlayerController.stop();
-            this.embedPlayer.castSession.endSession( true );
             this.embedPlayer.updatePlaybackInterface( function () {
+                _this.embedPlayer.casting = false;
                 _this.embedPlayer.enablePlayControls();
+                _this.embedPlayer.addPlayerSpinner();
+                _this.embedPlayer.getPlayerElement().load();
                 _this.embedPlayer.canSeek().then( function () {
-                    _this.embedPlayer.seek( _this.savedPlaybackParams.currentTime, true );
+                    _this.embedPlayer.seek( seekTo, stopAfterSeek );
                 } );
             } );
+            this.savedPlayer = null;
         },
 
         launchError: function ( errorCode ) {
@@ -185,16 +186,10 @@
         },
 
         showConnectingMessage: function () {
-            if ( this.getConfig( 'disableSenderUI' ) ) {
-                return;
-            }
             this.displayMessage( gM( 'mwe-chromecast-connecting' ) );
         },
 
         showLoadingMessage: function () {
-            if ( this.getConfig( 'disableSenderUI' ) ) {
-                return;
-            }
             this.displayMessage( gM( 'mwe-chromecast-loading' ) );
         },
 

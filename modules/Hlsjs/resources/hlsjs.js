@@ -101,6 +101,7 @@
 					this.hls.destroy();
 					this.hls = null;
 				}
+				this.orig_clean.call(this.getPlayer());
 			},
 			/**
 			 * Register the playback events and attach the playback engine to the video element
@@ -563,6 +564,7 @@
 				this.orig_load = this.getPlayer().load;
 				this.orig_onerror = this.getPlayer()._onerror;
 				this.orig_ontimeupdate = this.getPlayer()._ontimeupdate;
+				this.orig_clean = this.getPlayer().clean;
 				if (this.getPlayer()._onseeking) {
 					this.orig_onseeking = this.getPlayer()._onseeking.bind(this.getPlayer());
 				}
@@ -578,6 +580,7 @@
 				this.getPlayer()._ontimeupdate = this._ontimeupdate.bind(this);
 				this.getPlayer()._onseeking = this._onseeking.bind(this);
 				this.getPlayer()._onseeked = this._onseeked.bind(this);
+				this.getPlayer().clean = this.clean.bind(this);
 			},
 			/**
 			 * Disable override player methods for HLS playback
@@ -592,6 +595,7 @@
 				this.getPlayer()._ontimeupdate = this.orig_ontimeupdate;
 				this.getPlayer()._onseeking = this.orig_onseeking;
 				this.getPlayer()._onseeked = this.orig_onseeked;
+				this.getPlayer().clean = this.orig_clean;
 			},
 			//Overidable player methods, "this" is bound to HLS plugin instance!
 			/**

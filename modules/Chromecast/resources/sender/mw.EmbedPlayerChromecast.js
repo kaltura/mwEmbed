@@ -23,7 +23,6 @@
             'readyState': 1
         },
         remotePlayerMonitorId: null,
-        tracksLoaded: false,
         castContext: null,
         castSession: null,
         remotePlayer: null,
@@ -31,6 +30,7 @@
         remotePlayerController: null,
         receiverName: null,
         remotePlayerEvents: [
+            cast.framework.RemotePlayerEventType.IS_CONNECTED_CHANGED,
             cast.framework.RemotePlayerEventType.IS_PAUSED_CHANGED,
             cast.framework.RemotePlayerEventType.VOLUME_LEVEL_CHANGED,
             cast.framework.RemotePlayerEventType.IS_MUTED_CHANGED
@@ -63,7 +63,10 @@
             this.bindHelper( "selectClosedCaptions", this.switchTextTracks.bind( this ) );
         },
 
+        /**** Tracks ****/
+
         switchAudioTracks: function ( e, data ) {
+            mw.log( 'EmbedPlayerChromecast:: switchAudioTracks', data );
             var trackId = data.index + 1;
             var mediaSession = this.castSession.getMediaSession();
             var activeTrackIds = mediaSession.activeTrackIds || [];
@@ -85,6 +88,7 @@
         },
 
         switchTextTracks: function ( e, label, language ) {
+            mw.log( 'EmbedPlayerChromecast:: switchTextTracks', language );
             var mediaSession = this.castSession.getMediaSession();
             var activeTrackIds = mediaSession.activeTrackIds || [];
             var tracks = mediaSession.media.tracks || [];
@@ -113,6 +117,10 @@
         },
 
         editTracksInfoRequest: function ( mediaSession, activeTrackIds, trackIdToRemove, trackIdToAdd ) {
+            mw.log( 'EmbedPlayerChromecast:: editTracksInfoRequest', {
+                trackIdToRemove: trackIdToRemove,
+                trackIdToAdd: trackIdToAdd
+            } );
             if ( trackIdToRemove ) {
                 var index = activeTrackIds.indexOf( trackIdToRemove );
                 if ( index > -1 ) {
@@ -131,6 +139,8 @@
                 } );
         },
 
+        /**** Setup & Shutdown Sender ****/
+
         setupRemotePlayer: function ( remotePlayer, remotePlayerController, playbackParams ) {
             mw.log( "EmbedPlayerChromecast:: setupRemotePlayer", { 'playbackParams': playbackParams } );
             this.remotePlayerState = this.REMOTE_PLAYER_STATE.IDLE;
@@ -139,11 +149,29 @@
             this.castContext = cast.framework.CastContext.getInstance();
             this.castSession = this.castContext.getCurrentSession();
             this.receiverName = this.getReceiverName();
-            this.updateDuration( playbackParams.duration );
-            this.updateCurrentTime( playbackParams.currentTime );
-            this.setEmbedPlayerVolume( playbackParams.volume, true );
             this.addRemotePlayerBindings();
-            this.loadMedia();
+            if ( this.castSession.getSessionState() === cast.framework.SessionState.SESSION_RESUMED ) {
+                if ( !this.remotePlayer.playerState ) {
+                    // TODO : We need to handle refresh page in the middle of loading media
+                } else {
+                    this.onMediaLoaded();
+                }
+            } else {
+                this.updateDuration( playbackParams.duration );
+                this.updateCurrentTime( playbackParams.currentTime );
+                this.setEmbedPlayerVolume( playbackParams.volume, true );
+                this.loadMedia();
+            }
+        },
+
+        shutdownRemotePlayer: function () {
+            mw.log( "EmbedPlayerChromecast:: shutdownRemotePlayer" );
+            this.removeRemotePlayerBindings();
+            this.stopRemotePlayerMonitor();
+            this.unbindHelper( "switchAudioTrack" );
+            this.unbindHelper( "selectClosedCaptions" );
+            this.remotePlayerController.stop();
+            this.castSession.endSession( true );
         },
 
         /**** Remote Player Events ****/
@@ -179,6 +207,9 @@
                 case cast.framework.RemotePlayerEventType.IS_MUTED_CHANGED:
                     this.onIsMutedChanged();
                     break;
+                case cast.framework.RemotePlayerEventType.IS_CONNECTED_CHANGED:
+                    this.onIsConnectedChanged();
+                    break;
             }
         },
 
@@ -206,6 +237,17 @@
             }
         },
 
+        onIsConnectedChanged: function () {
+            mw.log( "EmbedPlayerChromecast:: RemotePlayerEventType -> onIsConnectedChanged: " + this.remotePlayer.isConnected );
+            if ( !this.remotePlayer.isConnected ) {
+                this.removeRemotePlayerBindings();
+                this.stopRemotePlayerMonitor();
+                this.remotePlayerController.stop();
+                this.castSession.endSession( true );
+                this.triggerHelper( "castSessionEnded" );
+            }
+        },
+
         /**** Load Media ****/
 
         loadMedia: function () {
@@ -221,7 +263,6 @@
             var contentType = this.getSource().mimeType;
             // Setup media info
             var mediaInfo = new chrome.cast.media.MediaInfo( contentId, contentType );
-            // mediaInfo.duration = this.getDuration();
             mediaInfo.streamType = this.isLive() ? chrome.cast.media.StreamType.LIVE : chrome.cast.media.StreamType.BUFFERED;
             mediaInfo.customData = { embedConfig: this.getEmbedConfig() };
             mediaInfo.metadata = this.getMediaMetadata();
@@ -239,28 +280,17 @@
 
         onMediaLoaded: function () {
             mw.log( "EmbedPlayerChromecast:: onMediaLoaded" );
-            var chromeCastSource = this.getChromecastSource();
-            if ( chromeCastSource ) {
-                this.mediaElement.setSource( chromeCastSource );
-                this.updateScreen();
-                this.setActiveTracks();
-                this.startRemotePlayerMonitor();
-                this.play();
+            this.updateScreen();
+            this.startRemotePlayerMonitor();
+            switch ( this.remotePlayer.playerState ) {
+                case this.REMOTE_PLAYER_STATE.PLAYING:
+                case this.REMOTE_PLAYER_STATE.BUFFERING:
+                    this.play();
+                    break;
+                case this.REMOTE_PLAYER_STATE.PAUSED:
+                    this.pause();
+                    break;
             }
-        },
-
-        setActiveTracks: function () {
-            var _this = this;
-            var mediaSession = this.castSession.getMediaSession();
-            var activeTrackIds = mediaSession.activeTrackIds || [];
-            var tracks = mediaSession.media.tracks || [];
-            $.each( activeTrackIds, function ( index, trackId ) {
-                var track = tracks[ trackId ];
-                if ( track.type === chrome.cast.media.TrackType.TEXT ) {
-                }
-                else if ( track.type === chrome.cast.media.TrackType.AUDIO ) {
-                }
-            } );
         },
 
         monitorRemotePlayer: function () {
@@ -334,7 +364,7 @@
                 'playerState': playerState,
                 'idleReason': opt_idleReason
             } );
-            if ( playerState === this.REMOTE_PLAYER_STATE.PLAYING ) {
+            if ( playerState === this.REMOTE_PLAYER_STATE.PLAYING || playerState === this.REMOTE_PLAYER_STATE.PAUSED ) {
                 this.hideSpinner();
             } else if ( playerState === this.REMOTE_PLAYER_STATE.BUFFERING ) {
                 this.addPlayerSpinner();
@@ -347,7 +377,8 @@
 
         play: function () {
             mw.log( "EmbedPlayerChromecast:: play" );
-            if ( this.currentState === this.LOCAL_PLAYER_STATE.END ) {
+            if ( this.currentState === this.LOCAL_PLAYER_STATE.START ||
+                this.currentState === this.LOCAL_PLAYER_STATE.END ) {
                 this.replay();
             } else {
                 this.remotePlayerState = this.REMOTE_PLAYER_STATE.PLAYING;
@@ -419,13 +450,6 @@
                 this.remotePlayer.currentTime = seekTime;
                 this.remotePlayerController.seek();
             }
-        },
-
-        /**** Stop ****/
-
-        stop: function () {
-            this.pause();
-            this.remotePlayerController.stop();
         },
 
         /**** Volume ****/
@@ -505,23 +529,23 @@
         },
 
         getEmbedConfig: function () {
-            mw.log( "EmbedPlayerChromecast:: getEmbedConfig" );
-            this.foo++;
-            return {
+            var embedConfig = {
                 'publisherID': this.kwidgetid.substr( 1 ),
                 'uiconfID': this.kuiconfid,
                 'entryID': this.kentryid,
                 'flashVars': this.getFlashVars()
             };
+            mw.log( "EmbedPlayerChromecast:: getEmbedConfig", embedConfig );
+            return embedConfig;
         },
 
         getMediaMetadata: function () {
-            mw.log( "EmbedPlayerChromecast:: getMediaMetadata" );
             var embedPlayerMetadata = this.kalturaPlayerMetaData;
             var mediaMetadata = new chrome.cast.media.MovieMediaMetadata();
-            mediaMetadata.images = [ new chrome.cast.Image( embedPlayerMetadata.thumbnailUrl ) ];
+            mediaMetadata.images = [ new chrome.cast.Image( this.poster || embedPlayerMetadata.thumbnailUrl ) ];
             mediaMetadata.title = embedPlayerMetadata.name || '';
             mediaMetadata.subtitle = embedPlayerMetadata.description || '';
+            mw.log( "EmbedPlayerChromecast:: getMediaMetadata", mediaMetadata );
             return mediaMetadata;
         },
 
@@ -574,66 +598,35 @@
             }
         },
 
-        getChromecastSource: function () {
-            mw.log( "EmbedPlayerChromecast:: getChromecastSource" );
-            var sources = this.mediaElement.sources;
-            var videoSize = 0;
-            var newSource = null;
-            var supportedMimeTypes = [ 'video/mp4', 'application/dash+xml', 'application/vnd.apple.mpegurl' ];
-            for ( var i = 0; i < sources.length; i++ ) {
-                var source = sources[ i ];
-                if ( $.inArray( source.mimeType, supportedMimeTypes ) !== -1 ) {
-                    if ( source.sizebytes && parseInt( source.sizebytes ) > videoSize ) { // find the best quality MP4 source
-                        newSource = source;
-                        videoSize = parseInt( newSource.sizebytes );
-                    } else {
-                        newSource = source;
-                    }
-                }
-            }
-            if ( newSource ) {
-                sources.push( newSource );
-                return newSource;
-            } else {
-                mw.log( "EmbedPlayerChromecast:: Could not find a source suitable for casting" );
-                return false;
-            }
-        },
-
         /**** UI handling ****/
-
-        launchError: function ( errorCode ) {
-            mw.log( "EmbedPlayerChromecast:: launchError" );
-            this.triggerHelper( "chromecastError", errorCode );
-        },
 
         updateScreen: function () {
             mw.log( "EmbedPlayerChromecast:: updateScreen" );
             var _this = this;
-            if ( !mw.getConfig( 'disableSenderUI' ) ) {
-                this.getInterface().find( ".chromecastScreen" ).remove();
-                this.getVideoHolder().append( this.getPlayingScreen() );
-                $( ".chromecastThumb" ).load( function () {
-                    setTimeout( function () {
-                        _this.setPlayingScreen();
-                        _this.updatePosterHTML();
-                    }, 0 );
-                } );
-            }
+            this.getInterface().find( ".chromecastScreen" ).remove();
+            this.getVideoHolder().append( this.getPlayingScreen() );
+            $( ".chromecastThumb" ).load( function () {
+                setTimeout( function () {
+                    _this.setPlayingScreen();
+                }, 0 );
+            } );
         },
 
         getPlayingScreen: function () {
-            var thumbnail = (mw.getConfig( 'defaultThumbnail' ) !== null) ? mw.getConfig( 'defaultThumbnail' ) : this.poster;
-            return '<div class="chromecastScreen" style="background-color: rgba(0,0,0,0.7); width: 100%; height: 100%; font-family: Arial; position: absolute">' +
+            return '<img src="' + this.poster + '"' + ' class="playerPoster fill-height"/>' +
+                '<div class="chromecastScreen" style="background-color: rgba(0,0,0,0.7); width: 100%; height: 100%; font-family: Arial; position: absolute">' +
                 '<div class="chromecastPlayback">' +
                 '<div class="chromecastThumbBorder">' +
-                '<img class="chromecastThumb" src="' + thumbnail + '"/></div> ' +
+                '<img class="chromecastThumb" src="' + this.poster + '"/></div> ' +
                 '<div class="titleHolder">' +
                 '<span class="chromecastTitle"></span><br>' +
                 '<div><i class="icon-chromecast chromecastPlayingIcon chromecastPlaying"></i>' +
                 '<span class="chromecastPlaying">' + gM( 'mwe-chromecast-playing' ) + '</span>' +
                 '<span id="chromecastReceiverName" class="chromecastPlaying chromecastReceiverName"></span>' +
-                '</div></div></div></div>';
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '</div>';
         },
 
         setPlayingScreen: function () {
@@ -644,8 +637,13 @@
             $( ".chromecastThumb" ).height( thumbWidth / factor );
             $( ".chromecastThumbBorder" ).height( thumbWidth / factor );
             var title = this.evaluate( '{mediaProxy.entry.name}' );
-            $( ".chromecastTitle" ).text( title );
+            $( ".chromecastTitle" ).text( this.kalturaPlayerMetaData.name );
             $( "#chromecastReceiverName" ).text( this.receiverName );
+        },
+
+        launchError: function ( errorCode ) {
+            mw.log( "EmbedPlayerChromecast:: launchError" );
+            this.triggerHelper( "chromecastError", errorCode );
         },
 
         //TODO: Those are leftovers from previous sender - do we really needs them?

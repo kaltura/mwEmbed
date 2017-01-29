@@ -422,7 +422,7 @@ function onMessage( event ) {
 function embedPlayer( event ) {
     ReceiverLogger.log( "MediaManager", "embedPlayer", event.data.media.customData.embedConfig );
     var embedInfo = event.data.media.customData.embedConfig;
-    var embedLoaderLibPath = embedInfo.lib ? embedInfo.lib + "mwEmbedLoader.php" : "../../../../../mwEmbedLoader.php";
+    var embedLoaderLibPath = embedInfo.lib ? embedInfo.lib + "mwEmbedLoader.php" : "../../../../mwEmbedLoader.php";
     $.getScript( embedLoaderLibPath )
         .then( function () {
             setConfiguration( embedInfo );
