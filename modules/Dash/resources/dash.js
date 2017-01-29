@@ -120,6 +120,12 @@
 							servers: {
 								'com.widevine.alpha': drmConfig.licenseBaseUrl + "/cenc/widevine/license?" + drmConfig.licenseData,
 								'com.microsoft.playready': drmConfig.licenseBaseUrl + "/cenc/playready/license?" + drmConfig.licenseData
+							},
+							advanced: {
+								'com.widevine.alpha': {
+									'videoRobustness': 'SW_SECURE_CRYPTO',
+									'audioRobustness': 'SW_SECURE_CRYPTO'
+								}
 							}
 						}
 					}
