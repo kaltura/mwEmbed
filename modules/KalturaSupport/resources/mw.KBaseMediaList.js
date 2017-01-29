@@ -147,12 +147,12 @@
 			if (!this.$mediaListContainer) {
 					if (this.getConfig('onPage')) {
 						var iframeID = this.embedPlayer.id + '_ifp';
-						if( !mw.getConfig('EmbedPlayer.IsFriendlyIframe')) {
 							// support hidden playlists
 							if (this.getConfig('includeInLayout') === false) {
 								this.$mediaListContainer = $();
 								this.$mediaListContainer.hide();
-							} else {
+							}
+							else {
 								try {
 									//Try to find and apply css on parent frame
 									var cssLink = this.getConfig('cssFileName');
@@ -183,7 +183,7 @@
 									mw.log("Error: " + this.pluginName + " could not access parent iframe");
 								}
 							}
-						}
+
 				} else {
 					this.$mediaListContainer = $( ".playlistInterface");
 					// resize the video to make place for the playlist according to its position (left, top, right, bottom)
