@@ -524,10 +524,14 @@
 
         getMediaMetadata: function () {
             //TODO: Do we need to get external image also?
-            // TODO: Change to this.getKalturaThumbnailUrl() api
+            var thumbnailUrl = kWidgetSupport.getKalturaThumbnailUrl( {
+                url: this.poster,
+                width: 800,
+                height: 1200
+            } );
             var embedPlayerMetadata = this.kalturaPlayerMetaData;
             var mediaMetadata = new chrome.cast.media.MovieMediaMetadata();
-            mediaMetadata.images = [ new chrome.cast.Image( this.poster || embedPlayerMetadata.thumbnailUrl ) ];
+            mediaMetadata.images = [ new chrome.cast.Image( thumbnailUrl ) ];
             mediaMetadata.title = embedPlayerMetadata.name || '';
             mediaMetadata.subtitle = embedPlayerMetadata.description || '';
             mw.log( "EmbedPlayerChromecast:: getMediaMetadata", mediaMetadata );
@@ -588,6 +592,8 @@
         updateScreen: function () {
             mw.log( "EmbedPlayerChromecast:: updateScreen" );
             var _this = this;
+            this.layoutBuilder.closeAlert();
+            this.enablePlayControls();
             this.getInterface().find( ".chromecastScreen" ).remove();
             this.getVideoHolder().append( this.getPlayingScreen() );
             $( ".chromecastThumb" ).load( function () {
