@@ -23,31 +23,43 @@
         startCastTitle: gM( 'mwe-chromecast-startcast' ),
         stopCastTitle: gM( 'mwe-chromecast-stopcast' ),
         savedPlayer: null,
-        savedPlaybackParams: null,
         isDisabled: false,
         casting: false,
         remotePlayer: null,
         remotePlayerController: null,
         CAST_SENDER_V3_URL: '//www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1',
 
+        /**
+         * Setup the Chromecast plugin - loads Google Cast Chrome sender SDK and bind his handler.
+         */
         setup: function () {
-            top[ '__onGCastApiAvailable' ] = this.toggleCastButton.bind( this );
             if ( mw.getConfig( 'EmbedPlayer.IsFriendlyIframe' ) ) {
                 try {
+                    top[ '__onGCastApiAvailable' ] = this.toggleCastButton.bind( this );
                     kWidget.appendScriptUrl( this.CAST_SENDER_V3_URL, null, top.document );
                 } catch ( e ) {
+                    window[ '__onGCastApiAvailable' ] = this.toggleCastButton.bind( this );
                     kWidget.appendScriptUrl( this.CAST_SENDER_V3_URL );
                 }
             } else {
+                window[ '__onGCastApiAvailable' ] = this.toggleCastButton.bind( this );
                 kWidget.appendScriptUrl( this.CAST_SENDER_V3_URL );
             }
         },
 
+        /**
+         * Setup the Chromecast plugin bindings.
+         */
         addBindings: function () {
             this.bind( 'chromecastError', this.launchError.bind( this ) );
             this.bind( 'castSessionEnded', this.switchToChromecastPlayer.bind( this ) );
         },
 
+        /**
+         * Handles the Chromecast player button when receiver is discovered.
+         * @param isAvailable
+         * @param reason
+         */
         toggleCastButton: function ( isAvailable, reason ) {
             this.log( "toggleCastButton: isAvailable=" + isAvailable + ", reason=" + reason );
             if ( isAvailable ) {
@@ -58,6 +70,11 @@
             }
         },
 
+        /**
+         * Initialize the cast framework.
+         * 1) Defines the application id of the receiver.
+         * 2) Check if a session is already opened.
+         */
         initializeCastApi: function () {
             this.log( "initializeCastApi" );
             window.chrome = top.chrome || window.chrome;
@@ -74,29 +91,41 @@
             setTimeout( this.checkIfAlreadyConnected.bind( this ), 100 );
         },
 
+        /**
+         * Handles the use case of refreshing the page while casting.
+         */
         checkIfAlreadyConnected: function () {
             if ( this.remotePlayer.isConnected ) {
                 this.switchToChromecastPlayer();
             }
         },
 
+        /**
+         * Responsible for the logic which happens when we clicking the cast button.
+         * @returns {boolean}
+         */
         toggleCast: function () {
             this.log( "toggleCast: isDisabled=" + this.isDisabled + ", isCasting=" + this.casting );
             if ( this.isDisabled ) {
                 return false;
             }
-            if ( !this.casting ) {
+            // If we're casting - disconnect
+            if ( this.casting ) {
+                this.switchToSavedPlayer();
+            } else {
+                // If we're not - connect
                 this.showConnectingMessage();
                 this.embedPlayer.disablePlayControls( [ "chromecast" ] );
                 cast.framework.CastContext.getInstance().requestSession().then(
                     this.switchToChromecastPlayer.bind( this ),
                     this.launchError.bind( this )
                 );
-            } else {
-                this.switchToSavedPlayer();
             }
         },
 
+        /**
+         * Returning the cast button ui.
+         */
         getComponent: function () {
             if ( !this.$el ) {
                 this.$el = $( '<button/>' )
@@ -107,13 +136,16 @@
             return this.$el;
         },
 
+        /**
+         * After cast session has opened, switch to Chromecast player and save the old one.
+         */
         switchToChromecastPlayer: function () {
             this.log( "switchToChromecastPlayer" );
             var _this = this;
+            var playbackParams = this.getEmbedPlayerPlaybackParams();
             this.casting = true;
             this.embedPlayer.casting = true;
             $( this.embedPlayer ).trigger( 'casting' );
-            this.savedPlaybackParams = this.getEmbedPlayerPlaybackParams();
             this.savedPlayer = this.embedPlayer.selectedPlayer;
             this.embedPlayer.clean();
             this.embedPlayer.selectPlayer( mw.EmbedTypes.mediaPlayers.getPlayerById( 'chromecast' ) );
@@ -122,10 +154,14 @@
                 _this.getComponent().css( "color", "#35BCDA" );
                 _this.updateTooltip( _this.stopCastTitle );
                 _this.showLoadingMessage();
-                _this.embedPlayer.setupRemotePlayer( _this.remotePlayer, _this.remotePlayerController, _this.savedPlaybackParams );
+                _this.embedPlayer.setupRemotePlayer( _this.remotePlayer, _this.remotePlayerController, playbackParams );
             } );
         },
 
+        /**
+         * Gets the current playback data.
+         * @returns {{currentTime: *, duration: *, volume: (*|Float)}}
+         */
         getEmbedPlayerPlaybackParams: function () {
             return {
                 currentTime: this.embedPlayer.getPlayerElementTime(),
@@ -134,6 +170,9 @@
             }
         },
 
+        /**
+         * After cast session has been closed, switch to the player that was active before casting.
+         */
         switchToSavedPlayer: function () {
             this.log( "switchToSavedPlayer" );
             var _this = this;
@@ -147,22 +186,28 @@
             this.embedPlayer.selectPlayer( this.savedPlayer );
             this.embedPlayer.updatePlaybackInterface( function () {
                 _this.embedPlayer.casting = false;
-                _this.embedPlayer.enablePlayControls();
                 _this.embedPlayer.addPlayerSpinner();
-                _this.embedPlayer.getPlayerElement().load();
                 _this.embedPlayer.canSeek().then( function () {
                     _this.embedPlayer.seek( seekTo, stopAfterSeek );
                 } );
             } );
-            this.savedPlayer = null;
         },
 
+        /**
+         * Launch an error and restoring the player ui.
+         * @param errorCode
+         */
         launchError: function ( errorCode ) {
             this.log( "launchError: " + this.getErrorMessage( errorCode ) );
             this.embedPlayer.layoutBuilder.closeAlert();
             this.embedPlayer.enablePlayControls();
         },
 
+        /**
+         * Gets a human readable error message based on the errorCode which cast sdk provides.
+         * @param errorCode
+         * @returns {*}
+         */
         getErrorMessage: function ( errorCode ) {
             this.log( "getErrorMessage: errorCode=" + errorCode );
             switch ( errorCode ) {
@@ -185,14 +230,24 @@
             }
         },
 
+        /**
+         * Displays connecting message on the player ui.
+         */
         showConnectingMessage: function () {
             this.displayMessage( gM( 'mwe-chromecast-connecting' ) );
         },
 
+        /**
+         * Displays loading message on the player ui.
+         */
         showLoadingMessage: function () {
             this.displayMessage( gM( 'mwe-chromecast-loading' ) );
         },
 
+        /**
+         * Displays a certain message on the player ui.
+         * @param msg
+         */
         displayMessage: function ( msg ) {
             this.embedPlayer.layoutBuilder.displayAlert( {
                     'title': 'Chromecast Player',

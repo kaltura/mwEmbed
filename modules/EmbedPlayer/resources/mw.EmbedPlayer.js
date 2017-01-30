@@ -2309,7 +2309,7 @@
 			}
 
 			// Remove any poster div ( that would overlay the player )
-			if (!this.isAudioPlayer) {
+			if (!this.isAudioPlayer && !this.casting) {
 				this.removePoster();
 			}
 
