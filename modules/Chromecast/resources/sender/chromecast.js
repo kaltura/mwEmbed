@@ -52,7 +52,7 @@
          */
         addBindings: function () {
             this.bind( 'chromecastError', this.launchError.bind( this ) );
-            this.bind( 'castSessionEnded', this.switchToChromecastPlayer.bind( this ) );
+            this.bind( 'castSessionEnded', this.switchToLocalPlayer.bind( this ) );
         },
 
         /**
@@ -96,7 +96,7 @@
          */
         checkIfAlreadyConnected: function () {
             if ( this.remotePlayer.isConnected ) {
-                this.switchToChromecastPlayer();
+                this.switchToRemotePlayer();
             }
         },
 
@@ -111,13 +111,13 @@
             }
             // If we're casting - disconnect
             if ( this.casting ) {
-                this.switchToSavedPlayer();
+                this.switchToLocalPlayer();
             } else {
                 // If we're not - connect
                 this.showConnectingMessage();
                 this.embedPlayer.disablePlayControls( [ "chromecast" ] );
                 cast.framework.CastContext.getInstance().requestSession().then(
-                    this.switchToChromecastPlayer.bind( this ),
+                    this.switchToRemotePlayer.bind( this ),
                     this.launchError.bind( this )
                 );
             }
@@ -139,7 +139,7 @@
         /**
          * After cast session has opened, switch to Chromecast player and save the old one.
          */
-        switchToChromecastPlayer: function () {
+        switchToRemotePlayer: function () {
             this.log( "switchToChromecastPlayer" );
             var _this = this;
             var playbackParams = this.getEmbedPlayerPlaybackParams();
@@ -173,7 +173,7 @@
         /**
          * After cast session has been closed, switch to the player that was active before casting.
          */
-        switchToSavedPlayer: function () {
+        switchToLocalPlayer: function () {
             this.log( "switchToSavedPlayer" );
             var _this = this;
             var seekTo = this.embedPlayer.currentTime;
@@ -187,9 +187,7 @@
             this.embedPlayer.updatePlaybackInterface( function () {
                 _this.embedPlayer.casting = false;
                 _this.embedPlayer.addPlayerSpinner();
-                _this.embedPlayer.canSeek().then( function () {
-                    _this.embedPlayer.seek( seekTo, stopAfterSeek );
-                } );
+                _this.embedPlayer.seek( seekTo, stopAfterSeek );
             } );
         },
 

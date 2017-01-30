@@ -229,11 +229,7 @@
 
         onIsMutedChanged: function () {
             mw.log( "EmbedPlayerChromecast:: RemotePlayerEventType -> onIsMutedChanged: " + this.remotePlayer.isMuted );
-            if ( this.remotePlayer.isMuted ) {
-                this.toggleMute( true );
-            } else {
-                this.toggleMute();
-            }
+            this.toggleMute( this.remotePlayer.isMuted );
         },
 
         onIsConnectedChanged: function () {
@@ -277,7 +273,6 @@
             this.startRemotePlayerMonitor();
             this.updateScreen();
             this.updatePosterHTML();
-            this.play();
         },
 
         monitorRemotePlayer: function () {
@@ -314,14 +309,12 @@
 
         updateCurrentTimeUi: function ( currentTime ) {
             if ( currentTime > 0 ) {
-                mw.log( "EmbedPlayerChromecast:: updateCurrentTimeUi:: " + currentTime );
                 this.updateCurrentTime( currentTime );
             }
         },
 
         updateDurationUi: function ( duration ) {
             if ( duration > 0 ) {
-                mw.log( "EmbedPlayerChromecast:: updateDurationUi:: " + duration );
                 if ( duration !== this.getDuration() ) {
                     this.updateCurrentTime( 0 );
                 }
@@ -330,7 +323,6 @@
         },
 
         updateAdsUi: function ( customData ) {
-            mw.log( "EmbedPlayerChromecast:: updateAdsUi:: ", customData );
             if ( customData && customData.adsInfo ) {
                 if ( customData.adsInfo.isPlayingAd ) {
                     this.hideSpinner();
@@ -345,11 +337,6 @@
             if ( !playerState ) {
                 return null;
             }
-            mw.log( "EmbedPlayerChromecast:: updateSenderUi:: ", {
-                'remotePlayerState': this.remotePlayerState,
-                'playerState': playerState,
-                'idleReason': opt_idleReason
-            } );
             if ( playerState === this.REMOTE_PLAYER_STATE.PLAYING || playerState === this.REMOTE_PLAYER_STATE.PAUSED ) {
                 this.hideSpinner();
             } else if ( playerState === this.REMOTE_PLAYER_STATE.BUFFERING ) {
@@ -415,8 +402,18 @@
 
         /**** Seek ****/
 
+        /*
+         doSeek: function () {
+         // TODO
+         },
+
+         canSeek: function () {
+         // TODO
+         },
+         */
+
         seek: function ( seekTime ) {
-            mw.log( "EmbedPlayerChromecast:: seek to " + seekTime );
+            mw.log( "EmbedPlayerChromecast:: seek:: " + seekTime );
             this.stopRemotePlayerMonitor();
             this.embedPlayerSeek( seekTime );
             this.remotePlayerSeek( seekTime );
@@ -432,7 +429,7 @@
         },
 
         remotePlayerSeek: function ( seekTime ) {
-            if ( this.remotePlayer ) {
+            if ( this.remotePlayer && this.remotePlayer.canSeek ) {
                 this.remotePlayer.currentTime = seekTime;
                 this.remotePlayerController.seek();
             }
@@ -526,6 +523,8 @@
         },
 
         getMediaMetadata: function () {
+            //TODO: Do we need to get external image also?
+            // TODO: Change to this.getKalturaThumbnailUrl() api
             var embedPlayerMetadata = this.kalturaPlayerMetaData;
             var mediaMetadata = new chrome.cast.media.MovieMediaMetadata();
             mediaMetadata.images = [ new chrome.cast.Image( this.poster || embedPlayerMetadata.thumbnailUrl ) ];
