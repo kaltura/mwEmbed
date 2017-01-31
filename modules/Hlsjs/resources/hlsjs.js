@@ -70,7 +70,6 @@
 				this.bind("SourceChange", this.isNeeded.bind(this));
 				this.bind("playerReady", this.initHls.bind(this));
 				this.bind("onChangeMedia", this.clean.bind(this));
-				this.bind("onLiveOffSynchChanged", this.onLiveOffSyncChanged.bind(this));
 				if (mw.getConfig("hlsLogs")) {
 					this.bind("monitorEvent", this.monitorDebugInfo.bind(this));
 				}
@@ -95,6 +94,7 @@
 					this.LoadHLS = false;
 					this.loaded = false;
 					this.unRegisterHlsEvents();
+                    this.unbind("onLiveOffSynchChanged");
 					this.restorePlayerMethods();
 					this.hls.detachMedia();
 					this.mediaAttached = false;
@@ -128,7 +128,8 @@
 						// The initial seeking to the live edge has finished.
 						this.afterInitialSeeking = true;
 					}.bind(this));
-					this.bind("seeking", this.onSeekBeforePlay.bind(this));
+                    this.bind("onLiveOffSynchChanged", this.onLiveOffSyncChanged.bind(this));
+                    this.bind("seeking", this.onSeekBeforePlay.bind(this));
 					this.bind("firstPlay", function () {
 						this.unbind("firstPlay");
 						this.unbind("seeking");

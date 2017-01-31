@@ -166,7 +166,9 @@
             return {
                 currentTime: this.embedPlayer.getPlayerElementTime(),
                 duration: this.embedPlayer.getDuration(),
-                volume: this.embedPlayer.getPlayerElementVolume()
+                volume: this.embedPlayer.getPlayerElementVolume(),
+                state: this.embedPlayer.currentState,
+                captions: this.embedPlayer.getInterface().find( '.track' )
             }
         },
 

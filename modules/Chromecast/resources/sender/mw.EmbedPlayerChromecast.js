@@ -22,6 +22,8 @@
         vid: {
             'readyState': 1
         },
+        beforeCastParams: null,
+        movingBackToLive: false,
         remotePlayerMonitorId: null,
         castContext: null,
         castSession: null,
@@ -144,6 +146,7 @@
         setupRemotePlayer: function ( remotePlayer, remotePlayerController, playbackParams ) {
             mw.log( "EmbedPlayerChromecast:: setupRemotePlayer", { 'playbackParams': playbackParams } );
             this.remotePlayerState = this.REMOTE_PLAYER_STATE.IDLE;
+            this.beforeCastParams = playbackParams;
             this.remotePlayer = remotePlayer;
             this.remotePlayerController = remotePlayerController;
             this.castContext = cast.framework.CastContext.getInstance();
@@ -156,10 +159,10 @@
                     this.onMediaLoaded();
                 }
             } else {
-                this.updateDuration( playbackParams.duration );
-                this.updateCurrentTime( playbackParams.currentTime );
-                this.setEmbedPlayerVolume( playbackParams.volume, true );
-                this.loadMedia();
+                this.updateDuration( this.beforeCastParams.duration );
+                this.updateCurrentTime( this.beforeCastParams.currentTime );
+                this.setEmbedPlayerVolume( this.beforeCastParams.volume, true );
+                this.loadMedia( true );
             }
         },
 
@@ -245,7 +248,7 @@
 
         /**** Load Media ****/
 
-        loadMedia: function () {
+        loadMedia: function ( firstCast ) {
             mw.log( "EmbedPlayerChromecast:: loadMedia" );
             this.remotePlayerState = this.REMOTE_PLAYER_STATE.LOADING;
             var contentId = this.getSrc();
@@ -261,18 +264,47 @@
             loadRequest.currentTime = this.getCurrentTime();
             mw.log( "EmbedPlayerChromecast:: loadMedia:: Load request sent", loadRequest );
             // Call load media
+            var handler = null;
+            if ( this.isLive() ) {
+                handler = this.onLiveMediaLoaded;
+            } else {
+                handler = this.onMediaLoaded;
+            }
             this.castSession.loadMedia( loadRequest ).then(
-                this.onMediaLoaded.bind( this ),
-                this.launchError.bind( this )
+                handler.bind( this, firstCast ), this.launchError.bind( this )
             );
         },
 
-        onMediaLoaded: function () {
+        onMediaLoaded: function ( firstCast ) {
             mw.log( "EmbedPlayerChromecast:: onMediaLoaded" );
             this.addRemotePlayerBindings();
             this.startRemotePlayerMonitor();
             this.updateScreen();
             this.updatePosterHTML();
+            if ( firstCast ) {
+                this.activeBeforeCastCaptions();
+            }
+        },
+
+        activeBeforeCastCaptions: function () {
+            if ( this.beforeCastParams.captions.length === 1 ) {
+                var lang = this.beforeCastParams.captions[ 0 ].lang;
+                this.switchTextTracks( null, null, lang );
+            }
+        },
+
+        onLiveMediaLoaded: function ( firstCast ) {
+            this.onMediaLoaded( firstCast );
+            if ( this.movingBackToLive ) {
+                this.triggerHelper( 'movingBackToLive' );
+                this.movingBackToLive = false;
+            }
+            if ( firstCast ) {
+                this.activeBeforeCastCaptions();
+                if ( this.beforeCastParams.state !== this.LOCAL_PLAYER_STATE.PLAY ) {
+                    this.play();
+                }
+            }
         },
 
         monitorRemotePlayer: function () {
@@ -369,6 +401,15 @@
         remotePlayerPlay: function () {
             if ( this.remotePlayer && this.remotePlayer.isPaused ) {
                 this.remotePlayerController.playOrPause();
+            }
+        },
+
+        /**** Live ****/
+
+        backToLive: function () {
+            if ( this.getCurrentTime() > 0 && !this.movingBackToLive ) {
+                this.movingBackToLive = true;
+                this.loadMedia();
             }
         },
 
@@ -524,16 +565,17 @@
 
         getMediaMetadata: function () {
             //TODO: Do we need to get external image also?
-            var thumbnailUrl = kWidgetSupport.getKalturaThumbnailUrl( {
-                url: this.poster,
-                width: 800,
-                height: 1200
-            } );
+            var thumbnailUrl = kWidgetSupport.getKalturaThumbnailUrl( { url: this.poster, width: 800, height: 1200 } );
             var embedPlayerMetadata = this.kalturaPlayerMetaData;
             var mediaMetadata = new chrome.cast.media.MovieMediaMetadata();
-            mediaMetadata.images = [ new chrome.cast.Image( thumbnailUrl ) ];
             mediaMetadata.title = embedPlayerMetadata.name || '';
             mediaMetadata.subtitle = embedPlayerMetadata.description || '';
+            if ( thumbnailUrl ) {
+                var image = new chrome.cast.Image( thumbnailUrl );
+                image.width = 800;
+                image.height = 1200;
+                mediaMetadata.images = [ image ];
+            }
             mw.log( "EmbedPlayerChromecast:: getMediaMetadata", mediaMetadata );
             return mediaMetadata;
         },
@@ -651,9 +693,6 @@
 
         isDVR: function () {
             return false;
-        },
-
-        backToLive: function () {
         },
 
         getPlayerElement: function () {

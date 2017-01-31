@@ -165,6 +165,10 @@
                 })
             }
 
+            this.bind('casting',function (  ) {
+                _this.getPlayer().getInterface().find( '.track' ).remove();
+            });
+
 			this.bind( 'onplay', function(){
 				_this.playbackStarted = true;
 				_this.getMenu().close();
