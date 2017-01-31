@@ -330,6 +330,13 @@
 						}
 					});
 					this.log(audioTracks.length + " audio tracks were found: " + JSON.stringify(audioTracks));
+					//Set default audio track
+					var audioTrack = this.getPlayer().audioTrack;
+					if (audioTrack && audioTrack.defaultTrack && audioTrack.defaultTrack < audioTracks.length) {
+						setTimeout(function(){
+							this.hls.audioTrack = this.getPlayer().audioTrack.defaultTrack;
+						}.bind(this), 0);
+					}
 					this.getPlayer().triggerHelper('audioTracksReceived', audioTrackData);
 				}
 			},
