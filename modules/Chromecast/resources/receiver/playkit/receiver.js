@@ -139,7 +139,6 @@ function startEmbed( uiConfId, partnerId ) {
                 $( window ).trigger( "onReceiverKDPReady" );
                 setMediaElementEvents();
                 addBindings();
-                embedPlayerPromise.resolve();
             },
             "flashvars": ReceiverFlashVars,
             "cache_st": 1438601385
@@ -462,6 +461,10 @@ function addBindings() {
 
     kdp.kBind( "playing", function () {
         mediaManager.broadcastStatus( false );
+    } );
+
+    kdp.kBind( "playerReady", function () {
+        embedPlayerPromise.resolve();
     } );
 }
 

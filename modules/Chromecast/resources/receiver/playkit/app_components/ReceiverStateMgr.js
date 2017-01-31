@@ -182,7 +182,10 @@ StateManager.prototype = {
             var pct = (curTime / totalTime);
             var pix = pct * 780;
             this.curTimeDiv.text( formatDuration( curTime ) + ' ' );
-            this.totalTimeDiv.text( '/ ' + formatDuration( totalTime ) );
+            if ( totalTime !== Infinity ) {
+                this.totalTimeDiv.text( '/ ' + formatDuration( totalTime ) );
+                this.curTimeDiv.css( 'left', 990 );
+            }
             this.progressFill.css( 'width', pix + 'px' );
         }
     },

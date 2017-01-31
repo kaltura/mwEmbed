@@ -2,6 +2,9 @@
  * The receiver's embed player flashvars.
  */
 var ReceiverFlashVars = {
+    "currentTimeLabel": {
+        'plugin': false
+    },
     "dash": {
         'plugin': false
     },
@@ -49,6 +52,7 @@ var ReceiverFlashVars = {
     },
     "doubleClick": {
         "plugin": true,
+        "useExternalImaLib": true,
         "adTagUrl": ""
     },
     "proxyData": {
