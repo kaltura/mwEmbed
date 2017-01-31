@@ -684,6 +684,7 @@
 			var $textTarget = $('<div />')
 				.addClass('track')
 				.attr('data-capId', capId)
+				.attr('dir', "auto")
 				.hide();
 
 			var $windowTarget = $('<div />')
