@@ -63,6 +63,9 @@ var mediaElement;
  * The receiver's embed player flashvars.
  */
 var receiverFlashVars = {
+    "currentTimeLabel": {
+        'plugin': false
+    },
     "dash": {
         'plugin': false
     },
@@ -545,12 +548,16 @@ function getFlashVars( senderPlayFrom, senderAutoPlay, senderFlashVars ) {
             }
         }
         if ( typeof senderAutoPlay === 'boolean' ) {
-            receiverFlashVars.autoPlay = senderAutoPlay;
+            // TODO: Support autoPlay=false in the receiver
+            // receiverFlashVars.autoPlay = senderAutoPlay;
         }
         if ( !senderFlashVars ) {
             return receiverFlashVars;
         } else if ( typeof senderFlashVars === 'string' ) {
             senderFlashVars = JSON.parse( senderFlashVars );
+        }
+        if ( senderFlashVars.doubleClick ) {
+            senderFlashVars.doubleClick.useExternalImaLib = true;
         }
         return ReceiverUtils.extend( receiverFlashVars, senderFlashVars );
     }

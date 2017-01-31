@@ -419,11 +419,9 @@
 
         replay: function () {
             mw.log( "EmbedPlayerChromecastReceiver::replay(), currentElementState::" + this.getPlayerElementCurrentState() );
-            if ( this.getPlayerElementCurrentState() === "end" ) {
-                this.restoreEventPropagation();
-                this.preloadMediaSourceExtension();
-                this.play();
-            }
+            this.restoreEventPropagation();
+            this.preloadMediaSourceExtension();
+            this.play();
         },
 
         changeMediaCallback: function ( callback ) {
