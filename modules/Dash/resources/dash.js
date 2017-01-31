@@ -255,6 +255,11 @@
 						}
 					});
 					mw.log("Dash::" + audioTracks.length + " audio tracks were found: ", audioTracks);
+					//Set default audio track
+					var audioTrack = this.getPlayer().audioTrack;
+					if (audioTrack && audioTrack.defaultTrack && audioTrack.defaultTrack < audioTracks.length) {
+						this.onSwitchAudioTrack({}, {index: audioTrack.defaultTrack});
+					}
 					this.onAudioTracksReceived(audioTrackData);
 				}
 			},
