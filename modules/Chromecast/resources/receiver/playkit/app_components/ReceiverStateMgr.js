@@ -184,6 +184,7 @@ StateManager.prototype = {
             this.curTimeDiv.text( formatDuration( curTime ) + ' ' );
             if ( totalTime !== Infinity ) {
                 this.totalTimeDiv.text( '/ ' + formatDuration( totalTime ) );
+            } else {
                 this.curTimeDiv.css( 'left', 990 );
             }
             this.progressFill.css( 'width', pix + 'px' );
