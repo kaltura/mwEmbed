@@ -227,11 +227,11 @@ body {
 	bottom: 0;
 	width: 100%;
 
-	-webkit-transition: bottom 0.3s ease-in;
-	-moz-transition: bottom 0.3s ease-in;
-	-o-transition: bottom 0.3s ease-in;
-	-ms-transition: bottom 0.3s ease-in;
-	transition: bottom 0.3s ease-in;
+	-webkit-transition: bottom 0.3s ease-in, visibility 0.3s ease-in;
+	-moz-transition: bottom 0.3s ease-in, visibility 0.3s ease-in;
+	-o-transition: bottom 0.3s ease-in, visibility 0.3s ease-in;
+	-ms-transition: bottom 0.3s ease-in, visibility 0.3s ease-in;
+	transition: bottom 0.3s ease-in, visibility 0.3s ease-in;
 }
 
 
@@ -242,9 +242,11 @@ body {
 .controlBarContainer.hover {
 	bottom: -4.2em;
 	z-index: 100;
+	visibility: hidden;
 }
 .controlBarContainer.open {
 	bottom: 0;
+	visibility: visible;
 }
 .mobileSkin.start-state .controlBarContainer{
 	display: none;

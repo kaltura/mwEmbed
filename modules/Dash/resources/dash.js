@@ -120,6 +120,12 @@
 							servers: {
 								'com.widevine.alpha': drmConfig.licenseBaseUrl + "/cenc/widevine/license?" + drmConfig.licenseData,
 								'com.microsoft.playready': drmConfig.licenseBaseUrl + "/cenc/playready/license?" + drmConfig.licenseData
+							},
+							advanced: {
+								'com.widevine.alpha': {
+									'videoRobustness': 'SW_SECURE_CRYPTO',
+									'audioRobustness': 'SW_SECURE_CRYPTO'
+								}
 							}
 						}
 					}
@@ -249,6 +255,11 @@
 						}
 					});
 					mw.log("Dash::" + audioTracks.length + " audio tracks were found: ", audioTracks);
+					//Set default audio track
+					var audioTrack = this.getPlayer().audioTrack;
+					if (audioTrack && audioTrack.defaultTrack && audioTrack.defaultTrack < audioTracks.length) {
+						this.onSwitchAudioTrack({}, {index: audioTrack.defaultTrack});
+					}
 					this.onAudioTracksReceived(audioTrackData);
 				}
 			},

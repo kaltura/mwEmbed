@@ -15,9 +15,13 @@
 .cvaa .screen-content .tmpl,
 .cvaa-btn-label span,
 .cvaa-btn, .cvaa-btn-text {
-	font-family: Helvetica Neue Regular, Lato-Regular, Lato;
+	font-family: Lato, Lato-Regular, Helvetica Neue Regular, Helvetica, Arial, serif, sans-serif;
 	font-size: 16px;
 	line-height: 30px;
+
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
 /*------------------BUTTONS/DROPDOWNS-------------------*/
@@ -59,12 +63,13 @@
 .cvaa-btn-label span {
 	display: block;
 	font-size: 12px;
+	font-weight: bold;
 }
 
 .cvaa-dropdown {
 	width: 144px;
 	height: 34px;
-	background-color: rgba(255, 255, 255, 0);
+	background-color: rgba(0, 0, 0, 0.4);
 	border: 1px solid rgba(255, 255, 255, 0.5);
 	color: #fff;
 	border-radius: 3px;
@@ -241,13 +246,15 @@
 	margin-top: 30px;
 }
 
-.cvaa-adv .custom {
+.cvaa-adv .custom.cvaa-btn {
 	display: none;
+	font-size: 12px;
 }
 
 .cvaa-adv .cvaa-btn {
 	font-size: 14px;
 	padding: 2px;
+	overflow: hidden;
 }
 
 .cvaa-adv .cvaa-btn:after{
@@ -360,15 +367,10 @@
 	right: 0;
 	bottom: 5px;
 	text-align: center;
+	z-index: -1;
 }
 
-.cvaa-footer__preview {
-
-}
-
-/*------------------BTN COLORS-------------------*/
-
-/* Handle small screens paging */
+/*------------------BTN COLORS/BG CAROUSEL-------------------*/
 @media (max-height: 220px) {
 	.cvaa-bg .cvaa-row.cvaa-row--center .Black,
 	.cvaa-bg .cvaa-row.cvaa-row--center .Magenta,
@@ -436,6 +438,8 @@
 	top: 10%;
 	font-size: 20px;
 }
+
+/*------------------BTN COLORS-------------------*/
 
 .cvaa-color .cvaa-btn,
 .cvaa-bg .cvaa-btn {
@@ -538,6 +542,10 @@
 	font-variant: normal;
 	text-transform: none;
 	line-height: 1;
+
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
 .icvaa-check:after {
