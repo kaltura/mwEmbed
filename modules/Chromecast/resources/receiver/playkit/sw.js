@@ -1,13 +1,4 @@
 var CACHE_NAME = 'kaltura-chromecast-receiver-cache';
-var urlsToCache = [
-    '/',
-    '/assets',
-    '/app_components/ReceiverAdsMgr.js',
-    '/app_components/ReceiverIdleMgr.js',
-    '/app_components/ReceiverLogger.js',
-    '/app_components/ReceiverStateMgr.js',
-    '/app_components/ReceiverUtils.js'
-];
 
 self.addEventListener( 'fetch', function ( event ) {
     console.log( '[ServiceWorker] fetch' );
