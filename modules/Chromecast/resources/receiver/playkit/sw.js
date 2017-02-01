@@ -15,8 +15,8 @@ self.addEventListener( 'fetch', function ( event ) {
         caches.match( event.request )
             .then( function ( response ) {
                 // Cache hit - return response
-                debugger;
                 if ( response ) {
+                    console.log( "!!!! Cache hit - return response", event.request );
                     return response;
                 }
 
@@ -28,7 +28,6 @@ self.addEventListener( 'fetch', function ( event ) {
 
                 return fetch( fetchRequest ).then(
                     function ( response ) {
-                        debugger;
                         // Check if we received a valid response
                         if ( !response || response.status !== 200 || response.type !== 'basic' ) {
                             return response;
@@ -42,7 +41,6 @@ self.addEventListener( 'fetch', function ( event ) {
 
                         caches.open( CACHE_NAME )
                             .then( function ( cache ) {
-                                debugger;
                                 cache.put( event.request, responseToCache );
                             } );
 
