@@ -1,5 +1,6 @@
 var CACHE_NAME = 'kaltura-chromecast-receiver-cache';
 
+
 self.addEventListener( 'fetch', function ( event ) {
     console.log( '[ServiceWorker] fetch' );
 
