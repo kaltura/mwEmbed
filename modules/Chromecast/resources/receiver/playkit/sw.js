@@ -9,19 +9,6 @@ var urlsToCache = [
     '/app_components/ReceiverUtils.js'
 ];
 
-self.addEventListener( 'install', function ( event ) {
-    console.log( '[ServiceWorker] install' );
-
-    // Perform install steps
-    event.waitUntil(
-        caches.open( CACHE_NAME )
-            .then( function ( cache ) {
-                console.log( '[ServiceWorker] Opened cache' );
-                return cache.addAll( urlsToCache );
-            } )
-    );
-} );
-
 self.addEventListener( 'fetch', function ( event ) {
     console.log( '[ServiceWorker] fetch' );
 
@@ -33,7 +20,6 @@ self.addEventListener( 'fetch', function ( event ) {
                     console.log( "[ServiceWorker] Cache hit - return response", event.request );
                     return response;
                 }
-
 
                 // IMPORTANT: Clone the request. A request is a stream and
                 // can only be consumed once. Since we are consuming this
