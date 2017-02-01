@@ -10,23 +10,27 @@ var urlsToCache = [
 ];
 
 self.addEventListener( 'install', function ( event ) {
+    console.log( '[ServiceWorker] install' );
+
     // Perform install steps
     event.waitUntil(
         caches.open( CACHE_NAME )
             .then( function ( cache ) {
-                console.log( '[Service Worker] Opened cache' );
+                console.log( '[ServiceWorker] Opened cache' );
                 return cache.addAll( urlsToCache );
             } )
     );
 } );
 
 self.addEventListener( 'fetch', function ( event ) {
+    console.log( '[ServiceWorker] fetch' );
+
     event.respondWith(
         caches.match( event.request )
             .then( function ( response ) {
                 // Cache hit - return response
                 if ( response ) {
-                    console.log( "[Service Worker] Cache hit - return response", event.request );
+                    console.log( "[ServiceWorker] Cache hit - return response", event.request );
                     return response;
                 }
 

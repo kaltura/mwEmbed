@@ -426,8 +426,11 @@ function embedPlayer( event ) {
     ReceiverLogger.log( "MediaManager", "embedPlayer", event.data.media.customData.embedConfig );
     var embedInfo = event.data.media.customData.embedConfig;
     var embedLoaderLibPath = embedInfo.lib ? embedInfo.lib + "mwEmbedLoader.php" : "../../../../../mwEmbedLoader.php";
-    $.getScript( embedLoaderLibPath )
-        .then( function () {
+    $.ajax( {
+        type: "GET",
+        url: embedLoaderLibPath,
+        cache: true,
+        success: function () {
             setConfiguration( embedInfo );
             kWidget.embed( {
                 "targetId": "kaltura_player",
@@ -450,7 +453,8 @@ function embedPlayer( event ) {
                 "cache_st": 1438601385,
                 "entry_id": embedInfo.entryID
             } );
-        } );
+        }
+    } );
 }
 
 /**
