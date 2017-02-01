@@ -556,9 +556,6 @@ function getFlashVars( senderPlayFrom, senderAutoPlay, senderFlashVars ) {
         } else if ( typeof senderFlashVars === 'string' ) {
             senderFlashVars = JSON.parse( senderFlashVars );
         }
-        if ( senderFlashVars.doubleClick ) {
-            senderFlashVars.doubleClick.useExternalImaLib = true;
-        }
         return ReceiverUtils.extend( receiverFlashVars, senderFlashVars );
     }
     catch ( error ) {
