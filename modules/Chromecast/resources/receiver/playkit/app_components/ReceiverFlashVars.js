@@ -52,7 +52,6 @@ var ReceiverFlashVars = {
     },
     "doubleClick": {
         "plugin": true,
-        "useExternalImaLib": true,
         "adTagUrl": ""
     },
     "proxyData": {
