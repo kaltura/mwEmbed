@@ -683,6 +683,7 @@
 			var $textTarget = $('<div />')
 				.addClass('track')
 				.attr('data-capId', capId)
+				.attr('dir', "auto")
 				.hide();
 
 			// Update text ( use "html" instead of "text" so that subtitle format can
