@@ -9,12 +9,12 @@ self.addEventListener( 'fetch', function ( event ) {
             .then( function ( response ) {
                 // Cache hit - return response
                 if ( response ) {
-                    var now = new Date();
-                    if ( (response.TTL - now) > 0 ) {
-                        console.log( "ServiceWorker:: Cache hit - return response", response );
-                        return response;
-                    }
-                    console.log( "ServiceWorker:: Response in cache buy ttl is past", response );
+                    // var now = new Date();
+                    // if ( (response.TTL - now) > 0 ) {
+                    console.log( "ServiceWorker:: Cache hit - return response", response );
+                    return response;
+                    // }
+                    // console.log( "ServiceWorker:: Response in cache buy ttl is past", response );
                 }
 
                 // IMPORTANT: Clone the request. A request is a stream and
