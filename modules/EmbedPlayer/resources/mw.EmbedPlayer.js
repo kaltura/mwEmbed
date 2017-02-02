@@ -2412,24 +2412,26 @@
 		 *
 		 */
 		addPlayerSpinner: function () {
-			var sId = 'loadingSpinner_' + this.id;
-			$(this).trigger('onAddPlayerSpinner');
-			// remove any old spinner
-			$('#' + sId).remove();
-			var target = this;
-			switch(mw.getConfig("EmbedPlayer.SpinnerTarget")){
-				case "videoHolder":
-					target = this.getVideoHolder();
-					break;
-				case "videoDisplay":
-					target = this.getVideoDisplay();
-					break;
-				default:
-					target = this;
-			}
-			// re add an absolute positioned spinner:
-			$(target).getAbsoluteOverlaySpinner()
-				.attr('id', sId);
+			if (!mw.isChromeCast()) {
+                var sId = 'loadingSpinner_' + this.id;
+                $( this ).trigger( 'onAddPlayerSpinner' );
+                // remove any old spinner
+                $( '#' + sId ).remove();
+                var target = this;
+                switch ( mw.getConfig( "EmbedPlayer.SpinnerTarget" ) ) {
+                    case "videoHolder":
+                        target = this.getVideoHolder();
+                        break;
+                    case "videoDisplay":
+                        target = this.getVideoDisplay();
+                        break;
+                    default:
+                        target = this;
+                }
+                // re add an absolute positioned spinner:
+                $( target ).getAbsoluteOverlaySpinner()
+                    .attr( 'id', sId );
+            }
 		},
 		hideSpinner: function () {
 			$(this).trigger('onRemovePlayerSpinner');
