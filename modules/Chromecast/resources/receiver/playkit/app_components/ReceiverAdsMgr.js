@@ -16,10 +16,9 @@ $( window ).bind( 'onReceiverReplay', function () {
 
 $( window ).bind( 'onReceiverChangeMedia', function ( event, withAds ) {
     ReceiverLogger.log( "ReceiverAdsManager", "event-->onReceiverChangeMedia", { "withAds": withAds } );
+    ReceiverAdsManager.destroy();
     if ( withAds ) {
         ReceiverAdsManager = new AdsManager();
-    } else if ( ReceiverAdsManager ) {
-        ReceiverAdsManager.destroy();
     }
 } );
 
