@@ -757,14 +757,17 @@
 						.addClass( 'ad-component ad-skip-btn' )
 						.css({"position": "absolute", "float": "right", "display": "none"})
 						.on("click touchstart", function(e){
-							e.stopPropagation();
+                            e.stopPropagation();
 							e.preventDefault();
 							$( _this.embedPlayer).trigger( 'onAdSkip' );
+                            if ( _this.adPaused ) {
+                                _this.resumeAd( _this.isLinear );
+                            }
 							if ( _this.isChromeless ){
 								_this.embedPlayer.getPlayerElement().sendNotification( 'skipAd' );
 							}else{
 								_this.adsManager.stop();
-								if (_this.currentAdSlotType === "postroll" && _this.getConfig( 'adTagUrl' ) ){
+                                if (_this.currentAdSlotType === "postroll" && _this.getConfig( 'adTagUrl' ) ){
 									_this.restorePlayer(true);
 								}
 							}
