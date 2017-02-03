@@ -150,6 +150,7 @@
 				this.bind( "hideScreen", function (e, screenName) {
 					isOverlayScreenOpen = false;
 					_this.restoreView(screenName);
+					_this.updateSecondScreenLayout(e);
 				} );
 
 				this.bind('dualScreenStreamChange', function (e, data) {
@@ -784,7 +785,7 @@
 							}
 
 							var secondScreen = _this.displays.getAuxDisplay();
-							secondScreen.repaint(screenProps);
+							secondScreen.repaint(screenProps, true);
 							if (!_this.disabled && _this.render) {
 								//Show display and control bar after resizing
 								_this.enableView();
