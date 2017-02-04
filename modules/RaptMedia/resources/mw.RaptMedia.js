@@ -1,5 +1,5 @@
 /**
- * The RaptMedia plugin adds RaptMedia capabilities to Kaltura.
+ * The RaptMedia plugin integrates the RaptMedia Engine to the Kaltura Player. 
  * RaptMedia adds clickable interactive layer that accompanies your video content and can do things like:
  * cue or launch different media plays, jump to specific timecode, trigger an event on your webpage and launch a new web page or an app.
  * Learn more at http://docs.raptmedia.com/
@@ -10,6 +10,8 @@
  * This plugin is only activated when the entryId provided is a Playlist Entry with partnerData == "raptmedia;projectId".
  * This plugin also makes use of accompanying plugin RaptMediaScrubber plugin to override the default scrubber behavior to fit a Rapt Media experience.
  * With RaptMediaScrubber plugin the scrubber can interact within the context of a single RaptMedia clip instead of just the entire stitched playlist.
+ * The RaptMedia plugin integrates the RaptMedia Engine to the Kaltura Player. 
+ * It also makes use of accompanying plugin RaptMediaDurationLabel used to override the default player DurationLabel to behave according to the RaptMedia Sequence rather than show the overall playlist duration.
  */
 (function ( mw, $ ) {
 	"use strict";
