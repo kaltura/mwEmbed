@@ -1,0 +1,18 @@
+{
+	"RaptMedia": {
+		"description": "The RaptMedia plugin integrates the RaptMedia Engine to the Kaltura Player. <br />RaptMedia adds clickable interactive layer that accompanies your video content and can do things like: <br />cue or launch different media plays, jump to specific timecode, trigger an event on your webpage and launch a new web page or an app. <br />Learn more at <a href='http://docs.raptmedia.com/' target='_blank'>http://docs.raptmedia.com</a> <br /> This plugins is only usable for raptmedia.com accounts who enabled integration with Kaltura. <br />If you don't have a RaptMedia account or need to enable the Kaltura integration, please contact support@raptmedia.com <br />This plugin is only activated when the entryId provided is a Playlist Entry with partnerData == 'raptmedia;projectId'. <br />This plugin also makes use of accompanying plugin RaptMediaScrubber plugin to override the default scrubber behavior to fit a Rapt Media experience. <br />With RaptMediaScrubber plugin the scrubber can interact within the context of a single RaptMedia clip instead of just the entire stitched playlist.",
+		"label": "RaptMedia Interactive Video Sequence",
+		"attributes": {
+			"raptMediaScriptUrl": {
+				"type": "string",
+                "doc": "The URL to the Rapt Media Engine. Leave empty to use default.",
+                "label": "RaptMedia Engine URL"
+			},
+			"behaviorOnEnd": {
+				"type": "string",
+                "doc": "Accepts pause or replay. If set to pause it will pause the player at the end of the sequence.",
+                "label": "Behavior On Sequence Complete"
+			}
+		}
+	}
+}
