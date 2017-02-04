@@ -150,6 +150,7 @@
 				this.bind( "hideScreen", function (e, screenName) {
 					isOverlayScreenOpen = false;
 					_this.restoreView(screenName);
+					_this.updateSecondScreenLayout(e);
 				} );
 
 				this.bind('dualScreenStreamChange', function (e, data) {
@@ -784,7 +785,7 @@
 							}
 
 							var secondScreen = _this.displays.getAuxDisplay();
-							secondScreen.repaint(screenProps);
+							secondScreen.repaint(screenProps, true);
 							if (!_this.disabled && _this.render) {
 								//Show display and control bar after resizing
 								_this.enableView();
@@ -1030,28 +1031,35 @@
 				var promise;
 
 				if (mw.isMobileDevice()) {
-					var forceMosaic = this.getConfig('forceMuxedOnMobileDevices') ||
-						(mw.isIOS() && (navigator.userAgent.indexOf('iPad') === -1));
-					promise = (forceMosaic ? $.Deferred().reject() : this.initSecondPlayer(true))
-						.then(function (res) {
-							if (mobileTag) {
-								utils.setConfig({
-									streamSelectorConfig: {
-										ignoreTag: mobileTag
+					var muxedStreamsPromise = mobileTag ?
+						utils.filterStreamsByTag(mobileTag).then(null, function (streams) {
+							return [];
+						}) : [];
+					promise = $.when(muxedStreamsPromise).then(function (streams) {
+						var muxedStream = streams[0];
+						var forceMosaic = (mw.isIOS() && (navigator.userAgent.indexOf('iPad') === -1)) ||
+							(_this.getConfig('forceMuxedOnMobileDevices') && muxedStream);
+
+						return (forceMosaic ?
+							$.Deferred().reject() :
+							_this.initSecondPlayer(true))
+								.then(function (res) {
+									if (mobileTag) {
+										utils.setConfig({
+											streamSelectorConfig: {
+												ignoreTag: mobileTag
+											}
+										});
+
+										_this.updateStreams();
 									}
+
+									return res;
+								}, function () {
+									muxedStream && utils.setStream(muxedStream, forceMosaic, true);
+									return $.Deferred().reject();
 								});
-
-								_this.updateStreams();
-							}
-
-							return res;
-						}, function () {
-							mobileTag && utils.filterStreamsByTag(mobileTag).then(function (streams) {
-								utils.setStream(streams[0], forceMosaic, true);
-							});
-
-							return $.Deferred().reject();
-						});
+					});
 				} else {
 					if (mobileTag) {
 						utils.setConfig({

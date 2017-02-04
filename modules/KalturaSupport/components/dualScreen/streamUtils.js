@@ -265,7 +265,6 @@
             });
 
             this._super();
-            this.embedPlayer.unbindHelper('.streamUtilsSetStream');
         }
     });
 })(window.mw, window.jQuery);

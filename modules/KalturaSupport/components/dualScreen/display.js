@@ -37,9 +37,19 @@
 				.draggable( $.extend( this.getConfig( 'draggable' ), this.viewActionHandler() ))
 				.resizable( $.extend( this.getConfig( 'resizable' ), this.viewActionHandler() ));
 		},
-		repaint: function(screenProps){
-			this.prop = screenProps;
-			this.obj.css( screenProps );
+		repaint: function(screenProps, forceProps){
+			if (this.forcedProps && !forceProps) {
+				this.prop = this.forcedProps;
+				this.forcedProps = null;
+			} else {
+				this.prop = screenProps;
+			}
+
+			if (forceProps) {
+				this.forcedProps = screenProps;
+			}
+
+			this.obj.css(this.prop);
 			this.getPlayer().triggerHelper('displayRepainted');
 		},
 		getProperties: function(){
@@ -185,7 +195,7 @@
             this.obj.removeClass('hiddenScreen' ).addClass('firstScreen' );
         },
 		hide: function (isFlashMode) {
-            var xOffset = this.getPlayer().getWidth() - (parseInt(this.obj.css('left')) || 0) + (parseInt(this.obj.width()) || 0);
+            var xOffset = window.screen.width;
             this.obj.addClass( 'hiddenScreen' );
             this.obj.css('transform', 'translate(' + xOffset + 'px, 0)');
             //take care of flash obj (seek through hidden flash player will be very slow, so we need to bring at least several pixels inside the visible area of the player frame)
