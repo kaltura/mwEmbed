@@ -28,8 +28,8 @@ DAL for Q&A Module
                     // Write to localStorage this item was read
                     if (_viewedEntries.indexOf(EntryId) < 0) {
                         _viewedEntries.push(EntryId);
-                        while (_viewedEntries.length>maxEntriesLength) {
-                            _viewedEntries.pop();
+                        if (_viewedEntries.length>maxEntriesLength) {
+                            _viewedEntries.splice(0,_viewedEntries.length-maxEntriesLength);
                         }
                         if (window.localStorage) {
                             localStorage["_viewedEntries"] = JSON.stringify(_viewedEntries);
