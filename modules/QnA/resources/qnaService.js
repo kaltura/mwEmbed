@@ -9,7 +9,7 @@ DAL for Q&A Module
 
     var viewedEntries=(function() {
         var _viewedEntries = [];
-        var maxEntriesLength = 100;
+        var maxEntriesLength = 250;
         if(window.localStorage) {
             if (localStorage["_viewedEntries"]) {
                 try {

@@ -62,7 +62,7 @@
                 if (window.localStorage) {
                     try {
                         if (!localStorage.kAnonymousUserId) {
-                            localStorage.kAnonymousUserId = _this.generateUserId();
+                            localStorage.kAnonymousUserId = _this.generateUserId(pluginGetConfig("userId"));
                         }
                         return localStorage.kAnonymousUserId;
                     }catch(e) {
