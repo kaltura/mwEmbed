@@ -9,6 +9,7 @@
         ],
         "dependencies": [
         	"mw.KBaseScreen",
+            "mw.KPushServerNotification",
         	"nanoScroller"
         ],
         "kalturaPluginName": "qna",
@@ -21,5 +22,11 @@
         ],
         "templates": "../QnA/resources/qna.tmpl.html",
         "messageFile": "QnA.i18n.json"
+    },
+    "mw.KPushServerNotification": {
+        "scripts": [
+            "resources/mw.KPushServerNotification.js",
+            "resources/socket.io.min.js"
+        ]
     }
 }

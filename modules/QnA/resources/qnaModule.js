@@ -145,6 +145,7 @@
                 });
 
 
+
             },
             destroy: function () {
                 clearInterval(this.currentTimeInterval);

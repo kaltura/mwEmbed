@@ -1,5 +1,5 @@
 /*
-DAL for Q&A Module
+ DAL for Q&A Module
 
 
  */
@@ -9,14 +9,9 @@ DAL for Q&A Module
 
     var viewedEntries=(function() {
         var _viewedEntries = [];
-        var maxEntriesLength = 250;
         if(window.localStorage) {
             if (localStorage["_viewedEntries"]) {
-                try {
-                    _viewedEntries = JSON.parse(localStorage["_viewedEntries"]);
-                }catch(e) {
-                    mw.log("Exception in initilaizing Q&A _viewedEntries: "+e);
-                }
+                _viewedEntries = JSON.parse(localStorage["_viewedEntries"]);
             }
         }else{
             mw.log("window.localStorage is not available");
@@ -24,20 +19,12 @@ DAL for Q&A Module
 
         return {
             markAsRead: function(EntryId) {
-                try {
-                    // Write to localStorage this item was read
-                    if (_viewedEntries.indexOf(EntryId) < 0) {
-                        _viewedEntries.push(EntryId);
-                        if (_viewedEntries.length>maxEntriesLength) {
-                            _viewedEntries.splice(0,_viewedEntries.length-maxEntriesLength);
-                        }
-                        if (window.localStorage) {
-                            localStorage["_viewedEntries"] = JSON.stringify(_viewedEntries);
-                        }
-
+                // Write to localStorage this item was read
+                if (_viewedEntries.indexOf(EntryId) < 0 ) {
+                    _viewedEntries.push(EntryId);
+                    if (window.localStorage) {
+                        localStorage["_viewedEntries"] = JSON.stringify(_viewedEntries);
                     }
-                }catch(e) {
-                    mw.log("Exception in markAsRead: "+e);
 
                 }
             },
@@ -212,18 +199,16 @@ DAL for Q&A Module
 
         // The bind postfix:
         bindPostfix: '.KQnaService',
-        keepPolling: true,
         QnaThreads: ko.observableArray(),
         AnswerOnAirQueue: ko.observableArray(),
-        lastUpdateTime: -1,
-        moduleStatusLastUpdateTime: -1,
         QandA_ResponseProfile: "QandA_ResponseProfile",
         QandA_ResponseProfileSystemName: "QandA",
         QandA_MetadataProfileSystemName: "Kaltura-QnA",
         QandA_cuePointTag: "qna",
+        QandA_publicNotificationName: "PUBLIC_QNA_NOTIFICATIONS",
+        QandA_UserNotificationName: "USER_QNA_NOTIFICATIONS",
+        QandA_CodeNotificationName: "CODE_QNA_NOTIFICATIONS",
         QandA_cuePointTypes: {"Question":1,"Answer":2, "Announcement":3},
-        bootPromise:null,
-
 
         init: function (embedPlayer, qnaPlugin) {
             var _this = this;
@@ -232,44 +217,46 @@ DAL for Q&A Module
             // Setup player ref:
             this.embedPlayer = embedPlayer;
             this.qnaPlugin = qnaPlugin;
-
-            this.keepPolling=true;
-
+            this.kPushServerNotification = new mw.KPushServerNotification(embedPlayer);
 
             if (embedPlayer.isLive()) {
-                this.requestCuePoints();
+                //we first register to all notification before continue to get the existing cuepoints, so we don't get races and lost cue points
+                $.when(this.getMetaDataProfile(),
+                    this.registerPublicNotificationItems(),
+                    this.registerUserNotificationItems(),
+                    this.registerCodeNotificationItems());
             }
-
         },
-        boot:function() {
-
-            if (this.bootPromise) {
-                return this.bootPromise;
-            }
-
+        getMetaDataProfile:function() {
             var _this=this;
 
-            var deferred = $.Deferred();
             var listMetadataProfileRequest = {
                 service: "metadata_metadataprofile",
                 action: "list",
                 "filter:systemNameEqual": this.QandA_MetadataProfileSystemName
             };
+            this.userId=this.qnaPlugin.getUserID();
 
+
+            var deferred = $.Deferred();
             this.getKClient().doRequest(listMetadataProfileRequest, function (result) {
-                _this.metadataProfile = result.objects[0];
-                _this.userId=_this.qnaPlugin.getUserID();
-                deferred.resolve();
-            });
 
-            this.bootPromise=deferred;
-            return this.bootPromise;
+                if (result.objectType==="KalturaAPIException") {
+                    mw.log("Error getting metadata profile: "+result.message+" ("+result.code+")");
+                    deferred.resolve(false);
+                    return;
+                }
+
+                _this.metadataProfile = result.objects[0];
+                deferred.resolve(true);
+            });
+            return deferred;
         },
 
         viewedEntries: viewedEntries,
 
         destroy: function () {
-            this.keepPolling=false;
+
             $(this.embedPlayer).unbind(this.bindPostfix);
         },
 
@@ -297,80 +284,78 @@ DAL for Q&A Module
         submitQuestion: function (question, parent) {
             var embedPlayer = this.embedPlayer;
             var _this = this;
-            this.boot().then(function() {
-                var startTime = new Date();
+            var startTime = new Date();
 
-                var metadata = {};
-                if (parent) {
-                    metadata.ThreadId = parent.cuePoint().metadata.ThreadId;
-                }
-                metadata.Type = "Question";
-                metadata.ThreadCreatorId = _this.userId;
+            var metadata = {};
+            if (parent) {
+                metadata.ThreadId = parent.cuePoint().metadata.ThreadId;
+            }
+            metadata.Type = "Question";
+            metadata.ThreadCreatorId = _this.userId;
 
-                var xmlData = _this.createMetadataXmlFromObject(metadata);
+            var xmlData = _this.createMetadataXmlFromObject(metadata);
 
 
-                var createCuePointRequest = {
-                    "service": "cuePoint_cuePoint",
-                    "action": "add",
-                    "cuePoint:objectType": "KalturaAnnotation",
-                    "cuePoint:entryId": embedPlayer.kentryid,
-                    "cuePoint:startTime": embedPlayer.currentTime,
-                    "cuePoint:text": question,
-                    "cuePoint:isPublic": 1,
-                    "cuePoint:searchableOnEntry": 0
-                };
-                if (parent) {
-                    createCuePointRequest["cuePoint:parentId"] = parent.cuePoint().id;
-                }
+            var createCuePointRequest = {
+                "service": "cuePoint_cuePoint",
+                "action": "add",
+                "cuePoint:objectType": "KalturaAnnotation",
+                "cuePoint:entryId": embedPlayer.kentryid,
+                "cuePoint:startTime": embedPlayer.currentTime,
+                "cuePoint:text": question,
+                "cuePoint:isPublic": 1,
+                "cuePoint:searchableOnEntry": 0
+            };
+            if (parent) {
+                createCuePointRequest["cuePoint:parentId"] = parent.cuePoint().id;
+            }
 
-                var addMetadataRequest = {
-                    service: "metadata_metadata",
-                    action: "add",
-                    metadataProfileId: _this.metadataProfile.id,
-                    objectId: "{1:result:id}",
-                    xmlData: xmlData,
-                    objectType: "annotationMetadata.Annotation"
-                };
+            var addMetadataRequest = {
+                service: "metadata_metadata",
+                action: "add",
+                metadataProfileId: _this.metadataProfile.id,
+                objectId: "{1:result:id}",
+                xmlData: xmlData,
+                objectType: "annotationMetadata.Annotation"
+            };
 
-                var updateCuePointRequestAddQnaTag = {
-                    "service": "cuePoint_cuePoint",
-                    "action": "update",
-                    "id": "{1:result:id}",
-                    "cuePoint:objectType": "KalturaAnnotation",
-                    "cuePoint:tags": _this.QandA_cuePointTag
-                };
+            var updateCuePointRequestAddQnaTag = {
+                "service": "cuePoint_cuePoint",
+                "action": "update",
+                "id": "{1:result:id}",
+                "cuePoint:objectType": "KalturaAnnotation",
+                "cuePoint:tags": _this.QandA_cuePointTag
+            };
 
-                // mw.log("Submitting a new question: " + question);
+            // mw.log("Submitting a new question: " + question);
 
-                _this.getKClient().doRequest([createCuePointRequest, addMetadataRequest, updateCuePointRequestAddQnaTag], function (result) {
+            _this.getKClient().doRequest([createCuePointRequest, addMetadataRequest, updateCuePointRequestAddQnaTag], function (result) {
 
-                        var endTime = new Date();
-                        var cuePoint = result[2];
-                        var metadata = result[1];
-                        if (cuePoint.id && metadata.id) {
+                    var endTime = new Date();
+                    var cuePoint = result[2];
+                    var metadata = result[1];
+                    if (cuePoint.id && metadata.id) {
 
-                            cuePoint.metadata = {xml: metadata.xml, id: metadata.id};
+                        cuePoint.metadata = {xml: metadata.xml, id: metadata.id};
 
-                            var item = _this.annotationCuePointToQnaEntry(cuePoint);
+                        var item = _this.annotationCuePointToQnaEntry(cuePoint);
 
-                            if (item) {
-                                _this.addOrUpdateEntry(item);
-                                _this.sortThreads();
-                            }
-
-                            mw.log("added Annotation cue point with id: " + cuePoint.id + " took " + (endTime - startTime) + " ms");
-
-                        } else {
-                            mw.log("error adding Annotation " + JSON.stringify(result));
-
+                        if (item) {
+                            _this.addOrUpdateEntry(item);
+                            _this.sortThreads();
                         }
-                    },
-                    false,
-                    function (err) {
-                        mw.log("Error: " + this.bindPostfix + " could not add cue point. Error: " + err);
-                    });
-            });
+
+                        mw.log("added Annotation cue point with id: " + cuePoint.id + " took " + (endTime - startTime) + " ms");
+
+                    } else {
+                        mw.log("error adding Annotation " + JSON.stringify(result));
+
+                    }
+                },
+                false,
+                function (err) {
+                    mw.log("Error: " + _this.bindPostfix + " could not add cue point. Error: " + err);
+                });
         },
 
         // item can be either a QnaThread (for an announcement) or a QnaEntry (for a Q&A thread)
@@ -520,8 +505,8 @@ DAL for Q&A Module
 
             // as long as the queue is not empty and it's head contains a cue point with a valid end time (defined and not 0) - remove it.
             while( _this.AnswerOnAirQueue().length > 0 &&
-                    parseInt(_this.AnswerOnAirQueue()[0]().cuePoint().createdAt + (_this.AnswerOnAirQueue()[0]().cuePoint().endTime - _this.AnswerOnAirQueue()[0]().cuePoint().startTime)/1000) < currentPlayerTime &&
-                    parseInt(_this.AnswerOnAirQueue()[0]().cuePoint().endTime) !== 0){
+            parseInt(_this.AnswerOnAirQueue()[0]().cuePoint().createdAt + (_this.AnswerOnAirQueue()[0]().cuePoint().endTime - _this.AnswerOnAirQueue()[0]().cuePoint().startTime)/1000) < currentPlayerTime &&
+            parseInt(_this.AnswerOnAirQueue()[0]().cuePoint().endTime) !== 0){
                 _this.AnswerOnAirQueue.shift();
             }
 
@@ -546,192 +531,121 @@ DAL for Q&A Module
             }
             _this.AnswerOnAirQueue.push(ko.observable(item));
         },
+        processQnA:function(cuePoints) {
+            var _this=this;
+            cuePoints.forEach(function(cuePoint) {
 
-        requestCuePoints:function() {
-            var _this = this;
-            if (!_this.keepPolling) {
-                return false;
-            }
+                var item=_this.annotationCuePointToQnaEntry(cuePoint);
+                if (item) {
 
-            this.boot().then(function() {
+                    if (item.getType() === "AnswerOnAir"){
 
-                var entryId = _this.embedPlayer.kentryid;
+                        _this.addOrUpdateAnswerOnAir(item);
+                        _this.AnswerOnAirQueueUpdate(_this.qnaPlugin.embedPlayer.currentTime);
 
-                // build list annotation cue point request
-                var request = {
-                    'service': 'cuepoint_cuepoint',
-                    'action': 'list',
-                    'filter:tagsLike':_this.QandA_cuePointTag,
-                    'filter:entryIdEqual': entryId,
-                    'filter:objectType': 'KalturaAnnotationFilter',
-                    'filter:orderBy': '+createdAt',
-                    'filter:isPublicEqual': '1',
-                    "responseProfile:objectType":"KalturaResponseProfileHolder",
-                    "responseProfile:systemName":_this.QandA_ResponseProfileSystemName,
-
-                    /*Search  metadata   */
-                    'filter:advancedSearch:objectType': 'KalturaMetadataSearchItem',
-                    'filter:advancedSearch:metadataProfileId': _this.metadataProfile.id,
-                    'filter:advancedSearch:type': 2, //or
-
-                    //search all messages on my session id
-                    'filter:advancedSearch:items:item0:objectType': "KalturaSearchCondition",
-                    'filter:advancedSearch:items:item0:field': "/*[local-name()='metadata']/*[local-name()='ThreadCreatorId']",
-                    'filter:advancedSearch:items:item0:value': _this.userId,
-
-                    //find all announcements
-                    'filter:advancedSearch:items:item1:objectType': "KalturaSearchCondition",
-                    'filter:advancedSearch:items:item1:field': "/*[local-name()='metadata']/*[local-name()='Type']",
-                    'filter:advancedSearch:items:item1:value': "Announcement",
-
-                    //find all AnswerOnAir cue points
-                    'filter:advancedSearch:items:item2:objectType': "KalturaSearchCondition",
-                    'filter:advancedSearch:items:item2:field': "/*[local-name()='metadata']/*[local-name()='Type']",
-                    'filter:advancedSearch:items:item2:value': "AnswerOnAir"
-                };
-
-                var lastUpdatedAt = _this.lastUpdateTime;
-                // Only add lastUpdatedAt filter if any cue points already received
-                if (lastUpdatedAt > 0) {
-                    request['filter:updatedAtGreaterThanOrEqual'] = lastUpdatedAt;
-                }
-
-                // build list code cue point request for qna settings (checking both new and old tags for BC)
-                var codeCuePointListRequest = {
-                    'service': 'cuepoint_cuepoint',
-                    'action': 'list',
-                    'filter:entryIdEqual': entryId,
-                    'filter:tagsMultiLikeOr':'player-qna-settings-update,WEBCASTSTATETAG',
-                    'filter:cuePointTypeEqual': 'codeCuePoint.Code',
-                    'filter:orderBy': '-createdAt',
-                    'pager:pageSize': 1,
-                    'pager:pageIndex': 1
-                };
-
-
-                var moduleStatusLastUpdateTime = _this.moduleStatusLastUpdateTime + 1;
-                // Only add lastUpdatedAt filter if any cue points already received
-                if (moduleStatusLastUpdateTime > 0) {
-                    codeCuePointListRequest['filter:updatedAtGreaterThanOrEqual'] = moduleStatusLastUpdateTime;
-                }
-
-                _this.getKClient().doRequest( [request, codeCuePointListRequest],
-                    function (resoults) {
-
-                        if (!_this.keepPolling) {
-                            return false;
-                        }
-
-                        try {
-                            // process results from 1st request
-                            var data = resoults[0];
-                            // if an error pop out:
-                            if (!data || data.code) {
-                                // todo: add error handling
-                                mw.log("Error:: KCuePoints could not retrieve live cuepoints");
-                                return;
-                            }
-
-                            data.objects.forEach(function (cuePoint) {
-
-                                var item = _this.annotationCuePointToQnaEntry(cuePoint);
-                                if (item) {
-
-                                    if (_this.lastUpdateTime < cuePoint.updatedAt) {
-                                        _this.lastUpdateTime = cuePoint.updatedAt;
-                                    }
-                                    if (item.getType() === "AnswerOnAir") {
-
-                                        _this.addOrUpdateAnswerOnAir(item);
-                                        _this.AnswerOnAirQueueUpdate(_this.qnaPlugin.embedPlayer.currentTime);
-
-                                    }
-                                    else {
-                                        _this.addOrUpdateEntry(item);
-                                    }
-                                }
-                            });
-
-                            _this.sortThreads();
-
-                            // process results from 2nd request
-                            var data2 = resoults[1];
-                            // if an error pop out:
-                            if (!data2 || !data2.objects || data2.objects.length < 1) {
-                                return;
-                            }
-
-                            var disableModule = true;
-                            var announcementOnly = false;
-
-                            var cuePoint = data2.objects[0];
-                            if (cuePoint === undefined || cuePoint.code === undefined) {
-                                return;
-                            }
-
-                            _this.moduleStatusLastUpdateTime = cuePoint.updatedAt;
-
-                            //TODO remove this once all procuders app will be upgraded to latest
-                            if (cuePoint.code === "ENABLE_QNA") {
-                                disableModule = false;
-                                announcementOnly = false;
-                            }
-                            else if (cuePoint.code === "DISABLE_QNA") {
-                                disableModule = true;
-                                announcementOnly = false;
-                            }
-                            else if (cuePoint.code === "ENABLE_ANNOUNCEMENTS_ONLY") {
-                                disableModule = false;
-                                announcementOnly = true;
-                            }
-                            else if (cuePoint.code === "DISABLE_ANNOUNCEMENTS_ONLY") {
-                                disableModule = false;
-                                announcementOnly = false;
-                            }
-                            //for BC supporting both new and old QnA settings cue points
-                            if (cuePoint.tags) {
-                                //old QnA settings cue point convention //todo [sa] remove after releasing new producer version
-                                if (cuePoint.tags.indexOf("WEBCASTSTATETAG") >= 0) {
-                                    try {
-                                        var webCastingState = JSON.parse(cuePoint.code);
-                                        disableModule = !webCastingState["QnA"];
-                                        announcementOnly = !disableModule && webCastingState["AnnouncementsOnly"];
-                                    }
-                                    catch (e) {
-                                        mw.log("Error:: Error parsing WEBCASTSTATETAG code cue point " + e.message + " " + e.stack);
-                                    }
-                                }
-                                //new QnA settings cue point convention
-                                else if (cuePoint.tags.indexOf("player-qna-settings-update") >= 0) {
-                                    try {
-                                        if (cuePoint.partnerData) {
-                                            var webCastingState = JSON.parse(cuePoint.partnerData);
-                                            webCastingState = webCastingState["qnaSettings"];
-                                            disableModule = !webCastingState["qnaEnabled"];
-                                            announcementOnly = !disableModule && webCastingState["announcementOnly"];
-                                        }
-                                    }
-                                    catch (e) {
-                                        mw.log("Error:: Error parsing player-qna-settings-update code cue point " + e.message + " " + e.stack);
-                                    }
-                                }
-                            }
-                            _this.qnaPlugin.hideModule(disableModule, announcementOnly);
-                        } catch(e) {
-                            mw.log("Error in qna requestCuePoints "+e);
-                        } finally {
-                            setTimeout(_this.requestCuePoints.bind(_this),
-                                _this.qnaPlugin.getConfig("qnaPollingInterval") || 10000);
-                        }
-                    },
-                    undefined,
-                    function onError(e) {
-                        mw.log("Error in qna requestCuePoints "+e);
-                        setTimeout(_this.requestCuePoints.bind(_this),
-                            _this.qnaPlugin.getConfig("qnaPollingInterval") || 10000);
                     }
-                );
+                    else {
+                        _this.addOrUpdateEntry(item);
+                    }
+                }
             });
+
+            this.sortThreads();
+        },
+        processQnAState:function(cuePoint) {
+
+            var disableModule = true;
+            var announcementOnly = false;
+
+            //TODO remove this once all procuders app will be upgraded to latest
+            if (cuePoint.code === "ENABLE_QNA"){
+                disableModule = false;
+                announcementOnly = false;
+            }
+            else if (cuePoint.code === "DISABLE_QNA"){
+                disableModule = true;
+                announcementOnly = false;
+            }
+            else if (cuePoint.code === "ENABLE_ANNOUNCEMENTS_ONLY"){
+                disableModule = false;
+                announcementOnly = true;
+            }
+            else if (cuePoint.code === "DISABLE_ANNOUNCEMENTS_ONLY"){
+                disableModule = false;
+                announcementOnly = false;
+            }
+            //for BC supporting both new and old QnA settings cue points
+            if(cuePoint.tags) {
+                //old QnA settings cue point convention //todo [sa] remove after releasing new producer version
+                if (cuePoint.tags.indexOf("WEBCASTSTATETAG") >= 0) {
+                    try {
+                        var webCastingState=JSON.parse(cuePoint.code);
+                        disableModule=!webCastingState["QnA"];
+                        announcementOnly=!disableModule && webCastingState["AnnouncementsOnly"];
+                    }
+                    catch(e) {
+                        mw.log("Error:: Error parsing WEBCASTSTATETAG code cue point "+ e.message+ " "+ e.stack);
+                    }
+                }
+                //new QnA settings cue point convention
+                else if (cuePoint.tags.indexOf("player-qna-settings-update") >= 0) {
+                    try {
+                        if(cuePoint.partnerData) {
+                            var webCastingState = JSON.parse(cuePoint.partnerData);
+                            webCastingState = webCastingState["qnaSettings"];
+                            disableModule = !webCastingState["qnaEnabled"];
+                            announcementOnly = !disableModule && webCastingState["announcementOnly"];
+                        }
+                    }
+                    catch(e) {
+                        mw.log("Error:: Error parsing player-qna-settings-update code cue point "+ e.message+ " "+ e.stack);
+                    }
+                }
+            }
+            this.qnaPlugin.hideModule(disableModule, announcementOnly);
+        },
+
+
+        registerUserNotificationItems: function() {
+            var _this = this;
+
+            var params = {
+                "entryId":_this.embedPlayer.kentryid,
+                "userId":_this.userId
+            };
+
+            return this.kPushServerNotification.registerNotification(_this.QandA_UserNotificationName,params,
+                function(cuePoint) {
+                    _this.processQnA([cuePoint]);
+                });
+        },
+        registerCodeNotificationItems: function() {
+            var _this = this;
+
+            var params = {
+                "entryId":_this.embedPlayer.kentryid
+            };
+
+            return this.kPushServerNotification.registerNotification(_this.QandA_CodeNotificationName,params,
+                function(cuePoint) {
+                    _this.processQnAState(cuePoint);
+                });
+        },
+        registerPublicNotificationItems: function() {
+
+            var _this = this;
+
+            var params = {
+                "entryId":_this.embedPlayer.kentryid
+            };
+
+            return this.kPushServerNotification.registerNotification(_this.QandA_publicNotificationName,params,
+                function(cuePoint) {
+                    _this.processQnA([cuePoint]);
+                });
+
+
         }
+
     };
 })(window.mw, window.jQuery, window.ko);
