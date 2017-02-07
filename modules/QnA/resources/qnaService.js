@@ -9,9 +9,14 @@
 
     var viewedEntries=(function() {
         var _viewedEntries = [];
+        var maxEntriesLength = 250;
         if(window.localStorage) {
             if (localStorage["_viewedEntries"]) {
-                _viewedEntries = JSON.parse(localStorage["_viewedEntries"]);
+                try {
+                    _viewedEntries = JSON.parse(localStorage["_viewedEntries"]);
+                }catch(e) {
+                    mw.log("Exception in initilaizing Q&A _viewedEntries: "+e);
+                }
             }
         }else{
             mw.log("window.localStorage is not available");
@@ -19,12 +24,20 @@
 
         return {
             markAsRead: function(EntryId) {
-                // Write to localStorage this item was read
-                if (_viewedEntries.indexOf(EntryId) < 0 ) {
-                    _viewedEntries.push(EntryId);
-                    if (window.localStorage) {
-                        localStorage["_viewedEntries"] = JSON.stringify(_viewedEntries);
+                try {
+                    // Write to localStorage this item was read
+                    if (_viewedEntries.indexOf(EntryId) < 0) {
+                        _viewedEntries.push(EntryId);
+                        if (_viewedEntries.length>maxEntriesLength) {
+                            _viewedEntries.splice(0,_viewedEntries.length-maxEntriesLength);
+                        }
+                        if (window.localStorage) {
+                            localStorage["_viewedEntries"] = JSON.stringify(_viewedEntries);
+                        }
+
                     }
+                }catch(e) {
+                    mw.log("Exception in markAsRead: "+e);
 
                 }
             },
