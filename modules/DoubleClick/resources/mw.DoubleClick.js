@@ -762,6 +762,8 @@
 							$( _this.embedPlayer).trigger( 'onAdSkip' );
                             if ( _this.adPaused ) {
                                 _this.resumeAd( _this.isLinear );
+								//Make sure to kill any timeout so button won't reappear
+								_this.clearSkipTimeout();
                             }
 							if ( _this.isChromeless ){
 								_this.embedPlayer.getPlayerElement().sendNotification( 'skipAd' );
