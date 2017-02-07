@@ -17,7 +17,7 @@
             },
             tmplWelcome:function(){
                 var _this = this;
-                $(".icon-close").css("display", "none");
+                $(".icontmplWelcome-close").css("display", "none");
                 $(_this.emptyScreen()).hide().append(
                     '<div class="ivqContainer">' +
                     '<div class="welcome"></div>' +
@@ -107,8 +107,8 @@
                     '   <div class="title-text padding20"></div>'+
                     '   <div class="sub-text margin-top4"></div>'+
                     '   <div class="completed-BottonContainer">'+
-                    '       <div class="review-button button-box-attr font-Lato2" tabindex="0" role="button" title="review your answers"></div>'+
-                    '       <div class="submit-button button-box-attr font-Lato2" tabindex="0" role="button" title="Submit your answers"></div>'+
+                    '       <div class="review-button button-box-attr font-Lato2" tabindex="5" role="button" title="review your answers"></div>'+
+                    '       <div class="submit-button button-box-attr font-Lato2" tabindex="5" role="button" title="Submit your answers"></div>'+
                     '   </div>'+
                     '</div>').fadeIn( "fast" );
             },
