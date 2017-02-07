@@ -188,6 +188,7 @@
 				if (event.clientY || event.originalEvent.touches) {
 					this.latitude = ((event.clientY || event.originalEvent.touches[0].pageY) - this.savedY) * this.moveMultiplier + this.savedLatitude;
 				}
+				event.preventDefault();
 			}
 		},
 
