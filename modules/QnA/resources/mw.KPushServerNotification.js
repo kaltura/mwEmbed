@@ -22,7 +22,8 @@
         var deferred = $.Deferred();
 
         var _this=this;
-        this.socket = io.connect(url,{forceNew: true});
+        var options = {forceNew: true, transports: [ 'websocket' ]};
+        this.socket = io.connect(url,options);
 
         this.socket.on('validated', function(){
             mw.log("Connected to socket for "+url);
@@ -56,13 +57,15 @@
         });
 
         this.socket.on('message', function(queueKey, msg){
-            var message=String.fromCharCode.apply(null, new Uint8Array(msg.data))
-            mw.log("["+eventName+"][" + queueKey + "]: " +  message);
-            var obj=JSON.parse(message);
+            mw.log("["+eventName+"][" + queueKey + "]: " +  msg);
 
             if (_this.callbackMap[queueKey]) {
-                _this.callbackMap[queueKey].cb(obj);
+                _this.callbackMap[queueKey].cb(msg);
+            } else {
+                mw.log("["+eventName+"][" + queueKey + "]: Error couldn't find queueKey in map");
+
             }
+
         });
         this.socket.on('errorMsg', function( msg){
             mw.log("["+eventName+"]"+msg);

@@ -576,7 +576,7 @@
             //for BC supporting both new and old QnA settings cue points
             if(cuePoint.tags) {
                 //old QnA settings cue point convention //todo [sa] remove after releasing new producer version
-                if (cuePoint.tags.indexOf("WEBCASTSTATETAG") >= 0) {
+                if (cuePoint.tags.indexOf("WEBCASTSTATETAG") >= 0 && cuePoint.code) {
                     try {
                         var webCastingState=JSON.parse(cuePoint.code);
                         disableModule=!webCastingState["QnA"];
@@ -613,8 +613,8 @@
                     "entryId": _this.embedPlayer.kentryid,
                     "userId":_this.userId
                 },
-                onMessage: function(cuePoint) {
-                    _this.processQnA([cuePoint]);
+                onMessage: function(cuePoints) {
+                    _this.processQnA(cuePoints);
                 }
             };
 
@@ -623,8 +623,10 @@
                 params: {
                     "entryId": _this.embedPlayer.kentryid
                 },
-                onMessage: function(cuePoint) {
-                    _this.processQnAState([cuePoint]);
+                onMessage: function(cuePoints) {
+                    $.each(cuePoints, function(index, cuePoint) {
+                        _this.processQnAState(cuePoint);
+                    });
                 }
             };
 
@@ -633,13 +635,12 @@
                 params: {
                     "entryId": _this.embedPlayer.kentryid
                 },
-                onMessage: function(cuePoint) {
-                    _this.processQnA([cuePoint]);
+                onMessage: function(cuePoints) {
+                    _this.processQnA(cuePoints);
                 }
             };
 
-            return this.kPushServerNotification.registerNotifications([codeNotifications]);
-            //return this.kPushServerNotification.registerNotifications([userNotifications,codeNotifications,publicNotifications]);
+            return this.kPushServerNotification.registerNotifications([userNotifications,codeNotifications,publicNotifications]);
         }
 
     };
