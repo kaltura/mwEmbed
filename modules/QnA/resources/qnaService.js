@@ -221,10 +221,9 @@
 
             if (embedPlayer.isLive()) {
                 //we first register to all notification before continue to get the existing cuepoints, so we don't get races and lost cue points
-                $.when(this.getMetaDataProfile(),
-                    this.registerPublicNotificationItems(),
-                    this.registerUserNotificationItems(),
-                    this.registerCodeNotificationItems());
+                this.getMetaDataProfile().then(function() {
+                    _this.registerNotifications();
+                });
             }
         },
         getMetaDataProfile:function() {
@@ -605,46 +604,42 @@
             this.qnaPlugin.hideModule(disableModule, announcementOnly);
         },
 
-
-        registerUserNotificationItems: function() {
+        registerNotifications: function() {
             var _this = this;
 
-            var params = {
-                "entryId":_this.embedPlayer.kentryid,
-                "userId":_this.userId
-            };
-
-            return this.kPushServerNotification.registerNotification(_this.QandA_UserNotificationName,params,
-                function(cuePoint) {
+            var userNotifications = {
+                eventName: _this.QandA_UserNotificationName,
+                params: {
+                    "entryId": _this.embedPlayer.kentryid,
+                    "userId":_this.userId
+                },
+                onMessage: function(cuePoint) {
                     _this.processQnA([cuePoint]);
-                });
-        },
-        registerCodeNotificationItems: function() {
-            var _this = this;
-
-            var params = {
-                "entryId":_this.embedPlayer.kentryid
+                }
             };
 
-            return this.kPushServerNotification.registerNotification(_this.QandA_CodeNotificationName,params,
-                function(cuePoint) {
-                    _this.processQnAState(cuePoint);
-                });
-        },
-        registerPublicNotificationItems: function() {
-
-            var _this = this;
-
-            var params = {
-                "entryId":_this.embedPlayer.kentryid
+            var codeNotifications = {
+                eventName: _this.QandA_CodeNotificationName,
+                params: {
+                    "entryId": _this.embedPlayer.kentryid
+                },
+                onMessage: function(cuePoint) {
+                    _this.processQnAState([cuePoint]);
+                }
             };
 
-            return this.kPushServerNotification.registerNotification(_this.QandA_publicNotificationName,params,
-                function(cuePoint) {
+            var publicNotifications = {
+                eventName: _this.QandA_publicNotificationName,
+                params: {
+                    "entryId": _this.embedPlayer.kentryid
+                },
+                onMessage: function(cuePoint) {
                     _this.processQnA([cuePoint]);
-                });
+                }
+            };
 
-
+            return this.kPushServerNotification.registerNotifications([codeNotifications]);
+            //return this.kPushServerNotification.registerNotifications([userNotifications,codeNotifications,publicNotifications]);
         }
 
     };
