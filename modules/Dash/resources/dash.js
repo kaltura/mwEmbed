@@ -127,8 +127,8 @@
 				if (mw.isChrome()){
 					defaultConfig.shakaConfig.advanced = {
 						'com.widevine.alpha': {
-							'videoRobustness': 'HW_SECURE_ALL',
-							'audioRobustness': 'HW_SECURE_ALL'
+							'videoRobustness': 'SW_SECURE_CRYPTO',
+							'audioRobustness': 'SW_SECURE_CRYPTO'
 						}
 					};
 				}
