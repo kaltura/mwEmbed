@@ -18,8 +18,7 @@
             displayImportance: 'medium',
             templatePath: '../Quiz/resources/templates/quiz.tmpl.html',
             usePreviewPlayer: false,
-            previewPlayerEnabled: false,
-            ignoreStreamChanges: false
+            previewPlayerEnabled: false
         },
 
         isSeekingIVQ:false,
@@ -27,7 +26,7 @@
         selectedAnswer:null,
         seekToQuestionTime:null,
         multiStreamWelcomeSkip:false,
-        streamChanging:false,
+        relatedStreamChanging:false,
         IVQVer:'IVQ-2.41.rc2',
 
         setup: function () {
@@ -40,17 +39,19 @@
             this.bind('onChangeStream', function () {
                 mw.log("Quiz: multistream On");
                 _this.multiStreamWelcomeSkip = true;
-                _this.streamChanging = true;
             });
-            this.bind('onChangeStreamDone', function () {
-                _this.streamChanging = false;
+            this.bind('dualVideoOnChangeStream', function () {
+                _this.relatedStreamChanging = true;
+            });
+            this.bind('dualVideoOnChangeStreamDone', function () {
+                _this.relatedStreamChanging = false;
             });
 
             embedPlayer.addJsListener( 'kdpReady', function(){
                 // [FEC-6441: Quiz plugin damaged when switching between dual video options]
                 // Don't reload quiz cuepoints when a stream change occurs
                 // Needed for the dual-video cases in which only the parent media contains quiz metadata
-                if (_this.getConfig('ignoreStreamChanges') && _this.streamChanging) {
+                if (_this.relatedStreamChanging) {
                     return;
                 }
 
