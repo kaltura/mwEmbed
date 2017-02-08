@@ -1901,5 +1901,16 @@
                 "type": "string"
             }
         }
+    },
+    "video360": {
+        "label": "360 videos",
+        "description": "Enable 360 videos on the player",
+        "attributes": {
+            "plugin": {
+                "doc": "If the 360 should be activated.",
+                "label": "Enable 360 videos",
+                "type": "hiddenValue"
+            }
+        }
     }
 }
