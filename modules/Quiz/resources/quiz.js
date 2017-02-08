@@ -40,10 +40,10 @@
                 mw.log("Quiz: multistream On");
                 _this.multiStreamWelcomeSkip = true;
             });
-            this.bind('dualVideoOnChangeStream', function () {
+            this.bind('dualScreen_onChangeStream', function () {
                 _this.relatedStreamChanging = true;
             });
-            this.bind('dualVideoOnChangeStreamDone', function () {
+            this.bind('dualScreen_onChangeStreamDone', function () {
                 _this.relatedStreamChanging = false;
             });
 

@@ -315,12 +315,14 @@
 				});
 				this.bind("onChangeStream", function(){
 					_this.syncEnabled = false;
-					_this.getPlayer().triggerHelper('dualVideoOnChangeStream');
 				});
 				this.bind("onChangeStreamDone", function(){
 					_this.syncEnabled = true;
 					_this.updateStreams();
-					_this.getPlayer().triggerHelper('dualVideoOnChangeStreamDone');
+				});
+
+				this.embedPlayer.bindHelper('onChangeStream.dualScreenIvqSupport onChangeStreamDone.dualScreenIvqSupport', function (event) {
+					_this.getPlayer().triggerHelper('dualScreen_' + event.type);
 				});
 
 				if (this.getConfig('enableKeyboardShortcuts')) {
