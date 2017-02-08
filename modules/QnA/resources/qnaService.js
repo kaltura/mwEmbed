@@ -235,7 +235,11 @@
             if (embedPlayer.isLive()) {
                 //we first register to all notification before continue to get the existing cuepoints, so we don't get races and lost cue points
                 this.getMetaDataProfile().then(function() {
-                    _this.registerNotifications();
+                    _this.registerNotifications().then(function() {
+                        console.warn("OK");
+                    },function(err) {
+                        console.warn(err);
+                    });
                 });
             }
         },
@@ -569,23 +573,6 @@
             var disableModule = true;
             var announcementOnly = false;
 
-            //TODO remove this once all procuders app will be upgraded to latest
-            if (cuePoint.code === "ENABLE_QNA"){
-                disableModule = false;
-                announcementOnly = false;
-            }
-            else if (cuePoint.code === "DISABLE_QNA"){
-                disableModule = true;
-                announcementOnly = false;
-            }
-            else if (cuePoint.code === "ENABLE_ANNOUNCEMENTS_ONLY"){
-                disableModule = false;
-                announcementOnly = true;
-            }
-            else if (cuePoint.code === "DISABLE_ANNOUNCEMENTS_ONLY"){
-                disableModule = false;
-                announcementOnly = false;
-            }
             //for BC supporting both new and old QnA settings cue points
             if(cuePoint.tags) {
                 //old QnA settings cue point convention //todo [sa] remove after releasing new producer version
@@ -620,38 +607,38 @@
         registerNotifications: function() {
             var _this = this;
 
-            var userNotifications = {
-                eventName: _this.QandA_UserNotificationName,
-                params: {
-                    "entryId": _this.embedPlayer.kentryid,
-                    "userId":_this.userId
-                },
-                onMessage: function(cuePoints) {
-                    _this.processQnA(cuePoints);
-                }
-            };
-
-            var codeNotifications = {
-                eventName: _this.QandA_CodeNotificationName,
-                params: {
+            var codeNotifications =  this.kPushServerNotification.createNotificationRequest(
+                _this.QandA_CodeNotificationName,
+                {
                     "entryId": _this.embedPlayer.kentryid
                 },
-                onMessage: function(cuePoints) {
+                function(cuePoints) {
                     $.each(cuePoints, function(index, cuePoint) {
                         _this.processQnAState(cuePoint);
                     });
-                }
-            };
+                });
 
-            var publicNotifications = {
-                eventName: _this.QandA_publicNotificationName,
-                params: {
+
+            var publicNotifications =  this.kPushServerNotification.createNotificationRequest(
+                _this.QandA_publicNotificationName,
+                {
                     "entryId": _this.embedPlayer.kentryid
                 },
-                onMessage: function(cuePoints) {
+                function(cuePoints) {
                     _this.processQnA(cuePoints);
-                }
-            };
+                });
+
+
+            var userNotifications =  this.kPushServerNotification.createNotificationRequest(
+                _this.QandA_UserNotificationName,
+                {
+                    "entryId": _this.embedPlayer.kentryid,
+                    "userId":_this.userId
+                },
+                function(cuePoints) {
+                    _this.processQnA(cuePoints);
+                });
+
 
             return this.kPushServerNotification.registerNotifications([userNotifications,codeNotifications,publicNotifications]);
         }

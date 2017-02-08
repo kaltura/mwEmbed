@@ -121,49 +121,53 @@
             this.socketPool={};
             $(this.embedPlayer).unbind(this.bindPostfix);
         },
+        createNotificationRequest:function(eventName, eventParams, onMessage) {
+            var request = {
+                'service': 'eventNotification_eventNotificationTemplate',
+                'action': 'register',
+                'format': 1,
+                "notificationTemplateSystemName": eventName,
+                "pushNotificationParams:objectType": "KalturaPushNotificationParams"
 
+            };
+            var index=0;
+            $.each( eventParams, function(key,value) {
+                request["pushNotificationParams:userParams:item"+index+":objectType"]="KalturaPushNotificationParams";
+                request["pushNotificationParams:userParams:item"+index+":key"]=key;
+                request["pushNotificationParams:userParams:item"+index+":value:objectType"]="KalturaStringValue";
+                request["pushNotificationParams:userParams:item"+index+":value:value"]=value;
+                request["pushNotificationParams:userParams:item"+index+":isQueueKeyParam"]=1;
+                index++;
+            });
 
-        registerNotifications:function(events) {
+            return  {
+                eventName: eventName,
+                apiRequest: request,
+                onMessage: onMessage
+            };
+        },
+        registerNotifications:function(registerRequests) {
             var deferred = $.Deferred();
 
             var _this=this;
 
-            function createRequest(event) {
-                var request = {
-                    'service': 'eventNotification_eventNotificationTemplate',
-                    'action': 'register',
-                    'format': 1,
-                    "notificationTemplateSystemName": event.eventName,
-                    "pushNotificationParams:objectType": "KalturaPushNotificationParams"
-
-                };
-                var index=0;
-                $.each( event.params, function(key,value) {
-                    request["pushNotificationParams:userParams:item"+index+":objectType"]="KalturaPushNotificationParams";
-                    request["pushNotificationParams:userParams:item"+index+":key"]=key;
-                    request["pushNotificationParams:userParams:item"+index+":value:objectType"]="KalturaStringValue";
-                    request["pushNotificationParams:userParams:item"+index+":value:value"]=value;
-                    request["pushNotificationParams:userParams:item"+index+":isQueueKeyParam"]=1;
-                    index++;
-                });
-                return request;
-            };
-
-            var requests = $.map(events,createRequest);
+            var apiRequests = $.map(registerRequests,function(request) {
+                return request.apiRequest;
+            });
 
             //don't do unnesseary multi-requests
-            if (requests.length==1) {
-                requests=requests[0];
+            if (apiRequests.length==1) {
+                apiRequests=apiRequests[0];
             }
 
-            mw.log("registering to ",requests);
+            mw.log("registering to ",apiRequests);
 
-            function processResult(event,result) {
+            function processResult(registerRequest,result) {
                 var deferred = $.Deferred();
 
                 if (result.objectType==="KalturaAPIException") {
-                    mw.log("Error registering to "+event.eventName+" message:"+result.message+" ("+result.code+")");
-                    deferred.resolve(false);
+                    mw.log("Error registering to "+registerRequest.eventName+" message:"+result.message+" ("+result.code+")");
+                    deferred.resolve(result.message);
                     return deferred;
                 }
 
@@ -174,26 +178,26 @@
                     socket = new SocketWrapper(socketKey);
                     _this.socketPool[socketKey]=socket;
 
-                    socket.connect(result.url,event.eventName);
+                    socket.connect(result.url,registerRequest.eventName);
                 }
 
-                socket.listen(event.eventName,result.queueName, result.queueKey,function(obj) {
-                    mw.log('received event for '+event.eventName+ " key: "+result.queueKey);
-                    event.onMessage(obj);
+                socket.listen(registerRequest.eventName,result.queueName, result.queueKey,function(obj) {
+                    mw.log('received event for '+registerRequest.eventName+ " key: "+result.queueKey);
+                    registerRequest.onMessage(obj);
                 }).then(function() {
 
                     if (deferred.state()!=="rejected") {
-                        mw.log('Listening to '+event.eventName+ " for key: "+result.queueKey);
+                        mw.log('Listening to '+registerRequest.eventName+ " for key: "+result.queueKey);
                         deferred.resolve(true);
                     } else {
-                        mw.log('Listening result for  '+event.eventName+ " for key: "+result.queueKey+ " came too late! ignoring!");
+                        mw.log('Listening result for  '+registerRequest.eventName+ " for key: "+result.queueKey+ " came too late! ignoring!");
 
                     }
                 });
 
                 setTimeout(function() {
                     if (deferred.state()!=="resolved") {
-                        mw.log('Timeout waiting for connection  '+event.eventName+ " for key: "+result.queueKey);
+                        mw.log('Timeout waiting for connection  '+registerRequest.eventName+ " for key: "+result.queueKey);
                         deferred.reject();
                     }
                 },mw.KPushServerNotification.connectionTimeout);
@@ -201,19 +205,31 @@
 
             }
 
-            this.kClient.doRequest(requests, function(results) {
+            this.kClient.doRequest(apiRequests, function(results) {
+
+                if (results.objectType==="KalturaAPIException") {
+                    mw.log("Error registering to event tempalte service :"+results.message+" ("+results.code+")");
+                    deferred.reject(results.message);
+                    return deferred;
+                }
+
 
                 var defs=[];
-                if (!requests.length) { //incase of single-request
-                    defs.push(processResult(events[0],results));
+
+                if (!apiRequests.length) { //incase of single-request
+                    defs.push(processResult(registerRequests[0],results));
                 } else {
                     defs=$.map(results,function(result, index) {
-                        return processResult(events[index],result)
+                        return processResult(registerRequests[index],result)
                     });
                 }
 
                 return $.when(defs);
-
+            },
+            false,
+            function(error) {
+                mw.log('Error registering to events  '+error);
+                deferred.reject(error);
             });
 
             return deferred;
