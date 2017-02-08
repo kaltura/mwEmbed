@@ -1,0 +1,18 @@
+.SaveForLater{
+	position: relative;
+	top: 30%;
+	left: 50%;
+	text-align: center;
+	float: left;
+	transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%,-50%); /* IE 9 */
+	-webkit-transform: translate(-50%,-50%); /* Safari */
+
+	border-radius: 0.15em;
+	font-size:35px;
+	font-family: Helvetica,Arial;
+	text-shadow:2px 2px #2E3131;
+	color: #FFF;
+	background-color: rgba(0,0,0,0.7);
+	padding:5px 5px 5px 5px;
+}
