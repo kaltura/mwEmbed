@@ -79,7 +79,7 @@
 
 				var _this = this;
                 this.bind( 'playerReady', function (  ) {
-                    _this.getPlayer().triggerHelper('dualScreenLoaded');
+
                     mw.log('DualScreen - playerReady');
                     //block DualScreen for spalyer
                     if ( _this.getPlayer().instanceOf === 'Silverlight' ) {
@@ -383,6 +383,7 @@
                     this.waitForSecondScreen = null;
 
                     if (this.syncEnabled) {
+
                         var _this = this;
                         this.initView();
                         this.initControlBar();
@@ -390,6 +391,7 @@
 
                         if (_this.secondPlayer.canRender()) {
                             _this.log("render condition are met - initializing");
+                			_this.getPlayer().triggerHelper('dualScreenLoaded');
                             _this.checkRenderConditions();
                             if (_this.disabled){
                                 _this.disabled = false;
