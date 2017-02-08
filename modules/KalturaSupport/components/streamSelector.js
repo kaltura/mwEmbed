@@ -41,6 +41,9 @@
 		},
 		addBindings: function () {
 			var _this = this;
+			this.bind('dualScreenLoaded', function () {
+                _this.destroy();
+            });
 
 			this.bind('playerReady', function () {
 				if (!_this.streamsReady) {

@@ -76,8 +76,10 @@
 				this.getPlayer().playerConfig.plugins.playlistAPI.plugin !== false);
 			},
 			addBindings: function () {
+
 				var _this = this;
                 this.bind( 'playerReady', function (  ) {
+                    _this.getPlayer().triggerHelper('dualScreenLoaded');
                     mw.log('DualScreen - playerReady');
                     //block DualScreen for spalyer
                     if ( _this.getPlayer().instanceOf === 'Silverlight' ) {
