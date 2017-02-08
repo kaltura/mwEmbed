@@ -73,8 +73,12 @@
 				this.render();
 			}.bind(this));
 
-			this.bind("doStop onChangeMedia", function () {
+			this.bind("doStop", function () {
 				cancelAnimationFrame(this.requestId)
+			}.bind(this));
+
+			this.bind("onChangeMedia", function () {
+				this.clean();
 			}.bind(this));
 
 			this.bind("updateLayout", function () {
@@ -188,6 +192,7 @@
 				if (event.clientY || event.originalEvent.touches) {
 					this.latitude = ((event.clientY || event.originalEvent.touches[0].pageY) - this.savedY) * this.moveMultiplier + this.savedLatitude;
 				}
+				event.preventDefault();
 			}
 		},
 
@@ -237,6 +242,11 @@
 			addKeyCallback(this.keyboardShortcutsMap.down, function () {
 				this.latitude -= 10 * this.moveMultiplier;
 			}.bind(this));
+		},
+
+		clean: function(){
+			cancelAnimationFrame(this.requestId);
+			$(this.renderer.domElement).remove();
 		},
 
 		add360logo: function () {
