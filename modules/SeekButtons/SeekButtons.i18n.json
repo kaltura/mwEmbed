@@ -1,5 +1,6 @@
 {
   "en": {
-    "mwe-skipBtn-tooltip": "Seek Forward"
+    "mwe-skipBtnForward-tooltip": "Seek Forward",
+    "mwe-skipBtnBack-tooltip": "Seek Back"
   }
 }

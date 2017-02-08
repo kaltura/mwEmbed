@@ -8,51 +8,75 @@
 
         defaultConfig: {
             'parent': 'controlsContainer',
-            'order': 72,
+            'order': 98,
             'visible': true,
             'align': "right",
             'showTooltip': true,
-            'tooltip': gM( 'mwe-skipBtn-tooltip' ),
             'skipForward': 30,
             'skipBack': 30
         },
 
         active: false,
 
+        forwardIconClass: 'icon-forward',
+        backIconClass: 'icon-prev',
+
+        forwardTitle: gM('mwe-skipBtnForward-tooltip'),
+        backTitle: gM('mwe-skipBtnBack-tooltip'),
+
 
         setup: function( embedPlayer ) {
-            console.info("SeekButtons: setup:: setup started");
-            var _this = this;
+            mw.log("SeekButtons:: setup");
             this.addBindings();
-
         },
 
         addBindings: function() {
-            var $button = this.getComponent();
-            this.skip = this.skip.bind(this);
-            $button.bind("click", this.skip);
+            var $buttons = this.getComponent();
+            this.skipForward = this.skipForward.bind(this);
+            $buttons.bind("click", this.skipForward);
+            this.skipBack = this.skipBack.bind(this);
+            $buttons.bind("click", this.skipBack);
         },
 
-        skip: function(event) {
-            console.log(event);
+        skipForward: function(event) {
             var direction = $(event.target).attr("data-direction");
             if (direction === "forward") {
                 var current = this.embedPlayer.currentTime;
-
                 return this.embedPlayer.seek(current + this.getConfig("skipForward"));
             }
         },
-        skipForward: function() {
 
+        skipBack: function(event) {
+            var direction = $(event.target).attr("data-direction");
+            if (direction === "back") {
+                var current = this.embedPlayer.currentTime;
+                return this.embedPlayer.seek(current - this.getConfig("skipBack"));
+            }
         },
 
         getComponent: function() {
             var _this = this;
-            if( !this.$el ) {
-                this.$el = $( '<button/>' )
-                    .attr( 'title', this.getConfig('tooltip') )
+            var eventName = 'click';
+            if (!this.$el) {
+                var $forwardBtn = $('<button />')
+                    .attr('title', this.nextTitle)
                     .attr( 'data-direction', "forward" )
-                    .addClass( "seekButtons nextBtn" );
+                    .addClass( "btn icon-next" )
+                    .on(eventName, function () {
+                        $(_this).trigger('skipForward');
+                    });
+
+                var $backBtn = $('<button />')
+                    .attr('title', this.prevTitle )
+                    .attr( 'data-direction', "back" )
+                    .addClass( "btn icon-prev" )
+                    .on(eventName, function () {
+                        $(_this).trigger('skipBack');
+                    });
+
+                this.$el = $('<div />')
+                    .addClass(this.getCssClass())
+                    .append($backBtn, $forwardBtn);
             }
             return this.$el;
         }
