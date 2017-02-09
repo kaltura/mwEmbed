@@ -70,6 +70,8 @@
 
 			this.bind("playing", function () {
 				$(this.video).hide();
+				var canvasSize = this.getCanvasSize();
+				this.renderer.setSize(canvasSize.width, canvasSize.height);
 				this.render();
 			}.bind(this));
 
@@ -83,7 +85,8 @@
 
 			this.bind("updateLayout", function () {
 				if(this.renderer){
-					this.renderer.setSize(window.innerWidth, window.innerHeight);
+					var canvasSize = this.getCanvasSize();
+					this.renderer.setSize(canvasSize.width, canvasSize.height);
 				}
 			}.bind(this));
 
@@ -95,9 +98,9 @@
 		initComponents: function () {
 			// setting up the renderer
 			this.renderer = new THREE.WebGLRenderer();
-			this.renderer.setSize(window.innerWidth, window.innerHeight);
-
 			this.getPlayer().getVideoDisplay().append(this.renderer.domElement);
+			$(this.renderer.domElement).addClass("canvas360");
+
 			// creating a new scene
 			this.scene = new THREE.Scene();
 
@@ -149,6 +152,26 @@
 
 			THREE.VideoTexture.prototype = Object.create(THREE.Texture.prototype);
 			THREE.VideoTexture.prototype.constructor = THREE.VideoTexture;
+		},
+
+		getCanvasSize: function(){
+			var videoDisplayWidth = this.getPlayer().getVideoDisplay().width();
+			var videoDisplayHeight = this.getPlayer().getVideoDisplay().height();
+			var pWidth = parseInt(this.video.videoWidth / this.video.videoHeight * videoDisplayHeight);
+			var videoRatio;
+			if(videoDisplayWidth < pWidth) {
+				videoRatio = this.video.videoHeight / this.video.videoWidth;
+				return {
+					width: videoDisplayWidth,
+					height: videoRatio * videoDisplayWidth
+				};
+			} else {
+				videoRatio = this.video.videoWidth / this.video.videoHeight;
+				return {
+					width: videoRatio * videoDisplayHeight,
+					height: videoDisplayHeight
+				};
+			}
 		},
 
 		updateCamera: function () {
