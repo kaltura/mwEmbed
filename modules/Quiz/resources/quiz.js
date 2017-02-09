@@ -165,8 +165,8 @@
             embedPlayer.bindHelper('seeked'+_this.KIVQModule.bindPostfix, function () {
                 // KMS-13599
                 // Let the mw.KCuePoints 'seeked' handler run before
-                // in order to make sure that the KalturaSupport_CuePointReached handler
-                // is not called before the player finished seeking
+                // in order to make sure that the 'KalturaSupport_CuePointReached' event,
+                // triggered by the 'seeked' event, is not handled by the plugin
                 setTimeout(function () {
                     _this.isSeekingIVQ = false;
                     mw.log("Quiz: Seeked");
