@@ -614,20 +614,10 @@
 			this.adPaused = true;
 			this.embedPlayer.paused = true;
 			$(this.embedPlayer).trigger('onpause');
-			var classes = "adCover";
-			if (mw.isIE8()){
-				classes += " adCoverIE8";
-			}
-			var adCover = $('<div class="' + classes + '"></div>').on('click', function(){
-				_this.embedPlayer.hideSpinnerOncePlaying();
-				_this.resumeAd(isLinear)
-			});
-			$(".adCover").remove();
-			if (!mw.isIphone()){
-				$(".videoDisplay").prepend(adCover);
-			}
-			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
-
+            if ( !this.adSkippable ) {
+                this.addAdCover();
+            }
+            $(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
 			if (isLinear && !this.isNativeSDK) {
 				this.clearSkipTimeout();
 				this.embedPlayer.enablePlayControls(["scrubber","share","infoScreen","related","playlistAPI","nextPrevBtn","sourceSelector","qualitySettings","morePlugins"]);
@@ -645,6 +635,21 @@
 				}
 			}
 		},
+
+        addAdCover: function () {
+            var classes = "adCover";
+            if ( mw.isIE8() ) {
+                classes += " adCoverIE8";
+            }
+            var adCover = $( '<div class="' + classes + '"></div>' ).on( 'click', function () {
+                _this.embedPlayer.hideSpinnerOncePlaying();
+                _this.resumeAd( isLinear )
+            } );
+            $( ".adCover" ).remove();
+            if ( !mw.isIphone() ) {
+                $( ".videoDisplay" ).prepend( adCover );
+            }
+        },
 
 		resumeAd: function (isLinear) {
 			if (this.adPaused){
