@@ -53,7 +53,6 @@
 				this.mobileVibrationValue = this.getConfig("mobileVibrationValue");
 				this.video = this.getPlayer().getPlayerElement();
 				this.video.setAttribute('crossorigin', 'anonymous');
-				$(this.video).css('z-index', '-1');
 				if (mw.isIE11()) {
 					// a workaround for ie11 texture issue
 					// see https://github.com/mrdoob/three.js/issues/7560
@@ -70,6 +69,7 @@
 
 			this.bind("playing", function () {
 				$(this.video).hide();
+				$(this.getPlayer()).css('z-index', '-1');
 				var canvasSize = this.getCanvasSize();
 				this.renderer.setSize(canvasSize.width, canvasSize.height);
 				this.render();
@@ -98,8 +98,9 @@
 		initComponents: function () {
 			// setting up the renderer
 			this.renderer = new THREE.WebGLRenderer();
-			this.getPlayer().getVideoDisplay().append(this.renderer.domElement);
-			$(this.renderer.domElement).addClass("canvas360");
+			this.canvas = this.renderer.domElement;
+			this.getPlayer().getVideoDisplay().append(this.canvas);
+			$(this.canvas).addClass("canvas360");
 
 			// creating a new scene
 			this.scene = new THREE.Scene();
@@ -216,6 +217,7 @@
 					this.latitude = ((event.clientY || event.originalEvent.touches[0].pageY) - this.savedY) * this.moveMultiplier + this.savedLatitude;
 				}
 				event.preventDefault();
+				event.stopPropagation();
 			}
 		},
 
@@ -246,8 +248,8 @@
 		},
 
 		attachMotionListeners: function () {
-			$(document).on("mousedown touchstart", this.onDocumentMouseDown.bind(this));
-			$(document).on("mousemove touchmove", this.onDocumentMouseMove.bind(this));
+			$(this.canvas).on("mousedown touchstart", this.onDocumentMouseDown.bind(this));
+			$(this.canvas).on("mousemove touchmove", this.onDocumentMouseMove.bind(this));
 			$(document).on("mouseup touchend", this.onDocumentMouseUp.bind(this));
 			window.addEventListener('devicemotion', this.onMobileOrientation.bind(this));
 		},
@@ -269,7 +271,7 @@
 
 		clean: function(){
 			cancelAnimationFrame(this.requestId);
-			$(this.renderer.domElement).remove();
+			$(this.canvas).remove();
 		},
 
 		add360logo: function () {
