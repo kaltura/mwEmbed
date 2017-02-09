@@ -76,8 +76,10 @@
 				this.getPlayer().playerConfig.plugins.playlistAPI.plugin !== false);
 			},
 			addBindings: function () {
+
 				var _this = this;
                 this.bind( 'playerReady', function (  ) {
+
                     mw.log('DualScreen - playerReady');
                     //block DualScreen for spalyer
                     if ( _this.getPlayer().instanceOf === 'Silverlight' ) {
@@ -321,6 +323,10 @@
 					_this.updateStreams();
 				});
 
+				this.embedPlayer.bindHelper('onChangeStream.dualScreenIvqSupport onChangeStreamDone.dualScreenIvqSupport', function (event) {
+					_this.getPlayer().triggerHelper('dualScreen_' + event.type);
+				});
+
 				if (this.getConfig('enableKeyboardShortcuts')) {
 					this.bind('addKeyBindCallback', function (e, addKeyCallback) {
 						_this.addKeyboardShortcuts(addKeyCallback);
@@ -377,6 +383,7 @@
                     this.waitForSecondScreen = null;
 
                     if (this.syncEnabled) {
+
                         var _this = this;
                         this.initView();
                         this.initControlBar();
@@ -384,6 +391,7 @@
 
                         if (_this.secondPlayer.canRender()) {
                             _this.log("render condition are met - initializing");
+                			_this.getPlayer().triggerHelper('dualScreenLoaded');
                             _this.checkRenderConditions();
                             if (_this.disabled){
                                 _this.disabled = false;
