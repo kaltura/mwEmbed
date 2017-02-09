@@ -33,7 +33,7 @@
                 poster: this.getPoster()
             }).addClass('videoPlayer');
 
-            if (this.streamerType === 'http') {
+            if (this.streamerType === 'http' || this.supportsNativeHls()) {
                 readyCallback(this);
                 $this.attr('src', this.stream.url);
             } else if (this.streamerType === 'hls') {
@@ -83,6 +83,10 @@
 
         supportsOptimisticSeeking: function supportsOptimisticSeeking() {
             return !this.isABR();
+        },
+
+        supportsNativeHls: function supportsNativeHls() {
+            return this.streamerType === 'hls' && mw.isDesktopSafari();
         }
     };
 })(window.mw, window.jQuery, window.kWidgetSupport, window.Hls);
