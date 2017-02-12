@@ -12,3 +12,11 @@
     right: 0;
     margin: 5px 20px;
 }
+.canvas360{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left:0;
+    margin: auto;
+}

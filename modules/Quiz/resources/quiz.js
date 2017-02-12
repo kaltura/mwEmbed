@@ -26,6 +26,7 @@
         selectedAnswer:null,
         seekToQuestionTime:null,
         multiStreamWelcomeSkip:false,
+        relatedStreamChanging:false,
         IVQVer:'IVQ-2.41.rc2',
 
         setup: function () {
@@ -39,8 +40,21 @@
                 mw.log("Quiz: multistream On");
                 _this.multiStreamWelcomeSkip = true;
             });
+            this.bind('dualScreen_onChangeStream', function () {
+                _this.relatedStreamChanging = true;
+            });
+            this.bind('dualScreen_onChangeStreamDone', function () {
+                _this.relatedStreamChanging = false;
+            });
 
             embedPlayer.addJsListener( 'kdpReady', function(){
+                // [FEC-6441: Quiz plugin damaged when switching between dual video options]
+                // Don't reload quiz cuepoints when a stream change occurs
+                // Needed for the dual-video cases in which only the parent media contains quiz metadata
+                if (_this.relatedStreamChanging) {
+                    return;
+                }
+
                 _this.KIVQModule = new mw.KIVQModule(embedPlayer, _this);
                 _this.KIVQModule.isKPlaylist = (typeof (embedPlayer.playlist) === "undefined" ) ? false : true;
 
@@ -149,8 +163,14 @@
             });
 
             embedPlayer.bindHelper('seeked'+_this.KIVQModule.bindPostfix, function () {
-               _this.isSeekingIVQ = false;
-                mw.log("Quiz: Seeked");
+                // KMS-13599
+                // Let the mw.KCuePoints 'seeked' handler run before
+                // in order to make sure that the 'KalturaSupport_CuePointReached' event,
+                // triggered by the 'seeked' event, is not handled by the plugin
+                setTimeout(function () {
+                    _this.isSeekingIVQ = false;
+                    mw.log("Quiz: Seeked");
+                }, 0);
             });
 
             embedPlayer.bindHelper('seeking'+_this.KIVQModule.bindPostfix, function () {
