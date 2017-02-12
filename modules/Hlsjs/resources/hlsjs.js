@@ -101,8 +101,10 @@
 					this.hls.destroy();
 					this.hls = null;
 				}
-				this.orig_clean.call(this.getPlayer());
-			},
+                if ( this.orig_clean && !this.getPlayer().casting ) {
+                    this.orig_clean.call( this.getPlayer() );
+                }
+            },
 			/**
 			 * Register the playback events and attach the playback engine to the video element
 			 */

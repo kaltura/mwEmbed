@@ -194,6 +194,9 @@ function startReceiver() {
     mediaManager.onErrorOrig = mediaManager.onError.bind( mediaManager );
     mediaManager.onError = onError.bind( this );
 
+    mediaManager.customizedStatusCallbackOrig = mediaManager.customizedStatusCallback;
+    mediaManager.customizedStatusCallback = customizedStatusCallback.bind( this );
+
     // Init message bus and setting his event
     messageBus = receiverManager.getCastMessageBus( 'urn:x-cast:com.kaltura.cast.player' );
     messageBus.onMessage = onMessage.bind( this );
@@ -202,6 +205,19 @@ function startReceiver() {
 }
 
 /***** Media Manager Events *****/
+
+// TODO: Remove this workaround when Google will handle the remotePlayer issue
+// TODO: https://code.google.com/p/google-cast-sdk/issues/detail?id=1104&q=remotePlayer
+/* -----> */
+function customizedStatusCallback( mediaStatus ) {
+    if ( mediaStatus.playerState === StateManager.State.IDLE && mediaStatus.idleReason ) {
+        if ( mediaStatus.idleReason === 'FINISHED' || mediaStatus.idleReason === 'CANCELED' || mediaStatus.idleReason === 'INTERRUPTED' ) {
+            mediaStatus.idleReason = null;
+        }
+    }
+    return mediaStatus;
+}
+/* <----- */
 
 /**
  * Override callback for media manager onError.
@@ -307,9 +323,13 @@ function onLoad( event ) {
         ReceiverStateManager.setState( StateManager.State.IDLE );
 
         // Show media metadata when ready
-        loadMetadataPromise.then( function ( showPreview ) {
-            ReceiverStateManager.onShowMediaMetadata( showPreview );
-        } );
+        if ( loadMetadataPromise ) {
+            loadMetadataPromise.then( function ( showPreview ) {
+                ReceiverStateManager.onShowMediaMetadata( showPreview );
+            } );
+        } else {
+            ReceiverStateManager.onShowMediaMetadata( false );
+        }
 
         var embedConfig = event.data.media.customData.embedConfig;
         // If same entry is sent then reload, else perform changeMedia
@@ -427,30 +447,34 @@ function embedPlayer( event ) {
     var embedInfo = event.data.media.customData.embedConfig;
     var embedLoaderLibPath = embedInfo.lib ? embedInfo.lib + "mwEmbedLoader.php" : "../../../../mwEmbedLoader.php";
     $.getScript( embedLoaderLibPath )
-        .then( function () {
-            setConfiguration( embedInfo );
-            kWidget.embed( {
-                "targetId": "kaltura_player",
-                "wid": "_" + embedInfo.publisherID,
-                "uiconf_id": embedInfo.uiconfID,
-                "readyCallback": function ( playerID ) {
-                    loadMetadataPromise.then( function ( showPreview ) {
-                        ReceiverStateManager.onShowMediaMetadata( showPreview );
-                    } );
-                    kdp = document.getElementById( playerID );
-                    $( '#initial-video-element' ).remove();
-                    mediaElement = $( kdp ).contents().contents().find( 'video' )[ 0 ];
-                    mediaManager.setMediaElement( mediaElement );
-                    $( window ).trigger( "onReceiverKDPReady" );
-                    setMediaElementEvents();
-                    addBindings();
-                    embedPlayerInitialized.setState( EmbedPhase.Completed );
-                },
-                "flashvars": getFlashVars( event.data.currentTime, event.data.autoplay, embedInfo.flashVars ),
-                "cache_st": 1438601385,
-                "entry_id": embedInfo.entryID
-            } );
-        } );
+     .then( function () {
+         setConfiguration( embedInfo );
+         kWidget.embed( {
+             "targetId": "kaltura_player",
+             "wid": "_" + embedInfo.publisherID,
+             "uiconf_id": embedInfo.uiconfID,
+             "readyCallback": function ( playerID ) {
+                 if ( loadMetadataPromise ) {
+                     loadMetadataPromise.then( function ( showPreview ) {
+                         ReceiverStateManager.onShowMediaMetadata( showPreview );
+                     } );
+                 } else {
+                     ReceiverStateManager.onShowMediaMetadata( false );
+                 }
+                 kdp = document.getElementById( playerID );
+                 $( '#initial-video-element' ).remove();
+                 mediaElement = $( kdp ).contents().contents().find( 'video' )[ 0 ];
+                 mediaManager.setMediaElement( mediaElement );
+                 $( window ).trigger( "onReceiverKDPReady" );
+                 setMediaElementEvents();
+                 addBindings();
+                 embedPlayerInitialized.setState( EmbedPhase.Completed );
+             },
+             "flashvars": getFlashVars( event.data.currentTime, event.data.autoplay, embedInfo.flashVars ),
+             "cache_st": 1438601385,
+             "entry_id": embedInfo.entryID
+         } );
+     } );
 }
 
 /**

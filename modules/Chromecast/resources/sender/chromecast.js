@@ -186,8 +186,8 @@
             this.updateTooltip( this.startCastTitle );
             this.embedPlayer.getInterface().find( ".chromecastScreen" ).remove();
             this.embedPlayer.selectPlayer( this.savedPlayer );
+            this.embedPlayer.casting = false;
             this.embedPlayer.updatePlaybackInterface( function () {
-                _this.embedPlayer.casting = false;
                 _this.embedPlayer.addPlayerSpinner();
                 _this.embedPlayer.seek( seekTo, stopAfterSeek );
             } );

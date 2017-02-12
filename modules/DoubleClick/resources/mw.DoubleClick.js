@@ -433,7 +433,6 @@
             if ( this.embedPlayer.casting ) {
                 this.embedPlayer.adTimeline.restorePlayer( null, true );
                 this.destroy();
-                this.addSkipSupport();
                 return;
             }
             // Initialize the ads manager. In case of ad playlist with a preroll, the preroll will start playing immediately.
