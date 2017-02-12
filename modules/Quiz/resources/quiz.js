@@ -260,7 +260,9 @@
             $(".confirm-box").html(gM('mwe-quiz-continue')).show().attr("tabindex", 5).attr("title", "Click to start the quiz").on('keydown', _this.keyDownHandler)
                 .on('click', function () {
                     _this.KIVQModule.checkIfDone(-1);
-                }).focus();
+                }).focus().attr('id', 'welcome-continue-button');
+            // verify focus in IE
+            document.getElementById('welcome-continue-button').focus();
 
         },
 
@@ -293,7 +295,10 @@
                     $(".header-container").addClass('close-button')
                         .on('click', function () {
                             _this.ssSetCurrentQuestion(questionNr,true);
-                        }).on('keydown', _this.keyDownHandler).attr('role', 'button').attr('tabindex', 5).attr('title', 'Hint - '+$.cpObject.cpArray[questionNr].hintText+'. Click to close hint').focus();
+                        }).on('keydown', _this.keyDownHandler).attr('role', 'button').attr('tabindex', 5)
+                          .attr('title', 'Hint - '+$.cpObject.cpArray[questionNr].hintText+'. Click to close hint').focus().attr('id', 'hint-close-button');
+                    // verify focus in IE
+                    document.getElementById('hint-close-button').focus();
                     $(".hint-container").append($.cpObject.cpArray[questionNr].hintText);
                 }).on('keydown', _this.keyDownHandler).attr('role', 'button').attr('tabindex', 5)
         },
@@ -480,12 +485,15 @@
                 .addClass('single-answer-box-bk-apply')
                 .children().removeClass('single-answer-box-txt')
                 .addClass(function(){
-                    var currentAnswerNumber = $(this).attr('id');
+                    var currentAnswerNumber = parseInt($(this).attr('id'))+1;
                     $(this).addClass('single-answer-box-txt-wide')
                         .after($('<button  type="button"></button>') // adding continue/applied div as button
                             .addClass("single-answer-box-apply qContinue")
-                            .text(gM('mwe-quiz-continue')).attr('aria-labeledby', 'answer-'+currentAnswerNumber+'-text').removeAttr('aria-disabled').focus()
-                    )
+                            .text(gM('mwe-quiz-continue')).attr('aria-label', 'Continue quiz with the selected answer: '+currentAnswerNumber).removeAttr('aria-disabled').focus()
+                            .attr('id', 'continue-button-answer-'+currentAnswerNumber)
+                    );
+                   // verify focus in IE
+                    document.getElementById('continue-button-answer-'+currentAnswerNumber).focus();
                 });
         },
         showAnswered: function (cPo, questionNr) {
@@ -544,16 +552,18 @@
                         .addClass('single-answer-box-bk-apply')
                         .children().removeClass('single-answer-box-txt')
                         .addClass(function(){
-                            var currentAnswerNumber = $(this).attr('id');
+                            var currentAnswerNumber = parseInt($(this).attr('id'))+1;
                             // add the "continue" button for the selected answer
                             // also add accessibility capabilities for the "continue" button after the user has selected an answer
                             $(this).addClass('single-answer-box-txt-wide')
-                                .after($('<button  type="button"></button>') // adding continue/applied div as button so no need to set it with a role and tabindex
+                                .after($('<div ></div>') // adding continue/applied div as button so no need to set it with a role and tabindex
                                     .addClass("single-answer-box-apply qContinue")
-                                    .text(gM('mwe-quiz-continue')).attr('tabindex', 5).attr('aria-labeledby', 'answer-'+currentAnswerNumber+'-text').removeAttr('aria-disabled')
-                                    .on('keydown', _this.keyDownHandler).focus()
+                                    .text(gM('mwe-quiz-continue')).attr('tabindex', 5).attr('aria-label', 'Continue quiz  with the selected answer: '+currentAnswerNumber).removeAttr('aria-disabled')
+                                    .on('keydown', _this.keyDownHandler).attr('id', 'continue-button-answer-'+currentAnswerNumber).attr('role', 'button')
                             );
-                            
+                            // verify focus in IE
+                            //setTimeout("document.getElementById('continue-button-answer-"+currentAnswerNumber+"').focus();", 100);
+                            document.getElementById('continue-button-answer-'+currentAnswerNumber).focus();
                         });
                      
                     _this.selectedAnswer =  $('.single-answer-box-txt-wide').attr('id');
@@ -696,7 +706,10 @@
                 .on('click', '.quizDone-cont', function () {
                     _this.KIVQModule.quizEndScenario();
                 });
-            $('.quizDone-cont').attr('tabindex', 5).attr('role', 'button').attr('title', 'click to end quiz now').on('keydown', _this.keyDownHandler).focus();
+            $('.quizDone-cont').attr('tabindex', 5).attr('role', 'button')
+                    .attr('title', 'click to end quiz now').on('keydown', _this.keyDownHandler).attr('id', 'quiz-done-continue-button').focus();
+            // verify focus in IE
+            document.getElementById('quiz-done-continue-button').focus();
         }
     }));
 })(window.mw, window.jQuery);
