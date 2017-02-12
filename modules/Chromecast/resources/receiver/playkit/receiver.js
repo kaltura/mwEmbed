@@ -307,9 +307,7 @@ function onLoad( event ) {
         ReceiverStateManager.setState( StateManager.State.IDLE );
 
         // Show media metadata when ready
-        loadMetadataPromise.then( function ( showPreview ) {
-            ReceiverStateManager.onShowMediaMetadata( showPreview );
-        } );
+        loadMetadataOnScreen();
 
         var embedConfig = event.data.media.customData.embedConfig;
         // If same entry is sent then reload, else perform changeMedia
@@ -427,30 +425,41 @@ function embedPlayer( event ) {
     var embedInfo = event.data.media.customData.embedConfig;
     var embedLoaderLibPath = embedInfo.lib ? embedInfo.lib + "mwEmbedLoader.php" : "../../../../../mwEmbedLoader.php";
     $.getScript( embedLoaderLibPath )
-        .then( function () {
-            setConfiguration( embedInfo );
-            kWidget.embed( {
-                "targetId": "kaltura_player",
-                "wid": "_" + embedInfo.publisherID,
-                "uiconf_id": embedInfo.uiconfID,
-                "readyCallback": function ( playerID ) {
-                    loadMetadataPromise.then( function ( showPreview ) {
-                        ReceiverStateManager.onShowMediaMetadata( showPreview );
-                    } );
-                    kdp = document.getElementById( playerID );
-                    $( '#initial-video-element' ).remove();
-                    mediaElement = $( kdp ).contents().contents().find( 'video' )[ 0 ];
-                    mediaManager.setMediaElement( mediaElement );
-                    $( window ).trigger( "onReceiverKDPReady" );
-                    setMediaElementEvents();
-                    addBindings();
-                    embedPlayerInitialized.setState( EmbedPhase.Completed );
-                },
-                "flashvars": getFlashVars( event.data.currentTime, event.data.autoplay, embedInfo.flashVars ),
-                "cache_st": 1438601385,
-                "entry_id": embedInfo.entryID
-            } );
+     .then( function () {
+         setConfiguration( embedInfo );
+         kWidget.embed( {
+             "targetId": "kaltura_player",
+             "wid": "_" + embedInfo.publisherID,
+             "uiconf_id": embedInfo.uiconfID,
+             "readyCallback": function ( playerID ) {
+                 loadMetadataOnScreen();
+                 kdp = document.getElementById( playerID );
+                 $( '#initial-video-element' ).remove();
+                 mediaElement = $( kdp ).contents().contents().find( 'video' )[ 0 ];
+                 mediaManager.setMediaElement( mediaElement );
+                 $( window ).trigger( "onReceiverKDPReady" );
+                 setMediaElementEvents();
+                 addBindings();
+                 embedPlayerInitialized.setState( EmbedPhase.Completed );
+             },
+             "flashvars": getFlashVars( event.data.currentTime, event.data.autoplay, embedInfo.flashVars ),
+             "cache_st": 1438601385,
+             "entry_id": embedInfo.entryID
+         } );
+     } );
+}
+
+/**
+ * Handles the media metadata that sent from the sender device.
+ */
+function loadMetadataOnScreen() {
+    if ( loadMetadataPromise ) {
+        loadMetadataPromise.then( function ( showPreview ) {
+            ReceiverStateManager.onShowMediaMetadata( showPreview );
         } );
+    } else {
+        ReceiverStateManager.onShowMediaMetadata( false );
+    }
 }
 
 /**
