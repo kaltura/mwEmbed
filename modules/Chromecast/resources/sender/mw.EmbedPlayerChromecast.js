@@ -257,7 +257,10 @@
             // Setup media info
             var mediaInfo = new chrome.cast.media.MediaInfo( contentId, contentType );
             mediaInfo.streamType = this.isLive() ? chrome.cast.media.StreamType.LIVE : chrome.cast.media.StreamType.BUFFERED;
-            mediaInfo.customData = { embedConfig: this.getEmbedConfig() };
+            mediaInfo.customData = {
+                embedConfig: this.getEmbedConfig(),
+                receiverConfig: this.getReceiverConfig()
+            };
             mediaInfo.metadata = this.getMediaMetadata();
             // Setup load request
             var loadRequest = new chrome.cast.media.LoadRequest( mediaInfo );
@@ -571,6 +574,11 @@
             };
             mw.log( "EmbedPlayerChromecast:: getEmbedConfig", embedConfig );
             return embedConfig;
+        },
+
+        getReceiverConfig: function () {
+            var chromecastConfig = this.getKalturaConfig( 'chromecast' );
+            return chromecastConfig.receiverConfig;
         },
 
         getMediaMetadata: function () {

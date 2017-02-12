@@ -69,8 +69,8 @@ StateManager.prototype = {
             $( '.cast-media-progress-fill' ).css( "background-color", config.progressFillColor );
         }
         if ( config.spinnerFillColor ) {
-            $( '.cast-buffering-spinner' ).css( "background-color", config.spinnerFillColor );
-            $( '.cast-loading-spinner' ).css( "background-color", config.spinnerFillColor );
+            $( '.cast-buffering-spinner' ).css( "border-top", '6px solid ' + config.spinnerFillColor );
+            $( '.cast-loading-spinner' ).css( "border-top", '6px solid ' + config.spinnerFillColor );
         }
         this.idleManager.configure( config );
     },
