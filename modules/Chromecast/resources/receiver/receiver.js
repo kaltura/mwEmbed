@@ -323,13 +323,7 @@ function onLoad( event ) {
         ReceiverStateManager.setState( StateManager.State.IDLE );
 
         // Show media metadata when ready
-        if ( loadMetadataPromise ) {
-            loadMetadataPromise.then( function ( showPreview ) {
-                ReceiverStateManager.onShowMediaMetadata( showPreview );
-            } );
-        } else {
-            ReceiverStateManager.onShowMediaMetadata( false );
-        }
+        loadMetadataOnScreen();
 
         var embedConfig = event.data.media.customData.embedConfig;
         // If same entry is sent then reload, else perform changeMedia
@@ -454,13 +448,7 @@ function embedPlayer( event ) {
              "wid": "_" + embedInfo.publisherID,
              "uiconf_id": embedInfo.uiconfID,
              "readyCallback": function ( playerID ) {
-                 if ( loadMetadataPromise ) {
-                     loadMetadataPromise.then( function ( showPreview ) {
-                         ReceiverStateManager.onShowMediaMetadata( showPreview );
-                     } );
-                 } else {
-                     ReceiverStateManager.onShowMediaMetadata( false );
-                 }
+                 loadMetadataOnScreen();
                  kdp = document.getElementById( playerID );
                  $( '#initial-video-element' ).remove();
                  mediaElement = $( kdp ).contents().contents().find( 'video' )[ 0 ];
@@ -475,6 +463,19 @@ function embedPlayer( event ) {
              "entry_id": embedInfo.entryID
          } );
      } );
+}
+
+/**
+ * Handles the media metadata that sent from the sender device.
+ */
+function loadMetadataOnScreen() {
+    if ( loadMetadataPromise ) {
+        loadMetadataPromise.then( function ( showPreview ) {
+            ReceiverStateManager.onShowMediaMetadata( showPreview );
+        } );
+    } else {
+        ReceiverStateManager.onShowMediaMetadata( false );
+    }
 }
 
 /**
