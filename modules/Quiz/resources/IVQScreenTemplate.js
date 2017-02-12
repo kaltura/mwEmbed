@@ -4,7 +4,7 @@
 (function (mw, $) {
     "use strict";
     mw.KIVQScreenTemplate = function (embedPlayer) {
-        $(".videoHolder").attr('aria-live', 'polite');
+        $(".videoHolder").attr("aria-live", "polite");
         return this.init(embedPlayer);
     };
     if (!(mw.KIVQScreenTemplate.prototype = {

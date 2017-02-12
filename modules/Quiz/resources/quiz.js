@@ -300,7 +300,7 @@
                     // verify focus in IE
                     document.getElementById('hint-close-button').focus();
                     $(".hint-container").append($.cpObject.cpArray[questionNr].hintText);
-                }).on('keydown', _this.keyDownHandler).attr('role', 'button').attr('tabindex', 5)
+                }).on('keydown', _this.keyDownHandler).attr('role', 'button').attr('tabindex', 5);
         },
         
         // TODO - handle accessibility leftovers
@@ -525,7 +525,6 @@
             if (_this.selectedAnswer &&! cPo.selectedAnswer ){
                 _this.showSelectedQuestion(questionNr);
             };
-            console.log(cPo);
             
             // loop through all answers and bind click event
             $('.single-answer-box-bk').off().on('keydown', _this.keyDownHandler).on('click',function(e){
@@ -588,7 +587,7 @@
         ivqShowScreen:function(){
             var _this = this,embedPlayer = this.getPlayer();
             _this.showScreen();
-            console.log("hiding flash player");
+            mw.log("hiding flash player");
             $('#kplayer_pid_kplayer').css('visibility', 'hidden');
             $('#kplayer_pid_kplayer').css('display', 'none');
             $('#kplayer_pid_kplayer').attr('aria-hidden', 'true');
@@ -601,7 +600,7 @@
             _this.embedPlayer.triggerHelper( 'onEnableKeyboardBinding' );
             _this.KIVQModule.showQuizOnScrubber();
             $(".icon-close").css("display", "");
-            console.log("showing flash player");
+            mw.log("showing flash player");
             $('#kplayer_pid_kplayer').css('visibility', 'visible');
             $('#kplayer_pid_kplayer').css('display', 'block');
             $('#kplayer_pid_kplayer').attr('aria-hidden', 'false');
