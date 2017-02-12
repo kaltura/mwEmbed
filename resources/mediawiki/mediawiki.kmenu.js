@@ -65,6 +65,9 @@
         	var _this = this;
         	item.idx = this.itemIdx;
             var attrs = item.attributes || {};
+            if( item.accessibility ) {
+                var accessibility = '<span class="accessibilityLabel">' + item.accessibility + '</span>';
+            }
             var $item = $('<li />')
 						.addClass(item.cssClass)
                         .attr(attrs)
@@ -91,7 +94,8 @@
                                 }
 								_this.close();
 							})
-						);
+                            .append(accessibility)
+                        );
 
             // If not the first item
             if( this.itemIdx > 0 ){

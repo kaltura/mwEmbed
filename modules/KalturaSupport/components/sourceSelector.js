@@ -20,7 +20,8 @@
 
 		isDisabled: false,
 		inUpdateLayout:false,
-		selectSourceTitle: gM( 'mwe-embedplayer-select_source' ),
+        sourceQuality: gM( 'mwe-embedplayer-select_source-accessibility' ),
+        selectSourceTitle: gM( 'mwe-embedplayer-select_source' ),
 		switchSourceTitle: gM( 'mwe-embedplayer-switch_source' ),
         AutoTitle: gM( 'mwe-embedplayer-auto_source' ),
 		saveBackgroundColor: null, // used to save background color upon disable and rotate and return it when enabled again to prevent rotating box around the icon when custom style is applied
@@ -295,7 +296,8 @@
                 'callback': function () {
                     _this.getPlayer().switchSrc(-1);
                 },
-               'active': true
+               'active': true,
+               'accessibility': _this.sourceQuality
             });
         },
 		addSourceToMenu: function( source ){
@@ -315,7 +317,8 @@
 	                    _this.getPlayer().triggerHelper("newSourceSelected", source.getAssetId());
                         _this.getPlayer().switchSrc(source);
                     },
-                    'active': _this.isSourceSelected(source)
+                    'active': _this.isSourceSelected(source),
+                    'accessibility': _this.sourceQuality
                 });
             }
 		},
