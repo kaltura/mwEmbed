@@ -101,6 +101,7 @@
 			this.canvas = this.renderer.domElement;
 			this.getPlayer().getVideoDisplay().append(this.canvas);
 			$(this.canvas).addClass("canvas360");
+			$(this.canvas).css('z-index', '2');
 
 			// creating a new scene
 			this.scene = new THREE.Scene();
@@ -205,6 +206,9 @@
 			this.savedY = event.clientY || event.originalEvent.touches[0].pageY;
 			this.savedLongitude = this.longitude;
 			this.savedLatitude = this.latitude;
+			if( event.type === "touchstart" ) {
+				$("#touchOverlay").trigger("touchstart");
+			}
 		},
 
 		// when the mouse moves, if in manual control we adjust coordinates
