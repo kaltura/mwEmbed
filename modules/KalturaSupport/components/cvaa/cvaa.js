@@ -195,17 +195,23 @@
                 { name: "cvaa-bg",    btnClass: "cvaa-cstm__bg-btn" },
                 { name: "cvaa-color", btnClass: "cvaa-cstm__color-btn" }];
 
-            $(".cvaa .icon-arrow").on("mousedown", function () {
-                _this.cvaaMenuChanged(_this.previousScreen);
+            $(".cvaa .icon-arrow").on("click keydown", function () {
+                if (event.which === 32 || event.which === 13 || event.type == "click") {
+                    _this.cvaaMenuChanged(_this.previousScreen);
+                }
             });
 
-            $(".cvaa .icon-close").on("mousedown", function () {
-                _this.cvaaMenuChanged("cvaa-adv");
+            $(".cvaa .icon-close").on("click keydown", function () {
+                if (event.which === 32 || event.which === 13 || event.type == "click") {
+                    _this.cvaaMenuChanged("cvaa-adv");
+                }
             });
 
             $.each(cvaaMenus, function (index, menu) {
-                $(".cvaa ." + menu.btnClass).on("mousedown", function () {
-                    _this.cvaaMenuChanged(menu.name);
+                $(".cvaa ." + menu.btnClass).on("click keydown", function () {
+                    if (event.which === 32 || event.which === 13 || event.type == "click") {
+                        _this.cvaaMenuChanged(menu.name);
+                    }
                 });
             });
 
@@ -249,8 +255,10 @@
             });
 
             //paging buttons for colors and backgrounds
-            $(".cvaa-arrow").on("click", function (event) {
-                $(this).parent().parent().toggleClass("cvaa-alternate-page-view");
+            $(".cvaa-arrow").on("click keydown", function (event) {
+                if (event.which === 32 || event.which === 13 || event.type == "change") {
+                    $(this).parent().parent().toggleClass("cvaa-alternate-page-view");
+                }
             });
         },
 

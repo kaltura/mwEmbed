@@ -53,7 +53,6 @@
 				this.mobileVibrationValue = this.getConfig("mobileVibrationValue");
 				this.video = this.getPlayer().getPlayerElement();
 				this.video.setAttribute('crossorigin', 'anonymous');
-				$(this.video).css('z-index', '-1');
 				if (mw.isIE11()) {
 					// a workaround for ie11 texture issue
 					// see https://github.com/mrdoob/three.js/issues/7560
@@ -70,16 +69,24 @@
 
 			this.bind("playing", function () {
 				$(this.video).hide();
+				$(this.getPlayer()).css('z-index', '-1');
+				var canvasSize = this.getCanvasSize();
+				this.renderer.setSize(canvasSize.width, canvasSize.height);
 				this.render();
 			}.bind(this));
 
-			this.bind("doStop onChangeMedia", function () {
+			this.bind("doStop", function () {
 				cancelAnimationFrame(this.requestId)
+			}.bind(this));
+
+			this.bind("onChangeMedia", function () {
+				this.clean();
 			}.bind(this));
 
 			this.bind("updateLayout", function () {
 				if(this.renderer){
-					this.renderer.setSize(window.innerWidth, window.innerHeight);
+					var canvasSize = this.getCanvasSize();
+					this.renderer.setSize(canvasSize.width, canvasSize.height);
 				}
 			}.bind(this));
 
@@ -91,9 +98,10 @@
 		initComponents: function () {
 			// setting up the renderer
 			this.renderer = new THREE.WebGLRenderer();
-			this.renderer.setSize(window.innerWidth, window.innerHeight);
+			this.canvas = this.renderer.domElement;
+			this.getPlayer().getVideoDisplay().append(this.canvas);
+			$(this.canvas).addClass("canvas360");
 
-			this.getPlayer().getVideoDisplay().append(this.renderer.domElement);
 			// creating a new scene
 			this.scene = new THREE.Scene();
 
@@ -147,6 +155,26 @@
 			THREE.VideoTexture.prototype.constructor = THREE.VideoTexture;
 		},
 
+		getCanvasSize: function(){
+			var videoDisplayWidth = this.getPlayer().getVideoDisplay().width();
+			var videoDisplayHeight = this.getPlayer().getVideoDisplay().height();
+			var pWidth = parseInt(this.video.videoWidth / this.video.videoHeight * videoDisplayHeight);
+			var videoRatio;
+			if(videoDisplayWidth < pWidth) {
+				videoRatio = this.video.videoHeight / this.video.videoWidth;
+				return {
+					width: videoDisplayWidth,
+					height: videoRatio * videoDisplayWidth
+				};
+			} else {
+				videoRatio = this.video.videoWidth / this.video.videoHeight;
+				return {
+					width: videoRatio * videoDisplayHeight,
+					height: videoDisplayHeight
+				};
+			}
+		},
+
 		updateCamera: function () {
 			// limiting latitude from -85 to 85 (cannot point to the sky or under your feet)
 			this.latitude = Math.max(-85, Math.min(85, this.latitude));
@@ -188,6 +216,8 @@
 				if (event.clientY || event.originalEvent.touches) {
 					this.latitude = ((event.clientY || event.originalEvent.touches[0].pageY) - this.savedY) * this.moveMultiplier + this.savedLatitude;
 				}
+				event.preventDefault();
+				event.stopPropagation();
 			}
 		},
 
@@ -218,8 +248,8 @@
 		},
 
 		attachMotionListeners: function () {
-			$(document).on("mousedown touchstart", this.onDocumentMouseDown.bind(this));
-			$(document).on("mousemove touchmove", this.onDocumentMouseMove.bind(this));
+			$(this.canvas).on("mousedown touchstart", this.onDocumentMouseDown.bind(this));
+			$(this.canvas).on("mousemove touchmove", this.onDocumentMouseMove.bind(this));
 			$(document).on("mouseup touchend", this.onDocumentMouseUp.bind(this));
 			window.addEventListener('devicemotion', this.onMobileOrientation.bind(this));
 		},
@@ -237,6 +267,11 @@
 			addKeyCallback(this.keyboardShortcutsMap.down, function () {
 				this.latitude -= 10 * this.moveMultiplier;
 			}.bind(this));
+		},
+
+		clean: function(){
+			cancelAnimationFrame(this.requestId);
+			$(this.canvas).remove();
 		},
 
 		add360logo: function () {

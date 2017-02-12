@@ -86,7 +86,7 @@
                         answerParams = {
                             'action': 'update',
                             'id': $.cpObject.cpArray[questionNr].answerCpId,
-                            'cuePoint:entryId': _this.embedPlayer.kentryid
+                            'cuePoint:entryId': $.cpObject.cpArray[questionNr].cpEntryId
                         }
                     } else {
                         answerParams = {
