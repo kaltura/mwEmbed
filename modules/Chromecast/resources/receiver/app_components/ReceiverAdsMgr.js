@@ -16,10 +16,9 @@ $( window ).bind( 'onReceiverReplay', function () {
 
 $( window ).bind( 'onReceiverChangeMedia', function ( event, withAds ) {
     ReceiverLogger.log( "ReceiverAdsManager", "event-->onReceiverChangeMedia", { "withAds": withAds } );
+    ReceiverAdsManager.destroy();
     if ( withAds ) {
         ReceiverAdsManager = new AdsManager();
-    } else if ( ReceiverAdsManager ) {
-        ReceiverAdsManager.destroy();
     }
 } );
 
@@ -201,7 +200,12 @@ AdsManager.prototype = {
                         if ( mediaInfo.duration ) {
                             this.adsInfo.adsBreakInfo.push( mediaInfo.duration );
                         } else {
-                            //TODO: How to get entry duration in OTT in that point?
+                            kdp.kBind( "firstPlay", function () {
+                                var duration = kdp.evaluate( '{duration}' );
+                                this.adsInfo.adsBreakInfo.push( duration );
+                                mediaManager.broadcastStatus( false, null, { adsInfo: this.adsInfo } );
+                                kdp.kUnbind( "firstPlay" );
+                            }.bind( this ) );
                         }
                     }
                     break;
