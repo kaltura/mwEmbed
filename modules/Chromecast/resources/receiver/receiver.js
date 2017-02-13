@@ -40,6 +40,15 @@ var debugKalturaPlayer;
  */
 var kdp;
 /**
+ * Saves the kdp state.
+ */
+var kdpState;
+/**
+ * Flag that indicates if we need to pause the player after he started to play.
+ * @type {boolean}
+ */
+var forcePauseAfterPlaying = false;
+/**
  * The Google cast receiver manager.
  * Responsible for the application management.
  */
@@ -256,6 +265,10 @@ function onEditTracksInfo( event ) {
         || event.data.activeTrackIds.length === 0 ) {
         return;
     }
+    if ( kdpState === "paused" ) {
+        forcePauseAfterPlaying = true;
+        kdp.sendNotification( 'doPlay' );
+    }
     mediaManager.onEditTracksInfoOrig( event );
     var activeTrackIds = event.data.activeTrackIds;
     var tracks = mediaInfo.tracks;
@@ -380,10 +393,14 @@ function doChangeMedia( embedConfig ) {
         $( window ).trigger( "onReceiverChangeMedia", false );
         kdp.setKDPAttribute( 'doubleClick', 'adTagUrl', '' );
     }
-    kdp.sendNotification( "changeMedia", {
-        "entryId": embedConfig[ 'entryID' ],
-        "proxyData": embedConfig[ 'flashVars' ] ? embedConfig[ 'flashVars' ][ 'proxyData' ] : undefined
-    } );
+    if ( embedConfig.flashVars && embedConfig.flashVars.proxyData ) {
+        kdp.sendNotification( "changeMedia", {
+            "entryId": embedConfig.entryID,
+            "proxyData": embedConfig.flashVars.proxyData
+        } );
+    } else {
+        kdp.sendNotification( "changeMedia", { "entryId": embedConfig.entryID } );
+    }
 }
 
 /***** Receiver Manager Events *****/
@@ -536,7 +553,15 @@ function addBindings() {
     } );
 
     kdp.kBind( "playing", function () {
+        if ( forcePauseAfterPlaying ) {
+            forcePauseAfterPlaying = false;
+            kdp.sendNotification( 'doPause' );
+        }
         mediaManager.broadcastStatus( false );
+    } );
+
+    kdp.kBind( "playerStateChange", function ( newState ) {
+        kdpState = newState;
     } );
 }
 

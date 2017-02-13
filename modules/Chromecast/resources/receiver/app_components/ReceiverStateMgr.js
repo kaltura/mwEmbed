@@ -335,6 +335,9 @@ StateManager.prototype = {
     _onPause: function ( opt_afterSeek ) {
         var _this = this;
         this._toggleComponents( 'show', [ this.pauseBtn, this.stateBtnContainer, this.inPlayControls ] );
+        if ( this.waitMsg.is( ":visible" ) ) {
+            this.waitMsg.fadeOut();
+        }
         if ( opt_afterSeek ) {
             if ( this.isOverlayShown ) {
                 this._toggleComponents( 'show', [ this.gradient, this.mediaInfoContainer ] );
