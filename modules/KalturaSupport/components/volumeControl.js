@@ -8,7 +8,6 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 		layout: "horizontal",
 		showTooltip: true,
 		displayImportance: "medium",
-		accessibleControls: false,
 		accessibleVolumeChange: 0.1,
 		showSlider: true,
         pinVolumeBar: false,
@@ -142,19 +141,6 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 			_this.saveVolume();
 
 		} );
-		if (this.getConfig("accessibleControls")){
-			this.getAccessibilityBtn('increaseVolBtn').click( function() {
-				if (_this.getPlayer().volume <= (1 - _this.getConfig("accessibleVolumeChange"))){
-					_this.getPlayer().setVolume(_this.getPlayer().volume + _this.getConfig("accessibleVolumeChange"), true);
-
-				}
-			} );
-			this.getAccessibilityBtn('decreaseVolBtn').click( function() {
-				if (_this.getPlayer().volume >= _this.getConfig("accessibleVolumeChange")){
-					_this.getPlayer().setVolume(_this.getPlayer().volume - _this.getConfig("accessibleVolumeChange"), true);
-				}
-			} );
-		}
 		this.getBtn().focusin(openSlider);
 		this.getBtn().focusout(closeSlider);
 		this.getComponent().hover(openSlider, closeSlider);
@@ -197,10 +183,15 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 		this.getBtn().removeClass( iconClasses ).addClass( newClass );
 
 		// Update slider
-		this.getSlider().slider( 'value', percent * 100 );
+		var decPercent = percent * 100;
+		this.getSlider().slider( 'value', decPercent );
 		if ( this.getConfig( 'accessibilityLabels' ) ){
-			var title = gM('mwe-embedplayer-volume-value', percent * 100 );
-			this.getSlider().find('a').html('<span class="accessibilityLabel">'+title+'</span>');
+			var title = gM('mwe-embedplayer-volume-value', decPercent );
+			this.getSlider().attr({
+				'role': 'slider',
+				'aria-valuetext': title,
+				'aria-valuenow': decPercent
+				});
 		}
 	},
 	getComponent: function() {
@@ -218,22 +209,13 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 			}else{
 				$sliderContainer = $( '<div />' ).addClass( 'slider' );
 			}
+			$sliderContainer.attr('tabindex',3);
 			this.$el = $('<div />')
 				.addClass( this.getCssClass() + layoutClass )
 				.append(
 					$btn,
 					$sliderContainer
 				);
-			// add accessibility controls
-			if (this.getConfig("accessibleControls")){
-				var $accessibilityIncreaseVol = $('<button/>')
-					.addClass( "btn aria")
-					.attr({"id":"increaseVolBtn","title": gM("mwe-embedplayer-volume-increase")});
-				var $accessibilityDecreaseVol = $('<button/>')
-					.addClass( "btn aria")
-					.attr({"id":"decreaseVolBtn","title": gM("mwe-embedplayer-volume-decrease")});
-				this.$el.append($accessibilityIncreaseVol).append($accessibilityDecreaseVol);
-			}
 		}
 		return this.$el;
 	},
@@ -242,9 +224,6 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 	},
 	getSlider: function(){
 		return this.getComponent().find('.slider');
-	},
-	getAccessibilityBtn : function(id){
-		return this.getComponent().find( '#'+id );
 	},
 	getSliderContainer : function(id){
 		return this.getComponent().find( '.sliderContainer' );

@@ -167,7 +167,7 @@
 						_this.setSpeed( speedFloat );
 					},
 					'active': active,
-					'accessibility': _this.playbackSpeedAccessibility
+					'accessibility': speedFloat + " " + _this.playbackSpeedAccessibility
 				});
 				if (_this.embedPlayer.isMobileSkin() && active){
 					_this.getMenu().setActive(idx);

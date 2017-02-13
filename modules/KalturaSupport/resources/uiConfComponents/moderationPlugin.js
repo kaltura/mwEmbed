@@ -64,12 +64,11 @@
 				$( '<label for="flagComments">'+ gM("ks-MODERATION-PLACEHOLDER" ) +'</label>' ),
 				$( '<textarea />' )
 					.attr( 'id', 'flagComments' )
-					.attr( 'placeholder', gM("ks-MODERATION-PLACEHOLDER" ))
 					.css({'width': '100%', 'height': '40px', 'margin-top': '10px'}),
 				$('<div/>' ).append(
 					$( '<div />' )
 					.addClass( 'reportButton right' )
-					.text( gM("ks-MODERATION-SUBMIT") )
+					.text( gM("ks-MODERATION-SUBMIT-BTN") )
 					.attr( 'tabindex',0 )
 					.attr( 'role', 'button')
 					.attr( 'alt', gM("ks-MODERATION-SUBMIT"))

@@ -297,7 +297,7 @@
                     _this.getPlayer().switchSrc(-1);
                 },
                'active': true,
-               'accessibility': _this.sourceQuality
+               'accessibility': _this.AutoTitle + " " +_this.sourceQuality
             });
         },
 		addSourceToMenu: function( source ){
@@ -318,7 +318,7 @@
                         _this.getPlayer().switchSrc(source);
                     },
                     'active': _this.isSourceSelected(source),
-                    'accessibility': _this.sourceQuality
+                    'accessibility': sourceLabel + " " + _this.sourceQuality
                 });
             }
 		},

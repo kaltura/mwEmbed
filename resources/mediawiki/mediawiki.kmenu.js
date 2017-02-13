@@ -66,7 +66,7 @@
         	item.idx = this.itemIdx;
             var attrs = item.attributes || {};
             if( item.accessibility ) {
-                var accessibility = '<span class="accessibilityLabel">' + item.accessibility + '</span>';
+                var accessibilityLabel = item.accessibility;
             }
             var $item = $('<li />')
 						.addClass(item.cssClass)
@@ -94,7 +94,7 @@
                                 }
 								_this.close();
 							})
-                            .append(accessibility)
+							.attr('aria-label', accessibilityLabel)
                         );
 
             // If not the first item
