@@ -513,6 +513,9 @@
         _ondurationchange: function ( event, data ) {
             if ( this.playerElement && !isNaN( this.playerElement.duration ) && isFinite( this.playerElement.duration ) ) {
                 this.setDuration( this.getPlayerElement().duration );
+                if ( !this.sequenceProxy.isInSequence ) {
+                    this.triggerHelper( "receiverContentPlay", this.duration );
+                }
             }
         },
 

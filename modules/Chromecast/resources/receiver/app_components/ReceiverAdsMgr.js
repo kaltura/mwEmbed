@@ -209,13 +209,12 @@ AdsManager.prototype = {
                     var mediaInfo = mediaManager.getMediaInformation();
                     if ( mediaInfo ) {
                         if ( mediaInfo.duration ) {
-                            this.adsInfo.adsBreakInfo.push( mediaInfo.duration );
+                            this.adsInfo.adsBreakInfo.push( Math.round( duration ) );
                         } else {
-                            kdp.kBind( "firstPlay", function () {
-                                var duration = kdp.evaluate( '{duration}' );
-                                this.adsInfo.adsBreakInfo.push( duration );
+                            kdp.kBind( "receiverContentPlay", function ( contentDuration ) {
+                                this.adsInfo.adsBreakInfo.push( Math.round( contentDuration ) );
                                 mediaManager.broadcastStatus( false, null, { adsInfo: this.adsInfo } );
-                                kdp.kUnbind( "firstPlay" );
+                                kdp.kUnbind( "receiverContentPlay" );
                             }.bind( this ) );
                         }
                     }
@@ -257,7 +256,7 @@ AdsManager.prototype = {
     _onAdPlay: function () {
         ReceiverLogger.log( this.CLASS_NAME, "_onAdPlay, isPlayingAd=true" );
         this.adsInfo.isPlayingAd = true;
-        mediaManager.broadcastStatus( false, null, { adsInfo: this.adsInfo } );
+        mediaManager.broadcastStatus( false, null, { adsInfo: { adsBreakInfo: [], isPlayingAd: true } } );
     },
 
     /**
