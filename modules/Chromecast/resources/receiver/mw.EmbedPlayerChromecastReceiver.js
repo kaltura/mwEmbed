@@ -359,7 +359,7 @@
                     track = new top.cast.receiver.media.Track( trackId, trackType );
                     track.trackContentType = info.mimeType;
                     track.language = info.language;
-                    track.name = info.name || (trackType + '_TRACK_' + trackId);
+                    track.name = info.name || info.language || 'None';
                     track.customData = { bitrates: info.bitrates, codecs: info.codecs };
                     tracks.push( track );
                 }
