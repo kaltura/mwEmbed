@@ -15,12 +15,12 @@ if (isset($_SERVER["HTTP_X_FORWARDED_HOST"]))
 }
 
 // The default cache directory
-$wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
+$wgScriptCacheDirectory = isset($cacheVersionDirectory) ? $cacheVersionDirectory : realpath( dirname( __FILE__ ) ) . '/cache';
 
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '2.53';
+$wgMwEmbedVersion = '2.53.rc7';
 
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {
@@ -37,7 +37,7 @@ date_default_timezone_set('UTC');
 $wgServerPort = (($_SERVER['SERVER_PORT']) != '80' && $_SERVER['SERVER_PORT'] != '443')?':'.$_SERVER['SERVER_PORT']:'';
 $wgServer = $wgHTTPProtocol . '://' . $_SERVER['SERVER_NAME'] .$wgServerPort. dirname( dirname( $_SERVER['SCRIPT_NAME'] ) ) .'/';
 
-$psRelativePath = '../kwidget-ps/';
+$psRelativePath = isset($kwidgetPS) ? $kwidgetPS : '../kwidget-ps/';
 
 
 // By default set $wgScriptPath to empty
@@ -113,42 +113,44 @@ $wgResourceLoaderMaxage = array(
 	),
 );
 /***
- * External module config: 
+ * External module config:
  */
 $wgExternalPlayersSupportedTypes = array('YouTube');
 
 /*********************************************************
- * Default Kaltura Configuration: 
- * TODO move kaltura configuration to KalturaSupport module ( part of New ResourceLoader update ) 
+ * Default Kaltura Configuration:
+ * TODO move kaltura configuration to KalturaSupport module ( part of New ResourceLoader update )
  ********************************************************/
 
 //Embedded services
 //To enable service re routing for entryResult calls
 $wgEnableKalturaEmbedServicesRouting = true;
 
-// To include signed headers with user IPs for IP restriction lookups, input a salt string for 
-// $wgKalturaRemoteAddressSalt configuration option. 
+// To include signed headers with user IPs for IP restriction lookups, input a salt string for
+// $wgKalturaRemoteAddressSalt configuration option.
 $wgKalturaRemoteAddressSalt = false;
 
 // If we should check for onPage resources per the external resources plugin
 $wgKalturaEnableEmbedUiConfJs = false;
 
-// Enables the result cache while in debug mode 
-// This enables fast player rendering while scripts remain unminifed. 
+// Enables the result cache while in debug mode
+// This enables fast player rendering while scripts remain unminifed.
 // ( normally $wgEnableScriptDebug disables result cache )
 $wgKalturaForceResultCache = false;
 
 // For force ip testing geo restrictions
 $wgKalturaForceIP = false;
 
-// To test sites with referre restrictions: 
+// To test sites with referre restrictions:
 $wgKalturaForceReferer = false;
 
 // The default Kaltura service url:
-$wgKalturaServiceUrl = 'http://cdnapi.kaltura.com';
-// if https use cdnsecakmi
-if( $wgHTTPProtocol == 'https' ){
-	$wgKalturaServiceUrl =  'https://cdnapisec.kaltura.com';
+if ( !isset($wgKalturaServiceUrl) ) {
+    $wgKalturaServiceUrl = 'http://cdnapi.kaltura.com';
+    // if https use cdnsecakmi
+    if( $wgHTTPProtocol == 'https' ){
+        $wgKalturaServiceUrl =  'https://cdnapisec.kaltura.com';
+    }
 }
 
 // Default Kaltura CDN url: 
