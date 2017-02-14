@@ -133,6 +133,9 @@ AdsManager.prototype = {
      * @private
      */
     _customizedStatusCallback: function ( mediaStatus ) {
+        if ( !mediaStatus.customData ) {
+            mediaStatus.customData = {};
+        }
         var isIdle = mediaStatus.playerState === StateManager.State.IDLE;
         if ( this.startPlayingWithAds ) {
             if ( mediaStatus.customData && mediaStatus.customData.forceStatus ) {
@@ -154,6 +157,7 @@ AdsManager.prototype = {
                 this.startPlayingWithAds = true;
             }
         }
+        mediaStatus.customData.adsInfo = this.adsInfo;
         ReceiverLogger.log( this.CLASS_NAME, "_customizedStatusCallback - Returning sender playerState of: " + mediaStatus.playerState, mediaStatus );
         return mediaStatus;
     },
@@ -183,8 +187,7 @@ AdsManager.prototype = {
             // We have an issue that if sender pause in middle of an ad it sending the wrong status (PLAYING)
             // We need to understand the root cause
             mediaManager.broadcastStatus( false, null, {
-                forceStatus: StateManager.State.PAUSED,
-                adsInfo: this.adsInfo
+                forceStatus: StateManager.State.PAUSED
             } );
         } else {
             mediaManager.broadcastStatus( false );
@@ -213,7 +216,7 @@ AdsManager.prototype = {
                         } else {
                             kdp.kBind( "receiverContentPlay", function ( contentDuration ) {
                                 this.adsInfo.adsBreakInfo.push( Math.round( contentDuration ) );
-                                mediaManager.broadcastStatus( false, null, { adsInfo: this.adsInfo } );
+                                mediaManager.broadcastStatus( false );
                                 kdp.kUnbind( "receiverContentPlay" );
                             }.bind( this ) );
                         }
@@ -223,7 +226,7 @@ AdsManager.prototype = {
                     break;
             }
         }
-        mediaManager.broadcastStatus( false, null, { adsInfo: this.adsInfo } );
+        mediaManager.broadcastStatus( false );
     },
 
     /**
@@ -256,7 +259,7 @@ AdsManager.prototype = {
     _onAdPlay: function () {
         ReceiverLogger.log( this.CLASS_NAME, "_onAdPlay, isPlayingAd=true" );
         this.adsInfo.isPlayingAd = true;
-        mediaManager.broadcastStatus( false, null, { adsInfo: { adsBreakInfo: [], isPlayingAd: true } } );
+        mediaManager.broadcastStatus( false );
     },
 
     /**
@@ -274,7 +277,7 @@ AdsManager.prototype = {
     _onPreSequenceComplete: function () {
         ReceiverLogger.log( this.CLASS_NAME, "_onPreSequenceComplete, isPlayingAd=false" );
         this.adsInfo.isPlayingAd = false;
-        mediaManager.broadcastStatus( false, null, { adsInfo: this.adsInfo } );
+        mediaManager.broadcastStatus( false );
     },
 
     /**
@@ -292,7 +295,7 @@ AdsManager.prototype = {
     _onPostSequenceComplete: function () {
         ReceiverLogger.log( this.CLASS_NAME, "_onPostSequenceComplete, isPlayingAd=false" );
         this.adsInfo.isPlayingAd = false;
-        mediaManager.broadcastStatus( false, null, { adsInfo: this.adsInfo } );
+        mediaManager.broadcastStatus( false );
     },
 
     /**

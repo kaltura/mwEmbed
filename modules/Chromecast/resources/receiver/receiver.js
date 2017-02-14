@@ -325,26 +325,28 @@ function onLoad( event ) {
 
     // Player already initialized
     else if ( embedPlayerInitialized.is( EmbedPhase.Completed ) ) {
+        playNextMedia( event.data.media.customData.embedConfig );
+    }
+}
 
-        // Reset progress bar
-        ReceiverStateManager.onProgress( 0, 0 );
+function playNextMedia( mediaConfig ) {
+    // Reset progress bar
+    ReceiverStateManager.onProgress( 0, 0 );
 
-        // Rest mediaPlayFrom if needed
-        kdp.setKDPAttribute( 'mediaProxy', 'mediaPlayFrom', 0 );
+    // Rest mediaPlayFrom if needed
+    kdp.setKDPAttribute( 'mediaProxy', 'mediaPlayFrom', 0 );
 
-        // Set app state as idle
-        ReceiverStateManager.setState( StateManager.State.IDLE );
+    // Set app state as idle
+    ReceiverStateManager.setState( StateManager.State.IDLE );
 
-        // Show media metadata when ready
-        loadMetadataOnScreen();
+    // Show media metadata when ready
+    loadMetadataOnScreen();
 
-        var embedConfig = event.data.media.customData.embedConfig;
-        // If same entry is sent then reload, else perform changeMedia
-        if ( kdp.evaluate( '{mediaProxy.entry.id}' ) === embedConfig[ 'entryID' ] ) {
-            doReplay( embedConfig );
-        } else {
-            doChangeMedia( embedConfig );
-        }
+    // If same entry is sent then reload, else perform changeMedia
+    if ( kdp.evaluate( '{mediaProxy.entry.id}' ) === mediaConfig.entryID ) {
+        doReplay( mediaConfig );
+    } else {
+        doChangeMedia( mediaConfig );
     }
 }
 
