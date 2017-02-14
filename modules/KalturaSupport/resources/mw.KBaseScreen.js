@@ -187,7 +187,7 @@
 				.then(
 				function(data) {
 					var closeBtn = $('<span class="icon-close"/>')
-						.html('<span class="accessibilityLabel">' + closeMessage + '</span>')
+						.attr('aria-label', closeMessage)
 						.attr('tabindex', 0 )
 						.attr('role', 'button')
 						.on('click', function(){

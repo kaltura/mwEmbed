@@ -71,7 +71,6 @@
 					.text( gM("ks-MODERATION-SUBMIT-BTN") )
 					.attr( 'tabindex',0 )
 					.attr( 'role', 'button')
-					.attr( 'alt', gM("ks-MODERATION-SUBMIT"))
 					.click(function() {
 						_this.submitFlag({
 							'flagType': $( '#flagType' ).val(),
@@ -153,8 +152,7 @@
 				this.$el = $( '<button />' )
 								.addClass( 'btn icon-flag' + this.getCssClass() )
 								.attr({
-									'title': tooltipLabel,
-									'alt': tooltipLabel
+									'title': tooltipLabel
 								})
 								.click( function(){
 									_this.drawModal();
