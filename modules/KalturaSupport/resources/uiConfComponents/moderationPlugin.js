@@ -117,7 +117,7 @@
 		},
 		submitFlag: function(flagObj) {
 			var _this = this;
-			//check validation length
+			//validation length of description check
 			if (_this.getConfig("minDescriptionLength") != 0 && flagObj.flagComments.length < this.getConfig("minDescriptionLength")  ){
                 this.screen.find("#flagComments").addClass("validationError");
                 return;
