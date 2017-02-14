@@ -95,15 +95,16 @@
             }
         },
         locale: {
-            "fontSizelabel": gM('mwe-cvaa-fontSize'),
-            "fontOplabel": gM('mwe-cvaa-fontOpacity'),
-            "backgroundOpLabel": gM('mwe-cvaa-backgroundOpacity'),
-            "fontColorlabel": gM('mwe-cvaa-fontColor'),
-            "backgroundColorlabel": gM('mwe-cvaa-backgroundColor'),
-            "fontFamilylabel": gM('mwe-cvaa-fontFamily'),
-            "edgeStylelabel": gM('mwe-cvaa-edgeStyle'),
+            "cvaaPreset": gM('mwe-cvaa-preset'),
+            "previousScreen": gM('mwe-cvaa-previousScreenBtn'),
             "optionsBtnLabel": gM('mwe-cvaa-options'),
-            "captionsPreviewText": gM('mwe-cvaa-previewText')
+            "fontSize": gM('mwe-cvaa-fontSize'),
+            "fontColor": gM('mwe-cvaa-fontColor'),
+            "fontFamily": gM('mwe-cvaa-fontFamily'),
+            "fontStyle": gM('mwe-cvaa-fontStyle'),
+            "fontBackground": gM('mwe-cvaa-fontBackgroundColor'),
+            "fontOpacity": gM('mwe-cvaa-fontOpacity'),
+            "fontBackgroundOpacity": gM('mwe-cvaa-fontBackgroundOpacity')
         },
         previousScreen: "cvaa-adv",
         currentScreen: "cvaa-adv",
