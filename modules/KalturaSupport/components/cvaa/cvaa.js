@@ -169,7 +169,8 @@
             this.bind('preHideScreen', function (event, screenName) {
                 if (screenName === "cvaa") {
                     //set correct currently selected language
-                    _this.getPlayer().getInterface().find(".closedCaptions .dropdown-menu li").eq(_this.lastActiveCaption).addClass('active');
+                    _this.getPlayer().getInterface().find(".closedCaptions .dropdown-menu").children().removeClass('active');
+                    _this.getPlayer().getInterface().find(".closedCaptions .dropdown-menu li").eq(_this.currentLanguageIndex).addClass('active');
                     _this.getPlayer().getInterface().find(".closedCaptions .mobileMenuSelect").val(_this.currentLanguage);
 
                     if (_this.getPlayer().getPlayerElement()) {
