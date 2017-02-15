@@ -733,7 +733,7 @@
 			);
 
 			// Update the style of the text object if set
-			if (caption.styleId) {
+			if (caption.styleId && !this.customStyle) {
 				var capCss = source.getStyleCssById(caption.styleId);
 				$textTarget.find('span.ttmlStyled').css(
 					capCss
