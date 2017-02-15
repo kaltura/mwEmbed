@@ -130,23 +130,9 @@ StateManager.prototype = {
     },
 
     /**
-     * Updates a countdown until the next media in the queue will start.
-     * @private
-     */
-    _updateCountdown: function () {
-        var countdown = Math.round( mediaElement.duration - mediaElement.currentTime );
-        if ( countdown === 0 || countdown > 5 ) {
-            this._clearNextMediaMetadata();
-        } else {
-            this.countdown.text( countdown );
-        }
-    },
-
-    /**
      * Clear the next media metadata UI.
-     * @private
      */
-    _clearNextMediaMetadata: function () {
+    clearNextMediaMetadata: function () {
         if ( this.countdownInterval !== null ) {
             this._toggleComponents( 'hide', [ this.nextMediaInfoContainer, this.gradient ] );
             clearInterval( this.countdownInterval );
@@ -428,5 +414,18 @@ StateManager.prototype = {
         for ( var i = 0; i < components.length; i++ ) {
             show ? components[ i ].fadeIn() : components[ i ].fadeOut();
         }
-    }
+    },
+
+    /**
+     * Updates a countdown until the next media in the queue will start.
+     * @private
+     */
+    _updateCountdown: function () {
+        var countdown = Math.round( mediaElement.duration - mediaElement.currentTime );
+        if ( countdown === 0 || countdown > 5 ) {
+            this.clearNextMediaMetadata();
+        } else {
+            this.countdown.text( countdown );
+        }
+    },
 };

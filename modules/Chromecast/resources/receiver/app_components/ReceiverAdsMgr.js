@@ -158,9 +158,6 @@ AdsManager.prototype = {
                 if ( mediaStatus.idleReason === 'FINISHED' || mediaStatus.idleReason == 'CANCELED' || mediaStatus.idleReason == 'INTERRUPTED' ) {
                     mediaStatus.idleReason = null;
                 }
-                if ( mediaManager.getMediaQueue() ) {
-                    mediaStatus.playerState = StateManager.State.PLAYING;
-                }
             }
             /* <----- */
         } else if ( mediaStatus.playerState === StateManager.State.PLAYING ) {
