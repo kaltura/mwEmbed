@@ -210,6 +210,9 @@ function startReceiver() {
     messageBus = receiverManager.getCastMessageBus( 'urn:x-cast:com.kaltura.cast.player' );
     messageBus.onMessage = onMessage.bind( this );
 
+    // Init queue manager
+    ReceiverQueueManager = new QueueManager();
+
     receiverManager.start();
 }
 
@@ -222,9 +225,6 @@ function customizedStatusCallback( mediaStatus ) {
     if ( mediaStatus.playerState === StateManager.State.IDLE && mediaStatus.idleReason ) {
         if ( mediaStatus.idleReason === 'FINISHED' || mediaStatus.idleReason === 'CANCELED' || mediaStatus.idleReason === 'INTERRUPTED' ) {
             mediaStatus.idleReason = null;
-        }
-        if ( mediaManager.getMediaQueue() ) {
-            mediaStatus.playerState = StateManager.State.PLAYING;
         }
     }
     return mediaStatus;
@@ -523,40 +523,6 @@ function onCanPlay() {
  */
 function onProgress() {
     ReceiverStateManager.onProgress( mediaElement.currentTime, mediaElement.duration );
-    var countdown = Math.round( mediaElement.duration - mediaElement.currentTime );
-    if ( countdown === 5 && mediaManager.getMediaQueue() && !ReceiverAdsManager.isPlayingAd() ) {
-        loadNextMediaMetadataOnScreen();
-    }
-}
-
-/**
- * Loads the next media metadata and show it on the screen when ready.
- */
-function loadNextMediaMetadataOnScreen() {
-    var mediaQueue = mediaManager.getMediaQueue();
-    var nextItemIndex = getCurrentItemIndex() + 1;
-    if ( nextItemIndex < mediaQueue.getLength() ) {
-        var nextItemObj = mediaQueue.getItems()[ nextItemIndex ];
-        var nextItemMetadata = nextItemObj.media.metadata;
-        ReceiverUtils.loadMediaMetadata( nextItemMetadata, false ).then( function ( showPreview ) {
-            ReceiverStateManager.onShowNextMediaMetadata( showPreview );
-        } );
-    }
-}
-
-/**
- * Returns the current index the plays in the queue.
- */
-function getCurrentItemIndex() {
-    var mediaQueue = mediaManager.getMediaQueue();
-    var currentItemId = mediaQueue.getCurrentItemId();
-    var queueItems = mediaQueue.getItems();
-    for ( var i = 0; i < mediaQueue.getLength(); i++ ) {
-        var item = queueItems[ i ];
-        if ( item.itemId === currentItemId ) {
-            return i;
-        }
-    }
 }
 
 /**
