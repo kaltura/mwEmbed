@@ -228,7 +228,7 @@ AdsManager.prototype = {
                     var mediaInfo = mediaManager.getMediaInformation();
                     if ( mediaInfo ) {
                         if ( mediaInfo.duration ) {
-                            this.adsInfo.adsBreakInfo.push( Math.round( duration ) );
+                            this.adsInfo.adsBreakInfo.push( mediaInfo.duration );
                         } else {
                             kdp.kBind( "receiverContentPlay", function ( contentDuration ) {
                                 this.adsInfo.adsBreakInfo.push( Math.round( contentDuration ) );

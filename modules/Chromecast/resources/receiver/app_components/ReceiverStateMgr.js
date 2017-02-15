@@ -29,6 +29,7 @@ function StateManager() {
     this.waitMsg = $( '.cast-wait-msg' );
     this.countdown = $( '#cast-up-next-countdown' );
     this.insertRemoveFromQueueMsg = $( '.cast-added-removed-from-queue-msg' );
+    this.insertRemoveFromQueueTimeout = null;
 }
 
 /**
@@ -102,11 +103,15 @@ StateManager.prototype = {
     },
 
     toggleInsertRemoveFromQueue: function ( type, title, subtitle ) {
+        if ( this.insertRemoveFromQueueTimeout !== null ) {
+            clearTimeout( this.insertRemoveFromQueueTimeout );
+            this.insertRemoveFromQueueTimeout = null;
+        }
         var mediaTxt = title + ' - ' + subtitle;
         var msgTxt = (type === "insert" ? "added to queue" : "removed from queue");
         this.insertRemoveFromQueueMsg.html( '<b>' + mediaTxt + '</b> ' + msgTxt );
         this.insertRemoveFromQueueMsg.slideDown( 500 );
-        setTimeout( function () {
+        this.insertRemoveFromQueueTimeout = setTimeout( function () {
             this.insertRemoveFromQueueMsg.slideUp( 500 );
         }.bind( this ), 4000 );
     },
@@ -438,5 +443,5 @@ StateManager.prototype = {
         } else {
             this.countdown.text( countdown );
         }
-    },
+    }
 };

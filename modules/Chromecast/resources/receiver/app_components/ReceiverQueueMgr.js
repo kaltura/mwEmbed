@@ -16,7 +16,7 @@ $( window ).bind( 'onReceiverReplay', function () {
 $( window ).bind( 'onReceiverChangeMedia', function ( event, withAds ) {
     ReceiverLogger.log( "ReceiverQueueManager", "event-->onReceiverChangeMedia", { "withAds": withAds } );
     if ( ReceiverQueueManager.isQueueActive() ) {
-        ReceiverStateManager.clearNextMediaMetadata();
+        ReceiverQueueManager.clearNextMediaMetadata();
     }
 } );
 
@@ -30,6 +30,11 @@ QueueManager.prototype = {
         return this._isQueueActive;
     },
 
+    clearNextMediaMetadata: function () {
+        this.isCountdownDisplayed = false;
+        ReceiverStateManager.clearNextMediaMetadata();
+    },
+
     mediaStatusCallbackSubscribe: function ( func ) {
         ReceiverLogger.log( this.CLASS_NAME, "mediaStatusCallbackSubscribe", func );
         this._adsMediaStatusCallback = func;
@@ -41,6 +46,7 @@ QueueManager.prototype = {
     },
 
     _init: function () {
+        this.isCountdownDisplayed = false;
         this._isPlayingWithQueue = false;
         this._isQueueActive = false;
         this._adsMediaStatusCallback = null;
@@ -78,8 +84,11 @@ QueueManager.prototype = {
     _onQueueInsert: function ( event ) {
         ReceiverLogger.log( this.CLASS_NAME, "_onQueueInsert", event );
 
-        var insertedItem = event.data.items[ 0 ].media;
-        ReceiverStateManager.toggleInsertRemoveFromQueue( 'insert', insertedItem.metadata.title, insertedItem.metadata.subtitle );
+        var insertedItem = event.data.items[ 0 ];
+        if ( insertedItem.preloadTime !== 0 ) {
+            event.data.items[ 0 ].preloadTime = 0;
+        }
+        ReceiverStateManager.toggleInsertRemoveFromQueue( 'insert', insertedItem.media.metadata.title, insertedItem.media.metadata.subtitle );
 
         mediaManager.onQueueInsertOrig( event );
     },
@@ -88,7 +97,7 @@ QueueManager.prototype = {
         ReceiverLogger.log( this.CLASS_NAME, "_onQueueRemove", event );
 
         var insertedItem = event.data.items[ 0 ].media;
-        ReceiverStateManager.toggleInsertRemoveFromQueue( 'remove', insertedItem.metadata.title, insertedItem.metadata.subtitle );
+        ReceiverStateManager.toggleInsertRemoveFromQueue( 'remove', insertedItem.media.metadata.title, insertedItem.media.metadata.subtitle );
 
         mediaManager.onQueueRemoveOrig( event );
     },
@@ -118,7 +127,8 @@ QueueManager.prototype = {
 
     _onProgress: function () {
         var countdown = Math.round( mediaElement.duration - mediaElement.currentTime );
-        if ( countdown === 5 && (!ReceiverAdsManager || !ReceiverAdsManager.isPlayingAd()) ) {
+        if ( (countdown <= 5 && !this.isCountdownDisplayed) && (!ReceiverAdsManager || !ReceiverAdsManager.isPlayingAd()) ) {
+            this.isCountdownDisplayed = true;
             this._loadNextMediaMetadataOnScreen();
         }
     },
