@@ -40,7 +40,11 @@ AdsManager.prototype = {
          * Return all the original implementations of media manager.
          * @type {*}
          */
-        mediaManager.customizedStatusCallback = mediaManager.customizedStatusCallbackOrig_ReceiverAdsManager;
+        if ( !ReceiverQueueManager.isQueueActive() ) {
+            mediaManager.customizedStatusCallback = mediaManager.customizedStatusCallbackOrig_ReceiverAdsManager;
+        } else {
+            ReceiverQueueManager.mediaStatusCallbackUnSubscribe();
+        }
         mediaManager.onEnded = mediaManager.onEndedOrig;
         mediaManager.onPause = mediaManager.onPauseOrig;
 
@@ -111,8 +115,12 @@ AdsManager.prototype = {
          * Override all the necessary events of mediaManager to support IMA plugin on Chromecast.
          * @type {*}
          */
-        mediaManager.customizedStatusCallbackOrig_ReceiverAdsManager = mediaManager.customizedStatusCallback;
-        mediaManager.customizedStatusCallback = this._customizedStatusCallback.bind( this );
+        if ( !ReceiverQueueManager.isQueueActive() ) {
+            mediaManager.customizedStatusCallbackOrig_ReceiverAdsManager = mediaManager.customizedStatusCallback;
+            mediaManager.customizedStatusCallback = this._customizedStatusCallback.bind( this );
+        } else {
+            ReceiverQueueManager.mediaStatusCallbackSubscribe( this._customizedStatusCallback.bind( this ) );
+        }
 
         mediaManager.onEndedOrig = mediaManager.onEnded.bind( mediaManager );
         mediaManager.onEnded = this._onEnded.bind( this );
@@ -154,7 +162,7 @@ AdsManager.prototype = {
             // TODO: Remove this workaround when Google will handle the remotePlayer issue
             // TODO: https://code.google.com/p/google-cast-sdk/issues/detail?id=1104&q=remotePlayer
             /* -----> */
-            else if ( isIdle && this.allAdsCompleted && mediaStatus.idleReason ) {
+            else if ( isIdle && this.allAdsCompleted ) {
                 if ( mediaStatus.idleReason === 'FINISHED' || mediaStatus.idleReason == 'CANCELED' || mediaStatus.idleReason == 'INTERRUPTED' ) {
                     mediaStatus.idleReason = null;
                 }
@@ -164,7 +172,9 @@ AdsManager.prototype = {
             this.startPlayingWithAds = true;
         }
         mediaStatus.customData.adsInfo = this.adsInfo;
-        ReceiverLogger.log( this.CLASS_NAME, "_customizedStatusCallback - Returning sender playerState of: " + mediaStatus.playerState, mediaStatus );
+        ReceiverLogger.log( this.CLASS_NAME, "_customizedStatusCallback_" + this.CLASS_NAME + " - Returning sender playerState of: "
+            + mediaStatus.playerState, mediaStatus );
+
         return mediaStatus;
     },
 

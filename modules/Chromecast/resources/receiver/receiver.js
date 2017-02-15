@@ -222,7 +222,7 @@ function startReceiver() {
 // TODO: https://code.google.com/p/google-cast-sdk/issues/detail?id=1104&q=remotePlayer
 /* -----> */
 function customizedStatusCallback( mediaStatus ) {
-    if ( mediaStatus.playerState === StateManager.State.IDLE && mediaStatus.idleReason ) {
+    if ( mediaStatus.playerState === StateManager.State.IDLE ) {
         if ( mediaStatus.idleReason === 'FINISHED' || mediaStatus.idleReason === 'CANCELED' || mediaStatus.idleReason === 'INTERRUPTED' ) {
             mediaStatus.idleReason = null;
         }

@@ -30,9 +30,20 @@ QueueManager.prototype = {
         return this._isQueueActive;
     },
 
+    mediaStatusCallbackSubscribe: function ( func ) {
+        ReceiverLogger.log( this.CLASS_NAME, "mediaStatusCallbackSubscribe", func );
+        this._adsMediaStatusCallback = func;
+    },
+
+    mediaStatusCallbackUnSubscribe: function () {
+        ReceiverLogger.log( this.CLASS_NAME, "mediaStatusCallbackUnSubscribe" );
+        this._adsMediaStatusCallback = null;
+    },
+
     _init: function () {
         this._isPlayingWithQueue = false;
         this._isQueueActive = false;
+        this._adsMediaStatusCallback = null;
 
         mediaManager.onQueueLoadOrig = mediaManager.onQueueLoad.bind( mediaManager );
         mediaManager.onQueueLoad = this._onQueueLoad.bind( this );
@@ -80,6 +91,7 @@ QueueManager.prototype = {
     },
 
     _customizedStatusCallback: function ( mediaStatus ) {
+        mediaStatus = this._adsMediaStatusCallback ? this._adsMediaStatusCallback( mediaStatus ) : mediaStatus;
         if ( this._isPlayingWithQueue ) {
             if ( mediaStatus.playerState === StateManager.State.IDLE ) {
                 if ( mediaStatus.idleReason === 'FINISHED' || mediaStatus.idleReason === 'CANCELED' || mediaStatus.idleReason === 'INTERRUPTED' ) {
@@ -90,6 +102,8 @@ QueueManager.prototype = {
         } else if ( mediaStatus.playerState === StateManager.State.PLAYING ) {
             this._isPlayingWithQueue = true;
         }
+        ReceiverLogger.log( this.CLASS_NAME, "_customizedStatusCallback_" + this.CLASS_NAME + " - Returning sender playerState of: "
+            + mediaStatus.playerState, mediaStatus );
         return mediaStatus;
     },
 
@@ -101,6 +115,7 @@ QueueManager.prototype = {
     },
 
     _loadNextMediaMetadataOnScreen: function () {
+        ReceiverLogger.log( this.CLASS_NAME, "_loadNextMediaMetadataOnScreen" );
         var mediaQueue = mediaManager.getMediaQueue();
         var nextItemIndex = this._getCurrentItemIndex() + 1;
         if ( nextItemIndex < mediaQueue.getLength() ) {
