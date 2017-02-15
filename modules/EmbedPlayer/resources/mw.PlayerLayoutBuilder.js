@@ -1237,8 +1237,11 @@
 
             if (!hideCloseButton) {
                 // Setup the close button
+                var closeMessage = gM("mwe-embedplayer-close_screen");
                 $closeButton = $('<button></button>')
                     .addClass('btn icon-close closePluginsScreen')
+                    .attr('alt', closeMessage)
+                    .html('<span class="accessibilityLabel">' + closeMessage + '</span>')
                     .click(function () {
                         _this.closeMenuOverlay();
                         if (closeCallback) {
