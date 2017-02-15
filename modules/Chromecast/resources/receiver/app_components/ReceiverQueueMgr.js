@@ -56,7 +56,13 @@ QueueManager.prototype = {
 
         mediaManager.onQueueEndedOrig = mediaManager.onQueueEnded.bind( mediaManager );
         mediaManager.onQueueEnded = this._onQueueEnded.bind( this );
+    },
 
+    _destroy: function () {
+        mediaManager.customizedStatusCallback = mediaManager.customizedStatusCallbackOrig_ReceiverQueueManager;
+        mediaElement.removeEventListener( 'timeupdate', this._onProgress );
+        this._isQueueActive = false;
+        this._isPlayingWithQueue = false;
     },
 
     _onQueueLoad: function ( event ) {
@@ -81,12 +87,7 @@ QueueManager.prototype = {
 
     _onQueueEnded: function ( event ) {
         ReceiverLogger.log( this.CLASS_NAME, "_onQueueEnded", event );
-
-        mediaManager.customizedStatusCallback = mediaManager.customizedStatusCallbackOrig_ReceiverQueueManager;
-        mediaElement.removeEventListener( 'timeupdate', this._onProgress );
-        this._isQueueActive = false;
-        this._isPlayingWithQueue = false;
-
+        this._destroy();
         mediaManager.onQueueEndedOrig( event );
     },
 
