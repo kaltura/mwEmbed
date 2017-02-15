@@ -146,6 +146,10 @@
 
 				//Consume view state events
 				this.bind( 'dualScreenStateChange', function(e, state){
+					if ( _this.getPlayer().isAudio() ) {
+						_this.fsm.consumeEvent( state );
+						return;
+					}
 					if(!_this.disabled && _this.controlBar && !_this.getPlayer().isAudio()) {
 						//update view mode lock state if needed
 						var currentLockState = _this.isViewModeLocked;
