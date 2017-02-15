@@ -96,7 +96,7 @@ QueueManager.prototype = {
     _onQueueRemove: function ( event ) {
         ReceiverLogger.log( this.CLASS_NAME, "_onQueueRemove", event );
 
-        var insertedItem = event.data.items[ 0 ].media;
+        var insertedItem = event.data.items[ 0 ];
         ReceiverStateManager.toggleInsertRemoveFromQueue( 'remove', insertedItem.media.metadata.title, insertedItem.media.metadata.subtitle );
 
         mediaManager.onQueueRemoveOrig( event );
