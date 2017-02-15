@@ -339,6 +339,18 @@
             text-overflow: ellipsis;
             align-self: flex-end;
         }
+
+        .cast-added-removed-from-queue-msg {
+            position: absolute;
+            top: 2%;
+            left: 2%;
+            font-size: 30px;
+            font-family: "proxima nova";
+            display: block;
+            color: white;
+            background: black;
+            display: none;
+        }
     </style>
     <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
     <script src="//code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
@@ -355,6 +367,7 @@
     <div id="kaltura_player" style=" width:98%; height: 98%; position: absolute; z-index: 1;"></div>
     <video id="initial-video-element"></video>
     <div id="logo" class="logo">
+        <div class="cast-added-removed-from-queue-msg" ></div>
         <div class="cast-wait-msg">Please wait...</div>
         <div id="cast-loading-spinner" class="cast-loading-spinner"></div>
         <div id="cast-gradient" class="cast-gradient"></div>

@@ -28,6 +28,7 @@ function StateManager() {
     this.progressFill = $( '.cast-media-progress-fill' );
     this.waitMsg = $( '.cast-wait-msg' );
     this.countdown = $( '#cast-up-next-countdown' );
+    this.insertRemoveFromQueueMsg = $( '.cast-added-removed-from-queue-msg' );
 }
 
 /**
@@ -98,6 +99,16 @@ StateManager.prototype = {
      */
     getState: function () {
         return this.currState;
+    },
+
+    toggleInsertRemoveFromQueue: function ( type, title, subtitle ) {
+        var mediaTxt = title + ' - ' + subtitle;
+        var msgTxt = (type === "insert" ? "added to queue" : "removed from queue");
+        this.insertRemoveFromQueueMsg.html( '<b>' + mediaTxt + '</b> ' + msgTxt );
+        this.insertRemoveFromQueueMsg.slideDown( 500 );
+        setTimeout( function () {
+            this.insertRemoveFromQueueMsg.slideUp( 500 );
+        }.bind( this ), 4000 );
     },
 
     /**

@@ -77,11 +77,19 @@ QueueManager.prototype = {
 
     _onQueueInsert: function ( event ) {
         ReceiverLogger.log( this.CLASS_NAME, "_onQueueInsert", event );
+
+        var insertedItem = event.data.items[ 0 ].media;
+        ReceiverStateManager.toggleInsertRemoveFromQueue( 'insert', insertedItem.metadata.title, insertedItem.metadata.subtitle );
+
         mediaManager.onQueueInsertOrig( event );
     },
 
     _onQueueRemove: function ( event ) {
         ReceiverLogger.log( this.CLASS_NAME, "_onQueueRemove", event );
+
+        var insertedItem = event.data.items[ 0 ].media;
+        ReceiverStateManager.toggleInsertRemoveFromQueue( 'remove', insertedItem.metadata.title, insertedItem.metadata.subtitle );
+
         mediaManager.onQueueRemoveOrig( event );
     },
 
