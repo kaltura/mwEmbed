@@ -82,6 +82,10 @@
             display: none;
         }
 
+        #cast-media-info-next {
+            display: none;
+        }
+
         #cast-pause-button {
             display: none;
         }
@@ -227,6 +231,26 @@
             bottom: 20px;
         }
 
+        #cast-up-next-countdown {
+            font-size: 65px;
+        }
+
+        .cast-up-next {
+            width: 800px;
+            position: absolute;
+            font-size: 52px;
+            font-style: normal;
+            font-stretch: normal;
+            left: 200px;
+            bottom: 20px;
+            color: #ffffff;
+            font-family: "proxima nova";
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            align-self: flex-end;
+        }
+
         .cast-loading-spinner {
             position: absolute;
             left: 48%;
@@ -339,6 +363,13 @@
                 <div id="cast-title" class="cast-title"></div>
                 <div id="cast-subtitle" class="cast-subtitle"></div>
                 <div class="cast-separator"></div>
+            </div>
+            <div id="cast-media-info-next">
+                <div id="cast-artwork-next" class="cast-artwork"></div>
+                <div id="cast-title-next" class="cast-title"></div>
+                <div id="cast-subtitle-next" class="cast-subtitle"></div>
+                <div class="cast-separator"></div>
+                <div class="cast-up-next">Up next in ... <span id="cast-up-next-countdown"></span></div>
             </div>
             <img id="cast-pause-button" src="assets/pause.png" class="cast-state" height="30" width="24">
             <div id="cast-state-button-container" class="cast-state-button-container"></div>

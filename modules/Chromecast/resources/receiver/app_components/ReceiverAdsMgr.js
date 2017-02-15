@@ -40,7 +40,7 @@ AdsManager.prototype = {
          * Return all the original implementations of media manager.
          * @type {*}
          */
-        mediaManager.customizedStatusCallback = mediaManager.customizedStatusCallbackOrig;
+        mediaManager.customizedStatusCallback = mediaManager.customizedStatusCallbackOrig_ReceiverAdsManager;
         mediaManager.onEnded = mediaManager.onEndedOrig;
         mediaManager.onPause = mediaManager.onPauseOrig;
 
@@ -58,6 +58,14 @@ AdsManager.prototype = {
         kdp.kUnbind( "onAllAdsCompleted" );
 
         ReceiverAdsManager = null;
+    },
+
+    /**
+     * Returns whether the receiver playing an ad.
+     * @returns {boolean}
+     */
+    isPlayingAd: function () {
+        return this.adsInfo.isPlayingAd;
     },
 
     /**
@@ -103,7 +111,7 @@ AdsManager.prototype = {
          * Override all the necessary events of mediaManager to support IMA plugin on Chromecast.
          * @type {*}
          */
-        mediaManager.customizedStatusCallbackOrig = mediaManager.customizedStatusCallback;
+        mediaManager.customizedStatusCallbackOrig_ReceiverAdsManager = mediaManager.customizedStatusCallback;
         mediaManager.customizedStatusCallback = this._customizedStatusCallback.bind( this );
 
         mediaManager.onEndedOrig = mediaManager.onEnded.bind( mediaManager );
@@ -138,7 +146,7 @@ AdsManager.prototype = {
         }
         var isIdle = mediaStatus.playerState === StateManager.State.IDLE;
         if ( this.startPlayingWithAds ) {
-            if ( mediaStatus.customData && mediaStatus.customData.forceStatus ) {
+            if ( mediaStatus.customData.forceStatus ) {
                 mediaStatus.playerState = mediaStatus.customData.forceStatus;
             } else if ( isIdle && !this.allAdsCompleted ) {
                 mediaStatus.playerState = StateManager.State.PLAYING;
@@ -150,12 +158,13 @@ AdsManager.prototype = {
                 if ( mediaStatus.idleReason === 'FINISHED' || mediaStatus.idleReason == 'CANCELED' || mediaStatus.idleReason == 'INTERRUPTED' ) {
                     mediaStatus.idleReason = null;
                 }
+                if ( mediaManager.getMediaQueue() ) {
+                    mediaStatus.playerState = StateManager.State.PLAYING;
+                }
             }
             /* <----- */
-        } else {
-            if ( mediaStatus.playerState === StateManager.State.PLAYING ) {
-                this.startPlayingWithAds = true;
-            }
+        } else if ( mediaStatus.playerState === StateManager.State.PLAYING ) {
+            this.startPlayingWithAds = true;
         }
         mediaStatus.customData.adsInfo = this.adsInfo;
         ReceiverLogger.log( this.CLASS_NAME, "_customizedStatusCallback - Returning sender playerState of: " + mediaStatus.playerState, mediaStatus );
