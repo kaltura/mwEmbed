@@ -1,0 +1,13 @@
+{
+    "convivaHTML5": {
+        "label": "convivaHTML5 info",
+        "description": "convivaHTML5 alalitics plugin ",
+        "attributes": {
+            "parent": {
+                "doc": "Parent container for component. Components include default placement, leave as null if unsure.",
+                "type": "enum",
+                "enum": ["bottomRightContainer", "videoHolder", "controlsContainer"]
+            }
+        }
+    }
+}

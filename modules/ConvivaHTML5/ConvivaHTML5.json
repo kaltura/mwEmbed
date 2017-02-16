@@ -1,0 +1,7 @@
+{
+    "ConvivaHTML5":{
+        "scripts":["resources/convivaHTML5.js","resources/conviva-core-sdk.min.js"],
+        "dependencies": ["mw.KBaseComponent"],
+        "kalturaPluginName": "convivaHTML5"
+    }
+}
