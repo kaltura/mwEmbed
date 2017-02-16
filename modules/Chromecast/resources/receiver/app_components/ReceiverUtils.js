@@ -84,7 +84,6 @@ var ReceiverUtils = {
                 $( '#cast-subtitle' ).text( metadata.subtitle ? metadata.subtitle : '' );
                 mediaArtwork = $( '#cast-artwork' );
             } else {
-                $( '#cast-up-next-countdown' ).text( '5' );
                 $( '#cast-title-next' ).text( metadata.title ? metadata.title : '' );
                 $( '#cast-subtitle-next' ).text( metadata.subtitle ? metadata.subtitle : '' );
                 mediaArtwork = $( '#cast-artwork-next' );

@@ -31,7 +31,7 @@ QueueManager.prototype = {
     },
 
     clearNextMediaMetadata: function () {
-        this.isCountdownDisplayed = false;
+        this._isCountdownDisplayed = false;
         ReceiverStateManager.clearNextMediaMetadata();
     },
 
@@ -46,7 +46,7 @@ QueueManager.prototype = {
     },
 
     _init: function () {
-        this.isCountdownDisplayed = false;
+        this._isCountdownDisplayed = false;
         this._isPlayingWithQueue = false;
         this._isQueueActive = false;
         this._adsMediaStatusCallback = null;
@@ -68,7 +68,9 @@ QueueManager.prototype = {
         mediaManager.customizedStatusCallback = mediaManager.customizedStatusCallbackOrig_ReceiverQueueManager;
         mediaElement.removeEventListener( 'timeupdate', this._onProgress );
         this._isQueueActive = false;
+        this._isCountdownDisplayed = false;
         this._isPlayingWithQueue = false;
+        this._adsMediaStatusCallback = null;
     },
 
     _onQueueLoad: function ( event ) {
@@ -127,8 +129,8 @@ QueueManager.prototype = {
 
     _onProgress: function () {
         var countdown = Math.round( mediaElement.duration - mediaElement.currentTime );
-        if ( (countdown <= 5 && !this.isCountdownDisplayed) && (!ReceiverAdsManager || !ReceiverAdsManager.isPlayingAd()) ) {
-            this.isCountdownDisplayed = true;
+        if ( (countdown <= 5 && !this._isCountdownDisplayed) && (!ReceiverAdsManager || !ReceiverAdsManager.isPlayingAd()) ) {
+            this._isCountdownDisplayed = true;
             this._loadNextMediaMetadataOnScreen();
         }
     },

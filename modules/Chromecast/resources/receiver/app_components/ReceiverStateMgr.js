@@ -374,6 +374,7 @@ StateManager.prototype = {
      */
     _onPause: function ( opt_afterSeek ) {
         var _this = this;
+        this.clearNextMediaMetadata();
         this._toggleComponents( 'show', [ this.pauseBtn, this.stateBtnContainer, this.inPlayControls ] );
         if ( this.waitMsg.is( ":visible" ) ) {
             this.waitMsg.fadeOut();
