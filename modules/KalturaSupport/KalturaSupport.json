@@ -91,13 +91,13 @@
 			"components/dualScreen/dualScreenControlBar.js",
 			"components/dualScreen/displays.js",
 			"components/dualScreen/display.js",
-			"components/dualScreen/cuePointsManager.js",
 			"components/dualScreen/dualScreenExternalControlManager.js",
 			"components/dualScreen/imagePlayer.js",
 			"components/dualScreen/videoPlayer.js",
 			"components/dualScreen/videoSync.js",
 			"components/dualScreen/fsm.js",
-			"components/dualScreen/dualScreenStatesConfig.js"
+			"components/dualScreen/dualScreenStatesConfig.js",
+			"resources/webcast/cuePointsManager.js"
 		],
 		"styles": [
 			"components/dualScreen/dualScreen.css",
@@ -255,7 +255,7 @@
 		"kalturaPluginName": "logo"
 	},
   "video360": {
-    "scripts": "components/video360.js",
+    "scripts": ["components/360/video360.js"],
     "dependencies": ["threejs","mw.KBasePlugin"],
     "kalturaPluginName": "video360"
   },
@@ -483,5 +483,11 @@
 		"scripts": "components/reportError.js",
 		"dependencies": "mw.KBaseComponent",
 		"kalturaPluginName": "reportError"
+	},
+	"kgitGuard": {
+		"scripts": "components/kgitGuard/kgitGuard.js",
+		"styles": "components/kgitGuard/kgitGuard.css",
+		"dependencies": "mw.KBasePlugin",
+		"kalturaPluginName": "kgitGuard"
 	}
 }
