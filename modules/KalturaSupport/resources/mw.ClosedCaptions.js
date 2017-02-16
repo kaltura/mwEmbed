@@ -682,12 +682,16 @@
 		},
 
 		addCaptionAsText: function ( source, capId, caption ) {
+			var captionDirection = "auto";
+			//Set CC direction to rtl only in IE since it dose not support auto attribute
+			if ( source.srclang === 'he' && mw.isIE11() ) {
+				captionDirection = "rtl";
+			}
 			// use capId as a class instead of id for easy selections and no conflicts with
 			// multiple players on page.
 			var $textTarget = $('<div />')
 				.addClass('track')
 				.attr('data-capId', capId)
-				.attr('dir', "auto")
 				.hide();
 
 			// Update text ( use "html" instead of "text" so that subtitle format can
@@ -696,6 +700,7 @@
 			$textTarget.append(
 				$('<span />')
 					.addClass('ttmlStyled')
+					.attr('dir', captionDirection)
 					.css('pointer-events', 'auto')
 					.css(this.getCaptionCss())
 					.append(
@@ -732,7 +737,7 @@
 			);
 
 			// Update the style of the text object if set
-			if (caption.styleId) {
+			if (caption.styleId && !this.customStyle) {
 				var capCss = source.getStyleCssById(caption.styleId);
 				$textTarget.find('span.ttmlStyled').css(
 					capCss

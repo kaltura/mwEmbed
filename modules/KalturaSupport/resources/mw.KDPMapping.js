@@ -1187,7 +1187,9 @@
 					if ( !embedPlayer.stopped ){
 						setTimeout(function() {
 							embedPlayer.ignoreNextNativeEvent = true;
-	                                    embedPlayer.seek(0, true);
+							if( !embedPlayer.isLive() ) {
+								embedPlayer.seek(0, true);
+							}
 							embedPlayer.stop();
 						},10);
 					}
