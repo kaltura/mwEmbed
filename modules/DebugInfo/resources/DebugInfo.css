@@ -9,29 +9,6 @@
     pointer-events: none
 }
 
-.mw-debug-info-close-btn {
-    position: absolute;
-    right:3px;
-    top:3px;
-    -webkit-border-radius: 0;
-    -moz-border-radius: 0;
-    border-radius: 0px;
-    color: #ffffff;
-    font-size: 12px;
-    background: #000000;
-    padding: 3px 3px 3px 3px;
-    text-decoration: none;
-    pointer-events: auto
-}
-.mw-debug-info-copy-btn {
-    pointer-events: auto
-}
-
-.mw-debug-info-close-btn:hover {
-    background: #44535c;
-    text-decoration: none;
-}
-
 
 .mw-debug-info-text {
     text-overflow: ellipsis;
@@ -65,4 +42,46 @@
 }
 .mw-debug-info-separator::after {
     margin-left: .25em;
+}
+
+
+.mw-debug-info-btn {
+    padding: 4px 4px;
+    background: #4479BA;
+    color: #FFF;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    pointer-events: auto;
+    border: solid 1px #20538D;
+    text-decoration: none;
+}
+
+.mw-debug-info-btn:hover {
+    background: #44535c;
+    text-decoration: none;
+}
+.mw-debug-info-btn-group {
+    margin-top: 6px;
+    border-top: 1px solid white;
+    display: inline-block;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    width: 100%;
+}
+
+.mw-debug-info-close-btn {
+    position: absolute;
+    right:3px;
+    top:3px;
+}
+
+.mw-debug-info-copy-btn {
+}
+
+.mw-debug-info-getIps-btn {
+}
+
+.mw-debug-info-email-btn {
+
 }

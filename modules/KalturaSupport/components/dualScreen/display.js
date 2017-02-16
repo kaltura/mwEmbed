@@ -222,5 +222,9 @@
 		PRIMARY: "primary",
 		SECONDARY: "secondary"
 	};
+	mw.dualScreen.display.STATE = {
+		LOCKED: "locked",
+		UNLOCKED: "unlocked"
+	};
 }
 )( window.mw, window.jQuery );

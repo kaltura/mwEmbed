@@ -399,8 +399,8 @@
 
 			var fv = {};
 			this.supportedPlugins.forEach( function ( plugin ) {
-				if ( !$.isEmptyObject( _this.embedPlayer.getKalturaConfig( plugin ) ) ) {
-					fv[plugin] = _this.embedPlayer.getKalturaConfig( plugin );
+				if ( !$.isEmptyObject( _this.embedPlayer.getRawKalturaConfig( plugin ) ) ) {
+					fv[plugin] = _this.embedPlayer.getRawKalturaConfig( plugin );
 				}
 			} );
 			// add support for custom proxyData for OTT app developers

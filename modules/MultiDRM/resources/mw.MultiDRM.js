@@ -29,12 +29,13 @@
 		},
 
 		isCastLabsNeeded: function () {
-			return (mw.isChrome() && !mw.isMobileDevice()) || //for smoothStream over dash
-				((this.isOldIE() || mw.isDesktopSafari()) && this.getConfig("forceDASH"));  //for dash over silverLight
+			return (mw.isChrome() && !mw.isMobileDevice()) || mw.isEdge() || //for smoothStream over dash
+				((this.MSEunsupported() || mw.isDesktopSafari()) && this.getConfig("forceDASH"));  //for dash over silverLight
 		},
 
-		isOldIE: function () {
-			return mw.isIE8() || mw.isIE9() || mw.isIE10Comp();
+		MSEunsupported: function () {
+			return mw.isIE8() || mw.isIE9() || mw.isIE10Comp() ||
+				  (mw.isIE11() && (mw.getUserOS() === 'Windows 7' || mw.getUserOS() === 'Windows 8'));
 		},
 
 		getFpsCertificate: function (embedPlayer) {
@@ -61,7 +62,7 @@
 				_this.setEmbedPlayerConfig(_this.getPlayer());
 
 				var multiDRMProtocols = ["video/ism", "video/playreadySmooth"];
-				if ((_this.isOldIE() || mw.isDesktopSafari()) &&
+				if ((_this.MSEunsupported() || mw.isDesktopSafari()) &&
 					_this.getConfig("forceDASH")) {
 					multiDRMProtocols.push("application/dash+xml");
 				}
