@@ -153,6 +153,7 @@ StateManager.prototype = {
             this._toggleComponents( 'hide', [ this.nextMediaInfoContainer, this.gradient ] );
             clearInterval( this.countdownInterval );
             this.countdownInterval = null;
+            this.countdown.text( '' );
         }
     },
 

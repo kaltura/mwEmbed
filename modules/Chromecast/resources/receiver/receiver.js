@@ -289,7 +289,7 @@ function onEditTracksInfo( event ) {
 function onPause( event ) {
     ReceiverLogger.log( "MediaManager", "onPause", event );
     kdp.sendNotification( "doPause" );
-    mediaManager.broadcastStatus( false );
+    mediaManager.broadcastStatus( false, event.data.requestId );
 }
 
 /**
@@ -298,6 +298,7 @@ function onPause( event ) {
 function onPlay( event ) {
     ReceiverLogger.log( "MediaManager", "onPlay", event );
     kdp.sendNotification( "doPlay" );
+    mediaManager.broadcastStatus( false, event.data.requestId );
 }
 
 /**
