@@ -565,17 +565,25 @@
 				if( defaultLangKey == 'None' ){
 					return ;
 				}
+				if ( mw.isIOS() ) {
+					this.selectDefaultIosTrack(defaultLangKey);
+					return ;
+				}
 				source = this.selectSourceByLangKey( defaultLangKey );
 				if( source ){
 					this.log('autoSelectSource: select by defaultLanguageKey: ' + defaultLangKey);
 					this.selectedSource = source;
 					this.embedPlayer.getInterface().find( '[srclang='+ defaultLangKey +']').attr("default", "true");
 					return ;
-				}				
+				}
 			}
             // Get source by "default" property
             if ( !this.selectedSource ) {
                 source = this.selectDefaultSource();
+                if ( source && mw.isIOS() ) {
+                    this.selectDefaultIosTrack(source.srclang);
+                    return ;
+                }
                 if( source ){
                     this.log('autoSelectSource: select by default caption');
                     this.selectedSource = source;
@@ -597,6 +605,32 @@
 				this.log('autoSelectSource: select first caption');
 				this.selectedSource = this.textSources[0];
 			}
+		},
+		selectDefaultIosTrack: function (defaultLangKey) {
+			var _this = this;
+			this.once( 'playing', function (){
+				var textTracks = _this.embedPlayer.getVideoHolder().find("video")[0].textTracks;
+				// Check if default text track is selected
+				if (_this.isTextTrackSelected(textTracks)) {
+					return;
+				}
+				_this.showDefaultTextTrack(textTracks, defaultLangKey);
+			});
+		},
+		isTextTrackSelected: function (textTracks) {
+			for (var i=0; textTracks.length > i; i++) {
+				if (textTracks[i].mode == "showing") {
+					return true;
+				}
+			}
+			return false;
+		},
+		showDefaultTextTrack: function (textTracks, defaultLangKey) {
+			$.each( textTracks, function( inx, caption) {
+				if (caption.language == defaultLangKey) {
+					caption.mode = "showing";
+				}
+			});
 		},
 		selectSourceByLangKey: function( langKey ){
 			var _this = this;
