@@ -973,6 +973,7 @@
 			iframe.scrolling = "no";
 			iframe.name = iframeId;
 			iframe.className = 'mwEmbedKalturaIframe';
+			iframe.setAttribute('title', 'The Kaltura Dynamic Video Player');
 			// IE8 requires frameborder attribute to hide frame border:
 			iframe.setAttribute('frameborder', '0');
 
