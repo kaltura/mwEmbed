@@ -64,6 +64,7 @@
 			this.bind("firstPlay", function () {
 				this.attachMotionListeners();
 				this.getPlayer().layoutBuilder.removePlayerClickBindings();
+				$(this.canvas).css('z-index', '2');
 				this.add360logo();
 			}.bind(this));
 
@@ -101,7 +102,6 @@
 			this.canvas = this.renderer.domElement;
 			this.getPlayer().getVideoDisplay().append(this.canvas);
 			$(this.canvas).addClass("canvas360");
-			$(this.canvas).css('z-index', '2');
 
 			// creating a new scene
 			this.scene = new THREE.Scene();
