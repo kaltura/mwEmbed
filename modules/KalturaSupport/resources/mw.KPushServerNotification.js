@@ -53,7 +53,7 @@
             mw.log('push server reconnection failed '+e);
         });
 
-        this.socket.on('connected', function(queueKeyHash, queueKey) {
+        this.socket.on('connected', function(queueKey, queueKeyHash) {
             if (_this.listenKeys[queueKeyHash]) {
                 _this.listenKeys[queueKeyHash].deferred.resolve(queueKey);
                 _this.callbackMap[queueKey] = _this.listenKeys[queueKeyHash];
