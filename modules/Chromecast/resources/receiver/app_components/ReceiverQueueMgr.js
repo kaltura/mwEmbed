@@ -98,9 +98,11 @@ QueueManager.prototype = {
     _onQueueRemove: function ( event ) {
         ReceiverLogger.log( this.CLASS_NAME, "_onQueueRemove", event );
 
-        var insertedItem = event.data.items[ 0 ];
-        ReceiverStateManager.toggleInsertRemoveFromQueue( 'remove', insertedItem.media.metadata.title, insertedItem.media.metadata.subtitle );
-
+        var removedItemId = event.data.itemIds[ 0 ];
+        var removedItem = this._getItemById( removedItemId );
+        if ( removedItem ) {
+            ReceiverStateManager.toggleInsertRemoveFromQueue( 'remove', removedItem.media.metadata.title, removedItem.media.metadata.subtitle );
+        }
         mediaManager.onQueueRemoveOrig( event );
     },
 
@@ -148,6 +150,18 @@ QueueManager.prototype = {
         }
     },
 
+    _getItemById: function ( id ) {
+        var mediaQueue = mediaManager.getMediaQueue();
+        var queueItems = mediaQueue.getItems();
+        for ( var i = 0; i < mediaQueue.getLength(); i++ ) {
+            var item = queueItems[ i ];
+            if ( item.itemId === id ) {
+                return item;
+            }
+        }
+        return null;
+    },
+
     _getCurrentItemIndex: function () {
         var mediaQueue = mediaManager.getMediaQueue();
         var currentItemId = mediaQueue.getCurrentItemId();
@@ -158,5 +172,6 @@ QueueManager.prototype = {
                 return i;
             }
         }
+        return null;
     }
 };
