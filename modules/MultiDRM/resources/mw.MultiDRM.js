@@ -29,7 +29,7 @@
 		},
 
 		isCastLabsNeeded: function () {
-			return (mw.isChrome() && !mw.isMobileDevice()) || mw.isEdge() || mw.isFirefox() || //for smoothStream over dash
+			return (mw.isChrome() && !mw.isMobileDevice()) || mw.isEdge() || //for smoothStream over dash
 				((this.MSEunsupported() || mw.isDesktopSafari()) && this.getConfig("forceDASH"));  //for dash over silverLight
 		},
 
@@ -138,7 +138,7 @@
 				"accessLicenseServerURL": null,
 				"flashFile": mw.getConfig("EmbedPlayer.dashAsUrl") || mw.getMwEmbedPath() + "node_modules/mwEmbed-Dash-Everywhere/dashas/dashas.swf",
 				"silverlightFile": mw.getConfig("EmbedPlayer.dashCsUrl") || mw.getMwEmbedPath() + "node_modules/mwEmbed-Dash-Everywhere/dashcs/dashcs.xap",
-				"techs": ( mw.isDesktopSafari() ) ? ["dashcs"] : ["dashjs", "dashcs"],
+				"techs": ( mw.isFirefox() || mw.isDesktopSafari() ) ? ["dashcs"] : ["dashjs", "dashcs"],
 				"debug": false
 			};
 			return defaultConfig;
