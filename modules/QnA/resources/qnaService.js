@@ -230,15 +230,15 @@
             // Setup player ref:
             this.embedPlayer = embedPlayer;
             this.qnaPlugin = qnaPlugin;
-            this.kPushServerNotification = new mw.KPushServerNotification(embedPlayer);
 
+            this.kPushServerNotification= mw.KPushServerNotification.getInstance(embedPlayer)
             if (embedPlayer.isLive()) {
                 //we first register to all notification before continue to get the existing cuepoints, so we don't get races and lost cue points
                 this.getMetaDataProfile().then(function() {
                     _this.registerNotifications().then(function() {
-                        console.warn("OK");
+                        mw.log("QnA successful  registerNotifications");
                     },function(err) {
-                        console.warn(err);
+                        mw.log("QnA failed  registerNotifications ",err);
                     });
                 });
             }

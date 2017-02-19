@@ -4,6 +4,13 @@
         return this.init(embedPlayer);
     }
 
+    mw.KPushServerNotification.getInstance=function(embedPlayer) {
+        if (!embedPlayer.kPushServerNotification) {
+            embedPlayer.kPushServerNotification = new mw.KPushServerNotification(embedPlayer);
+        }
+        return embedPlayer.kPushServerNotification;
+    }
+
     mw.KPushServerNotification.connectionTimeout = 10000;
 
 
@@ -31,7 +38,7 @@
             _this.connected=true;
 
             $.each(_this.listenKeys,function(key, obj) {
-                mw.log("SocketWrapper: calling emit for  "+key+ " "+eventName);
+                //mw.log("SocketWrapper: calling emit for  "+key+ " eventName: "+eventName+" queueNameHash:"+obj.queueNameHash+" queueKeyHash:"+obj.queueKeyHash);
                 _this.socket.emit('listen', obj.queueNameHash,obj.queueKeyHash);
             });
         });
@@ -52,17 +59,17 @@
                 _this.callbackMap[queueKey] = _this.listenKeys[queueKeyHash];
                 mw.log("Listening to queue [" + queueKey + "] for eventName " + eventName+ " queueKeyHash "+queueKeyHash);
             } else {
-                mw.log("Cannot listen to queue [" + queueKey + "] for eventName " + eventName+ " queueKeyHash "+queueKeyHash);
+                mw.log("Cannot listen to queue [" + queueKey + "] for eventName " + eventName+ " queueKeyHash "+queueKeyHash+" queueKeyHash not found");
             }
         });
 
         this.socket.on('message', function(queueKey, msg){
-            mw.log("["+eventName+"][" + queueKey + "]: " +  msg);
+            mw.log("["+eventName+"][" + queueKey + "]: onMessage" ,msg);
 
             if (_this.callbackMap[queueKey]) {
                 _this.callbackMap[queueKey].cb(msg);
             } else {
-                mw.log("["+eventName+"][" + queueKey + "]: Error couldn't find queueKey in map");
+                mw.log("["+eventName+"][" + queueKey + "]: onMessage Error couldn't find queueKey in map");
 
             }
 
@@ -77,6 +84,8 @@
     SocketWrapper.prototype.listen=function(eventName,queueNameHash, queueKeyHash, cb) {
 
         var deferred = $.Deferred();
+
+        mw.log("Listening to ",eventName," queueNameHash: ",queueNameHash, " queueKeyHash: ",queueKeyHash);
 
         this.listenKeys[queueKeyHash] = {
             deferred: deferred,
@@ -213,18 +222,21 @@
                     return deferred;
                 }
 
-
-                var defs=[];
+                var deffers=[];
 
                 if (!apiRequests.length) { //incase of single-request
-                    defs.push(processResult(registerRequests[0],results));
+                    deffers.push(processResult(registerRequests[0],results));
                 } else {
-                    defs=$.map(results,function(result, index) {
+                    deffers=$.map(results,function(result, index) {
                         return processResult(registerRequests[index],result)
                     });
                 }
 
-                return $.when(defs);
+                $.when(deffers).then(function() {
+                    deferred.resolve(true);
+                },function(err) {
+                    deferred.reject(err);
+                });
             },
             false,
             function(error) {

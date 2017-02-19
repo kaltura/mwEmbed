@@ -10,6 +10,9 @@
         "scripts": "resources/base64/base64_encode.js",
         "dependencies": "utf8_encode"
     },
+    "socket.io": {
+        "scripts": "resources/socket.io/socket.io.min.js"
+    },
     "utf8_encode": {
         "scripts": "resources/utf8/utf8_encode.js"
     },
