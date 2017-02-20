@@ -486,10 +486,11 @@
                 .children().removeClass('single-answer-box-txt')
                 .addClass(function(){
                     var currentAnswerNumber = parseInt($(this).attr('id'))+1;
+                    var currentAnswerText = $('#answer-'+(currentAnswerNumber-1)+'-text').html();
                     $(this).addClass('single-answer-box-txt-wide')
                         .after($('<button  type="button"></button>') // adding continue/applied div as button
                             .addClass("single-answer-box-apply qContinue")
-                            .text(gM('mwe-quiz-continue')).attr('aria-label', 'Continue quiz with the selected answer: '+currentAnswerNumber).removeAttr('aria-disabled').focus()
+                            .text(gM('mwe-quiz-continue')).attr('aria-label', 'Continue quiz with the selected answer: '+currentAnswerText).removeAttr('aria-disabled').focus()
                             .attr('id', 'continue-button-answer-'+currentAnswerNumber)
                     );
                    // verify focus in IE
@@ -552,12 +553,13 @@
                         .children().removeClass('single-answer-box-txt')
                         .addClass(function(){
                             var currentAnswerNumber = parseInt($(this).attr('id'))+1;
+                            var currentAnswerText = $('#answer-'+(currentAnswerNumber-1)+'-text').html();
                             // add the "continue" button for the selected answer
                             // also add accessibility capabilities for the "continue" button after the user has selected an answer
                             $(this).addClass('single-answer-box-txt-wide')
                                 .after($('<div ></div>') // adding continue/applied div as button so no need to set it with a role and tabindex
                                     .addClass("single-answer-box-apply qContinue")
-                                    .text(gM('mwe-quiz-continue')).attr('tabindex', 5).attr('aria-label', 'Continue quiz  with the selected answer: '+currentAnswerNumber).removeAttr('aria-disabled')
+                                    .text(gM('mwe-quiz-continue')).attr('tabindex', 5).attr('aria-label', 'Continue quiz  with the selected answer: '+currentAnswerText).removeAttr('aria-disabled')
                                     .on('keydown', _this.keyDownHandler).attr('id', 'continue-button-answer-'+currentAnswerNumber).attr('role', 'button')
                             );
                             // verify focus in IE
