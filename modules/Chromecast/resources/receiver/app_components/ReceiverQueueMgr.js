@@ -99,9 +99,11 @@ QueueManager.prototype = {
         ReceiverLogger.log( this.CLASS_NAME, "_onQueueRemove", event );
 
         var removedItemId = event.data.itemIds[ 0 ];
-        var removedItem = this._getItemById( removedItemId );
-        if ( removedItem ) {
-            ReceiverStateManager.toggleInsertRemoveFromQueue( 'remove', removedItem.media.metadata.title, removedItem.media.metadata.subtitle );
+        if ( mediaManager.getMediaQueue().getCurrentItemId() !== removedItemId ) {
+            var removedItem = this._getItemById( removedItemId );
+            if ( removedItem ) {
+                ReceiverStateManager.toggleInsertRemoveFromQueue( 'remove', removedItem.media.metadata.title, removedItem.media.metadata.subtitle );
+            }
         }
         mediaManager.onQueueRemoveOrig( event );
     },
