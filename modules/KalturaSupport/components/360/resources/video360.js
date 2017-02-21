@@ -309,7 +309,7 @@
 		detachMotionListeners: function () {
 			$(this.canvas).off("mousedown touchstart");
 			$(this.canvas).off("mousemove touchmove");
-			$(document).off("mouseup touchend");
+			$(document).off("mouseup touchend", this.onDocumentMouseUp.bind(this));
 			window.removeEventListener('devicemotion', this.onMobileOrientation.bind(this));
 		},
 
