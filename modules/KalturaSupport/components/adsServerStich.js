@@ -42,7 +42,7 @@
 
             this.bind("mediaLoaded", function(event,source) {
                 var serverHostName = _this.getConfig("playServer");
-                var getAdsUrl = serverHostName +  "/p/105/layout/playerManifest/uiConfId/23448290/entryId/0_v8y4bir3/flavorId/0_bp09oz39/sessionId/"+_this.sessionid+"/a.json"
+                var getAdsUrl = serverHostName +  "/p/"+_this.embedPlayer.kpartnerid+"/layout/playerManifest/uiConfId/"+_this.embedPlayer.kuiconfid+"/entryId/0_v8y4bir3/flavorId/0_bp09oz39/sessionId/"+_this.sessionid+"/a.json"
                 $.getJSON(getAdsUrl ,function(data){
                     if (data && data.sequences) {
                         var cues = [];
@@ -87,7 +87,7 @@
         getAdData: function(adId,offset){
             var _this = this;
             var serverHostName = _this.getConfig("playServer");
-            var getAdsUrl = serverHostName +  "/p/105/layout/playerAdBreak/adId/"+adId+"/sessionId/"+_this.sessionid+"/a.json";
+            var getAdsUrl = serverHostName +  "/p/"+_this.embedPlayer.kpartnerid+"/layout/playerAdBreak/adId/"+adId+"/sessionId/"+_this.sessionid+"/a.json";
             $.getJSON(getAdsUrl, function(data){
                 if (data && data.ads){
                     var totalInternalOffset = 0;
