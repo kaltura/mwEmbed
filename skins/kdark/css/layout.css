@@ -1993,6 +1993,19 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 .mobileSkin.player-out .videoShadow{
     opacity: 0;
 }
+
+.bubble-ad div{
+    background-color: #ffee00;
+    width: 5px;
+    height: 5px;
+    margin-bottom: -9px;
+    position: absolute;
+    text-align: center;
+    font-size: 1vw;
+    background-size: 100% 100%;
+    z-index: 999;
+    line-height: 3vw;
+}
 .overlayAdContainer{
     -webkit-transition: top 0.3s ease-in-out;
     -moz-transition: top 0.3s ease-in-out;

@@ -45,11 +45,14 @@
                 var getAdsUrl = serverHostName +  "/p/105/layout/playerManifest/uiConfId/23448290/entryId/0_v8y4bir3/flavorId/0_bp09oz39/sessionId/"+_this.sessionid+"/a.json"
                 $.getJSON(getAdsUrl ,function(data){
                     if (data && data.sequences) {
+                        var cues = [];
+
                         for ( var i = 0 ; i < data.sequences.length ; i++ ) {
                            var currentSeq = data.sequences[i];
                             if (currentSeq.adId && currentSeq.offset == 0){
                                 //preroll!!!
                                 _this.getAdData(currentSeq.adId,currentSeq.offset );
+                                cues.push(0);
                             }
                             else {
                                 if (currentSeq.adId) {
@@ -58,8 +61,21 @@
                                         sequence: currentSeq ,
                                         isDone: false
                                     } );
+                                    cues.push(currentSeq.offset);
                                 }
                             }
+                        }
+                        var scrubber = _this.embedPlayer.getInterface().find(".scrubber");
+                        scrubber.parent().prepend('<div class="bubble-ad"></div>');
+
+
+                        for (var i = 0 ;i<cues.length;i++) {
+                            var pos = Math.round((cues[i]/(_this.embedPlayer.duration * 1000)*100)) ;
+                            $('.bubble-ad').append($('<div id ="' + "key"+i + '" style="margin-left:' + pos + '%">' +
+                                ' </div>')
+                                    .addClass("")
+                            );
+
                         }
                     }
                 });
@@ -94,6 +110,8 @@
 
                     }
                 }
+
+
             });
         },
         trackAd : function(ad,offset) {
