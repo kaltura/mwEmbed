@@ -3106,6 +3106,14 @@
 			return this.live;
 		},
 
+		set360:function (is360) {
+			this.Is360 = is360;
+		},
+
+		is360: function(){
+			return this.Is360;
+		},
+
 		setDrmRequired: function (isDrm) {
 			this.drmRequired = isDrm;
 		},
