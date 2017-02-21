@@ -21,12 +21,11 @@
 		savedY: 0,
 		savedLongitude: 0,
 		savedLatitude: 0,
-		enableKeyboardShortcuts: true,
 		keyboardShortcutsMap: {
-			"left":  "65",  // 'A'
-			"up":    "87",  // 'W'
+			"left": "65",  // 'A'
+			"up": "87",  // 'W'
 			"right": "68",  // 'D'
-			"down":  "83"   // 'S'
+			"down": "83"   // 'S'
 		},
 
 		isSafeEnviornment: function () {
@@ -283,6 +282,11 @@
 			}.bind(this));
 		},
 
+		add360logo: function () {
+			var logo = $('<div />').addClass('logo360 bottomRight');
+			this.getPlayer().getVideoHolder().append(logo);
+		},
+
 		clean: function () {
 			cancelAnimationFrame(this.requestId);
 			$(this.canvas).remove();
@@ -291,6 +295,7 @@
 			this.detachMotionListeners();
 			this.remove360logo();
 			this.is360 = false;
+			this.initCameraTarget();
 		},
 
 		removeBindings: function () {
@@ -308,9 +313,13 @@
 			window.removeEventListener('devicemotion', this.onMobileOrientation.bind(this));
 		},
 
-		add360logo: function () {
-			var logo = $('<div />').addClass('logo360 bottomRight');
-			this.getPlayer().getVideoHolder().append(logo);
+		initCameraTarget: function () {
+			this.longitude = 180;
+			this.latitude = 0;
+			this.savedX = 0;
+			this.savedY = 0;
+			this.savedLongitude = 0;
+			this.savedLatitude = 0;
 		},
 
 		remove360logo: function () {
