@@ -647,8 +647,7 @@
 			}
 			elm.innerHTML = '' +
 				'<div style="position: relative; width: 100%; height: 100%;">' +
-				'<button class="kWidgetCentered kWidgetPlayBtn" ' + 'id="' + targetId + '_playBtn" >' +
-				'<span class="kWidgetAccessibilityLabel">' + 'Play video content' + '</span></button>' +
+				'<button aria-label="Play video content"  class="kWidgetCentered kWidgetPlayBtn" ' + 'id="' + targetId + '_playBtn" ></button>' +
 				'<img class="kWidgetCentered" src="' + this.getKalturaThumbUrl(settings) + '" >' +
 				'</div>';
 			// Add a click binding to do the really embed:
