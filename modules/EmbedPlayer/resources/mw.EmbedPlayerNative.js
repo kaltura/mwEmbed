@@ -128,6 +128,13 @@
                     _this.resetSrc = true;
                 }
             });
+			this.bindHelper('selectDefaultCaptionNative' + this.bindPostfix, function (e, defaultLangKey) {
+				var textTracks = _this.getPlayerElement().textTracks;
+				if (_this.isTextTrackSelected(textTracks)) {
+					return;
+				}
+				_this.showDefaultTextTrack(textTracks, defaultLangKey);
+			});
         },
 
 		removeBindings: function(){
@@ -572,6 +579,36 @@
                 return true;
             }
         },
+		/**
+		 * Check if default caption track is selected on Native player
+		 *
+		 * @param {Array}
+		 *             Text tracks array.
+		 * @returns {boolean}
+		 */
+		isTextTrackSelected: function (textTracks) {
+			for (var i=0; textTracks.length > i; i++) {
+				if (textTracks[i].mode == "showing") {
+					return true;
+				}
+			}
+			return false;
+		},
+		/**
+		 * Show default text track
+		 *
+		 * @param {Array}
+		 *            Text tracks array.
+		 * @param {String}
+		 *            Default language key
+		 */
+		showDefaultTextTrack: function (textTracks, defaultLangKey) {
+			$.each( textTracks, function( inx, caption) {
+				if (caption.language == defaultLangKey) {
+					caption.mode = "showing";
+				}
+			});
+		},
 		/**
 		 * playerSwitchSource switches the player source working around a few bugs in browsers
 		 *
