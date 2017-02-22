@@ -23,27 +23,6 @@
             }
         }
 
-        @-webkit-keyframes fill {
-            0% {
-                left: 200px;
-            }
-            20% {
-                left: 350px;
-            }
-            40% {
-                left: 500px;
-            }
-            60% {
-                left: 650px;
-            }
-            80% {
-                left: 800px;
-            }
-            100% {
-                left: 900px;
-            }
-        }
-
         video {
             height: auto;
             width: 100%;
@@ -174,25 +153,20 @@
             background-color: rgba(255, 255, 255, 0.3);
         }
 
-        .cast-progress-loading-container {
+        .cast-loading-media-msg {
+            width: 800px;
+            font-family: "proxima nova";
+            font-size: 28px;
+            font-style: normal;
+            font-stretch: normal;
+            color: #e2e2e2;
             position: absolute;
-            height: 8px;
-            opacity: 0.4;
-            background-color: #ffffff;
-            bottom: 30px;
             left: 200px;
-            width: 900px;
-        }
-
-        .cast-progress-loading-fill {
-            -webkit-animation: fill 0.7s infinite linear;
-            position: absolute;
-            height: 8px;
-            opacity: 0.4;
-            bottom: 30px;
-            left: 200px;
-            width: 200px;
-            background-color: #f8a61a;
+            bottom: 40px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            align-self: flex-end
         }
 
         .cast-media-progress-container {
@@ -352,7 +326,8 @@
         }
     </style>
     <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
-    <script src="//code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script src="//code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+            crossorigin="anonymous"></script>
     <script src="app_components/ReceiverLogger.js"></script>
     <script src="app_components/ReceiverUtils.js"></script>
     <script src="app_components/ReceiverQueueMgr.js"></script>
@@ -366,7 +341,7 @@
     <div id="kaltura_player" style=" width:98%; height: 98%; position: absolute; z-index: 1;"></div>
     <video id="initial-video-element"></video>
     <div id="logo" class="logo">
-        <div class="cast-added-removed-from-queue-msg" ></div>
+        <div class="cast-added-removed-from-queue-msg"></div>
         <div class="cast-wait-msg">Please wait...</div>
         <div id="cast-loading-spinner" class="cast-loading-spinner"></div>
         <div id="cast-gradient" class="cast-gradient"></div>
@@ -382,7 +357,7 @@
                 <div id="cast-title-next" class="cast-title"></div>
                 <div id="cast-subtitle-next" class="cast-subtitle"></div>
                 <div class="cast-separator"></div>
-                <div class="cast-up-next">Up next in ... <span id="cast-up-next-countdown"></span></div>
+                <div class="cast-up-next">Up next in... <span id="cast-up-next-countdown"></span></div>
             </div>
             <img id="cast-pause-button" src="assets/pause.png" class="cast-state" height="30" width="24">
             <div id="cast-state-button-container" class="cast-state-button-container"></div>
@@ -396,8 +371,7 @@
                 </div>
             </div>
             <div id="cast-before-play-controls">
-                <div class="cast-progress-loading-container"></div>
-                <div class="cast-progress-loading-fill"></div>
+                <div class="cast-loading-media-msg">Loading media...</div>
             </div>
         </div>
     </div>
