@@ -609,7 +609,7 @@
 		selectDefaultIosTrack: function (defaultLangKey) {
 			var _this = this;
 			this.once( 'playing', function (){
-				_this.embedPlayer.triggerHelper("selectDefaultCaptionNative", defaultLangKey);
+				_this.embedPlayer.selectDefaultCaption(defaultLangKey);
 			});
 		},
 		selectSourceByLangKey: function( langKey ){

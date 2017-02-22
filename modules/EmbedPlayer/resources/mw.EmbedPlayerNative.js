@@ -128,13 +128,6 @@
                     _this.resetSrc = true;
                 }
             });
-			this.bindHelper('selectDefaultCaptionNative' + this.bindPostfix, function (e, defaultLangKey) {
-				var textTracks = _this.getPlayerElement().textTracks;
-				if (_this.isTextTrackSelected(textTracks)) {
-					return;
-				}
-				_this.showDefaultTextTrack(textTracks, defaultLangKey);
-			});
         },
 
 		removeBindings: function(){
@@ -579,6 +572,19 @@
                 return true;
             }
         },
+		/**
+		 * Selects default caption track for native player
+		 *
+		 * @param {String}
+		 *             Default language key.
+		 */
+		selectDefaultCaption: function (defaultLangKey) {
+			var textTracks = this.getPlayerElement().textTracks;
+			if (this.isTextTrackSelected(textTracks)) {
+				return true;
+			}
+			this.showDefaultTextTrack(textTracks, defaultLangKey);
+		},
 		/**
 		 * Check if default caption track is selected on Native player
 		 *
