@@ -135,18 +135,18 @@ QueueManager.prototype = {
         var countdown = Math.round( mediaElement.duration - mediaElement.currentTime );
         if ( (countdown <= 5 && !this._isCountdownDisplayed) && (!ReceiverAdsManager || !ReceiverAdsManager.isPlayingAd()) ) {
             this._isCountdownDisplayed = true;
-            this._loadNextMediaMetadataOnScreen();
+            this._loadNextMediaMetadataOnScreen( countdown );
         }
     },
 
-    _loadNextMediaMetadataOnScreen: function () {
+    _loadNextMediaMetadataOnScreen: function ( countdown ) {
         ReceiverLogger.log( this.CLASS_NAME, "_loadNextMediaMetadataOnScreen" );
         var mediaQueue = mediaManager.getMediaQueue();
         var nextItemIndex = this._getCurrentItemIndex() + 1;
         if ( nextItemIndex < mediaQueue.getLength() ) {
             var nextItemObj = mediaQueue.getItems()[ nextItemIndex ];
             var nextItemMetadata = nextItemObj.media.metadata;
-            ReceiverUtils.loadMediaMetadata( nextItemMetadata, false ).then( function ( showPreview ) {
+            ReceiverUtils.loadMediaMetadata( nextItemMetadata, false, countdown ).then( function ( showPreview ) {
                 ReceiverStateManager.onShowNextMediaMetadata( showPreview );
             } );
         }

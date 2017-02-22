@@ -74,7 +74,7 @@ var ReceiverUtils = {
      * @param metadata
      * @param isMediaLoading
      */
-    loadMediaMetadata: function ( metadata, isMediaLoading ) {
+    loadMediaMetadata: function ( metadata, isMediaLoading, opt_countdown ) {
         ReceiverLogger.log( this.CLASS_NAME, "loadMediaMetadata", metadata );
         var deferred = $.Deferred();
         var mediaArtwork;
@@ -84,6 +84,7 @@ var ReceiverUtils = {
                 $( '#cast-subtitle' ).text( metadata.subtitle ? metadata.subtitle : '' );
                 mediaArtwork = $( '#cast-artwork' );
             } else {
+                $( '#cast-up-next-countdown' ).text( opt_countdown );
                 $( '#cast-title-next' ).text( metadata.title ? metadata.title : '' );
                 $( '#cast-subtitle-next' ).text( metadata.subtitle ? metadata.subtitle : '' );
                 mediaArtwork = $( '#cast-artwork-next' );

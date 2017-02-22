@@ -317,6 +317,7 @@ StateManager.prototype = {
      * @private
      */
     _onBuffering: function () {
+        this.clearNextMediaMetadata();
         if ( this.loadingSpinner.is( ":visible" ) ) {
             this.loadingSpinner.fadeOut();
         }
