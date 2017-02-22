@@ -1670,6 +1670,7 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 .watermark {
 	position: absolute;
 	padding: 5px;
+	z-index: 2;
 }
 .mobileSkin:not(.pluginsScreenOpened) .watermark {
     z-index: 2;
