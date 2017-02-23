@@ -87,6 +87,9 @@
 	},
 	"dualScreen": {
 		"scripts": [
+			"components/dualScreen/nativePlayer.js",
+			"components/dualScreen/flashPlayer.js",
+			"components/dualScreen/streamUtils.js",
 			"components/dualScreen/dualScreen.js",
 			"components/dualScreen/dualScreenControlBar.js",
 			"components/dualScreen/displays.js",
@@ -97,7 +100,8 @@
 			"components/dualScreen/videoSync.js",
 			"components/dualScreen/fsm.js",
 			"components/dualScreen/dualScreenStatesConfig.js",
-			"resources/webcast/cuePointsManager.js"
+			"resources/webcast/cuePointsManager.js",
+			"components/streamSelectorUtils.js"
 		],
 		"styles": [
 			"components/dualScreen/dualScreen.css",
@@ -109,7 +113,8 @@
 		"dependencies": [
 			"mw.KBaseComponent",
 			"jquery.ui.draggable",
-			"jquery.ui.resizable"
+			"jquery.ui.resizable",
+			"jquery.ui.droppable"
 		],
 		"kalturaPluginName": "dualScreen"
 	},

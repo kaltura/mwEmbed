@@ -20,7 +20,7 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '2.52';
+$wgMwEmbedVersion = '2.53.rc3';
 
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {
@@ -161,7 +161,7 @@ if( $wgHTTPProtocol == 'https' ){
 // Default Kaltura Stats url
 $wgKalturaStatsServiceUrl = 'http://stats.kaltura.com';
 if( $wgHTTPProtocol == 'https' ){
-	$wgKalturaStatsServiceUrl = 'https://www.kaltura.com';
+	$wgKalturaStatsServiceUrl = 'https://stats.kaltura.com';
 }
 
 // Default Kaltura service url:

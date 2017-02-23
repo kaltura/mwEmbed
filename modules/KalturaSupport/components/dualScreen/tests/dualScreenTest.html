@@ -17,20 +17,36 @@
         'targetId': 'kaltura_player',
         'wid': '_959472',
         'uiconf_id' : '29714821',
-        //'entry_id': "0_peh6469l", //2 videos
-        'entry_id': "0_fxjdiwsm", //PPT + 2 videos
+//        'entry_id': "0_9mbggu9e", //PPT + video
+        'entry_id': "0_peh6469l", //2 videos
+//        'entry_id': "0_fxjdiwsm", //PPT + 2 videos
         'flashvars': {
-            "EmbedPlayer.SpinnerTarget": "videoHolder",
+
+            //default streamertype = http (HTML5 video progressive download)
+
+            'LeadWithHLSOnFlash': true, //flash/native HLS
+            //'EmbedPlayer.ForceKPlayer': true, // kplayer mp4 (flash progressive download)
+            //streamerType: "auto", //hds
+            //streamerType: "rtmp", //hds
+            //streamerType: "hdnetworkmanifest", //hds
+            //streamerType: "hdnetwork", //hds
+            //streamerType: "http", //HTML5 video progressive download
+
             "chapters": {
                 plugin: true
             },
             "sideBarContainer": {
-                "clickToClose": true
+              "clickToClose": true
             },
             "dualScreen": {
                 plugin: true
             },
-            //"streamSelector.plugin" : true,
+            //"streamSelector": {
+            //    plugin: true
+            //},
+            "sourceSelector": {
+                plugin: true
+            },
             "infoScreen": {
                 plugin: true,
                 parent: "controlsContainer",
