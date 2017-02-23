@@ -96,14 +96,15 @@
 		setup: function (readyCallback) {
 			var _this = this;
 			this._propagateEvents = true;
-			if (mw.isIpad()) {
+			if (mw.isIpad() || mw.isEdge()) {
 				this.getPlayerElement().removeAttribute("poster");
 			}
 			$(this.getPlayerElement()).css('position', 'absolute');
 			if (this.inline) {
 				$(this.getPlayerElement()).attr('playsinline', '');
 			}
-			readyCallback();
+            this.addBindings();
+            readyCallback();
 
 			// disable network errors on unload:
 			$(window).unload(function () {
@@ -113,7 +114,6 @@
 					_this.layoutBuilder.closeAlert();
 				}
 			});
-            this.addBindings();
 		},
         addBindings: function(){
             var _this = this;
@@ -590,7 +590,7 @@
 			this.isPauseLoading = false;
 
 			// Make sure the switch source is different:
-			if (!src || src == vid.src) {
+			if (!src || (src == vid.src && !this.changeMediaStarted)) {
 				if ($.isFunction(switchCallback)) {
 					switchCallback(vid);
 				}
