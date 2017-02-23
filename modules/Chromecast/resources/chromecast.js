@@ -69,27 +69,11 @@
 			this.isNativeSDK  = mw.getConfig( "EmbedPlayer.ForceNativeComponent");
 
 			if (!this.isNativeSDK) {
-				var loadScriptInFrame = function(){
-					kWidget.appendScriptUrl("https://www.gstatic.com/cv/js/sender/v1/cast_sender.js", function(){
-						_this.chromeLib = window.chrome;
-					});
-				}
-				if (mw.getConfig('EmbedPlayer.IsFriendlyIframe')){
-					try{
-						kWidget.appendScriptUrl("https://www.gstatic.com/cv/js/sender/v1/cast_sender.js", function(){
-							try{
-								_this.chromeLib = window.top.chrome;
-							}catch(e){
-								loadScriptInFrame();
-							}
-						}, top.document);
-					}catch(e){
-						loadScriptInFrame();
-					}
-				}else{
-					loadScriptInFrame();
-				}
-
+                var sender_script = document.createElement("script");
+                sender_script.type = "text/javascript";
+                sender_script.src = "https://www.gstatic.com/cv/js/sender/v1/cast_sender.js";
+                $("head").append(sender_script);
+                _this.chromeLib = window.chrome;
 				var ticks = 0;
 				var intervalID = setInterval(function () {
 					ticks++;
