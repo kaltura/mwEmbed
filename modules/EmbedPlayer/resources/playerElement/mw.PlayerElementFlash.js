@@ -168,11 +168,15 @@
 			this.sendNotification( 'changeVolume', volume );
 		},
         sendNotification: function ( noteName, value ) {
+        	var _this = this;
             if ( this.disabled ){
                 return false;
             }
             if ( this.playerElement ) {
-                this.playerElement.sendNotification( noteName, value ) ;
+            	setTimeout(function(){
+            		                _this.playerElement.sendNotification( noteName, value ) ;
+
+            	},100);
             }else{
                 $( this ).bind('playerJsReady', function(){
                     if ( !this.disabled ){
