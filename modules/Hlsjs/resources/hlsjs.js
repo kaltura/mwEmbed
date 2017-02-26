@@ -337,7 +337,9 @@
 							this.hls.audioTrack = this.getPlayer().audioTrack.defaultTrack;
 						}.bind(this), 0);
 					}
-					this.getPlayer().triggerHelper('audioTracksReceived', audioTrackData);
+					setTimeout(function(){
+						this.getPlayer().triggerHelper('audioTracksReceived', audioTrackData);
+					}.bind(this), 0);
 				}
 			},
 			/**
