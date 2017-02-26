@@ -12,6 +12,7 @@
 			"showTooltip": true,
 			"labelWidthPercentage": 33,
 			"defaultStream": -1, // -1 is auto
+			"defaultLang": "", // If non empty should conform to RFC-693
 			"enableKeyboardShortcuts": true,
 			"smartContainer": "qualitySettings",
 			'smartContainerCloseEvent': 'switchAudioTrack',
@@ -114,7 +115,21 @@
 			return this.streams[this.getCurrentStreamIndex()];
 		},
 		getDefaultStream: function () {
-			return this.streams[(this.getConfig('defaultStream'))];
+			var defaultLangName = this.getConfig("defaultLang");
+			var defaultLangIndex = this.getConfig('defaultStream');
+			if (defaultLangName) {
+				var defaultStreams = $.grep(this.streams, function (lang, index) {
+					return lang.language === defaultLangName;
+				});
+				if (defaultStreams.length > 0) {
+					this.log("found default language by key: " + defaultStreams[0].language);
+					return defaultStreams[0];
+				}
+				this.log("warn - language key "+ defaultLangName +" not found, get default language by index: " + this.streams[defaultLangIndex].language);
+				return this.streams[defaultLangIndex];
+			}
+			this.log("found default language by index: " + this.streams[defaultLangIndex].language);
+			return this.streams[defaultLangIndex];
 		},
 		getCurrentStreamIndex: function () {
 			var _this = this;
