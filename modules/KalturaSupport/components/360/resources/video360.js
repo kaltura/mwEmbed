@@ -6,7 +6,7 @@
 		defaultConfig: {
 			moveMultiplier: 0.3,
 			mobileVibrationValue: (mw.isIOS() ? 0.0365 : 1),
-			cameraOptions:{
+			cameraOptions: {
 				fov: 75,
 				aspect: window.innerWidth / window.innerHeight,
 				near: 0.1,
@@ -14,33 +14,52 @@
 			}
 		},
 		manualControl: false,
+		is360: false,
 		longitude: 180,
 		latitude: 0,
 		savedX: 0,
 		savedY: 0,
 		savedLongitude: 0,
 		savedLatitude: 0,
-		enableKeyboardShortcuts: true,
 		keyboardShortcutsMap: {
-			"left":  "65",  // 'A'
-			"up":    "87",  // 'W'
+			"left": "65",  // 'A'
+			"up": "87",  // 'W'
 			"right": "68",  // 'D'
-			"down":  "83"   // 'S'
+			"down": "83"   // 'S'
 		},
 
 		isSafeEnviornment: function () {
 			return !( mw.isIE8() || mw.isIE9() || mw.isIE10Comp() || // old IEs
-				(mw.isIE11() && (mw.getUserOS() === 'Windows 7' || mw.getUserOS() === 'Windows 8')) || // ie11 on win7/8
-				(mw.isIphone() && mw.isIOSBelow10()) || // iPhone and IOS < 10 - doesn't support inline playback
-				mw.isIOSBelow9() ); // IOS < 9 doesn't support webgl
+			(mw.isIE11() && (mw.getUserOS() === 'Windows 7' || mw.getUserOS() === 'Windows 8')) || // ie11 on win7/8
+			(mw.isIphone() && mw.isIOSBelow10()) || // iPhone and IOS < 10 - doesn't support inline playback
+			mw.isIOSBelow9() ); // IOS < 9 doesn't support webgl
 		},
 
 		setup: function () {
 			this.set360Config();
-			this.addBindings();
+			this.bind("playerReady", function () {
+				if (this.getPlayer().is360()) {
+					this.is360 = true;
+					this.addBindings();
+					this.moveMultiplier = this.getConfig("moveMultiplier");
+					this.mobileVibrationValue = this.getConfig("mobileVibrationValue");
+					this.video = this.getPlayer().getPlayerElement();
+					this.video.setAttribute('crossorigin', 'anonymous');
+					if (mw.isIE11()) {
+						// a workaround for ie11 texture issue
+						// see https://github.com/mrdoob/three.js/issues/7560
+						this.overrideVideoTextureMethod();
+					}
+					this.initComponents();
+				}
+			}.bind(this));
+
+			this.bind('addKeyBindCallback', function (e, addKeyCallback) {
+				this.addKeyboardShortcuts(addKeyCallback);
+			}.bind(this));
 		},
 
-		set360Config:function(){
+		set360Config: function () {
 			//Get user configuration
 			var userCameraOptions = this.getConfig("cameraOptions");
 			//Deep extend custom config
@@ -48,22 +67,9 @@
 		},
 
 		addBindings: function () {
-			this.bind("playerReady", function () {
-				this.moveMultiplier = this.getConfig("moveMultiplier");
-				this.mobileVibrationValue = this.getConfig("mobileVibrationValue");
-				this.video = this.getPlayer().getPlayerElement();
-				this.video.setAttribute('crossorigin', 'anonymous');
-				if (mw.isIE11()) {
-					// a workaround for ie11 texture issue
-					// see https://github.com/mrdoob/three.js/issues/7560
-					this.overrideVideoTextureMethod();
-				}
-				this.initComponents();
-			}.bind(this));
-
 			this.bind("firstPlay", function () {
 				this.attachMotionListeners();
-				this.getPlayer().layoutBuilder.removePlayerClickBindings();
+				$(this.canvas).css('z-index', '2');
 				this.add360logo();
 			}.bind(this));
 
@@ -84,14 +90,10 @@
 			}.bind(this));
 
 			this.bind("updateLayout", function () {
-				if(this.renderer){
+				if (this.renderer) {
 					var canvasSize = this.getCanvasSize();
 					this.renderer.setSize(canvasSize.width, canvasSize.height);
 				}
-			}.bind(this));
-
-			this.bind('addKeyBindCallback', function (e, addKeyCallback) {
-				this.addKeyboardShortcuts(addKeyCallback);
 			}.bind(this));
 		},
 
@@ -101,7 +103,6 @@
 			this.canvas = this.renderer.domElement;
 			this.getPlayer().getVideoDisplay().append(this.canvas);
 			$(this.canvas).addClass("canvas360");
-			$(this.canvas).css('z-index', '2');
 
 			// creating a new scene
 			this.scene = new THREE.Scene();
@@ -156,12 +157,12 @@
 			THREE.VideoTexture.prototype.constructor = THREE.VideoTexture;
 		},
 
-		getCanvasSize: function(){
+		getCanvasSize: function () {
 			var videoDisplayWidth = this.getPlayer().getVideoDisplay().width();
 			var videoDisplayHeight = this.getPlayer().getVideoDisplay().height();
 			var pWidth = parseInt(this.video.videoWidth / this.video.videoHeight * videoDisplayHeight);
 			var videoRatio;
-			if(videoDisplayWidth < pWidth) {
+			if (videoDisplayWidth < pWidth) {
 				videoRatio = this.video.videoHeight / this.video.videoWidth;
 				return {
 					width: videoDisplayWidth,
@@ -206,7 +207,7 @@
 			this.savedY = event.clientY || event.originalEvent.touches[0].pageY;
 			this.savedLongitude = this.longitude;
 			this.savedLatitude = this.latitude;
-			if( event.type === "touchstart" ) {
+			if (event.type === "touchstart") {
 				$("#touchOverlay").trigger("touchstart");
 			}
 		},
@@ -260,27 +261,69 @@
 
 		addKeyboardShortcuts: function (addKeyCallback) {
 			addKeyCallback(this.keyboardShortcutsMap.left, function () {
-				this.longitude -= 10 * this.moveMultiplier;
+				if (this.is360) {
+					this.longitude -= 10 * this.moveMultiplier;
+				}
 			}.bind(this));
 			addKeyCallback(this.keyboardShortcutsMap.up, function () {
-				this.latitude += 10 * this.moveMultiplier;
+				if (this.is360) {
+					this.latitude += 10 * this.moveMultiplier;
+				}
 			}.bind(this));
 			addKeyCallback(this.keyboardShortcutsMap.right, function () {
-				this.longitude += 10 * this.moveMultiplier;
+				if (this.is360) {
+					this.longitude += 10 * this.moveMultiplier;
+				}
 			}.bind(this));
 			addKeyCallback(this.keyboardShortcutsMap.down, function () {
-				this.latitude -= 10 * this.moveMultiplier;
+				if (this.is360) {
+					this.latitude -= 10 * this.moveMultiplier;
+				}
 			}.bind(this));
-		},
-
-		clean: function(){
-			cancelAnimationFrame(this.requestId);
-			$(this.canvas).remove();
 		},
 
 		add360logo: function () {
 			var logo = $('<div />').addClass('logo360 bottomRight');
 			this.getPlayer().getVideoHolder().append(logo);
+		},
+
+		clean: function () {
+			cancelAnimationFrame(this.requestId);
+			$(this.canvas).remove();
+			$(this.getPlayer()).css('z-index', 0);
+			this.removeBindings();
+			this.detachMotionListeners();
+			this.remove360logo();
+			this.is360 = false;
+			this.initCameraTarget();
+		},
+
+		removeBindings: function () {
+			this.unbind("firstPlay");
+			this.unbind("playing");
+			this.unbind("doStop");
+			this.unbind("onChangeMedia");
+			this.unbind("updateLayout");
+		},
+
+		detachMotionListeners: function () {
+			$(this.canvas).off("mousedown touchstart");
+			$(this.canvas).off("mousemove touchmove");
+			$(document).off("mouseup touchend", this.onDocumentMouseUp.bind(this));
+			window.removeEventListener('devicemotion', this.onMobileOrientation.bind(this));
+		},
+
+		initCameraTarget: function () {
+			this.longitude = 180;
+			this.latitude = 0;
+			this.savedX = 0;
+			this.savedY = 0;
+			this.savedLongitude = 0;
+			this.savedLatitude = 0;
+		},
+
+		remove360logo: function () {
+			$.find('.logo360')[0].remove();
 		}
 	}));
 
