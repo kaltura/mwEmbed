@@ -12,7 +12,7 @@
 			"showTooltip": true,
 			"labelWidthPercentage": 33,
 			"defaultStream": -1, // -1 is auto
-			"defaultLang": "", // If non empty should conform to RFC-693
+			"defaultLang": "", // If non empty should conform to RFC-693 or RFC-5646
 			"enableKeyboardShortcuts": true,
 			"smartContainer": "qualitySettings",
 			'smartContainerCloseEvent': 'switchAudioTrack',
@@ -119,7 +119,13 @@
 			var defaultLangIndex = this.getConfig('defaultStream');
 			if (defaultLangName) {
 				var defaultStreams = $.grep(this.streams, function (lang, index) {
-					return lang.language === defaultLangName;
+					//Support both language and label field
+					if (lang && (lang.language || lang.label)) {
+						var language = lang.language || lang.label;
+						//Check that string start matches as we don't actually support RFC-693
+						return language.toLowerCase().indexOf(defaultLangName.toLowerCase()) === 0;
+					}
+					return false;
 				});
 				if (defaultStreams.length > 0) {
 					this.log("found default language by key: " + defaultStreams[0].language);
