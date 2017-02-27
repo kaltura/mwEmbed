@@ -4,6 +4,7 @@
 (function (mw, $) {
     "use strict";
     mw.KIVQScreenTemplate = function (embedPlayer) {
+        $(".videoHolder").attr("aria-live", "polite");
         return this.init(embedPlayer);
     };
     if (!(mw.KIVQScreenTemplate.prototype = {
@@ -16,7 +17,7 @@
             },
             tmplWelcome:function(){
                 var _this = this;
-                $(".icon-close").css("display", "none");
+                $(".icontmplWelcome-close").css("display", "none");
                 $(_this.emptyScreen()).hide().append(
                     '<div class="ivqContainer">' +
                     '<div class="welcome"></div>' +
@@ -24,7 +25,7 @@
                     '<div class="welcomeMessage"></div>' +
                     '<div class="InvideoTipMessage"></div>' +
                     '<div class="bottomContainer padding10">' +
-                        '<div class="confirm-box"></div>' +
+                        '<div class="confirm-box" role="button" title="to take the quiz"></div>' +
                     '</div>' +
                     '</div>').fadeIn( "fast" );
             },
@@ -106,8 +107,8 @@
                     '   <div class="title-text padding20"></div>'+
                     '   <div class="sub-text margin-top4"></div>'+
                     '   <div class="completed-BottonContainer">'+
-                    '       <div class="review-button button-box-attr font-Lato2"></div>'+
-                    '       <div class="submit-button button-box-attr font-Lato2"></div>'+
+                    '       <div class="review-button button-box-attr font-Lato2" tabindex="5" role="button" title="review your answers"></div>'+
+                    '       <div class="submit-button button-box-attr font-Lato2" tabindex="5" role="button" title="Submit your answers"></div>'+
                     '   </div>'+
                     '</div>').fadeIn( "fast" );
             },
