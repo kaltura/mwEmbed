@@ -1073,6 +1073,9 @@ body {
     letter-spacing: 0;
     border-radius: 10px;
 }
+.mobileSkin.size-tiny .alert-container{
+    padding-top: 10px;
+}
 .alert {
 	display: table-cell;
 	width: 100%;
@@ -1091,9 +1094,15 @@ body {
     background-color: transparent;
     border: 0px solid black;
 }
+.mobileSkin.size-tiny .alert-title {
+    font-size: 14px !important;
+}
 .mobileSkin .alert-message {
     font-size: 18px !important;
     font-weight: bold !important;
+}
+.mobileSkin.size-tiny .alert-message {
+    font-size: 11px !important;
 }
 .mobileSkin .alert-buttons-container {
     padding-bottom: 0px !important;
