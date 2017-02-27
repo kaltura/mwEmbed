@@ -2538,4 +2538,4 @@
 	window.KWidget = kWidget;
 	window.kWidget = kWidget;
 
-})(jQuery);
+})(window.jQuery);
