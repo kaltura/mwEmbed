@@ -145,7 +145,7 @@
             var playbackParams = this.getEmbedPlayerPlaybackParams();
             this.casting = true;
             this.embedPlayer.casting = true;
-            $( this.embedPlayer ).trigger( 'casting' );
+            $( this.embedPlayer ).trigger( 'casting', true );
             this.savedPlayer = this.embedPlayer.selectedPlayer;
             this.embedPlayer.clean();
             this.embedPlayer.selectPlayer( mw.EmbedTypes.mediaPlayers.getPlayerById( 'chromecast' ) );
@@ -181,6 +181,7 @@
             var seekTo = this.embedPlayer.currentTime;
             var stopAfterSeek = (this.embedPlayer.currentState === "pause");
             this.casting = false;
+            $( this.embedPlayer ).trigger( 'casting', false );
             this.embedPlayer.shutdownRemotePlayer();
             this.getComponent().css( "color", "white" );
             this.updateTooltip( this.startCastTitle );
