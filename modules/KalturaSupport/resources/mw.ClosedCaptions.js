@@ -565,7 +565,7 @@
 				if( defaultLangKey == 'None' ){
 					return ;
 				}
-				if ( mw.isIOS() ) {
+				if ( mw.isIOS() && !mw.isIpad()) {
 					this.selectDefaultIosTrack(defaultLangKey);
 					return ;
 				}
@@ -580,7 +580,7 @@
             // Get source by "default" property
             if ( !this.selectedSource ) {
                 source = this.selectDefaultSource();
-                if ( source && mw.isIOS() ) {
+                if ( source && mw.isIOS() && !mw.isIpad() ) {
 					this.selectDefaultIosTrack(source.srclang);
 					return ;
                 }
