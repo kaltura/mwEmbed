@@ -1141,6 +1141,9 @@
 		sendNotification: function( embedPlayer, notificationName, notificationData ){
 			mw.log('KDPMapping:: sendNotification > '+ notificationName,  notificationData );
 			switch( notificationName ){
+				case 'switchSrc':
+                    embedPlayer.switchSrc( notificationData );
+					break;
 				case 'showSpinner': 
 					embedPlayer.addPlayerSpinner();
 					break;

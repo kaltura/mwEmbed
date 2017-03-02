@@ -1,0 +1,14 @@
+@startuml
+User -> Sender: cast
+Sender -> ReceiverApp: sessionRequest()
+ReceiverApp-> ReceiverApp: initReceiver()
+ReceiverApp-> ReceiverApp: showLogo()
+ReceiverApp --> Sender: session
+Sender-> ReceiverApp: session.loadMedia(req)
+ReceiverApp->ReceiverApp: onLoad(req)
+ReceiverApp -> RemotePlayer: embed (req.data.customData.embedConfig)
+RemotePlayer -> ReceiverApp: getMediaInfo()
+ReceiverApp --> RemotePlayer: mediaInfo
+RemotePlayer -> RemotePlayer: loadMedia(mediaInfo)
+RemotePlayer --> Sender: play
+@enduml

@@ -165,6 +165,10 @@
                 })
             }
 
+            this.bind('casting',function (  ) {
+                _this.getPlayer().getInterface().find( '.track' ).remove();
+            });
+
 			this.bind( 'onplay', function(){
 				_this.playbackStarted = true;
 				_this.getMenu().close();
@@ -1065,7 +1069,7 @@
                         _this.setConfig('displayCaptions', false);
                     } else {
                         _this.setTextSource(src);
-                        _this.embedPlayer.triggerHelper("selectClosedCaptions", src.label);
+                        _this.embedPlayer.triggerHelper( "selectClosedCaptions", [ src.label, src.srclang ] );
                         _this.getActiveCaption();
                     }
                 },
@@ -1111,12 +1115,14 @@
 					.css( this.getDefaultStyle() )
 					.html( $('<div />')
 						.text( gM('mwe-timedtext-loading-text') ) );
-				source.load(function(){
-					_this.getPlayer().triggerHelper('newClosedCaptionsData' , _this.selectedSource);
-					if( _this.playbackStarted ){
-						_this.monitor();
-					}
-				});
+				if (!this.embedPlayer.casting) {
+                    source.load( function () {
+                        _this.getPlayer().triggerHelper( 'newClosedCaptionsData', _this.selectedSource );
+                        if ( _this.playbackStarted ) {
+                            _this.monitor();
+                        }
+                    } );
+                }
 			}
 
 			this.selectedSource = source;
