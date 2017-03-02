@@ -314,7 +314,6 @@
 		},
 		hideCaptions: function(){
 			if( !this.getConfig('displayCaptions') || this.textSources.length === 0 ) {
-				this.getMenu().clearActive();
 				if (this.getConfig('showOffButton')){
 						this.getMenu().$el.find('.offBtn').addClass('active');
 				}
@@ -327,7 +326,6 @@
 		},
 		showCaptions: function(){
 			if( this.getConfig('displayCaptions') ) {
-				this.getMenu().clearActive();
 				this.getCaptionsOverlay().show();
 				if( this.selectedSource != null ) {
 					this.getPlayer().triggerHelper('closedCaptionsDisplayed', {language: this.selectedSource.label});
