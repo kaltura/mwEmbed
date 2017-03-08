@@ -110,6 +110,15 @@
                     if (mw.getConfig("hlsLiveSegmentBuffer")) {
                         hlsPluginConfiguration["liveSegmentBuffer"] = mw.getConfig("hlsLiveSegmentBuffer");
                     }
+                    if (mw.getConfig("hlsMaxReliabilityRecordSize")) {
+                        hlsPluginConfiguration["maxReliabilityRecordSize"] = mw.getConfig("hlsMaxReliabilityRecordSize");
+                    }
+                    if (mw.getConfig("hlsMaxDownSwitchLimit")) {
+                        hlsPluginConfiguration["maxDownSwitchLimit"] = mw.getConfig("hlsMaxDownSwitchLimit");
+                    }
+                    if (mw.getConfig("hlsMaxUpSwitchLimit")) {
+                        hlsPluginConfiguration["maxUpSwitchLimit"] = mw.getConfig("hlsMaxUpSwitchLimit");
+                    }
                     if (mw.getConfig("hlsInitialBufferTime")) {
                         hlsPluginConfiguration["initialBufferTime"] = mw.getConfig("hlsInitialBufferTime");
                     }
