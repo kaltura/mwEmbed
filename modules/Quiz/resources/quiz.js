@@ -295,7 +295,7 @@
 
             $(".title-text").html(gM('mwe-quiz-almostDone'));
             $(".sub-text").html(gM('mwe-quiz-remainUnAnswered') + '</br>' + gM('mwe-quiz-pressRelevatToAnswer'))
-            $(".confirm-box").html(gM('mwe-quiz-okGotIt'))
+            $(".confirm-box").html(gM('mwe-quiz-okGotIt'));
 
             $(document).off('click','.confirm-box')
                 .on('click', '.confirm-box', function () {
@@ -433,13 +433,15 @@
                         .on('click', '.q-box', function () {
                             _this.KIVQScreenTemplate.tmplReviewAnswer();
                             _this.ssReviewAnswer(parseInt($(this).attr('id')));
-                        }).attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer');
+                        });
                     $(document).off('click','.q-box-false')
                         .on('click', '.q-box-false', function () {
                             _this.KIVQScreenTemplate.tmplReviewAnswer();
                             _this.ssReviewAnswer(parseInt($(this).attr('id')));
-                        }).attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer');
+                        });
                 }
+                $('.q-box').attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer').on('keydown', _this.keyDownHandler);
+                $('.q-box-false').attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer').on('keydown', _this.keyDownHandler);
             }else{
                 $(".title-text").addClass("padding23");
                 $(".sub-text").html(gM('mwe-quiz-completedQuiz'));
@@ -466,7 +468,7 @@
                         mw.log("Quiz: Playlist Auto Continue After Submitted");
                         _this.embedPlayer.setKDPAttribute('playlistAPI','autoContinue',true);
                     }
-                }).attr('tabindex', '5').attr('role', 'button').attr('title', 'Quiz is done. Click to continue watching the video.');
+                }).attr('tabindex', '5').attr('role', 'button').attr('title', 'Quiz is done. Click to continue watching the video.').focus().on('keydown', _this.keyDownHandler);
         },
         ssReviewAnswer: function (selectedQuestion) {
             var _this = this;
@@ -496,7 +498,7 @@
             });
             $('.gotItBox').html(gM('mwe-quiz-gotIt')).bind('click', function () {
                 _this.ssSubmitted(_this.KIVQModule.score);
-            });
+            }).attr('role', 'button').attr('tabindex', '5').focus().on('keydown', _this.keyDownHandler);
         },
         showSelectedQuestion:function(questionNr){
             var _this = this;
