@@ -29,7 +29,7 @@
         var deferred = $.Deferred();
 
         var _this=this;
-        var options = {forceNew: true, transports: [ 'websocket' ]};
+        var options = {};
         this.socket = io.connect(url,options);
 
         this.socket.on('validated', function(){
