@@ -316,7 +316,7 @@
                         .on('click', function () {
                             _this.ssSetCurrentQuestion(questionNr,true);
                         }).on('keydown', _this.keyDownHandler).attr('role', 'button').attr('tabindex', 5)
-                          .attr('title', 'Hint - '+$.cpObject.cpArray[questionNr].hintText+'. Click to close hint').focus().attr('id', 'hint-close-button');
+                          .attr('title', 'Hint - '+$.cpObject.cpArray[questionNr].hintText+'. Click to close hint').focus().attr('id', 'hint-close-button').css('outline', 'none');
                     // verify focus in IE
                     document.getElementById('hint-close-button').focus();
                     $(".hint-container").append($.cpObject.cpArray[questionNr].hintText);
