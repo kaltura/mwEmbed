@@ -60,15 +60,17 @@
 						$( '<option />' ).attr( 'value', 3 ).text( _this.getConfig( 'reasonHarmful' ) ),
 						$( '<option />' ).attr( 'value', 4 ).text( _this.getConfig( 'reasonSpam' ) )
 					)
-					.css({'width': '100%', 'height': '26px', 'margin-top': '10px'})),
+					.css({'width': '100%', 'height': '26px', 'margin': '10px 0 10px 0'})),
+				$( '<label for="flagComments">'+ gM("ks-MODERATION-PLACEHOLDER" ) +'</label>' ),
 				$( '<textarea />' )
 					.attr( 'id', 'flagComments' )
-					.attr( 'placeholder', gM("ks-MODERATION-PLACEHOLDER" ))
 					.css({'width': '100%', 'height': '40px', 'margin-top': '10px'}),
 				$('<div/>' ).append(
 					$( '<div />' )
 					.addClass( 'reportButton right' )
-					.text( gM("ks-MODERATION-SUBMIT") )
+					.text( gM("ks-MODERATION-SUBMIT-BTN") )
+					.attr( 'tabindex',0 )
+					.attr( 'role', 'button')
 					.click(function() {
 						_this.submitFlag({
 							'flagType': $( '#flagType' ).val(),
@@ -146,14 +148,16 @@
 		getComponent: function(){
 			var _this = this;
 			if( !this.$el ){
+				var tooltipLabel = this.getConfig('tooltip');
 				this.$el = $( '<button />' )
 								.addClass( 'btn icon-flag' + this.getCssClass() )
 								.attr({
-									'title': this.getConfig('tooltip')
+									'title': tooltipLabel
 								})
 								.click( function(){
 									_this.drawModal();
 								});
+				this.setAccessibility(this.$el, tooltipLabel);
 			}
 			return this.$el;
 		}

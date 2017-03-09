@@ -70,7 +70,9 @@
                     if (dragDropEnabled) {
                         $stream.draggable({
                             revert: true,
-                            helper: 'clone',
+                            helper: function (event) {
+                                return $(this).clone().css('position', 'absolute').get(0);
+                            },
                             containment: '.videoHolder',
                             start: function (event, ui) {
                                 $(ui.helper).addClass('ds-stream--helper');

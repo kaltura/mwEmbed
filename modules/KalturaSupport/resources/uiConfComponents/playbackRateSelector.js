@@ -17,6 +17,7 @@
 			'smartContainerCloseEvent': 'updatedPlaybackRate'
 		},
 
+		playbackSpeedAccessibility: gM('mwe-embedplayer-speed-accessibility'),
 		isDisabled: false,
 		currentSpeed: 1,
 		manifestSource: null,
@@ -165,7 +166,8 @@
 					'callback': function(){
 						_this.setSpeed( speedFloat );
 					},
-					'active': active
+					'active': active,
+					'accessibility': speedFloat + " " + _this.playbackSpeedAccessibility
 				});
 				if (_this.embedPlayer.isMobileSkin() && active){
 					_this.getMenu().setActive(idx);

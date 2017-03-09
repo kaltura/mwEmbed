@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chromecast Custom Receiver</title>
+    <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+    <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+    <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+    <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+    <script>mw.setConfig( 'forceMobileHTML5', true );</script>
+</head>
+<body>
+<h1>Chromecast with Custom Receiver Config</h1>
+<div id="kaltura_player" style="width: 460px; height: 260px;float: left;"></div>
+<br style="clear: both;"/><br/>
+<script>
+    kWidget.featureConfig( {
+        'targetId': 'kaltura_player',
+        'wid': '_243342',
+        'uiconf_id': '21099702',
+        'flashvars': {
+            'chromecast': {
+                'plugin': true,
+//                'applicationID': '0307E6ED', // Google sample receiver
+//                'applicationID': '61EB4CBF', // PlayKit receiver
+                'applicationID': 'ED4BE7BD', // Dan receiver
+                'debugKalturaPlayer': false,
+                'receiverConfig': {
+                    'spinnerFillColor': '#962095', // Default: '#59BAF3'
+                    'progressFillColor': '#2b9528', // Default: '#F8A61A'
+                    'titleFont': "proxima nova", // Default: "proxima nova"
+                    'titleSize': 56, // Default: 52 (Pixels)
+                    'subtitleFont': "proxima nova", // Default: "proxima nova"
+                    'subtitleSize': 36, // Default: 32 (Pixels)
+                    'switchingAudioTracksMsg': "Switching audio tracks for you!", // Default: "Please wait..." (The message that displays while switching audio tracks)
+                    'switchingAudioTracksMsgColor': '#f30007', // Default : '#59BAF3'
+                    'fadeOutPauseTime': 10, // Default: 5 (Seconds – The time that takes the media artwork disappear in case of pause media during playback)
+                    'launchingTimeout': 10, // Default: 5 (Minutes – The time until the receiver is shutdown when he’s in launching state)
+                    'loadingTimeout': 2, // Default: 5 (Minutes – The time until the receiver is shutdown when he’s in loading state)
+                    'pausedTimeout': 30, // Default: 20 (Minutes – The time until the receiver is shutdown when he’s in pause state)
+                    'idleTimeout': 30, // Default: 5 (Minutes – The time until the receiver is shutdown when he’s in idle state)
+                    'upNextPopupTime': 5 // Default: 15 (Seconds - The time the a pop up about the next media in queue will shown)
+                }
+            }
+        },
+        "entry_id": "0_l1v5vzh3"
+    } );
+</script>
+<br>
+
+Sample embed receiver config code:
+<pre class="prettyprint linenums">
+kWidget.embed({
+    'targetId': 'kaltura_player',
+    'wid': '_243342',
+    'uiconf_id' : '21099702',
+    'entry_id' : '0_l1v5vzh3',
+    'flashvars': {
+          'chromecast': {
+                'plugin': true,
+                'applicationID': 'ED4BE7BD',
+                'debugKalturaPlayer': false,
+                'receiverConfig': {
+                    'spinnerFillColor': string, // Default: '#59BAF3'
+                    'progressFillColor': string, // Default: '#F8A61A'
+                    'titleFont': string, // Default: "proxima nova"
+                    'titleSize': integer, // Default: 52 (Pixels)
+                    'subtitleFont': string, // Default: "proxima nova"
+                    'subtitleSize': integer, // Default: 32 (Pixels)
+                    'switchingAudioTracksMsg': string, // Default: "Please wait..." (The message that displays while switching audio tracks)
+                    'switchingAudioTracksMsgColor': string, // Default : '#59BAF3'
+                    'fadeOutPauseTime': integer, // Default: 5 (Seconds – The time that takes the media artwork disappear in case of pause media during playback)
+                    'launchingTimeout': integer, // Default: 5 (Minutes – The time until the receiver is shutdown when he’s in launching state)
+                    'loadingTimeout': integer, // Default: 5 (Minutes – The time until the receiver is shutdown when he’s in loading state)
+                    'pausedTimeout': integer, // Default: 20 (Minutes – The time until the receiver is shutdown when he’s in pause state)
+                    'idleTimeout': integer // Default: 5 (Minutes – The time until the receiver is shutdown when he’s in idle state)
+               }
+           }
+       },
+    });
+
+    Note:
+    other supporting parameters that must be passed via the receiver URL are:
+    * logoUrl - path to the logo url file
+    * backgroundColor - background color of the idle screen
+    * debugReceiver - whether to see the receiver application logs
+    * debugKalturaPlayer - whether to see the Kaltura player logs
+
+    Example:
+    https://path/to/receiver.html?debugReceiver&debugKalturaPlayer&backgroundColor=blue&logoUrl=path/to/logo.png
+</pre>
+</body>
+</html>

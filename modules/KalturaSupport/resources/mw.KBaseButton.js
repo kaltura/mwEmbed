@@ -34,7 +34,7 @@
 						_this.toggleExpend();
 					} );
 			}
-			this.setAccessibility( this.$el , this.expendPlayerTxt );
+			this.setAccessibility( this.$el , _this.onTXT );
 			return this.$el;
 		} ,
 
@@ -49,9 +49,11 @@
 						if ( this.pressed ) {
 							_this.getComponent().removeClass( _this.onIconClass ).addClass( _this.offIconClass );
 							_this.updateTooltip( _this.offTXT );
+                            _this.setAccessibility( this.$el , _this.offTXT );
 						} else {
 							_this.getComponent().removeClass( _this.offIconClass ).addClass( _this.onIconClass );
 							_this.updateTooltip( _this.onTXT );
+                            _this.setAccessibility( this.$el , _this.onTXT );
 						}
 					}
 				}

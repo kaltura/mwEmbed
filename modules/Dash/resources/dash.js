@@ -81,25 +81,16 @@
 
 					this.setEmbedPlayerConfig(this.getPlayer());
 
-					if (this.destroyPromise) {
-						// Firefox 50 and chrome 51 has an issue with mediaSource when preload attr is none
-						// see https://bugs.chromium.org/p/chromium/issues/detail?id=539707
-						//     https://bugzilla.mozilla.org/show_bug.cgi?id=1211752
-						// we store the previews preload value and restore it on clean method.
-						this.preloadVal = $(this.getPlayer().getPlayerElement()).attr("preload");
-						$(this.getPlayer().getPlayerElement()).attr("preload",true);
-
+                    if ( this.destroyPromise ) {
 						// after change media we should wait till the destroy promise will be resolved
-						this.destroyPromise.then(function () {
-							this.log("The player has been destroyed");
-							this.destroyPromise = null;
-							this.manifestLoaded = false;
-							this.createPlayer();
-						}.bind(this));
-					} else {
-						this.createPlayer();
-					}
-				}
+                        this.destroyPromise.then( function () {
+                            this.onShakaDestroyEnded();
+                            this.createPlayer();
+                        }.bind( this ) );
+                    } else {
+                        this.createPlayer();
+                    }
+                }
 			},
 
 			setEmbedPlayerConfig: function (embedPlayer) {
@@ -448,6 +439,19 @@
 				mw.log("Dash::Error: ", error);
 			},
 
+            onShakaDestroyEnded:function (  ) {
+                this.log( "The player has been destroyed" );
+                this.destroyPromise = null;
+                this.manifestLoaded = false;
+                // Firefox 50 and chrome 51 has an issue with mediaSource when preload attr is none
+                // see:
+				// https://bugs.chromium.org/p/chromium/issues/detail?id=539707
+                // https://bugzilla.mozilla.org/show_bug.cgi?id=1211752
+                // we store the previews preload value and restore it on clean method.
+                this.preloadVal = $(this.getPlayer().getPlayerElement()).attr("preload");
+                $(this.getPlayer().getPlayerElement()).attr("preload",true);
+            },
+
 			/**
 			 * Clean method
 			 */
@@ -457,7 +461,7 @@
 					this.LoadShaka = false;
 					this.loaded = false;
 					this.currentBitrate = null;
-					this.destroyPromise = player.destroy();
+                    this.destroyPromise = player.destroy().then(this.onShakaDestroyEnded.bind(this));
 					if(this.preloadVal){
 						$(this.getPlayer().getPlayerElement()).attr("preload",this.preloadVal);
 					}
@@ -491,7 +495,8 @@
 				this.orig_ondurationchange = this.getPlayer()._ondurationchange;
 				this.orig_backToLive = this.getPlayer().backToLive;
 				this.orig_doSeek = this.getPlayer().doSeek;
-				this.getPlayer().switchSrc = this.switchSrc.bind(this);
+                this.orig_clean = this.getPlayer().clean;
+                this.getPlayer().switchSrc = this.switchSrc.bind(this);
 				this.getPlayer().playerSwitchSource = this.playerSwitchSource.bind(this);
 				this.getPlayer().load = this.load.bind(this);
 				this.getPlayer().parseTracks = this.parseTracks.bind(this);
@@ -499,7 +504,8 @@
 				this.getPlayer()._ondurationchange = this._ondurationchange.bind(this);
 				this.getPlayer().backToLive = this.backToLive.bind(this);
 				this.getPlayer().doSeek = this.doSeek.bind(this);
-			},
+                this.getPlayer().clean = this.clean.bind(this);
+            },
 			/**
 			 * Disable override player methods for Dash playback
 			 */
@@ -512,7 +518,8 @@
 				this.getPlayer()._ondurationchange = this.orig_ondurationchange;
 				this.getPlayer().backToLive = this.orig_backToLive;
 				this.getPlayer().doSeek = this.orig_doSeek;
-			}
+                this.getPlayer().clean = this.orig_clean;
+            }
 		});
 
 		mw.PluginManager.add('Dash', dash);
