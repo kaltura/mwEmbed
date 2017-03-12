@@ -34,7 +34,7 @@
 			this.bind( 'playerReady', function(){
 				_this.addAutoToMenu();
 			});
-			
+
 			this.bind( 'sourcesReplaced firstPlay', function(){
 				_this.buildMenu();
 			});
@@ -260,7 +260,7 @@
 			}
 
 	        //Dash
-	        if( ( this.getPlayer().streamerType === "mpegdash" ) ){
+	        if( ( this.getPlayer().streamerType === "mpegdash" && this.secondIteration === true ) ){
 		        this.addAutoToMenu();
 		        return true;
 	        }
@@ -276,7 +276,7 @@
 				if(this.getPlayer().streamerType !== "hls" && !mw.EmbedTypes.getMediaPlayers().isSupportedPlayer('kplayer')){ //If flash disabled, player fallback to http progressive, but the streamerType might still be hdnetwork
                     return true;
                 }
-	            if ( this.getPlayer().streamerType == "hls" && this.secondIteration === true) {
+	            if ( this.getPlayer().streamerType == "hls" && this.secondIteration === true ) {
 					return true;
 	            }
 				this.secondIteration = true;
