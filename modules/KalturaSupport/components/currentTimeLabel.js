@@ -106,7 +106,7 @@
 				var currentWidth = this.$el.width();
 				if ( currentWidth !== this.labelWidth ){
 					this.embedPlayer.layoutBuilder.updateComponentsVisibility();
-					this.labelWidth = currentWidth;
+					this.labelWidth = this.$el.width();
 				}
 			}
 		},

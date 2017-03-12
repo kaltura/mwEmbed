@@ -267,6 +267,8 @@ mw.KWidgetSupport.prototype = {
 				this.updateDrmPlayerData(embedPlayer);
 			}
 		}
+		// Check for 360 tag
+		this.update360PlayerData(embedPlayer, playerData);
 		// Check for "image" mediaType ( 2 )
 		this.updateImagePlayerData(embedPlayer, playerData);
 		// Check for external media:
@@ -571,6 +573,14 @@ mw.KWidgetSupport.prototype = {
 		});
 		var drmRequired = (drmSources.length > 0);
 		embedPlayer.setDrmRequired( drmRequired );
+	},
+	update360PlayerData: function(embedPlayer, playerData){
+		if ( playerData.meta && playerData.meta.tags ) {
+			var pattern = new RegExp('(, |^)360(,|$)');
+			embedPlayer.set360(pattern.test(playerData.meta.tags));
+		} else {
+			embedPlayer.set360(false);
+		}
 	},
 	updateImagePlayerData: function(embedPlayer, playerData){
 		// Check for "image" mediaType ( 2 )

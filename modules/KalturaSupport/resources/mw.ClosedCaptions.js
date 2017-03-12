@@ -165,6 +165,10 @@
                 })
             }
 
+            this.bind('casting',function (  ) {
+                _this.getPlayer().getInterface().find( '.track' ).remove();
+            });
+
 			this.bind( 'onplay', function(){
 				_this.playbackStarted = true;
 				_this.getMenu().close();
@@ -310,7 +314,6 @@
 		},
 		hideCaptions: function(){
 			if( !this.getConfig('displayCaptions') || this.textSources.length === 0 ) {
-				this.getMenu().clearActive();
 				if (this.getConfig('showOffButton')){
 						this.getMenu().$el.find('.offBtn').addClass('active');
 				}
@@ -323,7 +326,6 @@
 		},
 		showCaptions: function(){
 			if( this.getConfig('displayCaptions') ) {
-				this.getMenu().clearActive();
 				this.getCaptionsOverlay().show();
 				if( this.selectedSource != null ) {
 					this.getPlayer().triggerHelper('closedCaptionsDisplayed', {language: this.selectedSource.label});
@@ -678,12 +680,16 @@
 		},
 
 		addCaptionAsText: function ( source, capId, caption ) {
+			var captionDirection = "auto";
+			//Set CC direction to rtl only in IE since it dose not support auto attribute
+			if ( source.srclang === 'he' && mw.isIE11() ) {
+				captionDirection = "rtl";
+			}
 			// use capId as a class instead of id for easy selections and no conflicts with
 			// multiple players on page.
 			var $textTarget = $('<div />')
 				.addClass('track')
 				.attr('data-capId', capId)
-				.attr('dir', "auto")
 				.hide();
 
 			// Update text ( use "html" instead of "text" so that subtitle format can
@@ -692,6 +698,7 @@
 			$textTarget.append(
 				$('<span />')
 					.addClass('ttmlStyled')
+					.attr('dir', captionDirection)
 					.css('pointer-events', 'auto')
 					.css(this.getCaptionCss())
 					.append(
@@ -728,7 +735,7 @@
 			);
 
 			// Update the style of the text object if set
-			if (caption.styleId) {
+			if (caption.styleId && !this.customStyle) {
 				var capCss = source.getStyleCssById(caption.styleId);
 				$textTarget.find('span.ttmlStyled').css(
 					capCss
@@ -1062,7 +1069,7 @@
                         _this.setConfig('displayCaptions', false);
                     } else {
                         _this.setTextSource(src);
-                        _this.embedPlayer.triggerHelper("selectClosedCaptions", src.label);
+                        _this.embedPlayer.triggerHelper( "selectClosedCaptions", [ src.label, src.srclang ] );
                         _this.getActiveCaption();
                     }
                 },
@@ -1108,12 +1115,14 @@
 					.css( this.getDefaultStyle() )
 					.html( $('<div />')
 						.text( gM('mwe-timedtext-loading-text') ) );
-				source.load(function(){
-					_this.getPlayer().triggerHelper('newClosedCaptionsData' , _this.selectedSource);
-					if( _this.playbackStarted ){
-						_this.monitor();
-					}
-				});
+				if (!this.embedPlayer.casting) {
+                    source.load( function () {
+                        _this.getPlayer().triggerHelper( 'newClosedCaptionsData', _this.selectedSource );
+                        if ( _this.playbackStarted ) {
+                            _this.monitor();
+                        }
+                    } );
+                }
 			}
 
 			this.selectedSource = source;

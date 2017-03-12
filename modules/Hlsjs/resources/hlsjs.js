@@ -70,7 +70,6 @@
 				this.bind("SourceChange", this.isNeeded.bind(this));
 				this.bind("playerReady", this.initHls.bind(this));
 				this.bind("onChangeMedia", this.clean.bind(this));
-				this.bind("onLiveOffSynchChanged", this.onLiveOffSyncChanged.bind(this));
 				if (mw.getConfig("hlsLogs")) {
 					this.bind("monitorEvent", this.monitorDebugInfo.bind(this));
 				}
@@ -95,13 +94,14 @@
 					this.LoadHLS = false;
 					this.loaded = false;
 					this.unRegisterHlsEvents();
+                    this.unbind("onLiveOffSynchChanged");
 					this.restorePlayerMethods();
 					this.hls.detachMedia();
 					this.mediaAttached = false;
 					this.hls.destroy();
 					this.hls = null;
 				}
-			},
+            },
 			/**
 			 * Register the playback events and attach the playback engine to the video element
 			 */
@@ -127,7 +127,8 @@
 						// The initial seeking to the live edge has finished.
 						this.afterInitialSeeking = true;
 					}.bind(this));
-					this.bind("seeking", this.onSeekBeforePlay.bind(this));
+                    this.bind("onLiveOffSynchChanged", this.onLiveOffSyncChanged.bind(this));
+                    this.bind("seeking", this.onSeekBeforePlay.bind(this));
 					this.bind("firstPlay", function () {
 						this.unbind("firstPlay");
 						this.unbind("seeking");
@@ -570,6 +571,7 @@
 				this.orig_load = this.getPlayer().load;
 				this.orig_onerror = this.getPlayer()._onerror;
 				this.orig_ontimeupdate = this.getPlayer()._ontimeupdate;
+				this.orig_clean = this.getPlayer().clean;
 				if (this.getPlayer()._onseeking) {
 					this.orig_onseeking = this.getPlayer()._onseeking.bind(this.getPlayer());
 				}
@@ -585,6 +587,7 @@
 				this.getPlayer()._ontimeupdate = this._ontimeupdate.bind(this);
 				this.getPlayer()._onseeking = this._onseeking.bind(this);
 				this.getPlayer()._onseeked = this._onseeked.bind(this);
+				this.getPlayer().clean = this.clean.bind(this);
 			},
 			/**
 			 * Disable override player methods for HLS playback
@@ -599,6 +602,7 @@
 				this.getPlayer()._ontimeupdate = this.orig_ontimeupdate;
 				this.getPlayer()._onseeking = this.orig_onseeking;
 				this.getPlayer()._onseeked = this.orig_onseeked;
+				this.getPlayer().clean = this.orig_clean;
 			},
 			//Overidable player methods, "this" is bound to HLS plugin instance!
 			/**
