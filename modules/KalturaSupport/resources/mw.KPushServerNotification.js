@@ -137,7 +137,6 @@
                 'format': 1,
                 "notificationTemplateSystemName": eventName,
                 "pushNotificationParams:objectType": "KalturaPushNotificationParams"
-
             };
             var index=0;
             $.each( eventParams, function(key,value) {
