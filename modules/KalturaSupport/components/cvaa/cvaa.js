@@ -517,7 +517,9 @@
         },
 
         isSafeEnviornment: function () {
-            return !mw.isIphone() && !mw.isIE8();
+            return mw.isIphone() &&
+                   mw.getConfig("EmbedPlayer.WebKitPlaysInline") == true &&
+                   !mw.isIE8();
         }
     });
 
