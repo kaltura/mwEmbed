@@ -158,12 +158,16 @@
                 this.bind('resizeEvent', function () {
 					// in WebVTT we have to remove the caption on resizing
 					// for recalculation the caption layout
-                    if ( _this.selectedSource.mimeType === "text/vtt" ) {
+                    if ( _this.selectedSource && _this.selectedSource.mimeType === "text/vtt" ) {
 						mw.log( 'mw.ClosedCaptions:: resizeEvent: remove captions' );
                         _this.getPlayer().getInterface().find('.track').remove();
                     }
                 })
             }
+
+            this.bind('casting',function (  ) {
+                _this.getPlayer().getInterface().find( '.track' ).remove();
+            });
 
 			this.bind( 'onplay', function(){
 				_this.playbackStarted = true;
@@ -310,7 +314,6 @@
 		},
 		hideCaptions: function(){
 			if( !this.getConfig('displayCaptions') || this.textSources.length === 0 ) {
-				this.getMenu().clearActive();
 				if (this.getConfig('showOffButton')){
 						this.getMenu().$el.find('.offBtn').addClass('active');
 				}
@@ -323,7 +326,6 @@
 		},
 		showCaptions: function(){
 			if( this.getConfig('displayCaptions') ) {
-				this.getMenu().clearActive();
 				this.getCaptionsOverlay().show();
 				if( this.selectedSource != null ) {
 					this.getPlayer().triggerHelper('closedCaptionsDisplayed', {language: this.selectedSource.label});
@@ -662,7 +664,6 @@
 				.html($(caption.content)
 					.addClass('caption')
 					.css('pointer-events', 'auto')
-					.css("background-color", (this.customStyle && this.customStyle.windowColor) ? this.customStyle.windowColor : "none")
 				);
 
 			this.displayTextTarget($textTarget);
@@ -679,6 +680,11 @@
 		},
 
 		addCaptionAsText: function ( source, capId, caption ) {
+			var captionDirection = "auto";
+			//Set CC direction to rtl only in IE since it dose not support auto attribute
+			if ( source.srclang === 'he' && mw.isIE11() ) {
+				captionDirection = "rtl";
+			}
 			// use capId as a class instead of id for easy selections and no conflicts with
 			// multiple players on page.
 			var $textTarget = $('<div />')
@@ -686,18 +692,13 @@
 				.attr('data-capId', capId)
 				.hide();
 
-			var $windowTarget = $('<div />')
-				.css("background-color", (this.customStyle && this.customStyle.windowColor) ? this.customStyle.windowColor : "none")
-				.addClass('trackWindow');
-
 			// Update text ( use "html" instead of "text" so that subtitle format can
 			// include html formating
 			// TOOD we should scrub this for non-formating html
-
 			$textTarget.append(
-				$windowTarget.append(
 				$('<span />')
 					.addClass('ttmlStyled')
+					.attr('dir', captionDirection)
 					.css('pointer-events', 'auto')
 					.css(this.getCaptionCss())
 					.append(
@@ -707,7 +708,6 @@
 							.css('position', 'relative')
 							.html(caption.content)
 					)
-				)
 			);
 
 			// Add/update the lang option
@@ -735,7 +735,7 @@
 			);
 
 			// Update the style of the text object if set
-			if (caption.styleId) {
+			if (caption.styleId && !this.customStyle) {
 				var capCss = source.getStyleCssById(caption.styleId);
 				$textTarget.find('span.ttmlStyled').css(
 					capCss
@@ -1069,7 +1069,7 @@
                         _this.setConfig('displayCaptions', false);
                     } else {
                         _this.setTextSource(src);
-                        _this.embedPlayer.triggerHelper("selectClosedCaptions", src.label);
+                        _this.embedPlayer.triggerHelper( "selectClosedCaptions", [ src.label, src.srclang ] );
                         _this.getActiveCaption();
                     }
                 },
@@ -1102,7 +1102,7 @@
 					'class': "cvaaOptions"
 				},
 				'callback': function(){
-					_this.getPlayer().triggerHelper(btnOptions.optionsEvent);
+					_this.getPlayer().triggerHelper(btnOptions.optionsEvent, _this.lastActiveCaption);
 				},
 				'active': false
 			});
@@ -1115,12 +1115,14 @@
 					.css( this.getDefaultStyle() )
 					.html( $('<div />')
 						.text( gM('mwe-timedtext-loading-text') ) );
-				source.load(function(){
-					_this.getPlayer().triggerHelper('newClosedCaptionsData' , _this.selectedSource);
-					if( _this.playbackStarted ){
-						_this.monitor();
-					}
-				});
+				if (!this.embedPlayer.casting) {
+                    source.load( function () {
+                        _this.getPlayer().triggerHelper( 'newClosedCaptionsData', _this.selectedSource );
+                        if ( _this.playbackStarted ) {
+                            _this.monitor();
+                        }
+                    } );
+                }
 			}
 
 			this.selectedSource = source;

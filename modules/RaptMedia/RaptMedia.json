@@ -1,0 +1,24 @@
+{
+	"mw.RaptMedia": {
+		"scripts": "resources/mw.RaptMedia.js",
+		"dependencies": [
+			"mw.KBaseComponent",
+			"Hlsjs"
+		],
+		"kalturaPluginName": "raptMedia"
+	},
+	"mw.RaptMediaDurationLabel": {
+		"scripts": "resources/mw.RaptMediaDurationLabel.js",
+		"dependencies": [
+			"mw.KBaseComponent"
+		],
+		"kalturaPluginName": "raptMediaDurationLabel"
+	},
+	"mw.RaptMediaScrubber": {
+		"scripts": "resources/mw.RaptMediaScrubber.js",
+		"dependencies": [
+			"mw.KBaseComponent"
+		],
+		"kalturaPluginName": "raptMediaScrubber"
+	}
+}

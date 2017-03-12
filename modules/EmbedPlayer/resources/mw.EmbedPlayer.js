@@ -2309,7 +2309,7 @@
 			}
 
 			// Remove any poster div ( that would overlay the player )
-			if (!this.isAudioPlayer) {
+			if (!this.isAudioPlayer && !this.casting) {
 				this.removePoster();
 			}
 
@@ -2412,24 +2412,26 @@
 		 *
 		 */
 		addPlayerSpinner: function () {
-			var sId = 'loadingSpinner_' + this.id;
-			$(this).trigger('onAddPlayerSpinner');
-			// remove any old spinner
-			$('#' + sId).remove();
-			var target = this;
-			switch(mw.getConfig("EmbedPlayer.SpinnerTarget")){
-				case "videoHolder":
-					target = this.getVideoHolder();
-					break;
-				case "videoDisplay":
-					target = this.getVideoDisplay();
-					break;
-				default:
-					target = this;
-			}
-			// re add an absolute positioned spinner:
-			$(target).getAbsoluteOverlaySpinner()
-				.attr('id', sId);
+			if (!mw.isChromeCast()) {
+                var sId = 'loadingSpinner_' + this.id;
+                $( this ).trigger( 'onAddPlayerSpinner' );
+                // remove any old spinner
+                $( '#' + sId ).remove();
+                var target = this;
+                switch ( mw.getConfig( "EmbedPlayer.SpinnerTarget" ) ) {
+                    case "videoHolder":
+                        target = this.getVideoHolder();
+                        break;
+                    case "videoDisplay":
+                        target = this.getVideoDisplay();
+                        break;
+                    default:
+                        target = this;
+                }
+                // re add an absolute positioned spinner:
+                $( target ).getAbsoluteOverlaySpinner()
+                    .attr( 'id', sId );
+            }
 		},
 		hideSpinner: function () {
 			$(this).trigger('onRemovePlayerSpinner');
@@ -3104,6 +3106,14 @@
 
 		isLive: function () {
 			return this.live;
+		},
+
+		set360:function (is360) {
+			this.Is360 = is360;
+		},
+
+		is360: function(){
+			return this.Is360;
 		},
 
 		setDrmRequired: function (isDrm) {

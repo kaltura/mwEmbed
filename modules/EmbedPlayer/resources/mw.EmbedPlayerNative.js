@@ -96,14 +96,15 @@
 		setup: function (readyCallback) {
 			var _this = this;
 			this._propagateEvents = true;
-			if (mw.isIpad()) {
+			if (mw.isIpad() || mw.isEdge()) {
 				this.getPlayerElement().removeAttribute("poster");
 			}
 			$(this.getPlayerElement()).css('position', 'absolute');
 			if (this.inline) {
 				$(this.getPlayerElement()).attr('playsinline', '');
 			}
-			readyCallback();
+            this.addBindings();
+            readyCallback();
 
 			// disable network errors on unload:
 			$(window).unload(function () {
@@ -113,7 +114,6 @@
 					_this.layoutBuilder.closeAlert();
 				}
 			});
-            this.addBindings();
 		},
         addBindings: function(){
             var _this = this;
@@ -440,7 +440,7 @@
 						if (vid.duration > 0) {
 							_this.log("player can seek");
 							clearTimeout( _this.canSeekTimeout );
-							this.canSeekTimeout = null;
+                            _this.canSeekTimeout = null;
 							setTimeout( function () {
 								return checkVideoStateDeferred.resolve();
 							}, 10 );
@@ -469,7 +469,7 @@
 				}
 				this.log("player can't seek - wait video element ready state");
 				this.canSeekTimeout = setTimeout(function () {
-					this.canSeekTimeout = null;
+                    _this.canSeekTimeout = null;
 					_this.canSeek(checkVideoStateDeferred, callbackCount + 1);
 				}, 1000);
 			} else {
@@ -590,7 +590,7 @@
 			this.isPauseLoading = false;
 
 			// Make sure the switch source is different:
-			if (!src || src == vid.src) {
+			if (!src || (src == vid.src && !this.changeMediaStarted)) {
 				if ($.isFunction(switchCallback)) {
 					switchCallback(vid);
 				}

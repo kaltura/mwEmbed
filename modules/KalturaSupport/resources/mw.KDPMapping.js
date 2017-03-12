@@ -1141,6 +1141,9 @@
 		sendNotification: function( embedPlayer, notificationName, notificationData ){
 			mw.log('KDPMapping:: sendNotification > '+ notificationName,  notificationData );
 			switch( notificationName ){
+				case 'switchSrc':
+                    embedPlayer.switchSrc( notificationData );
+					break;
 				case 'showSpinner': 
 					embedPlayer.addPlayerSpinner();
 					break;
@@ -1184,7 +1187,9 @@
 					if ( !embedPlayer.stopped ){
 						setTimeout(function() {
 							embedPlayer.ignoreNextNativeEvent = true;
-	                                    embedPlayer.seek(0, true);
+							if( !embedPlayer.isLive() ) {
+								embedPlayer.seek(0, true);
+							}
 							embedPlayer.stop();
 						},10);
 					}

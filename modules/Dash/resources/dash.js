@@ -71,7 +71,7 @@
 					this.log("Init shaka version " + shaka.Player.version);
 
 					//Set streamerType to dash
-					this.embedPlayer.streamerType = 'dash';
+					this.embedPlayer.streamerType = 'mpegdash';
 
 					this.loaded = true;
 
@@ -81,18 +81,16 @@
 
 					this.setEmbedPlayerConfig(this.getPlayer());
 
-					if (this.destroyPromise) {
+                    if ( this.destroyPromise ) {
 						// after change media we should wait till the destroy promise will be resolved
-						this.destroyPromise.then(function () {
-							this.log("The player has been destroyed");
-							this.destroyPromise = null;
-							this.manifestLoaded = false;
-							this.createPlayer();
-						}.bind(this));
-					} else {
-						this.createPlayer();
-					}
-				}
+                        this.destroyPromise.then( function () {
+                            this.onShakaDestroyEnded();
+                            this.createPlayer();
+                        }.bind( this ) );
+                    } else {
+                        this.createPlayer();
+                    }
+                }
 			},
 
 			setEmbedPlayerConfig: function (embedPlayer) {
@@ -117,6 +115,14 @@
 						}
 					}
 				};
+				if (mw.isChrome()){
+					defaultConfig.shakaConfig.advanced = {
+						'com.widevine.alpha': {
+							'videoRobustness': 'SW_SECURE_CRYPTO',
+							'audioRobustness': 'SW_SECURE_CRYPTO'
+						}
+					};
+				}
 				return defaultConfig;
 			},
 
@@ -217,6 +223,7 @@
 						};
 					});
 					mw.log("Dash::" + videoTracks.length + " ABR flavors were found: ", videoTracks);
+					this.getPlayer().setKDPAttribute('sourceSelector', 'visible', true);
 					this.getPlayer().onFlavorsListChanged(flavors);
 				}
 			},
@@ -225,18 +232,27 @@
 				var audioTracks = this.getTracksByType("audio");
 				if (audioTracks && audioTracks.length > 0) {
 					var audioTrackData = {languages: []};
+					var audioTrackLangs = {};
 					$.each(audioTracks, function (index, audioTrack) {
-						audioTrackData.languages.push({
-							'kind': 'audioTrack',
-							'language': audioTrack.language,
-							'srclang': audioTrack.language,
-							'label': audioTrack.language,
-							'title': audioTrack.language,
-							'id': audioTrack.id,
-							'index': audioTrackData.languages.length
-						});
+						if (audioTrackLangs[audioTrack.language] === undefined) {
+							audioTrackLangs[audioTrack.language] = 1;
+							audioTrackData.languages.push({
+								'kind': 'audioTrack',
+								'language': audioTrack.language,
+								'srclang': audioTrack.language,
+								'label': audioTrack.language,
+								'title': audioTrack.language,
+								'id': audioTrack.id,
+								'index': audioTrackData.languages.length
+							});
+						}
 					});
 					mw.log("Dash::" + audioTracks.length + " audio tracks were found: ", audioTracks);
+					//Set default audio track
+					var audioTrack = this.getPlayer().audioTrack;
+					if (audioTrack && audioTrack.defaultTrack && audioTrack.defaultTrack < audioTracks.length) {
+						this.onSwitchAudioTrack({}, {index: audioTrack.defaultTrack});
+					}
 					this.onAudioTracksReceived(audioTrackData);
 				}
 			},
@@ -362,6 +378,46 @@
 				}
 			},
 
+			_ondurationchange: function (event, data) {
+				if (this.getPlayer().isLive() && this.getPlayer().isDVR()) {
+					// The live stream duration is not relative, therefore the time preview shown by the scrubber (in DVR) is incorrect.
+					// We have to calculate the relative duration by the time range.
+					var seekRange = player.seekRange();
+					this.getPlayer().setDuration(seekRange.end - seekRange.start);
+				} else {
+					this.orig_ondurationchange(event, data);
+				}
+			},
+
+			doSeek: function (seekTime) {
+				if (this.getPlayer().isLive() && this.getPlayer().isDVR()) {
+					// In live stream the vid.currentTime is not relative, therefore the seek time target from the scrubber (in DVR) is incorrect.
+					// We have to calculate the seek time target for the vid.currentTime by the delta between the relative duration and the relative seek time target.
+					var delta = this.getPlayer().getDuration() - seekTime;
+					var seekRange = player.seekRange();
+					var seekTimeTarget = seekRange.end - delta;
+					this.getPlayer().currentSeekTargetTime = seekTimeTarget;
+					this.getPlayer().getPlayerElement().currentTime = seekTimeTarget;
+				} else {
+					this.orig_doSeek.call(this.getPlayer(), seekTime);
+				}
+			},
+
+			backToLive: function () {
+				this.getPlayer().goingBackToLive = true;
+				var seekRange = player.seekRange();
+				this.getPlayer().getPlayerElement().currentTime = seekRange.end;
+				this.getPlayer().triggerHelper('movingBackToLive');
+				if (this.getPlayer().isDVR()) {
+					var _this = this;
+					this.once('seeked', function () {
+						_this.getPlayer().goingBackToLive = false;
+					});
+				} else {
+					this.getPlayer().goingBackToLive = false;
+				}
+			},
+
 			onErrorEvent: function (event) {
 				// Extract the shaka.util.Error object from the event.
 				this.onError(event.detail);
@@ -374,14 +430,27 @@
 			onError: function (error) {
 				var errorMessage = error.name === "TypeError" ? error.stack : JSON.stringify(error);
 				var errorObj = {
-					message : errorMessage
+					message: errorMessage
 				};
-				if(error.category){
+				if (error.category) {
 					errorObj.code = error.category + "000";
 				}
-				this.getPlayer().triggerHelper( 'embedPlayerError' , errorObj );
+				this.getPlayer().triggerHelper('embedPlayerError', errorObj);
 				mw.log("Dash::Error: ", error);
 			},
+
+            onShakaDestroyEnded:function (  ) {
+                this.log( "The player has been destroyed" );
+                this.destroyPromise = null;
+                this.manifestLoaded = false;
+                // Firefox 50 and chrome 51 has an issue with mediaSource when preload attr is none
+                // see:
+				// https://bugs.chromium.org/p/chromium/issues/detail?id=539707
+                // https://bugzilla.mozilla.org/show_bug.cgi?id=1211752
+                // we store the previews preload value and restore it on clean method.
+                this.preloadVal = $(this.getPlayer().getPlayerElement()).attr("preload");
+                $(this.getPlayer().getPlayerElement()).attr("preload",true);
+            },
 
 			/**
 			 * Clean method
@@ -392,7 +461,10 @@
 					this.LoadShaka = false;
 					this.loaded = false;
 					this.currentBitrate = null;
-					this.destroyPromise = player.destroy();
+                    this.destroyPromise = player.destroy().then(this.onShakaDestroyEnded.bind(this));
+					if(this.preloadVal){
+						$(this.getPlayer().getPlayerElement()).attr("preload",this.preloadVal);
+					}
 					this.restorePlayerMethods();
 				}
 			},
@@ -420,12 +492,20 @@
 				this.orig_load = this.getPlayer().load;
 				this.orig_parseTracks = this.getPlayer().parseTracks;
 				this.orig_switchAudioTrack = this.getPlayer().switchAudioTrack;
-				this.getPlayer().switchSrc = this.switchSrc.bind(this);
+				this.orig_ondurationchange = this.getPlayer()._ondurationchange;
+				this.orig_backToLive = this.getPlayer().backToLive;
+				this.orig_doSeek = this.getPlayer().doSeek;
+                this.orig_clean = this.getPlayer().clean;
+                this.getPlayer().switchSrc = this.switchSrc.bind(this);
 				this.getPlayer().playerSwitchSource = this.playerSwitchSource.bind(this);
 				this.getPlayer().load = this.load.bind(this);
 				this.getPlayer().parseTracks = this.parseTracks.bind(this);
 				this.getPlayer().switchAudioTrack = this.switchAudioTrack.bind(this);
-			},
+				this.getPlayer()._ondurationchange = this._ondurationchange.bind(this);
+				this.getPlayer().backToLive = this.backToLive.bind(this);
+				this.getPlayer().doSeek = this.doSeek.bind(this);
+                this.getPlayer().clean = this.clean.bind(this);
+            },
 			/**
 			 * Disable override player methods for Dash playback
 			 */
@@ -435,8 +515,11 @@
 				this.getPlayer().load = this.orig_load;
 				this.getPlayer().parseTracks = this.orig_parseTracks;
 				this.getPlayer().switchAudioTrack = this.orig_switchAudioTrack;
-			}
-
+				this.getPlayer()._ondurationchange = this.orig_ondurationchange;
+				this.getPlayer().backToLive = this.orig_backToLive;
+				this.getPlayer().doSeek = this.orig_doSeek;
+                this.getPlayer().clean = this.orig_clean;
+            }
 		});
 
 		mw.PluginManager.add('Dash', dash);

@@ -26,6 +26,7 @@
         selectedAnswer:null,
         seekToQuestionTime:null,
         multiStreamWelcomeSkip:false,
+        relatedStreamChanging:false,
         IVQVer:'IVQ-2.41.rc2',
 
         setup: function () {
@@ -39,8 +40,21 @@
                 mw.log("Quiz: multistream On");
                 _this.multiStreamWelcomeSkip = true;
             });
+            this.bind('dualScreen_onChangeStream', function () {
+                _this.relatedStreamChanging = true;
+            });
+            this.bind('dualScreen_onChangeStreamDone', function () {
+                _this.relatedStreamChanging = false;
+            });
 
             embedPlayer.addJsListener( 'kdpReady', function(){
+                // [FEC-6441: Quiz plugin damaged when switching between dual video options]
+                // Don't reload quiz cuepoints when a stream change occurs
+                // Needed for the dual-video cases in which only the parent media contains quiz metadata
+                if (_this.relatedStreamChanging) {
+                    return;
+                }
+
                 _this.KIVQModule = new mw.KIVQModule(embedPlayer, _this);
                 _this.KIVQModule.isKPlaylist = (typeof (embedPlayer.playlist) === "undefined" ) ? false : true;
 
@@ -149,8 +163,14 @@
             });
 
             embedPlayer.bindHelper('seeked'+_this.KIVQModule.bindPostfix, function () {
-               _this.isSeekingIVQ = false;
-                mw.log("Quiz: Seeked");
+                // KMS-13599
+                // Let the mw.KCuePoints 'seeked' handler run before
+                // in order to make sure that the 'KalturaSupport_CuePointReached' event,
+                // triggered by the 'seeked' event, is not handled by the plugin
+                setTimeout(function () {
+                    _this.isSeekingIVQ = false;
+                    mw.log("Quiz: Seeked");
+                }, 0);
             });
 
             embedPlayer.bindHelper('seeking'+_this.KIVQModule.bindPostfix, function () {
@@ -275,7 +295,7 @@
 
             $(".title-text").html(gM('mwe-quiz-almostDone'));
             $(".sub-text").html(gM('mwe-quiz-remainUnAnswered') + '</br>' + gM('mwe-quiz-pressRelevatToAnswer'))
-            $(".confirm-box").html(gM('mwe-quiz-okGotIt'))
+            $(".confirm-box").html(gM('mwe-quiz-okGotIt'));
 
             $(document).off('click','.confirm-box')
                 .on('click', '.confirm-box', function () {
@@ -296,7 +316,7 @@
                         .on('click', function () {
                             _this.ssSetCurrentQuestion(questionNr,true);
                         }).on('keydown', _this.keyDownHandler).attr('role', 'button').attr('tabindex', 5)
-                          .attr('title', 'Hint - '+$.cpObject.cpArray[questionNr].hintText+'. Click to close hint').focus().attr('id', 'hint-close-button');
+                          .attr('title', 'Hint - '+$.cpObject.cpArray[questionNr].hintText+'. Click to close hint').focus().attr('id', 'hint-close-button').css('outline', 'none');
                     // verify focus in IE
                     document.getElementById('hint-close-button').focus();
                     $(".hint-container").append($.cpObject.cpArray[questionNr].hintText);
@@ -420,6 +440,8 @@
                             _this.ssReviewAnswer(parseInt($(this).attr('id')));
                         }).attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer');
                 }
+                $('.q-box').attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer').on('keydown', _this.keyDownHandler);
+                $('.q-box-false').attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer').on('keydown', _this.keyDownHandler);
             }else{
                 $(".title-text").addClass("padding23");
                 $(".sub-text").html(gM('mwe-quiz-completedQuiz'));
@@ -446,7 +468,8 @@
                         mw.log("Quiz: Playlist Auto Continue After Submitted");
                         _this.embedPlayer.setKDPAttribute('playlistAPI','autoContinue',true);
                     }
-                }).attr('tabindex', '5').attr('role', 'button').attr('title', 'Quiz is done. Click to continue watching the video.');
+                }).attr('tabindex', '5').attr('role', 'button').attr('title', 'Quiz is done. Click to continue watching the video.').focus().on('keydown', _this.keyDownHandler);
+
         },
         ssReviewAnswer: function (selectedQuestion) {
             var _this = this;
@@ -476,7 +499,7 @@
             });
             $('.gotItBox').html(gM('mwe-quiz-gotIt')).bind('click', function () {
                 _this.ssSubmitted(_this.KIVQModule.score);
-            });
+            }).attr('role', 'button').attr('tabindex', '5').focus().on('keydown', _this.keyDownHandler);
         },
         showSelectedQuestion:function(questionNr){
             var _this = this;

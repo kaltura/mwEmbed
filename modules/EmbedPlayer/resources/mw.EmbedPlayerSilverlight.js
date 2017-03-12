@@ -391,7 +391,7 @@
 					isMimeType( "video/ism" )
 				) {
 					resolvedSrc = encodeURIComponent(resolvedSrc);
-					_this.streamerType = 'smoothStream';
+					_this.streamerType = 'sl';
 
 					flashvars.smoothStreamPlayer = true;
 					flashvars.preload = "auto";
@@ -769,7 +769,7 @@
 		 * load method calls parent_load to start fetching media from server, in case of DRM the license request will be handled as well
 		 */
 		load: function () {
-			if ( this.streamerType !== "smoothStream" ){
+			if ( this.streamerType !== "sl" ){
 				this.playerObject.load();
 			}
 		},
