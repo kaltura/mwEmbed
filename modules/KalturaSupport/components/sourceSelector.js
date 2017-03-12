@@ -17,7 +17,7 @@
 			'smartContainer': 'qualitySettings',
 			'smartContainerCloseEvent': 'newSourceSelected'
 		},
-
+		secondIteration: false,
 		isDisabled: false,
 		inUpdateLayout:false,
         sourceQuality: gM( 'mwe-embedplayer-select_source-accessibility' ),
@@ -31,7 +31,11 @@
 		setup: function(){
 			var _this = this;
 
-			this.bind( 'playerReady sourcesReplaced', function(){
+			this.bind( 'playerReady', function(){
+				_this.addAutoToMenu();
+			});
+			
+			this.bind( 'sourcesReplaced firstPlay', function(){
 				_this.buildMenu();
 			});
 
@@ -272,16 +276,20 @@
 				if(this.getPlayer().streamerType !== "hls" && !mw.EmbedTypes.getMediaPlayers().isSupportedPlayer('kplayer')){ //If flash disabled, player fallback to http progressive, but the streamerType might still be hdnetwork
                     return true;
                 }
-                this.addAutoToMenu();
-	            if ( this.getPlayer().streamerType == "hls" ) {
-		            return true;
+	            if ( this.getPlayer().streamerType == "hls" && this.secondIteration === true) {
+					return true;
 	            }
+				this.secondIteration = true;
 	            return false;
             }
 
-			if ( this.getPlayer().streamerType == "http" ){
+			if ( this.getPlayer().streamerType == "hls" ){
 				this.addAutoToMenu();
-				return false;
+				return true;
+			}
+
+			if ( this.getPlayer().streamerType == "http" ){
+				return true;
 			}
 
 			if( this.getPlayer().streamerType != "http" ){ //add and select Auto for adaptive bitrate

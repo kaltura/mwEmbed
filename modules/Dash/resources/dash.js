@@ -57,7 +57,6 @@
 			isNeeded: function () {
 				if (this.getPlayer().mediaElement.selectedSource.mimeType === "application/dash+xml") {
 					this.LoadShaka = true;
-					this.embedPlayer.streamerType = 'http';
 				} else {
 					this.LoadShaka = false;
 				}
