@@ -117,6 +117,8 @@
                             e.preventDefault();
                             $(_this.embedPlayer).trigger('playPreviousClip');
                         });
+                    this.setAccessibility($nextBtn,this.nextTitle);
+                    this.setAccessibility($prevBtn,this.prevTitle);
 
                     var layoutClass = ' ' + this.getConfig('layout');
                     this.$el = $('<div />')
