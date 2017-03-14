@@ -155,6 +155,10 @@
 			this.unbind('seeked');
 			this.unbind('playerPlayed');
 			this.unbind('replayEvent');
+			this.unbind('seeked.newSegment');
+			this.unbind('onPlayerStateChange');
+			this.unbind('playerPaused.raptEndOfSegment');
+			this.unbind('mediaLoaded');
 			//this.getPlayer().sendNotification('enableGui', { 'guiEnabled': true });
 			this.raptMediaPlaylistEntry = false;
 			this.engineCurrentSegment = null;
@@ -179,20 +183,24 @@
 						if (_this.raptSequence.length == 0) return;
 						_this.playbackEnded = false;
 						var currentEntryId = media.sources[0].src;
+						if (_this.engineCurrentSegment && currentEntryId == _this.engineCurrentSegment.entryId)
+							return;
 						_this.engineCurrentSegment = _this.raptSegments[currentEntryId];
 						var __this = _this;
-						if (_this.raptMediaInitialSegmentLoad) {
+						if (!_this.raptMediaInitialSegmentLoad) {
+							_this.bind('seeked.newSegment', function () {
+								__this.unbind('seeked.newSegment');
+								__this.getPlayer().play();
+							});
+							var segmentStartSec = parseFloat((_this.engineCurrentSegment.msStartTime / 1000).toFixed(2));
+							_this.getPlayer().sendNotification("doSeek", segmentStartSec);
+						} else {
+							// the first rapt segment was loaded, we're ready to continue
 							_this.raptMediaInitialSegmentLoad = false;
 							_this.log('Initial Rapt Segment was loaded, now we can continue player init');
 							_this.initCompleteCallback();
 						}
-						_this.bind('seeked.newSegment', function () {
-							//always play after new segment was loaded
-							__this.unbind('seeked.newSegment');
-							__this.getPlayer().play();
-						});
 						_this.getPlayer().sendNotification("raptMedia_newSegment", _this.engineCurrentSegment);
-						_this.getPlayer().sendNotification("doSeek", parseFloat((_this.engineCurrentSegment.msStartTime / 1000).toFixed(2)));
 						//_this.getPlayer().sendNotification('enableGui', { 'guiEnabled': true });
 						_this.log('load: ' + _this.engineCurrentSegment);
 					},
@@ -212,7 +220,8 @@
 					},
 
 					event: function(event) {
-						_this.log('RaptMedia Engine Event: ' + event.type);
+						if (event.type != 'media:timeupdate')
+							_this.log('RaptMedia Engine Event: ' + event.type);
 						switch (event.type) {
 							case 'project:ended':
 								var behaviorOnEnd = _this.getConfig( 'behaviorOnEnd' );

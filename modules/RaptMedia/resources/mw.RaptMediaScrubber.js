@@ -116,20 +116,21 @@
 						// Only run the onChange event if done by a user slide
 						// (otherwise it runs times it should not)
 						if (!embedPlayer.userSlide || _this.sliderUpdating || !_this.raptCurrentSegment) return;
+
+						var segmentSeekTime = (ui.value / 1000) * _this.raptDuration();
+						var endOfSegment = _this.isEndOfCurrentSegment(segmentSeekTime);
 						
-						var seekDuringPlay = embedPlayer.isPlaying();
+						var seekDuringPlay = embedPlayer.isPlaying() && !endOfSegment;
 						if (seekDuringPlay) embedPlayer.stopEventPropagation();
 
 						_this.sliderUpdating = true;
-						var segmentSeekTime = (ui.value / 1000) * _this.raptDuration();
 						var segmentStartOffset = (_this.raptCurrentSegment != null) ? parseFloat((_this.raptCurrentSegment.msStartTime / 1000).toFixed(2)) : 0;
 						var seekTime = segmentSeekTime + segmentStartOffset;
 						//use 350ms from end of segment as saftey buffer to avoid missing the end due to misaligned frame rates or slow event propagations
-						var seekTimeEndOfSeg = segmentStartOffset + parseFloat(((_this.raptCurrentSegment.msDuration-350)/1000).toFixed(2));
+						var seekTimeEndOfSeg = segmentStartOffset + parseFloat(((_this.raptCurrentSegment.msDuration-50)/1000).toFixed(2));
 
 						_this.updateAttr(ui);
 
-						var endOfSegment = _this.isEndOfCurrentSegment(segmentSeekTime);
 						if (endOfSegment) {
 							embedPlayer.triggerHelper("userInitiatedSeek", seekTimeEndOfSeg);
 							embedPlayer.stopPlayAfterSeek = true;
