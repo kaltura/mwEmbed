@@ -254,13 +254,13 @@
 		},
         handleAdaptiveBitrateAndContinue: function (){
 			//Silverlight smoothStream
-			if( ( this.getPlayer().streamerType === "sl" ) ){
+			if ( this.getPlayer().streamerType === "sl" ) {
 				this.addAutoToMenu();
 				return true;
 			}
 
 	        //Dash
-	        if( ( this.getPlayer().streamerType === "mpegdash" && this.secondIteration === true ) ){
+	        if ( this.getPlayer().streamerType === "mpegdash" && this.secondIteration === true ){
 		        this.addAutoToMenu();
 		        return true;
 	        }
@@ -274,7 +274,8 @@
 
             if ( this.getPlayer().streamerType != "http" && !this.getPlayer().isPlaying() && !this.getPlayer().isInSequence() ){
 				if(this.getPlayer().streamerType !== "hls" && !mw.EmbedTypes.getMediaPlayers().isSupportedPlayer('kplayer')){ //If flash disabled, player fallback to http progressive, but the streamerType might still be hdnetwork
-                    return true;
+					this.addAutoToMenu();
+					return true;
                 }
 	            if ( this.getPlayer().streamerType == "hls" && this.secondIteration === true ) {
 					return true;
