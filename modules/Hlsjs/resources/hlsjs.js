@@ -1,6 +1,7 @@
 ( function( mw, $ , Hls ) {"use strict";
 
-	if (Hls.isSupported() && mw.getConfig("LeadWithHLSOnJs")) {
+	//Currently use native support when available, e.g. Safari desktop and Edge
+	if (Hls.isSupported() && !mw.isDesktopSafari() && !mw.isEdge() && mw.getConfig("LeadWithHLSOnJs")) {
 		// Add HLS Logic player:
 		//Force HLS streamer type
 		mw.setConfig("streamerType", "hls");
@@ -48,6 +49,8 @@
 			 * Setup the HLS playback engine wrapper with supplied config options
 			 */
 			setup: function () {
+				this.log("version: " + Hls.version );
+				mw.setConfig('isHLS_JS', true);
 				this.addBindings();
 			},
 			/**
@@ -151,16 +154,27 @@
 			onMediaAttached: function () {
 				this.log("Media attached");
 				//Once media is attached load the manifest
-				this.hls.loadSource(this.getPlayer().getSrc());
+				var selectedSource = this.getPlayer().getSrc();
+				this.getPlayer().resolveSrcURL( selectedSource ).then( function(source){
+					this.hls.loadSource(source);
+				}.bind(this));
 			},
 			/**
 			 *
 			 * @param event
 			 * @param data
 			 */
-			onFragParsingMetadata: function (data) {
-				//TODO: parse ID3 tags
+			onFragParsingMetadata: function (e, data) {
 				//data: { samples : [ id3 pes - pts and dts timestamp are relative, values are in seconds]}
+
+				//Get the data from the event + Unicode transform
+				var id3TagData = String.fromCharCode.apply( null, new Uint8Array( data.samples[data.samples.length-1].data ) );
+				//Get the JSON substring
+				var id3TagString=id3TagData.substring(id3TagData.indexOf("{"), id3TagData.lastIndexOf("}")+1);
+				//Parse JSON
+				var id3Tag=JSON.parse(id3TagString);
+
+				this.getPlayer().triggerHelper('onId3Tag', id3Tag);
 			},
 			/**
 			 * Extract metadata from parsed manifest data, e.g. ABR etc.
@@ -177,6 +191,11 @@
 			 * @param data
 			 */
 			onLevelSwitch: function (event, data) {
+				//Set and report bitrate change
+				var source = this.hls.levels[data.level];
+				this.getPlayer().currentBitrate = source.bitrate/ 1024;
+				this.getPlayer().triggerHelper('bitrateChange', this.getPlayer().currentBitrate);
+				//Notify sourceSwitchingStarted
 				if (this.isLevelSwitching && this.levelIndex == data.level) {
 					this.getPlayer().triggerHelper("sourceSwitchingStarted");
 				}
@@ -286,9 +305,11 @@
 				this.orig_backToLive = this.getPlayer().backToLive;
 				this.orig_switchSrc = this.getPlayer().switchSrc;
 				this.orig_changeMediaCallback = this.getPlayer().changeMediaCallback;
+				this.orig_load = this.getPlayer().load;
 				this.getPlayer().backToLive = this.backToLive.bind(this);
 				this.getPlayer().switchSrc = this.switchSrc.bind(this);
-				this.getPlayer().changeMediaCallback = null;
+				this.getPlayer().changeMediaCallback = this.changeMediaCallback.bind(this);
+				this.getPlayer().load = this.load.bind(this);
 			},
 			/**
 			 * Disable override player methods for HLS playback
@@ -297,6 +318,7 @@
 				this.getPlayer().backToLive = this.orig_backToLive;
 				this.getPlayer().switchSrc = this.orig_switchSrc;
 				this.getPlayer().changeMediaCallback = this.orig_changeMediaCallback;
+				this.getPlayer().load = this.orig_load;
 				mw.supportsFlash = orig_supportsFlash;
 			},
 			//Overidable player methods, "this" is bound to HLS plugin instance!
@@ -328,6 +350,8 @@
 						if (this.hls.currentLevel == sourceIndex) {
 							this.onLevelSwitch(Hls.Events.LEVEL_SWITCH, {level: sourceIndex});
 							this.onFragChanged(Hls.Events.LEVEL_LOADED, {frag: {level: sourceIndex}});
+							this.getPlayer().currentBitrate = source.getBitrate();
+							this.getPlayer().triggerHelper('bitrateChange', source.getBitrate());
 						} else {
 							this.hls.nextLevel = sourceIndex;
 						}
@@ -335,8 +359,21 @@
 				} else {
 					this.hls.nextLevel = -1;
 				}
+			},
+			/**
+			 * Override player method for loading the video element
+			 */
+			load: function(){
+				this.hls.startLoad();
+			},
+			/**
+			 * Override player callback after changing media
+			 */
+			changeMediaCallback: function(){
+				this.getPlayer().play();
+				this.getPlayer().changeMediaStarted = false;
+				this.getPlayer().triggerHelper('onChangeMediaDone');
 			}
-
 		});
 
 		mw.PluginManager.add('hlsjs', hlsjs);

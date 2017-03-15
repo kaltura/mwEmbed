@@ -60,20 +60,10 @@
 
         parseTag: function(tag){
             var time;
-            switch(this.getPlayer().instanceOf){
-                case "Native":
-                    time = JSON.parse(tag).timestamp / 1000;
-                    break;
-                case "Kplayer":
-                case "Silverlight":
-                    //id3 tag: {"id":"ac1d4fd80c79bf7807f6c33061833a784ff5ce62","timestamp":1.447225650123E12,"offset":1431918.0,"objectType":"KalturaSyncPoint"}
-                    try{
-                        var timestamp = tag.match(/timestamp\"\:([0-9|\.|A-F]+)/);
-                        time = parseFloat(timestamp[1]) / 1000;
-                    }catch(e){
-                        mw.log("id3Tag plugin :: ERROR parsing tag : " + tag);
-                    }
-                    break;
+            if ( tag ) {
+                time = tag.timestamp / 1000;
+            } else {
+                mw.log("id3Tag plugin :: ERROR parsing tag.");
             }
             if(time) {
                 this.updatedTime = time;

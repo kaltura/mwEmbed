@@ -106,17 +106,21 @@
 			var requestCuePoints = cuePoints || this.getCuePoints();
 			var thumbCuePoint = $.grep(requestCuePoints, function (cuePoint) {
 				return (cuePoint.cuePointType == 'thumbCuePoint.Thumb');
-			});
-
+			})
+			var loadThumbnailsWithReferrer = this.embedPlayer.getFlashvars( 'loadThumbnailWithReferrer' );
+			var referrer = window.kWidgetSupport.getHostPageUrl();
 			//Create request data only for cuepoints that have assetId
 			$.each(thumbCuePoint, function (index, item) {
-				requestArray.push(
-					{
-						'service': 'thumbAsset',
-						'action': 'getUrl',
-						'id': item.assetId
-					}
-				);
+				// for some thumb cue points, assetId may be undefined from the API.
+				if (typeof item.assetId !== 'undefined') {
+					requestArray.push(
+						{
+							'service': 'thumbAsset',
+							'action': 'getUrl',
+							'id': item.assetId
+						}
+					);
+				}
 				responseArray[index] = item;
 			});
 
@@ -133,7 +137,7 @@
 						}
 					});
 					$.each(thumbCuePoint, function (index, item) {
-						item.thumbnailUrl = data[index];
+						item.thumbnailUrl = loadThumbnailsWithReferrer ? data[index] + '?options:referrer=' + referrer : data[index];
 					});
 					if (callback) {
 						callback();

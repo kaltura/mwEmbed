@@ -71,6 +71,7 @@
 			'enterfullscreen',
 			'exitfullscreen',
 			'chromecastDeviceConnected',
+			'hideConnectingMessage',
 			'chromecastDeviceDisConnected',
 			'textTracksReceived',
 			'loadEmbeddedCaptions',
@@ -132,6 +133,10 @@
 			this.bindHelper("showChromecastDeviceList", function () {
 				mw.log("EmbedPlayerNativeComponent:: showChromecastDeviceList::");
 				_this.getPlayerElement().showChromecastDeviceList();
+			});
+			this.bindHelper("sendCCRecieverMessage", function (e,msg) {
+				mw.log("EmbedPlayerNativeComponent:: sendCCRecieverMessage::");
+				_this.getPlayerElement().sendCCRecieverMessage(msg);
 			});
 			this.bindHelper("onEndedDone", function () {
 				_this.playbackDone = true;
@@ -402,7 +407,9 @@
 
 		// verify that we didn't get play right after pause or vise versa when user multiple clicks the device
 		checkPlayPauseTime: function(){
-
+			if(mw.getConfig('disableKalturaControls') === true) {
+				return true;
+			}
 			var d = new Date();
 			var t = d.getTime();
 			var executeCommand = false;
@@ -739,8 +746,15 @@
 		switchSrc: function (source) {
 			var sourceIndex = (source === -1) ? -1 : source.assetid;
 			this.getPlayerElement().switchFlavor(sourceIndex);
-		}
+		},
 
+		checkClipDoneCondition: function() {
+			mw.log( 'EmbedPlayer:nativeComponent: checkClipDoneCondition:' );
+
+			if ( mw.isAndroid() ) {
+				this.parent_checkClipDoneCondition();
+			}
+		}
 	};
 })(mediaWiki, jQuery);
 

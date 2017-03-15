@@ -140,7 +140,7 @@
 			var hlsSource = sources.filter( function ( source ) {
 				return ( source.mimeType === "application/vnd.apple.mpegurl" );
 			});
-			drmSources.push(hlsSource);
+			drmSources.concat(hlsSource);
 		}
 		embedPlayer.kalturaFlavors = drmSources;
 		embedPlayer.replaceSources(drmSources);

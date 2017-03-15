@@ -815,9 +815,12 @@
         },
 
         onId3tag: function (data) {
-			var id3Tag = base64_decode(data.data);
-			///todo  this is a temp fix until we remove the ID3 header from the content in the flash code
-			id3Tag = id3Tag.substring(id3Tag.indexOf('{'));
+			//Decode the data
+			var id3TagData = base64_decode(data.data);
+			//Get the JSON substring
+			var id3TagString = id3TagData.substring(id3TagData.indexOf("{"), id3TagData.lastIndexOf("}")+1);
+			//Parse JSON
+			var id3Tag = JSON.parse(id3TagString);
 
             this.triggerHelper('onId3Tag', id3Tag);
         },

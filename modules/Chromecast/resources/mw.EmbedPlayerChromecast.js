@@ -44,7 +44,7 @@
 		updatePlayhead: function (currentTime, duration) {
 			this.currentTime = currentTime;
 			this.vid.currentTime = currentTime;
-			if ( !this.seeking && !this.userSlide) {
+			if ( !this.seeking && !this.userSlide && duration) {
 				$(this).trigger("updatePlayHeadPercent",[ currentTime / duration ]);
 				$( this ).trigger( 'timeupdate' );
 			}
@@ -79,10 +79,29 @@
 			this.parent_pause();
 		},
 
-		switchPlaySource: function( source, switchCallback, doneCallback ){
+		canAutoPlay: function () {
+			return true;
+		},
+		changeMediaCallback: function (callback) {
+			var _this = this;
+			// Check if we have source
+			if (!this.getSource()) {
+				callback();
+				return;
+			}
+			this.switchPlaySource(this.getSource(), function () {
+				mw.setConfig("EmbedPlayer.KeepPoster",true);
+				mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
+				setTimeout(function(){
+					_this.updatePosterHTML();
+				},0);
+
+				callback();
+			});
+		},
+		switchPlaySource: function( source, switchCallback ){
 			$(this).trigger("chromecastSwitchMedia", [source.src, source.mimeType]);
 			this.vid.mediaLoadedCallback = switchCallback;
-			this.vid.mediaFinishedCallback = doneCallback;
 		},
 
 		mediaLoaded: function(mediaSession){

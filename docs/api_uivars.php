@@ -328,6 +328,12 @@ $uiVars = array(
 				'default' => 'false',
 				'example' => ''
 			),
+			'loadThumbnailsWithReferrer' => array(
+				'type' => 'Boolean',
+				'desc' => 'Flag indicating whether the KDP should append the referrer to the thumbnail serve request. Default value "false" to take advantage of caching.',
+				'default' => 'false',
+				'example' => ''
+			),
 			'noThumbnail' => array(
 				'type' => 'Boolean',
 				'desc' => 'Flag indicating whether the KDP should forgo loading the thumbnail',
