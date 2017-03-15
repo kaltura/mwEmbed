@@ -429,7 +429,7 @@
 			initConfig: function () {
 				var maxWidthPercentage = this.getConfig( 'resizable' ).maxWidth;
 				var playerWidth = this.getPlayer().getWidth();
-				var maxWidth = ( ( playerWidth * this.getConfig( 'resizable' ).maxWidthPercentage ) / 100 );
+				var maxWidth = ( ( playerWidth * maxWidthPercentage ) / 100 );
 				var minWidth = ( ( playerWidth * this.getConfig( 'secondScreen' ).sizeRatio ) / 100 );
 				var resizable = $.extend(
 					{},
