@@ -193,7 +193,7 @@
 				}
 			});
 
-			this.bind( 'updateLayout', function(){
+			this.bind( 'onCloseFullScreen onOpenFullScreen', function(){
 				if (_this.getConfig("displayCaptions") == true){
 					_this.updateTextSize();
 				}
