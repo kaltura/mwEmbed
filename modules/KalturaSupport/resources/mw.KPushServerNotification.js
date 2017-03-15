@@ -132,12 +132,11 @@
         },
         createNotificationRequest:function(eventName, eventParams, onMessage) {
             var request = {
-                'service': 'eventNotification_eventNotificationTemplate',
+                'service': 'eventnotification_eventnotificationtemplate',
                 'action': 'register',
                 'format': 1,
                 "notificationTemplateSystemName": eventName,
                 "pushNotificationParams:objectType": "KalturaPushNotificationParams"
-
             };
             var index=0;
             $.each( eventParams, function(key,value) {
