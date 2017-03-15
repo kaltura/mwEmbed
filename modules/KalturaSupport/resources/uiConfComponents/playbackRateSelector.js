@@ -126,6 +126,24 @@
 		},
 		addKeyboardShortcuts: function( addKeyCallback ){
 			var _this = this;
+			
+			//FF has different key code for the +,-,=
+			if ( mw.isFirefox() ) {
+				// Add + Sign for faster speed
+				addKeyCallback( 'shift+61', function(){
+					_this.setSpeed( _this.getFasterSpeed() );
+				});
+				// Add - Sigh for slower speed
+				addKeyCallback( 173, function(){
+					_this.setSpeed( _this.getSlowerSpeed() );
+				});
+				// Add = Sigh for normal speed
+				addKeyCallback(  61, function(){
+					_this.setSpeed( _this.getConfig('defaultSpeed') );
+				});
+				return;
+			}
+
 			// Add + Sign for faster speed
 			addKeyCallback( 'shift+187', function(){
 				_this.setSpeed( _this.getFasterSpeed() );
