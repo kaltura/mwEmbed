@@ -433,12 +433,12 @@
                         .on('click', '.q-box', function () {
                             _this.KIVQScreenTemplate.tmplReviewAnswer();
                             _this.ssReviewAnswer(parseInt($(this).attr('id')));
-                        });
+                        }).attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer');
                     $(document).off('click','.q-box-false')
                         .on('click', '.q-box-false', function () {
                             _this.KIVQScreenTemplate.tmplReviewAnswer();
                             _this.ssReviewAnswer(parseInt($(this).attr('id')));
-                        });
+                        }).attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer');
                 }
                 $('.q-box').attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer').on('keydown', _this.keyDownHandler);
                 $('.q-box-false').attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer').on('keydown', _this.keyDownHandler);
@@ -469,6 +469,7 @@
                         _this.embedPlayer.setKDPAttribute('playlistAPI','autoContinue',true);
                     }
                 }).attr('tabindex', '5').attr('role', 'button').attr('title', 'Quiz is done. Click to continue watching the video.').focus().on('keydown', _this.keyDownHandler);
+
         },
         ssReviewAnswer: function (selectedQuestion) {
             var _this = this;
