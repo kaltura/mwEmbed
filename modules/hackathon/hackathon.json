@@ -1,0 +1,9 @@
+{
+  "hackathon": {
+    "scripts": [
+      "hackathon.js"
+    ],
+    "dependencies": ["mw.KBasePlugin"],
+    "kalturaPluginName": "hackathon"
+  }
+}
