@@ -20,7 +20,8 @@
             pollsContentMapping : {}, // stores the polls questions/answers - resetting this object during ChangeMedia event
             votingProfileId: null, // used to create a voting cue point (with relevant metadata)
             userId: null, // used to mange user voting (prevent duplication of voting)
-            isPollShown: false // indicate if we actually showing a poll (all minimal poll data was retrieved and the poll can be shown)
+            isPollShown: false, // indicate if we actually showing a poll (all minimal poll data was retrieved and the poll can be shown)
+            isHandlingAnswerClick: false //indicate if we are currently handling clicked answer
         },
         /**
          * Resets poll player plugin internals
@@ -562,8 +563,17 @@
         {
             var _this = this;
 
+            //preventing simultaneously answer clicking in tablets
+            if(_this.globals.isHandlingAnswerClick) {
+                _this.log('currently handling clicked answer - ignoring request');
+                return;
+            } else {
+                _this.globals.isHandlingAnswerClick = true;
+            }
+
             if (!_this.canUserVote() || _this.voteInProgress()) {
                 _this.log('user cannot vote at the moment - ignoring request');
+                _this.globals.isHandlingAnswerClick = false;
                 return;
             }
 
@@ -575,12 +585,14 @@
                 if (isNaN(selectedAnswer))
                 {
                     _this.log('failed to get the answer identifier for user selected answer - ignoring request');
+                    _this.globals.isHandlingAnswerClick = false;
                     return;
 
                 }
 
                 if (_this.userVote.answer === selectedAnswer) {
                     _this.log('user tried to vote to currently selected answer - ignoring request');
+                    _this.globals.isHandlingAnswerClick = false;
                     return;
                 }
 
@@ -649,9 +661,12 @@
                     });
                 }
 
+                _this.globals.isHandlingAnswerClick = false;
 
             } catch (e) {
                 _this.log('failed to get update user vote in kaltura server - undo to previously selected answer (if any)');
+                //preventing simultaneously answer clicking in tablets
+                _this.globals.isHandlingAnswerClick = false;
                 _this.userVote.inProgress = false;
                 _this.userVote.answer = previousAnswer;
                 _this.view.syncDOMUserVoting();
