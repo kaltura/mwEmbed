@@ -513,29 +513,6 @@
             return new QnaEntry(cuePoint);
         },
 
-        AnswerOnAirQueueUpdate:function(currentPlayerTime){
-            var _this = this;
-            if (_this.AnswerOnAirQueue().length === 0){
-                return;
-            }
-
-            // as long as the queue is not empty and it's head contains a cue point with a valid end time (defined and not 0) - remove it.
-            while( _this.AnswerOnAirQueue().length > 0 &&
-            parseInt(_this.AnswerOnAirQueue()[0]().cuePoint().createdAt + (_this.AnswerOnAirQueue()[0]().cuePoint().endTime - _this.AnswerOnAirQueue()[0]().cuePoint().startTime)/1000) < currentPlayerTime &&
-            parseInt(_this.AnswerOnAirQueue()[0]().cuePoint().endTime) !== 0){
-                _this.AnswerOnAirQueue.shift();
-            }
-
-            if (_this.AnswerOnAirQueue().length > 0){
-                if (_this.AnswerOnAirQueue()[0]().cuePoint().endTime !== undefined && _this.AnswerOnAirQueue()[0]().cuePoint().endTime > 0){
-
-                    setTimeout(function() {
-                        _this.AnswerOnAirQueueUpdate(_this.qnaPlugin.embedPlayer.currentTime);
-                    },parseInt(_this.AnswerOnAirQueue()[0]().cuePoint().endTime) - currentPlayerTime*1000);
-                }
-            }
-        },
-
         addOrUpdateAnswerOnAir: function(item){
             var _this = this;
 
@@ -557,7 +534,6 @@
                     if (item.getType() === "AnswerOnAir"){
 
                         _this.addOrUpdateAnswerOnAir(item);
-                        _this.AnswerOnAirQueueUpdate(_this.qnaPlugin.embedPlayer.currentTime);
 
                     }
                     else {
