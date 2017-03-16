@@ -17,6 +17,7 @@
 			'smartContainerCloseEvent': 'updatedPlaybackRate'
 		},
 
+		playbackSpeedAccessibility: gM('mwe-embedplayer-speed-accessibility'),
 		isDisabled: false,
 		currentSpeed: 1,
 		manifestSource: null,
@@ -125,16 +126,27 @@
 		},
 		addKeyboardShortcuts: function( addKeyCallback ){
 			var _this = this;
+			//key code for the +,-,=
+			var fasterSpeed = 'shift+187';
+			var slowerSpeed = 189;
+			var startSpeed = 187;
+
+			//FF has different key code for +,-,=
+			if ( mw.isFirefox() ) {
+				fasterSpeed = 'shift+61';
+				slowerSpeed = 173;
+				startSpeed = 61;
+			}
 			// Add + Sign for faster speed
-			addKeyCallback( 'shift+187', function(){
+			addKeyCallback( fasterSpeed, function(){
 				_this.setSpeed( _this.getFasterSpeed() );
 			});
 			// Add - Sigh for slower speed
-			addKeyCallback( 189, function(){
+			addKeyCallback( slowerSpeed, function(){
 				_this.setSpeed( _this.getSlowerSpeed() );
 			});
 			// Add = Sigh for normal speed
-			addKeyCallback( 187, function(){
+			addKeyCallback( startSpeed, function(){
 				_this.setSpeed( _this.getConfig('defaultSpeed') );
 			});
 		},		
@@ -165,7 +177,8 @@
 					'callback': function(){
 						_this.setSpeed( speedFloat );
 					},
-					'active': active
+					'active': active,
+					'accessibility': speedFloat + " " + _this.playbackSpeedAccessibility
 				});
 				if (_this.embedPlayer.isMobileSkin() && active){
 					_this.getMenu().setActive(idx);

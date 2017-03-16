@@ -1,50 +1,50 @@
 <!DOCTYPE HTML>
 <html>
-  <head>
-	<title>Chromecast with VAST 3.0 Ad Pods</title>
-	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
-	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
-	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
-  </head>
-  <body>
-	<h1>
-		Chromecast with VAST 3.0 Ad Pods
-	</h1>
-	<br>
+<head>
+    <title>Chromecast with Ads</title>
+    <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+    <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+    <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+</head>
+<body>
+<h1>Chromecast with Ads</h1>
+<br>
 <div id="myVideoTarget" style="width:400px;height:330px;"></div>
-<h3>Ad Pods:</h3>
-This demonstrates the VAST 3.0 support for sequential ads as defined in the VAST 3 spec as <b>ad pods</b>. This demo features two prerolls from vast3 adPods schema.
-<br>
-<img src="../../kalturasupport/tests/resources/adpods_iba-net.png" style="max-width:400px">
-<br>
-See the <a href="http://www.iab.net/media/file/VASTv3.0.pdf">Vast 3.0 spec</a> for more details.
 <script>
-	kWidget.featureConfig({
-		'targetId': 'myVideoTarget',
-		'wid': '_243342',
-		'uiconf_id' : '13306622',
-		'entry_id' : '0_uka1msg4',
-		'flashvars': {
-			'vast': {
-				'plugin' : true,
-				'numPreroll':"1",
-				'prerollInterval':"1",
-				'prerollStartWith':"1",
-				'prerollUrl':"http://projects.kaltura.com/MichalR/vast3_demo.xml",
-                'numPostroll':"0",
-				'preSequence':"1"
-			},
-			'adsOnReplay':false,
-			'chromecast':{
-				'plugin': true,
-                'applicationID': 'C43947A1',
-                'receiverLogo': true,
-                'useKalturaPlayer': true
-			}
-		}
-	})
+    kWidget.featureConfig( {
+        'targetId': 'myVideoTarget',
+        'wid': '_243342',
+        'uiconf_id': '13306622',
+        'entry_id': '0_uka1msg4',
+        'flashvars': {
+            'adsOnReplay': false,
+            'chromecast': {
+                'plugin': true,
+//                'applicationID': '0307E6ED', // Google sample receiver
+//                'applicationID': '61EB4CBF', // PlayKit receiver
+                'applicationID': 'ED4BE7BD', // Dan receiver
+                'debugKalturaPlayer': false,
+                'receiverConfig': null
+            },
+            'doubleClick': {
+                'plugin': true,
+                /**
+                 * Only preroll.
+                 */
+                'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=xml_vmap1&unviewed_position_start=1&cust_params=sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=',
+                /**
+                 * Only postroll.
+                 */
+//                'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=xml_vmap1&unviewed_position_start=1&cust_params=sample_ar%3Dpostonly&cmsid=496&vid=short_onecue&correlator=',
+                /**
+                 * Preroll, midroll and postroll.
+                 */
+//                'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=xml_vmap1&unviewed_position_start=1&cust_params=sample_ar%3Dpremidpost&cmsid=496&vid=short_onecue&correlator=',
+                'disableCompanionAds': false,
+                'debugMode': false
+            }
+        }
+    } )
 </script>
-
-
-  </body>
+</body>
 </html>

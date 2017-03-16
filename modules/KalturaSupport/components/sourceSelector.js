@@ -17,10 +17,11 @@
 			'smartContainer': 'qualitySettings',
 			'smartContainerCloseEvent': 'newSourceSelected'
 		},
-
+		secondIteration: false,
 		isDisabled: false,
 		inUpdateLayout:false,
-		selectSourceTitle: gM( 'mwe-embedplayer-select_source' ),
+        sourceQuality: gM( 'mwe-embedplayer-select_source-accessibility' ),
+        selectSourceTitle: gM( 'mwe-embedplayer-select_source' ),
 		switchSourceTitle: gM( 'mwe-embedplayer-switch_source' ),
         AutoTitle: gM( 'mwe-embedplayer-auto_source' ),
 		saveBackgroundColor: null, // used to save background color upon disable and rotate and return it when enabled again to prevent rotating box around the icon when custom style is applied
@@ -30,7 +31,11 @@
 		setup: function(){
 			var _this = this;
 
-			this.bind( 'playerReady sourcesReplaced', function(){
+			this.bind( 'playerReady', function(){
+				_this.addAutoToMenu();
+			});
+
+			this.bind( 'sourcesReplaced firstPlay', function(){
 				_this.buildMenu();
 			});
 
@@ -249,13 +254,13 @@
 		},
         handleAdaptiveBitrateAndContinue: function (){
 			//Silverlight smoothStream
-			if( ( this.getPlayer().streamerType === "smoothStream" ) ){
+			if ( this.getPlayer().streamerType === "sl" ) {
 				this.addAutoToMenu();
 				return true;
 			}
 
 	        //Dash
-	        if( ( this.getPlayer().streamerType === "dash" ) ){
+	        if ( this.getPlayer().streamerType === "mpegdash" && this.secondIteration === true ){
 		        this.addAutoToMenu();
 		        return true;
 	        }
@@ -269,18 +274,23 @@
 
             if ( this.getPlayer().streamerType != "http" && !this.getPlayer().isPlaying() && !this.getPlayer().isInSequence() ){
 				if(this.getPlayer().streamerType !== "hls" && !mw.EmbedTypes.getMediaPlayers().isSupportedPlayer('kplayer')){ //If flash disabled, player fallback to http progressive, but the streamerType might still be hdnetwork
-                    return true;
+					this.addAutoToMenu();
+					return true;
                 }
-                this.addAutoToMenu();
-	            if ( this.getPlayer().streamerType == "hls" ) {
-		            return true;
+	            if ( this.getPlayer().streamerType == "hls" && this.secondIteration === true ) {
+					return true;
 	            }
+				this.secondIteration = true;
 	            return false;
             }
 
-			if ( this.getPlayer().streamerType == "http" ){
+			if ( this.getPlayer().streamerType == "hls" ){
 				this.addAutoToMenu();
-				return false;
+				return true;
+			}
+
+			if ( this.getPlayer().streamerType == "http" ){
+				return true;
 			}
 
 			if( this.getPlayer().streamerType != "http" ){ //add and select Auto for adaptive bitrate
@@ -295,7 +305,8 @@
                 'callback': function () {
                     _this.getPlayer().switchSrc(-1);
                 },
-               'active': true
+               'active': true,
+               'accessibility': _this.AutoTitle + " " +_this.sourceQuality
             });
         },
 		addSourceToMenu: function( source ){
@@ -315,7 +326,8 @@
 	                    _this.getPlayer().triggerHelper("newSourceSelected", source.getAssetId());
                         _this.getPlayer().switchSrc(source);
                     },
-                    'active': _this.isSourceSelected(source)
+                    'active': _this.isSourceSelected(source),
+                    'accessibility': sourceLabel + " " + _this.sourceQuality
                 });
             }
 		},

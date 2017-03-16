@@ -1147,7 +1147,7 @@ HTML;
 		$jsMinContent = JavaScriptMinifier::minify( $jsContent, $wgResourceLoaderMinifierStatementsOnOwnLine );
 	
 		// try to store the cached file: 
-		$this->cache-set($cachePath, $jsMinContent);
+		$this->cache->set($cachePath, $jsMinContent);
 		return $jsMinContent;
 	}
 	/**
@@ -1328,7 +1328,11 @@ HTML;
 
 <script type="text/javascript">
     var customCSS = <?php echo $customCss ?>;
-    if (['kWidget'] && !window['kWidget'].isMobileDevice() && customCSS){
+    if ( window['kWidget'] && window["kalturaIframePackageData"] && window["kalturaIframePackageData"].playerConfig && window["kalturaIframePackageData"].playerConfig.layout  && window["kalturaIframePackageData"].playerConfig.vars ) {
+           var skin = window["kalturaIframePackageData"].playerConfig.layout ? window["kalturaIframePackageData"].playerConfig.layout.skin : "kdark";
+           var mobileSkin = window['kWidget'].isChromeCast() || ( window["kalturaIframePackageData"].playerConfig.vars["EmbedPlayer.EnableMobileSkin"] === true && skin === "kdark" && window['kWidget'].isMobileDevice() && !window['kWidget'].isWindowsPhone() );
+    }
+    if (  customCSS && mobileSkin === false ) {
         var head = document.head || document.getElementsByTagName('head')[0];
         var customStyle = document.createElement('style');
         customStyle.type = 'text/css';

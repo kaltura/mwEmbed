@@ -291,13 +291,17 @@
 
                             if (playedAnAdFlag && !embedPlayer.isVideoSiblingEnabled()) {
                                 embedPlayer.switchPlaySource(_this.originalSource, function (video) {
-                                    // Make sure we pause the video
-                                    video.pause();
-                                    /* iPad iOS v4.3.1 ignore video pause (probably timing issue) */
-                                    $(video).bind('play.postSequenceComplete', function () {
+                                    if (video) {
+                                        // Make sure we pause the video
                                         video.pause();
-                                        $(video).unbind('.postSequenceComplete');
-                                    });
+                                        /* iPad iOS v4.3.1 ignore video pause (probably timing issue) */
+                                        if ( !mw.isChromeCast() ) {
+                                            $( video ).bind( 'play.postSequenceComplete', function () {
+                                                video.pause();
+                                                $( video ).unbind( '.postSequenceComplete' );
+                                            } );
+                                        }
+                                    }
                                     onPostRollDone();
                                 });
                             } else {

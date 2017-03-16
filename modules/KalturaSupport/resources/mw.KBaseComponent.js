@@ -195,7 +195,7 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 	},
 	setAccessibility : function(btn, label){
 		if (this.getConfig('accessibilityLabels')){
-			btn.html('<span class="accessibilityLabel">'+label+'</span>');
+			btn.attr('aria-label', label);
 		}
 	},
 	destroy: function(){
