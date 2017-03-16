@@ -126,34 +126,27 @@
 		},
 		addKeyboardShortcuts: function( addKeyCallback ){
 			var _this = this;
-			
-			//FF has different key code for the +,-,=
-			if ( mw.isFirefox() ) {
-				// Add + Sign for faster speed
-				addKeyCallback( 'shift+61', function(){
-					_this.setSpeed( _this.getFasterSpeed() );
-				});
-				// Add - Sigh for slower speed
-				addKeyCallback( 173, function(){
-					_this.setSpeed( _this.getSlowerSpeed() );
-				});
-				// Add = Sigh for normal speed
-				addKeyCallback(  61, function(){
-					_this.setSpeed( _this.getConfig('defaultSpeed') );
-				});
-				return;
-			}
+			//key code for the +,-,=
+			var fasterSpeed = 'shift+187';
+			var slowerSpeed = 189;
+			var startSpeed = 187;
 
+			//FF has different key code for +,-,=
+			if ( mw.isFirefox() ) {
+				fasterSpeed = 'shift+61';
+				slowerSpeed = 173;
+				startSpeed = 61;
+			}
 			// Add + Sign for faster speed
-			addKeyCallback( 'shift+187', function(){
+			addKeyCallback( fasterSpeed, function(){
 				_this.setSpeed( _this.getFasterSpeed() );
 			});
 			// Add - Sigh for slower speed
-			addKeyCallback( 189, function(){
+			addKeyCallback( slowerSpeed, function(){
 				_this.setSpeed( _this.getSlowerSpeed() );
 			});
 			// Add = Sigh for normal speed
-			addKeyCallback( 187, function(){
+			addKeyCallback( startSpeed, function(){
 				_this.setSpeed( _this.getConfig('defaultSpeed') );
 			});
 		},		
