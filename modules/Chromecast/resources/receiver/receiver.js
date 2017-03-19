@@ -72,6 +72,9 @@ var mediaElement;
  * The receiver's embed player flashvars.
  */
 var receiverFlashVars = {
+    "skipBtn": {
+        'plugin': false
+    },
     "currentTimeLabel": {
         'plugin': false
     },
@@ -361,6 +364,7 @@ function configure( config ) {
     if ( config ) {
         ReceiverLogger.log( "MediaManager", "configure", config );
         ReceiverStateManager.configure( config );
+        ReceiverQueueManager.configure( config );
     }
 }
 

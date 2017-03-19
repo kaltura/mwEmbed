@@ -22,10 +22,18 @@ $( window ).bind( 'onReceiverChangeMedia', function ( event, withAds ) {
 
 function QueueManager() {
     this.CLASS_NAME = 'ReceiverQueueManager';
+    this.UP_NEXT_POPUP_TIME = 15;
     this._init();
 }
 
 QueueManager.prototype = {
+
+    configure: function ( config ) {
+        if ( config.upNextPopupTime && typeof config.upNextPopupTime === 'number' ) {
+            this.UP_NEXT_POPUP_TIME = config.upNextPopupTime;
+        }
+    },
+
     isQueueActive: function () {
         return this._isQueueActive;
     },
@@ -133,7 +141,7 @@ QueueManager.prototype = {
 
     _onProgress: function () {
         var countdown = Math.round( mediaElement.duration - mediaElement.currentTime );
-        if ( (countdown <= 5 && !this._isCountdownDisplayed) && (!ReceiverAdsManager || !ReceiverAdsManager.isPlayingAd()) ) {
+        if ( (countdown <= this.UP_NEXT_POPUP_TIME && !this._isCountdownDisplayed) && (!ReceiverAdsManager || !ReceiverAdsManager.isPlayingAd()) ) {
             this._isCountdownDisplayed = true;
             this._loadNextMediaMetadataOnScreen( countdown );
         }

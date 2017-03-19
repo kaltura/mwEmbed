@@ -356,7 +356,7 @@
             if ( customData && customData.adsInfo ) {
                 if ( customData.adsInfo.isPlayingAd ) {
                     this.hideSpinner();
-                    this.disablePlayControls( [ 'playPauseBtn', 'chromecast', 'fullScreenBtn', 'volumeControl' ] );
+                    this.disablePlayControls( [ 'playPauseBtn', 'fullScreenBtn', 'volumeControl' ] );
                 } else {
                     this.enablePlayControls();
                 }

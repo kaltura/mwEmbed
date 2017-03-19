@@ -1309,7 +1309,16 @@
                     // ( will be updated to postroll at contentDoneFlag update time )
                 }
                 if ( _this.currentAdSlotType != 'postroll' ) {
-                    _this.restorePlayer();
+                    if(mw.isIE11() && mw.getUserOS() === 'Windows 8.1'){
+                        // for FEC-6421 workaround to cause video element rendering
+                        var videoElement = $(_this.embedPlayer.getPlayerElement());
+	                    var position = videoElement.css('position');
+	                    videoElement.css('position', '');
+	                    _this.restorePlayer();
+	                    videoElement.css('position', position);
+                    } else {
+	                    _this.restorePlayer();
+                    }
                 }
             } );
             adsListener( 'ALL_ADS_COMPLETED', function () {

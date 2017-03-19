@@ -144,6 +144,10 @@
                 'skipOffsetRemaining': 0
             };
 
+            embedPlayer.bindHelper('casting' + _this.bindPostfix, function () {
+                _this.destroy();
+            });
+
             // On change media clear out any old adTimeline bindings
             embedPlayer.bindHelper('onChangeMedia' + _this.bindPostfix, function () {
                 _this.destroy();
@@ -185,6 +189,7 @@
 				});
 
                 mw.log("AdTimeline:: load ads, trigger: AdSupport_OnPlayAdLoad");
+
                 embedPlayer.pauseLoading();
 
                 // given an opportunity for ads to load for ads to load:
