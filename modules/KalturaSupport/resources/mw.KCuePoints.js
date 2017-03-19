@@ -143,14 +143,14 @@
 							}
 						}
 					});
-
+				// Since the thumb assets request is async the callback needs to be async as well
 					if (callback) {
-						callback();
+						setTimeout(function () { callback(); }, 0);
 					}
 				});
 			} else {
 				if (callback) {
-					callback();
+					setTimeout(function () { callback(); }, 0);
 				}
 			}
 		},

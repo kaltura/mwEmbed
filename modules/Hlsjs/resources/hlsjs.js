@@ -80,7 +80,6 @@
 			isNeeded: function () {
 				if (this.getPlayer().mediaElement.selectedSource.mimeType === "application/vnd.apple.mpegurl") {
 					this.LoadHLS = true;
-					this.embedPlayer.streamerType = 'http';
 				} else {
 					this.LoadHLS = false;
 				}
