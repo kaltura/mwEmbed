@@ -361,6 +361,7 @@ function configure( config ) {
     if ( config ) {
         ReceiverLogger.log( "MediaManager", "configure", config );
         ReceiverStateManager.configure( config );
+        ReceiverQueueManager.configure( config );
     }
 }
 

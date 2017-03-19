@@ -21,9 +21,7 @@
         'flashvars': {
             'chromecast': {
                 'plugin': true,
-//                'applicationID': '0307E6ED', // Google sample receiver
-//                'applicationID': '61EB4CBF', // PlayKit receiver
-                'applicationID': 'ED4BE7BD', // Dan receiver
+                'applicationID': '61EB4CBF',
                 'debugKalturaPlayer': false,
                 'receiverConfig': {
                     'spinnerFillColor': '#962095', // Default: '#59BAF3'
@@ -38,7 +36,8 @@
                     'launchingTimeout': 10, // Default: 5 (Minutes – The time until the receiver is shutdown when he’s in launching state)
                     'loadingTimeout': 2, // Default: 5 (Minutes – The time until the receiver is shutdown when he’s in loading state)
                     'pausedTimeout': 30, // Default: 20 (Minutes – The time until the receiver is shutdown when he’s in pause state)
-                    'idleTimeout': 30 // Default: 5 (Minutes – The time until the receiver is shutdown when he’s in idle state)
+                    'idleTimeout': 30, // Default: 5 (Minutes – The time until the receiver is shutdown when he’s in idle state)
+                    'upNextPopupTime': 5 // Default: 15 (Seconds - The time the a pop up about the next media in queue will shown)
                 }
             }
         },
