@@ -371,13 +371,7 @@
                 this.hideSpinner();
             } else if ( playerState === this.REMOTE_PLAYER_STATE.BUFFERING ) {
                 this.addPlayerSpinner();
-                // TODO: Remove this workaround when Google will handle the remotePlayer issue
-                // TODO: https://code.google.com/p/google-cast-sdk/issues/detail?id=1104&q=remotePlayer
-                /* Replace this line:  */
-            } else if ( playerState === this.REMOTE_PLAYER_STATE.IDLE && this.remotePlayerState === this.REMOTE_PLAYER_STATE.PLAYING ) {
-                /* With this line:
-                 } else if ( playerState === this.REMOTE_PLAYER_STATE.IDLE && opt_idleReason === "FINISHED" ) {
-                 */
+            } else if ( playerState === this.REMOTE_PLAYER_STATE.IDLE && opt_idleReason === "FINISHED" ) {
                 this.endPlayback();
             }
         },
