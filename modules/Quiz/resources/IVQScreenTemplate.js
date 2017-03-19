@@ -17,7 +17,7 @@
             },
             tmplWelcome:function(){
                 var _this = this;
-                $(".icon-close").css("display", "none");
+                $(".icontmplWelcome-close").css("display", "none");
                 $(_this.emptyScreen()).hide().append(
                     '<div class="ivqContainer">' +
                     '<div class="welcome"></div>' +
