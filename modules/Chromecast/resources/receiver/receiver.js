@@ -310,7 +310,7 @@ function onLoad( event ) {
     // If the sender send us the media metadata, we start to load it.
     // else, we will wait until onloadmetadata will raise and then we will load it our self.
     if ( event.data.media.metadata ) {
-        loadMetadataPromise = ReceiverUtils.loadMediaMetadata( event.data.media.metadata, true );
+        loadMetadataPromise = ReceiverUtils.loadMediaMetadata( event.data.media.metadata );
     }
 
     // Player not initialized yet
@@ -347,7 +347,7 @@ function playNextMedia( mediaConfig ) {
     loadMetadataOnScreen();
 
     // If same entry is sent then reload, else perform changeMedia
-    if ( kdp.evaluate( '{mediaProxy.entry.id}' ) === mediaConfig.entryID ) {
+    if ( kdp.evaluate( '{mediaProxy.entry.id}' ) === mediaConfig.entryID && !ReceiverQueueManager.isQueueActive() ) {
         doReplay( mediaConfig );
     } else {
         doChangeMedia( mediaConfig );
@@ -361,7 +361,6 @@ function configure( config ) {
     if ( config ) {
         ReceiverLogger.log( "MediaManager", "configure", config );
         ReceiverStateManager.configure( config );
-        ReceiverQueueManager.configure( config );
     }
 }
 
@@ -389,16 +388,12 @@ function doChangeMedia( embedConfig ) {
         $( window ).trigger( "onReceiverChangeMedia", true );
         kdp.setKDPAttribute( 'doubleClick', 'adTagUrl', embedConfig.flashVars.doubleClick.adTagUrl );
 
-    } else if ( !adsPluginEnabledNow && adsPluginEnabledNext ) {
-        ReceiverLogger.log( "MediaManager", "doChangeMedia - before: no ads, now: ads" );
-        // Seems that this scenario is not possible right now
-        // Play without ads here also
+    } else {
+        if ( adsPluginEnabledNow && !adsPluginEnabledNext ) {
+            ReceiverLogger.log( "MediaManager", "doChangeMedia - before: ads, now: no ads" );
+            kdp.setKDPAttribute( 'doubleClick', 'adTagUrl', '' );
+        }
         $( window ).trigger( "onReceiverChangeMedia", false );
-
-    } else if ( adsPluginEnabledNow && !adsPluginEnabledNext ) {
-        ReceiverLogger.log( "MediaManager", "doChangeMedia - before: ads, now: no ads" );
-        $( window ).trigger( "onReceiverChangeMedia", false );
-        kdp.setKDPAttribute( 'doubleClick', 'adTagUrl', '' );
     }
     if ( embedConfig.flashVars && embedConfig.flashVars.proxyData ) {
         kdp.sendNotification( "changeMedia", {

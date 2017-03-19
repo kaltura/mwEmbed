@@ -1,46 +1,14 @@
 var ReceiverQueueManager = null;
 
-$( window ).bind( 'onReceiverKDPReady', function ( event ) {
-    ReceiverLogger.log( "ReceiverQueueManager", "event-->onReceiverKDPReady", { 'adsEnabled?': kdp.evaluate( '{doubleClick.plugin}' ) } );
-    if ( ReceiverQueueManager.isQueueActive() ) {
-        mediaElement.addEventListener( 'timeupdate', ReceiverQueueManager._onProgress.bind( ReceiverQueueManager ), false );
-    }
-} );
-
-$( window ).bind( 'onReceiverReplay', function () {
-    ReceiverLogger.log( "ReceiverQueueManager", "event-->onReceiverReplay" );
-    if ( ReceiverQueueManager.isQueueActive() ) {
-    }
-} );
-
-$( window ).bind( 'onReceiverChangeMedia', function ( event, withAds ) {
-    ReceiverLogger.log( "ReceiverQueueManager", "event-->onReceiverChangeMedia", { "withAds": withAds } );
-    if ( ReceiverQueueManager.isQueueActive() ) {
-        ReceiverQueueManager.clearNextMediaMetadata();
-    }
-} );
-
 function QueueManager() {
     this.CLASS_NAME = 'ReceiverQueueManager';
-    this.UP_NEXT_POPUP_TIME = 15;
     this._init();
 }
 
 QueueManager.prototype = {
 
-    configure: function ( config ) {
-        if ( config.upNextPopupTime && typeof config.upNextPopupTime === 'number' ) {
-            this.UP_NEXT_POPUP_TIME = config.upNextPopupTime;
-        }
-    },
-
     isQueueActive: function () {
         return this._isQueueActive;
-    },
-
-    clearNextMediaMetadata: function () {
-        this._isCountdownDisplayed = false;
-        ReceiverStateManager.clearNextMediaMetadata();
     },
 
     mediaStatusCallbackSubscribe: function ( func ) {
@@ -54,7 +22,6 @@ QueueManager.prototype = {
     },
 
     _init: function () {
-        this._isCountdownDisplayed = false;
         this._isPlayingWithQueue = false;
         this._isQueueActive = false;
         this._adsMediaStatusCallback = null;
@@ -74,9 +41,7 @@ QueueManager.prototype = {
 
     _destroy: function () {
         mediaManager.customizedStatusCallback = mediaManager.customizedStatusCallbackOrig_ReceiverQueueManager;
-        mediaElement.removeEventListener( 'timeupdate', this._onProgress );
         this._isQueueActive = false;
-        this._isCountdownDisplayed = false;
         this._isPlayingWithQueue = false;
         this._adsMediaStatusCallback = null;
     },
@@ -139,27 +104,6 @@ QueueManager.prototype = {
         return mediaStatus;
     },
 
-    _onProgress: function () {
-        var countdown = Math.round( mediaElement.duration - mediaElement.currentTime );
-        if ( (countdown <= this.UP_NEXT_POPUP_TIME && !this._isCountdownDisplayed) && (!ReceiverAdsManager || !ReceiverAdsManager.isPlayingAd()) ) {
-            this._isCountdownDisplayed = true;
-            this._loadNextMediaMetadataOnScreen( countdown );
-        }
-    },
-
-    _loadNextMediaMetadataOnScreen: function ( countdown ) {
-        ReceiverLogger.log( this.CLASS_NAME, "_loadNextMediaMetadataOnScreen" );
-        var mediaQueue = mediaManager.getMediaQueue();
-        var nextItemIndex = this._getCurrentItemIndex() + 1;
-        if ( nextItemIndex < mediaQueue.getLength() ) {
-            var nextItemObj = mediaQueue.getItems()[ nextItemIndex ];
-            var nextItemMetadata = nextItemObj.media.metadata;
-            ReceiverUtils.loadMediaMetadata( nextItemMetadata, false, countdown ).then( function ( showPreview ) {
-                ReceiverStateManager.onShowNextMediaMetadata( showPreview );
-            } );
-        }
-    },
-
     _getItemById: function ( id ) {
         var mediaQueue = mediaManager.getMediaQueue();
         var queueItems = mediaQueue.getItems();
@@ -167,19 +111,6 @@ QueueManager.prototype = {
             var item = queueItems[ i ];
             if ( item.itemId === id ) {
                 return item;
-            }
-        }
-        return null;
-    },
-
-    _getCurrentItemIndex: function () {
-        var mediaQueue = mediaManager.getMediaQueue();
-        var currentItemId = mediaQueue.getCurrentItemId();
-        var queueItems = mediaQueue.getItems();
-        for ( var i = 0; i < mediaQueue.getLength(); i++ ) {
-            var item = queueItems[ i ];
-            if ( item.itemId === currentItemId ) {
-                return i;
             }
         }
         return null;

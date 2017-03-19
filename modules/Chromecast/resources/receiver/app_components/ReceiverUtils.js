@@ -72,23 +72,15 @@ var ReceiverUtils = {
     /**
      * Loads the metadata for the given media.
      * @param metadata
-     * @param isMediaLoading
      */
-    loadMediaMetadata: function ( metadata, isMediaLoading, opt_countdown ) {
+    loadMediaMetadata: function ( metadata ) {
         ReceiverLogger.log( this.CLASS_NAME, "loadMediaMetadata", metadata );
         var deferred = $.Deferred();
         var mediaArtwork;
         if ( metadata ) {
-            if ( isMediaLoading ) {
-                $( '#cast-title' ).text( metadata.title ? metadata.title : '' );
-                $( '#cast-subtitle' ).text( metadata.subtitle ? metadata.subtitle : '' );
-                mediaArtwork = $( '#cast-artwork' );
-            } else {
-                $( '#cast-up-next-countdown' ).text( opt_countdown );
-                $( '#cast-title-next' ).text( metadata.title ? metadata.title : '' );
-                $( '#cast-subtitle-next' ).text( metadata.subtitle ? metadata.subtitle : '' );
-                mediaArtwork = $( '#cast-artwork-next' );
-            }
+            $( '#cast-title' ).text( metadata.title ? metadata.title : '' );
+            $( '#cast-subtitle' ).text( metadata.subtitle ? metadata.subtitle : '' );
+            mediaArtwork = $( '#cast-artwork' );
             var imageUrl = this._getMediaImageUrl( metadata );
             if ( imageUrl ) {
                 mediaArtwork.css( 'background-image', 'url("' + imageUrl.replace( /"/g, '\\"' ) + '")' );
