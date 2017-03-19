@@ -164,6 +164,12 @@
             return this.cuePoint().text;
         };
 
+        this.isAnswerOnAirActive = function(playerTime) {
+            var cuePoint =   this.cuePoint();
+            return playerTime>=cuePoint.createdAt &&
+                (!cuePoint.endTime || (cuePoint.createdAt +  cuePoint.endTime- cuePoint.startTime) >= playerTime);
+        };
+
         this.getTime = function(){
             return this.cuePoint().createdAt;
         };
