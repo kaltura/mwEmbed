@@ -40,7 +40,7 @@
 }
 
 .purchaseSubscription .posterWrapper {
-    background-size: cover;
+    background-size: cover !important;
 }
 
 .purchaseSubscription .itemInfo {
@@ -48,7 +48,6 @@
     bottom: 0px;
     right: 0px;
     width: 100%;
-    height: 210px;
     padding: 20px;
     font-family: Roboto;
     font-weight: 400;
@@ -56,6 +55,7 @@
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
+    padding-bottom: 30px;
 }
 
 .purchaseSubscription .itemInfo h3 {
