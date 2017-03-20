@@ -11,34 +11,22 @@
 			this.addBindings();
 			this.setConfig("purchaseOfferItems", [
 				{
-					title: "Star Wars",
-					synopsis: "The story begins thirty years after the events of Star Wars: Episode VI Return of the Jedi. The First Order has risen from the ashes of the Galactic Empire and is opposed by General Leia Organa and the Resistance, both of which seek to find the missing Jedi Master Luke Skywalker.",
-					"imageUrl": "http://preprod-mediago.s3.amazonaws.com/hackaton2016/super.jpg",
-					linkBack: "http://preprod-mediago.s3.amazonaws.com/hackaton2016/watchmovie.html"
+					title: "Star Wars: The Force Awakens",
+					synopsis: "Thirty years after defeating the Galactic Empire, Han Solo and his allies face a new threat from the evil Kylo Ren and his army of Stormtroopers.",
+					"imageUrl": "https://fanart.tv/fanart/movies/140607/moviebackground/star-wars-episode-vii-564773e6d85f8.jpg",
+					linkBack: "https://mediagowebdemo.ott.kaltura.com/movie/star-wars-the-force-awakens/445090"
 				},
 				{
-					title: "Stranger Things",
-					synopsis: "\"Stranger Things\" has become Netflix's latest smash hit. The first season of the series, set in the 1980s, from brothers Matt and Ross Duffer (\"Wayward Pines\"), which is set to return for a second season in 2017.",
-					"imageUrl": "http://preprod-mediago.s3.amazonaws.com/hackaton2016/stranger.jpg",
-					linkBack: "http://preprod-mediago.s3.amazonaws.com/hackaton2016/watchmovie.html"
+					title: "Finding Dory",
+					synopsis: "Dory is reunited with her friends Nemo and Marlin in the search for answers about her past. What can she remember? Who are her parents? And where did she learn to speak Whale?",
+					"imageUrl": "https://fanart.tv/fanart/movies/127380/moviebackground/finding-dory-574ee5493d840.jpg",
+					linkBack: "https://mediagowebdemo.ott.kaltura.com/movie/finding-dory/428755"
 				},
 				{
-					title: "Deadpool",
-					synopsis: "Wade Wilson (Ryan Reynolds) is a former Special Forces operative who now works as a mercenary. His world comes crashing down when evil scientist Ajax (Ed Skrein) tortures, disfigures and transforms him into Deadpool.",
-					"imageUrl": "http://preprod-mediago.s3.amazonaws.com/hackaton2016/deadpool.jpg",
-					linkBack: "http://preprod-mediago.s3.amazonaws.com/hackaton2016/watchmovie.html"
-				},
-				{
-					title: "Rick & Morti",
-					synopsis: "Rick Sanchez (voiced by Justin Roiland) – An eccentric and alcoholic mad scientist who is the father of Beth, the father-in-law of Jerry, and the maternal grandfather of Morty and Summer. His irresponsible tendencies lead Beth and Jerry to worry about the safety of their son Morty.",
-					"imageUrl": "http://preprod-mediago.s3.amazonaws.com/hackaton2016/rick.png",
-					linkBack: "http://preprod-mediago.s3.amazonaws.com/hackaton2016/watchmovie.html"
-				},
-				{
-					title: "Westworld",
-					synopsis: "Westworld is an American science fiction western thriller television series created by Jonathan Nolan and Lisa Joy for HBO.",
-					"imageUrl": "http://preprod-mediago.s3.amazonaws.com/hackaton2016/westworld.jpg",
-					linkBack: "http://preprod-mediago.s3.amazonaws.com/hackaton2016/watchmovie.html"
+					title: "Family Guy",
+					synopsis: "Sick, twisted, politically incorrect and Freakin' Sweet animated series featuring the adventures of the dysfunctional Griffin family. Bumbling Peter and long-suffering Lois have three kids...",
+					"imageUrl": "https://fanart.tv/fanart/tv/75978/showbackground/family-guy-57f111ef8dc5a.jpg",
+					linkBack: "https://mediagowebdemo.ott.kaltura.com/series/family-guy/445222"
 				}
 			]);
 		},
