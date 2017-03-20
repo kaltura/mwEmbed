@@ -8,6 +8,7 @@
 
 .purchaseSubscription .slick-arrow {
     z-index: 100;
+    display: none !important;
 }
 
 .purchaseSubscription .slick-prev {
@@ -39,24 +40,35 @@
 }
 
 .purchaseSubscription .posterWrapper {
-    /*position: absolute;*/
+    background-size: cover;
 }
 
 .purchaseSubscription .itemInfo {
     position: absolute;
     bottom: 0px;
     right: 0px;
-    width: 60%;
+    width: 100%;
     height: 210px;
-    padding-right: 10px;
-    padding-bottom: 10px;
+    padding: 20px;
     font-family: Roboto;
-     font-weight: 400;
+    font-weight: 400;
     font-size: 15px;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.purchaseSubscription .itemInfo h3 {
+    margin-bottom: 0px;
+    font-size: 22px;
+}
+.purchaseSubscription .itemInfo .synopsis {
+    margin-top: 7px;
+    color: rgba(255,255,255,0.7);
 }
 
 .purchaseSubscription .posterShade {
-    background: linear-gradient(to top,#000,rgba(0,0,0,.3) 40%,rgba(0,0,0,0));
+    background: linear-gradient(to top,rgba(0,0,0,0.7),rgba(0,0,0,0));
     width: 100%;
     height: 100%;
 }
@@ -66,15 +78,11 @@
 }
 
 .purchaseSubscription .button {
-    background: #3498db;
-    background-image: -webkit-linear-gradient(top, #3498db, #2980b9);
-    background-image: -moz-linear-gradient(top, #3498db, #2980b9);
-    background-image: -ms-linear-gradient(top, #3498db, #2980b9);
-    background-image: -o-linear-gradient(top, #3498db, #2980b9);
-    background-image: linear-gradient(to bottom, #3498db, #2980b9);
+    background: #59baf3;
     font-family: Arial;
     color: #ffffff;
     font-size: 15px;
+    border-radius: 20px;
     padding: 10px 20px 10px 20px;
     text-decoration: none;
 }
