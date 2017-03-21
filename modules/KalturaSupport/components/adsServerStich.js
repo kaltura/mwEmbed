@@ -94,20 +94,17 @@
                     for (var i = 0 ; i < data.ads.length; i++){
                         var currentAd = data.ads[i] ;
                         //ignore autoskip for now - look at only true ads
-                        if (1==1){
-                           var currentOffset = offset + currentAd.offset ;
-                            currentAd.clickURL = "http://www.google.com";
-                            if (currentOffset == 0){
-                                _this.trackAd(currentAd,currentOffset);
-                                if (currentAd.clickURL) {
-                                    _this.addClickURL(currentAd.clickURL , currentOffset + currentAd.duration);
-                                }
-                            } else {
-                                _this.cuePoints.push({offset:currentOffset,ad:currentAd,isDone:false});
+                        var currentOffset = offset + currentAd.offset ;
+                        currentAd.clickURL = currentAd.clickThrough;
+                        if (currentOffset == 0){
+                            _this.trackAd(currentAd,currentOffset);
+                            if (currentAd.clickURL) {
+                                _this.addClickURL(currentAd.clickURL , currentOffset + currentAd.duration);
                             }
-                            totalInternalOffset +=currentOffset + currentAd.duration;
+                        } else {
+                            _this.cuePoints.push({offset:currentOffset,ad:currentAd,isDone:false});
                         }
-
+                        totalInternalOffset +=currentOffset + currentAd.duration;                  
                     }
                 }
 
