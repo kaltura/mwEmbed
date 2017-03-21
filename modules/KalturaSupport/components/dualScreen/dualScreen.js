@@ -1,4 +1,4 @@
-(function ( mw, $ ) {
+(function ( mw, $ ,Hls) {
 	"use strict";
 	mw.PluginManager.add( 'dualScreen', mw.KBaseComponent.extend( {
 
@@ -1132,4 +1132,4 @@
 	);
 }
 
-)( window.mw, window.jQuery );
+)( window.mw, window.jQuery,window.Hls);
