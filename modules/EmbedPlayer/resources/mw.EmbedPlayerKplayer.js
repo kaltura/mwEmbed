@@ -883,6 +883,9 @@
 				fileExt = 'smil';
 			} else if (this.streamerType === 'live') {
 				format = 'rtmp';
+			} else if (this.streamerType === 'hdnetworkmanifest') {
+				format = this.streamerType;
+				mediaProtocol = 'http';
 			} else {
 				format = this.streamerType;
 				if (format == 'http') {
