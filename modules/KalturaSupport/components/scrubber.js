@@ -432,17 +432,15 @@
 		},
 		updateAttr: function (ui) {
 			var perc = ui.value / 1000;
-			var $slider = this.$el.find('.ui-slider-handle');
+			var $slider = this.$el;
 			var title = mw.seconds2npt(perc * this.embedPlayer.getDuration());
+			var totalDuration = mw.seconds2npt(this.embedPlayer.getDuration());
 			var attributes = {
 				'data-title': title,
-				'aria-valuetext': mw.seconds2npt(perc * this.embedPlayer.getDuration()),
+				'aria-valuetext': title + " of " + totalDuration,
 				'aria-valuenow': parseInt(perc * 100) + '%'
 			};
 			$slider.attr(attributes);
-			if (this.getConfig('accessibilityLabels')) {
-				$slider.html('<span class="accessibilityLabel">' + title + '</span>');
-			}
 		},
         getPlayHeadComponent: function () {
             return this.getComponent().find('.playHead');

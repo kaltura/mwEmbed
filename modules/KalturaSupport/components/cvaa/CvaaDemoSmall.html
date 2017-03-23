@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Cvaa Demo</title>
+	<script type="text/javascript" src="../../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../../docs/js/doc-bootstrap.js"></script>
+	<script>mw.setConfig('forceMobileHTML5', true);</script>
+</head>
+<body>
+	<h1>Captions styles menu</h1>
+	<div id="kaltura_player" style="width: 320px; height: 180px;float: left;"></div>
+	<br style="clear: both;" /><br />
+	<h1> Caption Styles Api </h1>
+<pre>
+<h3>It is possible to update styles via API call, using the following object format:</h3>
+ kWidget.addReadyCallback( function( playerId ){
+    var kdp = document.getElementById( playerId );
+     kaltura_player.sendNotification("newCaptionsStyles",
+       {
+           "fontFamily": "Courier New, Courier, Nimbus Mono L, Cutive Mono, monospace",
+           "fontColor": "rgb(123, 33, 111, 0.8)",
+           "fontSize": "3em",
+           "backgroundColor": "rgba(1, 1, 1, 0.5)",
+           "windowColor": "rgba(255, 255, 0, 0.8)",
+           "charEdgeStyle": "rgb(34, 34, 34) 2px 2px 3px, rgb(34, 34, 34) 2px 2px 4px, rgb(34, 34, 34) 2px 2px 5px"
+       }
+     );
+ });
+
+<h3>Additionally you can set up the default styles settings, using "cvaaDefault" flashvar:</h3>
+        'flashvars': {
+            'cvaa':{
+                'cvaaDefault': {
+                     'fontFamily': "Arial, Roboto, Arial Unicode Ms, Helvetica, Verdana, PT Sans Caption, sans-serif",
+                     'fontColor': "#ffffff",
+                     'fontOpacity': 100,
+                     'fontSize': 12,
+                     'backgroundColor': "#000000",
+                     'backgroundOpacity': 75,
+                     'windowColor': "#ffffff",
+                     'windowOpacity': 0,
+                     'edgeStyle': "none"
+                 }
+             }
+         }
+
+<b>NOTE:</b>The caption menu style settings are saved using cookies per page, you can disable cookies,
+However upon page refresh the settings will not be saved and the default will be used.
+To disable cookie for the plugin set the following flashvar to false:
+
+        'flashvars': {
+            'cvaa':{
+                'useCookie': false
+             }
+         }
+</pre>
+
+<script>
+	kWidget.featureConfig({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id': '20540612',
+		'entry_id': '0_uka1msg4',
+		'flashvars': {
+		    'EmbedPlayer.EnableMobileSkin': true,
+			'disableTrackElement': true,
+			'closedCaptions': {
+				'enableOptionsMenu': true,
+				"hideClosedCaptions": false
+			},
+			'cvaa':{
+				'useCookie': true
+			}
+//			'controlBarContainer': {
+//                'hover': false
+//			}
+//            'smartContainer': {
+//                'plugin': true,
+//                'tooltip': 'Global Settings',
+//                'config':{
+//                    'plugins':[
+//                        {
+//                            'pluginName':'closedCaptions',
+//                            'properties':[
+//                                {
+//                                    'property':'captions',
+//                                    'label': 'Language:',
+//                                    'type': 'enum'
+//                                }
+//                            ]
+//                        }
+//                    ]
+//                }
+//            }
+		}
+	});
+</script>
+</body>
+</html>

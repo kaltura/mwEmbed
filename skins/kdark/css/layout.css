@@ -60,6 +60,9 @@ body {
     display: block;
     height: 4.8em;
 }
+.mobileSkin.size-tiny .topBarContainer.open {
+    height: 4em;
+}
 .mobileSkin.size-small.fullscreen .topBarContainer, .mobileSkin.size-tiny.fullscreen .topBarContainer {
     display: block;
 }
@@ -194,6 +197,9 @@ body {
 .mobileSkin.size-small .titleLabel{
     font-size: 1.5em;
 }
+.mobileSkin.size-tiny .titleLabel{
+    font-size: 1.2em;
+}
 
 .ua-chromecast.pause-state .titleLabel{
     display: block !important;
@@ -227,11 +233,11 @@ body {
 	bottom: 0;
 	width: 100%;
 
-	-webkit-transition: bottom 0.3s ease-in;
-	-moz-transition: bottom 0.3s ease-in;
-	-o-transition: bottom 0.3s ease-in;
-	-ms-transition: bottom 0.3s ease-in;
-	transition: bottom 0.3s ease-in;
+	-webkit-transition: bottom 0.3s ease-in, visibility 0.3s ease-in;
+	-moz-transition: bottom 0.3s ease-in, visibility 0.3s ease-in;
+	-o-transition: bottom 0.3s ease-in, visibility 0.3s ease-in;
+	-ms-transition: bottom 0.3s ease-in, visibility 0.3s ease-in;
+	transition: bottom 0.3s ease-in, visibility 0.3s ease-in;
 }
 
 
@@ -242,9 +248,11 @@ body {
 .controlBarContainer.hover {
 	bottom: -4.2em;
 	z-index: 100;
+	visibility: hidden;
 }
 .controlBarContainer.open {
 	bottom: 0;
+	visibility: visible;
 }
 .mobileSkin.start-state .controlBarContainer{
 	display: none;
@@ -268,6 +276,10 @@ body {
     outline: 0;
     text-shadow: none;
     -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+.mobileSkin.size-tiny .btn{
+	font-size: 2em;
+	width: 1.6em;
 }
 .mobileSkin .btn:focus {
     outline: 0;
@@ -415,7 +427,7 @@ body {
 	margin: -0.79em 0 0 -1em;
 	text-decoration: none;
 	padding: 12px 20px 12px 25px;
-    z-index: 1;
+    z-index: 3;
 }
 .largePlayBtnBorder{
 	border-radius: 0.1em;
@@ -928,6 +940,9 @@ body {
 .mobileSkin.fullscreen .timers{
     font-size: 1.1em;
 }
+.mobileSkin.size-tiny .timers{
+    font-size: 0.9em;
+}
 .mobileSkin .liveStatus{
     font-family: 'icomoon';
 }
@@ -965,8 +980,10 @@ body {
     top: inherit;
     text-shadow: 0px 1px 2px rgba(0,0,0,0.20);
 }
-.mobileSkin.start-state.size-small .currentTimeLabel {
-    font-size: 1.2em;
+.mobileSkin.start-state.size-small .currentTimeLabel, .mobileSkin.start-state.size-tiny .currentTimeLabel {
+    font-size: 1.1em;
+	right: 0.6em;
+	bottom: 0.6em;
 }
 
 .durationLabel {
@@ -1056,6 +1073,9 @@ body {
     letter-spacing: 0;
     border-radius: 10px;
 }
+.mobileSkin.size-tiny .alert-container{
+    padding-top: 10px;
+}
 .alert {
 	display: table-cell;
 	width: 100%;
@@ -1074,9 +1094,15 @@ body {
     background-color: transparent;
     border: 0px solid black;
 }
+.mobileSkin.size-tiny .alert-title {
+    font-size: 14px !important;
+}
 .mobileSkin .alert-message {
     font-size: 18px !important;
     font-weight: bold !important;
+}
+.mobileSkin.size-tiny .alert-message {
+    font-size: 11px !important;
 }
 .mobileSkin .alert-buttons-container {
     padding-bottom: 0px !important;
@@ -1201,11 +1227,17 @@ body {
     display: none !important;
 }
 .closedCaptions > .dropdown-menu {
-	overflow-y:auto;
-	overflow-x:hidden;
-	max-height:200px;
-	width:auto;
-	max-width:140px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	max-height: 200px;
+	width: auto;
+	max-width: 140px;
+}
+
+@media (max-height: 220px) {
+	.closedCaptions > .dropdown-menu {
+		max-height: 120px;
+	}
 }
 
 .dropup .dropdown-submenu > .dropdown-menu {
@@ -1248,6 +1280,9 @@ body {
     box-shadow: none;
     height: 4.2em;
     width: 100%;
+}
+.mobileSkin.size-tiny .controlsContainer{
+    height: 3em;
 }
 .ui-tooltip {
 	background-color: #000000;
@@ -1421,11 +1456,17 @@ body {
     box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.20);
     outline: none;
 }
-.mobileSkin.size-small .largePlayBtn {
+.mobileSkin.size-small .largePlayBtn{
     font-size: 2.1em;
     width: 60px;
     height: 60px;
     border-radius: 60px;
+}
+.mobileSkin.size-tiny .largePlayBtn{
+    font-size: 1.8em;
+    width: 50px;
+    height: 50px;
+    border-radius: 50px;
 }
 .largePlayBtn:hover {
 	background-color: rgba(0,0,0,1);
@@ -1587,6 +1628,9 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 .fullscreen.mobileSkin .fullScreenBtn {
     float: left;
 }
+.mobileSkin.size-tiny .fullScreenBtn {
+    margin-top: 3px;
+}
 .playPauseBtn {
 	width: 3.3em;
 }
@@ -1662,6 +1706,7 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 .watermark {
 	position: absolute;
 	padding: 5px;
+	z-index: 2;
 }
 .mobileSkin:not(.pluginsScreenOpened) .watermark {
     z-index: 2;
@@ -1926,6 +1971,13 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
     -moz-animation: rotating 0.8s linear infinite;
     animation: rotating 0.8s linear infinite;
 }
+.mobileSkin.size-tiny .customSpinner{
+	margin-top: -44px;
+	margin-left: -44px;
+	width: 36px;
+	height: 36px;
+	border-radius: 36px;
+}
 .mobileSkin .videoShadow{
     background: rgba(0,0,0,0.5);
     position: absolute;
@@ -1991,25 +2043,7 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
     -o-transition: top 0.3s ease-in-out;
     transition: top 0.3s ease-in-out;
 }
-.trackWindow{
-    display: inline-block;
-    padding: 5px;
-    margin: 0 15px 0 15px;
- }
 /* used to detect when the css file finished loading */
 .cssChecker{
     display: none !important;
-}
-.logo360{
-	position: absolute;
-}
-.logo360.bottomRight{
-	bottom: 0;
-	right: 0;
-	padding:5px 20px;
-}
-.logo360 img{
-	width: 70px;
-	height: auto;
-	opacity:0.7;
 }

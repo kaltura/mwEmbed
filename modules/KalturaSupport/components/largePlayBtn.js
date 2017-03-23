@@ -8,6 +8,9 @@
 			'togglePause': true,
 			'order': 1
 		},
+		playLabel: gM('mwe-embedplayer-play_clip'),
+		pauseLabel: gM('mwe-embedplayer-pause_clip'),
+
 		setup: function() {
 			this.addBindings();
 		},
@@ -37,6 +40,7 @@
 					} else {
 						_this.getComponent().removeClass( "icon-pause" ).addClass( "icon-play" );
 					}
+					_this.setAccessibility(_this.getComponent(), _this.playLabel);
 					_this.show();
 				}
 			});
@@ -55,6 +59,7 @@
 			});
 			this.bind('onPlayerStateChange', function(e, newState, oldState){
 				if( newState == 'load' || newState == 'play' ){
+					_this.setAccessibility(_this.getComponent(), _this.pauseLabel);
 					_this.hide(true);
 				}
 				if( newState == 'pause' && _this.getPlayer().isPauseLoading && !mw.isChromeCast()){
@@ -139,7 +144,8 @@
 					.attr( {
 						'tabindex': '-1',
 						'href' : '#',
-						'title' : gM( 'mwe-embedplayer-play_clip' ),
+						'role': 'button',
+						'title' : this.playLabel,
 						'class'	: "icon-play " + this.getCssClass()
 					} )
 					.hide()
