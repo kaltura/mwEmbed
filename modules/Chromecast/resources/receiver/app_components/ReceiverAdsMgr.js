@@ -159,15 +159,6 @@ AdsManager.prototype = {
             } else if ( isIdle && !this.allAdsCompleted ) {
                 mediaStatus.playerState = StateManager.State.PLAYING;
             }
-            // TODO: Remove this workaround when Google will handle the remotePlayer issue
-            // TODO: https://code.google.com/p/google-cast-sdk/issues/detail?id=1104&q=remotePlayer
-            /* -----> */
-            else if ( isIdle && this.allAdsCompleted ) {
-                if ( mediaStatus.idleReason === 'FINISHED' || mediaStatus.idleReason == 'CANCELED' || mediaStatus.idleReason == 'INTERRUPTED' ) {
-                    mediaStatus.idleReason = null;
-                }
-            }
-            /* <----- */
         } else if ( mediaStatus.playerState === StateManager.State.PLAYING ) {
             this.startPlayingWithAds = true;
         }

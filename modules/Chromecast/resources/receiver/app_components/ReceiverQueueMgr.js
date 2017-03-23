@@ -126,9 +126,6 @@ QueueManager.prototype = {
         mediaStatus = this._adsMediaStatusCallback ? this._adsMediaStatusCallback( mediaStatus ) : mediaStatus;
         if ( this._isPlayingWithQueue ) {
             if ( mediaStatus.playerState === StateManager.State.IDLE ) {
-                if ( mediaStatus.idleReason === 'FINISHED' || mediaStatus.idleReason === 'CANCELED' || mediaStatus.idleReason === 'INTERRUPTED' ) {
-                    mediaStatus.idleReason = null;
-                }
                 mediaStatus.playerState = StateManager.State.PLAYING;
             }
         } else if ( mediaStatus.playerState === StateManager.State.PLAYING ) {

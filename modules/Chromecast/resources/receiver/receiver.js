@@ -203,9 +203,6 @@ function startReceiver() {
     mediaManager.onErrorOrig = mediaManager.onError.bind( mediaManager );
     mediaManager.onError = onError.bind( this );
 
-    mediaManager.customizedStatusCallbackOrig = mediaManager.customizedStatusCallback;
-    mediaManager.customizedStatusCallback = customizedStatusCallback.bind( this );
-
     // Init message bus and setting his event
     messageBus = receiverManager.getCastMessageBus( 'urn:x-cast:com.kaltura.cast.player' );
     messageBus.onMessage = onMessage.bind( this );
@@ -217,19 +214,6 @@ function startReceiver() {
 }
 
 /***** Media Manager Events *****/
-
-// TODO: Remove this workaround when Google will handle the remotePlayer issue
-// TODO: https://code.google.com/p/google-cast-sdk/issues/detail?id=1104&q=remotePlayer
-/* -----> */
-function customizedStatusCallback( mediaStatus ) {
-    if ( mediaStatus.playerState === StateManager.State.IDLE ) {
-        if ( mediaStatus.idleReason === 'FINISHED' || mediaStatus.idleReason === 'CANCELED' || mediaStatus.idleReason === 'INTERRUPTED' ) {
-            mediaStatus.idleReason = null;
-        }
-    }
-    return mediaStatus;
-}
-/* <----- */
 
 /**
  * Override callback for media manager onError.
