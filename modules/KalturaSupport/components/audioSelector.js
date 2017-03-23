@@ -131,8 +131,20 @@
 					this.log("found default language by key: " + defaultStreams[0].language);
 					return defaultStreams[0];
 				}
+
+				//Fallback to previous index based selection
+				if (!this.streams[defaultLangIndex]){
+					this.log("warn - language key "+ defaultLangName +" not found, and default language by index " + defaultLangIndex + " doesn't exist!");
+					return null;
+				}
 				this.log("warn - language key "+ defaultLangName +" not found, get default language by index: " + this.streams[defaultLangIndex].language);
 				return this.streams[defaultLangIndex];
+			}
+
+			//Fallback to previous index based selection
+			if (!this.streams[defaultLangIndex]){
+				this.log("warn - language with index " + defaultLangIndex + " doesn't exist!");
+				return null;
 			}
 			this.log("found default language by index: " + this.streams[defaultLangIndex].language);
 			return this.streams[defaultLangIndex];
