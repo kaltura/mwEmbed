@@ -715,7 +715,8 @@
                         .css( {
                             'position': 'absolute',
                             'top': '0px',
-                            'left': '0px'
+                            'left': '0px',
+                            'z-index': -1
                         } )
                 );
                 this.addCountdownNotice();
