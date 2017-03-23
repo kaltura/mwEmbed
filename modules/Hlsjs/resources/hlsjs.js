@@ -114,6 +114,8 @@
 					//Init the HLS playback engine
 					this.hls = new Hls(hlsConfig);
 
+					this.embedPlayer.liveSyncDurationOffset = (this.fragmentDuration || 10) * this.hls.config.liveSyncDurationCount;
+
 					this.loaded = true;
 					//Reset the error recovery counter
 					this.mediaErrorRecoveryCounter = 0;
@@ -387,6 +389,7 @@
 				if (data && data.frag) {
 					if (data.frag.duration) {
 						this.fragmentDuration = data.frag.duration;
+						this.embedPlayer.liveSyncDurationOffset = this.fragmentDuration * this.hls.config.liveSyncDurationCount;
 					}
 
 					if (this.isLevelSwitching &&
@@ -611,7 +614,7 @@
                 var _this = this;
                 var vid = this.getPlayer().getPlayerElement();
                 this.embedPlayer.goingBackToLive = true;
-                vid.currentTime = vid.duration - (this.fragmentDuration || 10) * 3;
+                vid.currentTime = vid.duration - this.embedPlayer.liveSyncDurationOffset;
                 if ( this.embedPlayer.isDVR() ) {
                     _this.once( 'seeked', function () {
 	                    _this.getPlayer().triggerHelper( 'movingBackToLive' );

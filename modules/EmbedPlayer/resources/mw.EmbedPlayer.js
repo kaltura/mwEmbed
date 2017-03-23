@@ -303,6 +303,8 @@
 		//the offset in hours:minutes:seconds from the playable live edge.
 		liveEdgeOffset: 0,
 
+		liveSyncDurationOffset:0,
+
 		/**
 		 * embedPlayer
 		 *
@@ -1209,7 +1211,10 @@
 		},
 		setDuration: function (newDuration) {
 			this.duration = newDuration;
-			$(this).trigger('durationChange', [newDuration]);
+			if(this.isLive() && this.isDVR()){
+				this.duration -= this.liveSyncDurationOffset;
+			}
+			$(this).trigger('durationChange', [this.duration]);
 		},
 
 		/**
