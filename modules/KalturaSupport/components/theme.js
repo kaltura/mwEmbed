@@ -82,8 +82,14 @@
 						$(".mwPlayerContainer:not(.mobileSkin)").find(".controlsContainer").attr("style","background: " + value + " !important");
 						break;
 					case 'scrubberColor':
-						$(".mwPlayerContainer:not(.mobileSkin)").find(".playHead").attr("style","background-color: " + value );
-						$(".mwPlayerContainer:not(.mobileSkin)").find(".playHead").attr("style","background:"  + value );
+						if ( mw.isIE8() ) {
+							$(".mwPlayerContainer:not(.mobileSkin)").find(".playHead").attr("style","background-color: " + value );
+							$(".mwPlayerContainer:not(.mobileSkin)").find(".playHead").attr("style","background:"  + value );
+						}
+						else {
+							$(".mwPlayerContainer:not(.mobileSkin)").find(".playHead").attr("style","background-color: " + value + " !important" );
+							$(".mwPlayerContainer:not(.mobileSkin)").find(".playHead").attr("style","background:"  + value + " !important" );
+						}
 						$(".mwPlayerContainer.mobileSkin").find(".playHead").attr("style","background: radial-gradient(ellipse at center, "  + value.replace('rgb','rgba').replace(')',',1)') + "0%," + value.replace('rgb','rgba').replace(')',',1)') + "30%," + value.replace('rgb','rgba').replace(')',',0)') + "31%," + value.replace('rgb','rgba').replace(')',',0)') +  "100% !important");
 						$(".mwPlayerContainer.mobileSkin").find(".playHead.ui-state-active").attr("style","background: radial-gradient(ellipse at center, "  + value.replace('rgb','rgba').replace(')',',1)') + "0%," + value.replace('rgb','rgba').replace(')',',1)') + "30%," + value.replace('rgb','rgba').replace(')',',0.3)') + "31%," + value.replace('rgb','rgba').replace(')',',0.3)') +  "100% !important");
 						break;
