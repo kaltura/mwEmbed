@@ -288,22 +288,19 @@
                                 // Run the clipdone event:
                                 embedPlayer.onClipDone();
                             }
-
                             if (playedAnAdFlag && !embedPlayer.isVideoSiblingEnabled()) {
-                                embedPlayer.switchPlaySource(_this.originalSource, function (video) {
-                                    if (video) {
-                                        // Make sure we pause the video
-                                        video.pause();
-                                        /* iPad iOS v4.3.1 ignore video pause (probably timing issue) */
-                                        if ( !mw.isChromeCast() ) {
-                                            $( video ).bind( 'play.postSequenceComplete', function () {
-                                                video.pause();
-                                                $( video ).unbind( '.postSequenceComplete' );
-                                            } );
-                                        }
+                                embedPlayer.switchPlaySource( _this.originalSource, function () {
+                                    // Make sure we pause the video
+                                    _this.embedPlayer.getPlayerElement().pause();
+                                    /* iPad iOS v4.3.1 ignore video pause (probably timing issue) */
+                                    if (!mw.isChromeCast()) {
+                                        $( _this.embedPlayer.getPlayerElement()).bind('play.postSequenceComplete', function () {
+                                            _this.embedPlayer.getPlayerElement().pause();
+                                            $( _this.embedPlayer.getPlayerElement()).unbind('.postSequenceComplete');
+                                        });
                                     }
                                     onPostRollDone();
-                                });
+                                } );
                             } else {
                                 onPostRollDone();
                             }
