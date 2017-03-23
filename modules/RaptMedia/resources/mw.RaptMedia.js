@@ -371,8 +371,6 @@
 		},
 
 		raptMediaResize: function() {
-			this.$el.width(this.getPlayer().getVideoHolder().width());
-			this.$el.height(this.getPlayer().getVideoHolder().height());
 			this.raptMediaEngine.resize({
 				width: this.getPlayer().getVideoHolder().width(),
 				height: this.getPlayer().getVideoHolder().height() 

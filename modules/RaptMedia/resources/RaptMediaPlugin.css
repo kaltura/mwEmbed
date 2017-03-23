@@ -1,5 +1,4 @@
 #raptMediaOverlay {
-	background-color: #000; 
-	opacity:1; 
+	position: absolute;
 	z-index:1000;
 }
