@@ -517,7 +517,11 @@
         },
 
         isSafeEnviornment: function () {
-            return !mw.isIphone() && !mw.isIE8();
+            if ( mw.isIphone() && mw.getConfig("EmbedPlayer.WebKitPlaysInline") !== true ){
+                return false;
+            }
+
+            return !mw.isIE8();
         }
     });
 
