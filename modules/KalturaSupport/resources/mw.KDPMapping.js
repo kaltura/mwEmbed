@@ -1254,11 +1254,11 @@
 							embedPlayer.referenceId = notificationData.referenceId;
 						}
 
-                        if ( typeof notificationData.mediaProxy === 'string' ) {
+                        if ( typeof notificationData.proxyData === 'string' ) {
                             try {
-                                notificationData.mediaProxy = JSON.parse( notificationData.mediaProxy );
+                                notificationData.proxyData = JSON.parse( notificationData.proxyData );
                             } catch ( e ) {
-                                mw.log("Unable to parse mediaProxy", notificationData.mediaProxy);
+                                mw.log("Unable to parse proxyData", notificationData.proxyData);
                                 embedPlayer.changeMediaStarted = false;
                                 return;
                             }
