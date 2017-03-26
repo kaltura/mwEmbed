@@ -202,8 +202,10 @@ onload = function () {
 												if (mediaElement.duration) {
 													mediaElement.removeEventListener("durationchange", updateDuration, false);
 													var mediaInfo = mediaManager.getMediaInformation();
-													mediaInfo.duration = mediaElement.duration;
-													mediaManager.setMediaInformation(mediaInfo);
+													if (mediaInfo && mediaElement.duration > 0) {
+                                                        mediaInfo.duration = mediaElement.duration;
+                                                        mediaManager.setMediaInformation( mediaInfo );
+                                                    }
 												}
 											};
 											mediaElement.addEventListener("durationchange", updateDuration, false);
