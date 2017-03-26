@@ -164,12 +164,10 @@
                     return;
                 }
             }
-			if( this.embedPlayer.isDVR() ) {
-				if ( this.duration < 1800 ) {
-					var relativeEdge = this.calculateRelativeLiveEdge(val);
-					if ( !relativeEdge ) {
-						this.getComponent().slider('option', 'value', val);
-					}
+			if( this.embedPlayer.isDVR() && this.duration < 1800 ) {
+				var relativeEdge = this.calculateRelativeLiveEdge(val);
+				if ( !relativeEdge ) {
+					this.getComponent().slider('option', 'value', val);
 				}
 			} else {
 				this.getComponent().slider('option', 'value', val);
@@ -185,7 +183,7 @@
             }
             var playHeadPercent = (this.getPlayHeadComponent().position().left + this.getPlayHeadComponent().width()/2) / this.getComponent().width();
             playHeadPercent = parseInt(playHeadPercent*100);
-            if( this.getPlayer().isLiveOffSynch() && playHeadPercent >= this.liveEdge ){
+            if( this.getPlayer().isLiveOffSynch() && ( playHeadPercent >= this.liveEdge || this.embedPlayer.getLiveEdgeOffset() < 10 )){
                 this.getPlayer().setLiveOffSynch(false);
             }
         },
