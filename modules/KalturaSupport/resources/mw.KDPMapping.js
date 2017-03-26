@@ -1254,6 +1254,15 @@
 							embedPlayer.referenceId = notificationData.referenceId;
 						}
 
+                        if ( typeof notificationData.mediaProxy === 'string' ) {
+                            try {
+                                notificationData.mediaProxy = JSON.parse( notificationData.mediaProxy );
+                            } catch ( e ) {
+                                mw.log("Unable to parse mediaProxy", notificationData.mediaProxy);
+                                embedPlayer.changeMediaStarted = false;
+                                return;
+                            }
+                        }
 						// Update the proxy data
 						embedPlayer.setKalturaConfig("proxyData", notificationData.proxyData);
 						embedPlayer.setKalturaConfig("proxyData", "data", notificationData.proxyData);
@@ -1275,7 +1284,7 @@
 						embedPlayer.updatePoster();
 
 						// if data is injected via changeMedia, re-load into iframe inject location:
-						if( notificationData.mediaProxy ){
+                        if ( notificationData.mediaProxy ) {
 							window.kalturaIframePackageData.entryResult = notificationData.mediaProxy;
 							// update plugin possition. Future refactor should treat mediaProxy as plugin  
 							embedPlayer.playerConfig.plugins['mediaProxy'] = notificationData.mediaProxy;
