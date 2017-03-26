@@ -54,18 +54,20 @@
 			// If our user ID is the same as the configured anonymousUserId we need to generate one, or get it from localStorage (if exists)
 			if (!_this.getConfig("userRole") || _this.getConfig("userRole") === "anonymousRole"){
 
+				var userId = _this.generateUserId();
 				//if localStorage is available, get & store the user id from it;
 				if (window.localStorage) {
 					try {
 						if (!localStorage.kAnonymousUserId) {
-							localStorage.kAnonymousUserId = _this.generateUserId();
+							localStorage.kAnonymousUserId = userId;
 						}
-						return localStorage.kAnonymousUserId;
+						userId = localStorage.kAnonymousUserId;
 					}catch(e) {
 						mw.log("Exception in getUserID: "+e);
 					}
 				}
-				return _this.generateUserId();
+				mw.log("Using kAnonymousUserId: ",userId);
+				return userId;
 			}
 			return _this.getConfig("userId");
 		},
