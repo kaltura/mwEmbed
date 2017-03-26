@@ -1216,16 +1216,24 @@
 					embedPlayer.emptySources();
 					break;
 				case 'changeMedia':
+					var validProxyData = true;
+                    if ( notificationData.proxyData && typeof notificationData.proxyData === 'string' ) {
+                        try {
+                            notificationData.proxyData = JSON.parse( notificationData.proxyData );
+                        } catch ( e ) {
+                            mw.log("Unable to parse proxyData", notificationData.proxyData);
+                            validProxyData = false;
+                        }
+                    }
 					// Check changeMedia if we don't have entryId and referenceId and they both not -1 - Empty sources
-					if( ( ! notificationData.entryId || notificationData.entryId == "" || notificationData.entryId == -1 )
-						&& ( ! notificationData.referenceId || notificationData.referenceId == "" || notificationData.referenceId == -1 ) 
-						// check for mediaProxy based override: 
-						&& !notificationData.mediaProxy
-					){
-						mw.log( "KDPMapping:: ChangeMedia missing entryId or refrenceid, empty sources.")
-						embedPlayer.emptySources();
-						break;
-					}
+                    if ( !validProxyData || (( !notificationData.entryId || notificationData.entryId === "" || notificationData.entryId === -1 )
+                        && ( !notificationData.referenceId || notificationData.referenceId === "" || notificationData.referenceId === -1 )
+                        // check for mediaProxy based override:
+                        && !notificationData.mediaProxy) ) {
+                        mw.log( "KDPMapping:: ChangeMedia missing entryId or refrenceid, empty sources." );
+                        embedPlayer.emptySources();
+                        break;
+                    }
 					// Check if we have entryId and it's not -1. than we change media
 					if( (notificationData.entryId && notificationData.entryId != -1)
 							||
@@ -1253,7 +1261,6 @@
 						if (notificationData.referenceId){
 							embedPlayer.referenceId = notificationData.referenceId;
 						}
-
 						// Update the proxy data
 						embedPlayer.setKalturaConfig("proxyData", notificationData.proxyData);
 						embedPlayer.setKalturaConfig("proxyData", "data", notificationData.proxyData);
@@ -1275,7 +1282,7 @@
 						embedPlayer.updatePoster();
 
 						// if data is injected via changeMedia, re-load into iframe inject location:
-						if( notificationData.mediaProxy ){
+                        if ( notificationData.mediaProxy ) {
 							window.kalturaIframePackageData.entryResult = notificationData.mediaProxy;
 							// update plugin possition. Future refactor should treat mediaProxy as plugin  
 							embedPlayer.playerConfig.plugins['mediaProxy'] = notificationData.mediaProxy;
