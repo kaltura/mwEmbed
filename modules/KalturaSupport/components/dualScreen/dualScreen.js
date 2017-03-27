@@ -226,9 +226,9 @@
 						} else if (currentState === 'PiP') {
 							primary.enableDroppable(primary === main);
 							secondary.enableDroppable(secondary === main);
-                        } else if (currentState === 'hide'){
-                            primary.enableDroppable();
-                            secondary.enableDroppable();
+						} else if (currentState === 'hide'){
+							primary.enableDroppable();
+							secondary.enableDroppable();
 						} else {
 							main.enableDroppable();
 						}
