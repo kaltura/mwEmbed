@@ -20,7 +20,7 @@
                 backgroundColor: "rgba(0,0,0,0)",
                 backgroundHexColor: "#000000",
                 backgroundOpacity: 0,
-                edgeStyle: "none"
+                edgeStyle: "0 0px 4px rgba(0, 0, 0, 1)"
             },
             cvaaPreset1: {
                 fontFamily: "Arial, Roboto, Arial Unicode Ms, Helvetica, Verdana, PT Sans Caption, sans-serif",
