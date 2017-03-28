@@ -175,6 +175,9 @@
 					_this.renderSearchBar();
 					_this.renderBottomBar();
 				}
+				if(_this.embedPlayer.isDVR() ==1){
+                    $(_this.embedPlayer.getInterface()).addClass("dvr");
+				}
 			});
 
 			this.bind('hide', function () {
@@ -981,8 +984,15 @@
 				if (!this.getPlayer().canAutoPlay() && this.getPlayer().firstPlay){
 					this.getPlayer().sendNotification('doPlay');
 				}
-				// see to start time and play ( +.1 to avoid highlight of prev chapter )
-				this.getPlayer().sendNotification('doSeek', ( this.mediaList[mediaIndex].startTime ) + 0.1);
+				if(this.embedPlayer.isDVR() == 1){
+					debugger;
+                 	var seekTo =  this.mediaList[mediaIndex].startTime-this.embedPlayer.evaluate( '{mediaProxy.entry.firstBroadcast}');
+					this.getPlayer().sendNotification('doSeek', seekTo);
+				}else{
+					// see to start time and play ( +.1 to avoid highlight of prev chapter )
+					this.getPlayer().sendNotification('doSeek', ( this.mediaList[mediaIndex].startTime ) + 0.1);
+
+				}
 			}
 		},
 		doOnScrollerUpdate: function(data){

@@ -654,3 +654,7 @@ input#searchBox::-ms-clear {
 .chapters > .k-chapters-container .mediaBox.resultNoMatch{
     display: none;
 }
+
+.dvr .chapters .mediaBoxText{
+    display: none;
+}
