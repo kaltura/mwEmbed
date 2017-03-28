@@ -193,11 +193,11 @@ AdsManager.prototype = {
         if ( this.adsInfo.isPlayingAd ) {
             // We have an issue that if sender pause in middle of an ad it sending the wrong status (PLAYING)
             // We need to understand the root cause
-            mediaManager.broadcastStatus( false, null, {
+            mediaManager.broadcastStatus( false, event.data.requestId, {
                 forceStatus: StateManager.State.PAUSED
             } );
         } else {
-            mediaManager.broadcastStatus( false );
+            mediaManager.broadcastStatus( false, event.data.requestId );
         }
     },
 
