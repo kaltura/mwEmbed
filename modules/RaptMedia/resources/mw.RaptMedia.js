@@ -43,7 +43,7 @@
 		loadNewEntry: function () {
 			this.raptMediaPlaylistEntry = this.parseRaptMediaTags();	
 
-			if (this.raptMediaPlaylistEntry == false) {
+			if (!this.raptMediaPlaylistEntry) {
 				//this is not a rapt media entry - let the player behave normally
 				this.getPlayer().sendNotification('reattachTimeUpdate');
 				return;
@@ -122,15 +122,16 @@
 					_this.setupRaptMediaPlugin();
 				})
 				.then(function(){
-					_this.log('And then, continue player init');
-					_this.initCompleteCallback();
+					//we can only continue with the rest of the player setup once the initial rapt segment was loaded
+					//see raptMedia_newSegment below
+					_this.raptMediaInitialSegmentLoad = true;
 				});
 			});
 		},
 
 		addBindings: function() {
 			var _this = this;
-            this.bind('onChangeMediaDone', function(event) { 
+            this.bind('mediaLoaded', function(event) { 
             	_this.raptCleanup();
 				_this.loadNewEntry();
 			});
@@ -154,7 +155,11 @@
 			this.unbind('seeked');
 			this.unbind('playerPlayed');
 			this.unbind('replayEvent');
-			this.getPlayer().sendNotification('enableGui', { 'guiEnabled': true });
+			this.unbind('seeked.newSegment');
+			this.unbind('onPlayerStateChange');
+			this.unbind('playerPaused.raptEndOfSegment');
+			this.unbind('mediaLoaded');
+			//this.getPlayer().sendNotification('enableGui', { 'guiEnabled': true });
 			this.raptMediaPlaylistEntry = false;
 			this.engineCurrentSegment = null;
 			this.playbackEnded = false;
@@ -176,17 +181,33 @@
 
 					load: function(media, flags) {
 						if (_this.raptSequence.length == 0) return;
+						_this.playbackEnded = false;
 						var currentEntryId = media.sources[0].src;
+						if (_this.engineCurrentSegment && currentEntryId == _this.engineCurrentSegment.entryId)
+							return;
 						_this.engineCurrentSegment = _this.raptSegments[currentEntryId];
-						_this.getPlayer().sendNotification("doSeek", (_this.engineCurrentSegment.msStartTime / 1000));
+						var __this = _this;
+						if (!_this.raptMediaInitialSegmentLoad) {
+							_this.bind('seeked.newSegment', function () {
+								__this.unbind('seeked.newSegment');
+								__this.getPlayer().play();
+							});
+							var segmentStartSec = parseFloat((_this.engineCurrentSegment.msStartTime / 1000).toFixed(2));
+							_this.getPlayer().sendNotification("doSeek", segmentStartSec);
+						} else {
+							// the first rapt segment was loaded, we're ready to continue
+							_this.raptMediaInitialSegmentLoad = false;
+							_this.log('Initial Rapt Segment was loaded, now we can continue player init');
+							_this.initCompleteCallback();
+						}
 						_this.getPlayer().sendNotification("raptMedia_newSegment", _this.engineCurrentSegment);
-						_this.getPlayer().sendNotification('enableGui', { 'guiEnabled': true });
+						//_this.getPlayer().sendNotification('enableGui', { 'guiEnabled': true });
 						_this.log('load: ' + _this.engineCurrentSegment);
 					},
 					
 					play: function() {
 						_this.getPlayer().sendNotification("doPlay");
-						_this.getPlayer().sendNotification('enableGui', { 'guiEnabled': true });
+						//_this.getPlayer().sendNotification('enableGui', { 'guiEnabled': true });
 					},
 					
 					pause: function() {
@@ -195,19 +216,23 @@
 					
 					seek: function(time) {
 						_this.getPlayer().sendNotification("doSeek", time);
-						_this.getPlayer().sendNotification('enableGui', { 'guiEnabled': true });
+						//_this.getPlayer().sendNotification('enableGui', { 'guiEnabled': true });
 					},
 
 					event: function(event) {
-						_this.log('caught rapt event: ' + event.type);
+						if (event.type != 'media:timeupdate')
+							_this.log('RaptMedia Engine Event: ' + event.type);
 						switch (event.type) {
 							case 'project:ended':
 								var behaviorOnEnd = _this.getConfig( 'behaviorOnEnd' );
-								_this.log('project:ended - ' + behaviorOnEnd);
 								if (behaviorOnEnd == 'replay') {
 									_this.raptMediaEngine.replay();
-									_this.getPlayer().sendNotification('enableGui', { 'guiEnabled': true });
+								} else {
+									_this.raptMediaUpdate();
+									_this.getPlayer().onClipDone();
 								}
+								_this.getPlayer().sendNotification("raptMedia_projectEnd");
+								//_this.getPlayer().sendNotification('enableGui', { 'guiEnabled': true });
 								break;
 						}
 					},
@@ -223,25 +248,28 @@
 
 			this.raptMediaEngine.load(this.raptMediaProjectId);
 
-			this.bind('updateLayout', function(){ _this.raptMediaResize(); });
+			this.bind('onPlayerStateChange', function(e, newState, oldState){
+				_this.raptMediaResize();
+			});
 
-			this.bind('monitorEvent', function(){ _this.raptMediaUpdate(); });
-			
-			this.bind('playerPlayEnd', function() {
-				_this.raptMediaUpdate(null);
+			this.bind('updateLayout', function(){ 
+				_this.raptMediaResize(); 
+			});
+
+			this.bind('monitorEvent', function(){ 
+				_this.raptMediaUpdate(); 
 			});
 			
-			this.bind('seeked', function() {
-				//anything here?
+			this.bind('seeked', function() { 
+				_this.playbackEnded = false;
+				_this.raptMediaUpdate(); 
 			});
-			
-			this.bind('playerPlayed', function(){
-				_this.getPlayer().sendNotification('enableGui', { 'guiEnabled': true });
-			});
-			
+
 			this.bind('replayEvent', function(){
+				_this.playbackEnded = false;
 				_this.raptMediaEngine.replay();
-				_this.log('Replay the RAPT project');
+				_this.raptMediaResize();
+				_this.raptMediaUpdate();
 			});
 
 			this.raptMediaResize();
@@ -255,27 +283,41 @@
 			if (this.engineCurrentSegment == null) 
 				return;
 
-			this.playbackEnded = false;
+			if (this.playbackEnded) {
+				this.getPlayer().pause();
+				return;	
+			}
 
-			var currentTimeMillis = ((parseFloat(this.getPlayer().currentTime).toFixed(3) * 1000) - this.engineCurrentSegment.msStartTime);
+			var currentTimeMillis = parseFloat(this.getPlayer().currentTime.toFixed(3)) * 1000 - this.engineCurrentSegment.msStartTime;
 			if (currentTimeMillis < 0) currentTimeMillis = 0;
-			var currentTimeSec = (currentTimeMillis / 1000).toFixed(3);
+			var currentTimeSec = parseFloat((currentTimeMillis / 1000).toFixed(3));
 
 			var segmentDurationMillis = this.engineCurrentSegment.msDuration - 550;
-			var segmentDurationSec = (this.engineCurrentSegment.msDuration / 1000).toFixed(3);
-
+			var segmentDurationSec = parseFloat((this.engineCurrentSegment.msDuration / 1000).toFixed(3));
+			
 			if (currentTimeMillis >= segmentDurationMillis) {
 				this.playbackEnded = true;
-				currentTimeSec = segmentDurationSec;
-				this.getPlayer().sendNotification('doPause');
-				this.getPlayer().sendNotification('raptMedia_pausedDecisionPoint');
-				this.getPlayer().sendNotification('enableGui', { 'guiEnabled': false, 'enableType': 'controls' });
+				var _embedPlayer = this.getPlayer();
+				var _this = this;
+				this.bind('playerPaused.raptEndOfSegment', function () {
+					_this.unbind('playerPaused.raptEndOfSegment');
+					_embedPlayer.sendNotification('raptMedia_pausedDecisionPoint');
+					var segmentStartOffset = parseFloat((_this.engineCurrentSegment.msStartTime / 1000).toFixed(3));
+					var seekTimeEndOfSeg = segmentStartOffset + parseFloat(((_this.engineCurrentSegment.msDuration)/1000).toFixed(3));
+					_embedPlayer.triggerHelper("userInitiatedSeek", seekTimeEndOfSeg);
+					_embedPlayer.stopPlayAfterSeek = true;
+					_embedPlayer.seek(seekTimeEndOfSeg, true);
+				});
+				this.getPlayer().pause();
+				//this.getPlayer().sendNotification('enableGui', { 'guiEnabled': false, 'enableType': 'controls' });
+			} else {
+				this.playbackEnded = false;
 			}
 
 			this.log(currentTimeSec + ", " + segmentDurationSec + " , " + this.playbackEnded);
 			
 			this.raptMediaEngine.update({
-				currentTime: currentTimeSec,
+				currentTime: (this.playbackEnded ? segmentDurationSec : currentTimeSec),
 				duration: segmentDurationSec,
 				ended: this.playbackEnded,
 				videoWidth: this.engineCurrentSegment.width,

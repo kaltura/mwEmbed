@@ -11,28 +11,24 @@
 		
 		setup: function (){
 			this._super();
-			
-			this.raptCurrentSegment = null;
 		},
 
 		addBindings: function() {
-
 			this._super();
-			
-			var partnerData = this.getPlayer().evaluate('{mediaProxy.entry.partnerData}');
-			this.raptMediaPlaylistEntry = (partnerData != null && partnerData.indexOf("raptmedia") > -1);
-
-			if (this.raptMediaPlaylistEntry == true) {
-				//rapt entry
-				this.addBindingsRapt();
-			} else {
-				//regular entry
-			}
 
 			var _this = this;
-			this.bind('onChangeMediaDone', function(event) { 
+
+			this.bind('mediaLoaded', function(event) { 
 				_this.raptCleanup();
-				_this.addBindings();
+				var partnerData = _this.getPlayer().evaluate('{mediaProxy.entry.partnerData}');
+				_this.raptMediaPlaylistEntry = (partnerData != null && partnerData.indexOf("raptmedia") > -1);
+
+				if (_this.raptMediaPlaylistEntry == true) {
+					//rapt entry
+					_this.addBindingsRapt();
+				} else {
+					//regular entry
+				}
 			});
 		},
 
@@ -53,35 +49,39 @@
 				_this.duration = _this.raptDuration();
 			});
 			this.bind('durationChange', function (event, duration) {
+                if (_this.getPlayer().userSlide) return;
                 _this.duration = _this.raptDuration();
 			});
 			this.bind('monitorEvent', function () {
-				if (!_this.raptCurrentSegment) return;
-				if (_this.getPlayer().userSlide) return;
-				var currentTime = _this.getPlayer().currentTime - (_this.raptCurrentSegment.msStartTime / 1000);
-                _this.updatePlayheadUI(currentTime / _this.raptDuration() * 1000);
+				if (_this.raptMediaPlaylistEntry && _this.raptCurrentSegment && !_this.getPlayer().userSlide && !_this.sliderUpdating) {
+					var currentTime = _this.getPlayer().currentTime - (_this.raptCurrentSegment.msStartTime / 1000);
+	                _this.updatePlayheadUI(currentTime / _this.raptDuration() * 1000);
+	            }
 			});
 			this.bind('raptMedia_pausedDecisionPoint', function () {
 				_this.updatePlayheadUI(1000);
 			});
 		},
 
+		updatePlayheadPercentUI: function (perc) {
+			if (this.raptMediaPlaylistEntry) 
+				return;
+			this._super(perc);
+		},
+
 		raptDuration: function () {
-			var currentDuration = this.getPlayer().getDuration();
-			if (this.raptCurrentSegment != null) 
-				currentDuration = this.raptCurrentSegment.msDuration / 1000;
-			return currentDuration;
+			if (!this.raptMediaPlaylistEntry) 
+				return this.getPlayer().getDuration();
+			else if (this.raptCurrentSegment != null) 
+				return parseFloat((this.raptCurrentSegment.msDuration / 1000).toFixed(2));
+			else
+				return 0;
 		},
 
 		getSliderConfig: function () {
-			if (this.raptMediaPlaylistEntry == false) {
-				return this._super();
-			}
-
 			var _this = this;
 			var embedPlayer = this.getPlayer();
-			var alreadyChanged = false;
-
+			
 			return {
 				range: "min",
 				value: 0,
@@ -92,7 +92,7 @@
 				start: function (event, ui) {
 					embedPlayer.userSlide = true;
 					// Release the mouse when player is not focused
-					$(_this.getPlayer()).one('hidePlayerControls onFocusOutOfIframe', function () {
+					$(embedPlayer).one('hidePlayerControls onFocusOutOfIframe', function () {
 						$(document).trigger('mouseup');
 					});
 				},
@@ -100,40 +100,89 @@
 					_this.updateAttr(ui);
 				},
 				change: function (event, ui) {
-					alreadyChanged = true;
-					var segmentSeekTime = (ui.value / 1000) * _this.raptDuration();
-					var segmentStartOffset = (_this.raptCurrentSegment != null) ? (_this.raptCurrentSegment.msStartTime / 1000) : 0;
-					var seekTime = segmentSeekTime + segmentStartOffset;
-					// always update the title
-					_this.updateAttr(ui);
-					// Only run the onChange event if done by a user slide
-					// (otherwise it runs times it should not)
-					if (embedPlayer.userSlide) {
+					if (!_this.raptMediaPlaylistEntry) { // regular entry:
+						var seekTime = (ui.value / 1000) * embedPlayer.getDuration();
+						// always update the title
+						_this.updateAttr(ui);
+						// Only run the onChange event if done by a user slide
+						// (otherwise it runs times it should not)
+						if (embedPlayer.userSlide) {
+							embedPlayer.userSlide = false;
+							embedPlayer.seeking = true;
+							embedPlayer.triggerHelper("userInitiatedSeek", seekTime);
+							embedPlayer.seek(seekTime);
+						}
+					} else { // raptmedia entry:
+						// Only run the onChange event if done by a user slide
+						// (otherwise it runs times it should not)
+						if (!embedPlayer.userSlide || _this.sliderUpdating || !_this.raptCurrentSegment) return;
+
+						var segmentSeekTime = (ui.value / 1000) * _this.raptDuration();
+						var endOfSegment = _this.isEndOfCurrentSegment(segmentSeekTime);
+						
+						var seekDuringPlay = embedPlayer.isPlaying() && !endOfSegment;
+						if (seekDuringPlay) embedPlayer.stopEventPropagation();
+
+						_this.sliderUpdating = true;
+						var segmentStartOffset = (_this.raptCurrentSegment != null) ? parseFloat((_this.raptCurrentSegment.msStartTime / 1000).toFixed(2)) : 0;
+						var seekTime = segmentSeekTime + segmentStartOffset;
+						//use 350ms from end of segment as saftey buffer to avoid missing the end due to misaligned frame rates or slow event propagations
+						var seekTimeEndOfSeg = segmentStartOffset + parseFloat(((_this.raptCurrentSegment.msDuration-50)/1000).toFixed(2));
+
+						_this.updateAttr(ui);
+
+						if (endOfSegment) {
+							embedPlayer.triggerHelper("userInitiatedSeek", seekTimeEndOfSeg);
+							embedPlayer.stopPlayAfterSeek = true;
+							embedPlayer.seek(seekTimeEndOfSeg, true);
+							_this.log('user seeked to end of segment');
+						} else {
+							embedPlayer.triggerHelper("userInitiatedSeek", seekTime);
+							embedPlayer.stopPlayAfterSeek = !seekDuringPlay;
+							embedPlayer.seek(seekTime, !seekDuringPlay);
+						}
 						embedPlayer.userSlide = false;
-						embedPlayer.seeking = true;
-						embedPlayer.triggerHelper("userInitiatedSeek", seekTime);
-						embedPlayer.seek(seekTime);
+						_this.sliderUpdating = false;
+
+						var _embedPlayer = embedPlayer;
+						if (!seekDuringPlay) {
+							setTimeout(function () {
+								_embedPlayer.triggerHelper('doPause');
+							}, 0);
+						} else {
+							setTimeout(function () {
+								_embedPlayer.restoreEventPropagation();
+							}, 0);
+						}
 					}
 				}
 			};
 		},
 
+		isEndOfCurrentSegment: function (segTime) {
+			var seekTimeMillis = parseFloat(segTime.toFixed(3)) * 1000;
+			if (seekTimeMillis < 0) seekTimeMillis = 0;
+			var segmentDurationMillis = this.raptCurrentSegment.msDuration - 550;
+			var isSegmentEnd = (seekTimeMillis >= segmentDurationMillis);
+			return isSegmentEnd;
+		},
+
+		updatePlayheadUI: function (val) {
+			this._super(val);
+		},
+
 		updateAttr: function (ui) {
-			if (this.raptMediaPlaylistEntry == false) {
-				this._super(ui);
-			} else {
-				var perc = ui.value / 1000;
-				var $slider = this.$el.find('.ui-slider-handle');
-				var title = mw.seconds2npt(perc * this.raptDuration());
-				var attributes = {
-					'data-title': title,
-					'aria-valuetext': mw.seconds2npt(perc * this.raptDuration()),
-					'aria-valuenow': parseInt(perc * 100) + '%'
-				};
-				$slider.attr(attributes);
-				if (this.getConfig('accessibilityLabels')) {
-					$slider.html('<span class="accessibilityLabel">' + title + '</span>');
-				}
+			var perc = ui.value / 1000;
+			var $slider = this.$el.find('.ui-slider-handle');
+			var title = mw.seconds2npt(perc * this.raptDuration());
+			var attributes = {
+				'data-title': title,
+				'aria-valuetext': mw.seconds2npt(perc * this.raptDuration()),
+				'aria-valuenow': parseInt(perc * 100) + '%'
+			};
+			$slider.attr(attributes);
+			if (this.getConfig('accessibilityLabels')) {
+				$slider.html('<span class="accessibilityLabel">' + title + '</span>');
 			}
 		},
 		
