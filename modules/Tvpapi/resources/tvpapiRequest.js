@@ -51,20 +51,21 @@
             return url;
         },
 
-        doRequest: function(url, data){
+        doRequest: function(url, data, options){
             var _this = this;
+            options = options || {};
             var deferredAjax = $.ajax( {
                 url: url,
-                type: "POST",
-                dataType: "json",
-                contentType: "application/json",
+                type: options.type || "POST",
+                dataType: options.dataType || "json",
+                contentType: options.contentType || "application/json",
                 statusCode: {
                     401: function() {
                         _this.embedPlayer.triggerHelper("tvpapiTokenExpired");
                     }
                 },
                 data: JSON.stringify( data ),
-                async: false
+                async: options.async || true
             } );
             return deferredAjax.promise();
         }
