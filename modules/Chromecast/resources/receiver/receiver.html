@@ -61,10 +61,6 @@
             display: none;
         }
 
-        #cast-media-info-next {
-            display: none;
-        }
-
         #cast-pause-button {
             display: none;
         }
@@ -166,7 +162,8 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            align-self: flex-end
+            align-self: flex-end;
+            display: none;
         }
 
         .cast-media-progress-container {
@@ -206,23 +203,24 @@
         }
 
         #cast-up-next-countdown {
-            font-size: 65px;
+            font-size: 36px;
         }
 
         .cast-up-next {
             width: 800px;
             position: absolute;
-            font-size: 52px;
+            font-size: 28px;
             font-style: normal;
             font-stretch: normal;
             left: 200px;
-            bottom: 20px;
+            bottom: 30px;
             color: #ffffff;
             font-family: "proxima nova";
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             align-self: flex-end;
+            display: none;
         }
 
         .cast-loading-spinner {
@@ -352,13 +350,6 @@
                 <div id="cast-subtitle" class="cast-subtitle"></div>
                 <div class="cast-separator"></div>
             </div>
-            <div id="cast-media-info-next">
-                <div id="cast-artwork-next" class="cast-artwork"></div>
-                <div id="cast-title-next" class="cast-title"></div>
-                <div id="cast-subtitle-next" class="cast-subtitle"></div>
-                <div class="cast-separator"></div>
-                <div class="cast-up-next">Up next in... <span id="cast-up-next-countdown"></span></div>
-            </div>
             <img id="cast-pause-button" src="assets/pause.png" class="cast-state" height="30" width="24">
             <div id="cast-state-button-container" class="cast-state-button-container"></div>
             <div id="cast-buffering-spinner" class="cast-buffering-spinner"></div>
@@ -370,9 +361,8 @@
                     <div class="cast-media-progress-fill"></div>
                 </div>
             </div>
-            <div id="cast-before-play-controls">
-                <div class="cast-loading-media-msg">Loading media...</div>
-            </div>
+            <div class="cast-loading-media-msg">Loading media...</div>
+            <div class="cast-up-next">Up next<span id="cast-up-next-countdown"></span></div>
         </div>
     </div>
 </div>

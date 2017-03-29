@@ -1,3 +1,11 @@
+/*$( window ).bind( 'onReceiverChangeMedia', function ( event ) {
+    ReceiverLogger.log( "ReceiverStateManager", "event-->onReceiverChangeMedia" );
+    if ( ReceiverQueueManager.isQueueActive() ) {
+        ReceiverStateManager.countdown.text( 3 );
+        ReceiverStateManager.countdownInterval = setInterval( ReceiverStateManager.updateCountdown.bind( ReceiverStateManager ), 1000 );
+    }
+} );*/
+
 /**
  * @constructor
  */
@@ -12,11 +20,10 @@ function StateManager() {
     this.isPlaying = false;
     this.isOverlayShown = false;
     this.pauseTimeout = null;
-    this.countdownInterval = null;
-    this.beforePlayControls = $( '#cast-before-play-controls' );
+    //this.countdownInterval = null;
+    this.beforePlayControls = $( '.cast-loading-media-msg' );
     this.inPlayControls = $( '#cast-in-play-controls' );
     this.mediaInfoContainer = $( '#cast-media-info' );
-    this.nextMediaInfoContainer = $( '#cast-media-info-next' );
     this.logoDiv = $( '#logo' );
     this.stateBtnContainer = $( '#cast-state-button-container' );
     this.pauseBtn = $( '#cast-pause-button' );
@@ -27,7 +34,7 @@ function StateManager() {
     this.totalTimeDiv = $( '#cast-total-time' );
     this.progressFill = $( '.cast-media-progress-fill' );
     this.waitMsg = $( '.cast-wait-msg' );
-    this.countdown = $( '#cast-up-next-countdown' );
+    //this.countdown = $( '#cast-up-next-countdown' );
     this.insertRemoveFromQueueMsg = $( '.cast-added-removed-from-queue-msg' );
     this.insertRemoveFromQueueTimeout = null;
 }
@@ -136,25 +143,15 @@ StateManager.prototype = {
     },
 
     /**
-     * Displays the next media metadata UI on screen.
-     * @param showPreview
-     */
-    onShowNextMediaMetadata: function ( showPreview ) {
-        this.countdownInterval = setInterval( this._updateCountdown.bind( this ), 1000 );
-        this._toggleComponents( (showPreview ? 'show' : 'hide'),
-            [ this.nextMediaInfoContainer, this.gradient ] );
-    },
-
-    /**
-     * Clear the next media metadata UI.
-     */
-    clearNextMediaMetadata: function () {
-        if ( this.countdownInterval !== null ) {
-            this._toggleComponents( 'hide', [ this.nextMediaInfoContainer, this.gradient ] );
+     * Updates a countdown until the next media in the queue will start.
+    updateCountdown: function () {
+        var countdown = parseInt( this.countdown.text() ) - 1;
+        this.countdown.text( countdown );
+        if ( countdown === 0 ) {
             clearInterval( this.countdownInterval );
             this.countdownInterval = null;
         }
-    },
+    },*/
 
     /**
      * Handles first play.
@@ -317,7 +314,6 @@ StateManager.prototype = {
      * @private
      */
     _onBuffering: function () {
-        this.clearNextMediaMetadata();
         if ( this.loadingSpinner.is( ":visible" ) ) {
             this.loadingSpinner.fadeOut();
         }
@@ -417,8 +413,11 @@ StateManager.prototype = {
     _resetScreen: function () {
         this.isPlaying = false;
         this._clearPauseTimeout();
-        this._toggleComponents( 'hide', [ this.pauseBtn, this.stateBtnContainer, this.inPlayControls, this.gradient, this.mediaInfoContainer ] );
+        this._toggleComponents( 'hide', [ this.pauseBtn, this.stateBtnContainer, this.inPlayControls, this.gradient, this.mediaInfoContainer, this.beforePlayControls ] );
         this.isOverlayShown = false;
+        if ( ReceiverQueueManager.isQueueActive() ) {
+            this.beforePlayControls = $( '.cast-up-next' );
+        }
     },
 
     /**
@@ -431,19 +430,6 @@ StateManager.prototype = {
         var show = (selector === 'show');
         for ( var i = 0; i < components.length; i++ ) {
             show ? components[ i ].fadeIn() : components[ i ].fadeOut();
-        }
-    },
-
-    /**
-     * Updates a countdown until the next media in the queue will start.
-     * @private
-     */
-    _updateCountdown: function () {
-        var countdown = Math.round( mediaElement.duration - mediaElement.currentTime );
-        if ( countdown === 0 || countdown > 5 ) {
-            this.clearNextMediaMetadata();
-        } else {
-            this.countdown.text( countdown );
         }
     }
 };
