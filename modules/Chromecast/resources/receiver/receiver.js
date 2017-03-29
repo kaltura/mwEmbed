@@ -72,6 +72,9 @@ var mediaElement;
  * The receiver's embed player flashvars.
  */
 var receiverFlashVars = {
+    "skipBtn": {
+        'plugin': false
+    },
     "currentTimeLabel": {
         'plugin': false
     },
