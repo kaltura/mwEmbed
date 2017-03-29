@@ -691,10 +691,17 @@
 					this.unbind("seeking");
 					this.hls.attachMedia(this.getPlayer().getPlayerElement());
 				}
-				this.getPlayer().play();
-				if ($.isFunction(switchCallback)) {
-					switchCallback();
-				}
+				if (!this.embedPlayer.isVideoSiblingEnabled()
+					&& !this.embedPlayer.isInSequence()
+					&& this.embedPlayer.adTimeline.currentAdSlotType === "postroll"
+					&& !this.embedPlayer.changeMediaStarted) {
+					// Do not issue play
+				} else {
+                    this.getPlayer().play();
+                }
+                if ($.isFunction(switchCallback)) {
+                    switchCallback();
+                }
 			},
 			/**
 			 * Override player method for playback error
