@@ -121,25 +121,26 @@
                 } );
             }
         },
-        trackCuePoints:function(){
-            var currentTime = this.embedPlayer.currentTime*1000;
-            if (currentTime){
-                for (var i=0; i<this.cuePoints.length;i++){
+        trackCuePoints:function() {
+            var currentTime = this.embedPlayer.currentTime * 1000;
+            if ( currentTime ) {
+                for ( var i = 0 ; i < this.cuePoints.length ; i++ ) {
                     var currentCuePoint = this.cuePoints[i];
-                    if (currentTime > currentCuePoint.offset  && !currentCuePoint.isDone) {
-                        if (currentCuePoint.ad.autoskip){
-                           if ( currentCuePoint.ad.offset> 1000 ){
+                    if ( currentTime > currentCuePoint.offset && !currentCuePoint.isDone ) {
+                        if ( currentCuePoint.ad.autoskip ) {
+                            if ( currentCuePoint.ad.offset > 1000 ) {
+                                debugger;
                                 //todo need to seek here
-                               //  this.embedPlayer.seek( ( currentCuePoint.ad.offset +currentTime ) / 1000 );
+                                this.embedPlayer.sendNotification( "doSeek",( currentCuePoint.offset + currentCuePoint.ad.duration ) / 1000 );
 
-                           }
+                            }
                             currentCuePoint.isDone = true;
                             continue;
                         }
                         currentCuePoint.isDone = true;
-                        this.trackAd(currentCuePoint.ad);
-                        if (currentCuePoint.ad.clickURL) {
-                            this.addClickURL(currentCuePoint.ad.clickURL , currentCuePoint.offset + currentCuePoint.ad.duration);
+                        this.trackAd( currentCuePoint.ad );
+                        if ( currentCuePoint.ad.clickURL ) {
+                            this.addClickURL( currentCuePoint.ad.clickURL , currentCuePoint.offset + currentCuePoint.ad.duration );
                         }
                     }
                 }
@@ -158,14 +159,65 @@
                 }
             }
         },
+        addSkipAd:function(timeToSkip){
+            /*
+             width: 70px;
+             height: 30px;
+             background-color: rgba(0,0,0,0.6);
+             border-radius: 2px;
+             */
+            var _this = this;
+            var $videoHolder = this.embedPlayer.getVideoHolder();
+            var $skipAd = $videoHolder.append("<div id='skipAd' style='cursor:pointer;vertical-align:middle;bottom:41px;right:8px;position:absolute;text-align:center;width: 70px;height: 30px;background-color: rgba(0,0,0,0.6);border-radius: 2px;'>" +
+                "<span style='vertical-align:middle;line-height:30px;width: 53px;height: 17px;font-family: Helvetica;font-size: 14px;font-weight: bold; color: #FFFFFF;'>Skip Ad</span></div>")
+
+            var clickEventName = "click" + _this.adClickPostFix;
+            if ( mw.isTouchDevice() ) {
+                clickEventName += " touchend" + _this.adClickPostFix;
+            }
+            $skipAd.unbind( clickEventName ).bind( clickEventName , function ( e ) {
+                _this.embedPlayer.sendNotification("doSeek",timeToSkip/1000);
+                _this.removeSkipAd();
+            });
+
+        },
+
+        removeSkipAd:function(){
+            var $videoHolder = this.embedPlayer.getVideoHolder();
+            $videoHolder.find("#skipAd").remove();
+        },
+
+        addAdvertiseText:function(){
+            /*
+             width: 90px;height: 17px;font-family: Helvetica;font-size: 14px;line-height: 17px;color: #FFFFFF;text-shadow: 0 2px 4px 0 rgba(0,0,0,0.5);
+             */
+            var _this = this;
+            var $videoHolder = this.embedPlayer.getVideoHolder();
+            var $adText = $videoHolder.append("<div id='adText' style='position:absolute;bottom:49px;left:10px;width: 90px;height: 17px;font-family: Helvetica;font-size: 14px;line-height: 17px;color: #FFFFFF;text-shadow: 0 2px 4px 0 rgba(0,0,0,0.5);'>Advertisement</div>")
+
+        },
+        removeAdvertiseText:function(){
+            /*
+             width: 90px;height: 17px;font-family: Helvetica;font-size: 14px;line-height: 17px;color: #FFFFFF;text-shadow: 0 2px 4px 0 rgba(0,0,0,0.5);
+             */
+            var _this = this;
+            var $videoHolder = this.embedPlayer.getVideoHolder();
+            $videoHolder.find("#adText").remove();
+
+        },
         addClickURL:function(url,timeToStop) {
             var _this = this;
             var addClick = function () {
+                _this.addAdvertiseText()
                 clearTimeout( _this.clickURLTimeout);
                 _this.clickURLTimeout = null;
 
+                var $videoHolder = _this.embedPlayer.getVideoHolder();
+                var $clickTarget = $videoHolder.append("<div id='clickthrough' style='cursor:pointer;vertical-align:middle;top:10px;left:7px;position:absolute;text-align:center;width: 96px;height: 30px;background-color: #00ABCC;border-radius: 2px;'>" +
+                    "<span style='vertical-align:middle;line-height:30px;width:77px;height: 17px;font-family: Helvetica;font-size: 14px;font-weight: bold;color: #FFFFFF;'>Learn more</span></div>")
+
                 // the event stack being exhausted.
-                var $clickTarget = (mw.isTouchDevice()) ? $( _this.embedPlayer ) : _this.embedPlayer.getVideoHolder();
+               // var $clickTarget = (mw.isTouchDevice()) ? $( _this.embedPlayer ) : _this.embedPlayer.getVideoHolder();
                 var clickEventName = "click" + _this.adClickPostFix;
                 if ( mw.isTouchDevice() ) {
                     clickEventName += " touchend" + _this.adClickPostFix;
@@ -182,10 +234,16 @@
                 _this.embedPlayer.disablePlayControls();
             };
             var removeClick = function () {
+                _this.removeAdvertiseText()
+
                 _this.clickURLTimeout = null;
-                var $clickTarget = (mw.isTouchDevice()) ? $( _this.embedPlayer ) : _this.embedPlayer.getVideoHolder();
+                var $videoHolder = _this.embedPlayer.getVideoHolder();
+                var $clickTarget = $videoHolder.find("#clickthrough");
+
                 $clickTarget.unbind( _this.adClickPostFix );
+                $clickTarget.remove();
                 _this.embedPlayer.enablePlayControls();
+                _this.removeSkipAd();
             };
             var checkWhenToStop = function () {
                 var currentTime = _this.embedPlayer.currentTime * 1000;
@@ -198,6 +256,7 @@
             }
             addClick();
             checkWhenToStop();
+           this.addSkipAd(timeToStop);
         },
         reportTrackers:function(){
             var currentTime = this.embedPlayer.currentTime;
