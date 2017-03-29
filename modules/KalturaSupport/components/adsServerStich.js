@@ -169,7 +169,7 @@
             var _this = this;
             var $videoHolder = this.embedPlayer.getVideoHolder();
             var $skipAd = $videoHolder.append("<div id='skipAd' style='cursor:pointer;vertical-align:middle;bottom:41px;right:8px;position:absolute;text-align:center;width: 70px;height: 30px;background-color: rgba(0,0,0,0.6);border-radius: 2px;'>" +
-                "<span style='vertical-align:middle;line-height:30px;width: 53px;height: 17px;font-family: Helvetica;font-size: 14px;font-weight: bold; color: #FFFFFF;'>Skip Ad</span></div>")
+                "<span style='vertical-align:middle;line-height:30px;width: 53px;height: 17px;font-family: Helvetica;font-size: 14px;font-weight: bold; color: #FFFFFF;'>Skip Ad</span></div>").find("#skipAd")
 
             var clickEventName = "click" + _this.adClickPostFix;
             if ( mw.isTouchDevice() ) {
@@ -214,7 +214,7 @@
 
                 var $videoHolder = _this.embedPlayer.getVideoHolder();
                 var $clickTarget = $videoHolder.append("<div id='clickthrough' style='cursor:pointer;vertical-align:middle;top:10px;left:7px;position:absolute;text-align:center;width: 96px;height: 30px;background-color: #00ABCC;border-radius: 2px;'>" +
-                    "<span style='vertical-align:middle;line-height:30px;width:77px;height: 17px;font-family: Helvetica;font-size: 14px;font-weight: bold;color: #FFFFFF;'>Learn more</span></div>")
+                    "<span style='vertical-align:middle;line-height:30px;width:77px;height: 17px;font-family: Helvetica;font-size: 14px;font-weight: bold;color: #FFFFFF;'>Learn more</span></div>").find("#clickthrough")
 
                 // the event stack being exhausted.
                // var $clickTarget = (mw.isTouchDevice()) ? $( _this.embedPlayer ) : _this.embedPlayer.getVideoHolder();
