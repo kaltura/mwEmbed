@@ -7,10 +7,15 @@
 ( function( mw, $ ) {"use strict";
 
     mw.PluginManager.add( 'adsServerStich', mw.KBasePlugin.extend({
+        adDataLoaded :false,
+        hasPreRoll:false,
        sessionid:null,
+        seekAfterAd:-1,
         queueAdRquest:[],
         cuePoints:[],
+        lastCurrentTime:0,
         trackers:[],
+        shouldMonitorSeek:true,
         defaultConfig: {
             playServer : "http://dev-backend3.dev.kaltura.com"
         },
@@ -27,7 +32,6 @@
                     if ( !_this.sessionid ){
                         _this.sessionid = Math.floor(Math.random() * 1000000000);
                     }
-
                     source.src = _this.injectParam(source.src,"uiconf/" + _this.embedPlayer.kuiconfid);
                     source.src = _this.injectParam(source.src,"sessionId/" + _this.sessionid);
                     source.src = _this.injectGetParam(source.src,"playerConfig=" + _this.getPlayerConfig());
@@ -35,21 +39,40 @@
             });
 
             this.bind( "monitorEvent" , function () {
-                 _this.reportTrackers();
+                _this.reportTrackers();
                 _this.trackCuePoints();
                 _this.trackQueueAds();
+                _this.lastCurrentTime = _this.embedPlayer.currentTime;
             } );
+
+            this.bind( "preSeek" , function(event,seektime,stopAfterSeek, stopSeek){
+                if (_this.shouldMonitorSeek) {
+                    _this.checkBeforeSeek(seektime,stopAfterSeek, stopSeek);
+
+                }
+                if (!_this.adDataLoaded) {
+
+                    _this.waitingForAdDataToLoad = [seektime,stopAfterSeek, stopSeek];
+                    stopSeek.value = true;
+                    stopAfterSeek = true;
+                    _this.embedPlayer.seeking = false;             
+                }
+                _this.shouldMonitorSeek = true;
+
+            });
 
             this.bind("mediaLoaded", function(event,source) {
                 var serverHostName = _this.getConfig("playServer");
                 var getAdsUrl = serverHostName +  "/p/"+_this.embedPlayer.kpartnerid+"/layout/playerManifest/uiConfId/"+_this.embedPlayer.kuiconfid+"/entryId/0_v8y4bir3/flavorId/0_bp09oz39/sessionId/"+_this.sessionid+"/a.json"
                 $.getJSON(getAdsUrl ,function(data){
                     if (data && data.sequences) {
+                        _this.adDataLoaded = true;
                         var cues = [];
 
                         for ( var i = 0 ; i < data.sequences.length ; i++ ) {
                            var currentSeq = data.sequences[i];
                             if (currentSeq.adId && currentSeq.offset == 0){
+                                _this.hasPreroll = true;
                                 //preroll!!!
                                 _this.getAdData(currentSeq.adId,currentSeq.offset );
                                 cues.push(0);
@@ -64,6 +87,11 @@
                                     cues.push(currentSeq.offset);
                                 }
                             }
+                        }
+
+                        if (_this.waitingForAdDataToLoad){
+                            _this.checkBeforeSeek(_this.waitingForAdDataToLoad[0],_this.waitingForAdDataToLoad[1],_this.waitingForAdDataToLoad[2]);
+                            _this.waitingForAdDataToLoad = null;
                         }
                         var scrubber = _this.embedPlayer.getInterface().find(".scrubber");
                         scrubber.parent().prepend('<div class="bubble-ad"></div>');
@@ -84,6 +112,45 @@
 
         },
 
+        checkBeforeSeek:function (seektime,stopAfterSeek,stopSeek) {
+            var _this= this;
+            if ( _this.adDataLoaded
+                && _this.hasPreroll
+                && _this.embedPlayer.kPreSeekTime == 0 ) {
+                if (!stopSeek) {
+                    stopSeek = {};
+                }
+                stopSeek.value = true;
+                stopAfterSeek = true;
+                _this.embedPlayer.seeking = false;
+            }
+
+            //check if we miss cuepoint during seek - if so take the last one
+            if ( _this.cuePoints && _this.cuePoints.length > 0 ) {
+                var lastOffset = 0;
+                var missedCue = null;
+                for ( var i = 0 ; i < _this.queueAdRquest.length ; i++ ) {
+                    var currentCue = _this.queueAdRquest[i];
+                    if ( currentCue.offset > lastOffset && currentCue.offset < seektime * 1000 ) {
+                        lastOffset = currentCue.offset;
+                        missedCue = currentCue;
+                    }
+                }
+                //found the cue we need to see to
+                if ( missedCue && !missedCue.isDone ) {
+                    _this.shouldMonitorSeek = false;
+                    stopSeek.value = true;
+                    stopAfterSeek = true;
+                    _this.embedPlayer.seeking = false;
+                    _this.embedPlayer.sendNotification( "doSeek" , missedCue.offset / 1000 );
+                }
+            }
+
+            _this.seekAfterAd = seektime;
+
+
+        },
+
         getAdData: function(adId,offset){
             var _this = this;
             var serverHostName = _this.getConfig("playServer");
@@ -96,7 +163,7 @@
                         //ignore autoskip for now - look at only true ads
                         var currentOffset = offset + currentAd.offset ;
                         currentAd.clickURL = currentAd.clickThrough;
-                        if (currentOffset == 0){
+                        if (currentOffset == 0 ){
                             _this.trackAd(currentAd,currentOffset);
                             if (currentAd.clickURL) {
                                 _this.addClickURL(currentAd.clickURL , currentOffset + currentAd.duration);
@@ -126,13 +193,13 @@
             if ( currentTime ) {
                 for ( var i = 0 ; i < this.cuePoints.length ; i++ ) {
                     var currentCuePoint = this.cuePoints[i];
-                    if ( currentTime > currentCuePoint.offset && !currentCuePoint.isDone ) {
+                    if ( currentTime > currentCuePoint.offset &&
+                         currentTime < currentCuePoint.offset + 1000
+                        && !currentCuePoint.isDone ) {
                         if ( currentCuePoint.ad.autoskip ) {
                             if ( currentCuePoint.ad.offset > 1000 ) {
-                                debugger;
-                                //todo need to seek here
+                                this.shouldMonitorSeek = false;
                                 this.embedPlayer.sendNotification( "doSeek",( currentCuePoint.offset + currentCuePoint.ad.duration ) / 1000 );
-
                             }
                             currentCuePoint.isDone = true;
                             continue;
@@ -142,7 +209,7 @@
                         if ( currentCuePoint.ad.clickURL ) {
                             this.addClickURL( currentCuePoint.ad.clickURL , currentCuePoint.offset + currentCuePoint.ad.duration );
                         }
-                    }
+                    } 
                 }
             }
         },
@@ -160,12 +227,6 @@
             }
         },
         addSkipAd:function(timeToSkip){
-            /*
-             width: 70px;
-             height: 30px;
-             background-color: rgba(0,0,0,0.6);
-             border-radius: 2px;
-             */
             var _this = this;
             var $videoHolder = this.embedPlayer.getVideoHolder();
             var $skipAd = $videoHolder.append("<div id='skipAd' style='cursor:pointer;vertical-align:middle;bottom:41px;right:8px;position:absolute;text-align:center;width: 70px;height: 30px;background-color: rgba(0,0,0,0.6);border-radius: 2px;'>" +
@@ -176,6 +237,7 @@
                 clickEventName += " touchend" + _this.adClickPostFix;
             }
             $skipAd.unbind( clickEventName ).bind( clickEventName , function ( e ) {
+                _this.shouldMonitorSeek = false;
                 _this.embedPlayer.sendNotification("doSeek",timeToSkip/1000);
                 _this.removeSkipAd();
             });
@@ -188,18 +250,12 @@
         },
 
         addAdvertiseText:function(){
-            /*
-             width: 90px;height: 17px;font-family: Helvetica;font-size: 14px;line-height: 17px;color: #FFFFFF;text-shadow: 0 2px 4px 0 rgba(0,0,0,0.5);
-             */
             var _this = this;
             var $videoHolder = this.embedPlayer.getVideoHolder();
             var $adText = $videoHolder.append("<div id='adText' style='position:absolute;bottom:49px;left:10px;width: 90px;height: 17px;font-family: Helvetica;font-size: 14px;line-height: 17px;color: #FFFFFF;text-shadow: 0 2px 4px 0 rgba(0,0,0,0.5);'>Advertisement</div>")
 
         },
         removeAdvertiseText:function(){
-            /*
-             width: 90px;height: 17px;font-family: Helvetica;font-size: 14px;line-height: 17px;color: #FFFFFF;text-shadow: 0 2px 4px 0 rgba(0,0,0,0.5);
-             */
             var _this = this;
             var $videoHolder = this.embedPlayer.getVideoHolder();
             $videoHolder.find("#adText").remove();
@@ -244,6 +300,11 @@
                 $clickTarget.remove();
                 _this.embedPlayer.enablePlayControls();
                 _this.removeSkipAd();
+                if ( _this.seekAfterAd > 0){
+                    _this.shouldMonitorSeek = false;
+                    _this.embedPlayer.sendNotification("doSeek",_this.seekAfterAd);
+                    _this.seekAfterAd = -1;
+                }
             };
             var checkWhenToStop = function () {
                 var currentTime = _this.embedPlayer.currentTime * 1000;
@@ -253,7 +314,7 @@
                     _this.clickURLTimeout = setTimeout(checkWhenToStop,500);
                 }
 
-            }
+            };
             addClick();
             checkWhenToStop();
            this.addSkipAd(timeToStop);
