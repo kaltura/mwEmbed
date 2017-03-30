@@ -4,22 +4,22 @@
 
 		defaultConfig: {
 			"parent": mw.isMobileDevice() ? 'topBarContainer' : 'controlsContainer',
-		 	"order": 62,
-		 	"displayImportance": "low",
-		 	"align": "right",
-		 	"showTooltip": true,
+			"order": 62,
+			"displayImportance": "low",
+			"align": "right",
+			"showTooltip": true,
 			"smartContainer": 'morePlugins',
 			"smartContainerCloseEvent": 'closeMenuOverlay',
-            "minDescriptionLength" : 0,
+			"minDescriptionLength" : 0,
 			"title": gM("ks-MODERATION-REPORT"),
 			"header": gM("ks-MODERATION-HEADER"),
 			"text": gM("ks-MODERATION-TEXT"),
 			"placeholder": gM("ks-MODERATION-PLACEHOLDER"),
-		 	"tooltip": gM("ks-MODERATION-REPORT"),
-		 	"reasonSex": gM("ks-MODERATION-REASON-SEX"),
-		 	"reasonViolence": gM("ks-MODERATION-REASON-VIOLENCE"),
-		 	"reasonHarmful": gM("ks-MODERATION-REASON-HARMFUL"),
-		 	"reasonSpam": gM("ks-MODERATION-REASON-SPAM")
+			"tooltip": gM("ks-MODERATION-REPORT"),
+			"reasonSex": gM("ks-MODERATION-REASON-SEX"),
+			"reasonViolence": gM("ks-MODERATION-REASON-VIOLENCE"),
+			"reasonHarmful": gM("ks-MODERATION-REASON-HARMFUL"),
+			"reasonSpam": gM("ks-MODERATION-REASON-SPAM")
 		},
 
 		setup: function () {
