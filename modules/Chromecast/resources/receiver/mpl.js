@@ -658,8 +658,10 @@ function initApp() {
 	 **/
 	appConfig.maxInactivity = 600;
 	castReceiverManager.onShutdown = function(){
-		messageBus.broadcast("shutdown"); // receiver was shut down by the browser Chromecast icon - send message to the player to stop the app
-	}
+        if ( castReceiverManager.getSenders().length > 0 ) {
+            messageBus.broadcast( "shutdown" ); // receiver was shut down by the browser Chromecast icon - send message to the player to stop the app
+        }
+	};
 	/**
 	 * Initializes the system manager. The application should call this method when
 	 * it is ready to start receiving messages, typically after registering
