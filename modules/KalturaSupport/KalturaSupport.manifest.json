@@ -1633,6 +1633,12 @@
                 "label": "Reason: Spam",
                 "doc": "Reason: Spam.",
                 "type": "string"
+            },
+            "minDescriptionLength": {
+                "label": "Minimum characters in description. 0 means no validation",
+                "doc": "Minimum characters in description. 0 means no validation",
+                "initvalue": 0,
+                "type": "number"
             }
         }
     },

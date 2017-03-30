@@ -10,6 +10,7 @@
 		 	"showTooltip": true,
 			"smartContainer": 'morePlugins',
 			"smartContainerCloseEvent": 'closeMenuOverlay',
+            "minDescriptionLength" : 0,
 			"title": gM("ks-MODERATION-REPORT"),
 			"header": gM("ks-MODERATION-HEADER"),
 			"text": gM("ks-MODERATION-TEXT"),
@@ -64,6 +65,11 @@
 				$( '<label for="flagComments">'+ gM("ks-MODERATION-PLACEHOLDER" ) +'</label>' ),
 				$( '<textarea />' )
 					.attr( 'id', 'flagComments' )
+					.bind('input propertychange', function() {
+						if( $(this).val().length == _this.getConfig("minDescriptionLength")){
+						$(this).removeClass("validationError");
+						}
+					})
 					.css({'width': '100%', 'height': '40px', 'margin-top': '10px'}),
 				$('<div/>' ).append(
 					$( '<div />' )
@@ -113,6 +119,11 @@
 		},
 		submitFlag: function(flagObj) {
 			var _this = this;
+			//validation length of description check
+			if (_this.getConfig("minDescriptionLength") != 0 && flagObj.flagComments.length < this.getConfig("minDescriptionLength")  ){
+				this.screen.find("#flagComments").addClass("validationError");
+				return;
+			}
 			this.getPlayer().triggerHelper( 'moderationSubmit', flagObj.flagType );
 			this.getPlayer().addPlayerSpinner();
 			this.getKalturaClient().doRequest( {
