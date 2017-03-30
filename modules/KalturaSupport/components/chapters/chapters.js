@@ -67,6 +67,7 @@
 			var _this = this;
 
 			this.bind('KalturaSupport_ThumbCuePointsReady', function () {
+				console.log(">>> KalturaSupport_ThumbCuePointsReady",_this.dvrWindow);
 				if (!_this.maskChangeStreamEvents) {
 					//Get chapters data from cuepoints
 					var chaptersRawData = _this.getCuePoints();
@@ -115,6 +116,7 @@
 			});
 
 			this.bind('KalturaSupport_ThumbCuePointsUpdated', function (e, cuepoints) {
+                console.log(">>> KalturaSupport_ThumbCuePointsUpdated",_this.dvrWindow);
 				if (!_this.dataIntialized) {
 					_this.dataIntialized = true;
 				}
@@ -135,6 +137,7 @@
 			});
 
 			this.bind("seeked", function(){
+                console.log(">>> seeked");
 				var item = _this.mediaList[ _this.selectedMediaItemIndex ];
 				if ( item && item.active ) {
 					item.active = false;
@@ -152,10 +155,12 @@
 			});
 
 			this.bind("freezeTimeIndicators", function(e, val){
+                console.log(">>> freezeTimeIndicators");
 				_this.freezeTimeIndicators = val;
 			});
 
 			this.bind("updatePlayHeadPercent", function () {
+                // console.log(">>> updatePlayHeadPercent");
 				if (_this.dataIntialized) {
 					_this.handlePendingItems();
 					_this.updateActiveItem();
@@ -163,6 +168,7 @@
 			});
 
 			this.bind('playerReady', function () {
+                console.log(">>> playerReady");
 				if (!_this.maskChangeStreamEvents) {
 					if ( _this.dataIntialized ) {
 						_this.show();
@@ -177,6 +183,7 @@
 				}
 				if(_this.embedPlayer.isDVR() ==1){
                     $(_this.embedPlayer.getInterface()).addClass("dvr");
+                    _this.dvrWindow = this.evaluate("{mediaProxy.entry.dvrWindow}");
 				}
 			});
 
@@ -188,13 +195,16 @@
 			});
 
 			this.bind('onChangeStream', function () {
+                console.log(">>> onChangeStream");
 				_this.maskChangeStreamEvents = true;
 			});
 			this.bind('onChangeStreamDone', function () {
+                console.log(">>> onChangeStreamDone");
 				_this.maskChangeStreamEvents = false;
 			});
 
 			this.bind('onChangeMedia', function () {
+                console.log(">>> onChangeMedia");
 				if (!_this.maskChangeStreamEvents){
 					_this.dataIntialized = false;
 					_this.mediaList = [];
@@ -210,6 +220,7 @@
 			});
 
 			this.bind('mediaListLayoutReady slideAnimationEnded updateLayout', function () {
+                console.log(">>> mediaListLayoutReady slideAnimationEnded updateLayout");
 				setTimeout(function(){
 					_this.getComponent()
 						.find(".k-title-container.mediaBoxText, .k-description-container.mediaBoxText").dotdotdot();
@@ -977,6 +988,10 @@
 			if (this.getConfig("closeOnClick") && (this.getConfig('parent') === 'sideBarContainer')){
 				this.getPlayer().triggerHelper("closeSideBarContainer");
 			}
+			//disable on items out of DVR - TODO manage this is the data and not in dom
+			if(this.getComponent().find( "li[data-mediaBox-index='" + mediaIndex + "']" ).hasClass("out-of-dvr")){
+				return;
+			}
 			//Only apply seek in VOD or in live if DVR is supported
 			if ((this.getPlayer().isLive() && this.getPlayer().isDVR()) ||
 					!this.getPlayer().isLive()) {
@@ -985,8 +1000,8 @@
 					this.getPlayer().sendNotification('doPlay');
 				}
 				if(this.embedPlayer.isDVR() == 1){
-					debugger;
                  	var seekTo =  this.mediaList[mediaIndex].startTime-this.embedPlayer.evaluate( '{mediaProxy.entry.firstBroadcast}');
+                 	console.log(">>>>> seek to ",seekTo)
 					this.getPlayer().sendNotification('doSeek', seekTo);
 				}else{
 					// see to start time and play ( +.1 to avoid highlight of prev chapter )
@@ -1051,8 +1066,32 @@
 			if (!this.freezeTimeIndicators) {
 				this.updateActiveChapter();
 				this.updateActiveSlide();
+				if(this.dvrWindow){
+					this.disableWindowDvrSlides()
+				}
 			}
 		},
+        disableWindowDvrSlides: function(){
+            var currentTime = this.getPlayer().LiveCurrentTime;
+			var dvrWindow = 14*60;//this.dvrWindow
+
+			console.log(">>>> disableWindowDvrSlides - currentTime",currentTime,dvrWindow);
+			for(var i=0;i<this.slidesMap.length;i++){
+                var slide =  this.getComponent().find( "li[data-mediaBox-index='" + i + "']" );
+				if(currentTime && this.slidesMap[i].endTime < currentTime-dvrWindow ){
+					$(slide).addClass("out-of-dvr");
+                	console.log(">>>>>",i," out " , currentTime-this.slidesMap[i].endTime);
+				}else{
+					$(slide).removeClass("out-of-dvr");
+                	console.log(">>>>>",i," in ", currentTime-this.slidesMap[i].endTime);
+				}
+				//handle edge cae of last item
+                if(i==this.slidesMap.length-1){
+					$(slide).removeClass("out-of-dvr");
+				}
+			}
+
+        },
 		updateActiveSlide: function(){
 			var activeSlideIndex = this.findActiveItem(this.slidesMap, this.selectedSlideIndex);
 			if (activeSlideIndex < 0 && this.isLiveCuepoints()){
