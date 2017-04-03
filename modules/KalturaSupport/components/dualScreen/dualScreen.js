@@ -220,15 +220,12 @@
 						primary.disableDroppable();
 						secondary.disableDroppable();
 
-						if (currentState === 'SbS') {
+						if (currentState === 'SbS' || currentState === 'hide') {
 							primary.enableDroppable();
 							secondary.enableDroppable();
 						} else if (currentState === 'PiP') {
 							primary.enableDroppable(primary === main);
 							secondary.enableDroppable(secondary === main);
-						} else if (currentState === 'hide'){
-							primary.enableDroppable();
-							secondary.enableDroppable();
 						} else {
 							main.enableDroppable();
 						}
