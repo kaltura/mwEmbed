@@ -37,6 +37,13 @@
 
 		setup: function () {
 			this.set360Config();
+            this.bind("SourceSelected", function(event,source){
+                if ( source.src.toLowerCase().indexOf("playmanifest") > -1 &&
+                    source.src.toLowerCase().indexOf("cfvod") === -1) {
+                    source.src = source.src.replace(/cdnapisec/,"cfvod");
+                    source.src = source.src.replace(/cdnapi/,"cfvod");
+                }
+            });
 			this.bind("playerReady", function () {
 				if (this.getPlayer().is360()) {
 					this.is360 = true;
