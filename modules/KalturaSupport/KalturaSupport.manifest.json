@@ -480,6 +480,12 @@
                 "doc": "If the audio selector should be activated.",
                 "label": "Enable audio selector",
                 "type": "hiddenValue"
+            },
+            "defaultLang": {
+                "doc": "Set default language of the audio, supporting ISO-639 two letters string",
+                "label": "Default language code",
+                "initvalue": "",
+                "type": "text"
             }
         }
     },
