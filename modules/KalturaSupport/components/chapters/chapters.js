@@ -67,7 +67,6 @@
 			var _this = this;
 
 			this.bind('KalturaSupport_ThumbCuePointsReady', function () {
-				console.log(">>> KalturaSupport_ThumbCuePointsReady",_this.dvrWindow);
 				if (!_this.maskChangeStreamEvents) {
 					//Get chapters data from cuepoints
 					var chaptersRawData = _this.getCuePoints();
@@ -116,7 +115,6 @@
 			});
 
 			this.bind('KalturaSupport_ThumbCuePointsUpdated', function (e, cuepoints) {
-                console.log(">>> KalturaSupport_ThumbCuePointsUpdated",_this.dvrWindow);
 				if (!_this.dataIntialized) {
 					_this.dataIntialized = true;
 				}
@@ -137,7 +135,6 @@
 			});
 
 			this.bind("seeked", function(){
-                console.log(">>> seeked");
 				var item = _this.mediaList[ _this.selectedMediaItemIndex ];
 				if ( item && item.active ) {
 					item.active = false;
@@ -155,12 +152,10 @@
 			});
 
 			this.bind("freezeTimeIndicators", function(e, val){
-                console.log(">>> freezeTimeIndicators");
 				_this.freezeTimeIndicators = val;
 			});
 
 			this.bind("updatePlayHeadPercent", function () {
-                // console.log(">>> updatePlayHeadPercent");
 				if (_this.dataIntialized) {
 					_this.handlePendingItems();
 					_this.updateActiveItem();
@@ -168,7 +163,6 @@
 			});
 
 			this.bind('playerReady', function () {
-                console.log(">>> playerReady");
 				if (!_this.maskChangeStreamEvents) {
 					if ( _this.dataIntialized ) {
 						_this.show();
@@ -195,16 +189,13 @@
 			});
 
 			this.bind('onChangeStream', function () {
-                console.log(">>> onChangeStream");
 				_this.maskChangeStreamEvents = true;
 			});
 			this.bind('onChangeStreamDone', function () {
-                console.log(">>> onChangeStreamDone");
 				_this.maskChangeStreamEvents = false;
 			});
 
 			this.bind('onChangeMedia', function () {
-                console.log(">>> onChangeMedia");
 				if (!_this.maskChangeStreamEvents){
 					_this.dataIntialized = false;
 					_this.mediaList = [];
@@ -220,7 +211,6 @@
 			});
 
 			this.bind('mediaListLayoutReady slideAnimationEnded updateLayout', function () {
-                console.log(">>> mediaListLayoutReady slideAnimationEnded updateLayout");
 				setTimeout(function(){
 					_this.getComponent()
 						.find(".k-title-container.mediaBoxText, .k-description-container.mediaBoxText").dotdotdot();
@@ -1001,7 +991,6 @@
 				}
 				if(this.embedPlayer.isDVR() == 1){
                  	var seekTo =  this.mediaList[mediaIndex].startTime-this.embedPlayer.evaluate( '{mediaProxy.entry.firstBroadcast}');
-                 	console.log(">>>>> seek to ",seekTo)
 					this.getPlayer().sendNotification('doSeek', seekTo);
 				}else{
 					// see to start time and play ( +.1 to avoid highlight of prev chapter )
@@ -1072,18 +1061,23 @@
 			}
 		},
         disableWindowDvrSlides: function(){
-            var currentTime = this.getPlayer().LiveCurrentTime;
-			var dvrWindow = 14*60;//this.dvrWindow
+            var currentTime = Math.ceil(this.getPlayer().LiveCurrentTime+ this.embedPlayer.getLiveEdgeOffset());
+			var dvrWindow = 30*60;//this.dvrWindow
 
-			console.log(">>>> disableWindowDvrSlides - currentTime",currentTime,dvrWindow);
+			if(isNaN(currentTime)){
+				//no ID3 data yet - disable all slides until we have timestamp data
+                for(var i=0;i<this.slidesMap.length;i++){
+                    var slide =  this.getComponent().find( "li[data-mediaBox-index='" + i + "']" );
+					$(slide).addClass("out-of-dvr");
+                }
+                return;
+			}
 			for(var i=0;i<this.slidesMap.length;i++){
                 var slide =  this.getComponent().find( "li[data-mediaBox-index='" + i + "']" );
 				if(currentTime && this.slidesMap[i].endTime < currentTime-dvrWindow ){
 					$(slide).addClass("out-of-dvr");
-                	console.log(">>>>>",i," out " , currentTime-this.slidesMap[i].endTime);
 				}else{
 					$(slide).removeClass("out-of-dvr");
-                	console.log(">>>>>",i," in ", currentTime-this.slidesMap[i].endTime);
 				}
 				//handle edge cae of last item
                 if(i==this.slidesMap.length-1){
