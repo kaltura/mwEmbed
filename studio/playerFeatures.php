@@ -131,6 +131,21 @@ if (is_file($html5ManifestFile)) {
     }
     $configRegister['ps'] = $json;
 }
+
+//Traverse the PS modules directory
+global $wgKwidgetPsEnabledModules;
+foreach ($wgKwidgetPsEnabledModules as $moduleName) {
+    $manifestPath = realpath(dirname($wgKalturaPSHtml5SettingsPath) . "/../ps/modules/$moduleName/{$moduleName}.manifest.json");
+    if( is_file( $manifestPath ) ){
+        $plugins = json_decode( file_get_contents($manifestPath), TRUE );
+    }
+    if (isset($plugins)){
+        foreach ($plugins as $key => $value) {
+            $configRegister[$key] = $value;
+        }
+    }
+}
+
 // Parse the request is it needed? as well the presequence bit
 //foreach ($configRegister as $registeredModule) {
 //	foreach ($registeredModule as $pluginId => $plugin) {
