@@ -64,7 +64,7 @@
             this.bind("mediaLoaded", function(event,source) {
                 var serverHostName = _this.getConfig("playServer");
                 var flavors = _this.embedPlayer.kalturaFlavors.filter((el) => el["data-assetid"] == void(0));
-                var selectedFlavor  = /*flavors ? flavors[0].flavors*/ :_this.embedPlayer.kalturaFlavors[1]["data-assetid"];
+                var selectedFlavor  =/* flavors ? flavors[0].flavors :*/_this.embedPlayer.kalturaFlavors[1]["data-assetid"];
                 // selectedFlavor = selectedFlavor.split(",")[0]
                 var getAdsUrl = serverHostName +  "/p/"+_this.embedPlayer.kpartnerid+"/layout/playerManifest/uiConfId/"+_this.embedPlayer.kuiconfid + "/entryId/" + _this.embedPlayer.kentryid + "/flavorId/"+selectedFlavor+"/sessionId/"+_this.sessionid+"/a.json"
                 $.getJSON(getAdsUrl ,function(data){
