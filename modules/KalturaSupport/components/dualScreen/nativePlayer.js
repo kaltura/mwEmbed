@@ -18,12 +18,12 @@
             this.stream = stream;
             this.embedPlayer = embedPlayer;
             this.streamerType = this.stream.url.indexOf('m3u8') > 0 ? 'hls' : 'http';
-            this.initPlayerElement(readyCallback || $.noop);
+            this.initPlayerElement(readyCallback || $.noop , Hls);
 
             return this;
         },
 
-        initPlayerElement: function initPlayerElement(readyCallback) {
+        initPlayerElement: function initPlayerElement(readyCallback , Hls) {
             var $this = $(this);
 
             this.muted = true;
