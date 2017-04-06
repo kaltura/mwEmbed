@@ -38,7 +38,9 @@
                 $this.attr('src', this.stream.url);
             } else if (this.streamerType === 'hls') {
                 console.log(">>> creating HLS");
-                debugger;
+                if(!Hls){
+                    debugger;
+                }
                 var hls = new Hls();
                 var _this = this;
                 hls.attachMedia(this);
