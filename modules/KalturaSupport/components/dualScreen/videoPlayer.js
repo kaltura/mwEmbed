@@ -44,15 +44,20 @@
             mw.log("DualScreen :: second screen :: videoPlayer :: initPlayerElement");
             var player = this.getPlayer();
             var playerConstructor;
-            switch(player.instanceOf){
-                case "Native":
-                    playerConstructor = mw.dualScreen.NativePlayer;
-                    break;
-                case "Kplayer":
-                    playerConstructor = mw.dualScreen.FlashPlayer;
-                    break;
-                default:
-                    throw "Player of type '" + player.instanceOf + "'' is not supported!";
+            console.log(">>> player.instanceOf",player.instanceOf);
+            try{
+                switch(player.instanceOf){
+                    case "Native":
+                        playerConstructor = mw.dualScreen.NativePlayer;
+                        break;
+                    case "Kplayer":
+                        playerConstructor = mw.dualScreen.FlashPlayer;
+                        break;
+                    default:
+                        throw "Player of type '" + player.instanceOf + "'' is not supported!";
+                }
+            } catch (e){
+
             }
 
             this.playerElement = new playerConstructor(this.stream, this.getPlayer(), function (player) {
