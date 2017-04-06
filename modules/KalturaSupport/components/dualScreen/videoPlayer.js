@@ -1,4 +1,4 @@
-(function ( mw, $) {
+(function ( mw, $ , Hls) {
     "use strict";
     mw.dualScreen = mw.dualScreen || {};
 
@@ -59,10 +59,9 @@
             } catch (e){
                 console.log(">>> catch - player.instanceOf",player.instanceOf);
             }
-
             this.playerElement = new playerConstructor(this.stream, this.getPlayer(), function (player) {
                 $(player).one('loadstart', this.sync.bind(this));
-            }.bind(this));
+            }.bind(this),Hls);
             this.$el = $(this.playerElement);
         },
 
@@ -87,4 +86,4 @@
             this._super();
         }
     });
-})( window.mw, window.jQuery );
+})( window.mw, window.jQuery, window.Hls );
