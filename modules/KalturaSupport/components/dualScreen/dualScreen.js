@@ -219,7 +219,7 @@
 
 						primary.disableDroppable();
 						secondary.disableDroppable();
-
+						console.log(" >>> currentState " , currentState);
 						if (currentState === 'SbS' || currentState === 'hide') {
 							primary.enableDroppable();
 							secondary.enableDroppable();
