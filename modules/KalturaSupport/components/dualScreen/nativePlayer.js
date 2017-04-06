@@ -37,6 +37,9 @@
                 readyCallback(this);
                 $this.attr('src', this.stream.url);
             } else if (this.streamerType === 'hls') {
+                if(!Hls && window.Hls){
+                    Hls = window.Hls;
+                }
                 var hls = new Hls();
                 var _this = this;
                 hls.attachMedia(this);
