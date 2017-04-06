@@ -19,6 +19,7 @@
         },
 
         setStream: function (stream) {
+            console.log(">>> setStream",stream);
             this.stream = stream;
 
             this.destroyVideoSync();
@@ -33,6 +34,7 @@
 
         getComponent: function () {
             if (!this.$el) {
+                console.log(">>> getComponent");
                 this.initPlayerElement();
             }
             return this.$el;
