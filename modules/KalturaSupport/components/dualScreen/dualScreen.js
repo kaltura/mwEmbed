@@ -58,8 +58,6 @@
 			isViewModeLocked : false, //indicating if current view mode state is locked by external application.
 
 			setup: function ( ) {
-			    debugger;
-
                 mw.setConfig("preferedBitrate", 50); //ABR - load kplayer video with the lowest fixed bitrate in order to give dual screen full control on ABR (right now supported for HLS kplayer only). Will be ignored in Native player
                 mw.setConfig("EmbedPlayer.SpinnerTarget", "videoHolder"); //set SpinnerTarget to videoHolder
 				this.initConfig();
@@ -1002,6 +1000,9 @@
 							var newVideoPlayer = new mw.dualScreen.videoPlayer(this.getPlayer(), function () {
 								this.setStream(stream);
 							}, 'videoPlayer');
+							if(Hls){
+                                newVideoPlayer.Hls = Hls;
+                            }
 							this.secondPlayer.getComponent().replaceWith(newVideoPlayer.getComponent());
 							this.destroySecondScreen();
 							this.secondPlayer = newVideoPlayer;

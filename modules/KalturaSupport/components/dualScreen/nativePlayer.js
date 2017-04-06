@@ -38,8 +38,8 @@
                 $this.attr('src', this.stream.url);
             } else if (this.streamerType === 'hls') {
                 console.log(">>> creating HLS");
+                debugger;
                 if(!Hls){
-                    debugger;
                     Hls = window.Hls;
                 }
                 var hls = new Hls();
