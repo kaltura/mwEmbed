@@ -7,6 +7,7 @@
         playerElement: null,
 
         isSafeEnviornment: function () {
+            debugger;
             return true;
         },
 
@@ -19,6 +20,7 @@
         },
 
         setStream: function (stream) {
+            debugger;
             console.log(">>> setStream",stream);
             this.stream = stream;
 

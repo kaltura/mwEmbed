@@ -40,6 +40,7 @@
                 console.log(">>> creating HLS");
                 if(!Hls){
                     debugger;
+                    Hls = window.Hls;
                 }
                 var hls = new Hls();
                 var _this = this;
