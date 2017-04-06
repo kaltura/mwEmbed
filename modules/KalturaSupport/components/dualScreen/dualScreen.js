@@ -998,11 +998,11 @@
 							this.secondPlayer.setStream(stream);
 						} else if (this.secondPlayer instanceof mw.dualScreen.imagePlayer) {
 							var newVideoPlayer = new mw.dualScreen.videoPlayer(this.getPlayer(), function () {
-								this.setStream(stream);
+								this.setStream(stream,Hls);
 							}, 'videoPlayer');
-							if(Hls){
-                                newVideoPlayer.Hls = Hls;
-                            }
+                            // if(Hls){
+                            //     newVideoPlayer.Hls = Hls;
+                            // }
 							this.secondPlayer.getComponent().replaceWith(newVideoPlayer.getComponent());
 							this.destroySecondScreen();
 							this.secondPlayer = newVideoPlayer;

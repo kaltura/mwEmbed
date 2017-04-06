@@ -4,11 +4,9 @@
 
     mw.dualScreen.videoPlayer = mw.KBaseComponent.extend({
         stream: null,
-        aa: Hls,
         playerElement: null,
 
         isSafeEnviornment: function () {
-            this.cc = Hls;
             return true;
         },
 
@@ -20,7 +18,7 @@
             // NOP
         },
 
-        setStream: function (stream) {
+        setStream: function (stream , Hls) {
             debugger;
             console.log(">>> setStream",stream);
             this.stream = stream;
