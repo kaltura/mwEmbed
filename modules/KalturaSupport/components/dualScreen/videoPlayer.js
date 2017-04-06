@@ -57,7 +57,7 @@
                         throw "Player of type '" + player.instanceOf + "'' is not supported!";
                 }
             } catch (e){
-
+                console.log(">>> catch - player.instanceOf",player.instanceOf);
             }
 
             this.playerElement = new playerConstructor(this.stream, this.getPlayer(), function (player) {
