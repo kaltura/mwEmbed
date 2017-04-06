@@ -27,7 +27,7 @@
             if (this.$el) {
                 var $prevEl = this.$el;
                 $prevEl.empty();
-                this.initPlayerElement();
+                this.initPlayerElement(Hls);
                 $prevEl.replaceWith(this.$el);
             }
         },
@@ -35,12 +35,12 @@
         getComponent: function () {
             if (!this.$el) {
                 console.log(">>> getComponent");
-                this.initPlayerElement();
+                this.initPlayerElement(Hls);
             }
             return this.$el;
         },
 
-        initPlayerElement: function () {
+        initPlayerElement: function (Hls) {
             mw.log("DualScreen :: second screen :: videoPlayer :: initPlayerElement");
             var player = this.getPlayer();
             var playerConstructor;
