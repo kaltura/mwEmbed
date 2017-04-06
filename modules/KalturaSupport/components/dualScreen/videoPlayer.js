@@ -5,7 +5,6 @@
     mw.dualScreen.videoPlayer = mw.KBaseComponent.extend({
         stream: null,
         aa: Hls,
-        bb:this.Hls,
         playerElement: null,
 
         isSafeEnviornment: function () {
