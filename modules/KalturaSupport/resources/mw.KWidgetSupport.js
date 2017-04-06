@@ -578,6 +578,26 @@ mw.KWidgetSupport.prototype = {
 		if ( playerData.meta && playerData.meta.tags ) {
 			var pattern = new RegExp('(, |^)360(,|$)');
 			embedPlayer.set360(pattern.test(playerData.meta.tags));
+			try {
+                if ( window.location.href.split( "#" ).length > 0 &&
+                    window.location.href.split( "#" )[1] == "360iosMode" ) {
+                    mw.setConfig( "Kaltura.UseAppleAdaptive" , false );
+                    mw.setConfig( "Kaltura.ServiceUrl" , "//cfvod.kaltura.com" );
+                } else {
+                    if ( mw.getConfig( "forceSameDomainOnIOS" ) && mw.isIOS() ) {
+                        var domain = kWidget.getPath().match( /\/\/(.*?)\// )[1];
+                        var path = kWidget.getPath();
+                        if ( domain.indexOf( "cfvod" ) == -1 ) {
+                            path = path.replace( /\/\/(.*?)\// , "//cfvod.kaltura.com/" );
+                        }
+                        var url = path + "/mwEmbedFrame.php/p/" + embedPlayer.kpartnerid + "/uiconf_id/" + embedPlayer.kuiconfid + "/entry_id/" + embedPlayer.kentryid + "/wid/_" + embedPlayer.kpartnerid + "#360iosMode";
+                        window.location.href = url;
+                    }
+                }
+            }
+            catch(err) {
+				mw.log("Error occur while trying to check ios iframe 360 data: " + err);
+            }
 		} else {
 			embedPlayer.set360(false);
 		}
