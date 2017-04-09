@@ -1,11 +1,11 @@
-(function (mw, $, kWidgetSupport, Hls) {
+(function (mw, $, kWidgetSupport) {
     'use strict';
 
     mw.dualScreen = mw.dualScreen || {};
 
-    mw.dualScreen.NativePlayer = function NativePlayer(stream, embedPlayer, readyCallback) {
+    mw.dualScreen.NativePlayer = function NativePlayer(stream, embedPlayer, readyCallback , Hls) {
         return $.extend($('<video/>')[0], nativePlayerPrototype)
-            .init(stream, embedPlayer, readyCallback);
+            .init(stream, embedPlayer, readyCallback , Hls);
     };
 
     var nativePlayerPrototype = {
@@ -14,16 +14,16 @@
         supportsPlaybackrate: true,
         streamerType: 'http',
 
-        init: function init(stream, embedPlayer, readyCallback) {
+        init: function init(stream, embedPlayer, readyCallback ,Hls) {
             this.stream = stream;
             this.embedPlayer = embedPlayer;
             this.streamerType = this.stream.url.indexOf('m3u8') > 0 ? 'hls' : 'http';
-            this.initPlayerElement(readyCallback || $.noop);
+            this.initPlayerElement(readyCallback || $.noop , Hls);
 
             return this;
         },
 
-        initPlayerElement: function initPlayerElement(readyCallback) {
+        initPlayerElement: function initPlayerElement(readyCallback , Hls) {
             var $this = $(this);
 
             this.muted = true;
@@ -37,6 +37,11 @@
                 readyCallback(this);
                 $this.attr('src', this.stream.url);
             } else if (this.streamerType === 'hls') {
+                console.log(">>> creating HLS");
+                debugger;
+                if(!Hls){
+                    Hls = window.Hls;
+                }
                 var hls = new Hls();
                 var _this = this;
                 hls.attachMedia(this);
@@ -89,4 +94,4 @@
             return this.streamerType === 'hls' && mw.isDesktopSafari();
         }
     };
-})(window.mw, window.jQuery, window.kWidgetSupport, window.Hls);
+})(window.mw, window.jQuery, window.kWidgetSupport);

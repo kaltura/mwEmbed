@@ -1,4 +1,4 @@
-(function ( mw, $ ) {
+(function ( mw, $ , Hls) {
     "use strict";
     mw.dualScreen = mw.dualScreen || {};
 
@@ -18,7 +18,9 @@
             // NOP
         },
 
-        setStream: function (stream) {
+        setStream: function (stream , Hls) {
+            debugger;
+            console.log(">>> setStream",stream);
             this.stream = stream;
 
             this.destroyVideoSync();
@@ -26,36 +28,41 @@
             if (this.$el) {
                 var $prevEl = this.$el;
                 $prevEl.empty();
-                this.initPlayerElement();
+                this.initPlayerElement(Hls);
                 $prevEl.replaceWith(this.$el);
             }
         },
 
         getComponent: function () {
             if (!this.$el) {
-                this.initPlayerElement();
+                console.log(">>> getComponent");
+                this.initPlayerElement(Hls);
             }
             return this.$el;
         },
 
-        initPlayerElement: function () {
+        initPlayerElement: function (Hls) {
             mw.log("DualScreen :: second screen :: videoPlayer :: initPlayerElement");
             var player = this.getPlayer();
             var playerConstructor;
-            switch(player.instanceOf){
-                case "Native":
-                    playerConstructor = mw.dualScreen.NativePlayer;
-                    break;
-                case "Kplayer":
-                    playerConstructor = mw.dualScreen.FlashPlayer;
-                    break;
-                default:
-                    throw "Player of type '" + player.instanceOf + "'' is not supported!";
+            console.log(">>> player.instanceOf",player.instanceOf);
+            try{
+                switch(player.instanceOf){
+                    case "Native":
+                        playerConstructor = mw.dualScreen.NativePlayer;
+                        break;
+                    case "Kplayer":
+                        playerConstructor = mw.dualScreen.FlashPlayer;
+                        break;
+                    default:
+                        throw "Player of type '" + player.instanceOf + "'' is not supported!";
+                }
+            } catch (e){
+                console.log(">>> catch - player.instanceOf",player.instanceOf);
             }
-
             this.playerElement = new playerConstructor(this.stream, this.getPlayer(), function (player) {
                 $(player).one('loadstart', this.sync.bind(this));
-            }.bind(this));
+            }.bind(this),Hls);
             this.$el = $(this.playerElement);
         },
 
@@ -80,4 +87,4 @@
             this._super();
         }
     });
-})( window.mw, window.jQuery );
+})( window.mw, window.jQuery, window.Hls );
