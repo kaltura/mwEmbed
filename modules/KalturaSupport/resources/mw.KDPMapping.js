@@ -1261,7 +1261,18 @@
 
 						// Update the proxy data
 						embedPlayer.setKalturaConfig("proxyData", notificationData.proxyData);
-						embedPlayer.setKalturaConfig("proxyData", "data", notificationData.proxyData);
+						//Prevent circular dependency between proxyData and proxyData.data by serializing the input object
+                        var proxyData = null;
+                        if (notificationData.proxyData) {
+                            try {
+                                proxyData = JSON.parse(JSON.stringify(notificationData.proxyData));
+                            } catch (e) {
+                                mw.log("KDPMapping:: failed to serialize proxyData. The object is corrupted!")
+                                embedPlayer.changeMediaStarted = false;
+                                return;
+                            }
+                        }
+                        embedPlayer.setKalturaConfig("proxyData", "data", proxyData);
 						//Needed for changeMedia to keep base proxyData before server response is mixed into the object
 						embedPlayer.setKalturaConfig('originalProxyData', notificationData.proxyData);
 
