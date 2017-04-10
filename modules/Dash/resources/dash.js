@@ -1,8 +1,7 @@
 (function (mw, $, shaka) {
 	"use strict";
-	if (!window.Promise) {
-		shaka.polyfill.installAll();
-	}
+	shaka.polyfill.installAll();
+
 	if (shaka.Player.isBrowserSupported() &&
 		!mw.getConfig("EmbedPlayer.ForceNativeComponent") &&
 		!mw.isDesktopSafari() &&
