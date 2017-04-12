@@ -23,20 +23,20 @@
         setup: function(){
             this.addBindings();
         },
-        addBindings: function(){
+        addBindings: function() {
             var _this = this;
 
-            this.bind("SourceSelected", function(event,source){
-                if ( source.src.toLowerCase().indexOf("playmanifest") > -1 &&
-                    source.src.toLowerCase().indexOf("sessionid/") === -1 ) {
-                    if ( !_this.sessionid ){
-                        _this.sessionid = Math.floor(Math.random() * 1000000000);
+            this.bind( "SourceSelected" , function ( event , source ) {
+                if ( source.src.toLowerCase().indexOf( "playmanifest" ) > -1 &&
+                    source.src.toLowerCase().indexOf( "sessionid/" ) === -1 ) {
+                    if ( !_this.sessionid ) {
+                        _this.sessionid = Math.floor( Math.random() * 1000000000 );
                     }
-                    source.src = _this.injectParam(source.src,"uiconf/" + _this.embedPlayer.kuiconfid);
-                    source.src = _this.injectParam(source.src,"sessionId/" + _this.sessionid);
-                    source.src = _this.injectGetParam(source.src,"playerConfig=" + _this.getPlayerConfig());
+                    source.src = _this.injectParam( source.src , "uiconf/" + _this.embedPlayer.kuiconfid );
+                    source.src = _this.injectParam( source.src , "sessionId/" + _this.sessionid );
+                    source.src = _this.injectGetParam( source.src , "playerConfig=" + _this.getPlayerConfig() );
                 }
-            });
+            } );
 
             this.bind( "monitorEvent" , function () {
                 _this.reportTrackers();
@@ -45,73 +45,77 @@
                 _this.lastCurrentTime = _this.embedPlayer.currentTime;
             } );
 
-            this.bind( "preSeek" , function(event,seektime,stopAfterSeek, stopSeek){
-                if (_this.shouldMonitorSeek) {
-                    _this.checkBeforeSeek(seektime,stopAfterSeek, stopSeek);
+            this.bind( "preSeek" , function ( event , seektime , stopAfterSeek , stopSeek ) {
+                if ( _this.shouldMonitorSeek ) {
+                    _this.checkBeforeSeek( seektime , stopAfterSeek , stopSeek );
 
                 }
-                if (!_this.adDataLoaded) {
+                if ( !_this.adDataLoaded ) {
 
-                    _this.waitingForAdDataToLoad = [seektime,stopAfterSeek, stopSeek];
+                    _this.waitingForAdDataToLoad = [seektime , stopAfterSeek , stopSeek];
                     stopSeek.value = true;
                     stopAfterSeek = true;
-                    _this.embedPlayer.seeking = false;             
+                    _this.embedPlayer.seeking = false;
                 }
                 _this.shouldMonitorSeek = true;
 
-            });
+            } );
 
-            this.bind("mediaLoaded", function(event,source) {
-                var serverHostName = _this.getConfig("playServer");
-                var flavors = _this.embedPlayer.kalturaFlavors.filter((el) => el["data-assetid"] == void(0));
-                var selectedFlavor  =/* flavors ? flavors[0].flavors :*/_this.embedPlayer.kalturaFlavors[1]["data-assetid"];
-                // selectedFlavor = selectedFlavor.split(",")[0]
-                var getAdsUrl = serverHostName +  "/p/"+_this.embedPlayer.kpartnerid+"/layout/playerManifest/uiConfId/"+_this.embedPlayer.kuiconfid + "/entryId/" + _this.embedPlayer.kentryid + "/flavorId/"+selectedFlavor+"/sessionId/"+_this.sessionid+"/a.json"
-                $.getJSON(getAdsUrl ,function(data){
-                    if (data && data.sequences) {
-                        _this.adDataLoaded = true;
-                        var cues = [];
+            this.bind( "mediaLoaded" , function ( event , source ) {
+                var serverHostName = _this.getConfig( "playServer" );
+                var flavors = _this.embedPlayer.getSource().flavors.split( "," );
+                $.each(flavors, function ( index , flavor ) {
+                    var getAdsUrl = serverHostName + "/p/" + _this.embedPlayer.kpartnerid + "/layout/playerManifest/uiConfId/" + _this.embedPlayer.kuiconfid + "/entryId/" + _this.embedPlayer.kentryid + "/flavorId/" + flavor + "/sessionId/" + _this.sessionid + "/a.json"
+                    $.getJSON( getAdsUrl , function ( data ) {
+                        if ( _this.queueAdRquest.length > 0 ) {
+                            return;
+                        }
+                        if ( data && data.sequences ) {
+                            _this.adDataLoaded = true;
+                            var cues = [];
 
-                        for ( var i = 0 ; i < data.sequences.length ; i++ ) {
-                           var currentSeq = data.sequences[i];
-                            if (currentSeq.adId && currentSeq.offset == 0){
-                                _this.hasPreroll = true;
-                                //preroll!!!
-                                _this.getAdData(currentSeq.adId,currentSeq.offset );
-                                cues.push(0);
-                            }
-                            else {
-                                if (currentSeq.adId) {
-                                    _this.queueAdRquest.push( {
-                                        offset: currentSeq.offset ,
-                                        sequence: currentSeq ,
-                                        isDone: false
-                                    } );
-                                    cues.push(currentSeq.offset);
+                            for ( var i = 0 ; i < data.sequences.length ; i++ ) {
+                                var currentSeq = data.sequences[i];
+                                if ( currentSeq.adId && currentSeq.offset == 0 ) {
+                                    _this.hasPreroll = true;
+                                    //preroll!!!
+                                    _this.getAdData( currentSeq.adId , currentSeq.offset );
+                                    cues.push( 0 );
+                                }
+                                else {
+                                    if ( currentSeq.adId ) {
+                                        _this.queueAdRquest.push( {
+                                            offset: currentSeq.offset ,
+                                            sequence: currentSeq ,
+                                            isDone: false
+                                        } );
+                                        cues.push( currentSeq.offset );
+                                    }
                                 }
                             }
+
+                            if ( _this.waitingForAdDataToLoad ) {
+                                _this.checkBeforeSeek( _this.waitingForAdDataToLoad[0] , _this.waitingForAdDataToLoad[1] , _this.waitingForAdDataToLoad[2] );
+                                _this.waitingForAdDataToLoad = null;
+                            }
+                            var scrubber = _this.embedPlayer.getInterface().find( ".scrubber" );
+                            scrubber.parent().prepend( '<div class="bubble-ad"></div>' );
+
+
+                            for ( var i = 0 ; i < cues.length ; i++ ) {
+                                var pos = Math.round( (cues[i] / (_this.embedPlayer.duration * 1000) * 100) );
+                                $( '.bubble-ad' ).append( $( '<div id ="' + "key" + i + '" style="margin-left:' + pos + '%">' +
+                                    ' </div>' )
+                                    .addClass( "" )
+                                );
+
+                            }
                         }
+                    } );
 
-                        if (_this.waitingForAdDataToLoad){
-                            _this.checkBeforeSeek(_this.waitingForAdDataToLoad[0],_this.waitingForAdDataToLoad[1],_this.waitingForAdDataToLoad[2]);
-                            _this.waitingForAdDataToLoad = null;
-                        }
-                        var scrubber = _this.embedPlayer.getInterface().find(".scrubber");
-                        scrubber.parent().prepend('<div class="bubble-ad"></div>');
+                } );
+            } )
 
-
-                        for (var i = 0 ;i<cues.length;i++) {
-                            var pos = Math.round((cues[i]/(_this.embedPlayer.duration * 1000)*100)) ;
-                            $('.bubble-ad').append($('<div id ="' + "key"+i + '" style="margin-left:' + pos + '%">' +
-                                ' </div>')
-                                    .addClass("")
-                            );
-
-                        }
-                    }
-                });
-
-            });
 
         },
 
