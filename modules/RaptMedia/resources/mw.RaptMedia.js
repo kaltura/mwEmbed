@@ -79,10 +79,19 @@
 					if (mw.getConfig('debug', true))
 						console.log('raptMediaPlugin::[init]', entry);
 
+					var AAC_FRAME_SIZE = 1024;
+					var MIN_SAMPLE_RATE = 44100;
+					var MIN_FRAME_RATE = 12;
+
+					// Segment duration is based on the duration of all video frames, however on discontinuities HLS.js appears to take the longer of the audio or video duration.
+					// Audio will always be a multiple of AAC frame size (1024 samples) so we assume the maximum error of 1 AAC frame at the lowest sampling rate per discontinuity.
+					var adjustment = ((AAC_FRAME_SIZE / MIN_SAMPLE_RATE) * i);
+					var msAdjustment = Math.ceil(adjustment * 100) * 10;
+
 					var segment = {
 						discontinuity: i,
-						msStartTime: msStartOffset,
-						msDuration: entry.msDuration,
+						msStartTime: msStartOffset + msAdjustment,
+						msDuration: entry.msDuration - msAdjustment,
 						width: entry.width, 
 						height: entry.height,
 						entryId: entry.id
@@ -187,16 +196,24 @@
 						}
 
 						_this.engineCurrentSegment = _this.raptSegments[currentEntryId];
+
 						var __this = _this;
 						if (!_this.raptMediaInitialSegmentLoad) {
 							_this.bind('seeked.newSegment', function () {
+								__this.seeking = false;
 								__this.unbind('seeked.newSegment');
-								__this.getPlayer().play();
 							});
-							var segmentStartSec = parseFloat((_this.engineCurrentSegment.msStartTime / 1000).toFixed(2));
-							// HLS.js shifts the timing of clips, so we try to correct for that
-							_this.fixupSegment(_this.engineCurrentSegment);
+							var segmentStartSec = Math.ceil(_this.engineCurrentSegment.msStartTime / 10) / 100;
 							_this.getPlayer().sendNotification("doSeek", segmentStartSec);
+
+							_this.seeking = true;
+							_this.transition = true;
+							_this.getPlayer().addBlackScreen();
+
+							if (!_this.getPlayer().isMuted()) {
+								_this.muted = true;
+								_this.getPlayer().toggleMute(true);
+							}
 						} else {
 							// the first rapt segment was loaded, we're ready to continue
 							_this.raptMediaInitialSegmentLoad = false;
@@ -292,39 +309,12 @@
 			if (this.engineCurrentSegment == null) 
 				return;
 
+			var playlistTimeMillis = parseFloat(this.getPlayer().currentTime).toFixed(2) * 1000;
+			var currentTimeMillis = playlistTimeMillis - this.engineCurrentSegment.msStartTime;
+
 			if (this.playbackEnded) {
 				this.getPlayer().pause();
 				return;	
-			}
-
-			var globalCurrentTimeMillis = parseFloat(this.getPlayer().currentTime).toFixed(3) * 1000;
-			var currentTimeMillis = (globalCurrentTimeMillis - this.engineCurrentSegment.msStartTime);
-
-			// Smallest seek that the player will honor
-			var minimumSeekMillis = (mw.getConfig("EmbedPlayer.SeekTargetThreshold", 0.1) + 0.01) * 1000;
-
-			// Detect if we're outside the bounds of the current segment and attempt to correct.
-			// Safari in particular appears to regularly under shoot when seeking.
-			// TODO: If we remain out of bounds of the segment
-			// after several attempts to correct we should probably
-			// just fail the playback instead of going into an
-			// infinite loop
-			if (currentTimeMillis < 0) {
-				var targetMillis = this.engineCurrentSegment.msStartTime + Math.max(0, currentTimeMillis + minimumSeekMillis);
-				this.log(
-					'WARNING: Current time: ' + (globalCurrentTimeMillis / 1000) +
-					' is before segment start: ' + (this.engineCurrentSegment.msStartTime / 1000) +
-					'. Possible bad seek. Attempting to correct by seeking to: ' + (targetMillis / 1000)
-				);
-				this.getPlayer().sendNotification('doSeek', targetMillis / 1000);
-			} else if (currentTimeMillis > this.engineCurrentSegment.msDuration) {
-				var targetMillis = this.engineCurrentSegment.msStartTime + Math.min(this.engineCurrentSegment.msDuration - 10, currentTimeMillis - minimumSeekMillis);
-				this.log(
-					'WARNING: Current time: ' + (globalCurrentTimeMillis / 1000) +
-					' is after segment end: ' + ((this.engineCurrentSegment.msStartTime + this.engineCurrentSegment.msDuration) / 1000) +
-					'. Possible playback overrun. Attempting to correct by seeking to: ' + (targetMillis / 1000)
-				);
-				this.getPlayer().sendNotification('doSeek', targetMillis / 1000);
 			}
 
 			if (currentTimeMillis < 0) currentTimeMillis = 0;
@@ -352,6 +342,21 @@
 				this.playbackEnded = false;
 			}
 
+			if (this.seeking)
+				return;
+
+			if (this.transition && currentTimeMillis >= 0) {
+				this.transition = false;
+				this.getPlayer().removeBlackScreen();
+				if (this.muted) {
+					this.muted = false;
+					this.getPlayer().toggleMute();
+				}
+			}
+
+			if (currentTimeMillis < 0)
+				return;
+
 			this.log(currentTimeSec + ", " + segmentDurationSec + " , " + this.playbackEnded);
 			
 			this.raptMediaEngine.update({
@@ -372,40 +377,6 @@
 				width: this.getPlayer().getVideoHolder().width(),
 				height: this.getPlayer().getVideoHolder().height() 
 			});
-		},
-
-		fixupSegment: function(segment) {
-			// Hls.js has a tendency to shift the start point of fragments around, so
-			// if it's in use we try to guess the new start time of our segment by
-			// looking at HLS.js's internal data structures
-			// TODO: Investigate if we will ever need to adjust the duration/end-time
-
-			var hlsjs = this.getPlayer().getPluginInstance('hlsjs');
-			if (!(hlsjs && hlsjs.hls.levels)) {
-				return;
-			}
-
-			this.log('hls.js detected, adjusting segment start time. Original msStartTime: ' + segment.msStartTime);
-			// We don't know which quality level will be loaded so look for the
-			// maximum start time across all levels
-			var levels = hlsjs.hls.levels;
-			for (var i = 0; i < levels.length; i++) {
-				var level = levels[i];
-				var fragments = level.details.fragments;
-
-				// Look through all the fragments for the first one that has the
-				// correct discontinuity sequence number
-				for (var j = 0; j < fragments.length; j++) {
-					var fragment = fragments[j];
-
-					if (fragment.cc === segment.discontinuity) {
-						segment.msStartTime = Math.max(segment.msStartTime, fragment.start * 1000);
-						// We found the relevant fragment for this level, skip to the next quality level.
-						break;
-					}
-				}
-			}
-			this.log('hls.js adjusted msStartTime: ' + segment.msStartTime);
 		},
 
 		isValidApiResult: function (data) {
