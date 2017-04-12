@@ -135,6 +135,7 @@
 			});
 
 			this.bind("seeked", function(){
+
 				var item = _this.mediaList[ _this.selectedMediaItemIndex ];
 				if ( item && item.active ) {
 					item.active = false;
@@ -1040,13 +1041,23 @@
 			var activeItemIndex = -1;
 			var time = this.getPlayer().currentTime;
 			var item;
-			var i = (startIndex > -1) ? startIndex : 0;
-
-			for (i; i < data.length; i++){
-				item = data[i];
-				if ((time >= item.startTime ) && (time < item.endTime )){
-					activeItemIndex = i;
-					break;
+			if(this.dvrWindow > 0){
+				//dvr mode
+                var currentTime = Math.ceil(this.getPlayer().LiveCurrentTime);
+                for (var i=0; i < data.length; i++){
+                	if(currentTime>data[i].startTime && currentTime<data[i].endTime){
+                        activeItemIndex = i;
+						break;
+					}
+                }
+			}else{
+				var i = (startIndex > -1) ? startIndex : 0;
+				for (i; i < data.length; i++){
+					item = data[i];
+					if ((time >= item.startTime ) && (time < item.endTime )){
+						activeItemIndex = i;
+						break;
+					}
 				}
 			}
 			return activeItemIndex;
@@ -1062,7 +1073,7 @@
 		},
         disableWindowDvrSlides: function(){
             var currentTime = Math.ceil(this.getPlayer().LiveCurrentTime+ this.embedPlayer.getLiveEdgeOffset());
-			var dvrWindow = 30*60;//this.dvrWindow
+			var dvrWindow = 45*60;//this.dvrWindow
 
 			if(isNaN(currentTime)){
 				//no ID3 data yet - disable all slides until we have timestamp data
