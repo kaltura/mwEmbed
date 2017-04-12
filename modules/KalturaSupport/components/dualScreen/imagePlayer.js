@@ -136,6 +136,41 @@
 			this.bind( 'postDualScreenTransition displayRepainted', function () {
 				_this.applyIntrinsicAspect();
 			});
+			// add listning to monitor only on DVR mode
+			if(this.embedPlayer.evaluate("{mediaProxy.entry.dvrWindow}")){
+				this.bind( 'monitorEvent', function () {
+					_this.applySlideOnDvrMode();
+				});
+
+			}
+		},
+        applySlideOnDvrMode : function(){
+            var myImg = this.getComponent();
+            var cuepoints;
+            if(	this.cuePointsManager && this.cuePointsManager.getPlayer().kCuePoints
+				&& this.cuePointsManager.getPlayer().kCuePoints.midCuePointsArray ){
+                cuepoints = this.cuePointsManager.getPlayer().kCuePoints.midCuePointsArray;
+			}
+			if (!cuepoints || !cuepoints.length){
+            	return;
+			}
+            // if(this.getPlayer().getLiveEdgeOffset() == 0 && myImg.attr('src')!=cuepoints[cuepoints.length-1].thumbnailUrl){
+			// 	// last slide for live
+             //    myImg.attr('src', cuepoints[cuepoints.length-1].thumbnailUrl);
+             //    return
+			// }
+            var currentTime = this.getPlayer().LiveCurrentTime*1000;
+            var newUrl;
+            for(var i=0;i<cuepoints.length;i++){
+                if(currentTime>cuepoints[i].startTime
+				){
+                    newUrl =  cuepoints[i].thumbnailUrl;
+				}
+			}
+			//optimize - set URL only if it is different
+			if(newUrl != myImg.attr('src')){
+            	myImg.attr('src', newUrl);
+			}
 		},
 		getComponent: function() {
 			if (!this.$el) {
@@ -180,6 +215,7 @@
 			return cuePoints;
 		},
 		sync: function(cuePoint){
+			console.log(">>>>>>>>","sync",cuePoint)
 			if (this.syncEnabled) {
 
 				if (!cuePoint)
