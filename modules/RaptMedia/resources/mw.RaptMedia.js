@@ -63,11 +63,6 @@
 					'action': 'get',
 					'entryId': entryId
 				});
-				requestsArray.push({
-					'service': 'flavorasset',
-					'action': 'getbyentryid',
-					'entryId': entryId
-				});
 			});
 			
 			_this.getKalturaClient().doRequest(requestsArray, function (data) {
@@ -75,37 +70,26 @@
 				if (!_this.isValidApiResult(data))
 					return;
 
-				var accumulativeFrames = 0;
-				var defaul_fps = 24;
-				var fps = null;
+				var msStartOffset = 0;
 				var entry = null;
-				var flavorAssets = null;
-
+				
 				for (var i = 0; i < data.length; ++i) { 
 					entry = data[i];
-					flavorAssets = data[i+1];
-				    if ( document.URL.indexOf( 'debugKalturaPlayer' ) !== -1 )
-						console.log('raptMediaPlugin::[init]', entry, flavorAssets);
-
-					if (Array.isArray(flavorAssets) && flavorAssets.length > 0 && flavorAssets[0].frameRate > 0)
-						fps = flavorAssets[0].frameRate;
-					else
-						fps = defaul_fps;
 					
-					var segemtFrames = Math.ceil(entry.msDuration / 1000 * fps);
+					if (mw.getConfig('debug', true))
+						console.log('raptMediaPlugin::[init]', entry);
 
 					var segment = {
-						msStartTime: (accumulativeFrames / fps) * 1000,
+						discontinuity: i,
+						msStartTime: msStartOffset,
 						msDuration: entry.msDuration,
-						frames: segemtFrames,
 						width: entry.width, 
 						height: entry.height,
 						entryId: entry.id
 					};
 					_this.raptSegments[entry.id] = segment;
 					_this.raptSequence.push(segment);
-					accumulativeFrames += segemtFrames;
-					++i;
+					msStartOffset += entry.msDuration;
 				}
 				
 				$.ajax({ dataType: 'script', url: raptMediaScriptUrl, cache: true })
@@ -114,6 +98,13 @@
 				})
 				.fail(function( jqxhr, settings, exception ) {
 					_this.log('Failed to load script: ' + raptMediaScriptUrl + ', ' + exception);
+					// pause the video
+					_this.getPlayer().layoutBuilder.displayAlert({
+						keepOverlay: true,
+						message: 'Error loading the RAPT Media engine. Please try to reload the page, or contact Support stating the URL of this page if the issue persists.',
+						title: 'Error loading RAPT Media engine',
+						noButtons: true
+					});
 				})
 				.then(function() {
 					_this.log('Then, setup the rapt engine');
@@ -185,6 +176,16 @@
 						var currentEntryId = media.sources[0].src;
 						if (_this.engineCurrentSegment && currentEntryId == _this.engineCurrentSegment.entryId)
 							return;
+						
+						if (!(currentEntryId in _this.raptSegments) || _this.raptSegments[currentEntryId] == null) {
+							_this.getPlayer().layoutBuilder.displayAlert({
+								keepOverlay: true,
+								message: 'There was an error loading this segment of the RAPT Media experience. Please try to reload the page, or contact Support stating the URL of this page if the issue persists.',
+								title: 'Error playing RAPT Media segment',
+								noButtons: true
+							});
+						}
+
 						_this.engineCurrentSegment = _this.raptSegments[currentEntryId];
 						var __this = _this;
 						if (!_this.raptMediaInitialSegmentLoad) {
@@ -193,6 +194,8 @@
 								__this.getPlayer().play();
 							});
 							var segmentStartSec = parseFloat((_this.engineCurrentSegment.msStartTime / 1000).toFixed(2));
+							// HLS.js shifts the timing of clips, so we try to correct for that
+							_this.fixupSegment(_this.engineCurrentSegment);
 							_this.getPlayer().sendNotification("doSeek", segmentStartSec);
 						} else {
 							// the first rapt segment was loaded, we're ready to continue
@@ -239,6 +242,12 @@
 					
 					error: function(error){
 						_this.log('Engine error: ' + error);
+						_this.getPlayer().layoutBuilder.displayAlert({
+							keepOverlay: true,
+							message: 'Somthing gone bad with this RAPT Media experience :( Please try to reload the page, or contact Support stating the URL of this page if the issue persists. (' + error + ')',
+							title: 'Error playing RAPT Media experience',
+							noButtons: true
+						});
 					}
 				};
 
@@ -288,11 +297,40 @@
 				return;	
 			}
 
-			var currentTimeMillis = parseFloat(this.getPlayer().currentTime.toFixed(3)) * 1000 - this.engineCurrentSegment.msStartTime;
+			var globalCurrentTimeMillis = parseFloat(this.getPlayer().currentTime).toFixed(3) * 1000;
+			var currentTimeMillis = (globalCurrentTimeMillis - this.engineCurrentSegment.msStartTime);
+
+			// Smallest seek that the player will honor
+			var minimumSeekMillis = (mw.getConfig("EmbedPlayer.SeekTargetThreshold", 0.1) + 0.01) * 1000;
+
+			// Detect if we're outside the bounds of the current segment and attempt to correct.
+			// Safari in particular appears to regularly under shoot when seeking.
+			// TODO: If we remain out of bounds of the segment
+			// after several attempts to correct we should probably
+			// just fail the playback instead of going into an
+			// infinite loop
+			if (currentTimeMillis < 0) {
+				var targetMillis = this.engineCurrentSegment.msStartTime + Math.max(0, currentTimeMillis + minimumSeekMillis);
+				this.log(
+					'WARNING: Current time: ' + (globalCurrentTimeMillis / 1000) +
+					' is before segment start: ' + (this.engineCurrentSegment.msStartTime / 1000) +
+					'. Possible bad seek. Attempting to correct by seeking to: ' + (targetMillis / 1000)
+				);
+				this.getPlayer().sendNotification('doSeek', targetMillis / 1000);
+			} else if (currentTimeMillis > this.engineCurrentSegment.msDuration) {
+				var targetMillis = this.engineCurrentSegment.msStartTime + Math.min(this.engineCurrentSegment.msDuration - 10, currentTimeMillis - minimumSeekMillis);
+				this.log(
+					'WARNING: Current time: ' + (globalCurrentTimeMillis / 1000) +
+					' is after segment end: ' + ((this.engineCurrentSegment.msStartTime + this.engineCurrentSegment.msDuration) / 1000) +
+					'. Possible playback overrun. Attempting to correct by seeking to: ' + (targetMillis / 1000)
+				);
+				this.getPlayer().sendNotification('doSeek', targetMillis / 1000);
+			}
+
 			if (currentTimeMillis < 0) currentTimeMillis = 0;
 			var currentTimeSec = parseFloat((currentTimeMillis / 1000).toFixed(3));
 
-			var segmentDurationMillis = this.engineCurrentSegment.msDuration - 550;
+			var segmentDurationMillis = this.engineCurrentSegment.msDuration - 300;
 			var segmentDurationSec = parseFloat((this.engineCurrentSegment.msDuration / 1000).toFixed(3));
 			
 			if (currentTimeMillis >= segmentDurationMillis) {
@@ -334,6 +372,40 @@
 				width: this.getPlayer().getVideoHolder().width(),
 				height: this.getPlayer().getVideoHolder().height() 
 			});
+		},
+
+		fixupSegment: function(segment) {
+			// Hls.js has a tendency to shift the start point of fragments around, so
+			// if it's in use we try to guess the new start time of our segment by
+			// looking at HLS.js's internal data structures
+			// TODO: Investigate if we will ever need to adjust the duration/end-time
+
+			var hlsjs = this.getPlayer().getPluginInstance('hlsjs');
+			if (!(hlsjs && hlsjs.hls.levels)) {
+				return;
+			}
+
+			this.log('hls.js detected, adjusting segment start time. Original msStartTime: ' + segment.msStartTime);
+			// We don't know which quality level will be loaded so look for the
+			// maximum start time across all levels
+			var levels = hlsjs.hls.levels;
+			for (var i = 0; i < levels.length; i++) {
+				var level = levels[i];
+				var fragments = level.details.fragments;
+
+				// Look through all the fragments for the first one that has the
+				// correct discontinuity sequence number
+				for (var j = 0; j < fragments.length; j++) {
+					var fragment = fragments[j];
+
+					if (fragment.cc === segment.discontinuity) {
+						segment.msStartTime = Math.max(segment.msStartTime, fragment.start * 1000);
+						// We found the relevant fragment for this level, skip to the next quality level.
+						break;
+					}
+				}
+			}
+			this.log('hls.js adjusted msStartTime: ' + segment.msStartTime);
 		},
 
 		isValidApiResult: function (data) {
