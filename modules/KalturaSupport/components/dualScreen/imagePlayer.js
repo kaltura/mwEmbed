@@ -141,6 +141,13 @@
 				this.bind( 'monitorEvent', function () {
 					_this.applySlideOnDvrMode();
 				});
+				this.bind( 'seeked', function () {
+					_this.getComponent().attr('src', "");
+					setTimeout(function(){
+						_this.getComponent().attr('src', "");
+						_this.applySlideOnDvrMode();
+					},512);
+				});
 
 			}
 		},
@@ -161,6 +168,7 @@
 			// }
             var currentTime = this.getPlayer().LiveCurrentTime*1000;
             var newUrl;
+            //searching for the right CP
             for(var i=0;i<cuepoints.length;i++){
                 if(currentTime>cuepoints[i].startTime
 				){
@@ -215,7 +223,6 @@
 			return cuePoints;
 		},
 		sync: function(cuePoint){
-			console.log(">>>>>>>>","sync",cuePoint)
 			if (this.syncEnabled) {
 
 				if (!cuePoint)
