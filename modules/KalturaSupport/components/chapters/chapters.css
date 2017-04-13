@@ -659,7 +659,10 @@ input#searchBox::-ms-clear {
     display: none;
 }
 
+.out-of-dvr .slideOverlay{
+    background: rgba(74,73,74,0.80);
+    cursor: default !important;
+}
 .out-of-dvr{
-    opacity:0.3;
     cursor: default !important;
 }
