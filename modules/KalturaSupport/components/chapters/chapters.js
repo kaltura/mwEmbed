@@ -331,15 +331,19 @@
 			var itemsToRemoveIndexes = [];
 
 			var currentTime = this.getPlayer().getPlayerElementTime();
+			var _this = this;
 
 			//Check for items that weren't displayed yet
 			$.each(this.pendingMediaItems, function (index, item) {
+				if(_this.getPlayer().evaluate("{mediaProxy.entry.dvrStatus}") == 1 && item.startTime<=_this.getPlayer().LiveCurrentTime){
+                    items.push(item);
+                    itemsToRemoveIndexes.push(index);
+				}
 				if (item.startTime <= currentTime && !item.displayed) {
 					items.push(item);
 					itemsToRemoveIndexes.push(index);
 				}
 			});
-			var _this = this;
 			$.each(itemsToRemoveIndexes, function (index) {
 				_this.pendingMediaItems.splice(index, 1);
 			});
