@@ -15,7 +15,6 @@
   <div id="kaltura_player" style="float:left;padding-left:10px;width:400px;height:330px;"></div>
   <i>Analytics events:</i> ( only html5 )<br />
   <textarea id="analyticsLog" rows='15' style="width:450px;"></textarea>
-  </div>
 
 <div style="clear:both"></div>
 	
@@ -34,11 +33,11 @@
 				'relativeTo': "video",
 				'trackEventMonitor': 'trackEvent',
 				'c2':"1234567",
-				'labelMapping':'test_2="hello {mediaProxy.entry.duration} world {video.volume}", test_3=hello',
+				'labelMapping':'test_2="hello {mediaProxy.entry.duration} world {video.volume}", test_3=hello, test1=',
 				'persistentLabels':'test_0=something else'
 			}
 		}
-	})
+	});
 
 	window['trackEvent'] = function( eventObj ){
 		$( "#analyticsLog" ).append( 'comScore Event:' + JSON.stringify( eventObj) + "\n\n" );

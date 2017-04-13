@@ -1,8 +1,17 @@
 /**
- * ComscoreStreamingTag loader
+ * comScore Streaming Analytics loader
  */
-( function( mw ) { "use strict";
-	mw.addKalturaPlugin( ["ComScoreStreamingTag"], 'comScoreStreamingTag', function( embedPlayer, callback ){
-		new mw.ComscoreStreamingTag( embedPlayer, callback );
-	});
-})( window.mw);
+(function (mw) {
+    "use strict";
+    mw.kalturaPluginWrapper(function () {
+        mw.PluginManager.add('comScoreStreamingTag', mw.KBaseComponent.extend({
+            setup: function () {
+                this.kalturaComScoreSTAPlugin = new mw.KalturaComScoreSTAPlugin(this);
+            },
+
+            destroy: function () {
+                this.kalturaComScoreSTAPlugin.destroy();
+            }
+        }));
+    });
+})(window.mw);
