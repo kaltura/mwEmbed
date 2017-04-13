@@ -133,7 +133,7 @@
             }
 
             //check if we miss cuepoint during seek - if so take the last one
-            if ( _this.cuePoints && _this.cuePoints.length > 0 ) {
+            if ( _this.queueAdRquest && _this.queueAdRquest.length > 0 ) {
                 var lastOffset = 0;
                 var missedCue = null;
                 for ( var i = 0 ; i < _this.queueAdRquest.length ; i++ ) {
@@ -145,6 +145,7 @@
                 }
                 //found the cue we need to see to
                 if ( missedCue && !missedCue.isDone ) {
+                    _this.seekAfterAd = seektime;
                     _this.shouldMonitorSeek = false;
                     stopSeek.value = true;
                     stopAfterSeek = true;
@@ -153,7 +154,7 @@
                 }
             }
 
-            _this.seekAfterAd = seektime;
+
 
 
         },
