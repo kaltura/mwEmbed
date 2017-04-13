@@ -135,7 +135,6 @@
 			});
 
 			this.bind("seeked", function(){
-
 				var item = _this.mediaList[ _this.selectedMediaItemIndex ];
 				if ( item && item.active ) {
 					item.active = false;
@@ -991,7 +990,7 @@
 					this.getPlayer().sendNotification('doPlay');
 				}
 				if(this.embedPlayer.isDVR() == 1){
-                 	var seekTo =  this.mediaList[mediaIndex].startTime-this.embedPlayer.evaluate( '{mediaProxy.entry.firstBroadcast}');
+                 	var seekTo =  this.mediaList[mediaIndex].startTime-this.embedPlayer.evaluate( '{mediaProxy.entry.firstBroadcast}')+this.embedPlayer.kalturaPlayerMetaData.firstBroadcast - this.embedPlayer.kalturaPlayerMetaData.currentBroadcastStartTime ;
 					this.getPlayer().sendNotification('doSeek', seekTo);
 				}else{
 					// see to start time and play ( +.1 to avoid highlight of prev chapter )
