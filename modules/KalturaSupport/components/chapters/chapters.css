@@ -666,3 +666,12 @@ input#searchBox::-ms-clear {
 .out-of-dvr{
     cursor: default !important;
 }
+
+.out-of-dvr.mediaBox:focus > .boxOutline  {
+    -webkit-transition-delay: 0ms;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    border: none;
+    box-sizing: border-box;
+}
