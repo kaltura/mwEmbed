@@ -1,7 +1,8 @@
 {
   "ComScoreStreamingTag": {
     "scripts": [
-      "resources/mw.ComscoreStreamingTag.js"
+      "resources/bin/streamsense.plugin.min.js",
+      "resources/mw.KalturaComScoreSTAPlugin.js"
     ],
     "dependencies": [
       "mw.EmbedPlayer",
