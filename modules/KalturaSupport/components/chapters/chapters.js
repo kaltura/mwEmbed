@@ -175,7 +175,7 @@
 					_this.renderSearchBar();
 					_this.renderBottomBar();
 				}
-				if(_this.embedPlayer.isDVR() ==1){
+				if(_this.embedPlayer.isDVR() == 1){
                     $(_this.embedPlayer.getInterface()).addClass("dvr");
                     _this.dvrWindow = this.evaluate("{mediaProxy.entry.dvrWindow}");
 				}
@@ -335,13 +335,12 @@
 
 			//Check for items that weren't displayed yet
 			$.each(this.pendingMediaItems, function (index, item) {
-				if(_this.getPlayer().evaluate("{mediaProxy.entry.dvrStatus}") == 1 && item.startTime<=_this.getPlayer().LiveCurrentTime){
-                    items.push(item);
-                    itemsToRemoveIndexes.push(index);
-				}
 				if (item.startTime <= currentTime && !item.displayed) {
 					items.push(item);
 					itemsToRemoveIndexes.push(index);
+				} else if (	_this.getPlayer().isDvrSupported() && item.startTime<=_this.getPlayer().LiveCurrentTime	){
+                    items.push(item);
+                    itemsToRemoveIndexes.push(index);
 				}
 			});
 			$.each(itemsToRemoveIndexes, function (index) {
