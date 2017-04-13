@@ -139,6 +139,8 @@
 			},
 
 			createPlayer: function () {
+                //Reinstall the polyfills to make sure they weren't ran over by others(VTT.js runs over VTTCue polyfill)
+				shaka.polyfill.installAll();
 				// Create a Player instance.
 				var player = new shaka.Player(this.getPlayer().getPlayerElement());
 
