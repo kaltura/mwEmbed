@@ -33,10 +33,22 @@
     function seekTo(a){
         kdp.sendNotification("doSeek",a);
     }
+    function seekRelative(a){
+        var position = kdp.evaluate("{video.player.currentTime}")
+        kdp.sendNotification("doSeek",position+a);
+    }
 
 </script>
 <button onclick="seekTo(0)">Seek to 0</button>
 <button onclick="seekTo(110)">Seek to 1:50</button>
+<button onclick="seekRelative(10)">+ 10 S</button>
+<button onclick="seekRelative(-10)">- 10 S</button>
+<button onclick="seekRelative(60)">+ 1 m</button>
+<button onclick="seekRelative(-60)">+ 1 m</button>
+<button onclick="seekRelative(300)">+ 5 m</button>
+<button onclick="seekRelative(-300)">- 5 m</button>
+<button onclick="seekRelative(3600)">+ 30 m</button>
+<button onclick="seekRelative(-3600)">- 30 m</button>
 
 
 </body>
