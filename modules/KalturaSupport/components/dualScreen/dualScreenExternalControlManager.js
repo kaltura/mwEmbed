@@ -16,6 +16,42 @@
                  */
                 $.extend(_this, {
                 });
+                //in case of DVR interval 1 sec for states-change logic
+                if(this.embedPlayer.isDVR()){
+                    setInterval(_this.dvrStateTick , 1000 , this)
+                }
+            },
+            lastStateCuePoint : null,
+            dvrStateTick : function(_this){
+                if(_this.cuePointsManager && _this.getPlayer().LiveCurrentTime){
+                    var codeCP = _this.embedPlayer.kCuePoints.codeCuePointsArray;
+                    //making sure CP array is sorted by startTime;
+                    codeCP.sort(function(a, b) {
+                        return parseFloat(a.startTime) - parseFloat(b.startTime);
+                    });
+
+                    var currentTime = _this.getPlayer().LiveCurrentTime*1000;
+                    var latestCP;
+                    if(!this.liveOffSynch){
+                        //live state - find highest CP that is not passed the current time
+                        for (var i=0;i<codeCP.length;i++){
+                            if(codeCP[i].startTime < currentTime - 2000){
+                                latestCP = codeCP[i];
+                            }
+                        }
+                    }else{
+                        //not live - handle a CP only when passing through one
+                        for (var i=0;i<codeCP.length;i++){
+                            if(Math.abs(currentTime-codeCP[i].startTime)<2000){
+                                latestCP = codeCP[i];
+                            }
+                        }
+                    }
+                    if(latestCP != _this.lastStateCuePoint ){
+                        _this.lastStateCuePoint = latestCP;
+                        _this.handleCuePoint(_this.lastStateCuePoint);
+                    }
+                }
             },
             destroy : function()
             {
