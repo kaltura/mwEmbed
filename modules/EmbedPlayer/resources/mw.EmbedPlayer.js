@@ -1846,15 +1846,17 @@
 		 */
 		triggerWidgetLoaded: function () {
 			if (!this.widgetLoaded) {
-				var resize = {
-					width: this.getInterface().width(),
-					height: this.getInterface().height() + 1
-				};
 				this.widgetLoaded = true;
 				mw.log("EmbedPlayer:: Trigger: widgetLoaded");
-				this.updateInterfaceSize(resize);
-				resize.height--;
-				this.updateInterfaceSize(resize);
+				if( mw.getConfig('Kaltura.ResizePlayerDimensions') ) {
+					var resize = {
+						width: this.getInterface().width(),
+						height: this.getInterface().height() + 1
+					};
+					this.updateInterfaceSize(resize);
+					resize.height--;
+					this.updateInterfaceSize(resize);
+				}
 				this.triggerHelper('widgetLoaded');
 			}
 		},
