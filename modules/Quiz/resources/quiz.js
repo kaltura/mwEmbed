@@ -18,9 +18,9 @@
             displayImportance: 'medium',
             templatePath: '../Quiz/resources/templates/quiz.tmpl.html',
             usePreviewPlayer: false,
-            autoContinue: true,
             previewPlayerEnabled: false
         },
+
         isSeekingIVQ:false,
         inFullScreen:false,
         selectedAnswer:null,
@@ -461,9 +461,7 @@
                                 _this.ivqHideScreen();
                                 _this.embedPlayer.seek(0, false);
                             }
-                            if (_this.getConfig("autoContinue")) {
-                                _this.KIVQModule.continuePlay();
-                            }
+                            _this.KIVQModule.continuePlay();
                         });
                     }
                     if(_this.KIVQModule.isKPlaylist){
