@@ -28,8 +28,9 @@ kWidget.addReadyCallback( function( playerId ){
 			// We bind to event
 			_this.bindPlayer();
 
+			var eventName = this.getConfig('startTrackingEvent') || 'layoutReady';
 			// Check for on-page s-code that already exists
-			this.bind('layoutReady', function(){
+			this.bind(eventName, function(){
 				// check that plugin is enabled: 
 				if( _this.getConfig('plugin') == false ){
 					return ;
