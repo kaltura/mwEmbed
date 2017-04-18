@@ -16,6 +16,9 @@
 (function ( mw, $ ) {
 	"use strict";
 
+	// Required for android playback of stitched playlists
+	mw.setConfig("Kaltura.LeadHLSOnAndroid", true);
+
 	mw.PluginManager.add( 'raptMedia', mw.KBaseComponent.extend( {
 
 		defaultConfig: {
