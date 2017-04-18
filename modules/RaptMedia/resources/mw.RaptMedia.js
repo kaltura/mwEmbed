@@ -85,7 +85,7 @@
 
 					// Segment duration is based on the duration of all video frames, however on discontinuities HLS.js appears to take the longer of the audio or video duration.
 					// Audio will always be a multiple of AAC frame size (1024 samples) so we assume the maximum error of 1 AAC frame at the lowest sampling rate per discontinuity.
-					var adjustment = ((AAC_FRAME_SIZE / MIN_SAMPLE_RATE) * i);
+					var adjustment = ((AAC_FRAME_SIZE / MIN_SAMPLE_RATE) * i) + (1 / MIN_FRAME_RATE * (i > 1 ? 1 : 0));
 					var msAdjustment = Math.ceil(adjustment * 100) * 10;
 
 					var segment = {
