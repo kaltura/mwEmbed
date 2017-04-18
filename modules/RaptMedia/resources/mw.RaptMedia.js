@@ -312,12 +312,24 @@
 			if (this.engineCurrentSegment == null) 
 				return;
 
+			if (this.seeking)
+				return;
+
 			var playlistTimeMillis = parseFloat(this.getPlayer().currentTime).toFixed(2) * 1000;
 			var currentTimeMillis = playlistTimeMillis - this.engineCurrentSegment.msStartTime;
 
 			if (this.playbackEnded) {
 				this.getPlayer().pause();
 				return;	
+			}
+
+			if (this.transition && currentTimeMillis > 0) {
+				this.transitioning = false;
+				this.getPlayer().removeBlackScreen();
+				if (this.muted) {
+					this.muted = false;
+					this.getPlayer().toggleMute();
+				}
 			}
 
 			if (currentTimeMillis < 0) currentTimeMillis = 0;
@@ -344,21 +356,6 @@
 			} else {
 				this.playbackEnded = false;
 			}
-
-			if (this.seeking)
-				return;
-
-			if (this.transition && currentTimeMillis >= 0) {
-				this.transition = false;
-				this.getPlayer().removeBlackScreen();
-				if (this.muted) {
-					this.muted = false;
-					this.getPlayer().toggleMute();
-				}
-			}
-
-			if (currentTimeMillis < 0)
-				return;
 
 			this.log(currentTimeSec + ", " + segmentDurationSec + " , " + this.playbackEnded);
 			
