@@ -20,6 +20,7 @@
             playServer : "http://dev-backend3.dev.kaltura.com"
         },
         adClickPostFix:".adsServerStich",
+        retryAdBreak:0,
         setup: function(){
             this.addBindings();
         },
@@ -163,8 +164,8 @@
             var _this = this;
             var serverHostName = _this.getConfig("playServer");
             var getAdsUrl = serverHostName +  "/p/"+_this.embedPlayer.kpartnerid+"/layout/playerAdBreak/adId/"+adId+"/sessionId/"+_this.sessionid+"/a.json";
-            $.getJSON(getAdsUrl, function(data){
-                if (data && data.ads){
+            var callback = function(data){
+                if (data && data.ads && data.ads.length > 0){
                     var totalInternalOffset = 0;
                     for (var i = 0 ; i < data.ads.length; i++){
                         var currentAd = data.ads[i] ;
@@ -179,12 +180,35 @@
                         } else {
                             _this.cuePoints.push({offset:currentOffset,ad:currentAd,isDone:false});
                         }
-                        totalInternalOffset +=currentOffset + currentAd.duration;                  
+                        totalInternalOffset +=currentOffset + currentAd.duration;
+                    }
+                } else {
+                    if ( _this.retryAdBreak < 50 ) {
+                        _this.retryAdBreak++;
+                        setTimeout( function () {
+                            doAjax( getAdsUrl );
+                        } , 20 );
                     }
                 }
+            };
+            var doAjax = function(getAdsUrl) {
+                $.ajax( {
+                    url: getAdsUrl ,
+                    dataType: "json" ,
+                    success: callback ,
+                    error: function () {
+                        if ( _this.retryAdBreak < 50 ) {
+                            _this.retryAdBreak++;
+                            setTimeout( function () {
+                                doAjax( getAdsUrl );
+                            } , 20 );
+                        }
+                    } ,
+                    timeout: 1000 //1 second timeout
+                } );
+            };
+            doAjax(getAdsUrl);
 
-
-            });
         },
         trackAd : function(ad,offset) {
             for ( var i = 0 ; i < ad.beacons.length ; i++ ) {
