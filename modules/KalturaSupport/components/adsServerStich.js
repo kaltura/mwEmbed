@@ -100,7 +100,7 @@
                                 _this.waitingForAdDataToLoad = null;
                             }
                             var scrubber = _this.embedPlayer.getInterface().find( ".scrubber" );
-                            if (_this.embedPlayer.getKalturaConfig("layout") && _this.embedPlayer.getKalturaConfig("layout").skin == "ott"){
+                            if (_this.embedPlayer.playerConfig.layout && _this.embedPlayer.playerConfig.layout.skin == "ott"){
                                 scrubber.append( '<div class="bubble-ad"></div>' );
                             } else {
                                 scrubber.parent().prepend( '<div class="bubble-ad"></div>' );
