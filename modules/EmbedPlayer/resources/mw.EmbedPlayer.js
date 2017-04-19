@@ -1848,10 +1848,18 @@
 			if (!this.widgetLoaded) {
 				this.widgetLoaded = true;
 				mw.log("EmbedPlayer:: Trigger: widgetLoaded");
+				if( mw.getConfig('Kaltura.ForceLayoutRedraw') ) {
+					var resize = {
+						width: this.getInterface().width(),
+						height: this.getInterface().height() + 1
+					};
+					this.updateInterfaceSize(resize);
+					resize.height--;
+					this.updateInterfaceSize(resize);
+				}
 				this.triggerHelper('widgetLoaded');
 			}
 		},
-
 		/**
 		 * Add a black thumbnail layer on top of the player
 		 */
