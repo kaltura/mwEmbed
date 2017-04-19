@@ -100,7 +100,12 @@
                                 _this.waitingForAdDataToLoad = null;
                             }
                             var scrubber = _this.embedPlayer.getInterface().find( ".scrubber" );
-                            scrubber.parent().prepend( '<div class="bubble-ad"></div>' );
+                            if (_this.embedPlayer.getKalturaConfig("layout") && _this.embedPlayer.getKalturaConfig("layout").skin == "ott"){
+                                scrubber.append( '<div class="bubble-ad"></div>' );
+                            } else {
+                                scrubber.parent().prepend( '<div class="bubble-ad"></div>' );
+
+                            }
 
 
                             for ( var i = 0 ; i < cues.length ; i++ ) {
@@ -260,8 +265,13 @@
         },
         addSkipAd:function(timeToSkip){
             var _this = this;
-            var $videoHolder = this.embedPlayer.getVideoHolder();
-            var $skipAd = $videoHolder.append("<div id='skipAd' style='cursor:pointer;vertical-align:middle;bottom:41px;right:8px;position:absolute;text-align:center;width: 70px;height: 30px;background-color: rgba(0,0,0,0.6);border-radius: 2px;'>" +
+            var bottom = "41";
+            if (_this.embedPlayer.getKalturaConfig("layout") && _this.embedPlayer.getKalturaConfig("layout").skin == "ott"){
+                bottom = "56";
+            }
+
+                var $videoHolder = this.embedPlayer.getVideoHolder();
+            var $skipAd = $videoHolder.append("<div id='skipAd' style='cursor:pointer;vertical-align:middle;bottom:"+ bottom +"px;right:8px;position:absolute;text-align:center;width: 70px;height: 30px;background-color: rgba(0,0,0,0.6);border-radius: 2px;'>" +
                 "<span style='vertical-align:middle;line-height:30px;width: 53px;height: 17px;font-family: Helvetica;font-size: 14px;font-weight: bold; color: #FFFFFF;'>Skip Ad</span></div>").find("#skipAd")
 
             var clickEventName = "click" + _this.adClickPostFix;
@@ -283,8 +293,12 @@
 
         addAdvertiseText:function(){
             var _this = this;
+            var bottom = "49";
+            if (_this.embedPlayer.getKalturaConfig("layout") && _this.embedPlayer.getKalturaConfig("layout").skin == "ott"){
+                bottom = "64";
+            }
             var $videoHolder = this.embedPlayer.getVideoHolder();
-            var $adText = $videoHolder.append("<div id='adText' style='position:absolute;bottom:49px;left:10px;width: 90px;height: 17px;font-family: Helvetica;font-size: 14px;line-height: 17px;color: #FFFFFF;text-shadow: 0 2px 4px 0 rgba(0,0,0,0.5);'>Advertisement</div>")
+            var $adText = $videoHolder.append("<div id='adText' style='position:absolute;bottom:" + bottom + "px;left:10px;width: 90px;height: 17px;font-family: Helvetica;font-size: 14px;line-height: 17px;color: #FFFFFF;text-shadow: 0 2px 4px 0 rgba(0,0,0,0.5);'>Advertisement</div>")
 
         },
         removeAdvertiseText:function(){

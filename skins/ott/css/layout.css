@@ -1457,6 +1457,19 @@ button::-moz-focus-inner {
 .blackBackground{
 	background-color: #000000;
 }
+
+.bubble-ad div{
+	background-color: #ffee00;
+	width: 5px;
+	height: 5px;
+	margin-bottom: -9px;
+	position: absolute;
+	text-align: center;
+	font-size: 1vw;
+	background-size: 100% 100%;
+	z-index: 999;
+	line-height: 3vw;
+}
 @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
 @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
 @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
