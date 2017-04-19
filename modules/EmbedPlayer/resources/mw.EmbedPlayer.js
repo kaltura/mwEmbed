@@ -1848,7 +1848,7 @@
 			if (!this.widgetLoaded) {
 				this.widgetLoaded = true;
 				mw.log("EmbedPlayer:: Trigger: widgetLoaded");
-				if( mw.getConfig('Kaltura.ResizePlayerDimensions') ) {
+				if( mw.getConfig('Kaltura.ForceLayoutRedraw') ) {
 					var resize = {
 						width: this.getInterface().width(),
 						height: this.getInterface().height() + 1
