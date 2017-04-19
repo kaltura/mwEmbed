@@ -266,7 +266,7 @@
         addSkipAd:function(timeToSkip){
             var _this = this;
             var bottom = "41";
-            if (_this.embedPlayer.getKalturaConfig("layout") && _this.embedPlayer.getKalturaConfig("layout").skin == "ott"){
+            if (_this.embedPlayer.playerConfig.layout && _this.embedPlayer.playerConfig.layout.skin == "ott"){
                 bottom = "56";
             }
 
