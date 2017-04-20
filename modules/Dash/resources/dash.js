@@ -46,7 +46,7 @@
 				this.bind("SourceChange", this.isNeeded.bind(this));
 				this.bind("playerReady", this.initShaka.bind(this));
 				this.bind("switchAudioTrack", this.onSwitchAudioTrack.bind(this));
-				this.bind("selectClosedCaptions", this.onSwitchTextTrack.bind(this));
+				this.bind("changeEmbeddedTextTrack", this.onSwitchTextTrack.bind(this));
 				this.bind("onChangeMedia", this.clean.bind(this));
 			},
 
@@ -366,14 +366,14 @@
 
 			onSwitchTextTrack: function (event, data) {
 				if (this.loaded) {
-					if (data === "Off") {
+					if (!data) {
 						player.setTextTrackVisibility(false);
 						this.log("onSwitchTextTrack disable subtitles");
 					} else {
-						player.configure({
-							preferredTextLanguage: data
-						});
-						this.log("onSwitchTextTrack switch to " + data);
+						var selectedTextTracks = this.getTracksByType("text")[data.index];
+						player.setTextTrackVisibility(true);
+						player.selectTrack(selectedTextTracks, false);
+						mw.log("Dash::onSwitchTextTrack switch to ", selectedTextTracks);
 					}
 				}
 			},
