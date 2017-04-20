@@ -63,7 +63,7 @@
                 this.counter = 0;
                 this.updatedTime = this.updatedTime + this.timeIntervalSec;
                 this.getPlayer().LiveCurrentTime = this.updatedTime;
-                this.getPlayer().flashCurrentTime = this.updatedTime; // for flash player
+                this.getPlayer().flashLiveCurrentTime = this.updatedTime; // for flash player
                 this.sendTrackEventMonitor(mw.seconds2npt(this.updatedTime), false);
             }
         },
@@ -82,7 +82,7 @@
                 this.updatedTime = time;
                 this.counter = 0; //reset time update interval counter
                 this.getPlayer().LiveCurrentTime = time;
-                this.getPlayer().flashCurrentTime = time; // for flash player
+                this.getPlayer().flashLiveCurrentTime = time; // for flash player
                 this.sendTrackEventMonitor(mw.seconds2npt(time), true);
             }
         },
