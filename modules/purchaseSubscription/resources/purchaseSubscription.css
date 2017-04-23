@@ -1,0 +1,98 @@
+/*
+  Style sheet for purchaseSubscription plugin
+  It's recomended to prefix your plugin styles with the plugin name
+*/
+.purchaseSubscription {
+
+}
+
+.purchaseSubscription .slick-arrow {
+    z-index: 100;
+    display: none !important;
+}
+
+.purchaseSubscription .slick-prev {
+    left: 0;
+}
+
+.purchaseSubscription .slick-next {
+    right: 0;
+}
+
+.purchaseSubscription.screen {
+    padding-top: 0;
+}
+
+.purchaseSubscription .icon-close {
+    right: 1em !important;;
+    top: 1em !important;
+}
+
+.purchaseSubscription .screen-content {
+    padding: 0;
+    /*position: relative;*/
+    height: 100%;
+    width: 100%;
+}
+
+.purchaseSubscription .itemWrapper {
+    position: relative;
+}
+
+.purchaseSubscription .posterWrapper {
+    background-size: cover !important;
+}
+
+.purchaseSubscription .itemInfo {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    width: 100%;
+    padding: 20px;
+    font-family: Roboto;
+    font-weight: 400;
+    font-size: 15px;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    padding-bottom: 30px;
+}
+
+.purchaseSubscription .itemInfo h3 {
+    margin-bottom: 0px;
+    font-size: 22px;
+}
+.purchaseSubscription .itemInfo .synopsis {
+    margin-top: 7px;
+    color: rgba(255,255,255,0.7);
+}
+
+.purchaseSubscription .posterShade {
+    background: linear-gradient(to top,rgba(0,0,0,0.7),rgba(0,0,0,0));
+    width: 100%;
+    height: 100%;
+}
+
+.purchaseSubscription .button::before{
+    font-family: icomoon;
+}
+
+.purchaseSubscription .button {
+    background: #59baf3;
+    font-family: Arial;
+    color: #ffffff;
+    font-size: 15px;
+    border-radius: 20px;
+    padding: 10px 20px 10px 20px;
+    text-decoration: none;
+}
+
+.purchaseSubscription .button:hover {
+    background: #3cb0fd;
+    background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+    text-decoration: none;
+}

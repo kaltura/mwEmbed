@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Player Skin 2.0 + JSON Config</title>
+    <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+    <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+    <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+    <!--<meta name="apple-itunes-app" content="app-id=304878510">-->
+</head>
+<body>
+<h1>Player Skin 2.0 + JSON Config</h1>
+<br />
+<div id="kaltura_player" style="width: 585px; height: 330px;float: left;"></div>
+<br style="clear: both;" /><br />
+<script>
+    kWidget.featureConfig({
+        'targetId': 'kaltura_player',
+        'wid': '_243342',
+        'uiconf_id' : '37812091',
+        'flashvars': {
+            'EmbedPlayer.WebKitPlaysInline':true,
+            "controlBarContainer": {
+                "hover": true
+            },
+            purchaseSubscription:{plugin:true},
+            'share': {
+                'plugin': true,
+                'parent': "topBarContainer",
+                'order': 3,
+                'socialShareURL': 'smart',
+                'socialNetworks': 'facebook,twitter,googleplus,email,linkedin,sms',
+                'embedCodeTemplate': '<iframe src="//cdnapi.kaltura.com/p/{mediaProxy.entry.partnerId}/sp/{mediaProxy.entry.partnerId}00/embedIframeJs/uiconf_id/{configProxy.kw.uiConfId}/partner_id/{mediaProxy.entry.partnerId}?iframeembed=true&playerId={configProxy.targetId}&entry_id={mediaProxy.entry.id}&flashvars[streamerType]=auto" width="560" height="395" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0"></iframe>'
+            }
+        },
+        "entry_id": "1_v34oba5k" // Entry with captions
+    });
+</script>
+</body>
+</html>

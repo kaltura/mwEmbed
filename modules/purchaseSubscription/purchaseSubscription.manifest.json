@@ -1,0 +1,47 @@
+{
+	"purchaseSubscription": {
+		"description": "Plugin description",
+		"label": "Label name in studio",
+		"attributes": {
+			"general": {
+				"doc": "Help button description",
+				"label": "Description of attribute",
+				"type": "Attribute type (url | text | string | number | boolean | float | json | uivars | entrySelector)",
+				"initvalue": "Default attribute value"
+			},
+			"color": {
+				"doc": "Help button description",
+				"label": "Description of attribute",
+				"player-refresh": "Plugin property to watch for player refresh updates",
+				"type": "color",
+				"initvalue": "Default attribute value",
+				"alpha": true
+			},
+			"enum": {
+				"doc": "Help button description",
+				"label": "Description of attribute",
+				"type": "Attribute type (url | text | string | number | boolean | float | color | enum | json | hiddenValue | uivars | entrySelector)",
+				"initvalue": "Default attribute value",
+				"enum": [
+					"enum1",
+					"enum2"
+				],
+				"options": [
+					{
+						"label": "array of objects mapping enums to label names",
+						"value": "enum1"
+					},
+					{
+						"label": "Enum option No.2",
+						"value": "enum2"
+					}
+				]
+			},
+			"hidden": {
+				"doc": "Help button description(hidden values are not shown in studio)",
+				"type": "hiddenValue",
+				"initvalue": "Default attribute value"
+			}
+		}
+	}
+}

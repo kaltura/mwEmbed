@@ -222,7 +222,7 @@ class UiConfResult {
 			"liveAnalytics"=>array(),
 			"kAnalony"=>array(),
 			"hlsjs"=>array(),
-			"kgitGuard"=>array()
+//			"kgitGuard"=>array()
 			//"playersJsReceiver" => array()
 		);
 
