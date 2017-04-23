@@ -508,6 +508,8 @@
 	opacity: 0.6;
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
 	cursor: pointer;
+	background-color: transparent;
+	border: none;
 }
 
 .playlistAPI .playlistBtn:hover {
