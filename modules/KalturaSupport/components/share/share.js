@@ -143,10 +143,13 @@
 				_this.setupPlayerURL();
 				_this.getScreen();
 			});
+			this.bind('onEndedDone onpause', function () {
+				_this.toggleScreen();
+			});
 			this.bind('preShowScreen', function (event, screenName) {
 				if ( screenName === "share" ){
 					_this.getScreen().then(function(screen){
-						screen.addClass('semiTransparentBkg'); // add semi-transparent background for share plugin screen only. Won't affect other screen based plugins
+						//screen.addClass('semiTransparentBkg'); // add semi-transparent background for share plugin screen only. Won't affect other screen based plugins
 						_this.shareScreenOpened = true;
 						// prevent keyboard key actions to allow typing in share screen fields
 						embedPlayer.triggerHelper( 'onDisableKeyboardBinding' );

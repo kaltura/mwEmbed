@@ -1,0 +1,30 @@
+<div class="wrapper">
+    <!--<div class="header"><h3>What would you like to watch?</h3></div>-->
+    <div class="content">
+        <% $.each(purchaseItems, function(idx, purchaseItem){ %>
+        <div class="itemWrapper" id="item_<%=idx%>">
+            <div class="posterWrapper" style='width: 100%; height: <%=settings.imgHeight%>px; background-image: url(<%=purchaseItem.imageUrl%>);background-size: contain '>
+                <div class="posterShade"></div>
+            </div>
+            <div class="itemInfo">
+                <div class="title">
+                    <h3>
+                        <%=purchaseItem.title%>
+                    </h3>
+                </div>
+                <p class="synopsis">
+                    <%=purchaseItem.synopsis%>
+                </p>
+                <div class="action-buttons">
+                    <span>
+                        <a class="icon-play button" href="<%=purchaseItem.linkBack%>" target="_blank">Play</a>
+                    </span>
+                    <span>
+                        <a class="button" href="<%=purchaseItem.linkBack%>?type=trailer" target="_blank">Play Trailer</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <% }); %>
+    </div>
+</div>

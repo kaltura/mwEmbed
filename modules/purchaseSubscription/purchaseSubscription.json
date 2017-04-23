@@ -1,0 +1,22 @@
+{
+	"purchaseSubscription": {
+		"kalturaPluginName": "purchaseSubscription",
+		"templates": {
+			"purchaseSubscription": "../purchaseSubscription/resources/purchaseSubscription.tmpl.html"
+		},
+		"dependencies": [
+			"jquery",
+			"mw.KBaseScreen"
+		],
+		"scripts": [
+			"resources/slick/slick.min.js",
+			"resources/purchaseSubscription.js"
+		],
+		"styles": [
+			"resources/slick/slick.css",
+			"resources/slick/slick-theme.css",
+			"resources/purchaseSubscription.css"
+		],
+		"messageFile": "resources/purchaseSubscription.i18n.json"
+	}
+}
