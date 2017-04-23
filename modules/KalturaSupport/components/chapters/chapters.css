@@ -654,3 +654,24 @@ input#searchBox::-ms-clear {
 .chapters > .k-chapters-container .mediaBox.resultNoMatch{
     display: none;
 }
+
+.dvr .chapters .mediaBoxText{
+    display: none;
+}
+
+.out-of-dvr .slideOverlay{
+    background: rgba(74,73,74,0.80);
+    cursor: default !important;
+}
+.out-of-dvr{
+    cursor: default !important;
+}
+
+.out-of-dvr.mediaBox:focus > .boxOutline  {
+    -webkit-transition-delay: 0ms;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    border: none;
+    box-sizing: border-box;
+}

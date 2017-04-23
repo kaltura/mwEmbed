@@ -1111,7 +1111,6 @@
 
 					this.cuePoints = cuePoints;
 				}
-
 				return this.cuePoints;
 			},
 			hasSlides: function () {
