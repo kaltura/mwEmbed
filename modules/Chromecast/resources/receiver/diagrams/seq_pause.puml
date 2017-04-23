@@ -1,0 +1,7 @@
+@startuml
+User -> Sender: pause
+Sender -> ReceiverApp: mediaSession.pauseMedia(req)
+ReceiverApp->ReceiverApp: onPause(req)
+ReceiverApp -> RemotePlayer: kdp.sendNotification('doPause')
+RemotePlayer --> Sender: pause
+@enduml

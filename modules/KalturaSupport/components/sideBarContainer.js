@@ -113,6 +113,12 @@
 			this.bind('onChangeMedia', function(){
 				_this.close();
 			});
+			this.bind('closeSideBarContainer', function(){
+				_this.close();
+			});
+			this.bind('openSideBarContainer', function(){
+				_this.open();
+			});
 			this.bind('onChangeMediaDone layoutChange', function(){
 				var children = _this.getComponent().children();
 				if( children.length && (children.filter('*[data-visibility="visible"]').length > 0 )) {

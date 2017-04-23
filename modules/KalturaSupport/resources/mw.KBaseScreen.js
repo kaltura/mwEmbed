@@ -182,10 +182,14 @@
 			var _this = this;
 			var defer = $.Deferred();
 			if (!this.$screen) {
+				var closeMessage = gM("mwe-embedplayer-close_screen");
 				this.getTemplateHTML(this.getTemplateData())
 				.then(
 				function(data) {
 					var closeBtn = $('<span class="icon-close"/>')
+						.attr('aria-label', closeMessage)
+						.attr('tabindex', 0 )
+						.attr('role', 'button')
 						.on('click', function(){
 							_this.hideScreen();
 						});

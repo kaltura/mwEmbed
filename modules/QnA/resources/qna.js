@@ -55,15 +55,17 @@
 			if (!_this.getConfig("userRole") || _this.getConfig("userRole") === "anonymousRole"){
 
 				//if localStorage is available, get & store the user id from it;
-				if(window.localStorage) {
-					if (!localStorage.kAnonymousUserId) {
-						localStorage.kAnonymousUserId = _this.generateUserId();
+				if (window.localStorage) {
+					try {
+						if (!localStorage.kAnonymousUserId) {
+							localStorage.kAnonymousUserId = _this.generateUserId();
+						}
+						return localStorage.kAnonymousUserId;
+					}catch(e) {
+						mw.log("Exception in getUserID: "+e);
 					}
-					return localStorage.kAnonymousUserId;
-				}else{
-					// localStorage is not available. Just generate a user id
-					return _this.generateUserId();
 				}
+				return _this.generateUserId();
 			}
 			return _this.getConfig("userId");
 		},

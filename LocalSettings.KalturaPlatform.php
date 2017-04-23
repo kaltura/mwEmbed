@@ -97,10 +97,12 @@ if( $kConf->hasParam('enableEmbedServicesRouting') ) {
 	$wgEnableKalturaEmbedServicesRouting = $kConf->get('enableEmbedServicesRouting');
 }
 
+
 $wgUseMemcache = false;
-if ( $kConf->hasParam('cache') ){
-	$wgMemcacheConfiguration = $kConf->get('memcacheLocal','cache',null);
-	$wgUseMemcache = false;
+$wgMemcacheConfiguration = $kConf->get('memcacheLocal','cache',null);
+if( $wgMemcacheConfiguration )
+{
+	$wgUseMemcache = true;
 }
 
 
