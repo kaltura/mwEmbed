@@ -1,9 +1,9 @@
 {
 	"mw.RaptMedia": {
 		"scripts": "resources/mw.RaptMedia.js",
+		"styles": "resources/RaptMediaPlugin.css",
 		"dependencies": [
-			"mw.KBaseComponent",
-			"Hlsjs"
+			"mw.KBaseComponent"
 		],
 		"kalturaPluginName": "raptMedia"
 	},
@@ -20,5 +20,12 @@
 			"mw.KBaseComponent"
 		],
 		"kalturaPluginName": "raptMediaScrubber"
+	},
+	"mw.RaptMediaPlayPauseBtn": {
+		"scripts": "resources/mw.RaptMediaPlayPauseBtn.js",
+		"dependencies": [
+			"mw.KBaseComponent"
+		],
+		"kalturaPluginName": "raptMediaPlayPauseBtn"
 	}
 }
