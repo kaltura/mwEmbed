@@ -371,7 +371,24 @@
                             _this.log("got state update for current poll  - syncing current poll with state '" + stateCuePointToHandle.partnerData + "'");
 
                             var pollState = JSON.parse(stateCuePointToHandle.partnerData);
+                            if(pollState.status == "inProgress" && _this.embedPlayer.isDVR()){
+                                //in DVR mode check if this poll was ended by the moderator
+                                var pollId = pollState.pollId;
+                                var allCuePoints = _this.cuePointsManager.getCuePoints();
+                                // look for same poll id with 'finished' status
+                                for(var i=allCuePoints.length-1;i>0;--i){
+                                    if( allCuePoints[i].partnerData &&
+                                        allCuePoints[i].partnerData.indexOf('"status":"finished"') > -1 &&
+                                        allCuePoints[i].partnerData.indexOf('"showResults":"disabled"') > -1 &&
+                                        allCuePoints[i].partnerData.indexOf(pollId) > -1 ){
+                                            //This state should show the poll as active but in fact it ended - don't allow
+                                            //users to answer - copy ended CP state
+                                            pollState = JSON.parse(allCuePoints[i].partnerData);
+                                            break;
+                                        }
+                                    }
 
+                            }
                             if (pollState) {
                                 _this.showOrUpdatePollByState(pollState);
                             }
@@ -381,6 +398,7 @@
                         }
                     } catch (e) {
                         // TODO [es]
+                        debugger
                     }
 
                 } else {
