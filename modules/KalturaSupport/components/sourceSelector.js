@@ -334,7 +334,7 @@
 			} else if( source.getHeight() < 800 ){
 				return '720P';
 			} else if( source.getHeight() < 2160 ){
-                return '1080P';
+				return '1080P';
 			} else {
 				return '4K';
 			}
