@@ -117,7 +117,7 @@
             // bind to cue point events
             var _this = this;
 
-            this.bind('onpause onplay onChangeMedia', function (e) {
+            this.bind('onpause onplay onChangeMedia movingBackToLive', function (e) {
                 _this.handlePlayerEvent(e.type);
             });
         },
@@ -196,7 +196,6 @@
                     _this.globals.pollsContentMapping = {};
                     break;
                 case 'onplay':
-                    if (eventName === 'onplay') {
                         // # we need to sync current poll state when user press playing or seeking.
                         // Note that since onplay is triggered also after seeking we don't need to handle that event explicitly
                         _this.log("event '" + eventName + "' - start syncing current poll state");
@@ -205,7 +204,18 @@
                             _this.handlePollResultsCuePoints({reset:true});
                         }
                         _this.log("event '" + eventName + "' - done syncing current poll state");
-                    }
+                    break;
+                case 'movingBackToLive':
+                    setTimeout(function(){
+                        // the timer is to let the player adjust its getLiveEdgeOffset value.
+                        // when this happens in a sync call stack the player still holds a positive value instead of 0
+                        _this.log("event '" + eventName + "' - start syncing current poll state");
+                        if (_this.cuePointsManager) {
+                            _this.handleStateCuePoints({reset:true});
+                            _this.handlePollResultsCuePoints({reset:true});
+                        }
+                        _this.log("event '" + eventName + "' - done syncing current poll state");
+                        },500);
                     break;
                 default:
                     break;
@@ -387,7 +397,10 @@
                                             break;
                                         }
                                     }
-
+                                //disable poll if not in live - 30 sec is the threshold
+                                if(_this.embedPlayer.getLiveEdgeOffset() > 30){
+                                    pollState.status = "finished";
+                                }
                             }
                             if (pollState) {
                                 _this.showOrUpdatePollByState(pollState);
