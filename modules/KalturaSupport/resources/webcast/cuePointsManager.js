@@ -480,7 +480,7 @@
             if(this.embedPlayer.isDVR()){
                 return this.getPlayer().LiveCurrentTime*1000;
             }
-            return player.getPlayerElementTime() * 1000;
+            return this.getPlayer().getPlayerElementTime();
         },
 
         getCuePointsReached: function () {
