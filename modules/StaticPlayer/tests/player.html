@@ -1,0 +1,31 @@
+<html>
+ <head>
+     <script src="../resources//mwEmbed.js"></script>
+ </head>
+<body>
+<div id="kaltura_player" style="width:400px;height:330px;"></div>
+<script>
+    //mw.setConfig("Kaltura.LeadWithHTML5",true);
+    kWidget.getIframeUrl = function(){
+        return '../resources/frameResponse.js';
+    };
+    kWidget.embed({
+        'targetId': 'kaltura_player',
+        'wid': '_243342',
+        'uiconf_id' : '12905712',
+        'entry_id' : '0_uka1msg4',
+        'flashvars': {
+            'autoPlay': true
+        }
+    });
+    function jsCallbackReady(){
+
+        var x = document.getElementById("kaltura_player");
+        x.kBind("playerReady" , function(){
+            x.sendNotification("changeMedia",{entryId:'0_uka1msg4'});
+
+        });
+    }
+    </script>
+</body>
+</html>
