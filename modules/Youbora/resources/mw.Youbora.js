@@ -64,7 +64,6 @@
 				// unbind all events
 				_this.unbind( _this.bindPostfix );
 				if (_this.firstPlayDone){
-					_this.incrementByChangeMedia = true;
 					_this.incrementViewIndex();
 				}
 			});
@@ -124,9 +123,7 @@
 				_this.embedPlayer.firstPlay = true;
 				_this.firstPlayDone = false;
 				_this.unbind( _this.bindPostfix );
-				if (!_this.incrementByChangeMedia) {
-                    _this.incrementViewIndex();
-                }
+				_this.incrementViewIndex();
 				_this.addBindings();
 			});
 
@@ -167,8 +164,11 @@
 			});
 		},
 		incrementViewIndex: function(){
-			this.viewIndex++;
-			this.log( "increment viewIndex: " + this.viewIndex );
+			if (!this.viewIndexIncremented) {
+                this.viewIndex++;
+                this.viewIndexIncremented = true;
+                this.log( "increment viewIndex: " + this.viewIndex );
+            }
 		},
 		getCustomParams: function(){
 			var paramObj = {};
@@ -270,7 +270,7 @@
 			});
 
 			this.bind('firstPlay' + this.bindPostfix, function(){
-                _this.incrementByChangeMedia = false;
+                _this.viewIndexIncremented = false;
                 _this.playRequestStartTime = new Date().getTime();
 				if (!_this.firstPlayDone){
 					// on play send the "start" action:
