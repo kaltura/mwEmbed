@@ -68,9 +68,14 @@
 				}
 			});
 			this.bind('playerReady', function(){
-				if ( _this.kalturaContextData && _this.kalturaContextData.flavorAssets && _this.kalturaContextData.flavorAssets.length === 1 ){
-					_this.currentBitRate = _this.kalturaContextData.flavorAssets[0].bitrate;
-				}
+                var kalturaContextData = _this.getPlayer().kalturaContextData;
+                if ( kalturaContextData && kalturaContextData.flavorAssets ) {
+                    if ( kalturaContextData.flavorAssets.length === 1 ) {
+                        _this.currentBitRate = kalturaContextData.flavorAssets[ 0 ].bitrate;
+                    } else {
+                        _this.currentBitRate = -1;
+                    }
+                }
 				_this.addBindings();
 			});
 			this.addBindings();
@@ -316,13 +321,13 @@
 			}
 			var pingTime = this.previusPingTime ? (( new Date().getTime() - this.previusPingTime )  / 1000 ).toFixed() : 0;
 			this.sendBeacon( 'ping',{
-				'pingTime': pingTime, // round seconds
-				'bitrate': this.currentBitRate !== -1 ? this.currentBitRate * 1024 : -1,
-				'time': this.embedPlayer.currentTime,
-				//'totalBytes':"0", // value is only sent along with the dataType parameter. If the bitrate parameter is sent, then this one is not needed.
-				//'dataType': "0", // Kaltura does not really do RTMP streams any more.
-				'diffTime': new Date().getTime() - this.previusPingTime
-				// 'nodeHost' //String that indicates the CDN� Node Host
+                'pingTime': pingTime, // round seconds
+                'bitrate': this.currentBitRate !== -1 ? this.currentBitRate * 1024 : -1,
+                'time': this.embedPlayer.currentTime,
+                //'totalBytes':"0", // value is only sent along with the dataType parameter. If the bitrate parameter is sent, then this one is not needed.
+                //'dataType': "0", // Kaltura does not really do RTMP streams any more.
+                'diffTime': new Date().getTime() - this.previusPingTime
+                // 'nodeHost' //String that indicates the CDN� Node Host
 			});
 			// update previusPingTime
 			this.previusPingTime = new Date().getTime();
