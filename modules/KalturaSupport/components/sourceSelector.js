@@ -274,7 +274,6 @@
 
             if ( this.getPlayer().streamerType != "http" && !this.getPlayer().isPlaying() && !this.getPlayer().isInSequence() ){
 				if(this.getPlayer().streamerType !== "hls" && !mw.EmbedTypes.getMediaPlayers().isSupportedPlayer('kplayer')){ //If flash disabled, player fallback to http progressive, but the streamerType might still be hdnetwork
-					this.addAutoToMenu();
 					return true;
                 }
 	            if ( this.getPlayer().streamerType == "hls" && this.secondIteration === true ) {

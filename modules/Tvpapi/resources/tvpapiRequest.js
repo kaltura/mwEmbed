@@ -65,7 +65,7 @@
                     }
                 },
                 data: JSON.stringify( data ),
-                async: options.async || true
+                async: (typeof(options.async) === "boolean") ? options.async : true
             } );
             return deferredAjax.promise();
         }
