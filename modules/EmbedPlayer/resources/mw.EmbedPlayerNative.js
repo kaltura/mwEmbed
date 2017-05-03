@@ -43,6 +43,9 @@
 		// A local var to store the current seek target time:
 		currentSeekTargetTime: null,
 
+		// A local var to store the current audio track index:
+		audioTrackIndex: null,
+
 		// Flag for ignoring next native error we get from the player.
 		ignoreNextError: false,
 
@@ -1355,9 +1358,12 @@
 		backToLive: function () {
             var _this = this;
 			var vid = this.getPlayerElement();
+			$(vid).one('loadeddata', function () {
+				this.switchAudioTrack(this.audioTrackIndex);
+			}.bind(this));
 			vid.load();
 			vid.play();
-			this.parseTracks();
+			this.parseTextTracks(vid, 0);
             setTimeout( function() {
                 _this.triggerHelper('movingBackToLive'); //for some reason on Mac the isLive client response is a little bit delayed, so in order to get update liveUI properly, we need to delay "movingBackToLive" helper
             }, 1000 );
@@ -1503,6 +1509,7 @@
 				} else {
 					audioTracks[audioTrackIndex].enabled = true;
 				}
+				this.audioTrackIndex = audioTrackIndex;
 			}
 		},
         getCurrentBufferLength: function(){
@@ -1513,6 +1520,7 @@
         },
 
 		clean:function(){
+			this.audioTrackIndex = null;
 			this.removeBindings();
 			clearTimeout(this.parseAudioTracksTimeout);
 			clearTimeout(this.parseTextTracksTimeout);
