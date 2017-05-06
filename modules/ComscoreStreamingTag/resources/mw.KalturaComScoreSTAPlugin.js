@@ -2,7 +2,7 @@
     "use strict";
 
     var PLUGIN_PLATFORM_NAME = 'kaltura',
-        PLUGIN_VERSION = '1.2.0',
+        PLUGIN_VERSION = '1.2.1',
         PLAYER_VERSION = mw.getConfig('version');
 
     function KalturaComScoreSTAPlugin(playerPluginInstance) {
@@ -49,6 +49,13 @@
             "bufferProgress.live": onBufferProgressLive // We use that event to detect DVR from a live streams.
         };
 
+        var eventTypeToAPICallMapping = {
+            "0": "Play",
+            "1": "Pause",
+            "3": "End",
+            "11": "SeekStart"
+        };
+
         // Normal Playback
         var isPlaylistLoaded = false,
             isAd = false,
@@ -63,7 +70,8 @@
             workaround_is_iphone_detect_seeking_events_set = false,
             isLiveStreamTypeConfigured = false,
             detectingAutomaticPlaylistLoop = false,
-            detectedAutomaticPlaylistLoop = false;
+            detectedAutomaticPlaylistLoop = false,
+            trackEventMonitorCallbackName = null;
 
         function init () {
             attachEvents();
@@ -77,8 +85,17 @@
             // The persistentLabels property is deprecated. Use persistentlabels instead.
             pluginOptions['persistentlabels'] = pluginOptions['persistentlabels'] || pluginOptions['persistentLabels'];
 
+            trackEventMonitorCallbackName = pluginOptions['trackEventMonitor'];
+
             gPlugin = new ns_.StreamingAnalytics.Plugin(pluginOptions, PLUGIN_PLATFORM_NAME, PLUGIN_VERSION, PLAYER_VERSION, {
-                position: getCurrentPosition
+                position: getCurrentPosition,
+                preMeasurement: function (currentState, newEvent) {
+                    var apiCallName = 'notify' + eventTypeToAPICallMapping[newEvent];
+
+                    trackEventMonitorLoggingNotify(apiCallName, getCurrentPosition());
+
+                    return true;
+                }
             });
             gPlugin.setSmartStateDetection(false); // Disabled until setting the clip
             gPlugin.setDetectPlay(true);
@@ -127,20 +144,31 @@
         function onPlaylistReady () {
             isPlaylistLoaded = true;
 
-            gPlugin.createPlaybackSession(getPlaybackSessionLabels());
+            var playbackSessionLabels = getPlaybackSessionLabels();
+
+            trackEventMonitorLoggingApi('createPlaybackSession', playbackSessionLabels);
+            gPlugin.createPlaybackSession(playbackSessionLabels);
         }
 
         // Dispatches when the player is ready to play the media. playerReady event is dispatched each time media is changed.
         function onPlayerReady () {
             // onPlaylistReady will be executed when there is an actual playlist.
             if (!isPlaylistLoaded) {
-                gPlugin.createPlaybackSession(getPlaybackSessionLabels());
+                var playbackSessionLabels = getPlaybackSessionLabels();
+
+                trackEventMonitorLoggingApi('createPlaybackSession', playbackSessionLabels);
+                gPlugin.createPlaybackSession(playbackSessionLabels);
+
                 isPlaylistLoaded = true;
             }
 
             clipPartNumber = 1;
 
-            gPlugin.setAsset(getAssetLabels(), detectedAutomaticPlaylistLoop, getAssetMetadata(), true);
+            var assetLabels = getAssetLabels();
+
+            trackEventMonitorLoggingApi('setAsset', assetLabels, "detectedAutomaticPlaylistLoop=" + detectedAutomaticPlaylistLoop);
+            gPlugin.setAsset(assetLabels, detectedAutomaticPlaylistLoop, getAssetMetadata(), true);
+
             detectedAutomaticPlaylistLoop = false;
 
             // Iphone native player do not trigger seek events.
@@ -152,6 +180,8 @@
                 workaround_is_iphone_detect_seeking_events_set = true;
 
                 iphoneVideoEl.addEventListener('seeking', function(e) {
+                    trackEventMonitorLoggingNotify('notifySeekStart', getCurrentPosition());
+
                     // STA is smart enough to handle several and repetitive calls.
                     gPlugin.notifySeekStart();
                 });
@@ -159,10 +189,12 @@
         }
         
         function onPreSeek() {
+            trackEventMonitorLoggingNotify('notifySeekStart', getCurrentPosition());
             gPlugin.notifySeekStart();
         }
 
         function onSeek() {
+            trackEventMonitorLoggingNotify('notifySeekStart', getCurrentPosition());
             gPlugin.notifySeekStart();
         }
         
@@ -203,6 +235,7 @@
                 gPlugin.setSmartStateDetection(false);
 
                 // Initial play for live non-dvr streams
+                trackEventMonitorLoggingNotify('notifyPlay', getCurrentPosition());
                 gPlugin.notifyPlay();
             }
         }
@@ -222,6 +255,7 @@
 
             clearTimeout(workaround_initial_play_live_streams);
             workaround_initial_play_live_streams = setTimeout(function() {
+                trackEventMonitorLoggingNotify('notifyPlay', getCurrentPosition());
                 gPlugin.notifyPlay();
             }, 250);
         }
@@ -242,6 +276,7 @@
         function onBufferEndEventLive() {
             if(!playerAPIHelpers.isLive() || isDVRStream || !isLiveStreamTypeConfigured) return;
 
+            trackEventMonitorLoggingNotify('notifyPlay', getCurrentPosition());
             gPlugin.notifyPlay();
         }
 
@@ -252,6 +287,7 @@
             clearTimeout(workaround_initial_play_live_streams);
             workaround_initial_play_live_streams = null;
 
+            trackEventMonitorLoggingNotify('notifyPause', getCurrentPosition());
             gPlugin.notifyPause();
         }
 
@@ -266,10 +302,12 @@
         }
 
         function onBufferStartEvent(){
+            trackEventMonitorLoggingNotify('notifyBufferStart', getCurrentPosition());
             gPlugin.notifyBufferStart();
         }
 
         function onBufferEndEvent() {
+            trackEventMonitorLoggingNotify('notifyBufferStop', getCurrentPosition());
             gPlugin.notifyBufferStop();
         }
 
@@ -312,11 +350,17 @@
 
             adNumber++;
 
-            gPlugin.setAsset(getAssetLabels(), false, null, true);
+            var assetLabels = getAssetLabels();
+
+            trackEventMonitorLoggingApi('setAsset', assetLabels, "detectedAutomaticPlaylistLoop=false");
+            gPlugin.setAsset(assetLabels, false, null, true);
+
+            trackEventMonitorLoggingNotify('notifyPlay', getCurrentPosition());
             gPlugin.notifyPlay();
         }
 
         function onOnAdSkip () {
+            trackEventMonitorLoggingNotify('notifySkipAd', getCurrentPosition());
             gPlugin.notifySkipAd();
 
             adInfo = null;
@@ -326,18 +370,23 @@
             // If onAdSkip event was triggered, it ended the ad before.
             if (!adInfo) return;
 
-            gPlugin.notifyEnd( Math.floor(adInfo.adDuration * 1000) );
+            var currentPosition =  Math.floor(adInfo.adDuration * 1000);
+
+            trackEventMonitorLoggingNotify('notifyEnd', currentPosition);
+            gPlugin.notifyEnd( currentPosition );
 
             adInfo = null;
         }
 
         function onAdClick() {
+            trackEventMonitorLoggingNotify('notifyCallToAction', getCurrentPosition());
             gPlugin.notifyCallToAction();
         }
 
         function onPlayerPausedAds() {
             if(!isAd || !adInfo) return;
 
+            trackEventMonitorLoggingNotify('notifyPause', getCurrentPosition());
             gPlugin.notifyPause();
         }
 
@@ -345,8 +394,10 @@
             if(!isAd || !adInfo) return;
 
             if(newState == 'pause') {
+                trackEventMonitorLoggingNotify('notifyPause', getCurrentPosition());
                 gPlugin.notifyPause();
             } else if (newState == 'play') {
+                trackEventMonitorLoggingNotify('notifyPlay', getCurrentPosition());
                 gPlugin.notifyPlay();
             }
 
@@ -363,7 +414,10 @@
             isAd = false;
             clipPartNumber++;
 
-            gPlugin.setAsset(getAssetLabels(), false, getAssetMetadata(), true);
+            var assetLabels = getAssetLabels();
+
+            trackEventMonitorLoggingApi('setAsset', assetLabels, "detectedAutomaticPlaylistLoop=false");
+            gPlugin.setAsset(assetLabels, false, getAssetMetadata(), true);
 
             var enableSmartStateDetection = !playerAPIHelpers.isLive() || isDVRStream;
             gPlugin.setSmartStateDetection(enableSmartStateDetection);
@@ -400,11 +454,15 @@
         function updatePlayerVolume() {
             var newPlayerVolume = Math.floor( playerAPIHelpers.getPlayerVolume() * 100 );
 
+            trackEventMonitorLoggingNotifyChange("notifyChangeVolume", newPlayerVolume);
             gPlugin.notifyChangeVolume(newPlayerVolume);
         }
 
         function updatePlayerWindowState() {
-            gPlugin.notifyChangeWindowState(isFullScreen ? 'full' : 'norm');
+            var newPlayerWindowState = isFullScreen ? 'full' : 'norm';
+
+            trackEventMonitorLoggingNotifyChange("notifyChangeWindowState", newPlayerWindowState);
+            gPlugin.notifyChangeWindowState(newPlayerWindowState);
         }
 
         function getAssetLabels() {
@@ -491,6 +549,30 @@
                 prefix: '',
                 map: mediaProxyEntry
             }];
+        }
+
+        function trackEventMonitorLoggingNotifyChange(notifyChangeApiCallName, newValue) {
+            var apiCallArgs = [newValue];
+
+            trackEventMonitorLoggingApi(notifyChangeApiCallName, apiCallArgs);
+        }
+
+        function trackEventMonitorLoggingNotify(apiCallName, position) {
+            var apiCallArgs = [];
+
+            if(!isNaN(position)) apiCallArgs.push(position);
+
+            trackEventMonitorLoggingApi(apiCallName, apiCallArgs);
+        }
+
+        function trackEventMonitorLoggingApi(apiCallName, apiCallArgs) {
+            if(!trackEventMonitorCallbackName) return;
+
+            var trackEventMonitorCallback = parent.window[trackEventMonitorCallbackName];
+
+            if(typeof trackEventMonitorCallback != 'function') return;
+
+            trackEventMonitorCallback([apiCallName].concat(apiCallArgs));
         }
 
         // Player API helpers
