@@ -204,6 +204,7 @@ return array(
 			"playbackRateSelector" => "",
 			"restrictUserAgent" => "",
 			"multiDrm" => "",
+			"debugInfo" => "",
 			"sourceSelector" => "",
 			"audioSelector" => "",
 			"download" => "",
