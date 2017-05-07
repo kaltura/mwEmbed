@@ -51,10 +51,10 @@ Where:
 </pre>
 <a href="#" >{timeFormatNumber|timeFormat}</a><br>
 <a href="#" >{dateFormatNumber|dateFormat}</a><br>
-<a href="#" >{numberWithCommasNumber|numberWithCommas}</a><br><br>
-<b>Custom formaters:</b> ( exampale included via customFormater.js )<br>
+<a href="#" >{numberWithCommasNumber|numberWithCommas}</a><br>
 <a href="#" >{mediaProxy.entry.name|escape}</a><br>
-<a href="#" >{mediaProxy.entry.description|escape}</a><br>
+<a href="#" >{mediaProxy.entry.description|escape}</a><br><br>
+<b>Custom formaters:</b> ( exampale included via customFormater.js )<br>
 <a href="#" >{mediaProxy.entry.name|reverse}</a><br>
 </div>
 <br>
@@ -69,9 +69,6 @@ See <a href="ExternalResources.qunit.html">external resources</a> for how to inc
 <pre class="prettyprint linenums">
 mw.kalturaPluginWrapper(function(){
 	mw.util.formaters().register({
-		'escape': function( value ){
-			return escape( value );
-		},
 		'reverse': function( value){
 			return value.split("").reverse().join("");
 		}
