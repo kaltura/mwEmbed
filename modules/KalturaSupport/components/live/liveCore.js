@@ -86,21 +86,32 @@
 			this.bind( 'onpause', function() {
 				if ( embedPlayer.isLive() && _this.isDVR() && _this.switchDone ) {
 					embedPlayer.addPlayerSpinner();
-					_this.getLiveStreamStatusFromAPI( function( onAirStatus ) {
-						if ( onAirStatus ) {
-							if ( _this.shouldHandlePausedMonitor() ) {
-								_this.addPausedMonitor();
-							}
-						}
-					} );
 				}
 			} );
 
-			this.bind( 'firstPlay', function() {
-				_this.firstPlay = true;
+			this.bind( 'onChangeMedia', function() {
+				if ( _this.onProgress ) {
+					var vid = embedPlayer.getPlayerElement();
+					vid.removeEventListener('progress', _this.onProgress);
+				}
 			} );
 
-			this.bind( 'AdSupport_PreSequenceComplete', function() {
+			this.bind('firstPlay', function () {
+				_this.firstPlay = true;
+				if ( _this.isNativeHLS() && embedPlayer.isLive() && _this.isDVR() ) {
+					_this.onProgress = function () {
+						var seekable = vid.seekable;
+						if(seekable.length > 0) {
+							var seekableEnd = seekable.end(seekable.length - 1);
+							embedPlayer.setDuration(seekableEnd);
+						}
+					};
+					var vid = embedPlayer.getPlayerElement();
+					vid.addEventListener('progress', _this.onProgress);
+				}
+			});
+
+			this.bind('AdSupport_PreSequenceComplete', function () {
 				_this.switchDone = true;
 			} );
 
@@ -176,14 +187,6 @@
 				}
 
 				_this.onAirStatus = onAirObj.onAirStatus;
-
-				if ( _this.isDVR() ) {
-					if ( !onAirObj.onAirStatus ) {
-						if ( _this.shouldHandlePausedMonitor() ) {
-							_this.removePausedMonitor();
-						}
-					}
-				}
 			} );
 
 			this.bind( 'durationChange', function( e, newDuration) {
@@ -316,29 +319,6 @@
 					showComponentsArr.push( 'liveStatus' );
                     hideComponentsArr.push( 'scrubber', 'currentTimeLabel' );
 				}
-
-				if ( _this.isNativeHLS() ) {
-					_this.bind( 'timeupdate' , function() {
-						var curTime = embedPlayer.getPlayerElement().currentTime;
-
-						if ( _this.isDVR() ) {
-						  if ( curTime > _this.maxCurrentTime ) {
-							_this.maxCurrentTime = curTime;
-							embedPlayer.setDuration( _this.maxCurrentTime );
-
-						  }
-						}
-					});
-				}
-
-				if ( _this.shouldHandlePausedMonitor() ) {
-					_this.bind( 'playing', function() {
-						if ( _this.isDVR() && _this.switchDone ) {
-							//	_this.hideLiveStreamStatus();
-							_this.removePausedMonitor();
-						}
-					} );
-				}
 			}
 			//not a live entry: restore ui, hide live ui
 			else {
@@ -388,39 +368,6 @@
 		removeLiveStreamStatusMonitor: function() {
 			this.log( "removeLiveStreamStatusMonitor" );
 			this.liveStreamStatusMonitor = clearInterval( this.liveStreamStatusMonitor );
-		},
-
-		/**
-		 * indicates if we should handle paused monitor.
-		 */
-		shouldHandlePausedMonitor: function() {
-			if ( this.isNativeHLS() ) {
-				return true;
-			}
-			return false;
-		},
-
-		/**
-		 * Updating display time & scrubber while in paused state
-		 */
-		addPausedMonitor: function() {
-			var _this = this;
-			var embedPlayer = this.embedPlayer;
-			var pauseTime = _this.maxCurrentTime;
-			if ( pauseTime == 0 ) {
-				pauseTime = embedPlayer.getPlayerElementTime();
-			}
-			var pauseClockTime = Date.now();
-			this.log( "addPausedMonitor :   Monitor rate = " + mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
-			this.pausedMonitor = setInterval( function() {
-				var timePassed = ( Date.now() - pauseClockTime ) / 1000;
-				embedPlayer.setDuration( pauseTime + timePassed );
-			}, 1000 );
-		},
-
-		removePausedMonitor: function() {
-			this.log( "removePausedMonitor" );
-			this.pausedMonitor = clearInterval( this.pausedMonitor );
 		},
 
 		/**
