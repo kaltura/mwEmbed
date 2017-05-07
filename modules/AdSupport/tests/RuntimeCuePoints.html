@@ -11,16 +11,23 @@
 	Runtime Cuepoints
 	</h1>
 	<br>
-<div id="kaltura_player" style="width:400px;height:330px;"></div>
+<div id="kaltura_player" style="width:470px;height:300px;"></div>
 <script>
 	kWidget.featureConfig({
 		'targetId': 'kaltura_player',
 		'wid': '_243342',
 		'uiconf_id' : '12905712',
-		'entry_id' : '0_uka1msg4',
+		'entry_id' : '1_sf5ovm7u',
 		'flashvars': {
 			'vast': {
-				'trackCuePoints': true
+				'trackCuePoints': true,
+				'skipOffset':2
+			},
+			'skipBtn': {
+				'label': 'Skip Ad'
+			},
+			'scrubber':{
+				'drawCuePointType': 'adCuePoint.Ad'
 			},
 			'titleLabel': {
 				'plugin': true,
@@ -35,13 +42,21 @@
 					"cuePointType": "adCuePoint.Ad",
 					"startTime": 5000,
 					"sourceUrl": "http://projects.kaltura.com/mdale/hotelVastAd.xml"
+				},
+				{
+					"protocolType": 1,
+					"adType": 1, 
+					"cuePointType": "adCuePoint.Ad",
+					"startTime": 50000,
+					"sourceUrl": "http://projects.kaltura.com/mdale/hotelVastAd.xml"
 				}]
 			}
 		},
 	})
 </script>
 	<h3> How to set cuePoints at Runtime </h3>
-	cuePoints at Runtime work by partial mediaProxy override. Here you can see a <a href="https://www.kaltura.com/api_v3/testmeDoc/index.php?object=KalturaCuePoint" target="_new">cuePoint object</a> added with startTime 5 seconds.
+	cuePoints at Runtime work by partial mediaProxy override. Here you can see a <a href="https://www.kaltura.com/api_v3/testmeDoc/index.php?object=KalturaCuePoint" target="_new">cuePoint object</a> added with startTime 5 and 50 seconds.<br>
+	cuePoint positions are painted with 'scrubber.drawCuePointType' set to'adCuePoint.Ad'
 	<pre class="prettyprint linenums">
 &lt;script&gt;
 	kWidget.embed({
@@ -53,6 +68,9 @@
 			'vast': {
 				'trackCuePoints': true
 			},
+			'scrubber':{
+				'drawCuePointType': 'adCuePoint.Ad'
+			},
 			'mediaProxy':{
 				'entry':{
 					'name':"This shows partial runtime override of entry name"
@@ -62,6 +80,13 @@
 					"adType": 1, 
 					"cuePointType": "adCuePoint.Ad",
 					"startTime": 5000,
+					"sourceUrl": "http://projects.kaltura.com/mdale/hotelVastAd.xml"
+				},
+				{
+					"protocolType": 1,
+					"adType": 1, 
+					"cuePointType": "adCuePoint.Ad",
+					"startTime": 50000,
 					"sourceUrl": "http://projects.kaltura.com/mdale/hotelVastAd.xml"
 				}]
 			}

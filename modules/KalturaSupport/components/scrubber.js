@@ -14,7 +14,8 @@
 			'displayImportance': "medium",
 			'disableUntilFirstPlay': false,
 			'showOnlyTime': false,
-			'thumbSlicesUrl': null
+			'thumbSlicesUrl': null,
+			'drawCuePointType': null
 		},
 
 		waitForFirstPlay: false,
@@ -137,6 +138,25 @@
                 if(newState === 'pause') {
                     _this.paused = true;
                 }
+            });
+            
+            // draw cuepoints at player ready time if being tracked: 
+            this.bind("playerReady", function(){
+            	// clear any old cuepoints: 
+            	_this.getComponent().find('.cuepoint').remove();
+            	if( _this.getConfig('drawCuePointType') ){
+            		var cuePoints = _this.getPlayer().kCuePoints.getCuePointsByType(  _this.getConfig('drawCuePointType') );
+            		$.each( cuePoints, function(inx, cuePoint) {
+            			// get pixel position draw, css styled vertical bar
+            			_this.getComponent().append( 
+            				$('<div>').addClass('cuepoint')
+            				.css('left', 
+            					( ( ( cuePoint.startTime/1000 ) / _this.duration )* 100).toFixed(5) + '%'
+            				)
+            			)
+            			
+            		})
+            	}
             });
 		},
 		bindUpdatePlayheadPercent: function () {

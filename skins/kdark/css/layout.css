@@ -440,6 +440,15 @@ body {
     background-color: #686868;
     background: rgba(104,104,104,0.6);
 }
+.scrubber .cuepoint{
+	position: absolute;
+	background: white;
+	width: 2px;
+	height: 100%;
+}
+.adplay-state .cuepoint{
+	display:none;
+}
 .controlsContainer .scrubber{
 	display: inline-block;
 	margin-left:5px;

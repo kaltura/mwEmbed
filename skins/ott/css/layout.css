@@ -301,6 +301,15 @@ button::-moz-focus-inner {
 .mobile .scrubber{
 	margin-left: 22px !important;
 }
+.scrubber .cuepoint{
+	position: absolute;
+	background: white;
+	width: 2px;
+	height: 100%;
+}
+.adplay-state .cuepoint{
+	display:none;
+}
 .sliderPreviewTime {
 	position: absolute;
 	font-family: Helvetica,Arial;
