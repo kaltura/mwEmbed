@@ -48,8 +48,8 @@
 		}
 		// get any config based options:
 		var options = null;
-		if( mw.getConfig('loadingSpinner') ) {
-			options = mw.getConfig('loadingSpinner');
+		if( mw.config.get('loadingSpinner') ) {
+			options = mw.config.get('loadingSpinner');
 		}else{
 			// fix for IE where the config is not loaded yet - try to get the config from the kalturaIframePackageData
 			if (kalturaIframePackageData && kalturaIframePackageData.playerConfig && kalturaIframePackageData.playerConfig.plugins && kalturaIframePackageData.playerConfig.plugins.loadingSpinner){
@@ -147,8 +147,8 @@
 		// Support legacy disable spinner config option: 
 		var spinnerIsEnabled = !mw.getConfig('LoadingSpinner.Disabled');
 		// Support new standard config.plugin representation:
-		if( mw.getConfig('loadingSpinner') ) {
-			var config = mw.getConfig('loadingSpinner');
+		if( mw.config.get('loadingSpinner') ) {
+			var config = mw.config.get('loadingSpinner');
 			if( config && config.plugin === false ){
 				spinnerIsEnabled = false;
 			}
