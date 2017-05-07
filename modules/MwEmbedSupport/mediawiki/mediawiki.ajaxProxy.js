@@ -21,10 +21,10 @@
 		// Setup default vars
 		var defaults = {
 			error: function() {},
-			proxyUrl: mw.getConfig( 'Mw.XmlProxyUrl' ),
+			proxyUrl: mw.config.get( 'Mw.XmlProxyUrl' ),
 			proxyType: 'jsonp',
 			startWithProxy: false,
-			timeout: mw.getConfig( 'Mw.AjaxTimeout', 10000 ),
+			timeout: mw.config.get( 'Mw.AjaxTimeout', 10000 ),
 			enableCORS: false
 		};
 
