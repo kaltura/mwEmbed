@@ -345,7 +345,7 @@
                     if(cuePoints[0].tags.indexOf("state")>1){
                         prefix = "state";
                     }
-                    console.log(">>>>>", "polls ",cuePoints[0]);
+                    console.log(">>>>>", "polls ",cuePoints[0].id,cuePoints[0].tags);
                 });
             return this.kPushServerNotification.registerNotifications([pollsNotification])
         },
