@@ -1456,6 +1456,7 @@
         },
         parseAudioTracks: function(vid, counter){
             var _this = this;
+	        this.audioTrackIndex = null;
 	        this.parseAudioTracksTimeout = setTimeout (function() {
                 if( vid.audioTracks && vid.audioTracks.length > 0 ) {
                     var data ={'languages':[]};
