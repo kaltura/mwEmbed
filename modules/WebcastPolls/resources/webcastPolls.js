@@ -9,6 +9,9 @@
         defaultConfig: {
             'userId' : 'User'
         },
+        //TODO eitan - this is for testing if polls notification works
+        Polls_push_notification: "POLLS_PUSH_NOTIFICATIONS",
+
         cuePointsManager: null, // manages all the cue points tracking (cue point reached of poll results, poll states etc).
         kalturaProxy: null, // manages the communication with the Kaltura api (invoke a vote, extract poll data).
         userProfile: null, // manages active user profile
@@ -282,7 +285,108 @@
                     _this.handlePollResultsCuePoints({cuepointsArgs : args});
                 },_this);
             }
+
+            //TODO eitan - hook polls to cue-points through polling
+            this.kPushServerNotification= mw.KPushServerNotification.getInstance(this.embedPlayer);
+            if (this.embedPlayer.isLive()) {
+                //we first register to all notification before continue to get the existing cuepoints, so we don't get races and lost cue points
+                this.getMetaDataProfile().then(function() {
+                    _this.registerPollingNotifications().then(function() {
+                        mw.log("Polls successful  registerNotifications");
+                    },function(err) {
+                        mw.log("Polls failed  registerNotifications ",err);
+                    });
+                });
+            }
         },
+        getMetaDataProfile:function() {
+            var _this=this;
+
+            var listMetadataProfileRequest = {
+                service: "metadata_metadataprofile",
+                action: "list",
+                "filter:systemNameEqual": this.Polls_push_notification
+            };
+            this.userId=this.getUserID();
+
+
+            var deferred = $.Deferred();
+            this.getKClient().doRequest(listMetadataProfileRequest, function (result) {
+
+                if (result.objectType==="KalturaAPIException") {
+                    mw.log("Error getting metadata profile: "+result.message+" ("+result.code+")");
+                    deferred.resolve(false);
+                    return;
+                }
+
+                _this.metadataProfile = result.objects[0];
+                deferred.resolve(true);
+            });
+            return deferred;
+        },
+        getKClient: function () {
+            if (!this.kClient) {
+                this.kClient = mw.kApiGetPartnerClient(this.embedPlayer.kwidgetid);
+            }
+            return this.kClient;
+        },
+        registerPollingNotifications : function(){
+            var _this = this;
+            var pollsNotification =  this.kPushServerNotification.createNotificationRequest(
+                _this.Polls_push_notification,
+                {
+                    "entryId": _this.embedPlayer.kentryid
+                },
+                function(cuePoints) {
+                    var prefix;
+                    if(cuePoints[0].tags.indexOf("data")>1){
+                        prefix = "data";
+                    }
+                    if(cuePoints[0].tags.indexOf("state")>1){
+                        prefix = "state";
+                    }
+                    console.log(">>>>>", "polls ",cuePoints[0]);
+                });
+            return this.kPushServerNotification.registerNotifications([pollsNotification])
+        },
+        colorLog : function(...args){
+            debugger;
+
+        },
+        // return something like ##guestHashSeparator-186168013885295##
+        generateUserId: function(){
+            var _this = this;
+
+            return	"##" +
+                _this.getConfig("userId") + "HashSeparator" +
+                _this.getKSHash(_this.getPlayer().getFlashvars().ks) +
+                _this.getRandomInt(10000,99999999).toString() +
+                "##";
+        },
+        getUserID: function(){
+            var _this = this;
+
+            // If our user ID is the same as the configured anonymousUserId we need to generate one, or get it from localStorage (if exists)
+            if (!_this.getConfig("userRole") || _this.getConfig("userRole") === "anonymousRole"){
+
+                var userId = _this.generateUserId();
+                //if localStorage is available, get & store the user id from it;
+                if (window.localStorage) {
+                    try {
+                        if (!localStorage.kAnonymousUserId) {
+                            localStorage.kAnonymousUserId = userId;
+                        }
+                        userId = localStorage.kAnonymousUserId;
+                    }catch(e) {
+                        mw.log("Exception in getUserID: "+e);
+                    }
+                }
+                mw.log("Using kAnonymousUserId: ",userId);
+                return userId;
+            }
+            return _this.getConfig("userId");
+        },
+
         /**
          * Modifies current poll results according to cue points reached.
          * This function searches for relevant cue points and if found changes current poll results
