@@ -92,9 +92,15 @@ $YB.plugins.KalturaV2.prototype.registerListeners = function () {
     // Set ContentId
     context.setOptions({
       properties: {
-        contentId: context.player.getPlayer().evaluate("{mediaProxy.entry.id}"),
-        uiConfigId: context.player.getPlayer().evaluate("{playerStatusProxy.loadTime}"),
-        loadTime: context.player.getPlayer().evaluate("{playerStatusProxy.loadTime}"),
+        kalturaInfo: {
+          sessionId: context.player.getPlayer().evaluate("{configProxy.sessionId}"),
+          uiConfigId: context.player.getPlayer().evaluate("{configProxy.kw.uiConfId}"),
+          content: {
+            id: context.player.getPlayer().evaluate("{mediaProxy.entry.id}"),
+            title: context.player.getPlayer().evaluate("{mediaProxy.entry.name}"),
+            duration: context.player.getPlayer().evaluate("{mediaProxy.entry.duration}")
+          }
+        }
       }
     });
 
