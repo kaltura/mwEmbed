@@ -1,7 +1,13 @@
 {
     "mw.Youbora": {
-        "scripts": "resources/mw.Youbora.js",
-        "dependencies": ["mw.KBasePlugin"],
+        "scripts": [
+            "resources/youbora-lib.min.js",
+            "resources/youbora-plugin.js",
+            "resources/mw.Youbora.js"
+        ],
+        "dependencies": [
+            "mw.KBasePlugin"
+        ],
         "kalturaPluginName": "youbora"
     }
 }
