@@ -3,6 +3,7 @@
         "scripts": [
             "resources/youbora-lib.min.js",
             "resources/youbora-plugin.js",
+            "resources/youbora-adnalyzer.js",
             "resources/mw.Youbora.js"
         ],
         "dependencies": [

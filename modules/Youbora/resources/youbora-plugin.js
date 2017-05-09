@@ -1,11 +1,11 @@
 /**
  * @license
- * Youbora Plugin JS Kaltura player
+ * Youbora Plugin Kaltura player
  * Copyright NicePopleAtWork & Kaltura
  * @author Jordi Aguilar & Dan Ziv
  */
 
-var VERSION = '1.0.0'
+var VERSION = '1.0.0';
 
 $YB.plugins.KalturaV2 = function (player, options) {
   try {
@@ -157,14 +157,6 @@ $YB.plugins.KalturaV2.prototype.registerListeners = function () {
     context.bufferedHandler();
   });
 
-  this.player.bind('adStart', function () {
-    context.ignoringAdHandler();
-  });
-
-  this.player.bind('adEnd', function () {
-    context.ignoredAdHandler();
-  });
-
   this.player.bind('AdSupport_PreSequence firstPlay replayEvent', function () {
     context.playHandler();
   });
@@ -176,6 +168,9 @@ $YB.plugins.KalturaV2.prototype.registerListeners = function () {
   this.player.bind('seeking', function () {
     context.seekingHandler();
   });
+
+  // Adnalyzer start
+  this.adnalyzer = new $YB.adnalyzers.KalturaAds(this)
 };
 
 $YB.plugins.KalturaV2.prototype.unregisterListeners = function () {
