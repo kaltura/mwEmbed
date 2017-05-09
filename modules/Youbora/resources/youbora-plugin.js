@@ -59,8 +59,8 @@ $YB.plugins.KalturaV2.prototype.getTitle = function () {
 
 $YB.plugins.KalturaV2.prototype.getRendition = function () {
   var source = this.player.getPlayer().mediaElement.selectedSource;
-  if (source && source.getHeight() && source.getWidth()) {
-    return $YB.utils.buildRenditionString(source.getWidth(), source.getHeight())
+  if (source && source.height && source.width) {
+    return $YB.utils.buildRenditionString(source.width, source.height, source.bandwidth)
   }
 };
 
@@ -166,7 +166,9 @@ $YB.plugins.KalturaV2.prototype.registerListeners = function () {
   });
 
   this.player.bind('seeking', function () {
-    context.seekingHandler();
+    if (!context.viewManager.isBuffering) {
+      context.seekingHandler();
+    }
   });
 
   // Adnalyzer start
