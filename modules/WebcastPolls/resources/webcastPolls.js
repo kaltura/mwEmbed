@@ -7,10 +7,11 @@
      */
     mw.PluginManager.add('webcastPolls', mw.KBasePlugin.extend({
         defaultConfig: {
-            'userId' : 'User'
+            'userId': 'User'
         },
         //TODO eitan - this is for testing if polls notification works
         Polls_push_notification: "POLLS_PUSH_NOTIFICATIONS",
+        pollsCuePoints: [],
 
         cuePointsManager: null, // manages all the cue points tracking (cue point reached of poll results, poll states etc).
         kalturaProxy: null, // manages the communication with the Kaltura api (invoke a vote, extract poll data).
@@ -19,8 +20,8 @@
         userVote: {}, // ## Should remain empty (filled by 'resetPersistData')
         pollData: {}, // ## Should remain empty (filled by 'resetPersistData')
         /* stores all the information that doesn't relate directly to the poll currently selected */
-        globals : {
-            pollsContentMapping : {}, // stores the polls questions/answers - resetting this object during ChangeMedia event
+        globals: {
+            pollsContentMapping: {}, // stores the polls questions/answers - resetting this object during ChangeMedia event
             votingProfileId: null, // used to create a voting cue point (with relevant metadata)
             userId: null, // used to mange user voting (prevent duplication of voting)
             isPollShown: false // indicate if we actually showing a poll (all minimal poll data was retrieved and the poll can be shown)
@@ -28,16 +29,15 @@
         /**
          * Resets poll player plugin internals
          */
-        resetPersistData: function ()
-        {
+        resetPersistData: function () {
             var _this = this;
             _this.log('resetting current poll information');
             _this.configuration = {currentView: 'sharedView'};
             _this.userVote = {metadataId: null, answer: null, inProgress: false, canUserVote: false, isReady: false};
             _this.pollData = {
-                showAnswers :false,
-                pollId : null,
-                failedToExtractContent : false,
+                showAnswers: false,
+                pollId: null,
+                failedToExtractContent: false,
                 content: null,
                 showResults: false,
                 showTotals: false,
@@ -80,8 +80,7 @@
                     _this.globals.votingProfileId = null;
                 });
 
-            }else
-            {
+            } else {
                 _this.log("entry is in vod mode - disable voting feature for polls");
 
             }
@@ -89,8 +88,7 @@
         /**
          * Reloads user voting of current poll using the metadata id needed for voting
          */
-        reloadPollUserVoting : function()
-        {
+        reloadPollUserVoting: function () {
 
             var _this = this;
             if (this.embedPlayer.isLive() && _this.pollData.pollId) {
@@ -115,12 +113,11 @@
         /**
          * Monitor player events and adjust current poll status accordingly
          */
-        addBindings: function ()
-        {
+        addBindings: function () {
             // bind to cue point events
             var _this = this;
 
-            this.bind('onpause onplay onChangeMedia', function (e) {
+            this.bind('onpause onplay onChangeMedia monitorEvent', function (e) {
                 _this.handlePlayerEvent(e.type);
             });
         },
@@ -129,8 +126,7 @@
          * @param context
          * @returns {object} the most updated poll status reached cue point if found, otherwise null
          */
-        filterStateCuePoints : function(context)
-        {
+        filterStateCuePoints: function (context) {
             var _this = this;
             if (context && context.filter && context.cuePoints) {
                 var relevantCuePoints = context.filter({
@@ -140,16 +136,15 @@
 
                 return relevantCuePoints.length > 0 ? relevantCuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
             }
-
-            return null;
+            console.log(">>>>>", "filterStateCuePoints", context.c);
+            return context.cuePoints[0];
         },
         /**
          * Filter list of reached cue points to get the most updated poll results cue point of current poll
          * @param context
          * @returns {object} the most updated poll results reached cue point of current poll if found, otherwise null
          */
-        filterPollResultsCuePoints : function(context)
-        {
+        filterPollResultsCuePoints: function (context) {
             var _this = this;
             if (context && context.filter && context.cuePoints && _this.pollData.pollId) {
 
@@ -157,35 +152,57 @@
                     var relevantCuePoints = context.filter({
                         tags: ['poll-results'],
                         sortDesc: true,
-                        filter : function(cuePoint)
-                        {
+                        filter: function (cuePoint) {
                             var pollData = JSON.parse(cuePoint.partnerData);
-                            return pollData.pollId  === _this.pollData.pollId;
+                            return pollData.pollId === _this.pollData.pollId;
                         }
                     });
 
                     return relevantCuePoints.length > 0 ? relevantCuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
-                }catch(e)
-                {
+                } catch (e) {
                     // TODO [es]
                 }
             }
 
             return null;
         },
+
         /**
          * Changes current poll status according to player events.
          * For example, removing the poll when user pause the player
          * @param eventName the event name invoked by the player.
          * @returns {boolean}
          */
-        handlePlayerEvent : function(eventName)
-        {
+        handlePlayerEvent: function (eventName) {
             var _this = this;
 
-            switch(eventName)
-            {
+            switch (eventName) {
+                case 'monitorEvent':
+                    //TODO - Eitan, export this logic to a generic class that will replace cuePointsManger with push-notifications
+                    // var currenTime  = _this.getPlayer().currentTime;
+                    // if(_this.pollsCuePoints && _this.pollsCuePoints.length){
+                    //     var currentPosition = _this.getPlayer().currentTime;
+                    //
+                    //
+                    //     // process last CP with creation date that currentPosition passed:
+                    //
+                    //     for(var i = _this.pollsCuePoints.length-1; i > 0; i--){
+                    //         if(_this.pollsCuePoints[i].createdAt <= currentPosition  ){
+                    //             // found CP to process - check if it is not already active
+                    //             if(_this.lastCuePoint && _this.lastCuePoint == _this.pollsCuePoints[i] ){
+                    //                 return; // no need to re-process this one
+                    //             }
+                    //             _this.lastCuePoint = _this.pollsCuePoints[i];
+                    //             _this.pollsCuePoints[i].processed = true;
+                    //             _this.handleStateCuePoints({cuepointsArgs:{cuePoints:[_this.pollsCuePoints[i]]}},false);
+                    //             _this.handlePollResultsCuePoints({cuepointsArgs:{cuePoints:[_this.pollsCuePoints[i]]}});
+                    //             break
+                    //         }
+                    //     }
+                    // }
+                    break;
                 case 'onpause':
+                    debugger;
                     _this.log("event '" + eventName + "' triggered - removing current poll (if any)");
                     // remove current poll is found when player is being paused
                     _this.removePoll();
@@ -204,8 +221,8 @@
                         // Note that since onplay is triggered also after seeking we don't need to handle that event explicitly
                         _this.log("event '" + eventName + "' - start syncing current poll state");
                         if (_this.cuePointsManager) {
-                            _this.handleStateCuePoints({reset:true});
-                            _this.handlePollResultsCuePoints({reset:true});
+                            // _this.handleStateCuePoints({reset:true});
+                            // _this.handlePollResultsCuePoints({reset:true});
                         }
                         _this.log("event '" + eventName + "' - done syncing current poll state");
                     }
@@ -215,10 +232,9 @@
             }
         },
         /**
-         * Initializes required dependent components used by the polls plugin 
+         * Initializes required dependent components used by the polls plugin
          */
-        initializeDependentComponents: function ()
-        {
+        initializeDependentComponents: function () {
             var _this = this;
 
             if (!_this.userProfile) {
@@ -245,76 +261,94 @@
                 _this.cuePointsManager = new mw.webcast.CuePointsManager(_this.getPlayer(), function () {
                 }, "webcastPolls_CuePointsManager");
 
-                _this.cuePointsManager.registerMonitoredCuepointTypes(['poll-data'],function(cuepoints)
-                {
-                   for(var i = 0;i< cuepoints.length;i++)
-                   {
+                _this.cuePointsManager.registerMonitoredCuepointTypes(['poll-data'], function (cuepoints) {
+                    for (var i = 0; i < cuepoints.length; i++) {
 
-                       try {
-                           var cuepoint = cuepoints[i];
-                           var cuepointContent = cuepoint.partnerData ? JSON.parse(cuepoint.partnerData) : null;
+                        try {
+                            var cuepoint = cuepoints[i];
+                            var cuepointContent = cuepoint.partnerData ? JSON.parse(cuepoint.partnerData) : null;
                             var pollIdTokens = (cuepoint.tags || '').match(/id:([^, ]*)/);
-                           var pollId = pollIdTokens && pollIdTokens.length === 2 ? pollIdTokens[1] : null;
+                            var pollId = pollIdTokens && pollIdTokens.length === 2 ? pollIdTokens[1] : null;
 
-                           if (cuepointContent && pollId)
-                           {
-                               var pollContent = cuepointContent.text;
+                            if (cuepointContent && pollId) {
+                                var pollContent = cuepointContent.text;
 
-                               if (pollId && pollContent) {
-                                   _this.log("updated content of poll with id '" + pollId + "'");
-                                   if(_this.globals.pollsContentMapping[pollId]) {
+                                if (pollId && pollContent) {
+                                    _this.log("updated content of poll with id '" + pollId + "'");
+                                    if (_this.globals.pollsContentMapping[pollId]) {
                                         $.extend(_this.globals.pollsContentMapping[pollId], pollContent);
-                                   }else {
-                                       _this.globals.pollsContentMapping[pollId] = pollContent;
-                                   }
-                               }
-                           }
+                                    } else {
+                                        _this.globals.pollsContentMapping[pollId] = pollContent;
+                                    }
+                                }
+                            }
 
-                       }catch(e)
-                       {
-                           _this.log("ERROR while tring to extract poll information with error " + e);
-                       }
+                        } catch (e) {
+                            _this.log("ERROR while tring to extract poll information with error " + e);
+                        }
 
-                   }
+                    }
                 });
 
-                _this.cuePointsManager.onCuePointsReached = $.proxy(function(args)
-                {
+                _this.cuePointsManager.onCuePointsReached = $.proxy(function (args) {
+                    //TODO eitan - hook polls to cue-points through polling
+                    // debugger;
                     // new cue points reached - change internal polls status when relevant cue points reached
-                    _this.handleStateCuePoints({cuepointsArgs : args});
-                    _this.handlePollResultsCuePoints({cuepointsArgs : args});
-                },_this);
+                    // _this.handleStateCuePoints({cuepointsArgs : args});
+                    // _this.handlePollResultsCuePoints({cuepointsArgs : args});
+                }, _this);
             }
+
+
+            _this.pushCuePointsManager = mw.KPushCuePointsManager.getInstance(this.embedPlayer);
+            _this.pushCuePointsManager.registerToNotification(_this.Polls_push_notification, _this.getUserID(), this.registerPollCuePoint, this.triggerFromPolls, this);
+
 
             //TODO eitan - hook polls to cue-points through polling
-            this.kPushServerNotification= mw.KPushServerNotification.getInstance(this.embedPlayer);
-            if (this.embedPlayer.isLive()) {
-                //we first register to all notification before continue to get the existing cuepoints, so we don't get races and lost cue points
-                this.getMetaDataProfile().then(function() {
-                    _this.registerPollingNotifications().then(function() {
-                        mw.log("Polls successful  registerNotifications");
-                    },function(err) {
-                        mw.log("Polls failed  registerNotifications ",err);
-                    });
-                });
-            }
+            // this.kPushServerNotification= mw.KPushServerNotification.getInstance(this.embedPlayer);
+            // if (this.embedPlayer.isLive()) {
+            //     //we first register to all notification before continue to get the existing cuepoints, so we don't get races and lost cue points
+            //     this.getMetaDataProfile().then(function() {
+            //         _this.registerPollingNotifications().then(function() {
+            //             mw.log("Polls successful  registerNotifications");
+            //         },function(err) {
+            //             mw.log("Polls failed  registerNotifications ",err);
+            //         });
+            //     });
+            // }
         },
-        getMetaDataProfile:function() {
-            var _this=this;
+        registerPollCuePoint: function (notificationName, cuePoint , scope) {
+            debugger;
+            // console.log(">>>>>", "registerPollCuePoint", notificationName, cuePoint,scope);
+            scope.executeRegisterPollCuePoint(cuePoint);
+        },
+        triggerFromPolls: function (cuePoint ,scope) {
+            // console.log(">>>>>", "triggerFromPolls", scope);
+            scope.executetriggerFromPolls(cuePoint);
+            // debugger;
+        },
+        executeRegisterPollCuePoint : function(cuePoint){
+            debugger;
+        },
+        executetriggerFromPolls : function(cuePoint){
+            // debugger;
+        },
+        getMetaDataProfile: function () {
+            var _this = this;
 
             var listMetadataProfileRequest = {
                 service: "metadata_metadataprofile",
                 action: "list",
                 "filter:systemNameEqual": this.Polls_push_notification
             };
-            this.userId=this.getUserID();
+            this.userId = this.getUserID();
 
 
             var deferred = $.Deferred();
             this.getKClient().doRequest(listMetadataProfileRequest, function (result) {
 
-                if (result.objectType==="KalturaAPIException") {
-                    mw.log("Error getting metadata profile: "+result.message+" ("+result.code+")");
+                if (result.objectType === "KalturaAPIException") {
+                    mw.log("Error getting metadata profile: " + result.message + " (" + result.code + ")");
                     deferred.resolve(false);
                     return;
                 }
@@ -330,44 +364,62 @@
             }
             return this.kClient;
         },
-        registerPollingNotifications : function(){
+        registerPollingNotifications: function () {
             var _this = this;
-            var pollsNotification =  this.kPushServerNotification.createNotificationRequest(
+            var pollsNotification = this.kPushServerNotification.createNotificationRequest(
                 _this.Polls_push_notification,
                 {
                     "entryId": _this.embedPlayer.kentryid
                 },
-                function(cuePoints) {
-                    var prefix;
-                    if(cuePoints[0].tags.indexOf("data")>1){
-                        prefix = "data";
-                    }
-                    if(cuePoints[0].tags.indexOf("state")>1){
-                        prefix = "state";
-                    }
-                    console.log(">>>>>", "polls ",cuePoints[0].id,cuePoints[0].tags);
+                function (cuePoint) {
+                    // var prefix;
+                    // console.log(">>>>>", _this);
+                    // if(cuePoints[0].tags.indexOf("data")>1){
+                    //     prefix = "data";
+                    // }
+                    // if(cuePoints[0].tags.indexOf("state")>1){
+                    //     prefix = "state";
+                    // }
+
+                    console.log(">>>>>", "polls ", cuePoint[0].id, cuePoint[0].tags, cuePoint[0].createdAt);
+                    // if( cuePoints[0].createdAt >= 1494264425){
+                    //     _this.handleStateCuePoints({cuepointsArgs : args},true);
+                    // _this.handlePollResultsCuePoints({cuepointsArgs : args});
+                    // }
+                    _this.storeNewPushCuePoint(cuePoint[0])
                 });
             return this.kPushServerNotification.registerNotifications([pollsNotification])
         },
-        colorLog : function(...args){
-            debugger;
-
+        storeNewPushCuePoint: function (cp) {
+            var existingCuePoint = false;
+            for (var i = 0; i < this.pollsCuePoints.length; i++) {
+                if (this.pollsCuePoints[i].id == cp.id) {
+                    existingCuePoint = true;
+                }
+            }
+            if (!existingCuePoint) {
+                //push a new cue point and sort array
+                this.pollsCuePoints.push(cp);
+                this.pollsCuePoints.sort(function (a, b) {
+                    return a.updatedAt - b.updatedAt;
+                });
+            }
         },
         // return something like ##guestHashSeparator-186168013885295##
-        generateUserId: function(){
+        generateUserId: function () {
             var _this = this;
 
-            return	"##" +
+            return "##" +
                 _this.getConfig("userId") + "HashSeparator" +
                 _this.getKSHash(_this.getPlayer().getFlashvars().ks) +
-                _this.getRandomInt(10000,99999999).toString() +
+                _this.getRandomInt(10000, 99999999).toString() +
                 "##";
         },
-        getUserID: function(){
+        getUserID: function () {
             var _this = this;
 
             // If our user ID is the same as the configured anonymousUserId we need to generate one, or get it from localStorage (if exists)
-            if (!_this.getConfig("userRole") || _this.getConfig("userRole") === "anonymousRole"){
+            if (!_this.getConfig("userRole") || _this.getConfig("userRole") === "anonymousRole") {
 
                 var userId = _this.generateUserId();
                 //if localStorage is available, get & store the user id from it;
@@ -377,11 +429,11 @@
                             localStorage.kAnonymousUserId = userId;
                         }
                         userId = localStorage.kAnonymousUserId;
-                    }catch(e) {
-                        mw.log("Exception in getUserID: "+e);
+                    } catch (e) {
+                        mw.log("Exception in getUserID: " + e);
                     }
                 }
-                mw.log("Using kAnonymousUserId: ",userId);
+                mw.log("Using kAnonymousUserId: ", userId);
                 return userId;
             }
             return _this.getConfig("userId");
@@ -392,8 +444,7 @@
          * This function searches for relevant cue points and if found changes current poll results
          * @param context arguments provided by cue points manager with support for smart cue points filtering OR value 'true' to handle reset mode
          */
-        handlePollResultsCuePoints: function (context)
-        {
+        handlePollResultsCuePoints: function (context) {
             var _this = this;
             var resetMode = false;
             var cuepointsArgs = context.cuepointsArgs;
@@ -416,7 +467,7 @@
                             _this.log("got updated results and/or total voters for current poll  - syncing current poll accordingly");
                             var pollResults = JSON.parse(pollResultsCuePoint.partnerData);
                             //make sure to update polls' total voters number only if greater than the one currently displayed
-                            if(_this._canCompareTotalVoters(pollResults) && (_this.pollData.pollResults.totalVoters > pollResults.totalVoters)) {
+                            if (_this._canCompareTotalVoters(pollResults) && (_this.pollData.pollResults.totalVoters > pollResults.totalVoters)) {
                                 //assign current total voters
                                 pollResults.totalVoters = _this.pollData.pollResults.totalVoters;
                             }
@@ -450,8 +501,10 @@
          * This function searches for relevant cue points and if found changes current poll status
          * @param context arguments provided by cue points manager with support for smart cue points filtering  OR value 'true' to handle reset mode
          */
-        handleStateCuePoints: function (context)
-        {
+        handleStateCuePoints: function (context, dbg) {
+            if (dbg) {
+                debugger;
+            }
             var _this = this;
             var resetMode = false;
             var cuepointsArgs = context.cuepointsArgs;
@@ -501,8 +554,7 @@
         /**
          * Removes currently shown poll (if any) from the view and reset polls plugin information
          */
-        removePoll: function ()
-        {
+        removePoll: function () {
             var _this = this;
             _this.log("removing currently shown poll (if any)")
 
@@ -518,8 +570,7 @@
          * Update currently shown poll state according to poll state information
          * @param pollState poll state context information
          */
-        showOrUpdatePollByState: function (pollState)
-        {
+        showOrUpdatePollByState: function (pollState) {
             var _this = this;
 
             if (!pollState || !pollState.pollId) {
@@ -540,8 +591,7 @@
                         // ## update internals
                         _this.globals.isPollShown = true;
                         _this.pollData.pollId = pollState.pollId;
-                    }else if (_this.pollData.failedToExtractContent)
-                    {
+                    } else if (_this.pollData.failedToExtractContent) {
                         _this.log("failed to extract poll with id " + pollState.pollId + "'. ignoring state updates");
                         return;
                     }
@@ -552,18 +602,15 @@
                     _this.pollData.showTotals = pollState.showTotals && pollState.showTotals !== 'disabled';
                     _this.pollData.showResults = pollState.showResults && pollState.showResults !== 'disabled';
 
-                    if (!isShowingRequestedPoll)
-                    {
+                    if (!isShowingRequestedPoll) {
                         // ## show the poll the first time & extract important information
 
                         var pollContent = _this.globals.pollsContentMapping[_this.pollData.pollId];
-                        if (pollContent)
-                        {
+                        if (pollContent) {
                             _this.pollData.content = pollContent;
 
                             // fetch user vote of requested poll only if we are live and has a valid voting profile id
-                            if (_this.globals.votingProfileId && this.embedPlayer.isLive())
-                            {
+                            if (_this.globals.votingProfileId && this.embedPlayer.isLive()) {
                                 var invokedByPollId = _this.pollData.pollId;
                                 _this.getPollUserVote(invokedByPollId).then(function (result) {
                                     if (invokedByPollId === _this.pollData.pollId) {
@@ -582,8 +629,7 @@
 
                             _this.view.syncPollDOM(); // make sure we update the view with the new poll
                             _this.handlePollResultsCuePoints({reset: true}); // update currently shown poll results (if required)
-                        }else
-                        {
+                        } else {
                             // requesting to show a poll that we dont have data for - show visual error to the user
                             _this.pollData.failedToExtractContent = true;
                             _this.view.syncPollDOM();
@@ -594,7 +640,7 @@
                         _this.view.syncDOMUserVoting();
                         _this.view.syncDOMPollResults();
                     }
-                }else{
+                } else {
                     // has nothing to do if poll dom element not created
                     _this.log("failed to retrieve user voting, ignoring error silently");
                 }
@@ -609,7 +655,7 @@
          * @param pollId pollId to get user vote for
          * @returns {*} a promise with user vote information
          */
-        getPollUserVote : function(pollId) {
+        getPollUserVote: function (pollId) {
             var _this = this;
             var defer = $.Deferred();
 
@@ -639,8 +685,7 @@
          * Indicates if a user can vote
          * @returns {*|null|boolean} true if the user can vote, false otherwise
          */
-        canUserVote: function ()
-        {
+        canUserVote: function () {
             var _this = this;
             return this.embedPlayer.isLive() && _this.pollData.pollId && _this.globals.votingProfileId && _this.userVote.canUserVote && _this.userVote.isReady;
         },
@@ -648,8 +693,7 @@
          * Indicates if vote is being processed and sent to server
          * @returns {boolean} true if vote is being submitted to server
          */
-        voteInProgress: function ()
-        {
+        voteInProgress: function () {
             var _this = this;
             return _this.userVote.inProgress;
         },
@@ -657,8 +701,7 @@
          * returns current poll view configuration
          * @returns {string}
          */
-        getViewConfig: function ()
-        {
+        getViewConfig: function () {
             var _this = this;
             return _this.configuration.currentView;
         },
@@ -666,8 +709,7 @@
          * handle answer clicked by user
          * @param e
          */
-        handleAnswerClicked: function (e)
-        {
+        handleAnswerClicked: function (e) {
             var _this = this;
 
             if (!_this.canUserVote() || _this.voteInProgress()) {
@@ -680,8 +722,7 @@
             try {
                 var selectedAnswer = $(e.currentTarget).find("[data-poll-value]").data('poll-value'); // get selected answer by user
 
-                if (isNaN(selectedAnswer))
-                {
+                if (isNaN(selectedAnswer)) {
                     _this.log('failed to get the answer identifier for user selected answer - ignoring request');
                     return;
 
@@ -696,7 +737,6 @@
                 _this.userVote.inProgress = true;
                 _this.userVote.answer = selectedAnswer;
                 _this.view.syncDOMUserVoting();
-
 
 
                 if (_this.userVote.metadataId) {
@@ -721,11 +761,10 @@
                     _this.log("user didn't vote yet in this poll, add user vote");
 
                     // increase total voters by 1
-                    if (_this.pollData.pollResults)
-                    {
+                    if (_this.pollData.pollResults) {
                         _this.pollData.pollResults.totalVoters++;
-                    }else {
-                        this.pollData.pollResults = { totalVoters : 1};
+                    } else {
+                        this.pollData.pollResults = {totalVoters: 1};
                     }
                     _this.view.syncDOMPollResults();
 
@@ -744,8 +783,7 @@
                             _this.log('error occurred while updating server with user answer - undo to previously selected answer (if any)');
 
                             // reduce one vote that was added automatically
-                            if (_this.pollData.pollResults)
-                            {
+                            if (_this.pollData.pollResults) {
                                 _this.pollData.pollResults.totalVoters--;
                             }
                             _this.view.syncDOMPollResults();

@@ -69,6 +69,12 @@
       "socket.io"
     ]
   },
+  "mw.KPushCuePointsManager": {
+    "scripts": "resources/mw.KPushCuePointsManager.js",
+    "dependencies": [
+      "mw.KPushServerNotification"
+    ]
+  },
   "mw.KTimedText": {
     "scripts": "resources/mw.KTimedText.js"
   },
