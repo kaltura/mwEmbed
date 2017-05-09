@@ -567,17 +567,25 @@
 				if( defaultLangKey == 'None' ){
 					return ;
 				}
+				if ( mw.isIOS() && !mw.isIpad()) {
+					this.selectDefaultIosTrack(defaultLangKey);
+					return ;
+				}
 				source = this.selectSourceByLangKey( defaultLangKey );
 				if( source ){
 					this.log('autoSelectSource: select by defaultLanguageKey: ' + defaultLangKey);
 					this.selectedSource = source;
 					this.embedPlayer.getInterface().find( '[srclang='+ defaultLangKey +']').attr("default", "true");
 					return ;
-				}				
+				}
 			}
             // Get source by "default" property
             if ( !this.selectedSource ) {
                 source = this.selectDefaultSource();
+                if ( source && mw.isIOS() && !mw.isIpad() ) {
+					this.selectDefaultIosTrack(source.srclang);
+					return ;
+                }
                 if( source ){
                     this.log('autoSelectSource: select by default caption');
                     this.selectedSource = source;
@@ -599,6 +607,12 @@
 				this.log('autoSelectSource: select first caption');
 				this.selectedSource = this.textSources[0];
 			}
+		},
+		selectDefaultIosTrack: function (defaultLangKey) {
+			var _this = this;
+			this.once( 'playing', function (){
+				_this.embedPlayer.selectDefaultCaption(defaultLangKey);
+			});
 		},
 		selectSourceByLangKey: function( langKey ){
 			var _this = this;
