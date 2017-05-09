@@ -91,19 +91,7 @@ $YB.plugins.KalturaV2.prototype.registerListeners = function () {
 
   this.player.bind('playerReady', function () {
     // Set ContentId
-    context.setOptions({
-      properties: {
-        kalturaInfo: {
-          sessionId: context.player.getPlayer().evaluate("{configProxy.sessionId}"),
-          uiConfigId: context.player.getPlayer().evaluate("{configProxy.kw.uiConfId}"),
-          content: {
-            id: context.player.getPlayer().evaluate("{mediaProxy.entry.id}"),
-            title: context.player.getPlayer().evaluate("{mediaProxy.entry.name}"),
-            duration: context.player.getPlayer().evaluate("{mediaProxy.entry.duration}")
-          }
-        }
-      }
-    });
+    context.setMetadata();
 
     // Set bitrate
     var kalturaContextData = context.player.getPlayer().kalturaContextData;
@@ -124,6 +112,7 @@ $YB.plugins.KalturaV2.prototype.registerListeners = function () {
   this.player.bind('mediaLoadError playerError', function (e, errorObj) {
     var errorMsg = errorObj ? errorObj.message : context.player.getPlayer().getErrorMessage();
     var errorCode = errorObj && errorObj.code ? errorObj.code : context.player.getPlayer().getErrorCode();
+    context.setMetadata();
     context.errorHandler(errorCode, errorMsg);
   });
 
@@ -160,6 +149,7 @@ $YB.plugins.KalturaV2.prototype.registerListeners = function () {
   });
 
   this.player.bind('AdSupport_PreSequence firstPlay replayEvent', function () {
+    context.setMetadata();
     context.playHandler();
   });
 
@@ -183,18 +173,20 @@ $YB.plugins.KalturaV2.prototype.unregisterListeners = function () {
 
 $YB.plugins.KalturaV2.prototype.reset = function () {
   this.viewManager.comm.view++;
+};
+
+$YB.plugins.KalturaV2.prototype.setMetadata = function () {
   this.setOptions({
     properties: {
       kalturaInfo: {
-        sessionId: '',
-        uiConfigId: '',
+        sessionId: this.player.getPlayer().evaluate("{configProxy.sessionId}"),
+        uiConfigId: this.player.getPlayer().evaluate("{configProxy.kw.uiConfId}"),
         content: {
-          id: '',
-          title: '',
-          duration: ''
+          id: this.player.getPlayer().evaluate("{mediaProxy.entry.id}"),
+          title: this.player.getPlayer().evaluate("{mediaProxy.entry.name}"),
+          duration: this.player.getPlayer().evaluate("{mediaProxy.entry.duration}")
         }
       }
     }
   });
-
 };
