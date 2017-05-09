@@ -85,6 +85,7 @@ $YB.plugins.KalturaV2.prototype.registerListeners = function () {
     // dispatch stop if changing media during playback in order to close the session at Youbora
     if (context.player.getPlayer().currentState !== 'end') {
       context.endedHandler();
+      context.viewManager.comm.view++;
     }
   });
 
@@ -117,6 +118,7 @@ $YB.plugins.KalturaV2.prototype.registerListeners = function () {
 
   this.player.bind('postEnded', function () {
     context.endedHandler();
+    context.viewManager.comm.view++;
   });
 
   this.player.bind('mediaLoadError playerError', function (e, errorObj) {
