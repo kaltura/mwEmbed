@@ -85,7 +85,7 @@ $YB.plugins.KalturaV2.prototype.registerListeners = function () {
     // dispatch stop if changing media during playback in order to close the session at Youbora
     if (context.player.getPlayer().currentState !== 'end') {
       context.endedHandler();
-      context.viewManager.comm.view++;
+      context.reset();
     }
   });
 
@@ -118,7 +118,7 @@ $YB.plugins.KalturaV2.prototype.registerListeners = function () {
 
   this.player.bind('postEnded', function () {
     context.endedHandler();
-    context.viewManager.comm.view++;
+    context.reset();
   });
 
   this.player.bind('mediaLoadError playerError', function (e, errorObj) {
@@ -179,4 +179,22 @@ $YB.plugins.KalturaV2.prototype.registerListeners = function () {
 
 $YB.plugins.KalturaV2.prototype.unregisterListeners = function () {
   this.player.unbind(this.eventSuffix)
+};
+
+$YB.plugins.KalturaV2.prototype.reset = function () {
+  this.viewManager.comm.view++;
+  this.setOptions({
+    properties: {
+      kalturaInfo: {
+        sessionId: '',
+        uiConfigId: '',
+        content: {
+          id: '',
+          title: '',
+          duration: ''
+        }
+      }
+    }
+  });
+
 };

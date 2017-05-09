@@ -89,10 +89,12 @@ $YB.adnalyzers.KalturaAds.prototype.registerListeners = function () {
 
     this.ads.bind('onAdComplete', function () {
       adnalyzer.endedAdHandler();
+      adnalyzer.reset();
     });
 
     this.ads.bind('onAdSkip', function () {
       adnalyzer.endedAdHandler({ skipped: true });
+      adnalyzer.reset();
     });
 
 
