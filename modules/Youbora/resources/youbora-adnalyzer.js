@@ -26,10 +26,6 @@ $YB.adnalyzers.KalturaAds = function (plugin) {
 $YB.adnalyzers.KalturaAds.prototype = new $YB.adnalyzers.Generic();
 
 // Expose info from ads plugin
-$YB.adnalyzers.KalturaAds.prototype.getAdResource = function () {
-  return this.ads.getPlayer().adTimeline.originalSource.src;
-};
-
 $YB.adnalyzers.KalturaAds.prototype.getMediaPlayhead = function () {
   if (this.plugin.viewManager.isShowingAds) {
     return this.mediaPlayhead;
