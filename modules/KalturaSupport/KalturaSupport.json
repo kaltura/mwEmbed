@@ -63,6 +63,12 @@
   "mw.KCuePoints": {
     "scripts": "resources/mw.KCuePoints.js"
   },
+  "mw.KPushServerNotification": {
+    "scripts": "resources/mw.KPushServerNotification.js",
+    "dependencies": [
+      "socket.io"
+    ]
+  },
   "mw.KTimedText": {
     "scripts": "resources/mw.KTimedText.js"
   },
@@ -114,8 +120,7 @@
       "mw.KBaseComponent",
       "jquery.ui.draggable",
       "jquery.ui.resizable",
-      "jquery.ui.droppable",
-      "Hlsjs"
+      "jquery.ui.droppable"
     ],
     "kalturaPluginName": "dualScreen"
   },

@@ -38,11 +38,11 @@
 		LIVE_OFFLINE_ALERT_TIMEOUT: 8000,
 		ignoreEnableGui: false,
 		flashActivationRequired: false,
-        unresolvedSrcURL: false,
-        kPreload: {
-            'preLoading':false,
-            'playPending':false
-        },
+		unresolvedSrcURL: false,
+		kPreload: {
+			'preLoading': false,
+			'playPending': false
+		},
 
 		// Create our player element
 		setup: function (readyCallback) {
@@ -72,7 +72,7 @@
 			this.updateSources();
 
 			var flashvars = {};
-		this.getEntryUrl().then(function (srcToPlay) {
+			this.getEntryUrl().then(function (srcToPlay) {
 				flashvars.widgetId = "_" + _this.kpartnerid;
 				flashvars.partnerId = _this.kpartnerid;
 				flashvars.autoMute = _this.muted || mw.getConfig('autoMute');
@@ -99,54 +99,63 @@
 					flashvars.selectedFlavorIndex = _this.getSourceIndex(_this.mediaElement.selectedSource);
 				}
 
-                //add ignoreAkamaiHD to the flashvars if added by user (HDS start time)
-                if(mw.getConfig("ignoreAkamaiHD")) {
-                    flashvars.ignoreAkamaiHD = mw.getConfig("ignoreAkamaiHD");
-                }
+				//add ignoreAkamaiHD to the flashvars if added by user (HDS start time)
+				if (mw.getConfig("ignoreAkamaiHD")) {
+					flashvars.ignoreAkamaiHD = mw.getConfig("ignoreAkamaiHD");
+				}
 
 				//add OSMF HLS Plugin if the source is HLS
 				if (_this.isHlsSource(_this.mediaElement.selectedSource)) {
 					var hlsPluginConfiguration = {plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize'};
-                    if (mw.getConfig("hlsLiveSegmentBuffer")) {
-                        hlsPluginConfiguration["liveSegmentBuffer"] = mw.getConfig("hlsLiveSegmentBuffer");
-                    }
-                    if (mw.getConfig("hlsInitialBufferTime")) {
-                        hlsPluginConfiguration["initialBufferTime"] = mw.getConfig("hlsInitialBufferTime");
-                    }
-                    if (mw.getConfig("hlsExpandedBufferTime")) {
-                        hlsPluginConfiguration["expandedBufferTime"] = mw.getConfig("hlsExpandedBufferTime");
-                    }
-                    if (mw.getConfig("hlsMaxBufferTime")) {
-                        hlsPluginConfiguration["maxBufferTime"] = mw.getConfig("hlsMaxBufferTime");
-                    }
-                    var preferedBitRate = _this.evaluate( '{mediaProxy.preferedFlavorBR}' );
-                    if( preferedBitRate ) {
-                        hlsPluginConfiguration["prefBitrate"] = preferedBitRate;
-                        flashvars.disableAutoDynamicStreamSwitch = true; // disable autoDynamicStreamSwitch logic inside KDP (while playing + if player.isDynamicStream turn autoSwitch on)
-                    }
-                    if( mw.getConfig("maxBitrate") ) {
-                        hlsPluginConfiguration["maxBitrate"] = mw.getConfig("maxBitrate");
-                    }
-                    if( mw.getConfig("minBitrate") ) {
-                        hlsPluginConfiguration["minBitrate"] = mw.getConfig("minBitrate");
-                    }
-                    if (mw.getConfig("hlsLogs")) {
-                        hlsPluginConfiguration["sendLogs"] = mw.getConfig("hlsLogs");
-                        var func = ["onManifest", "onNextRequest", "onDownload", "onCurrentTime", "onTag"];
-                        for (var index = 0; index < func.length; index++) {
+					if (mw.getConfig("hlsLiveSegmentBuffer")) {
+						hlsPluginConfiguration["liveSegmentBuffer"] = mw.getConfig("hlsLiveSegmentBuffer");
+					}
+					if (mw.getConfig("hlsMaxReliabilityRecordSize")) {
+						hlsPluginConfiguration["maxReliabilityRecordSize"] = mw.getConfig("hlsMaxReliabilityRecordSize");
+					}
+					if (mw.getConfig("hlsMaxDownSwitchLimit")) {
+						hlsPluginConfiguration["maxDownSwitchLimit"] = mw.getConfig("hlsMaxDownSwitchLimit");
+					}
+					if (mw.getConfig("hlsMaxUpSwitchLimit")) {
+						hlsPluginConfiguration["maxUpSwitchLimit"] = mw.getConfig("hlsMaxUpSwitchLimit");
+					}
+					if (mw.getConfig("hlsInitialBufferTime")) {
+						hlsPluginConfiguration["initialBufferTime"] = mw.getConfig("hlsInitialBufferTime");
+					}
+					if (mw.getConfig("hlsExpandedBufferTime")) {
+						hlsPluginConfiguration["expandedBufferTime"] = mw.getConfig("hlsExpandedBufferTime");
+					}
+					if (mw.getConfig("hlsMaxBufferTime")) {
+						hlsPluginConfiguration["maxBufferTime"] = mw.getConfig("hlsMaxBufferTime");
+					}
+					var preferedBitRate = _this.evaluate('{mediaProxy.preferedFlavorBR}');
+					if (preferedBitRate) {
+						hlsPluginConfiguration["prefBitrate"] = preferedBitRate;
+						flashvars.disableAutoDynamicStreamSwitch = true; // disable autoDynamicStreamSwitch logic inside KDP (while playing + if player.isDynamicStream turn autoSwitch on)
+					}
+					if (mw.getConfig("maxBitrate")) {
+						hlsPluginConfiguration["maxBitrate"] = mw.getConfig("maxBitrate");
+					}
+					if (mw.getConfig("minBitrate")) {
+						hlsPluginConfiguration["minBitrate"] = mw.getConfig("minBitrate");
+					}
+					if (mw.getConfig("hlsLogs")) {
+						hlsPluginConfiguration["sendLogs"] = mw.getConfig("hlsLogs");
+						var func = ["onManifest", "onNextRequest", "onDownload", "onCurrentTime", "onTag"];
+						for (var index = 0; index < func.length; index++) {
 
-                            (function () {
-                                var x = func[index];
-                                if (x) {
-                                    window[x] = function (a, b, c, d, e, f, g, h) {
-                                        parent.window[x](a, b, c, d, e, f, g, h);
-                                    }
-                                }
-                            })();
-                        }
-                    }
-                    flashvars.KalturaHLS = hlsPluginConfiguration;
-                    flashvars.streamerType = _this.streamerType = 'hls';
+							(function () {
+								var x = func[index];
+								if (x) {
+									window[x] = function (a, b, c, d, e, f, g, h) {
+										parent.window[x](a, b, c, d, e, f, g, h);
+									}
+								}
+							})();
+						}
+					}
+					flashvars.KalturaHLS = hlsPluginConfiguration;
+					flashvars.streamerType = _this.streamerType = 'hls';
 				}
 
 				if (_this.isLive() && _this.streamerType == 'rtmp' && !_this.cancelLiveAutoPlay) {
@@ -164,13 +173,13 @@
 				var kdpVars = _this.getKalturaConfig('kdpVars', null);
 				$.extend(flashvars, kdpVars);
 
-				var flashFailCallback = function(){
+				var flashFailCallback = function () {
 					_this.removePoster();
-					_this.layoutBuilder.displayAlert( {
-						title: _this.getKalturaMsg( 'ks-FLASH-BLOCKED-TITLE' ),
-						message: _this.getKalturaMsg( 'ks-FLASH-BLOCKED' ),
+					_this.layoutBuilder.displayAlert({
+						title: _this.getKalturaMsg('ks-FLASH-BLOCKED-TITLE'),
+						message: _this.getKalturaMsg('ks-FLASH-BLOCKED'),
 						keepOverlay: true,
-						noButtons : true,
+						noButtons: true,
 						props: {
 							customAlertTitleCssClass: "AlertTitleTransparent",
 							customAlertMessageCssClass: "AlertMessageTransparent",
@@ -204,12 +213,12 @@
 						'hlsEndList': 'onHlsEndList',
 						'mediaError': 'onMediaError',
 						'bitrateChange': 'onBitrateChange',
-                        'textTracksReceived': 'onTextTracksReceived',
-                        'debugInfoReceived': 'onDebugInfoReceived',
+						'textTracksReceived': 'onTextTracksReceived',
+						'debugInfoReceived': 'onDebugInfoReceived',
 						'readyToPlay': 'onReadyToPlay',
-                        'id3tag': 'onId3tag'
+						'id3tag': 'onId3tag'
 					};
-				_this.playerObject = this.getElement();
+					_this.playerObject = this.getElement();
 					$.each(bindEventMap, function (bindName, localMethod) {
 						_this.playerObject.addJsListener(bindName, localMethod);
 					});
@@ -218,15 +227,15 @@
 					}
 					readyCallback();
 
-                    if (mw.getConfig('autoMute')) {
+					if (mw.getConfig('autoMute')) {
 						_this.triggerHelper("volumeChanged", 0);
 					}
 
-				},flashFailCallback);
+				}, flashFailCallback);
 
 				_this.bindHelper('switchAudioTrack' + _this.bindPostfix, function (e, data) {
 					if (_this.playerObject) {
-						_this.playerObject.sendNotification("doAudioSwitch", { audioIndex: data.index  });
+						_this.playerObject.sendNotification("doAudioSwitch", {audioIndex: data.index});
 					}
 				});
 
@@ -236,42 +245,42 @@
 					}
 				});
 
-                _this.bindHelper('changeEmbeddedTextTrack' + _this.bindPostfix, function (e, data) {
-                    if (_this.playerObject) {
-                        _this.playerObject.sendNotification("doTextTrackSwitch", { textIndex :data.index});
-                    }
-                });
+				_this.bindHelper('changeEmbeddedTextTrack' + _this.bindPostfix, function (e, data) {
+					if (_this.playerObject) {
+						_this.playerObject.sendNotification("doTextTrackSwitch", {textIndex: data.index});
+					}
+				});
 
-                _this.bindHelper('liveOnline' + _this.bindPostfix, function(){
-					if( this.isLive() && !this.isDVR() ) {
-                        _this.reset();
-                    }
-                });
+				_this.bindHelper('liveOnline' + _this.bindPostfix, function () {
+					if (this.isLive() && !this.isDVR()) {
+						_this.reset();
+					}
+				});
 			});
 
 		},
 
-        load: function(){
-            //block preload if live or autoplay, unless autoplay was activated on a player with preroll
-            if( !this.isLive() && (!this.autoplay || ( this.autoplay && this.isInSequence() ) ) ) {
-                //activate preload workaround: start downloading segments and pause the stream
-                this.kPreload.preLoading = true;
-                this.playerObject.play();
-            }
-        },
+		load: function () {
+			//block preload if live or autoplay, unless autoplay was activated on a player with preroll
+			if (!this.isLive() && (!this.autoplay || ( this.autoplay && this.isInSequence() ) )) {
+				//activate preload workaround: start downloading segments and pause the stream
+				this.kPreload.preLoading = true;
+				this.playerObject.play();
+			}
+		},
 
-        reset: function(){
-			if ( this.restarting ) {
+		reset: function () {
+			if (this.restarting) {
 				return;
 			}
-            this.restarting = true;
-            var _this = this;
-            this.clean();
-            this.setup(function(){
-                _this.restarting = false;
-                _this.play();
-            });
-        },
+			this.restarting = true;
+			var _this = this;
+			this.clean();
+			this.setup(function () {
+				_this.restarting = false;
+				_this.play();
+			});
+		},
 
 		isHlsSource: function (source) {
 			if (source && (source.getMIMEType() == 'application/vnd.apple.mpegurl' )) {
@@ -281,7 +290,11 @@
 		},
 
 		setCurrentTime: function (time, callback) {
-			this.flashCurrentTime = time;
+			if (this.isLive() && !this.isDVR()) {
+				this.flashLiveCurrentTime = time;
+			} else {
+				this.flashCurrentTime = time;
+			}
 			if (callback) {
 				callback();
 			}
@@ -331,24 +344,24 @@
 			}
 		},
 
-        /**
-         * receive languages list from hls player plugin
-         */
-        onTextTracksReceived: function (data) {
-            this.triggerHelper('textTracksReceived', data);
-        },
+		/**
+		 * receive languages list from hls player plugin
+		 */
+		onTextTracksReceived: function (data) {
+			this.triggerHelper('textTracksReceived', data);
+		},
 
-		/** 
-		* Override base flavor sources method with local set of adaptive flavor tags. 
-		*/
-		getSources: function(){
+		/**
+		 * Override base flavor sources method with local set of adaptive flavor tags.
+		 */
+		getSources: function () {
 			// check if manifest defined flavors have been defined: 
-			if( this.manifestAdaptiveFlavors.length ){
+			if (this.manifestAdaptiveFlavors.length) {
 				return this.manifestAdaptiveFlavors;
 			}
 			return this.getSourcesForKDP();
 		},
-		
+
 		/**
 		 * Get required sources for KDP. Either by flavorTags flashvar or tagged wtih 'web'/'mbr' by default
 		 * or hls sources
@@ -376,7 +389,7 @@
 
 		updateSources: function () {
 			if (!( this.isLive() || this.sourcesReplaced || this.isHlsSource(this.mediaElement.selectedSource) )) {
-				this.autoSelectTemporalSource( { 'sources': this.getSourcesForKDP() } );
+				this.autoSelectTemporalSource({'sources': this.getSourcesForKDP()});
 			}
 			else if (this.isLive() && this.streamerType == 'rtmp') {
 				var _this = this;
@@ -407,9 +420,9 @@
 			this.playerObject.setKDPAttribute('mediaProxy', 'isMp4', this.isMp4Src());
 			this.playerObject.setKDPAttribute('mediaProxy', 'entryDuration', this.getDuration()); //TODO - to support inteliseek - set the correct duration using seekFrom and clipTo
 			this.getEntryUrl().then(function (srcToPlay) {
-				if (!_this.playlist || _this.autoplay){
-					_this.bindHelper("onChangeMediaDone"+_this.bindPostfix, function(){
-						_this.unbindHelper("onChangeMediaDone"+_this.bindPostfix);
+				if (!_this.playlist || _this.autoplay) {
+					_this.bindHelper("onChangeMediaDone" + _this.bindPostfix, function () {
+						_this.unbindHelper("onChangeMediaDone" + _this.bindPostfix);
 						_this.play();
 					});
 				}
@@ -440,14 +453,14 @@
 		 * update the interface
 		 */
 		onPause: function () {
-            if(this.kPreload.preLoading){
-                this.kPreload.preLoading = false;
-                if(this.kPreload.playPending){
-                    this.kPreload.playPending = false;
-                    this.play();
-                }
-                return;
-            }
+			if (this.kPreload.preLoading) {
+				this.kPreload.preLoading = false;
+				if (this.kPreload.playPending) {
+					this.kPreload.playPending = false;
+					this.play();
+				}
+				return;
+			}
 			$(this).trigger("pause");
 		},
 
@@ -456,11 +469,11 @@
 		 * parent_play
 		 */
 		onPlay: function () {
-            if(this.kPreload.preLoading){
-                this.playerObject.pause();
-                return;
-            }
-			if ( mw.isChrome() && !this.flashActivationRequired && mw.getConfig("EmbedPlayer.EnableFlashActivation") !== false ){
+			if (this.kPreload.preLoading) {
+				this.playerObject.pause();
+				return;
+			}
+			if (mw.isChrome() && !this.flashActivationRequired && mw.getConfig("EmbedPlayer.EnableFlashActivation") !== false) {
 				this.flashActivationRequired = true;
 				$(this).hide();
 			}
@@ -484,7 +497,7 @@
 					dur = dur - this.startTime + 2;
 				}
 			}
-			if ( !this.isLive() && data.newValue > dur && mw.getConfig("EmbedPlayer.EnableURLTimeEncoding")===true ) {
+			if (!this.isLive() && data.newValue > dur && mw.getConfig("EmbedPlayer.EnableURLTimeEncoding") === true) {
 				return;
 			}
 			// Update the duration ( only if not in url time encoding mode:
@@ -493,7 +506,7 @@
 		},
 		onVideoMetadataReceived: function (data) {
 			if (data && data.info) {
-				$(this).trigger('videoMetadataReceived', [ data.info ]);
+				$(this).trigger('videoMetadataReceived', [data.info]);
 			}
 			// Trigger "media loaded"
 			if (!this.mediaLoadedFlag) {
@@ -540,32 +553,32 @@
 			}
 			data.errorMessage = this.getKalturaMsg('ks-CLIP_NOT_FOUND');
 			mw.log("EmbedPlayerKPlayer::MediaError error code: " + error);
-			this.triggerHelper('embedPlayerError', [ data ]);
+			this.triggerHelper('embedPlayerError', [data]);
 		},
 
 		/**
 		 * play method calls parent_play to update the interface
 		 */
 		play: function () {
-            if(this.kPreload.preLoading){
-                this.kPreload.playPending = true;
-                return;
-            }
-            if(this.restarting){
-                return;
-            }
-            var _this = this;
+			if (this.kPreload.preLoading) {
+				this.kPreload.playPending = true;
+				return;
+			}
+			if (this.restarting) {
+				return;
+			}
+			var _this = this;
 			mw.log('EmbedPlayerKplayer::play');
-            if(this.unresolvedSrcURL){
-                this.getEntryUrl().then(function (srcToPlay) {
-                    _this.unresolvedSrcURL = false;
-                    _this.playerObject.sendNotification('changeMedia', {
-                        entryUrl: srcToPlay
-                    });
-                    _this.play();
-                });
-                return;
-            }
+			if (this.unresolvedSrcURL) {
+				this.getEntryUrl().then(function (srcToPlay) {
+					_this.unresolvedSrcURL = false;
+					_this.playerObject.sendNotification('changeMedia', {
+						entryUrl: srcToPlay
+					});
+					_this.play();
+				});
+				return;
+			}
 			var shouldDisable = false;
 			if (this.isLive() && this.paused) {
 				shouldDisable = true;
@@ -628,7 +641,7 @@
 				if (this.streamerType == 'http') {
 					this.playerObject.seek(seekTime);
 				} else {
-					this.playerObject.setKDPAttribute( 'mediaProxy', 'mediaPlayFrom', seekTime );
+					this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', seekTime);
 					this.playerObject.play();
 				}
 			} else {
@@ -652,22 +665,22 @@
 		 * function called by flash at set interval to update the playhead.
 		 */
 		onUpdatePlayhead: function (playheadValue) {
-			if ( this.flashActivationRequired ){
+			if (this.flashActivationRequired) {
 				this.flashActivationRequired = false;
 				$(this).show();
 			}
-            if(this.isLive()){
-                $(this).trigger('timeupdate');
-                return; //for Live the flashCurrentTime will be updated through id3Tag
-            }
+			if (this.isLive() && !this.isDVR()) {
+				$(this).trigger('timeupdate');
+				return; //for Live + no DVR the flashCurrentTime will be updated through id3Tag
+			}
 			if (this.seeking) {
 				this.seeking = false;
-                this.flashCurrentTime = playheadValue;
-			}else {
-                if(this.flashCurrentTime < playheadValue){
-                    this.flashCurrentTime = playheadValue;
-                }
-            }
+				this.flashCurrentTime = playheadValue;
+			} else {
+				if (this.flashCurrentTime < playheadValue) {
+					this.flashCurrentTime = playheadValue;
+				}
+			}
 			$(this).trigger('timeupdate');
 		},
 
@@ -699,18 +712,18 @@
 		},
 
 		onSwitchingChangeStarted: function (data, id) {
-			$(this).trigger('sourceSwitchingStarted', [ data ]);
+			$(this).trigger('sourceSwitchingStarted', [data]);
 		},
 
 		onSwitchingChangeComplete: function (data, id) {
-			this.onBitrateChange( data );
+			this.onBitrateChange(data);
 			// TODO if we need to track source index should be top level method per each play interface having it's own adaptive logic
 			//this.mediaElement.setSourceByIndex(data.newIndex);
-            $(this).trigger('sourceSwitchingEnd', [ data.newIndex ]);
+			$(this).trigger('sourceSwitchingEnd', [data.newIndex]);
 		},
 
-		onBitrateChange: function ( data ) {
-			if ( data && data.newBitrate ) {
+		onBitrateChange: function (data) {
+			if (data && data.newBitrate) {
 				this.triggerHelper('bitrateChange', data.newBitrate);
 			}
 		},
@@ -740,7 +753,7 @@
 
 		onLiveEntryOffline: function () {
 			if (this.streamerType == 'rtmp') {
-				this.triggerHelper('liveStreamStatusUpdate', { 'onAirStatus': false });
+				this.triggerHelper('liveStreamStatusUpdate', {'onAirStatus': false});
 			}
 		},
 
@@ -749,7 +762,7 @@
 				//first time the livestream is ready
 				this.hideSpinner();
 				this.playerObject.setKDPAttribute('configProxy.flashvars', 'autoPlay', 'false');  //reset property for next media
-				this.triggerHelper('liveStreamStatusUpdate', { 'onAirStatus': true });
+				this.triggerHelper('liveStreamStatusUpdate', {'onAirStatus': true});
 				if (this.cancelLiveAutoPlay) {
 					this.cancelLiveAutoPlay = false;
 					this.autoplay = false;
@@ -801,35 +814,38 @@
 			this.triggerHelper('audioTrackIndexChanged', data);
 		},
 
-        onDebugInfoReceived: function (data){
-            var msg = '';
-            for (var prop in data) {
-                msg += prop + ': ' + data[prop]+' | ';
-            }
-            this.triggerHelper('debugInfoReceived', data);
-            mw.log("EmbedPlayerKplayer:: onDebugInfoReceived | " + msg);
-        },
+		onDebugInfoReceived: function (data) {
+			var msg = '';
+			for (var prop in data) {
+				msg += prop + ': ' + data[prop] + ' | ';
+			}
+			this.triggerHelper('debugInfoReceived', data);
+			mw.log("EmbedPlayerKplayer:: onDebugInfoReceived | " + msg);
+		},
 
-		onReadyToPlay: function (){
-            this.triggerHelper('readyToPlay');
-        },
+		onReadyToPlay: function () {
+			this.triggerHelper('readyToPlay');
+		},
 
-        onId3tag: function (data) {
+		onId3tag: function (data) {
 			//Decode the data
 			var id3TagData = base64_decode(data.data);
 			//Get the JSON substring
-			var id3TagString = id3TagData.substring(id3TagData.indexOf("{"), id3TagData.lastIndexOf("}")+1);
+			var id3TagString = id3TagData.substring(id3TagData.indexOf("{"), id3TagData.lastIndexOf("}") + 1);
 			//Parse JSON
 			var id3Tag = JSON.parse(id3TagString);
 
-            this.triggerHelper('onId3Tag', id3Tag);
-        },
+			this.triggerHelper('onId3Tag', id3Tag);
+		},
 
 		/**
 		 * Get the embed player time
 		 */
 		getPlayerElementTime: function () {
 			// update currentTime
+			if (this.isLive() && !this.isDVR()) {
+				return this.flashLiveCurrentTime ? this.flashLiveCurrentTime : 0;
+			}
 			return this.flashCurrentTime;
 		},
 
@@ -851,21 +867,21 @@
 		 * Get the URL to pass to KDP according to the current streamerType
 		 */
 		getEntryUrl: function () {
-            var _this = this;
+			var _this = this;
 			var deferred = $.Deferred();
 			var originalSrc = this.mediaElement.selectedSource.getSrc();
 			if (this.isHlsSource(this.mediaElement.selectedSource)) {
-                // add playerType=flash indicator (Kaltura Live HLS only)
-                //if( this.isLive() &&  mw.getConfig('isLiveKalturaHLS') ) {
-                //    originalSrc = originalSrc + "&playerType=flash";
-                //}
-                this.streamerType = 'hls';
+				// add playerType=flash indicator (Kaltura Live HLS only)
+				//if( this.isLive() &&  mw.getConfig('isLiveKalturaHLS') ) {
+				//    originalSrc = originalSrc + "&playerType=flash";
+				//}
+				this.streamerType = 'hls';
 				this.resolveSrcURL(originalSrc)
 					.then(function (srcToPlay) {
-                        _this.unresolvedSrcURL = false;
-                        deferred.resolve(srcToPlay);
+						_this.unresolvedSrcURL = false;
+						deferred.resolve(srcToPlay);
 					}, function () { //error
-                        _this.unresolvedSrcURL = true;
+						_this.unresolvedSrcURL = true;
 						deferred.resolve(originalSrc);
 					});
 				return deferred;
@@ -916,18 +932,18 @@
 				srcUrl = srcUrl + "&seekFrom=" + parseInt(this.startTime) * 1000;
 			}
 
-			srcUrl = srcUrl +"&playSessionId="  + this.evaluate('{configProxy.sessionId}');
+			srcUrl = srcUrl + "&playSessionId=" + this.evaluate('{configProxy.sessionId}');
 
-            //copy clientTag from original playManifest
-            if (originalSrc.indexOf("&clientTag=") !== -1) {
-                var clientTag = originalSrc.slice(originalSrc.indexOf("clientTag"));
-                clientTag = clientTag.slice(0, clientTag.indexOf("&"))
-                srcUrl = srcUrl + "&" + clientTag;
-            }
-			
+			//copy clientTag from original playManifest
+			if (originalSrc.indexOf("&clientTag=") !== -1) {
+				var clientTag = originalSrc.slice(originalSrc.indexOf("clientTag"));
+				clientTag = clientTag.slice(0, clientTag.indexOf("&"))
+				srcUrl = srcUrl + "&" + clientTag;
+			}
+
 			var sourceElm = $('<source />')
-				.attr( {src: srcUrl} )
-				.get( 0 );
+				.attr({src: srcUrl})
+				.get(0);
 			var refObj = new mw.MediaSource(sourceElm);
 			this.triggerHelper('SourceSelected', refObj);
 			deferred.resolve(refObj.src);
@@ -955,45 +971,45 @@
 				this.mediaElement.setSource(source);
 				this.getEntryUrl().then(function (srcToPlay) {
 					_this.playerObject.setKDPAttribute('mediaProxy', 'entryUrl', srcToPlay);
-					_this.playerObject.sendNotification('doSwitch', { flavorIndex: _this.getSourceIndex(source) });
+					_this.playerObject.sendNotification('doSwitch', {flavorIndex: _this.getSourceIndex(source)});
 				});
 				return;
 			}
-            var sourceIndex = -1; //autoDynamicStreamSwitch = true for adaptive bitrate (Auto)
-            if( source !== -1 ){
-                sourceIndex = this.getSourceIndex(source);
-            }
-			this.playerObject.sendNotification('doSwitch', { flavorIndex: sourceIndex });
+			var sourceIndex = -1; //autoDynamicStreamSwitch = true for adaptive bitrate (Auto)
+			if (source !== -1) {
+				sourceIndex = this.getSourceIndex(source);
+			}
+			this.playerObject.sendNotification('doSwitch', {flavorIndex: sourceIndex});
 		},
 		canAutoPlay: function () {
 			return (!this.isLive() || (this.isLive() && !this.isOffline()));
 		},
 		backToLive: function () {
 			this.triggerHelper('movingBackToLive');
-            var _this = this;
-            if(this.isDVR()){
-                this.playerObject.sendNotification('goLive');
-                if (this.buffering) {
-                    this.bindHelper('bufferEndEvent'+this.bindPostfix, function () {
-                        _this.unbindHelper('bufferEndEvent'+_this.bindPostfix);
-                        _this.playerObject.seek(_this.getDuration());
-                        //Unfreeze scrubber
-                        _this.syncMonitor();
-                    });
-                }
-            }else{
-                this.bindHelper('playing'+this.bindPostfix, function () {
-                    _this.unbindHelper('playing'+_this.bindPostfix);
-                    _this.playerObject.sendNotification('goLive');
-                });
-            }
+			var _this = this;
+			if (this.isDVR()) {
+				this.playerObject.sendNotification('goLive');
+				if (this.buffering) {
+					this.bindHelper('bufferEndEvent' + this.bindPostfix, function () {
+						_this.unbindHelper('bufferEndEvent' + _this.bindPostfix);
+						_this.playerObject.seek(_this.getDuration());
+						//Unfreeze scrubber
+						_this.syncMonitor();
+					});
+				}
+			} else {
+				this.bindHelper('playing' + this.bindPostfix, function () {
+					_this.unbindHelper('playing' + _this.bindPostfix);
+					_this.playerObject.sendNotification('goLive');
+				});
+			}
 		},
 
 		setKPlayerAttribute: function (host, prop, val) {
 			this.playerObject.setKDPAttribute(host, prop, val);
 		},
 		clean: function () {
-			this.unbindHelper(  this.bindPostfix );
+			this.unbindHelper(this.bindPostfix);
 			$(this.getPlayerContainer()).remove();
 			this.playerObject = null;
 		},
@@ -1045,11 +1061,11 @@
 			}
 
 		},
-        getCurrentBufferLength: function(){
-            return parseInt(this.playerObject.getCurrentBufferLength()); //return buffer length in seconds
-        },
+		getCurrentBufferLength: function () {
+			return parseInt(this.playerObject.getCurrentBufferLength()); //return buffer length in seconds
+		},
 
-		bufferHandling: function(){
+		bufferHandling: function () {
 			// Nothing here, only overwrite the super bufferHandling method.
 			// The buffer handling here made by Flash itself, by listening to "bufferChange" event.
 		}

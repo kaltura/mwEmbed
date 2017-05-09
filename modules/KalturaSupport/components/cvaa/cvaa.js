@@ -20,7 +20,7 @@
                 backgroundColor: "rgba(0,0,0,0)",
                 backgroundHexColor: "#000000",
                 backgroundOpacity: 0,
-                edgeStyle: "none"
+                edgeStyle: "0 0px 4px rgba(0, 0, 0, 1)"
             },
             cvaaPreset1: {
                 fontFamily: "Arial, Roboto, Arial Unicode Ms, Helvetica, Verdana, PT Sans Caption, sans-serif",
@@ -95,15 +95,16 @@
             }
         },
         locale: {
-            "fontSizelabel": gM('mwe-cvaa-fontSize'),
-            "fontOplabel": gM('mwe-cvaa-fontOpacity'),
-            "backgroundOpLabel": gM('mwe-cvaa-backgroundOpacity'),
-            "fontColorlabel": gM('mwe-cvaa-fontColor'),
-            "backgroundColorlabel": gM('mwe-cvaa-backgroundColor'),
-            "fontFamilylabel": gM('mwe-cvaa-fontFamily'),
-            "edgeStylelabel": gM('mwe-cvaa-edgeStyle'),
+            "cvaaPreset": gM('mwe-cvaa-preset'),
+            "previousScreen": gM('mwe-cvaa-previousScreenBtn'),
             "optionsBtnLabel": gM('mwe-cvaa-options'),
-            "captionsPreviewText": gM('mwe-cvaa-previewText')
+            "fontSize": gM('mwe-cvaa-fontSize'),
+            "fontColor": gM('mwe-cvaa-fontColor'),
+            "fontFamily": gM('mwe-cvaa-fontFamily'),
+            "fontStyle": gM('mwe-cvaa-fontStyle'),
+            "fontBackground": gM('mwe-cvaa-fontBackgroundColor'),
+            "fontOpacity": gM('mwe-cvaa-fontOpacity'),
+            "fontBackgroundOpacity": gM('mwe-cvaa-fontBackgroundOpacity')
         },
         previousScreen: "cvaa-adv",
         currentScreen: "cvaa-adv",
@@ -168,7 +169,8 @@
             this.bind('preHideScreen', function (event, screenName) {
                 if (screenName === "cvaa") {
                     //set correct currently selected language
-                    _this.getPlayer().getInterface().find(".closedCaptions .dropdown-menu li").eq(_this.lastActiveCaption).addClass('active');
+                    _this.getPlayer().getInterface().find(".closedCaptions .dropdown-menu").children().removeClass('active');
+                    _this.getPlayer().getInterface().find(".closedCaptions .dropdown-menu li").eq(_this.currentLanguageIndex).addClass('active');
                     _this.getPlayer().getInterface().find(".closedCaptions .mobileMenuSelect").val(_this.currentLanguage);
 
                     if (_this.getPlayer().getPlayerElement()) {
@@ -515,7 +517,11 @@
         },
 
         isSafeEnviornment: function () {
-            return !mw.isIphone() && !mw.isIE8();
+            if ( mw.isIphone() && mw.getConfig("EmbedPlayer.WebKitPlaysInline") !== true ){
+                return false;
+            }
+
+            return !mw.isIE8();
         }
     });
 

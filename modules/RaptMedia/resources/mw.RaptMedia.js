@@ -16,6 +16,9 @@
 (function ( mw, $ ) {
 	"use strict";
 
+	// Required for android playback of stitched playlists
+	mw.setConfig("Kaltura.LeadHLSOnAndroid", true);
+
 	mw.PluginManager.add( 'raptMedia', mw.KBaseComponent.extend( {
 
 		defaultConfig: {
@@ -43,7 +46,7 @@
 		loadNewEntry: function () {
 			this.raptMediaPlaylistEntry = this.parseRaptMediaTags();	
 
-			if (this.raptMediaPlaylistEntry == false) {
+			if (!this.raptMediaPlaylistEntry) {
 				//this is not a rapt media entry - let the player behave normally
 				this.getPlayer().sendNotification('reattachTimeUpdate');
 				return;
@@ -63,11 +66,6 @@
 					'action': 'get',
 					'entryId': entryId
 				});
-				requestsArray.push({
-					'service': 'flavorasset',
-					'action': 'getbyentryid',
-					'entryId': entryId
-				});
 			});
 			
 			_this.getKalturaClient().doRequest(requestsArray, function (data) {
@@ -75,37 +73,34 @@
 				if (!_this.isValidApiResult(data))
 					return;
 
-				var accumulativeFrames = 0;
-				var defaul_fps = 24;
-				var fps = null;
+				var msStartOffset = 0;
 				var entry = null;
-				var flavorAssets = null;
-
+				
 				for (var i = 0; i < data.length; ++i) { 
 					entry = data[i];
-					flavorAssets = data[i+1];
-				    if ( document.URL.indexOf( 'debugKalturaPlayer' ) !== -1 )
-						console.log('raptMediaPlugin::[init]', entry, flavorAssets);
-
-					if (Array.isArray(flavorAssets) && flavorAssets.length > 0 && flavorAssets[0].frameRate > 0)
-						fps = flavorAssets[0].frameRate;
-					else
-						fps = defaul_fps;
 					
-					var segemtFrames = Math.ceil(entry.msDuration / 1000 * fps);
+					if (mw.getConfig('debug', true))
+						console.log('raptMediaPlugin::[init]', entry);
+
+					var AAC_FRAME_SIZE = 1024;
+					var MIN_SAMPLE_RATE = 44100;
+					var MIN_FRAME_RATE = 24;
+
+					// Segment duration is based on the duration of all video frames, however on discontinuities HLS.js appears to take the longer of the audio or video duration.
+					// Audio will always be a multiple of AAC frame size (1024 samples) so we assume the maximum error of 1 AAC frame at the lowest sampling rate per discontinuity.
+					var adjustment = ((AAC_FRAME_SIZE / MIN_SAMPLE_RATE) * i) + (2 / MIN_FRAME_RATE * (i > 1 ? 1 : 0));
+					var msAdjustment = Math.ceil(adjustment * 100) * 10;
 
 					var segment = {
-						msStartTime: (accumulativeFrames / fps) * 1000,
-						msDuration: entry.msDuration,
-						frames: segemtFrames,
+						msStartTime: msStartOffset + msAdjustment,
+						msDuration: entry.msDuration - msAdjustment,
 						width: entry.width, 
 						height: entry.height,
 						entryId: entry.id
 					};
 					_this.raptSegments[entry.id] = segment;
 					_this.raptSequence.push(segment);
-					accumulativeFrames += segemtFrames;
-					++i;
+					msStartOffset += entry.msDuration;
 				}
 				
 				$.ajax({ dataType: 'script', url: raptMediaScriptUrl, cache: true })
@@ -114,6 +109,13 @@
 				})
 				.fail(function( jqxhr, settings, exception ) {
 					_this.log('Failed to load script: ' + raptMediaScriptUrl + ', ' + exception);
+					// pause the video
+					_this.getPlayer().layoutBuilder.displayAlert({
+						keepOverlay: true,
+						message: 'Error loading the RAPT Media engine. Please try to reload the page, or contact Support stating the URL of this page if the issue persists.',
+						title: 'Error loading RAPT Media engine',
+						noButtons: true
+					});
 				})
 				.then(function() {
 					_this.log('Then, setup the rapt engine');
@@ -122,15 +124,16 @@
 					_this.setupRaptMediaPlugin();
 				})
 				.then(function(){
-					_this.log('And then, continue player init');
-					_this.initCompleteCallback();
+					//we can only continue with the rest of the player setup once the initial rapt segment was loaded
+					//see raptMedia_newSegment below
+					_this.raptMediaInitialSegmentLoad = true;
 				});
 			});
 		},
 
 		addBindings: function() {
 			var _this = this;
-            this.bind('onChangeMediaDone', function(event) { 
+            this.bind('mediaLoaded', function(event) { 
             	_this.raptCleanup();
 				_this.loadNewEntry();
 			});
@@ -154,7 +157,11 @@
 			this.unbind('seeked');
 			this.unbind('playerPlayed');
 			this.unbind('replayEvent');
-			this.getPlayer().sendNotification('enableGui', { 'guiEnabled': true });
+			this.unbind('seeked.newSegment');
+			this.unbind('onPlayerStateChange');
+			this.unbind('playerPaused.raptEndOfSegment');
+			this.unbind('mediaLoaded');
+			//this.getPlayer().sendNotification('enableGui', { 'guiEnabled': true });
 			this.raptMediaPlaylistEntry = false;
 			this.engineCurrentSegment = null;
 			this.playbackEnded = false;
@@ -176,17 +183,53 @@
 
 					load: function(media, flags) {
 						if (_this.raptSequence.length == 0) return;
+						_this.playbackEnded = false;
 						var currentEntryId = media.sources[0].src;
+						if (_this.engineCurrentSegment && currentEntryId == _this.engineCurrentSegment.entryId)
+							return;
+						
+						if (!(currentEntryId in _this.raptSegments) || _this.raptSegments[currentEntryId] == null) {
+							_this.getPlayer().layoutBuilder.displayAlert({
+								keepOverlay: true,
+								message: 'There was an error loading this segment of the RAPT Media experience. Please try to reload the page, or contact Support stating the URL of this page if the issue persists.',
+								title: 'Error playing RAPT Media segment',
+								noButtons: true
+							});
+						}
+
 						_this.engineCurrentSegment = _this.raptSegments[currentEntryId];
-						_this.getPlayer().sendNotification("doSeek", (_this.engineCurrentSegment.msStartTime / 1000));
+
+						var __this = _this;
+						if (!_this.raptMediaInitialSegmentLoad) {
+							_this.bind('seeked.newSegment', function () {
+								__this.seeking = false;
+								__this.unbind('seeked.newSegment');
+							});
+							var segmentStartSec = Math.ceil(_this.engineCurrentSegment.msStartTime / 10) / 100;
+							_this.getPlayer().sendNotification("doSeek", segmentStartSec);
+
+							_this.seeking = true;
+							_this.transition = true;
+							_this.getPlayer().addBlackScreen();
+
+							if (!_this.getPlayer().isMuted()) {
+								_this.muted = true;
+								_this.getPlayer().toggleMute(true);
+							}
+						} else {
+							// the first rapt segment was loaded, we're ready to continue
+							_this.raptMediaInitialSegmentLoad = false;
+							_this.log('Initial Rapt Segment was loaded, now we can continue player init');
+							_this.initCompleteCallback();
+						}
 						_this.getPlayer().sendNotification("raptMedia_newSegment", _this.engineCurrentSegment);
-						_this.getPlayer().sendNotification('enableGui', { 'guiEnabled': true });
+						//_this.getPlayer().sendNotification('enableGui', { 'guiEnabled': true });
 						_this.log('load: ' + _this.engineCurrentSegment);
 					},
 					
 					play: function() {
 						_this.getPlayer().sendNotification("doPlay");
-						_this.getPlayer().sendNotification('enableGui', { 'guiEnabled': true });
+						//_this.getPlayer().sendNotification('enableGui', { 'guiEnabled': true });
 					},
 					
 					pause: function() {
@@ -195,25 +238,35 @@
 					
 					seek: function(time) {
 						_this.getPlayer().sendNotification("doSeek", time);
-						_this.getPlayer().sendNotification('enableGui', { 'guiEnabled': true });
+						//_this.getPlayer().sendNotification('enableGui', { 'guiEnabled': true });
 					},
 
 					event: function(event) {
-						_this.log('caught rapt event: ' + event.type);
+						if (event.type != 'media:timeupdate')
+							_this.log('RaptMedia Engine Event: ' + event.type);
 						switch (event.type) {
 							case 'project:ended':
 								var behaviorOnEnd = _this.getConfig( 'behaviorOnEnd' );
-								_this.log('project:ended - ' + behaviorOnEnd);
 								if (behaviorOnEnd == 'replay') {
 									_this.raptMediaEngine.replay();
-									_this.getPlayer().sendNotification('enableGui', { 'guiEnabled': true });
+								} else {
+									_this.raptMediaUpdate();
+									_this.getPlayer().onClipDone();
 								}
+								_this.getPlayer().sendNotification("raptMedia_projectEnd");
+								//_this.getPlayer().sendNotification('enableGui', { 'guiEnabled': true });
 								break;
 						}
 					},
 					
 					error: function(error){
 						_this.log('Engine error: ' + error);
+						_this.getPlayer().layoutBuilder.displayAlert({
+							keepOverlay: true,
+							message: 'Somthing gone bad with this RAPT Media experience :( Please try to reload the page, or contact Support stating the URL of this page if the issue persists. (' + error + ')',
+							title: 'Error playing RAPT Media experience',
+							noButtons: true
+						});
 					}
 				};
 
@@ -223,25 +276,28 @@
 
 			this.raptMediaEngine.load(this.raptMediaProjectId);
 
-			this.bind('updateLayout', function(){ _this.raptMediaResize(); });
+			this.bind('onPlayerStateChange', function(e, newState, oldState){
+				_this.raptMediaResize();
+			});
 
-			this.bind('monitorEvent', function(){ _this.raptMediaUpdate(); });
-			
-			this.bind('playerPlayEnd', function() {
-				_this.raptMediaUpdate(null);
+			this.bind('updateLayout', function(){ 
+				_this.raptMediaResize(); 
+			});
+
+			this.bind('monitorEvent', function(){ 
+				_this.raptMediaUpdate(); 
 			});
 			
-			this.bind('seeked', function() {
-				//anything here?
+			this.bind('seeked', function() { 
+				_this.playbackEnded = false;
+				_this.raptMediaUpdate(); 
 			});
-			
-			this.bind('playerPlayed', function(){
-				_this.getPlayer().sendNotification('enableGui', { 'guiEnabled': true });
-			});
-			
+
 			this.bind('replayEvent', function(){
+				_this.playbackEnded = false;
 				_this.raptMediaEngine.replay();
-				_this.log('Replay the RAPT project');
+				_this.raptMediaResize();
+				_this.raptMediaUpdate();
 			});
 
 			this.raptMediaResize();
@@ -255,27 +311,55 @@
 			if (this.engineCurrentSegment == null) 
 				return;
 
-			this.playbackEnded = false;
+			if (this.seeking)
+				return;
 
-			var currentTimeMillis = ((parseFloat(this.getPlayer().currentTime).toFixed(3) * 1000) - this.engineCurrentSegment.msStartTime);
+			var playlistTimeMillis = parseFloat(this.getPlayer().currentTime).toFixed(2) * 1000;
+			var currentTimeMillis = playlistTimeMillis - this.engineCurrentSegment.msStartTime;
+
+			if (this.playbackEnded) {
+				this.getPlayer().pause();
+				return;	
+			}
+
+			if (this.transition && currentTimeMillis > 0) {
+				this.transitioning = false;
+				this.getPlayer().removeBlackScreen();
+				if (this.muted) {
+					this.muted = false;
+					this.getPlayer().toggleMute();
+				}
+			}
+
 			if (currentTimeMillis < 0) currentTimeMillis = 0;
-			var currentTimeSec = (currentTimeMillis / 1000).toFixed(3);
+			var currentTimeSec = parseFloat((currentTimeMillis / 1000).toFixed(3));
 
-			var segmentDurationMillis = this.engineCurrentSegment.msDuration - 550;
-			var segmentDurationSec = (this.engineCurrentSegment.msDuration / 1000).toFixed(3);
-
+			var segmentDurationMillis = this.engineCurrentSegment.msDuration - 300;
+			var segmentDurationSec = parseFloat((this.engineCurrentSegment.msDuration / 1000).toFixed(3));
+			
 			if (currentTimeMillis >= segmentDurationMillis) {
 				this.playbackEnded = true;
-				currentTimeSec = segmentDurationSec;
-				this.getPlayer().sendNotification('doPause');
-				this.getPlayer().sendNotification('raptMedia_pausedDecisionPoint');
-				this.getPlayer().sendNotification('enableGui', { 'guiEnabled': false, 'enableType': 'controls' });
+				var _embedPlayer = this.getPlayer();
+				var _this = this;
+				this.bind('playerPaused.raptEndOfSegment', function () {
+					_this.unbind('playerPaused.raptEndOfSegment');
+					_embedPlayer.sendNotification('raptMedia_pausedDecisionPoint');
+					var segmentStartOffset = parseFloat((_this.engineCurrentSegment.msStartTime / 1000).toFixed(3));
+					var seekTimeEndOfSeg = segmentStartOffset + parseFloat(((_this.engineCurrentSegment.msDuration)/1000).toFixed(3));
+					_embedPlayer.triggerHelper("userInitiatedSeek", seekTimeEndOfSeg);
+					_embedPlayer.stopPlayAfterSeek = true;
+					_embedPlayer.seek(seekTimeEndOfSeg, true);
+				});
+				this.getPlayer().pause();
+				//this.getPlayer().sendNotification('enableGui', { 'guiEnabled': false, 'enableType': 'controls' });
+			} else {
+				this.playbackEnded = false;
 			}
 
 			this.log(currentTimeSec + ", " + segmentDurationSec + " , " + this.playbackEnded);
 			
 			this.raptMediaEngine.update({
-				currentTime: currentTimeSec,
+				currentTime: (this.playbackEnded ? segmentDurationSec : currentTimeSec),
 				duration: segmentDurationSec,
 				ended: this.playbackEnded,
 				videoWidth: this.engineCurrentSegment.width,
@@ -286,8 +370,6 @@
 		},
 
 		raptMediaResize: function() {
-			this.$el.width(this.getPlayer().getVideoHolder().width());
-			this.$el.height(this.getPlayer().getVideoHolder().height());
 			this.raptMediaEngine.resize({
 				width: this.getPlayer().getVideoHolder().width(),
 				height: this.getPlayer().getVideoHolder().height() 

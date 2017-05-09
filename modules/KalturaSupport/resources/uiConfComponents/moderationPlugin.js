@@ -4,21 +4,22 @@
 
 		defaultConfig: {
 			"parent": mw.isMobileDevice() ? 'topBarContainer' : 'controlsContainer',
-		 	"order": 62,
-		 	"displayImportance": "low",
-		 	"align": "right",
-		 	"showTooltip": true,
+			"order": 62,
+			"displayImportance": "low",
+			"align": "right",
+			"showTooltip": true,
 			"smartContainer": 'morePlugins',
 			"smartContainerCloseEvent": 'closeMenuOverlay',
+			"minDescriptionLength" : 0,
 			"title": gM("ks-MODERATION-REPORT"),
 			"header": gM("ks-MODERATION-HEADER"),
 			"text": gM("ks-MODERATION-TEXT"),
 			"placeholder": gM("ks-MODERATION-PLACEHOLDER"),
-		 	"tooltip": gM("ks-MODERATION-REPORT"),
-		 	"reasonSex": gM("ks-MODERATION-REASON-SEX"),
-		 	"reasonViolence": gM("ks-MODERATION-REASON-VIOLENCE"),
-		 	"reasonHarmful": gM("ks-MODERATION-REASON-HARMFUL"),
-		 	"reasonSpam": gM("ks-MODERATION-REASON-SPAM")
+			"tooltip": gM("ks-MODERATION-REPORT"),
+			"reasonSex": gM("ks-MODERATION-REASON-SEX"),
+			"reasonViolence": gM("ks-MODERATION-REASON-VIOLENCE"),
+			"reasonHarmful": gM("ks-MODERATION-REASON-HARMFUL"),
+			"reasonSpam": gM("ks-MODERATION-REASON-SPAM")
 		},
 
 		setup: function () {
@@ -60,15 +61,22 @@
 						$( '<option />' ).attr( 'value', 3 ).text( _this.getConfig( 'reasonHarmful' ) ),
 						$( '<option />' ).attr( 'value', 4 ).text( _this.getConfig( 'reasonSpam' ) )
 					)
-					.css({'width': '100%', 'height': '26px', 'margin-top': '10px'})),
+					.css({'width': '100%', 'height': '26px', 'margin': '10px 0 10px 0'})),
+				$( '<label for="flagComments">'+ gM("ks-MODERATION-PLACEHOLDER" ) +'</label>' ),
 				$( '<textarea />' )
 					.attr( 'id', 'flagComments' )
-					.attr( 'placeholder', gM("ks-MODERATION-PLACEHOLDER" ))
+					.bind('input propertychange', function() {
+						if( $(this).val().length == _this.getConfig("minDescriptionLength")){
+						$(this).removeClass("validationError");
+						}
+					})
 					.css({'width': '100%', 'height': '40px', 'margin-top': '10px'}),
 				$('<div/>' ).append(
 					$( '<div />' )
 					.addClass( 'reportButton right' )
-					.text( gM("ks-MODERATION-SUBMIT") )
+					.text( gM("ks-MODERATION-SUBMIT-BTN") )
+					.attr( 'tabindex',0 )
+					.attr( 'role', 'button')
 					.click(function() {
 						_this.submitFlag({
 							'flagType': $( '#flagType' ).val(),
@@ -111,6 +119,11 @@
 		},
 		submitFlag: function(flagObj) {
 			var _this = this;
+			//validation length of description check
+			if (_this.getConfig("minDescriptionLength") != 0 && flagObj.flagComments.length < this.getConfig("minDescriptionLength")  ){
+				this.screen.find("#flagComments").addClass("validationError");
+				return;
+			}
 			this.getPlayer().triggerHelper( 'moderationSubmit', flagObj.flagType );
 			this.getPlayer().addPlayerSpinner();
 			this.getKalturaClient().doRequest( {
@@ -146,14 +159,16 @@
 		getComponent: function(){
 			var _this = this;
 			if( !this.$el ){
+				var tooltipLabel = this.getConfig('tooltip');
 				this.$el = $( '<button />' )
 								.addClass( 'btn icon-flag' + this.getCssClass() )
 								.attr({
-									'title': this.getConfig('tooltip')
+									'title': tooltipLabel
 								})
 								.click( function(){
 									_this.drawModal();
 								});
+				this.setAccessibility(this.$el, tooltipLabel);
 			}
 			return this.$el;
 		}

@@ -1,7 +1,7 @@
 /**
  * KWidget library provided embed layer services to html5 and flash players, as well as client side abstraction for some kaltura services.
  */
-(function () {
+(function ($) {
 // Use strict ECMAScript 5
 	"use strict";
 
@@ -647,9 +647,8 @@
 			}
 			elm.innerHTML = '' +
 				'<div style="position: relative; width: 100%; height: 100%;">' +
-				'<button class="kWidgetCentered kWidgetPlayBtn" ' + 'id="' + targetId + '_playBtn" >' +
-				'<span class="kWidgetAccessibilityLabel">' + 'Play video content' + '</span></button>' +
-				'<img class="kWidgetCentered" src="' + this.getKalturaThumbUrl(settings) + '" >' +
+				'<button aria-label="Play video content"  class="kWidgetCentered kWidgetPlayBtn" ' + 'id="' + targetId + '_playBtn" ></button>' +
+				'<img class="kWidgetCentered" src="' + this.getKalturaThumbUrl(settings) + '" alt="Video thumbnail">' +
 				'</div>';
 			// Add a click binding to do the really embed:
 			var playBtn = document.getElementById(targetId + '_playBtn');
@@ -973,6 +972,7 @@
 			iframe.scrolling = "no";
 			iframe.name = iframeId;
 			iframe.className = 'mwEmbedKalturaIframe';
+			iframe.setAttribute('title', 'The Kaltura Dynamic Video Player');
 			// IE8 requires frameborder attribute to hide frame border:
 			iframe.setAttribute('frameborder', '0');
 
@@ -2538,4 +2538,4 @@
 	window.KWidget = kWidget;
 	window.kWidget = kWidget;
 
-})();
+})(window.jQuery);

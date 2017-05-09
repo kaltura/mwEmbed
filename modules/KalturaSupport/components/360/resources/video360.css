@@ -5,7 +5,8 @@
     width: 75px;
     height: 40px;
     opacity: 0.7;
-    cursor: pointer;
+    z-index: 2;
+    pointer-events: none;
 }
 .logo360.bottomRight{
     bottom: 0;
@@ -19,4 +20,5 @@
     right: 0;
     left:0;
     margin: auto;
+    z-index: -1;
 }

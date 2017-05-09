@@ -303,6 +303,8 @@
 		//the offset in hours:minutes:seconds from the playable live edge.
 		liveEdgeOffset: 0,
 
+		liveSyncDurationOffset:0,
+
 		/**
 		 * embedPlayer
 		 *
@@ -1209,7 +1211,10 @@
 		},
 		setDuration: function (newDuration) {
 			this.duration = newDuration;
-			$(this).trigger('durationChange', [newDuration]);
+			if(this.isLive() && this.isDVR()){
+				this.duration -= this.liveSyncDurationOffset;
+			}
+			$(this).trigger('durationChange', [this.duration]);
 		},
 
 		/**
@@ -1843,10 +1848,18 @@
 			if (!this.widgetLoaded) {
 				this.widgetLoaded = true;
 				mw.log("EmbedPlayer:: Trigger: widgetLoaded");
+				if( mw.getConfig('Kaltura.ForceLayoutRedraw') ) {
+					var resize = {
+						width: this.getInterface().width(),
+						height: this.getInterface().height() + 1
+					};
+					this.updateInterfaceSize(resize);
+					resize.height--;
+					this.updateInterfaceSize(resize);
+				}
 				this.triggerHelper('widgetLoaded');
 			}
 		},
-
 		/**
 		 * Add a black thumbnail layer on top of the player
 		 */
@@ -2309,7 +2322,7 @@
 			}
 
 			// Remove any poster div ( that would overlay the player )
-			if (!this.isAudioPlayer) {
+			if (!this.isAudioPlayer && !this.casting) {
 				this.removePoster();
 			}
 
@@ -2412,24 +2425,26 @@
 		 *
 		 */
 		addPlayerSpinner: function () {
-			var sId = 'loadingSpinner_' + this.id;
-			$(this).trigger('onAddPlayerSpinner');
-			// remove any old spinner
-			$('#' + sId).remove();
-			var target = this;
-			switch(mw.getConfig("EmbedPlayer.SpinnerTarget")){
-				case "videoHolder":
-					target = this.getVideoHolder();
-					break;
-				case "videoDisplay":
-					target = this.getVideoDisplay();
-					break;
-				default:
-					target = this;
-			}
-			// re add an absolute positioned spinner:
-			$(target).getAbsoluteOverlaySpinner()
-				.attr('id', sId);
+			if (!mw.isChromeCast()) {
+                var sId = 'loadingSpinner_' + this.id;
+                $( this ).trigger( 'onAddPlayerSpinner' );
+                // remove any old spinner
+                $( '#' + sId ).remove();
+                var target = this;
+                switch ( mw.getConfig( "EmbedPlayer.SpinnerTarget" ) ) {
+                    case "videoHolder":
+                        target = this.getVideoHolder();
+                        break;
+                    case "videoDisplay":
+                        target = this.getVideoDisplay();
+                        break;
+                    default:
+                        target = this;
+                }
+                // re add an absolute positioned spinner:
+                $( target ).getAbsoluteOverlaySpinner()
+                    .attr( 'id', sId );
+            }
 		},
 		hideSpinner: function () {
 			$(this).trigger('onRemovePlayerSpinner');
@@ -3104,6 +3119,14 @@
 
 		isLive: function () {
 			return this.live;
+		},
+
+		set360:function (is360) {
+			this.Is360 = is360;
+		},
+
+		is360: function(){
+			return this.Is360;
 		},
 
 		setDrmRequired: function (isDrm) {

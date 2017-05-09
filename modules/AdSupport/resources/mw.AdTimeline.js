@@ -144,6 +144,10 @@
                 'skipOffsetRemaining': 0
             };
 
+            embedPlayer.bindHelper('casting' + _this.bindPostfix, function () {
+                _this.destroy();
+            });
+
             // On change media clear out any old adTimeline bindings
             embedPlayer.bindHelper('onChangeMedia' + _this.bindPostfix, function () {
                 _this.destroy();
@@ -185,6 +189,7 @@
 				});
 
                 mw.log("AdTimeline:: load ads, trigger: AdSupport_OnPlayAdLoad");
+
                 embedPlayer.pauseLoading();
 
                 // given an opportunity for ads to load for ads to load:
@@ -288,18 +293,19 @@
                                 // Run the clipdone event:
                                 embedPlayer.onClipDone();
                             }
-
                             if (playedAnAdFlag && !embedPlayer.isVideoSiblingEnabled()) {
-                                embedPlayer.switchPlaySource(_this.originalSource, function (video) {
+                                embedPlayer.switchPlaySource( _this.originalSource, function () {
                                     // Make sure we pause the video
-                                    video.pause();
+                                    _this.embedPlayer.getPlayerElement().pause();
                                     /* iPad iOS v4.3.1 ignore video pause (probably timing issue) */
-                                    $(video).bind('play.postSequenceComplete', function () {
-                                        video.pause();
-                                        $(video).unbind('.postSequenceComplete');
-                                    });
+                                    if (!mw.isChromeCast()) {
+                                        $( _this.embedPlayer.getPlayerElement()).bind('play.postSequenceComplete', function () {
+                                            _this.embedPlayer.getPlayerElement().pause();
+                                            $( _this.embedPlayer.getPlayerElement()).unbind('.postSequenceComplete');
+                                        });
+                                    }
                                     onPostRollDone();
-                                });
+                                } );
                             } else {
                                 onPostRollDone();
                             }

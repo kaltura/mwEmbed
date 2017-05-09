@@ -5,6 +5,7 @@
 
 		defaultConfig: {
 			'parent': 'sideBarContainer',
+			'closeOnClick': false,
 			'containerPosition': null,
 			'order': 2,
 			'showTooltip': false,
@@ -970,6 +971,9 @@
 		},
 		//UI Handlers
 		mediaClicked: function (mediaIndex) {
+			if (this.getConfig("closeOnClick") && (this.getConfig('parent') === 'sideBarContainer')){
+				this.getPlayer().triggerHelper("closeSideBarContainer");
+			}
 			//Only apply seek in VOD or in live if DVR is supported
 			if ((this.getPlayer().isLive() && this.getPlayer().isDVR()) ||
 					!this.getPlayer().isLive()) {
