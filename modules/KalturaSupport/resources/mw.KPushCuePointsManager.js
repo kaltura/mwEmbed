@@ -1,0 +1,199 @@
+(function (mw, $) {
+    "use strict";
+    mw.KPushCuePointsManager = function (embedPlayer) {
+        return this.init(embedPlayer);
+    };
+
+    mw.KPushCuePointsManager.getInstance = function (embedPlayer) {
+
+        if (!embedPlayer.KPushCuePointsManager) {
+            embedPlayer.KPushCuePointsManager = new mw.KPushCuePointsManager(embedPlayer);
+        }
+        return embedPlayer.KPushCuePointsManager;
+    };
+
+
+    mw.KPushCuePointsManager.prototype = {
+        bindPostfix: '.KPushCuePointsManager',
+        init: function (embedPlayer) {
+            // Remove any old bindings:
+            this.destroy();
+            // Setup player ref:
+            this.listeners = {};
+            this.embedPlayer = embedPlayer;
+            this.kClient = mw.kApiGetPartnerClient(this.embedPlayer.kwidgetid);
+            this.pushServerNotification = mw.KPushServerNotification.getInstance(this.embedPlayer);
+            this.addBindings();
+            this.lastDispatchedCp = null;
+            this.latestActiveCp = null;
+
+        },
+        addBindings: function () {
+            // bind to cue point events
+            var _this = this;
+            this.embedPlayer.bindHelper("monitorEvent", function () {
+                _this.checkAllRegisteredNotifications();
+            });
+            // this.bind('onpause onplay onChangeMedia monitorEvent', function (e) {
+            //     alert()
+            // });
+        },
+        findCuePointdataByTime: function (t) {
+            for (var key in this.listeners) {
+                if (this.listeners[key].hasOwnProperty(t)) {
+                    return {
+                        cuepoint: this.listeners[key][t],
+                        triggerCallback: this.listeners[key]["triggerCallback"],
+                        loadedCallback: this.listeners[key]["loadCuePointCallback"],
+                        scope: this.listeners[key]["scope"],
+                        key: key
+                    };
+                }
+            }
+        },
+        checkAllRegisteredNotifications: function () {
+            var _this = this;
+            var currentTime = _this.embedPlayer.currentTime;
+
+            // assuming array is sorted - iterate from end to first
+            for (var i = this.times.length - 1; i > -1; --i) {
+                if (currentTime != 0 && currentTime > this.times[i]) {
+                    this.latestActiveCp = this.times[i];
+                    if (this.latestActiveCp == this.lastDispatchedCp) {
+                        //great, this one was dispatched ! no need to keep search
+                        break
+                    }
+                    if (this.latestActiveCp != this.lastDispatchedCp) {
+                        // found a cuepoint that was not dispatched - and valid - trigger now and store
+                        this.lastDispatchedCp = this.latestActiveCp;
+                        var cpData = this.findCuePointdataByTime(this.latestActiveCp);
+                        var cuepoint = cpData.cuePoint;
+                        var callback = cpData.triggerCallback;
+                        var scope = cpData.scope;
+                        // this.embedPlayer.trigger() // dispatch generic event
+                        if (callback) {
+                            callback(cuepoint, scope);
+                        }
+                        break
+                    }
+                }
+            }
+
+        },
+        //store cuepoint on a per-registration array.
+        setLocalCuePoint: function (cuePoint, notificationName) {
+            this.times.push(cuePoint.createdAt); //TODO - handle DVR later
+            this.listeners[notificationName][cuePoint.createdAt] = cuePoint;
+            //after every insertion - sort
+            this.times.sort(function (a, b) {
+                return parseFloat(a.createdAt) - parseFloat(b.createdAt); //TODO - handle DVR later
+            });
+        },
+        /**
+         * API - register to pushNotifications and cue-point-reached logic
+         *
+         * @param notificationName - String, system name of notification template in backend
+         * @param userId - userid
+         * @param cpLoadedFunc - will be triggered when a cue-point is loaded by server
+         * @param cpTriggerFunc - will be triggered when a cue-point that was loaded here will be reached by playhead
+         * @param scope - scope of callback functions
+         */
+        registerToNotification: function (notificationName, userId, cpLoadedFunc, cpTriggerFunc, scope) {
+            var _this = this;
+            this.currentNotification = notificationName;
+            //create a listener object to store cuepoints per notification
+            this.listeners[notificationName] = {};
+            this.listeners[notificationName]["scope"] = scope; //TODO - try to find an elegant way;
+            if (cpTriggerFunc) {
+                this.listeners[notificationName]["triggerCallback"] = cpTriggerFunc;
+            } else {
+                this.listeners[notificationName]["triggerCallback"] = function (a) {
+                };
+                // TODO - optimize?
+            }
+            if (cpLoadedFunc) {
+                this.listeners[notificationName]["loadCuePointCallback"] = cpLoadedFunc;
+            } else {
+                this.listeners[notificationName]["loadCuePointCallback"] = function (a) {
+                };
+            }
+            if (scope) {
+                this.listeners[notificationName]["scope"] = scope;
+            } else {
+                this.listeners[notificationName]["scope"] = null;
+            }
+            //store all time (global notifications) for optimization
+            this.times = [];
+
+            this.getMetaDataProfile(notificationName, userId).then(function () {
+                _this.registerPollingNotifications(notificationName, scope).then(function () {
+                    mw.log(notificationName + "successful  registerNotifications");
+                }, function (err) {
+                    mw.log(notificationName + "failed  registerNotifications ", err);
+                });
+            });
+        },
+        /**
+            Register to cuepoint loaded function
+         */
+        registerPollingNotifications: function (notificationName) {
+            var _this = this;
+            // var _callback = callback;
+            var tempNotification = this.pushServerNotification.createNotificationRequest(
+                notificationName,
+                {
+                    "entryId": _this.embedPlayer.kentryid
+                },
+                function (cuePoint) {
+                    _this.cuePointloaded(cuePoint[0], notificationName);
+                });
+            return this.pushServerNotification.registerNotifications([tempNotification])
+        },
+
+        cuePointloaded: function (cuePoint, notificationName) {
+            this.setLocalCuePoint(cuePoint, notificationName);
+            var cpObject = this.findCuePointdataByTime(cuePoint.createdAt);
+            cpObject.loadedCallback(cpObject.key, cpObject.cuepoint, cpObject.scope);
+        },
+
+        getMetaDataProfile: function (notificationName, userId) {
+            var _this = this;
+
+            var listMetadataProfileRequest = {
+                service: "metadata_metadataprofile",
+                action: "list",
+                "filter:systemNameEqual": notificationName
+            };
+            this.userId = userId;
+
+            var deferred = $.Deferred();
+            this.getKClient().doRequest(listMetadataProfileRequest, function (result) {
+
+                if (result.objectType === "KalturaAPIException") {
+                    mw.log("Error getting metadata profile: " + result.message + " (" + result.code + ")");
+                    deferred.resolve(false);
+                    return;
+                }
+
+                mw.log("metadata profile " + _this.currentNotification + " loaded.");
+                _this.metadataProfile = result.objects[0];
+                deferred.resolve(true);
+            });
+            return deferred;
+        },
+        getKClient: function () {
+            if (!this.kClient) {
+                this.kClient = mw.kApiGetPartnerClient(this.embedPlayer.kwidgetid);
+            }
+            return this.kClient;
+        },
+
+        destroy: function () {
+
+        }
+
+
+    }
+
+})(window.mw, window.jQuery);
+
