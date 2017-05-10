@@ -1780,7 +1780,6 @@
 				if (_this.getError()) {
 					// Reset changeMediaStarted flag
 					_this.changeMediaStarted = false;
-					_this.showErrorMsg(_this.getError());
 					return;
 				}
 
