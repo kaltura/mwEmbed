@@ -109,9 +109,9 @@ $YB.plugins.KalturaV2.prototype.registerListeners = function () {
     context.reset();
   });
 
-  this.player.bind('mediaLoadError playerError', function (e, errorObj) {
+  this.player.bind('playerError', function (e, errorObj) {
     var errorMsg = errorObj ? errorObj.message : context.player.getPlayer().getErrorMessage();
-    var errorCode = errorObj && errorObj.code ? errorObj.code : context.player.getPlayer().getErrorCode();
+    var errorCode = errorObj && errorObj.key ? errorObj.key : context.player.getPlayer().getErrorCode();
     context.setMetadata();
     context.errorHandler(errorCode, errorMsg);
   });
