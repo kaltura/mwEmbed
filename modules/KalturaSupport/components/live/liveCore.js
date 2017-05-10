@@ -209,7 +209,6 @@
 					//once moving back to live, set live state again
 					embedPlayer.bindHelper( 'liveOnline', function() {
 						embedPlayer.setLive( true );
-
 					} );
 
 					if ( !_this.isNativeHLS() ) {
