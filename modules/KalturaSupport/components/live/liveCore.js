@@ -93,6 +93,7 @@
 				if ( _this.onProgress ) {
 					var vid = embedPlayer.getPlayerElement();
 					vid.removeEventListener('progress', _this.onProgress);
+					_this.onProgress = null;
 				}
 			} );
 
@@ -208,6 +209,7 @@
 					//once moving back to live, set live state again
 					embedPlayer.bindHelper( 'liveOnline', function() {
 						embedPlayer.setLive( true );
+
 					} );
 
 					if ( !_this.isNativeHLS() ) {
