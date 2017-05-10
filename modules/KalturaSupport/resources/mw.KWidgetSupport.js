@@ -799,6 +799,7 @@ mw.KWidgetSupport.prototype = {
 
 		embedPlayer.getKalturaMsgObject = function( msgKey ) {
 			return {
+			    'key': msgKey,
 				'title': embedPlayer.getKalturaMsgTitle( msgKey ),
 				'message': embedPlayer.getKalturaMsg( msgKey )
 			}
