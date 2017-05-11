@@ -132,11 +132,11 @@ $YB.plugins.KalturaV2.prototype.registerListeners = function () {
     }
   });
 
-  this.player.bind('userInitiatedPause', function () {
+  this.player.bind('onpause', function () {
     context.pauseHandler();
   });
 
-  this.player.bind('userInitiatedPlay', function () {
+  this.player.bind('onplay', function () {
     context.resumeHandler();
   });
 
