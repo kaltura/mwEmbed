@@ -91,10 +91,9 @@
 			this.bind('replayEvent preSequence', function(){
 				_this.stopTimer();
 			});
-
-            this.bind('showRelated', function(){
+			this.bind('showRelated', function(){
                 _this.showScreen(true);
-            });
+			});
 
 			this.bind('preShowScreen', function (event, screenName) {
 				if ( screenName === "related" ){
