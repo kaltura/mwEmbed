@@ -1,0 +1,6 @@
+MPEG-DASH
+
+Makes use of https://github.com/Dash-Industry-Forum/dash.js/
+to support mepg-dash transport. 
+
+The "Dash.js" folder is a direct checkout of that master branch
