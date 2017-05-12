@@ -92,7 +92,7 @@
 				_this.stopTimer();
 			});
 			this.bind('showRelated', function(){
-                _this.showScreen(true);
+				_this.showScreen(true);
 			});
 
 			this.bind('preShowScreen', function (event, screenName) {
