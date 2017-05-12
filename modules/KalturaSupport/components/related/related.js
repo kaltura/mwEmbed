@@ -136,10 +136,8 @@
 				var cssClass = $(this).width() / $(this).height() > 1.45 ? 'wide' : 'square';
 				$(this).find("img").removeClass().addClass(cssClass);
 				var img = $(this).find("img")[0];
-
 				var divWidth = $(this).width();    // save img div container width for cropping logic
 				var divHeight = $(this).height();  // save img div container height for cropping logic
-
 				// crop image from center
 				var heightOffset, widthOffset;
 				var $img = $(img);
