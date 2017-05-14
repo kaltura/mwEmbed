@@ -103,6 +103,8 @@
 							source.loaded = true;
 							newSources.push( source );
 						} );
+						_this.textSources = newSources;
+						_this.handleDefaultSource();
 						_this.buildMenu( newSources );
 						outOfBandCaptionEventHandlers.call(_this);
 					}
@@ -377,14 +379,17 @@
 					_this.forceLoadLanguage();
 				}
 
-				if( _this.getConfig('displayCaptions') !== false || ($.cookie( _this.cookieName ) !== 'None' && $.cookie( _this.cookieName )) ){
-					_this.autoSelectSource();
-					if( _this.selectedSource ){
-						_this.setTextSource(_this.selectedSource, false);
-					}
-				}
+				_this.handleDefaultSource();
 				callback();
 			});
+		},
+		handleDefaultSource: function () {
+			if( this.getConfig('displayCaptions') !== false || ($.cookie( this.cookieName ) !== 'None' && $.cookie( this.cookieName )) ){
+				this.autoSelectSource();
+				if( this.selectedSource ){
+					this.setTextSource(this.selectedSource, false);
+				}
+			}
 		},
 		textSourcesInSources: function(sources, textSource){
 			for ( var  i = 0; i < sources.length; i++ ){
