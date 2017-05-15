@@ -276,9 +276,12 @@
 		/**
 		 * returns true if device can auto play
 		 */
-		canAutoPlay: function () {
-			return (!mw.isAndroid() && !mw.isMobileChrome() && !mw.isIOS()) || this.mobilePlayed;
-		},
+        canAutoPlay: function () {
+            if ( mw.isMobileDevice() ) {
+                return !!mw.getConfig( "mutedAutoPlay" );
+            }
+            return this.mobilePlayed;
+        },
 
 		/**
 		 * Post element javascript, binds event listeners and starts monitor
@@ -1305,6 +1308,16 @@
 				this.bufferEnd();
 			}
 		},
+
+        _onplaying: function () {
+			if (mw.isMobileDevice() && mw.getConfig('mutedAutoPlay')) {
+                this.bindHelper( 'onAdPlay', function ( e, id, system, slot ) {
+                    if ( slot === "preroll" ) {
+                        this.getPlayerElement().src = "";
+                    }
+                }.bind( this ) );
+            }
+        },
 
 		/**
 		 * Local method for end of media event
