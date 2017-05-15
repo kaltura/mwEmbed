@@ -29,7 +29,8 @@
 			'smartContainerCloseEvent': 'changedClosedCaptions',
 			"forceWebVTT": false, // force using webvtt on-the-fly. only for kalturaAPI captions
 			"enableOptionsMenu": false,
-			"sortCaptionsAlphabetically": false
+			"sortCaptionsAlphabetically": false,
+			"cvaaOnEmbeddedCaptions": false
 		},
 
 		textSources: [],
@@ -241,6 +242,11 @@
 			});
 			this.bind( 'newCaptionsStyles', function (e, stylesObj){
 				_this.customStyle = stylesObj;
+				$('#cvaaStyle').remove();
+				if( _this.getConfig( 'cvaaOnEmbeddedCaptions' ) === true ) {
+					var embeddedCss = _this.getCvaaCssForEmbedded(stylesObj);
+					$('<style id="cvaaStyle" type="text/css"></style>').text(embeddedCss).appendTo('head');
+				}
 			});
 			this.bind( 'onChangeMedia', function (e, stylesObj){
 				//Reset UI state on change media
@@ -903,6 +909,30 @@
 			style["text-shadow"] = "0px 1px 5px #000000";
 			style["text-align"] = "center";
 			style["background"] = "none";
+			return style;
+		},
+		getCvaaCssForEmbedded: function(cvaaCss) {
+			var style = "video::cue {"
+			for (var key in cvaaCss) {
+				switch (key) {
+					case "fontFamily":
+						style += "font-family" + ": " + cvaaCss[key] + "; ";
+						break;
+					case "fontColor":
+						style += "color" + ": " + cvaaCss[key] + "; ";
+						break;
+					case "fontSize":
+						style += "font-size" + ": " + cvaaCss[key] + "; ";
+						break;
+					case "backgroundColor":
+						style += "background-color" + ": " + cvaaCss[key] + " !important;";
+						break;
+					case "edgeStyle":
+						style += "text-shadow" + ": " + cvaaCss[key] + "; ";
+						break;
+				}
+			}
+			style += "}";
 			return style;
 		},
 		getDefaultCaptionCss: function(){

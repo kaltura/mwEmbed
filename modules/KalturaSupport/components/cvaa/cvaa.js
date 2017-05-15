@@ -197,20 +197,20 @@
                 { name: "cvaa-bg",    btnClass: "cvaa-cstm__bg-btn" },
                 { name: "cvaa-color", btnClass: "cvaa-cstm__color-btn" }];
 
-            $(".cvaa .icon-arrow").on("click keydown", function () {
+            $(".cvaa .icon-arrow").on("click keydown", function (event) {
                 if (event.which === 32 || event.which === 13 || event.type == "click") {
                     _this.cvaaMenuChanged(_this.previousScreen);
                 }
             });
 
-            $(".cvaa .icon-close").on("click keydown", function () {
+            $(".cvaa .icon-close").on("click keydown", function (event) {
                 if (event.which === 32 || event.which === 13 || event.type == "click") {
                     _this.cvaaMenuChanged("cvaa-adv");
                 }
             });
 
             $.each(cvaaMenus, function (index, menu) {
-                $(".cvaa ." + menu.btnClass).on("click keydown", function () {
+                $(".cvaa ." + menu.btnClass).on("click keydown", function (event) {
                     if (event.which === 32 || event.which === 13 || event.type == "click") {
                         _this.cvaaMenuChanged(menu.name);
                     }
