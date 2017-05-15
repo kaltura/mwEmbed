@@ -12,7 +12,6 @@
         //TODO eitan - this is for testing if polls notification works
         Polls_push_notification: "POLLS_PUSH_NOTIFICATIONS",
         pollsCuePoints: [],
-
         cuePointsManager: null, // manages all the cue points tracking (cue point reached of poll results, poll states etc).
         kalturaProxy: null, // manages the communication with the Kaltura api (invoke a vote, extract poll data).
         userProfile: null, // manages active user profile
@@ -117,7 +116,7 @@
             // bind to cue point events
             var _this = this;
 
-            this.bind('onpause onplay onChangeMedia monitorEvent', function (e) {
+            this.bind('onpause onplay onChangeMedia', function (e) {
                 _this.handlePlayerEvent(e.type);
             });
         },
@@ -177,32 +176,7 @@
             var _this = this;
 
             switch (eventName) {
-                case 'monitorEvent':
-                    //TODO - Eitan, export this logic to a generic class that will replace cuePointsManger with push-notifications
-                    // var currenTime  = _this.getPlayer().currentTime;
-                    // if(_this.pollsCuePoints && _this.pollsCuePoints.length){
-                    //     var currentPosition = _this.getPlayer().currentTime;
-                    //
-                    //
-                    //     // process last CP with creation date that currentPosition passed:
-                    //
-                    //     for(var i = _this.pollsCuePoints.length-1; i > 0; i--){
-                    //         if(_this.pollsCuePoints[i].createdAt <= currentPosition  ){
-                    //             // found CP to process - check if it is not already active
-                    //             if(_this.lastCuePoint && _this.lastCuePoint == _this.pollsCuePoints[i] ){
-                    //                 return; // no need to re-process this one
-                    //             }
-                    //             _this.lastCuePoint = _this.pollsCuePoints[i];
-                    //             _this.pollsCuePoints[i].processed = true;
-                    //             _this.handleStateCuePoints({cuepointsArgs:{cuePoints:[_this.pollsCuePoints[i]]}},false);
-                    //             _this.handlePollResultsCuePoints({cuepointsArgs:{cuePoints:[_this.pollsCuePoints[i]]}});
-                    //             break
-                    //         }
-                    //     }
-                    // }
-                    break;
                 case 'onpause':
-                    debugger;
                     _this.log("event '" + eventName + "' triggered - removing current poll (if any)");
                     // remove current poll is found when player is being paused
                     _this.removePoll();
@@ -211,7 +185,6 @@
                     _this.log("event '" + eventName + "' triggered - removing current poll (if any)");
                     // remove current poll is found when changing media (during channel playlist for example)
                     _this.removePoll();
-
                     // clear poll content of previous entry
                     _this.globals.pollsContentMapping = {};
                     break;
@@ -220,11 +193,11 @@
                         // # we need to sync current poll state when user press playing or seeking.
                         // Note that since onplay is triggered also after seeking we don't need to handle that event explicitly
                         _this.log("event '" + eventName + "' - start syncing current poll state");
-                        if (_this.cuePointsManager) {
-                            // _this.handleStateCuePoints({reset:true});
-                            // _this.handlePollResultsCuePoints({reset:true});
+                        if(!_this.embedPlayer.isLive() && _this.cuePointsManager){
+                            _this.handleStateCuePoints({reset:true});
+                            _this.handlePollResultsCuePoints({reset:true});
+                            _this.log("event '" + eventName + "' - done syncing current poll state");
                         }
-                        _this.log("event '" + eventName + "' - done syncing current poll state");
                     }
                     break;
                 default:
@@ -256,7 +229,9 @@
                 _this.view.parent = _this;
             }
 
-            if (!_this.cuePointsManager) {
+
+
+            if (!_this.cuePointsManager && !_this.embedPlayer.isLive()) {
                 // cue points manager used to monitor and notify when relevant cue points reached (polls status, results).
                 _this.cuePointsManager = new mw.webcast.CuePointsManager(_this.getPlayer(), function () {
                 }, "webcastPolls_CuePointsManager");
@@ -298,40 +273,50 @@
                     // _this.handlePollResultsCuePoints({cuepointsArgs : args});
                 }, _this);
             }
-
-
-            _this.pushCuePointsManager = mw.KPushCuePointsManager.getInstance(this.embedPlayer);
-            _this.pushCuePointsManager.registerToNotification(_this.Polls_push_notification, _this.getUserID(), this.registerPollCuePoint, this.triggerFromPolls, this);
-
-
-            //TODO eitan - hook polls to cue-points through polling
-            // this.kPushServerNotification= mw.KPushServerNotification.getInstance(this.embedPlayer);
-            // if (this.embedPlayer.isLive()) {
-            //     //we first register to all notification before continue to get the existing cuepoints, so we don't get races and lost cue points
-            //     this.getMetaDataProfile().then(function() {
-            //         _this.registerPollingNotifications().then(function() {
-            //             mw.log("Polls successful  registerNotifications");
-            //         },function(err) {
-            //             mw.log("Polls failed  registerNotifications ",err);
-            //         });
-            //     });
-            // }
+            if(_this.embedPlayer.isLive()){ //register push-notifications only in case live
+                _this.pushCuePointsManager = mw.KPushCuePointsManager.getInstance(this.embedPlayer);
+                _this.pushCuePointsManager.registerToNotification(_this.Polls_push_notification, _this.getUserID(), this.cuePointLoaded, this.cuePointReached, this);
+            }
         },
-        registerPollCuePoint: function (notificationName, cuePoint , scope) {
-            debugger;
-            // console.log(">>>>>", "registerPollCuePoint", notificationName, cuePoint,scope);
-            scope.executeRegisterPollCuePoint(cuePoint);
+        cuePointLoaded: function (notificationName, cuePoint , scope) {
+            console.log(">>>>>", "cuePointLoaded", notificationName, cuePoint,scope);
+            scope.executeCuePointLoaded(cuePoint);
         },
-        triggerFromPolls: function (cuePoint ,scope) {
-            // console.log(">>>>>", "triggerFromPolls", scope);
-            scope.executetriggerFromPolls(cuePoint);
-            // debugger;
+        cuePointReached: function (cuePoint ,scope) {
+            console.log(">>>>>", "cuePointReached",cuePoint, scope);
+            scope.executeCuePointReached(cuePoint);
         },
-        executeRegisterPollCuePoint : function(cuePoint){
-            debugger;
+        executeCuePointLoaded : function(cuePoint){
+            var _this = this;
+            var cuepoint = cuePoint;
+            try {
+                var cuepointContent = cuepoint.partnerData ? JSON.parse(cuepoint.partnerData) : null;
+                var pollIdTokens = (cuepoint.tags || '').match(/id:([^, ]*)/);
+                var pollId = pollIdTokens && pollIdTokens.length === 2 ? pollIdTokens[1] : null;
+                if (cuepointContent && pollId) {
+                    var pollContent = cuepointContent.text;
+
+                    if (pollId && pollContent) {
+                        debugger;
+                        _this.log("@@ updated content of poll with id '" + pollId + "'" );
+                        console.log("@@> " , cuepointContent.text);
+                        if (_this.globals.pollsContentMapping[pollId]) {
+                            $.extend(_this.globals.pollsContentMapping[pollId], pollContent);
+                        } else {
+                            _this.globals.pollsContentMapping[pollId] = pollContent;
+                        }
+                    }
+                }
+
+            } catch (e) {
+                _this.log("ERROR while tring to extract poll information with error " + e);
+            }
+            console.log(">>>>>", "executeCuePointLoaded", cuePoint);
         },
-        executetriggerFromPolls : function(cuePoint){
-            // debugger;
+        executeCuePointReached : function(cuePoint){
+            console.log(">>>>>", "executeCuePointReached", cuePoint);
+            this.handleStateCuePoints({cuepointsArgs : {cuePoints:[cuePoint]}});
+            this.handlePollResultsCuePoints({cuepointsArgs : {cuePoints:[cuePoint]}});
         },
         getMetaDataProfile: function () {
             var _this = this;
@@ -342,17 +327,13 @@
                 "filter:systemNameEqual": this.Polls_push_notification
             };
             this.userId = this.getUserID();
-
-
             var deferred = $.Deferred();
             this.getKClient().doRequest(listMetadataProfileRequest, function (result) {
-
                 if (result.objectType === "KalturaAPIException") {
                     mw.log("Error getting metadata profile: " + result.message + " (" + result.code + ")");
                     deferred.resolve(false);
                     return;
                 }
-
                 _this.metadataProfile = result.objects[0];
                 deferred.resolve(true);
             });
@@ -364,32 +345,32 @@
             }
             return this.kClient;
         },
-        registerPollingNotifications: function () {
-            var _this = this;
-            var pollsNotification = this.kPushServerNotification.createNotificationRequest(
-                _this.Polls_push_notification,
-                {
-                    "entryId": _this.embedPlayer.kentryid
-                },
-                function (cuePoint) {
-                    // var prefix;
-                    // console.log(">>>>>", _this);
-                    // if(cuePoints[0].tags.indexOf("data")>1){
-                    //     prefix = "data";
-                    // }
-                    // if(cuePoints[0].tags.indexOf("state")>1){
-                    //     prefix = "state";
-                    // }
-
-                    console.log(">>>>>", "polls ", cuePoint[0].id, cuePoint[0].tags, cuePoint[0].createdAt);
-                    // if( cuePoints[0].createdAt >= 1494264425){
-                    //     _this.handleStateCuePoints({cuepointsArgs : args},true);
-                    // _this.handlePollResultsCuePoints({cuepointsArgs : args});
-                    // }
-                    _this.storeNewPushCuePoint(cuePoint[0])
-                });
-            return this.kPushServerNotification.registerNotifications([pollsNotification])
-        },
+        // registerPollingNotifications: function () {
+        //     var _this = this;
+        //     var pollsNotification = this.kPushServerNotification.createNotificationRequest(
+        //         _this.Polls_push_notification,
+        //         {
+        //             "entryId": _this.embedPlayer.kentryid
+        //         },
+        //         function (cuePoint) {
+        //             // var prefix;
+        //             // console.log(">>>>>", _this);
+        //             // if(cuePoints[0].tags.indexOf("data")>1){
+        //             //     prefix = "data";
+        //             // }
+        //             // if(cuePoints[0].tags.indexOf("state")>1){
+        //             //     prefix = "state";
+        //             // }
+        //
+        //             console.log(">>>>>", "polls ", cuePoint[0].id, cuePoint[0].tags, cuePoint[0].createdAt);
+        //             // if( cuePoints[0].createdAt >= 1494264425){
+        //             //     _this.handleStateCuePoints({cuepointsArgs : args},true);
+        //             // _this.handlePollResultsCuePoints({cuepointsArgs : args});
+        //             // }
+        //             _this.storeNewPushCuePoint(cuePoint[0])
+        //         });
+        //     return this.kPushServerNotification.registerNotifications([pollsNotification])
+        // },
         storeNewPushCuePoint: function (cp) {
             var existingCuePoint = false;
             for (var i = 0; i < this.pollsCuePoints.length; i++) {
@@ -501,10 +482,7 @@
          * This function searches for relevant cue points and if found changes current poll status
          * @param context arguments provided by cue points manager with support for smart cue points filtering  OR value 'true' to handle reset mode
          */
-        handleStateCuePoints: function (context, dbg) {
-            if (dbg) {
-                debugger;
-            }
+        handleStateCuePoints: function (context) {
             var _this = this;
             var resetMode = false;
             var cuepointsArgs = context.cuepointsArgs;

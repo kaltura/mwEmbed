@@ -24,19 +24,15 @@
             this.kClient = mw.kApiGetPartnerClient(this.embedPlayer.kwidgetid);
             this.pushServerNotification = mw.KPushServerNotification.getInstance(this.embedPlayer);
             this.addBindings();
-            this.lastDispatchedCp = null;
-            this.latestActiveCp = null;
+            this.lastDispatchedCpTime = null;
 
         },
         addBindings: function () {
             // bind to cue point events
             var _this = this;
-            this.embedPlayer.bindHelper("monitorEvent", function () {
-                _this.checkAllRegisteredNotifications();
+            this.embedPlayer.bindHelper("monitorEvent onpause onplay", function (e) {
+                _this.checkAllRegisteredNotifications(e);
             });
-            // this.bind('onpause onplay onChangeMedia monitorEvent', function (e) {
-            //     alert()
-            // });
         },
         findCuePointdataByTime: function (t) {
             for (var key in this.listeners) {
@@ -51,31 +47,39 @@
                 }
             }
         },
-        checkAllRegisteredNotifications: function () {
+        checkAllRegisteredNotifications: function (e) {
+            if (e.type == "onplay" || e.type == "onpause") {
+                //clear marked cuepoint
+                this.lastDispatchedCpTime = null;
+            }
             var _this = this;
             var currentTime = _this.embedPlayer.currentTime;
-
+            if (currentTime == 0) {
+                return; //no point calculate when time is 0
+            }
             // assuming array is sorted - iterate from end to first
             for (var i = this.times.length - 1; i > -1; --i) {
-                if (currentTime != 0 && currentTime > this.times[i]) {
-                    this.latestActiveCp = this.times[i];
-                    if (this.latestActiveCp == this.lastDispatchedCp) {
-                        //great, this one was dispatched ! no need to keep search
+                if (currentTime > this.times[i]) {
+                    var latestActiveCpTime = this.times[i];
+                    var cpData = this.findCuePointdataByTime(latestActiveCpTime);
+                    var cuepoint = cpData.cuepoint;
+
+                    if(cuepoint.tags.indexOf("poll-data")>-1){
+                        continue;
+                    }
+                    if (latestActiveCpTime == this.lastDispatchedCpTime) {
+                        // This CP was dispatched - no point to re-dispatch it
                         break
                     }
-                    if (this.latestActiveCp != this.lastDispatchedCp) {
-                        // found a cuepoint that was not dispatched - and valid - trigger now and store
-                        this.lastDispatchedCp = this.latestActiveCp;
-                        var cpData = this.findCuePointdataByTime(this.latestActiveCp);
-                        var cuepoint = cpData.cuePoint;
-                        var callback = cpData.triggerCallback;
-                        var scope = cpData.scope;
-                        // this.embedPlayer.trigger() // dispatch generic event
-                        if (callback) {
-                            callback(cuepoint, scope);
-                        }
-                        break
+                    // found a cuepoint that was not dispatched - and valid - trigger now and store
+                    this.lastDispatchedCpTime = latestActiveCpTime;
+                    var callback = cpData.triggerCallback;
+                    var scope = cpData.scope;
+                    // this.embedPlayer.trigger() // dispatch generic event
+                    if (callback) {
+                        callback(cuepoint, scope);
                     }
+                    break
                 }
             }
 
@@ -134,7 +138,7 @@
             });
         },
         /**
-            Register to cuepoint loaded function
+         Register to cuepoint loaded function
          */
         registerPollingNotifications: function (notificationName) {
             var _this = this;
