@@ -81,7 +81,7 @@
 			'volumechange'
 		],
 
-		streamerType: 'dash',
+		streamerType: 'mpegdash',
 
 		manifestLoaded: false,
 		dashContextUpdated: false,
@@ -155,7 +155,7 @@
 			return  !( mw.isIpad() || mw.isAndroid() || mw.isMobileChrome() || this.useNativePlayerControls() )
 		},
 		changeMedia: function(){
-			this.clean();
+			this.manifestLoaded = false;
 			this.parent_changeMedia();
 		},
 		changeMediaCallback: function (callback) {
@@ -185,13 +185,24 @@
 		},
 		clean: function ( ) {
 			this.manifestLoaded = false;
+			this.dashPlayerInitialized = false;
 			if ( this.detectPluginInterval ) {
 				this.cleanInterval(this.detectPluginInterval);
 			}
 			if (this.updateStateInterval ) {
 				this.cleanInterval(this.updateStateInterval);
 			}
+			this.removeBindings();
+			videojs(this.pid).safeDispose();
 		},
+
+		removeBindings: function(){
+			this.unbindHelper('switchAudioTrack' + this.bindPostfix);
+			this.unbindHelper('changeEmbeddedTextTrack' + this.bindPostfix);
+			this.unbindHelper('closedCaptionsDisplayed' + this.bindPostfix);
+			this.unbindHelper('closedCaptionsHidden' + this.bindPostfix);
+		},
+
 		/**
 		 * Return the embed code
 		 */
@@ -274,12 +285,12 @@
 						_this.updateDashContext();
 					}
 				} );
-				this.bindHelper('switchAudioTrack', function (e, data) {
+				this.bindHelper('switchAudioTrack' + this.bindPostfix, function (e, data) {
 					if (_this.getPlayerElement()) {
 						_this.getPlayerElement().setActiveTrack("audio", data.index);
 					}
 				});
-				this.bindHelper('changeEmbeddedTextTrack', function (e, data) {
+				this.bindHelper('changeEmbeddedTextTrack' + this.bindPostfix, function (e, data) {
 					if (_this.getPlayerElement()) {
 						var stats = _this.getPlayerElement().getPlaybackStatistics();
 						if (stats.text.activeTrack != data.index){
@@ -287,10 +298,10 @@
 						}
 					}
 				});
-				this.bindHelper('closedCaptionsDisplayed', function () {
+				this.bindHelper('closedCaptionsDisplayed'+ this.bindPostfix, function () {
 					_this.getPlayerElement().textTrackDisplay.show();
 				});
-				this.bindHelper('closedCaptionsHidden', function () {
+				this.bindHelper('closedCaptionsHidden' + this.bindPostfix, function () {
 					_this.getPlayerElement().textTrackDisplay.hide();
 				});
 			}
@@ -794,7 +805,11 @@
 					vid.pause();
 
 					// dissable seeking ( if we were in a seeking state before the switch )
-					_this.seeking = false;
+					if (_this.isFlavorSwitching) {
+						_this.seeking = true;
+					} else {
+						_this.seeking = false;
+					}
 
 					// Workaround for 'changeMedia' on Android & iOS
 					// When changing media and not playing entry before spinner is stuck on black screen
@@ -891,6 +906,7 @@
 			} else {
 				if ( this.parent_play() ) {
 					var play = function () {
+						_this.paused = false;
 						_this.getPlayerElement().play();
 						_this.monitor();
 					};
@@ -1299,6 +1315,7 @@
 				var _this = this;
 				this.waitForSeekTarget().then(function(){
 					_this.seeking = false;
+					_this.isFlavorSwitching = false;
 					if (_this._propagateEvents) {
 						_this.log(" trigger: seeked");
 						_this.triggerHelper('seeked', [_this.currentTime]);

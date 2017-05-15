@@ -21,7 +21,7 @@
             this.intervalCounter = this.timeIntervalSec / (this.embedPlayer.monitorRate/1000);
 
             this.bind( 'playerReady', function() {
-                 if( _this.getPlayer().isLive() && !_this.getPlayer().isDVR() ) {
+                 if( _this.getPlayer().isLive() ) {
                     _this.addBinding();
                  }
             });
@@ -38,9 +38,18 @@
 			var _this = this;
 
             this.bind('monitorEvent' + _this.bindPostfix, function() {
-                if( _this.updatedTime > 0 ){
+                if( _this.updatedTime > 0 && !_this.getPlayer().buffering){
                     _this.updateTime();
                 }
+            });
+
+            this.bind('seeking' + _this.bindPostfix, function(){
+                _this.preSeekTime = _this.getPlayer().getPlayerElement().currentTime;
+            });
+
+            this.bind('seeked' + _this.bindPostfix, function(){
+                var delta = _this.preSeekTime - _this.getPlayer().getPlayerElement().currentTime;
+                _this.updatedTime -= delta;
             });
 
 			this.bind('onId3Tag' + _this.bindPostfix, function(e, tag){
@@ -53,7 +62,8 @@
             if ( this.counter === this.intervalCounter ) {
                 this.counter = 0;
                 this.updatedTime = this.updatedTime + this.timeIntervalSec;
-                this.getPlayer().setCurrentTime(this.updatedTime);
+                this.getPlayer().LiveCurrentTime = this.updatedTime;
+                this.getPlayer().flashLiveCurrentTime = this.updatedTime; // for flash player
                 this.sendTrackEventMonitor(mw.seconds2npt(this.updatedTime), false);
             }
         },
@@ -71,7 +81,8 @@
                 this.log("Update time from id3 tag: " + d.toUTCString());
                 this.updatedTime = time;
                 this.counter = 0; //reset time update interval counter
-                this.getPlayer().setCurrentTime(time);
+                this.getPlayer().LiveCurrentTime = time;
+                this.getPlayer().flashLiveCurrentTime = time; // for flash player
                 this.sendTrackEventMonitor(mw.seconds2npt(time), true);
             }
         },

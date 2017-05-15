@@ -120,8 +120,9 @@
 							'id': item.assetId
 						}
 					);
+					responseArray.push(item);
 				}
-				responseArray[index] = item;
+
 			});
 
 			if (requestArray.length) {
@@ -131,21 +132,25 @@
 					if (requestArray.length === 1){
 						data = [data];
 					}
-					$.each(data, function (index, res) {
-						if (!_this.isValidResult(res)) {
-							data[index] = null;
+					$.each(data, function (index, thumbnailUrl) {
+						if (_this.isValidResult(thumbnailUrl)) {
+							var resItem = responseArray[index];
+							if (resItem){
+								resItem.thumbnailUrl = thumbnailUrl;
+								if (loadThumbnailWithReferrer){
+									resItem.thumbnailUrl += '?options:referrer=' + referrer;
+								}
+							}
 						}
 					});
-					$.each(thumbCuePoint, function (index, item) {
-						item.thumbnailUrl = loadThumbnailWithReferrer ? data[index] + '?options:referrer=' + referrer : data[index];
-					});
+				// Since the thumb assets request is async the callback needs to be async as well
 					if (callback) {
-						callback();
+						setTimeout(function () { callback(); }, 0);
 					}
 				});
 			} else {
 				if (callback) {
-					callback();
+					setTimeout(function () { callback(); }, 0);
 				}
 			}
 		},

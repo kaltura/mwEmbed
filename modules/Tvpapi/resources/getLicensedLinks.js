@@ -29,7 +29,7 @@
 		getMediaLicenseLink: function(event, source){
 			var url = this.getRequestUrl();
 			if (url) {
-				var sessionData = source.src.match(/([&|\?]?playSessionId=[0-9a-zA-Z|\-]+)/ig);
+				var sessionData = source.src.match(/([&|\?]?playSessionId=[0-9a-zA-Z|\-]+)&clientTag=html5:v[0-9_\.|dev|a-zA-Z]+/ig);
 				if (sessionData && sessionData.length) {
 					source.src = source.src.replace( sessionData[0] , '' );
 				}
@@ -45,7 +45,7 @@
 				};
 
 				var _this = this;
-				this.doRequest(url, data).then(
+				this.doRequest(url, data, {async: false}).then(
 					function (res) {
 						var mediaLink = getResponseLink(res);
 						if (mediaLink) {

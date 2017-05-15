@@ -480,6 +480,12 @@
                 "doc": "If the audio selector should be activated.",
                 "label": "Enable audio selector",
                 "type": "hiddenValue"
+            },
+            "defaultLang": {
+                "doc": "Set default language of the audio, supporting ISO-639 two letters string",
+                "label": "Default language code",
+                "initvalue": "",
+                "type": "text"
             }
         }
     },
@@ -1633,6 +1639,12 @@
                 "label": "Reason: Spam",
                 "doc": "Reason: Spam.",
                 "type": "string"
+            },
+            "minDescriptionLength": {
+                "label": "Minimum characters in description. 0 means no validation",
+                "doc": "Minimum characters in description. 0 means no validation",
+                "initvalue": 0,
+                "type": "number"
             }
         }
     },
@@ -1899,6 +1911,17 @@
             "options": {
                 "doc": "JSON object of hammer initialization options",
                 "type": "string"
+            }
+        }
+    },
+    "video360": {
+        "label": "360 videos",
+        "description": "Enable 360 videos on the player",
+        "attributes": {
+            "plugin": {
+                "doc": "If the 360 should be activated.",
+                "label": "Enable 360 videos",
+                "type": "hiddenValue"
             }
         }
     }

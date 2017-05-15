@@ -34,12 +34,12 @@
                         callback(data);
                     });
                 };
-                this.getQuestionAnswerCuepoint = function(kQuizUserEntryId,callback){
+                this.getQuestionAnswerCuepoint = function(kQuizEntryId, kQuizUserEntryId,callback){
 
                     var getCp = [{
                         'service': 'cuepoint_cuepoint',
                         'action': 'list',
-                        'filter:entryIdEqual': _this.embedPlayer.kentryid,
+                        'filter:entryIdEqual': kQuizEntryId,
                         'filter:objectType': 'KalturaQuestionCuePointFilter',
                         'filter:cuePointTypeEqual': 'quiz.QUIZ_QUESTION',
                         'filter:orderBy': '+startTime'
@@ -47,7 +47,7 @@
                         'service': 'cuepoint_cuepoint',
                         'action': 'list',
                         'filter:objectType': 'KalturaAnswerCuePointFilter',
-                        'filter:entryIdEqual':_this.embedPlayer.kentryid,
+                        'filter:entryIdEqual': kQuizEntryId,
                         'filter:quizUserEntryIdEqual':kQuizUserEntryId,
                         'filter:cuePointTypeEqual': 'quiz.QUIZ_ANSWER'
                     }];
@@ -86,7 +86,7 @@
                         answerParams = {
                             'action': 'update',
                             'id': $.cpObject.cpArray[questionNr].answerCpId,
-                            'cuePoint:entryId': _this.embedPlayer.kentryid
+                            'cuePoint:entryId': $.cpObject.cpArray[questionNr].cpEntryId
                         }
                     } else {
                         answerParams = {

@@ -67,9 +67,13 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
         <th scope="row">DVR</th>
         <td><input type="checkbox" class="form-control" id="dvr" /></td>
     </tr>
+    <tr>
+        <th scope="row">withCredentials</th>
+        <td><input type="checkbox" class="form-control" id="withCredentials" /></td>
+    </tr>
 </table>
     <br/>
-<input type="button" id="generate" value="Create Player" />
+    <input type="button" id="generate" value="Create Player" />
 <br><br>
 <div id="kaltura_player" style="width:624px; height: 387px;display:block;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject">
 </div>
@@ -191,14 +195,16 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
             "LeadWithHLSOnJs": $('#engine-js').is(':checked'),
 			"LeadWithHLSOnFlash": !$('#engine-js').is(':checked'),
             "hlsjs": {
-              'plugin': $('#engine-js').is(':checked')
+              'plugin': $('#engine-js').is(':checked'),
+              'withCredentials':$('#withCredentials').is(':checked')
             },
+            'disableHLSOnJs':  !$('#engine-js').is(':checked'),
             'hlsLogs': $('#engine-js').is(':checked'),
             "hlsLiveSegmentBuffer": parseInt($('#segBuffer').val()),
             "hlsInitialBufferTime": parseInt($('#iniBuffer').val()),
             "hlsExpandedBufferTime": parseInt($('#exBuffer').val()),
             "hlsMaxBufferTime": parseInt($('#maxBuffer').val()),
-
+	    "audioSelector":{"plugin":true},
             'heartbeat': {
                 'plugin' : true,
                 'trackEventMonitor': 'heartbeatTrackingLog',
@@ -219,9 +225,6 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
             "sourceSelector.plugin" : true,
             "sourceSelector.displayMode" : "sizebitrate",
             "closedCaptions.showEmbeddedCaptions" : true,
-            'debugInfo': {
-                'plugin': true
-            },
             "audioSelector": {
                 "plugin": true
             },

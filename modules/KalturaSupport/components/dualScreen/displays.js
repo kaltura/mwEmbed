@@ -4,6 +4,7 @@
 
         mw.dualScreen.displays = mw.KBasePlugin.extend({
             display: {},
+            isFlashMode: false,
 
             setup: function(){
             },
@@ -42,6 +43,7 @@
 
             //Screen view state handlers
             toggleMainDisplay: function () {
+                var _this = this;
                 var curMain = this.getMainDisplay();
                 var curAux = this.getAuxDisplay();
 
@@ -58,6 +60,7 @@
                 setTimeout(function(){
                     curAux.toggleHiddenToMain();
                     curMain.toggleMain(props);
+                    _this.getPlayer().triggerHelper( "dualScreenDisplaysSwitched" );
                 },200);
                 this.main = curAux;
                 this.aux = curMain;
@@ -81,14 +84,14 @@
                 curMain.disableMain();
                 curAux.toggleMainConfig();
                 curAux.enableMain();
-                this.main = curAux;
-                this.aux = curMain;
+                this.main = curMain;
+                this.aux = curAux;
             },
             hideDisplay: function ( ) {
-                this.getAuxDisplay().hide();
+                this.getAuxDisplay().hide(this.isFlashMode);
             },
             showDisplay: function ( ) {
-                this.getAuxDisplay().show();
+                this.getAuxDisplay().show(this.isFlashMode);
             },
 
             //Screen interaction handlers(drag/resize)
@@ -107,8 +110,15 @@
             disableTransitions: function () {
                 this.getMainDisplay().disableTransition();
                 this.getAuxDisplay().disableTransition();
-            }
+            },
 
+            setFlashMode: function (val) {
+                this.isFlashMode = val;
+            },
+
+            isInitialized: function () {
+                return this.getPrimary().obj && this.getSecondary().obj;
+            }
         });
     }
 )( window.mw, window.jQuery );

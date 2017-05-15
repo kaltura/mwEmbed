@@ -15,14 +15,14 @@
  *
  *
  * @param {Object}
- *			embedPlayer the embedPlayer target ( creates a mobileTimeline
- *			controller on the embedPlayer target if it does not already exist )
+ *            embedPlayer the embedPlayer target ( creates a mobileTimeline
+ *            controller on the embedPlayer target if it does not already exist )
  * @param {Object}
- *			timeType Stores the target string can be 'preroll', 'bumper', 'overlay',
- *			'midroll', 'postroll'
+ *            timeType Stores the target string can be 'preroll', 'bumper', 'overlay',
+ *            'midroll', 'postroll'
  * @param {Object}
- *			adConf adConf object see
- *			mw.MobilePlayerTimeline.display
+ *            adConf adConf object see
+ *            mw.MobilePlayerTimeline.display
  *
  *
  *
@@ -82,92 +82,103 @@
  * 		]
  * }
  */
-( function( mw, $ ) { "use strict";
+(function (mw, $) {
+    "use strict";
 
-	mw.addAdTimeline = function( embedPlayer ){
-		embedPlayer.adTimeline = new mw.AdTimeline( embedPlayer );
-	};
-	mw.AdTimeline = function(embedPlayer) {
-		return this.init(embedPlayer);
-	};
+    mw.addAdTimeline = function (embedPlayer) {
+        embedPlayer.adTimeline = new mw.AdTimeline(embedPlayer);
+    };
+    mw.AdTimeline = function (embedPlayer) {
+        return this.init(embedPlayer);
+    };
 
-	mw.AdTimeline.prototype = {
+    mw.AdTimeline.prototype = {
 
-		// Overlays are disabled during preroll, bumper and postroll
-		adOverlaysEnabled: true,
+        // Overlays are disabled during preroll, bumper and postroll
+        adOverlaysEnabled: true,
 
-		// Original source of embedPlayer
-		originalSource: false,
+        // Original source of embedPlayer
+        originalSource: false,
 
-		// Flag to store if its the first time play is being called:
-		firstPlay: true,
+        // Flag to store if its the first time play is being called:
+        firstPlay: true,
 
-		bindPostfix: '.AdTimeline',
-		pendingSeek: false,
+        bindPostfix: '.AdTimeline',
+        pendingSeek: false,
 
-		currentAdSlotType: null,
+        currentAdSlotType: null,
 
-		/**
-		 * @constructor
-		 * @param {Object}
-		 *			embedPlayer The embedPlayer object
-		 */
-		init: function(embedPlayer) {
-			this.embedPlayer = embedPlayer;
-			// Bind to the "play" and "end"
-			this.bindPlayer();
-		},
+        /**
+         * @constructor
+         * @param {Object}
+         *            embedPlayer The embedPlayer object
+         */
+        init: function (embedPlayer) {
+            this.embedPlayer = embedPlayer;
+            // Bind to the "play" and "end"
+            this.bindPlayer();
+        },
 
-		/**
-		 * Update Sequence Proxy property
-		 * @param {string}
-		 * 			propName The name of the property
-		 * @param {object}
-		 * 			value The value for the supplied property
-		 */
-		updateSequenceProxy: function( propName, value ){
-			this.embedPlayer.sequenceProxy[ propName ] = value;
-		},
-		bindPlayer: function() {
-			var _this = this;
-			var embedPlayer = this.embedPlayer;
-			// Setup the original source
-			_this.originalSource = embedPlayer.getSource();
-			// Clear out any old bindings
-			_this.destroy();
-			// Create an empty sequence proxy object ( stores information about the current sequence )
-			embedPlayer.sequenceProxy = {
-				'isInSequence' : false,
-				'timeRemaining' : 0,
-				'duration' : 0,
-				'skipOffsetRemaining': 0
-			};
+        /**
+         * Update Sequence Proxy property
+         * @param {string}
+         *            propName The name of the property
+         * @param {object}
+         *            value The value for the supplied property
+         */
+        updateSequenceProxy: function (propName, value) {
+            this.embedPlayer.sequenceProxy[propName] = value;
+        },
+        bindPlayer: function () {
+            var _this = this;
+            var embedPlayer = this.embedPlayer;
+            // Setup the original source
+            _this.originalSource = embedPlayer.getSource();
+            // Clear out any old bindings
+            _this.destroy();
+            // Create an empty sequence proxy object ( stores information about the current sequence )
+            embedPlayer.sequenceProxy = {
+                'isInSequence': false,
+                'timeRemaining': 0,
+                'duration': 0,
+                'skipOffsetRemaining': 0
+            };
 
-			// On change media clear out any old adTimeline bindings
-			embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostfix, function(){
-				_this.destroy();
-			});
+            embedPlayer.bindHelper('casting' + _this.bindPostfix, function () {
+                _this.destroy();
+            });
 
-			// Rest displayed slot count
-			_this.displayedSlotCount = 0;
+            // On change media clear out any old adTimeline bindings
+            embedPlayer.bindHelper('onChangeMedia' + _this.bindPostfix, function () {
+                _this.destroy();
+            });
 
-			// On play preSequence
-			embedPlayer.bindHelper( 'preSequence' + _this.bindPostfix, function() {
-				// store original content duration
-				var orgDuration = embedPlayer.duration;
+            // Rest displayed slot count
+            _this.displayedSlotCount = 0;
 
-				// Start of preSequence
-				embedPlayer.triggerHelper( 'AdSupport_PreSequence');
+            // On play preSequence
+            embedPlayer.bindHelper('preSequence' + _this.bindPostfix, function () {
+                // store original content duration
+                var orgDuration = embedPlayer.duration;
 
-				embedPlayer.unbindHelper("preSeek" + _this.bindPostfix).bindHelper("preSeek" + _this.bindPostfix, function(e, seekTime, stopAfterSeek, stopSeek) {
-					mw.log( 'AdTimeline::preSeek : prevented seek during ad playback');
-					embedPlayer.unbindHelper( "preSeek" + _this.bindPostfix );
-					stopSeek.value = true;
-					_this.pendingSeek = true;
-					_this.pendingSeekData = {
-						seekTime: seekTime,
-						stopAfterSeek: stopAfterSeek
-					};
+                // Start of preSequence
+                embedPlayer.triggerHelper('AdSupport_PreSequence');
+
+                embedPlayer.unbindHelper("preSeek" + _this.bindPostfix).bindHelper("preSeek" + _this.bindPostfix, function (e, seekTime, stopAfterSeek, stopSeek) {
+                    mw.log('AdTimeline::preSeek : prevented seek during ad playback');
+                    embedPlayer.unbindHelper("preSeek" + _this.bindPostfix);
+                    stopSeek.value = true;
+                    _this.pendingSeek = true;
+                    _this.pendingSeekData = {
+                        seekTime: seekTime,
+                        stopAfterSeek: stopAfterSeek
+                    };
+                });
+
+				var playedAnLinearAdFlag = false;
+				embedPlayer.bindHelper('onAdOpen' + _this.bindPostfix, function (e, adId, adSystem, AdSlotType, adPosition, linear) {
+					mw.log("AdTimeline:: set Played an linear ad flag to " + linear);
+					playedAnLinearAdFlag = linear;
 				});
 
 				//Setup a playedAnAdFlag
@@ -177,31 +188,30 @@
 					playedAnAdFlag = true;
 				});
 
-				mw.log( "AdTimeline:: load ads, trigger: AdSupport_OnPlayAdLoad" );
-				embedPlayer.pauseLoading();
+                mw.log("AdTimeline:: load ads, trigger: AdSupport_OnPlayAdLoad");
 
-				// given an opportunity for ads to load for ads to load:
-				embedPlayer.triggerQueueCallback( 'AdSupport_OnPlayAdLoad',function(){
-					mw.log( "AdTimeline:: AdSupport_OnPlayAdLoad ");
-					// Show prerolls:
-					_this.displaySlots( 'preroll', function(){
-						// Trigger ad complete for prerolls if an ad was played
-						// ( and we are going to play a bumper )
-						if( _this.displayedSlotCount > 0
-							&&
-							! $.isEmptyObject( _this.getSequenceProxy( 'bumper' ) )
-							){
-							_this.embedPlayer.triggerHelper( 'AdSupport_EndAdPlayback', 'preroll' );
-						}
-						// Show bumpers:
-						_this.displaySlots( 'bumper', function(){
-							// restore the original source:
-							var completeFunc  = function() {
-								// turn off preSequence
-								embedPlayer.sequenceProxy.isInSequence = false;
+                embedPlayer.pauseLoading();
 
-								// trigger the preSequenceComplete event ( always fired )
-								embedPlayer.triggerHelper( 'AdSupport_PreSequenceComplete' );
+                // given an opportunity for ads to load for ads to load:
+                embedPlayer.triggerQueueCallback('AdSupport_OnPlayAdLoad', function () {
+                    mw.log("AdTimeline:: AdSupport_OnPlayAdLoad ");
+                    // Show prerolls:
+                    _this.displaySlots('preroll', function () {
+                        // Trigger ad complete for prerolls if an ad was played
+                        // ( and we are going to play a bumper )
+                        if (_this.displayedSlotCount > 0
+                            && !$.isEmptyObject(_this.getSequenceProxy('bumper'))) {
+                            _this.embedPlayer.triggerHelper('AdSupport_EndAdPlayback', 'preroll');
+                        }
+                        // Show bumpers:
+                        _this.displaySlots('bumperPreSeq', function () {
+                            // restore the original source:
+                            var completeFunc = function () {
+                                // turn off preSequence
+                                embedPlayer.sequenceProxy.isInSequence = false;
+
+                                // trigger the preSequenceComplete event ( always fired )
+                                embedPlayer.triggerHelper('AdSupport_PreSequenceComplete');
 
 								if( playedAnAdFlag  ){
 									// reset displaySlotCount:
@@ -212,7 +222,9 @@
 								// Restore duration:
 								embedPlayer.setDuration( orgDuration );
 								// Continue playback
-								embedPlayer.play();
+								if (playedAnAdFlag || !playedAnLinearAdFlag){
+									embedPlayer.play();
+								}
 							};
 							// Check if the src does not match original src if
 							// so switch back and restore original bindings
@@ -223,252 +235,255 @@
 								completeFunc();
 							}
 
-						});
-					});
-				});
-				if (embedPlayer.seeking){ // user started seeking before playback started and we have a preroll to show
-					setTimeout(function(){
-						embedPlayer.stopEventPropagation();
-					},100);
-				}
-			});
+                        });
+                    });
+                });
+                if (embedPlayer.seeking) { // user started seeking before playback started and we have a preroll to show
+                    setTimeout(function () {
+                        embedPlayer.stopEventPropagation();
+                    }, 100);
+                }
+            });
+            // Bind the player "ended" event to play the postroll if present
+            var displayedPostroll = false;
+            // TODO We really need a "preend" event for thing like this.
+            // So that playlist next clip or other end bindings don't get triggered.
+            embedPlayer.bindHelper('ended' + _this.bindPostfix, function (event) {
 
-			// Bind the player "ended" event to play the postroll if present
-			var displayedPostroll = false;
-			// TODO We really need a "preend" event for thing like this.
-			// So that playlist next clip or other end bindings don't get triggered.
-			embedPlayer.bindHelper( 'ended' + _this.bindPostfix, function( event ){
+                if (embedPlayer.isInSequence() || ( embedPlayer.replayEventCount > 0 && !embedPlayer.adsOnReplay)) {
+                    return; // don't show postroll ads on replay if the adsOnReplay Flashvar is set to false
+                }
 
-				if ( embedPlayer.isInSequence() || ( embedPlayer.replayEventCount > 0 && !embedPlayer.adsOnReplay) ){
-					return; // don't show postroll ads on replay if the adsOnReplay Flashvar is set to false
-				}
+                if (displayedPostroll) {
+                    displayedPostroll = false; // reset flag to show postroll ads on replay
+                    return;
+                }
+                var playedAnAdFlag = false;
+                embedPlayer.bindHelper('AdSupport_StartAdPlayback' + _this.bindPostfix, function () {
+                    playedAnAdFlag = true;
+                });
+                displayedPostroll = true;
+                mw.log('AdTimeline:: AdSupport_StartAdPlayback set onDoneInterfaceFlag = false');
+                embedPlayer.onDoneInterfaceFlag = false;
+                //Signal player to stay at full screen for iPhone postroll
+                embedPlayer.keepNativeFullScreen = true;
 
-				if( displayedPostroll ){
-					displayedPostroll = false; // reset flag to show postroll ads on replay
-					return ;
-				}
-				var playedAnAdFlag = false;
-				embedPlayer.bindHelper( 'AdSupport_StartAdPlayback' +  _this.bindPostfix, function(){
-					playedAnAdFlag = true;
-				});
-				displayedPostroll = true;
-				mw.log( 'AdTimeline:: AdSupport_StartAdPlayback set onDoneInterfaceFlag = false' );
-				embedPlayer.onDoneInterfaceFlag = false;
-				//Signal player to stay at full screen for iPhone postroll
-				embedPlayer.keepNativeFullScreen = true;
+                // Display post roll in setTimeout ( hack to work around end sequence issues )
+                // should be refactored.
+                setTimeout(function () {
+                    // Trigger the postSequenceStart event
+                    // start the postSequence:
+                    embedPlayer.triggerHelper('AdSupport_PostSequence');
+                    _this.displaySlots('bumperPostSeq', function () {
+                        _this.displaySlots('postroll', function () {
+                            // Turn off preSequence
+                            embedPlayer.sequenceProxy.isInSequence = false;
+                            // Trigger the postSequenceComplete event
+                            embedPlayer.triggerHelper('AdSupport_PostSequenceComplete');
+                            /** TODO support postroll bumper and leave behind */
+                            function onPostRollDone() {
+                                // Restore interface
+                                _this.restorePlayer("postroll", playedAnAdFlag);
+                                // Restore ondone interface:
+                                embedPlayer.onDoneInterfaceFlag = true;
+                                // on clip done can't be invoked with a stop state ( TOOD clean up end sequence )
+                                embedPlayer.stopped = false;
+                                //Signal player that it can leave full screen after iPhone postroll
+                                embedPlayer.keepNativeFullScreen = false;
+                                // Run the clipdone event:
+                                embedPlayer.onClipDone();
+                            }
+                            if (playedAnAdFlag && !embedPlayer.isVideoSiblingEnabled()) {
+                                embedPlayer.switchPlaySource( _this.originalSource, function () {
+                                    // Make sure we pause the video
+                                    _this.embedPlayer.getPlayerElement().pause();
+                                    /* iPad iOS v4.3.1 ignore video pause (probably timing issue) */
+                                    if (!mw.isChromeCast()) {
+                                        $( _this.embedPlayer.getPlayerElement()).bind('play.postSequenceComplete', function () {
+                                            _this.embedPlayer.getPlayerElement().pause();
+                                            $( _this.embedPlayer.getPlayerElement()).unbind('.postSequenceComplete');
+                                        });
+                                    }
+                                    onPostRollDone();
+                                } );
+                            } else {
+                                onPostRollDone();
+                            }
+                        });
+                    });
+                }, 0);
+            });
+        },
+        destroy: function () {
+            var _this = this;
+            // Reset firstPlay flag
+            _this.firstPlay = true;
+            // Unbind all adTimeline events
+            $(_this.embedPlayer).unbind(_this.bindPostfix);
+        },
+        /**
+         * Gets the sequence proxy for a given slot type
+         */
+        getSequenceProxy: function (slotType) {
+            // Setup a sequence timeline set:
+            var sequenceProxy = {};
+            // Get the sequence ad set
+            this.embedPlayer.triggerHelper('AdSupport_' + slotType, [sequenceProxy]);
+            // Allow plugins to manipulate the sequence proxy ( after build out )
+            this.embedPlayer.triggerHelper("AdSupport_SequnceProxyBuildDone", [slotType, sequenceProxy]);
+            return sequenceProxy;
+        },
 
-				// Display post roll in setTimeout ( hack to work around end sequence issues )
-				// should be refactored.
-				setTimeout(function(){
-					// Trigger the postSequenceStart event
-					// start the postSequence:
-					embedPlayer.triggerHelper( 'AdSupport_PostSequence' );
-					_this.displaySlots( 'postroll', function(){
-						// Turn off preSequence
-						embedPlayer.sequenceProxy.isInSequence = false;
-						// Trigger the postSequenceComplete event
-						embedPlayer.triggerHelper( 'AdSupport_PostSequenceComplete' );
-						/** TODO support postroll bumper and leave behind */
-						function onPostRollDone(){
-							// Restore interface
-							_this.restorePlayer( "postroll", playedAnAdFlag );
-							// Restore ondone interface:
-							embedPlayer.onDoneInterfaceFlag = true;
-							// on clip done can't be invoked with a stop state ( TOOD clean up end sequence )
-							embedPlayer.stopped = false;
-							//Signal player that it can leave full screen after iPhone postroll
-							embedPlayer.keepNativeFullScreen = false;
-							// Run the clipdone event:
-							embedPlayer.onClipDone();
-						}
-						if( playedAnAdFlag && !embedPlayer.isVideoSiblingEnabled()){
-							embedPlayer.switchPlaySource( _this.originalSource, function( video ){
-								// Make sure we pause the video
-								video.pause();
-								/* iPad iOS v4.3.1 ignore video pause (probably timing issue) */
-								$( video ).bind('play.postSequenceComplete', function(){
-									video.pause();
-									$( video ).unbind( '.postSequenceComplete' );
-								});
-								onPostRollDone();
-							});
-						} else {
-							onPostRollDone();
-						}
-					});
-				}, 0);
-			});
-		},
-		destroy: function(){
-			var _this = this;
-			// Reset firstPlay flag
-			_this.firstPlay = true;
-			// Unbind all adTimeline events
-			$( _this.embedPlayer ).unbind( _this.bindPostfix );
-		},
-		/**
-		 * Gets the sequence proxy for a given slot type
-		 */
-		getSequenceProxy: function( slotType ){
-			// Setup a sequence timeline set:
-			var sequenceProxy = {};
-			// Get the sequence ad set
-			this.embedPlayer.triggerHelper( 'AdSupport_' + slotType,  [ sequenceProxy ] );
-			// Allow plugins to manipulate the sequence proxy ( after build out )
-			this.embedPlayer.triggerHelper( "AdSupport_SequnceProxyBuildDone", [ slotType, sequenceProxy ] );
-			return sequenceProxy;
-		},
+        /**
+         * Displays all the slots of a given set
+         *
+         * @param slotSet
+         *            {Object} slotSet Set of slots to be displayed.
+         * @param doneCallback
+         *            {function} doneCallback Function called once done displaying slots
+         * @return
+         */
+        displaySlots: function (slotType, doneCallback) {
+            var _this = this;
+            // Setup a sequence timeline set:
+            var sequenceProxy = _this.getSequenceProxy(slotType);
+            // Generate a sorted key list:
+            var keyList = [];
+            $.each(sequenceProxy, function (k, na) {
+                keyList.push(k);
+            });
 
-		/**
-		 * Displays all the slots of a given set
-		 *
-		 * @param slotSet
-		 * 			{Object} slotSet Set of slots to be displayed.
-		 * @param doneCallback
-		 * 			{function} doneCallback Function called once done displaying slots
-		 * @return
-		 */
-		displaySlots: function( slotType, doneCallback ){
-			var _this = this;
-			// Setup a sequence timeline set:
-			var sequenceProxy = _this.getSequenceProxy( slotType );
-			// Generate a sorted key list:
-			var keyList = [];
-			$.each( sequenceProxy, function(k, na){
-				keyList.push( k );
-			});
+            mw.log("AdTimeline:: displaySlots: " + slotType + ' found sequenceProxy length: ' + keyList.length);
 
-			mw.log( "AdTimeline:: displaySlots: " + slotType + ' found sequenceProxy length: ' + keyList.length );
-
-			// if don't have any ads issue the callback directly:
-			if( !keyList.length ){
-				doneCallback();
-				return ;
-			}
+            // if don't have any ads issue the callback directly:
+            if (!keyList.length) {
+                doneCallback();
+                return;
+            }
 
 			// Sort the sequence proxy key list:
 			keyList.sort();
 			var seqInx = 0;
 			// Run each sequence key in order:
 			var runSequeceProxyInx = function( seqInx ){
-				// Update the "sequenceProxy" var
-				_this.embedPlayer.sequenceProxy.isInSequence = true;
 				var key = keyList[ seqInx ] ;
 				if( !sequenceProxy[key] ){
 					doneCallback();
 					return ;
 				}
+				// Update the "sequenceProxy" var
+				_this.embedPlayer.sequenceProxy.isInSequence = true;
 				// Run the sequence proxy function:
 				sequenceProxy[ key ]( function(){
 
-					// Done with slot increment display slot count
-					_this.displayedSlotCount++;
+                    // Done with slot increment display slot count
+                    _this.displayedSlotCount++;
 
-					// done with the current proxy call next
-					seqInx++;
+                    // done with the current proxy call next
+                    seqInx++;
 
-					// call sequence proxy inline for ad plugins sync when doing source switch
-					runSequeceProxyInx( seqInx );
-				});
-			};
-			runSequeceProxyInx( seqInx );
-		},
-		updateUiForAdPlayback: function( slotType ){
-			if( ! slotType ){
-				mw.log("Error:: please supply an ad type, " + slotType + ' provided.');
-				slotType = '';
-			}
-			mw.log( "AdTimeline:: updateUiForAdPlayback: slotType:" + slotType );
-			var embedPlayer = this.embedPlayer;
-			//player doesn't support ads
-			if ( !embedPlayer ) {
-				return;
-			}
+                    // call sequence proxy inline for ad plugins sync when doing source switch
+                    runSequeceProxyInx(seqInx);
+                });
+            };
+            runSequeceProxyInx(seqInx);
+        },
+        updateUiForAdPlayback: function (slotType) {
+            if (!slotType) {
+                mw.log("Error:: please supply an ad type, " + slotType + ' provided.');
+                slotType = '';
+            }
+            mw.log("AdTimeline:: updateUiForAdPlayback: slotType:" + slotType);
+            var embedPlayer = this.embedPlayer;
+            //player doesn't support ads
+            if (!embedPlayer) {
+                return;
+            }
 
-			// Set the current slot type :
-			this.currentAdSlotType = slotType;
-			// Stop the native embedPlayer events so we can play the preroll and bumper
-			embedPlayer.stopEventPropagation();
-			// TODO read the add disable control bar to ad config and check that here.
-			var components = ['fullScreenBtn','logo','volumeControl'];
-			if (mw.getConfig('enableControlsDuringAd')) {
-				components.push('playPauseBtn');
-			}
-			embedPlayer.disablePlayControls(components);
-			// Update the interface to play state:
-			embedPlayer.playInterfaceUpdate();
-			// make sure to hide the spinner
-			embedPlayer.hideSpinner();
-			// hide poster when not using ad sibling
-			if ( !embedPlayer.isVideoSiblingEnabled() ){
-				embedPlayer.removePoster();
-			}
-			// Set inSequence property to "true"
-			embedPlayer.sequenceProxy.isInSequence = true;
-			// Trigger preroll started ( Note: updateUiForAdPlayback is our only
-			// indicator right now that a real ad is going to play )
-			// we can refactor but preroll must come before AdSupport_StartAdPlayback  )
-			mw.log( 'AdTimeline:: trigger: AdSupport_' + slotType + 'Started' );
-			embedPlayer.triggerHelper( 'AdSupport_' + slotType + 'Started' );
+            // Set the current slot type :
+            this.currentAdSlotType = slotType;
+            // Stop the native embedPlayer events so we can play the preroll and bumper
+            embedPlayer.stopEventPropagation();
+            // TODO read the add disable control bar to ad config and check that here.
+            var components = ['fullScreenBtn', 'logo', 'volumeControl'];
+            if (mw.getConfig('enableControlsDuringAd')) {
+                components.push('playPauseBtn');
+            }
+            embedPlayer.disablePlayControls(components);
+            // Update the interface to play state:
+            embedPlayer.playInterfaceUpdate();
+            // make sure to hide the spinner
+            embedPlayer.hideSpinner();
+            // hide poster when not using ad sibling
+            if (!embedPlayer.isVideoSiblingEnabled()) {
+                embedPlayer.removePoster();
+            }
+            // Set inSequence property to "true"
+            embedPlayer.sequenceProxy.isInSequence = true;
+            // Trigger preroll started ( Note: updateUiForAdPlayback is our only
+            // indicator right now that a real ad is going to play )
+            // we can refactor but preroll must come before AdSupport_StartAdPlayback  )
+            mw.log('AdTimeline:: trigger: AdSupport_' + slotType + 'Started');
+            embedPlayer.triggerHelper('AdSupport_' + slotType + 'Started');
 
-			mw.log( 'AdTimeline:: trigger: AdSupport_' + slotType.replace('roll', '')  + 'SequenceStart' );
-			embedPlayer.triggerHelper( 'AdSupport_' + slotType.replace('roll', '')  + 'SequenceStart' );
+            mw.log('AdTimeline:: trigger: AdSupport_' + slotType.replace('roll', '') + 'SequenceStart');
+            embedPlayer.triggerHelper('AdSupport_' + slotType.replace('roll', '') + 'SequenceStart');
 
-			// Trigger an ad start event once we enter an ad state
-			mw.log( 'AdTimeline:: trigger: AdSupport_StartAdPlayback' );
-			embedPlayer.triggerHelper( 'AdSupport_StartAdPlayback', slotType );
-		},
-		/**
-		 * Restore a player from ad state
-		 * @return
-		 */
-		restorePlayer: function( slotType, playedAd ){
-			if( ! this.currentAdSlotType ){
-				mw.log("Error:: AdTimeline missing currentAdSlotType on player restore ( assume preroll )");
-				this.currentAdSlotType = 'preroll';
-			}
-			if( ! slotType ){
-				slotType = this.currentAdSlotType ;
-			}
-			mw.log( "AdTimeline:: restorePlayer " );
-			var embedPlayer = this.embedPlayer;
+            // Trigger an ad start event once we enter an ad state
+            mw.log('AdTimeline:: trigger: AdSupport_StartAdPlayback');
+            embedPlayer.triggerHelper('AdSupport_StartAdPlayback', slotType);
+        },
+        /**
+         * Restore a player from ad state
+         * @return
+         */
+        restorePlayer: function (slotType, playedAd) {
+            if (!this.currentAdSlotType) {
+                mw.log("Error:: AdTimeline missing currentAdSlotType on player restore ( assume preroll )");
+                this.currentAdSlotType = 'preroll';
+            }
+            if (!slotType) {
+                slotType = this.currentAdSlotType;
+            }
+            mw.log("AdTimeline:: restorePlayer ");
+            var embedPlayer = this.embedPlayer;
 
-			//if player is not binded return - nothing to restore.
-			if ( !embedPlayer ){
-				return;
-			}
-			embedPlayer.restoreEventPropagation();
+            //if player is not binded return - nothing to restore.
+            if (!embedPlayer) {
+                return;
+            }
+            embedPlayer.restoreEventPropagation();
 
-			if (this.pendingSeek){
-				this.pendingSeek = false;
-				mw.log( 'AdTimeline:: Seek back to preSeek time');
-				embedPlayer.seek(this.pendingSeekData.seekTime, this.pendingSeekData.stopAfterSeek);
-			} else {
-				//If seek wasn't performed then and ad sequence is over then remove the seek handler
-				embedPlayer.unbindHelper( "preSeek" + this.bindPostfix );
-			}
+            if (this.pendingSeek) {
+                this.pendingSeek = false;
+                mw.log('AdTimeline:: Seek back to preSeek time');
+                embedPlayer.seek(this.pendingSeekData.seekTime, this.pendingSeekData.stopAfterSeek);
+            } else {
+                //If seek wasn't performed then and ad sequence is over then remove the seek handler
+                embedPlayer.unbindHelper("preSeek" + this.bindPostfix);
+            }
 
-			embedPlayer.enablePlayControls();
-			embedPlayer.seeking = false;
-			// restore in sequence property;
-			embedPlayer.sequenceProxy.isInSequence = false;
+            embedPlayer.enablePlayControls();
+            embedPlayer.seeking = false;
+            // restore in sequence property;
+            embedPlayer.sequenceProxy.isInSequence = false;
 
-			// restore poster when not using ad sibling
-			if ( !mw.isNativeApp() && !embedPlayer.isVideoSiblingEnabled()  ){
-				embedPlayer.updatePosterHTML();
-			}
+            // restore poster when not using ad sibling
+            if (!mw.isNativeApp() && !embedPlayer.isVideoSiblingEnabled()) {
+                embedPlayer.updatePosterHTML();
+            }
 
-			// issue the ad triggers if an ad was played.
-			if( playedAd ){
-				// trigger an event so plugins can restore their content based actions
-				mw.log( 'AdTimeline:: trigger: AdSupport_EndAdPlayback');
-				embedPlayer.triggerHelper( 'AdSupport_EndAdPlayback', this.currentAdSlotType);
+            // issue the ad triggers if an ad was played.
+            if (playedAd) {
+                // trigger an event so plugins can restore their content based actions
+                mw.log('AdTimeline:: trigger: AdSupport_EndAdPlayback');
+                embedPlayer.triggerHelper('AdSupport_EndAdPlayback', this.currentAdSlotType);
 
-				// Trigger slot event ( always after AdEnd )
-				mw.log( 'AdTimeline:: trigger: AdSupport_' + slotType.replace('roll', '') + 'SequenceComplete')
-				embedPlayer.triggerHelper( 'AdSupport_' + slotType.replace('roll', '') + 'SequenceComplete' );
-			}
-		}
-	};
+                // Trigger slot event ( always after AdEnd )
+                mw.log('AdTimeline:: trigger: AdSupport_' + slotType.replace('roll', '') + 'SequenceComplete')
+                embedPlayer.triggerHelper('AdSupport_' + slotType.replace('roll', '') + 'SequenceComplete');
+            }
+        }
+    };
 
-} )( window.mw, jQuery );
+})(window.mw, jQuery);

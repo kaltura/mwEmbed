@@ -145,41 +145,45 @@
 		// set the play list container according to the selected position
 		getMedialistContainer: function(){
 			if (!this.$mediaListContainer) {
-				if ( this.getConfig( 'onPage' ) ) {
-					var iframeID = this.embedPlayer.id + '_ifp';
-					try {
-						//Try to find and apply css on parent frame
-						var cssLink = this.getConfig('cssFileName');
-						if (cssLink) {
-							//Scroller CSS
-							kWidget.appendCssUrl( kWidget.getPath() + this.getConfig("scrollerCssPath"), window.parent.document );
-							//Plugin CSS
-							cssLink = cssLink.toLowerCase().indexOf("http") === 0 ? cssLink : kWidget.getPath() + cssLink; // support external CSS links
-							kWidget.appendCssUrl( cssLink, window.parent.document );
-						} else {
-							mw.log( "Error: "+ this.pluginName +" could not find CSS link" );
-						}
+					if (this.getConfig('onPage')) {
+						var iframeID = this.embedPlayer.id + '_ifp';
+							// support hidden playlists
+							if (this.getConfig('includeInLayout') === false) {
+								this.$mediaListContainer = $();
+								this.$mediaListContainer.hide();
+							}
+							else {
+								try {
+									//Try to find and apply css on parent frame
+									var cssLink = this.getConfig('cssFileName');
+									if (cssLink) {
+										//Scroller CSS
+										kWidget.appendCssUrl(kWidget.getPath() + this.getConfig("scrollerCssPath"), window.parent.document);
+										//Plugin CSS
+										cssLink = cssLink.toLowerCase().indexOf("http") === 0 ? cssLink : kWidget.getPath() + cssLink; // support external CSS links
+										kWidget.appendCssUrl(cssLink, window.parent.document);
+									} else {
+										mw.log("Error: " + this.pluginName + " could not find CSS link");
+									}
 
-						$( window['parent'].document ).find( '.onpagePlaylistInterface' ).remove(); // remove any previously created playlists
-						var iframeParent = window['parent'].document.getElementById( this.embedPlayer.id );
-						if ( this.getConfig( 'clipListTargetId' ) && $( iframeParent ).parents().find( "#" + this.getConfig( 'clipListTargetId' ) ).length > 0 ) {
-							$( iframeParent ).parents().find( "#" + this.getConfig( 'clipListTargetId' ) ).html( "<div class='onpagePlaylistInterface'></div>" );
-							this.$mediaListContainer = $( iframeParent ).parents().find( ".onpagePlaylistInterface" );
-						} else {
-							$( iframeParent ).after( "<div class='onpagePlaylistInterface'></div>" );
-							this.$mediaListContainer = $( iframeParent ).parent().find( ".onpagePlaylistInterface" );
-							$( this.$mediaListContainer ).width( $( iframeParent ).width());
-							var containerHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * this.getConfig( 'MinClips' ) + this.getConfig('verticalHeaderHeight') : this.getConfig( "mediaItemHeight" ) + this.getConfig('horizontalHeaderHeight');
-							$( this.$mediaListContainer ).height( containerHeight );
-						}
-						// support hidden playlists
-						if ( this.getConfig( 'includeInLayout' ) === false ) {
-							this.$mediaListContainer.hide();
-						}
-						this.$mediaListContainer.addClass( "k-" + this.getLayout() );
-					} catch ( e ) {
-						mw.log( "Error: "+ this.pluginName +" could not access parent iframe" );
-					}
+									$(window['parent'].document).find('.onpagePlaylistInterface').remove(); // remove any previously created playlists
+									var iframeParent = window['parent'].document.getElementById(this.embedPlayer.id);
+									if (this.getConfig('clipListTargetId') && $(iframeParent).parents().find("#" + this.getConfig('clipListTargetId')).length > 0) {
+										$(iframeParent).parents().find("#" + this.getConfig('clipListTargetId')).html("<div class='onpagePlaylistInterface'></div>");
+										this.$mediaListContainer = $(iframeParent).parents().find(".onpagePlaylistInterface");
+									} else {
+										$(iframeParent).after("<div class='onpagePlaylistInterface'></div>");
+										this.$mediaListContainer = $(iframeParent).parent().find(".onpagePlaylistInterface");
+										$(this.$mediaListContainer).width($(iframeParent).width());
+										var containerHeight = this.getLayout() === "vertical" ? this.getConfig("mediaItemHeight") * this.getConfig('MinClips') + this.getConfig('verticalHeaderHeight') : this.getConfig("mediaItemHeight") + this.getConfig('horizontalHeaderHeight');
+										$(this.$mediaListContainer).height(containerHeight);
+									}
+									this.$mediaListContainer.addClass("k-" + this.getLayout());
+								} catch (e) {
+									mw.log("Error: " + this.pluginName + " could not access parent iframe");
+								}
+							}
+
 				} else {
 					this.$mediaListContainer = $( ".playlistInterface");
 					// resize the video to make place for the playlist according to its position (left, top, right, bottom)

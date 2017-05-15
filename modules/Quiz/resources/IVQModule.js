@@ -22,10 +22,12 @@
             bindPostfix: '.quizPlugin',
             reviewMode:false,
             isKPlaylist:false,
+            kQuizEntryId: "",
 
             init: function (embedPlayer,quizPlugin) {
                 var _this = this;
 
+                _this.kQuizEntryId = embedPlayer.kentryid;
                 _this.KIVQApi = new mw.KIVQApi(embedPlayer);
                 _this.KIVQScreenTemplate = new mw.KIVQScreenTemplate(embedPlayer);
 
@@ -95,7 +97,7 @@
 
             getQuestionsAndAnswers: function (callback) {
                 var _this = this;
-                _this.KIVQApi.getQuestionAnswerCuepoint(_this.kQuizUserEntryId, function(data){
+                _this.KIVQApi.getQuestionAnswerCuepoint(_this.kQuizEntryId, _this.kQuizUserEntryId, function(data){
 
                     if (!_this.checkApiResponse('Get question err -->',data[0])){
                         return false;
@@ -249,7 +251,9 @@
             },
             cuePointReachedHandler: function (e, cuePointObj) {
                 var _this = this;
-               
+                if (!$.quizParams.showCorrectAfterSubmission && _this.quizSubmitted) {
+                    return
+                }
                 $.each($.cpObject.cpArray, function (key, val) {
                     if ($.cpObject.cpArray[key].startTime === cuePointObj.cuePoint.startTime) {
                         _this.quizPlugin.ssSetCurrentQuestion(key,false);

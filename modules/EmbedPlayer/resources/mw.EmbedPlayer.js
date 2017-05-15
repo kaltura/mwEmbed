@@ -303,6 +303,8 @@
 		//the offset in hours:minutes:seconds from the playable live edge.
 		liveEdgeOffset: 0,
 
+		liveSyncDurationOffset:0,
+
 		/**
 		 * embedPlayer
 		 *
@@ -883,6 +885,7 @@
 						$.each(this.mediaElement.sources, function (currentIndex, currentSource) {
 							if (currentSource.getFlavorId() == "ism") {
 								errorObj = _this.getKalturaMsgObject('mwe-embedplayer-install-silverlight');
+								errorObj.code = "7000";
 								return;
 							}
 						});
@@ -1208,7 +1211,10 @@
 		},
 		setDuration: function (newDuration) {
 			this.duration = newDuration;
-			$(this).trigger('durationChange', [newDuration]);
+			if(this.isLive() && this.isDVR()){
+				this.duration -= this.liveSyncDurationOffset;
+			}
+			$(this).trigger('durationChange', [this.duration]);
 		},
 
 		/**
@@ -1231,6 +1237,7 @@
 			if (!this.isStopped()) {
 				// set the "stopped" flag:
 				this.stopped = true;
+				this.isPauseLoading = false;
 
 				// TOOD we should improve the end event flow
 				// First end event for ads or current clip ended bindings
@@ -1773,7 +1780,6 @@
 				if (_this.getError()) {
 					// Reset changeMediaStarted flag
 					_this.changeMediaStarted = false;
-					_this.showErrorMsg(_this.getError());
 					return;
 				}
 
@@ -1841,10 +1847,18 @@
 			if (!this.widgetLoaded) {
 				this.widgetLoaded = true;
 				mw.log("EmbedPlayer:: Trigger: widgetLoaded");
+				if( mw.getConfig('Kaltura.ForceLayoutRedraw') ) {
+					var resize = {
+						width: this.getInterface().width(),
+						height: this.getInterface().height() + 1
+					};
+					this.updateInterfaceSize(resize);
+					resize.height--;
+					this.updateInterfaceSize(resize);
+				}
 				this.triggerHelper('widgetLoaded');
 			}
 		},
-
 		/**
 		 * Add a black thumbnail layer on top of the player
 		 */
@@ -1956,7 +1970,7 @@
 
 			// Do some device detection devices that don't support overlays
 			// and go into full screen once play is clicked:
-			if ((mw.isAndroidNativeBrowser() || mw.isIphone()) && !mw.isWindowsPhone()) {
+			if ((mw.isAndroidNativeBrowser() || (mw.isIphone() && !this.inline)) && !mw.isWindowsPhone()) {
 				return true;
 			}
 
@@ -2307,7 +2321,7 @@
 			}
 
 			// Remove any poster div ( that would overlay the player )
-			if (!this.isAudioPlayer) {
+			if (!this.isAudioPlayer && !this.casting) {
 				this.removePoster();
 			}
 
@@ -2410,24 +2424,26 @@
 		 *
 		 */
 		addPlayerSpinner: function () {
-			var sId = 'loadingSpinner_' + this.id;
-			$(this).trigger('onAddPlayerSpinner');
-			// remove any old spinner
-			$('#' + sId).remove();
-			var target = this;
-			switch(mw.getConfig("EmbedPlayer.SpinnerTarget")){
-				case "videoHolder":
-					target = this.getVideoHolder();
-					break;
-				case "videoDisplay":
-					target = this.getVideoDisplay();
-					break;
-				default:
-					target = this;
-			}
-			// re add an absolute positioned spinner:
-			$(target).getAbsoluteOverlaySpinner()
-				.attr('id', sId);
+			if (!mw.isChromeCast()) {
+                var sId = 'loadingSpinner_' + this.id;
+                $( this ).trigger( 'onAddPlayerSpinner' );
+                // remove any old spinner
+                $( '#' + sId ).remove();
+                var target = this;
+                switch ( mw.getConfig( "EmbedPlayer.SpinnerTarget" ) ) {
+                    case "videoHolder":
+                        target = this.getVideoHolder();
+                        break;
+                    case "videoDisplay":
+                        target = this.getVideoDisplay();
+                        break;
+                    default:
+                        target = this;
+                }
+                // re add an absolute positioned spinner:
+                $( target ).getAbsoluteOverlaySpinner()
+                    .attr( 'id', sId );
+            }
 		},
 		hideSpinner: function () {
 			$(this).trigger('onRemovePlayerSpinner');
@@ -3104,6 +3120,14 @@
 			return this.live;
 		},
 
+		set360:function (is360) {
+			this.Is360 = is360;
+		},
+
+		is360: function(){
+			return this.Is360;
+		},
+
 		setDrmRequired: function (isDrm) {
 			this.drmRequired = isDrm;
 		},
@@ -3203,38 +3227,40 @@
 		 * @param {Object} source asset to switch to
 		 */
 		switchSrc: function( source ){
-			var _this = this;
-			var currentBR = 0;
-			if (this.mediaElement.selectedSource) {
-				currentBR = this.mediaElement.selectedSource.getBitrate();
-			}
+			if (source !== -1) {
+				var _this = this;
+				var currentBR = 0;
+				if (this.mediaElement.selectedSource) {
+					currentBR = this.mediaElement.selectedSource.getBitrate();
+				}
 
-			$(this).trigger('sourceSwitchingStarted', [
-				{ currentBitrate: currentBR }
-			]);
-			this.mediaElement.setSource(source);
-			$(this).trigger('sourceSwitchingEnd', [
-				{ newBitrate: source.getBitrate() }
-			]);
-			if (!this.isStopped()) {
-				this.isFlavorSwitching = true;
-				// Get the exact play time
-				var oldMediaTime = this.currentTime;
-				var oldPaused = this.paused;
-				// Do a live switch
-				this.playerSwitchSource(source, function (vid) {
-					// issue a seek
-					setTimeout(function () {
-						_this.addBlackScreen();
-						_this.hidePlayerOffScreen();
-						_this.unbindHelper("seeked.switchSrc" ).bindOnceHelper("seeked.switchSrc", function () {
-							_this.isFlavorSwitching = false;
-							_this.removeBlackScreen();
-							_this.restorePlayerOnScreen();
-						});
-						_this.seek(oldMediaTime, oldPaused);
-					}, 100);
-				});
+				$(this).trigger('sourceSwitchingStarted', [
+					{currentBitrate: currentBR}
+				]);
+				this.mediaElement.setSource(source);
+				$(this).trigger('sourceSwitchingEnd', [
+					{newBitrate: source.getBitrate()}
+				]);
+				if (!this.isStopped()) {
+					this.isFlavorSwitching = true;
+					// Get the exact play time
+					var oldMediaTime = this.currentTime;
+					var oldPaused = this.paused;
+					// Do a live switch
+					this.playerSwitchSource(source, function (vid) {
+						// issue a seek
+						setTimeout(function () {
+							_this.addBlackScreen();
+							_this.hidePlayerOffScreen();
+							_this.unbindHelper("seeked.switchSrc").bindOnceHelper("seeked.switchSrc", function () {
+								_this.isFlavorSwitching = false;
+								_this.removeBlackScreen();
+								_this.restorePlayerOnScreen();
+							});
+							_this.seek(oldMediaTime, oldPaused);
+						}, 100);
+					});
+				}
 			}
 		},
 		/**
@@ -3319,19 +3345,30 @@
 		handlePlayerError: function (data, shouldHandlePlayerError) {
 			if (this.shouldHandlePlayerError || shouldHandlePlayerError) {
 				var message = this.getErrorMessage(data);
-				this.showErrorMsg({ title: this.getKalturaMsg('ks-GENERIC_ERROR_TITLE'), message: message });
-
+				var errorObj = { title: this.getKalturaMsg('ks-GENERIC_ERROR_TITLE'), message: message};
+				if(data.code){
+					errorObj.code = data.code;
+				}
+				this.showErrorMsg(errorObj);
 			}
 		},
 
 		getErrorMessage: function(data){
 			var message = data ? data : this.getKalturaMsg('ks-CLIP_NOT_FOUND');
 			/* there are two formats used to represent error messages*/
-			message = message.errorMessage !== undefined ? message.errorMessage : message;
+			if(message.errorMessage){
+				message = message.errorMessage;
+			} else if (message.message){
+				message = message.message;
+			}
 			if (!message || message == undefined){
 				message = this.getKalturaMsg('ks-CLIP_NOT_FOUND');
 			}
 			return message;
+		},
+
+		getErrorCode: function(data){
+			return data ? data.code : "7000";
 		},
 
 		/**

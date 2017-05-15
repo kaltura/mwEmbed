@@ -1,0 +1,81 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+        <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+        <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+        <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+        <script type="text/javascript" src="../../RaptMedia/tests/RaptMedia.qunit.js"></script>
+    </head>
+<body>
+
+    <div id="kaltura_player" style="width: 560px; height: 395px"></div>
+    <div>
+        <input class="changeMedia" type="button" data-entryId="404" value="Missing Entry" />
+        <input class="changeMedia" type="button" data-entryId="0_kh14ze3t" value="RAPTMedia Demo Playlist" />
+        <input class="changeMedia" type="button" data-entryId="1_4bzj26am" value="Kaltura University Intro Video" />
+    </div>
+    <script>
+        
+        var d = new Date("December 10, 2016 12:00:00");
+        var cacheSt = (parseInt(d.getTime()/1000)).toString();
+
+        kWidget.featureConfig({
+            "targetId": "kaltura_player",
+            "wid": "_811441",
+            "uiconf_id": 33991361,
+            "flashvars": {
+            //    "LeadWithHLSOnFlash": true,
+            //    "Kaltura.ForceFlashOnDesktop":true,
+            //    "EmbedPlayer.ForceKPlayer": true,
+            //    "LeadWithHLSOnJs": false,
+            //    "hlsjs":{
+            //        "plugin": false
+            //    },
+                "streamerType": "auto",
+                "autoPlay": true,
+                //"EmbedPlayer.MonitorRate": 100,
+                "EmbedPlayer.WebKitPlaysInline" : true,
+                "EmbedPlayer.inline" : true,
+                "EmbedPlayer.ForceLargeReplayButton": true,
+                "largePlayBtn.plugin" : false,
+                //"disableOnScreenClick": true,
+                "raptMedia": {
+                    'plugin': true,
+                    "parent": "videoHolder",
+                    "behaviorOnEnd": "pause",
+                    //"raptProjectId": "8Kv94QHZ"
+                },
+                "raptMediaDurationLabel": {
+                    'plugin': true
+                },
+                "raptMediaScrubber": {
+                    'plugin': true
+                },
+                "raptMediaPlayPauseBtn": {
+                    'plugin': true
+                },
+                "scrubber": {
+                    "plugin": false
+                },
+                "durationLabel": {
+                    "plugin": false
+                },
+                 "playPauseBtn": {
+                    'plugin': false
+                },
+            },
+            "entry_id": "0_kh14ze3t",
+            "cache_st": cacheSt
+        });
+
+        kWidget.addReadyCallback(function(playerId){
+            this.kdp = document.getElementById( playerId );
+            var _this = this;
+            $( 'input.changeMedia' ).click(function(){
+                _this.kdp.sendNotification( "changeMedia", { 'entryId' : $(this).attr('data-entryId') });
+            });
+        });
+    </script>
+</body>
+</html>

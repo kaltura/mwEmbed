@@ -10,6 +10,9 @@
         "scripts": "resources/base64/base64_encode.js",
         "dependencies": "utf8_encode"
     },
+    "socket.io": {
+        "scripts": "resources/socket.io/socket.io.min-1.7.3.js"
+    },
     "utf8_encode": {
         "scripts": "resources/utf8/utf8_encode.js"
     },
@@ -149,6 +152,15 @@
             "jquery.ui.core",
             "jquery.ui.widget",
             "jquery.ui.mouse"
+        ]
+    },
+    "jquery.ui.droppable": {
+        "scripts": "resources/jquery.ui/jquery.ui.droppable.js",
+        "dependencies": [
+            "jquery.ui.core",
+            "jquery.ui.widget",
+            "jquery.ui.mouse",
+            "jquery.ui.draggable"
         ]
     },
     "jquery.ui.resizable": {

@@ -1,0 +1,31 @@
+{
+	"mw.RaptMedia": {
+		"scripts": "resources/mw.RaptMedia.js",
+		"styles": "resources/RaptMediaPlugin.css",
+		"dependencies": [
+			"mw.KBaseComponent"
+		],
+		"kalturaPluginName": "raptMedia"
+	},
+	"mw.RaptMediaDurationLabel": {
+		"scripts": "resources/mw.RaptMediaDurationLabel.js",
+		"dependencies": [
+			"mw.KBaseComponent"
+		],
+		"kalturaPluginName": "raptMediaDurationLabel"
+	},
+	"mw.RaptMediaScrubber": {
+		"scripts": "resources/mw.RaptMediaScrubber.js",
+		"dependencies": [
+			"mw.KBaseComponent"
+		],
+		"kalturaPluginName": "raptMediaScrubber"
+	},
+	"mw.RaptMediaPlayPauseBtn": {
+		"scripts": "resources/mw.RaptMediaPlayPauseBtn.js",
+		"dependencies": [
+			"mw.KBaseComponent"
+		],
+		"kalturaPluginName": "raptMediaPlayPauseBtn"
+	}
+}

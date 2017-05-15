@@ -36,7 +36,7 @@
 			"param2": "{configProxy.kw.uiconfid}"
 		},
 		// the view index is incremented as users views multiple clips in a given play session.
-		viewIndex: 0,
+		viewIndex: -1,
 		// if beacon requests are sent before youbora is setup queue them: 
 		queuedBeacons: [],
 		// the active ping interval:
@@ -63,16 +63,19 @@
 				}
 				// unbind all events
 				_this.unbind( _this.bindPostfix );
-				if (_this.firstPlayDone){
-					_this.incrementViewIndex();
-				}
 			});
 			this.bind('playerReady', function(){
-				if ( _this.kalturaContextData && _this.kalturaContextData.flavorAssets && _this.kalturaContextData.flavorAssets.length === 1 ){
-					_this.currentBitRate = _this.kalturaContextData.flavorAssets[0].bitrate;
-				}
+                var kalturaContextData = _this.getPlayer().kalturaContextData;
+                if ( kalturaContextData && kalturaContextData.flavorAssets ) {
+                    if ( kalturaContextData.flavorAssets.length === 1 ) {
+                        _this.currentBitRate = kalturaContextData.flavorAssets[ 0 ].bitrate;
+                    } else {
+                        _this.currentBitRate = -1;
+                    }
+                }
 				_this.addBindings();
 			});
+			this.addBindings();
 			this.setupViewCode();
 		},
 		setupViewCode: function(){
@@ -82,7 +85,7 @@
 				return ;
 			}
 			this.settingUpViewCodeFlag = true;
-			// setup and view code: 
+			// setup and view code:
 			var payload = this.getBaseParams();
 			payload['pluginVersion'] = this.getPluginVersion();
 			payload['system'] = this.getConfig('accountName');
@@ -91,9 +94,9 @@
 				_this.host = $(xmlData).find('h').text();
 				_this.pingTime = $(xmlData).find('pt').text();
 				_this.viewCode = $(xmlData).find('c').text();
-				
+
 				_this.log( "setup viewCode: " + _this.viewCode );
-				// update async view code generation flag. 
+				// update async view code generation flag.
 				_this.settingUpViewCodeFlag = false;
 				_this.hanldeQueue();
 				// in case playback already started (autoplay) and ping interval wasn't set yet (as it didn't have a pingTime when playback started) - start ping interval
@@ -108,7 +111,7 @@
 			var _this = this;
 			this.unbind( this.bindPostfix );
 			this.playRequestStartTime = null;
-			this.firstPlayDone = false; 
+			this.firstPlayDone = false;
 			this.bindFirstPlay();
 
 			// track content end:
@@ -122,16 +125,16 @@
 				_this.embedPlayer.firstPlay = true;
 				_this.firstPlayDone = false;
 				_this.unbind( _this.bindPostfix );
-				_this.incrementViewIndex();
 				_this.addBindings();
 			});
 
 			// handle errors
-			this.bind('embedPlayerError' + this.bindPostfix + ' mediaLoadError'  + this.bindPostfix + ' playerError' + this.bindPostfix, function () {
-				var errorMsg = _this.embedPlayer.getError() ? _this.embedPlayer.getError().message : _this.embedPlayer.getErrorMessage();
+			this.bind('mediaLoadError'  + this.bindPostfix + ' playerError' + this.bindPostfix, function (e, errorObj) {
+				var errorMsg = errorObj ? errorObj.message : _this.embedPlayer.getErrorMessage();
+				var errorCode = errorObj && errorObj.code ? errorObj.code : _this.embedPlayer.getErrorCode();
 				_this.sendBeacon( 'error', {
 					'player': 'kaltura-player-v' + MWEMBED_VERSION,
-					'errorCode': '-1', // currently we don't support error codes
+					'errorCode': errorCode,
 					'msg': errorMsg,
 					'resource': _this.getCurrentVideoSrc(),
 					// 'transcode' // not presently used.
@@ -142,6 +145,8 @@
 					'totalBytes': "0", // could potentially be populated if we use XHR for iframe payload + static loader + DASH MSE for segments )
 					'pingTime': _this.pingTime
 				});
+				clearInterval( _this.activePingInterval );
+				_this.activePingInterval = null;
 			});
 
 			this.bind( 'bitrateChange' + this.bindPostfix ,function( event, newBitrate){
@@ -160,13 +165,13 @@
 			});
 		},
 		incrementViewIndex: function(){
-			this.viewIndex++;
-			this.log( "increment viewIndex: " + this.viewIndex );
-		},
+            this.viewIndex++;
+            this.log( "increment viewIndex: " + this.viewIndex );
+        },
 		getCustomParams: function(){
 			var paramObj = {};
 			for( var i = 1; i < 10; i++ ){
-				// see if the param config is populated ( don't use getConfig evaluated value, as it could evaluate to false ) 
+				// see if the param config is populated ( don't use getConfig evaluated value, as it could evaluate to false )
 				if( this.embedPlayer.getRawKalturaConfig( "youbora", "param" + i ) ){
 					paramObj[ "param" + i ] = this.getConfig( "param" + i );
 				}
@@ -175,7 +180,7 @@
 		},
 		bindPlaybackEvents: function(){
 			var _this = this;
-			// track pause: 
+			// track pause:
 			var userHasPaused = false;
 			this.bind( 'userInitiatedPause' + this.bindPostfix, function( playerState ){
 				// ignore if pause is within .5 seconds of end of video of after change media:
@@ -257,7 +262,8 @@
 			}
 			this.bind('AdSupport_PreSequence' + this.bindPostfix, function(){
 				if (!_this.firstPlayDone){
-					sendStartEvent();
+                    _this.incrementViewIndex();
+                    sendStartEvent();
 					_this.firstPlayDone = true;
 				}
 			});
@@ -265,7 +271,8 @@
 			this.bind('firstPlay' + this.bindPostfix, function(){
 				_this.playRequestStartTime = new Date().getTime();
 				if (!_this.firstPlayDone){
-					// on play send the "start" action:
+                    _this.incrementViewIndex();
+                    // on play send the "start" action:
 					sendStartEvent();
 					_this.firstPlayDone = true;
 					_this.bindFirstJoin();
@@ -312,13 +319,13 @@
 			}
 			var pingTime = this.previusPingTime ? (( new Date().getTime() - this.previusPingTime )  / 1000 ).toFixed() : 0;
 			this.sendBeacon( 'ping',{
-				'pingTime': pingTime, // round seconds
-				'bitrate': this.currentBitRate !== -1 ? this.currentBitRate * 1024 : -1,
-				'time': this.embedPlayer.currentTime,
-				//'totalBytes':"0", // value is only sent along with the dataType parameter. If the bitrate parameter is sent, then this one is not needed.
-				//'dataType': "0", // Kaltura does not really do RTMP streams any more.
-				'diffTime': new Date().getTime() - this.previusPingTime
-				// 'nodeHost' //String that indicates the CDN� Node Host
+                'pingTime': pingTime, // round seconds
+                'bitrate': this.currentBitRate !== -1 ? this.currentBitRate * 1024 : -1,
+                'time': this.embedPlayer.currentTime,
+                //'totalBytes':"0", // value is only sent along with the dataType parameter. If the bitrate parameter is sent, then this one is not needed.
+                //'dataType': "0", // Kaltura does not really do RTMP streams any more.
+                'diffTime': new Date().getTime() - this.previusPingTime
+                // 'nodeHost' //String that indicates the CDN� Node Host
 			});
 			// update previusPingTime
 			this.previusPingTime = new Date().getTime();
