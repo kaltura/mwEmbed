@@ -4,7 +4,7 @@
 (function (mw) {
     "use strict";
 
-    mw.PluginManager.add('comScoreStreamingTag', mw.KBaseComponent.extend({
+    mw.PluginManager.add('comScoreStreamingTag', mw.KBasePlugin.extend({
         setup: function () {
             this.kalturaComScoreSTAPlugin = new mw.KalturaComScoreSTAPlugin(this);
         },
