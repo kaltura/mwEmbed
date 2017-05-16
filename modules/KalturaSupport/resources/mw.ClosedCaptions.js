@@ -244,7 +244,7 @@
 				_this.customStyle = stylesObj;
 				$('#cvaaStyle').remove();
 				if( _this.getConfig( 'cvaaOnEmbeddedCaptions' ) === true ) {
-					var embeddedCss = _this.getCvaaCssForEmbedded(stylesObj);
+					var embeddedCss = _this.getCssFromJson(stylesObj);
 					$('<style id="cvaaStyle" type="text/css"></style>').text(embeddedCss).appendTo('head');
 				}
 			});
@@ -911,7 +911,11 @@
 			style["background"] = "none";
 			return style;
 		},
-		getCvaaCssForEmbedded: function(cvaaCss) {
+		/*
+		* TODO: Make a function to map between those properties, something like this:
+		* https://github.com/jquery/jquery/blob/master/src/core.js#L293
+		*/
+		getCssFromJson: function(cvaaCss) {
 			var style = "video::cue {"
 			for (var key in cvaaCss) {
 				switch (key) {
