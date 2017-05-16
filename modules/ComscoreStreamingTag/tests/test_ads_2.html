@@ -12,6 +12,7 @@
 <div id="myVideoTarget" style="float:left;padding-left:10px;width:400px;height:330px;"></div>
 <i>Analytics events:</i> ( only html5 )<br />
 <textarea id="analyticsLog" rows='15' style="width:450px;"></textarea>
+</div>
 
 <div style="clear:both"></div>
 
@@ -49,7 +50,7 @@
 				'persistentLabels':'test_0="something else"'
 			}
 		}
-	});
+	})
 
 	window['trackEvent'] = function( eventObj ){
 		$( "#analyticsLog" ).append( 'comScore Event:' + JSON.stringify( eventObj) + "\n\n" );
