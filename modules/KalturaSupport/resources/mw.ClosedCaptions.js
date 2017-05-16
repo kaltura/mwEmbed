@@ -30,7 +30,7 @@
 			"forceWebVTT": false, // force using webvtt on-the-fly. only for kalturaAPI captions
 			"enableOptionsMenu": false,
 			"sortCaptionsAlphabetically": false,
-			"cvaaOnEmbeddedCaptions": false
+			"enableNativeTextTrackCSS": false
 		},
 
 		textSources: [],
@@ -243,7 +243,7 @@
 			this.bind( 'newCaptionsStyles', function (e, stylesObj){
 				_this.customStyle = stylesObj;
 				$('#cvaaStyle').remove();
-				if( _this.getConfig( 'cvaaOnEmbeddedCaptions' ) === true ) {
+				if( _this.getConfig( 'enableNativeTextTrackCSS' ) === true ) {
 					var embeddedCss = _this.getCssFromJson(stylesObj);
 					$('<style id="cvaaStyle" type="text/css"></style>').text(embeddedCss).appendTo('head');
 				}
