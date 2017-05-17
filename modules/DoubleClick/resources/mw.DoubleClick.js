@@ -1731,59 +1731,58 @@
                     this.isdestroy = true;
                     this.destroy();
 
-                } else {
-                    if ( _this.saveTimeWhenSwitchMedia ) {
-                        _this.embedPlayer.seek( _this.timeToReturn );
-                        _this.timeToReturn = null;
-                    }
-                    this.embedPlayer.play();
-                }
-            }
-            if ( _this.adClickEvent ) {
-                $( window ).unbind( _this.adClickEvent );
-            } else if ( _this.isAdClickTimeoutEnabled ) {
-                _this.isAdClickTimeoutEnabled = false;
-            }
-        },
-        restorePlayerNoPostroll: function () {
-            var _this = this;
-            if ( !_this.getConfig( "adTagUrl" ) && !_this.getConfig( "postrollUrl" ) ) {
-                _this.currentAdSlotType = "postroll";
-                _this.restorePlayer( true );
-            }
-        },
-        /**
-         * TODO should be provided by the generic ad plugin class.
-         */
-        getConfig: function ( attrName ) {
-            // always get the config from the embedPlayer so that is up-to-date
-            return this.embedPlayer.getKalturaConfig( this.pluginName, attrName );
-        },
-        destroy: function () {
-            // remove any old bindings:
-            var _this = this;
-            this.hideSkipBtn();
-            if ( this.adTagUrl || this.currentAdSlotType === "postroll" ) {
-                this.embedPlayer.unbindHelper( this.bindPostfix );
-            }
-            if ( !this.isChromeless ) {
-                if ( this.adTagUrl && this.playingLinearAd ) {
-                    this.restorePlayer( true );
-                }
-                $( ".ad-skip-btn" ).remove(); // remove skip button from the DOM
-                setTimeout( function () {
-                    _this.removeAdContainer();
-                    if ( _this.adsLoader ) {
-                        _this.adsLoader.destroy();
-                    }
-                }, 100 );
-            } else {
-                if ( !this.isLinear ) {
-                    this.embedPlayer.getPlayerElement().sendNotification( 'destroy' );
-                }
-            }
-            this.contentDoneFlag = false;
-        }
-    };
+				} else {
+					if ( _this.saveTimeWhenSwitchMedia ) {
+						_this.embedPlayer.seek(_this.timeToReturn);
+						_this.timeToReturn = null;
+					}
+					this.embedPlayer.play();
+				}
+			}
+			if( _this.adClickEvent ) {
+				$(window).unbind(_this.adClickEvent);
+			} else if( _this.isAdClickTimeoutEnabled ) {
+				_this.isAdClickTimeoutEnabled = false;
+			}
+		},
+		restorePlayerNoPostroll:function(){
+			var _this = this;
+			if (!_this.getConfig("adTagUrl") && !_this.getConfig("postrollUrl")){
+				_this.currentAdSlotType = "postroll";
+				_this.restorePlayer(true);
+			}
+		},
+		/**
+		 * TODO should be provided by the generic ad plugin class.
+		 */
+		getConfig: function( attrName ){
+			// always get the config from the embedPlayer so that is up-to-date
+			return this.embedPlayer.getKalturaConfig( this.pluginName, attrName );
+		},
+		destroy:function(){
+			// remove any old bindings:
+			var _this = this;
+			this.hideSkipBtn();if ( this.adTagUrl || this.currentAdSlotType === "postroll" ){
+				this.embedPlayer.unbindHelper( this.bindPostfix );
+			}
+			if (!this.isChromeless){
+				if ( this.adTagUrl && this.playingLinearAd ) {
+					this.restorePlayer(true);
+				}
+				$(".ad-skip-btn").remove(); // remove skip button from the DOM
+				setTimeout(function(){
+					_this.removeAdContainer();
+					if ( _this.adsLoader ) {
+						_this.adsLoader.destroy();
+					}
+				},100);
+			}else{
+				if ( !this.isLinear ){
+					this.embedPlayer.getPlayerElement().sendNotification( 'destroy' );
+				}
+			}
+			this.contentDoneFlag = false;
+		}
+	};
 
 })( window.mw, jQuery );

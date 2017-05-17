@@ -1356,6 +1356,10 @@
 			mw.log('EmbedPlayer:: showPlayer: ' + this.id + ' interace: w:' + this.width + ' h:' + this.height);
 			var _this = this;
 
+            if ( mw.isMobileDevice() && mw.getConfig( 'mutedAutoPlay' ) ) {
+                this.toggleMutedAutoPlayAttributes( true );
+            }
+
 			if( mw.getConfig('preload')==='auto' ){
 				this.load();
 			}
@@ -1401,13 +1405,20 @@
 				this.showErrorMsg(this.getError());
 				return;
 			}
+
 			// Auto play stopped ( no playerReady has already started playback ) and if not on an iPad with iOS > 3
 			// livestream autoPlay is handled by liveCore
-			if (this.isStopped() && this.autoplay && !this.changeMediaStarted && this.canAutoPlay() && !this.isLive()) {
-				mw.log('EmbedPlayer::showPlayer::Do autoPlay');
-				_this.play();
-			}
+            if ( this.isStopped() && this.autoplay && !this.changeMediaStarted && this.canAutoPlay() && !this.isLive() ) {
+                mw.log( 'EmbedPlayer::showPlayer::Do autoPlay' );
+                _this.play();
+            }
 		},
+
+        toggleMutedAutoPlayAttributes: function ( toggle ) {
+            this.autoplay = toggle;
+            this.getPlayerElement().setAttribute( "muted", toggle );
+            this.getPlayerElement().setAttribute( "autoplay", toggle );
+        },
 
 		/**
 		 * Returns true if the device can auto play; else false
@@ -1760,6 +1771,11 @@
 
 			// Clear out any player error ( both via attr and object property ):
 			this.setError(null);
+
+			// Clear muted and autoplay attributes from the video tag if needed
+            if ( mw.getConfig( 'mutedAutoPlay') && mw.isMobileDevice() )  {
+                this.toggleMutedAutoPlayAttributes( false );
+            }
 
 			//	Clear out any player display blocks
 			this['data-blockPlayerDisplay'] = null;
@@ -2316,7 +2332,7 @@
 				this.triggerPreSequence();
 				if (_this.sequenceProxy && _this.sequenceProxy.isInSequence) {
 					mw.log("EmbedPlayer:: isInSequence, do NOT play content");
-					return false;
+                    return false;
 				}
 			}
 
