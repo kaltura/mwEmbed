@@ -242,7 +242,7 @@
                         _this.setOffAir(secondOfflineAlertOffest);
                     } else {
                         //if we already played once it means stream data was loaded. We can continue playing in "VOD" mode
-                        if (!embedPlayer.firstPlay && _this.isDVR()) {
+                        if (embedPlayer.currentTime > 0 && _this.isDVR()) {
                             embedPlayer.triggerHelper('liveEventEnded');
                         } else {
                             //remember last state
