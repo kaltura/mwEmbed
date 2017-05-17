@@ -131,6 +131,7 @@
                     _this.resetSrc = true;
                 }
             });
+	        this.bindHelper("changeEmbeddedTextTrack", this.onSwitchTextTrack.bind(this));
         },
 
 		removeBindings: function(){
@@ -1452,20 +1453,34 @@
         parseTracks: function(){
             var vid = this.getPlayerElement();
             this.parseAudioTracks(vid, 0); //0 is for a setTimer counter. Try to catch audioTracks, give up after 5 seconds
-            if(this.isLive()) {
-                this.parseTextTracks(vid, 0); //0 is for a setTimer counter. Try to catch textTracks.kind === "metadata", give up after 10 seconds
-            }
+            this.parseTextTracks(vid, 0); //0 is for a setTimer counter. Try to catch textTracks, give up after 10 seconds
         },
         parseTextTracks: function(vid, counter){
             var _this = this;
 	        this.parseTextTracksTimeout = setTimeout(function() {
                 if( vid.textTracks.length > 0 ) {
+	                var textTracksData = {languages: []};
                     for (var i = 0; i < vid.textTracks.length; i++) {
-                        if (vid.textTracks[i].kind === "metadata") {
-                            //add id3 tags support
-                            _this.id3Tag(vid.textTracks[i]);
-                            vid.textTracks[i].mode = "hidden";
-                        }
+                    	var textTrack = vid.textTracks[i];
+	                    if (textTrack.kind === 'metadata') {
+		                    //add id3 tags support
+		                    _this.id3Tag(textTrack);
+	                    } else if (textTrack.kind === 'subtitles' || textTrack.kind === 'caption') {
+		                    textTracksData.languages.push({
+			                    'kind': 'subtitle',
+			                    'language': textTrack.label,
+			                    'srclang': textTrack.label,
+			                    'label': textTrack.label,
+			                    'title': textTrack.label,
+			                    'id': textTrack.id,
+			                    'index': i
+		                    });
+	                    }
+	                    textTrack.mode = 'hidden';
+                    }
+                    if (textTracksData.languages.length) {
+	                    mw.log('EmbedPlayerNative:: ' + textTracksData.languages.length + ' subtitles were found: ', textTracksData.languages);
+	                    _this.triggerHelper('textTracksReceived', textTracksData);
                     }
                 }else{
                     //try to catch textTracks.kind === "metadata, give up after 10 seconds
@@ -1555,6 +1570,36 @@
 				}
 				this.audioTrackIndex = audioTrackIndex;
 			}
+		},
+		onSwitchTextTrack: function (event, data) {
+			var vid = this.getPlayerElement();
+			var textTracks = vid.textTracks;
+			if (textTracks && textTracks.length) {
+				if (!data) {
+					var activeSubtitle = this.getActiveSubtitle(textTracks);
+					if (activeSubtitle) {
+						activeSubtitle.mode = 'hidden';
+						this.log('onSwitchTextTrack disable subtitles');
+					}
+				} else {
+					var selectedSubtitle = textTracks[data.index];
+					if (selectedSubtitle) {
+						selectedSubtitle.mode = 'showing';
+						mw.log('EmbedPlayerNative::onSwitchTextTrack switch to ', selectedSubtitle);
+					}
+				}
+			}
+		},
+		getActiveSubtitle: function (textTracks) {
+			if (textTracks) {
+				for (var i = 0; i < textTracks.length; i++) {
+					var textTrack = textTracks[i];
+					if (textTrack.mode === 'showing' && (textTrack.kind === 'subtitles' || textTrack.kind === 'caption')) {
+						return textTrack;
+					}
+				}
+			}
+			return null;
 		},
         getCurrentBufferLength: function(){
             if ( this.playerElement.buffered.length > 0 ) {
