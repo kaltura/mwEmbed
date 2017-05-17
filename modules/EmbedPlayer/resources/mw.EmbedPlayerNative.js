@@ -1479,7 +1479,7 @@
 	                    textTrack.mode = 'hidden';
                     }
                     if (textTracksData.languages.length) {
-	                    mw.log('EmbedPlayerNative' + textTracksData.languages.length + ' subtitles were found: ', textTracksData.languages);
+	                    mw.log('EmbedPlayerNative:: ' + textTracksData.languages.length + ' subtitles were found: ', textTracksData.languages);
 	                    _this.triggerHelper('textTracksReceived', textTracksData);
                     }
                 }else{
