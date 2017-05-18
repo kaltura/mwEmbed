@@ -5,13 +5,11 @@
     };
 
     mw.KPushCuePointsManager.getInstance = function (embedPlayer) {
-
         if (!embedPlayer.KPushCuePointsManager) {
             embedPlayer.KPushCuePointsManager = new mw.KPushCuePointsManager(embedPlayer);
         }
         return embedPlayer.KPushCuePointsManager;
     };
-
 
     mw.KPushCuePointsManager.prototype = {
         bindPostfix: '.KPushCuePointsManager',
@@ -25,7 +23,6 @@
             this.pushServerNotification = mw.KPushServerNotification.getInstance(this.embedPlayer);
             this.addBindings();
             this.lastDispatchedCpTime = null;
-
         },
         addBindings: function () {
             // bind to cue point events
@@ -57,16 +54,14 @@
             if (currentTime == 0) {
                 return; //no point calculate when time is 0
             }
-            // assuming array is sorted - iterate from end to first
+            // assuming array is sorted - iterate from end to first. We care about the last one that has time less than
+            // current live playhead
             for (var i = this.times.length - 1; i > -1; --i) {
+                debugger;
                 if (currentTime > this.times[i]) {
                     var latestActiveCpTime = this.times[i];
                     var cpData = this.findCuePointdataByTime(latestActiveCpTime);
                     var cuepoint = cpData.cuepoint;
-
-                    if(cuepoint.tags.indexOf("poll-data")>-1){
-                        continue;
-                    }
                     if (latestActiveCpTime == this.lastDispatchedCpTime) {
                         // This CP was dispatched - no point to re-dispatch it
                         break
@@ -77,12 +72,12 @@
                     var scope = cpData.scope;
                     // this.embedPlayer.trigger() // dispatch generic event
                     if (callback) {
+                        mw.log(">>>> @@ " , "triggering CP from KPushCuePointsManager " , cuepoint);
                         callback(cuepoint, scope);
                     }
                     break
                 }
             }
-
         },
         //store cuepoint on a per-registration array.
         setLocalCuePoint: function (cuePoint, notificationName) {
@@ -128,7 +123,6 @@
             }
             //store all time (global notifications) for optimization
             this.times = [];
-
             this.getMetaDataProfile(notificationName, userId).then(function () {
                 _this.registerPollingNotifications(notificationName, scope).then(function () {
                     mw.log(notificationName + "successful  registerNotifications");
@@ -149,27 +143,24 @@
                     "entryId": _this.embedPlayer.kentryid
                 },
                 function (cuePoint) {
+                    mw.log(">>>>> @@ ", "cuePoint loaded", cuePoint[0].tags, cuePoint[0]);
                     _this.cuePointloaded(cuePoint[0], notificationName);
                 });
             return this.pushServerNotification.registerNotifications([tempNotification])
         },
-
         cuePointloaded: function (cuePoint, notificationName) {
             this.setLocalCuePoint(cuePoint, notificationName);
             var cpObject = this.findCuePointdataByTime(cuePoint.createdAt);
             cpObject.loadedCallback(cpObject.key, cpObject.cuepoint, cpObject.scope);
         },
-
         getMetaDataProfile: function (notificationName, userId) {
             var _this = this;
-
             var listMetadataProfileRequest = {
                 service: "metadata_metadataprofile",
                 action: "list",
                 "filter:systemNameEqual": notificationName
             };
             this.userId = userId;
-
             var deferred = $.Deferred();
             this.getKClient().doRequest(listMetadataProfileRequest, function (result) {
 
@@ -178,7 +169,6 @@
                     deferred.resolve(false);
                     return;
                 }
-
                 mw.log("metadata profile " + _this.currentNotification + " loaded.");
                 _this.metadataProfile = result.objects[0];
                 deferred.resolve(true);
