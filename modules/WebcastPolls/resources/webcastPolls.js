@@ -126,7 +126,6 @@
          * @returns {object} the most updated poll status reached cue point if found, otherwise null
          */
         filterStateCuePoints: function (context) {
-            var _this = this;
             if (context && context.filter && context.cuePoints) {
                 var relevantCuePoints = context.filter({
                     tags: ['select-poll-state', 'remove-selected-thumb', 'select-a-thumb'],
@@ -135,7 +134,7 @@
 
                 return relevantCuePoints.length > 0 ? relevantCuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
             }
-            console.log(">>>>>", "filterStateCuePoints", context.c);
+            this.log(">>>>>", "filterStateCuePoints", context.c);
             return context.cuePoints[0];
         },
         /**
@@ -145,7 +144,6 @@
          */
         filterPollResultsCuePoints: function (context) {
             var _this = this;
-            debugger;
             if(context.cuePoints && Array.isArray(context.cuePoints) &&  context.cuePoints.length == 1 && _this.pushCuePointsManager ){
                 context = context.cuePoints[0]; //setting context as the 1st CP
             }
@@ -319,13 +317,12 @@
 
                     if (pollId && pollContent) {
                         _this.log("@@ updated content of poll with id '" + pollId + "'" );
-                        // console.log("@@> " , cuepointContent.text);
                         if (_this.globals.pollsContentMapping[pollId]) {
                             $.extend(_this.globals.pollsContentMapping[pollId], pollContent);
                         } else {
                             _this.globals.pollsContentMapping[pollId] = pollContent;
                         }
-                        _this.log(">> @@ Registered poll "+pollId);
+                        _this.log(">> Registered poll "+pollId);
                     }
                 }
 
@@ -334,7 +331,7 @@
             }
         },
         executeCuePointReached : function(cuePoint){
-            this.log(">>>>>", "executeCuePointReached", cuePoint);
+            this.log(">>>>> $$$", "executeCuePointReached", cuePoint);
             this.latestCuePointReached = cuePoint;
             this.handleStateCuePoints({cuepointsArgs : {cuePoints:[cuePoint]}});
             this.handlePollResultsCuePoints({cuepointsArgs : {cuePoints:[cuePoint]}});
@@ -557,7 +554,7 @@
          */
         removePoll: function () {
             var _this = this;
-            _this.log("removing currently shown poll (if any)")
+            _this.log("removing currently shown poll (if any)");
 
             if (_this.globals.isPollShown) {
                 _this.view.removeWebcastPollElement();

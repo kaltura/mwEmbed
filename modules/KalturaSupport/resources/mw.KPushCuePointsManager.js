@@ -56,8 +56,8 @@
             }
             // assuming array is sorted - iterate from end to first. We care about the last one that has time less than
             // current live playhead
-            for (var i = this.times.length - 1; i > -1; --i) {
-                debugger;
+            var len = this.times.length;
+            for (var i = len-1; i > 0; --i) {
                 if (currentTime > this.times[i]) {
                     var latestActiveCpTime = this.times[i];
                     var cpData = this.findCuePointdataByTime(latestActiveCpTime);
@@ -81,12 +81,15 @@
         },
         //store cuepoint on a per-registration array.
         setLocalCuePoint: function (cuePoint, notificationName) {
+            // make sure we don't store the same cue point twice
+            if(this.times.indexOf(cuePoint.createdAt) > -1){
+                return;
+            }
+
             this.times.push(cuePoint.createdAt); //TODO - handle DVR later
             this.listeners[notificationName][cuePoint.createdAt] = cuePoint;
             //after every insertion - sort
-            this.times.sort(function (a, b) {
-                return parseFloat(a.createdAt) - parseFloat(b.createdAt); //TODO - handle DVR later
-            });
+            this.times.sort(function(a, b){return a-b});
         },
         /**
          * API - register to pushNotifications and cue-point-reached logic
@@ -143,7 +146,7 @@
                     "entryId": _this.embedPlayer.kentryid
                 },
                 function (cuePoint) {
-                    mw.log(">>>>> @@ ", "cuePoint loaded", cuePoint[0].tags, cuePoint[0]);
+                    mw.log(">>>>> ", "cuePoint loaded", cuePoint[0].createdAt);
                     _this.cuePointloaded(cuePoint[0], notificationName);
                 });
             return this.pushServerNotification.registerNotifications([tempNotification])

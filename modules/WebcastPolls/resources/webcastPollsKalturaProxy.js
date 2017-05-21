@@ -4,52 +4,42 @@
 
     mw.webcastPolls.WebcastPollsKalturaProxy = mw.KBasePlugin.extend({
         /* DEVELOPER NOTICE: you should not set any property directly here (they will be shared between instances) - use the setup function instead */
-        defaultConfig :
-        {
+        defaultConfig: {
             /* DEVELOPER NOTICE : don't use this plugin config feature since it is a detached plugin. A detached plugin cannot access the player configuration to support overrides */
         },
-        setup : function()
-        {
+        setup: function () {
             var _this = this;
 
             /*
              DEVELOPER NOTICE: you should set properties here (they will be scoped per instance)
              */
-            $.extend(_this, {
-            });
+            $.extend(_this, {});
         },
-        isErrorResponse : function(result)
-        {
+        isErrorResponse: function (result) {
             var _this = this;
             var hasError = false;
 
-            if (!result)
-            {
+            if (!result) {
 
                 _this.log('request to server failed with the following details: got undefined or null response');
                 return true;
             }
 
-            if ($.isArray(result))
-            {
-                $.each(result,function(index, response)
-                {
+            if ($.isArray(result)) {
+                $.each(result, function (index, response) {
                     hasError = hasError || (response && response.objectType && response.objectType === "KalturaAPIException");
                 });
-            }else
-            {
+            } else {
                 hasError = (result && result.objectType && result.objectType === "KalturaAPIException");
             }
 
-            if (hasError)
-            {
+            if (hasError) {
                 _this.log('request to server failed with the following details: ' + result.code + ' - ' + result.message);
             }
 
             return hasError;
         },
-        getUserVote : function(pollId, profileId, userId)
-        {
+        getUserVote: function (pollId, profileId, userId) {
             var _this = this;
             var defer = $.Deferred();
 
@@ -67,8 +57,8 @@
                     /*Search  metadata   */
                     'filter:advancedSearch:objectType': 'KalturaMetadataSearchItem',
                     'filter:advancedSearch:metadataProfileId': profileId,
-                    "responseProfile:objectType":"KalturaResponseProfileHolder",
-                    "responseProfile:systemName":"pollVoteResponseProfile",
+                    "responseProfile:objectType": "KalturaResponseProfileHolder",
+                    "responseProfile:systemName": "pollVoteResponseProfile",
 
                     //search all messages on my session id
                     'filter:advancedSearch:items:item1:objectType': "KalturaSearchCondition",
@@ -105,7 +95,7 @@
                                 _this.log("rejecting request due to invalid response from kaltura api");
                                 defer.reject();
                             }
-                        }else {
+                        } else {
                             _this.log("resolving request with the following details: user didn't perform a vote for that poll");
                             defer.resolve({});
                         }
@@ -118,16 +108,14 @@
                     _this.log("rejecting request due to error from kaltura api server with reason " + (reason ? JSON.stringify(reason) : ''));
                     defer.reject({});
                 });
-            }else
-            {
+            } else {
                 _this.log("rejecting request due to missing required information from plugin");
                 defer.reject({});
             }
 
             return defer.promise();
         },
-        transmitVoteUpdate : function(metadataId, userId, selectedAnswer,pollId)
-        {
+        transmitVoteUpdate: function (metadataId, userId, selectedAnswer, pollId) {
             var _this = this;
             var defer = $.Deferred();
 
@@ -152,17 +140,42 @@
                     _this.log("rejecting request due to error from kaltura api server with reason " + (reason ? JSON.stringify(reason) : ''));
                     defer.reject();
                 });
-            }else {
+            } else {
                 _this.log("rejecting request due to missing required information from plugin");
                 defer.reject({});
             }
 
             return defer.promise();
         },
-        transmitNewVote : function(pollId, pollProfileId, userId, selectedAnswer)
-        {
+        transmitNewVote: function (pollId, pollProfileId, userId, selectedAnswer) {
             var _this = this;
             var defer = $.Deferred();
+
+/*************************************************************
+
+            // New polls API for voting
+            if (pollId && pollProfileId && userId && selectedAnswer) {
+                var vote = {
+                    "service": "poll_poll",
+                    "action": "vote",
+                    "pollId": pollId,
+                    "answerIds": selectedAnswer, // 1
+                    "userId": userId
+                };
+                _this.getKClient().doRequest(vote, function (result) {
+                }, false, function (reason) {
+                    //TODO - Eitan handle errors later
+                    _this.log("rejecting request due to error from kaltura api server with reason " + (reason ? JSON.stringify(reason) : ''));
+                    defer.reject();
+                });
+            } else {
+                _this.log("rejecting request due to missing required information from plugin");
+                defer.reject({});
+            }
+
+            return defer.promise();
+            //TODO - Eitan remove old voting
+*************************************************************/
 
             if (pollId && pollProfileId && userId && selectedAnswer) {
                 var createCuePointRequest = {
@@ -197,7 +210,7 @@
                     _this.log("rejecting request due to error from kaltura api server with reason " + (reason ? JSON.stringify(reason) : ''));
                     defer.reject();
                 });
-            }else {
+            } else {
                 _this.log("rejecting request due to missing required information from plugin");
                 defer.reject({});
             }
@@ -205,8 +218,7 @@
             return defer.promise();
 
         },
-        getVoteCustomMetadataProfileId : function()
-        {
+        getVoteCustomMetadataProfileId: function () {
             var _this = this;
             var defer = $.Deferred();
 
@@ -224,16 +236,14 @@
                     _this.log("rejecting request due to error from kaltura api server");
                     defer.reject();
                 }
-            },false,function(reason)
-            {
+            }, false, function (reason) {
                 _this.log("rejecting request due to error from kaltura api server with reason " + (reason ? JSON.stringify(reason) : ''));
                 defer.reject();
             });
 
             return defer.promise();
         },
-        getKClient: function ()
-        {
+        getKClient: function () {
             if (!this.kClient) {
                 this.kClient = mw.kApiGetPartnerClient(this.getPlayer().kwidgetid);
             }
