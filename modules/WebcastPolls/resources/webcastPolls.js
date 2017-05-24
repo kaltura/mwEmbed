@@ -18,6 +18,7 @@
         configuration: {}, // ## Should remain empty (filled by 'resetPersistData')
         userVote: {}, // ## Should remain empty (filled by 'resetPersistData')
         pollData: {}, // ## Should remain empty (filled by 'resetPersistData')
+        pushCuePointsManager: {}, // ## cuepoints manager for push notifications
         /* stores all the information that doesn't relate directly to the poll currently selected */
         globals: {
             pollsContentMapping: {}, // stores the polls questions/answers - resetting this object during ChangeMedia event
@@ -116,8 +117,8 @@
             // bind to cue point events
             var _this = this;
 
-            this.bind('onpause onplay onChangeMedia', function (e) {
-                _this.handlePlayerEvent(e.type);
+            this.bind('onpause onplay onChangeMedia vodCuepointsLoaded seeked', function (e, args) {
+                _this.handlePlayerEvent(e.type, args);
             });
         },
         /**
@@ -131,10 +132,8 @@
                     tags: ['select-poll-state', 'remove-selected-thumb', 'select-a-thumb'],
                     sortDesc: true
                 });
-
                 return relevantCuePoints.length > 0 ? relevantCuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
             }
-            this.log(">>>>>", "filterStateCuePoints", context.c);
             return context.cuePoints[0];
         },
         /**
@@ -144,15 +143,39 @@
          */
         filterPollResultsCuePoints: function (context) {
             var _this = this;
-            if(context.cuePoints && Array.isArray(context.cuePoints) &&  context.cuePoints.length == 1 && _this.pushCuePointsManager ){
+            // TODO - optimize
+            if (!_this.embedPlayer.isLive()) {
+                if (context && context.filter && context.cuePoints && _this.pollData.pollId) {
+
+                    try {
+                        var relevantCuePoints = context.filter({
+                            tags: ['poll-results'],
+                            sortDesc: true,
+                            filter: function (cuePoint) {
+                                var pollData = JSON.parse(cuePoint.partnerData);
+                                return pollData.pollId === _this.pollData.pollId;
+                            }
+                        });
+
+                        return relevantCuePoints.length > 0 ? relevantCuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
+                    } catch (e) {
+                        // TODO [es]
+                    }
+                }
+
+                return null;
+            }
+
+
+            if (context.cuePoints && Array.isArray(context.cuePoints) && context.cuePoints.length == 1 && _this.pushCuePointsManager) {
                 context = context.cuePoints[0]; //setting context as the 1st CP
             }
             var pollData = JSON.parse(context.partnerData);
 
-            if(_this.pushCuePointsManager && pollData.showAnswers){
+            if (_this.pushCuePointsManager && pollData.showAnswers) {
                 var pollId = _this.pollData.pollId;
-                for (var i=0;i<_this.pollsCuePoints.length;i++){
-                    if(_this.pollsCuePoints[i].tags == "poll-results"){
+                for (var i = 0; i < _this.pollsCuePoints.length; i++) {
+                    if (_this.pollsCuePoints[i].tags == "poll-results") {
                         return _this.pollsCuePoints[i];
                     }
                 }
@@ -175,7 +198,7 @@
                 } catch (e) {
                     // TODO [es]
                 }
-            }else if (context && _this.latestCuePointReached && _this.pollData.pollId){
+            } else if (context && _this.latestCuePointReached && _this.pollData.pollId) {
                 return _this.latestCuePointReached;
             }
 
@@ -188,10 +211,28 @@
          * @param eventName the event name invoked by the player.
          * @returns {boolean}
          */
-        handlePlayerEvent: function (eventName) {
+        handlePlayerEvent: function (eventName, args) {
             var _this = this;
 
             switch (eventName) {
+                case 'seeked':
+                        //handle seek before 1st cue-point
+                        if (!_this.embedPlayer.isLive() && _this.pollsCuePoints && _this.pollsCuePoints.length){
+                            //vod cuepoints loaded and seek was triggered.
+                            var currentTime = args;
+                            //edge case - handle seek before 1st state // TODO eitan
+                            for(var i=0;i<_this.pollsCuePoints.length;i++){
+                                console.log(">>>>>", "pollsCuePoints seek",_this.pollsCuePoints[i].tags);
+                            }
+                        }
+                    break;
+                case 'vodCuepointsLoaded':
+                    //store for use when seek
+                    if (args && Array.isArray(args) && args.length > 0 && _this.pollsCuePoints.length == 0 ) {
+                        console.log(">>>>>", "vodCuepointsLoaded",args);
+                        _this.pollsCuePoints = args;
+                    }
+                    break;
                 case 'onpause':
                     _this.log("event '" + eventName + "' triggered - removing current poll (if any)");
                     // remove current poll is found when player is being paused
@@ -209,7 +250,7 @@
                         // # we need to sync current poll state when user press playing or seeking.
                         // Note that since onplay is triggered also after seeking we don't need to handle that event explicitly
                         _this.log("event '" + eventName + "' - start syncing current poll state");
-                        if(!_this.embedPlayer.isLive() && _this.cuePointsManager){
+                        if (!_this.embedPlayer.isLive() && _this.cuePointsManager) {
                             // _this.handleStateCuePoints({reset:true});
                             // _this.handlePollResultsCuePoints({reset:true});
                             _this.log("event '" + eventName + "' - done syncing current poll state");
@@ -245,67 +286,64 @@
                 _this.view.parent = _this;
             }
 
-
-            /*
-            if (!_this.cuePointsManager && !_this.embedPlayer.isLive()) {
-                // cue points manager used to monitor and notify when relevant cue points reached (polls status, results).
-                _this.cuePointsManager = new mw.webcast.CuePointsManager(_this.getPlayer(), function () {
-                }, "webcastPolls_CuePointsManager");
-
-                _this.cuePointsManager.registerMonitoredCuepointTypes(['poll-data'], function (cuepoints) {
-                    for (var i = 0; i < cuepoints.length; i++) {
-
-                        try {
-                            var cuepoint = cuepoints[i];
-                            var cuepointContent = cuepoint.partnerData ? JSON.parse(cuepoint.partnerData) : null;
-                            var pollIdTokens = (cuepoint.tags || '').match(/id:([^, ]*)/);
-                            var pollId = pollIdTokens && pollIdTokens.length === 2 ? pollIdTokens[1] : null;
-
-                            if (cuepointContent && pollId) {
-                                var pollContent = cuepointContent.text;
-
-                                if (pollId && pollContent) {
-                                    _this.log("updated content of poll with id '" + pollId + "'");
-                                    if (_this.globals.pollsContentMapping[pollId]) {
-                                        $.extend(_this.globals.pollsContentMapping[pollId], pollContent);
-                                    } else {
-                                        _this.globals.pollsContentMapping[pollId] = pollContent;
-                                    }
-                                }
-                            }
-
-                        } catch (e) {
-                            _this.log("ERROR while tring to extract poll information with error " + e);
-                        }
-
-                    }
-                });
-
-                _this.cuePointsManager.onCuePointsReached = $.proxy(function (args) {
-                    //TODO eitan - hook polls to cue-points through polling
-                    // debugger;
-                    // new cue points reached - change internal polls status when relevant cue points reached
-                    // _this.handleStateCuePoints({cuepointsArgs : args});
-                    // _this.handlePollResultsCuePoints({cuepointsArgs : args});
-                }, _this);
-            }
-            */
-
-            if(_this.embedPlayer.isLive()){ //register push-notifications only in case live
+            if (_this.embedPlayer.isLive()) { //register push-notifications only in case live
                 _this.pushCuePointsManager = mw.KPushCuePointsManager.getInstance(this.embedPlayer);
                 _this.pushCuePointsManager.registerToNotification(_this.Polls_push_notification, _this.getUserID(), this.cuePointLoaded, this.cuePointReached, this);
+            } else {
+                //VOD mode
+                if (!_this.cuePointsManager) {
+                    // cue points manager used to monitor and notify when relevant cue points reached (polls status, results).
+                    _this.cuePointsManager = new mw.webcast.CuePointsManager(_this.getPlayer(), function () {
+                    }, "webcastPolls_CuePointsManager");
+
+                    _this.cuePointsManager.registerMonitoredCuepointTypes(['poll-data'], function (cuepoints) {
+                        for (var i = 0; i < cuepoints.length; i++) {
+
+                            try {
+                                var cuepoint = cuepoints[i];
+                                var cuepointContent = cuepoint.partnerData ? JSON.parse(cuepoint.partnerData) : null;
+                                var pollIdTokens = (cuepoint.tags || '').match(/id:([^, ]*)/);
+                                var pollId = pollIdTokens && pollIdTokens.length === 2 ? pollIdTokens[1] : null;
+
+                                if (cuepointContent && pollId) {
+                                    var pollContent = cuepointContent.text;
+
+                                    if (pollId && pollContent) {
+                                        _this.log("updated content of poll with id '" + pollId + "'");
+                                        if (_this.globals.pollsContentMapping[pollId]) {
+                                            $.extend(_this.globals.pollsContentMapping[pollId], pollContent);
+                                        } else {
+                                            _this.globals.pollsContentMapping[pollId] = pollContent;
+                                        }
+                                    }
+                                }
+
+                            } catch (e) {
+                                _this.log("ERROR while trying to extract poll information with error " + e);
+                            }
+
+                        }
+                    });
+
+                    _this.cuePointsManager.onCuePointsReached = $.proxy(function (args) {
+                        // new cue points reached - change internal polls status when relevant cue points reached
+                        _this.handleStateCuePoints({cuepointsArgs: args});
+                        _this.handlePollResultsCuePoints({cuepointsArgs: args});
+                    }, _this);
+                }
+
             }
         },
-        cuePointLoaded: function (notificationName, cuePoint , scope) {
+        cuePointLoaded: function (notificationName, cuePoint, scope) {
             scope.executeCuePointLoaded(cuePoint);
+            console.log(">>>>> &&", cuePoint.tags);
         },
-        cuePointReached: function (cuePoint ,scope) {
+        cuePointReached: function (cuePoint, scope) {
             scope.executeCuePointReached(cuePoint);
 
         },
-        executeCuePointLoaded : function(cuePoint){
+        executeCuePointLoaded: function (cuePoint) {
             var _this = this;
-            _this.log(">>>>>", "cuePointLoaded", cuePoint);
             var cuepoint = cuePoint;
             _this.pollsCuePoints.push(cuepoint);
             try {
@@ -316,13 +354,13 @@
                     var pollContent = cuepointContent.text;
 
                     if (pollId && pollContent) {
-                        _this.log("@@ updated content of poll with id '" + pollId + "'" );
+                        _this.log("@@ updated content of poll with id '" + pollId + "'");
                         if (_this.globals.pollsContentMapping[pollId]) {
                             $.extend(_this.globals.pollsContentMapping[pollId], pollContent);
                         } else {
                             _this.globals.pollsContentMapping[pollId] = pollContent;
                         }
-                        _this.log(">> Registered poll "+pollId);
+                        _this.log(">> Registered poll " + pollId);
                     }
                 }
 
@@ -330,11 +368,11 @@
                 _this.log("ERROR while tring to extract poll information with error " + e);
             }
         },
-        executeCuePointReached : function(cuePoint){
+        executeCuePointReached: function (cuePoint) {
             this.log(">>>>> $$$", "executeCuePointReached", cuePoint);
             this.latestCuePointReached = cuePoint;
-            this.handleStateCuePoints({cuepointsArgs : {cuePoints:[cuePoint]}});
-            this.handlePollResultsCuePoints({cuepointsArgs : {cuePoints:[cuePoint]}});
+            this.handleStateCuePoints({cuepointsArgs: {cuePoints: [cuePoint]}});
+            this.handlePollResultsCuePoints({cuepointsArgs: {cuePoints: [cuePoint]}});
         },
         getMetaDataProfile: function () {
             var _this = this;
@@ -362,47 +400,6 @@
                 this.kClient = mw.kApiGetPartnerClient(this.embedPlayer.kwidgetid);
             }
             return this.kClient;
-        },
-        // registerPollingNotifications: function () {
-        //     var _this = this;
-        //     var pollsNotification = this.kPushServerNotification.createNotificationRequest(
-        //         _this.Polls_push_notification,
-        //         {
-        //             "entryId": _this.embedPlayer.kentryid
-        //         },
-        //         function (cuePoint) {
-        //             // var prefix;
-        //             // console.log(">>>>>", _this);
-        //             // if(cuePoints[0].tags.indexOf("data")>1){
-        //             //     prefix = "data";
-        //             // }
-        //             // if(cuePoints[0].tags.indexOf("state")>1){
-        //             //     prefix = "state";
-        //             // }
-        //
-        //             console.log(">>>>>", "polls ", cuePoint[0].id, cuePoint[0].tags, cuePoint[0].createdAt);
-        //             // if( cuePoints[0].createdAt >= 1494264425){
-        //             //     _this.handleStateCuePoints({cuepointsArgs : args},true);
-        //             // _this.handlePollResultsCuePoints({cuepointsArgs : args});
-        //             // }
-        //             _this.storeNewPushCuePoint(cuePoint[0])
-        //         });
-        //     return this.kPushServerNotification.registerNotifications([pollsNotification])
-        // },
-        storeNewPushCuePoint: function (cp) {
-            var existingCuePoint = false;
-            for (var i = 0; i < this.pollsCuePoints.length; i++) {
-                if (this.pollsCuePoints[i].id == cp.id) {
-                    existingCuePoint = true;
-                }
-            }
-            if (!existingCuePoint) {
-                //push a new cue point and sort array
-                this.pollsCuePoints.push(cp);
-                this.pollsCuePoints.sort(function (a, b) {
-                    return a.updatedAt - b.updatedAt;
-                });
-            }
         },
         // return something like ##guestHashSeparator-186168013885295##
         generateUserId: function () {
@@ -452,9 +449,9 @@
                 _this.log("handling reset mode for poll results");
                 // # we should check all reached cue points and treat this scenario as reset (meaning if no cue points found should remove previous polls results)
                 resetMode = true;
-                if(!_this.cuePointsManager){
+                if (!_this.cuePointsManager) {
                     cuepointsArgs = _this.latestCuePointReached;
-                }else{
+                } else {
                     cuepointsArgs = _this.cuePointsManager.getCuePointsReached();
                 }
             }

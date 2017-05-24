@@ -211,7 +211,7 @@
         handleMonitoredCuepoints : function(cuepoints)
         {
             var _this = this;
-
+            _this.embedPlayer.sendNotification("vodCuepointsLoaded",cuepoints);
             if (_this._monitoredCuepoints.enabled && cuepoints && cuepoints.length)
             {
                 _this.log("handleMonitoredCuepoints(): checking " + cuepoints.length + " cuepoints for monitored cue points");
