@@ -16,8 +16,11 @@
 (function ( mw, $ ) {
 	"use strict";
 
-	// Required for android playback of stitched playlists
+	// Required for playback of stitched playlists on android
 	mw.setConfig("Kaltura.LeadHLSOnAndroid", true);
+
+	// Required for playback of stitched playlists on IE11 on Windows 7
+	mw.setConfig("LeadWithHLSOnFlash", true);
 
 	mw.PluginManager.add( 'raptMedia', mw.KBaseComponent.extend( {
 
