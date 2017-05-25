@@ -119,6 +119,29 @@
             var _this = this;
             var defer = $.Deferred();
 
+            // New polls API for voting
+            if (pollId && userId && selectedAnswer) {
+                var vote = {
+                    "service": "poll_poll",
+                    "action": "vote",
+                    "pollId": pollId,
+                    "answerIds": selectedAnswer, // 1
+                    "userId": userId
+                };
+                _this.getKClient().doRequest(vote, function (result) {
+                }, false, function (reason) {
+                    //TODO - Eitan handle errors later
+                    _this.log("rejecting request due to error from kaltura api server with reason " + (reason ? JSON.stringify(reason) : ''));
+                    defer.reject();
+                });
+            } else {
+                _this.log("rejecting request due to missing required information from plugin");
+                defer.reject({});
+            }
+            return defer.promise();
+
+            // TODO - remove old API
+
             if (metadataId && userId && selectedAnswer) {
                 var updateMetadataRequest = {
                     service: "metadata_metadata",
@@ -151,7 +174,6 @@
             var _this = this;
             var defer = $.Deferred();
 
-/*************************************************************
 
             // New polls API for voting
             if (pollId && pollProfileId && userId && selectedAnswer) {
@@ -174,6 +196,7 @@
             }
 
             return defer.promise();
+/*************************************************************
             //TODO - Eitan remove old voting
 *************************************************************/
 
