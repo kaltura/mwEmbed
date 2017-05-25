@@ -177,16 +177,6 @@
 					}
 				}
 
-				//check for pending autoPlay
-				if ( onAirObj.onAirStatus &&
-					embedPlayer.firstPlay &&
-					embedPlayer.autoplay &&
-					embedPlayer.canAutoPlay() &&
-					!embedPlayer.isInSequence() &&
-					!embedPlayer.isPlaying() ) {
-					embedPlayer.play();
-				}
-
 				_this.onAirStatus = onAirObj.onAirStatus;
 			} );
 
