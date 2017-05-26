@@ -657,9 +657,9 @@ input#searchBox::-ms-clear {
 }
 .out-of-dvr .slideOverlay{
     background: rgba(74,73,74,0.80);
-    cursor: default !important;
 }
-.out-of-dvr{
+.out-of-dvr ,
+.out-of-dvr .slideOverlay{
     cursor: default !important;
 }
 .out-of-dvr.mediaBox:focus > .boxOutline  {
