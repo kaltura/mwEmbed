@@ -51,6 +51,9 @@
             }
             var _this = this;
             var currentTime = _this.embedPlayer.currentTime;
+            if(_this.embedPlayer.isDVR()){
+                currentTime = _this.embedPlayer.LiveCurrentTime
+            }
             if (currentTime == 0) {
                 return; //no point calculate when time is 0
             }
