@@ -56,10 +56,12 @@
 		}
 	};
 
-    var playerId = 38392191;
-    var wid = '_27017';
-    var ks = 'djJ8MjcwMTd8YnExSylpzYa3FBYeAF7IjbK_MGtiwIuSHfOLCHll9UtQEmmKmJWCM4mj6FRx8QXeyybZfsk_Qhy2AizCKAlVz4-45mE5P2sGcz5JU8KLVKNbX0FWcqcJ1VKFmJqBfs9NO4z1Gfz7RuMJjzm4cDBFpQo8p5TlIFFmptSUHo0oMt5-5nYvyn_XrCbnp5DXDyog3O03_vilFB12ywsmBt0ij2leitiJYFPdBbGp1F20JmYRayDv2RzjqSKzvXmUnIaxthp50yj-ba6bXJMt3aSjUh3WuPE5NmQwku7fyrThcGQQf4FBxwIeiPZFkKY8TrYUkkQ5bhNQE0mt8loEs9cJmPn24WPzgerlfC-0Uuf15aw=';
-    var entry = "1_ff4uy05l";
+    var playerId = 38392191; //prod
+//    var playerId = 15203553; //QA
+    var wid = '_27017'; // prod
+//    var wid = '_5174'; // QA
+    var ks = 'djJ8MjcwMTd8PZMbHFPDzQAltPb7QmyvBQ76aEws1ruyciwu4YXLJJHTglkDl-3PPAz6QmsNsFyKuYY6mLa56qwrUsoTmE-uopci4irOmqnG2HZA9PqLZqusIz93Xelog74W5d6aoK0UQ68DFzf_joYnp_yMeouz9iORTGzINHz_nr6QSheVQvYx0816SybVaY2p6Ca5pf8oTwgn0QFvqcbCYC5QccoYUoNO1msMHwyLYvx8jJKqnqsju-OnvugewPPNum9Y5GvuyhgvgiA4dRWwXwX_-S6T5jtRrUZFAYNB4iLfAeQGTnFPbC6p9kO-qCqmgS1cgZ9K';
+    var entry = "1_5ikf41lb";
 
     paramFromUrl("ks");
     paramFromUrl("wid");
@@ -74,9 +76,10 @@
 		'uiconf_id' : playerId,
 		'flashvars': {
 		    'autoPlay' : true,
-            "chapters": {                plugin: true            },
+            'qna': qna,
+            "chapters": {plugin: true},
             'ks': ks,
-            "webcastPolls":{"plugin":"true","userId":"Eitan","userRole":"unmoderatedAdminRole"},
+            "webcastPolls":{"plugin":true,"userId":"Eitan","userRole":"unmoderatedAdminRole"},
             "EmbedPlayer.LiveCuepoints" : true
 		},
 		'entry_id':  entry// vod : 1_bzr97hax | live : 1_afjmm4ie

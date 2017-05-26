@@ -72,7 +72,7 @@
                     var scope = cpData.scope;
                     // this.embedPlayer.trigger() // dispatch generic event
                     if (callback) {
-                        mw.log(">>>> @@ " , "triggering CP from KPushCuePointsManager " , cuepoint);
+                        mw.log("KPushCuePointsManager triggering cuepoint from KPushCuePointsManager " , cuepoint);
                         callback(cuepoint, scope);
                     }
                     break
@@ -92,15 +92,16 @@
             this.times.sort(function(a, b){return a-b});
         },
         /**
-         * API - register to pushNotifications and cue-point-reached logic
+         * API - register to pushNotifications, cue-point loading and cue-point-reached logic
          *
          * @param notificationName - String, system name of notification template in backend
          * @param userId - userid
          * @param cpLoadedFunc - will be triggered when a cue-point is loaded by server
          * @param cpTriggerFunc - will be triggered when a cue-point that was loaded here will be reached by playhead
          * @param scope - scope of callback functions
+         * @param moduleName - mane of module (will be used for registration with the push service)
          */
-        registerToNotification: function (notificationName, userId, cpLoadedFunc, cpTriggerFunc, scope) {
+        registerToNotification: function (notificationName, userId, cpLoadedFunc, cpTriggerFunc, scope, moduleName) {
             var _this = this;
             this.currentNotification = notificationName;
             //create a listener object to store cuepoints per notification
@@ -124,10 +125,16 @@
             } else {
                 this.listeners[notificationName]["scope"] = null;
             }
+            //TODO - manage this on the module name level and not the notification level
+            if (moduleName) {
+                this.listeners[notificationName]["moduleName"] = moduleName;
+            } else {
+                this.listeners[notificationName]["moduleName"] = null;
+            }
             //store all time (global notifications) for optimization
             this.times = [];
             this.getMetaDataProfile(notificationName, userId).then(function () {
-                _this.registerPollingNotifications(notificationName, scope).then(function () {
+                _this.registerPollingNotifications(notificationName, moduleName).then(function () {
                     mw.log(notificationName + "successful  registerNotifications");
                 }, function (err) {
                     mw.log(notificationName + "failed  registerNotifications ", err);
@@ -137,7 +144,7 @@
         /**
          Register to cuepoint loaded function
          */
-        registerPollingNotifications: function (notificationName) {
+        registerPollingNotifications: function (notificationName , moduleName) {
             var _this = this;
             // var _callback = callback;
             var tempNotification = this.pushServerNotification.createNotificationRequest(
@@ -146,10 +153,10 @@
                     "entryId": _this.embedPlayer.kentryid
                 },
                 function (cuePoint) {
-                    mw.log(">>>>> ", "cuePoint loaded", cuePoint[0].createdAt);
+                    mw.log("KPushCuePointsManager cuePoint loaded" + cuePoint[0].createdAt);
                     _this.cuePointloaded(cuePoint[0], notificationName);
                 });
-            return this.pushServerNotification.registerNotifications([tempNotification])
+            return this.pushServerNotification.registerNotifications([tempNotification],moduleName)
         },
         cuePointloaded: function (cuePoint, notificationName) {
             this.setLocalCuePoint(cuePoint, notificationName);

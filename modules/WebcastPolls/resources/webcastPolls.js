@@ -222,14 +222,14 @@
                             var currentTime = args;
                             //edge case - handle seek before 1st state // TODO eitan
                             for(var i=0;i<_this.pollsCuePoints.length;i++){
-                                console.log(">>>>>", "pollsCuePoints seek",_this.pollsCuePoints[i].tags);
+                                // console.log(">>>>>", "pollsCuePoints seek",_this.pollsCuePoints[i].tags);
                             }
                         }
                     break;
                 case 'vodCuepointsLoaded':
                     //store for use when seek
                     if (args && Array.isArray(args) && args.length > 0 && _this.pollsCuePoints.length == 0 ) {
-                        console.log(">>>>>", "vodCuepointsLoaded",args);
+                        // console.log(">>>>>", "vodCuepointsLoaded",args);
                         _this.pollsCuePoints = args;
                     }
                     break;
@@ -285,10 +285,10 @@
                 }, "webcastPolls_KalturaView");
                 _this.view.parent = _this;
             }
-
             if (_this.embedPlayer.isLive()) { //register push-notifications only in case live
                 _this.pushCuePointsManager = mw.KPushCuePointsManager.getInstance(this.embedPlayer);
-                _this.pushCuePointsManager.registerToNotification(_this.Polls_push_notification, _this.getUserID(), this.cuePointLoaded, this.cuePointReached, this);
+                _this.pushCuePointsManager.registerToNotification(_this.Polls_push_notification, _this.getUserID(),
+                    this.cuePointLoaded, this.cuePointReached, this, "polls");
             } else {
                 //VOD mode
                 if (!_this.cuePointsManager) {
@@ -336,7 +336,6 @@
         },
         cuePointLoaded: function (notificationName, cuePoint, scope) {
             scope.executeCuePointLoaded(cuePoint);
-            console.log(">>>>> &&", cuePoint.tags);
         },
         cuePointReached: function (cuePoint, scope) {
             scope.executeCuePointReached(cuePoint);
@@ -369,7 +368,6 @@
             }
         },
         executeCuePointReached: function (cuePoint) {
-            this.log(">>>>> $$$", "executeCuePointReached", cuePoint);
             this.latestCuePointReached = cuePoint;
             this.handleStateCuePoints({cuepointsArgs: {cuePoints: [cuePoint]}});
             this.handlePollResultsCuePoints({cuepointsArgs: {cuePoints: [cuePoint]}});
