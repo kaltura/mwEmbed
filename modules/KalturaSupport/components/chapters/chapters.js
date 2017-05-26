@@ -176,7 +176,7 @@
 					_this.renderBottomBar();
 				}
 				// adding a DVR class so the DVR css classes will be active and save the DVR window on the class level
-				if (_this.embedPlayer.isDVR() == true) {
+				if (_this.embedPlayer.isDVR()) {
 					$(_this.embedPlayer.getInterface()).addClass("dvr");
 					_this.dvrWindow = this.evaluate("{mediaProxy.entry.dvrWindow}");
 				}
@@ -991,7 +991,7 @@
 				if (!this.getPlayer().canAutoPlay() && this.getPlayer().firstPlay){
 					this.getPlayer().sendNotification('doPlay');
 				}
-				if (this.embedPlayer.isDVR() == 1) {
+				if (this.embedPlayer.isDVR()) {
 					var seekTo = this.mediaList[mediaIndex].startTime - this.embedPlayer.evaluate('{mediaProxy.entry.firstBroadcast}') + this.embedPlayer.kalturaPlayerMetaData.firstBroadcast - this.embedPlayer.kalturaPlayerMetaData.currentBroadcastStartTime;
 					this.getPlayer().sendNotification('doSeek', seekTo);
 				} else {
@@ -1071,6 +1071,7 @@
 				this.disableWindowDvrSlides()
 			}
 		},
+        // disable all items that are our of the DVR window
         disableWindowDvrSlides: function() {
             var currentTime = Math.ceil(this.getPlayer().LiveCurrentTime + this.embedPlayer.getLiveEdgeOffset());
             var dvrWindow = this.embedPlayer.evaluate("{mediaProxy.entry.dvrWindow}");

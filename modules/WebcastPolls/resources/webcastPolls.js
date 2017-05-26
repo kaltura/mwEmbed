@@ -411,7 +411,6 @@
                         }
                     } catch (e) {
                         // TODO [es]
-                        debugger
                     }
 
                 } else {
