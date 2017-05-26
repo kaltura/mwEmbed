@@ -1,0 +1,91 @@
+<html>
+<head>
+    <title>polls demo</title>
+    <script type="text/javascript" src="/html5.kaltura/mwEmbed/tests/qunit/qunit-bootstrap.js"></script>
+    <script type="text/javascript" src="/html5.kaltura/mwEmbed/mwEmbedLoader.php"></script>
+    <script type="text/javascript" src="/html5.kaltura/mwEmbed/docs/js/doc-bootstrap.js"></script>
+    <meta charset=UTF-8>
+
+
+</head>
+<body>
+<h1>polls demo</h1>
+<div id="kaltura_player" style="width: 885px; height: 630px;float: left;"></div>
+<div id="qnaListHolder" style="width: 300px; height: 330px; float:left; float: left"></div>
+<br style="clear: both;" /><br />
+
+<script>
+
+    var qna= {
+        'plugin': true,
+        'qnaTargetId': 'qnaListHolder',
+        'qnaPollingInterval': 5000,
+        'onPage': true,
+        'containerPosition': 'right',
+        'moduleWidth' : '200',
+        'userId': "Shimi",
+        'userRole':"userRole", //anonymousRole
+        'allowNewQuestionWhenNotLive': true
+    };
+
+    var QueryString = function () {
+        // This function is anonymous, is executed immediately and
+        // the return value is assigned to QueryString!
+        var query_string = {};
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i=0;i<vars.length;i++) {
+            var pair = vars[i].split("=");
+            // If first entry with this name
+            if (typeof query_string[pair[0]] === "undefined") {
+                query_string[pair[0]] = decodeURIComponent(pair[1]);
+                // If second entry with this name
+            } else if (typeof query_string[pair[0]] === "string") {
+                var arr = [ query_string[pair[0]],decodeURIComponent(pair[1]) ];
+                query_string[pair[0]] = arr;
+                // If third or later entry with this name
+            } else {
+                query_string[pair[0]].push(decodeURIComponent(pair[1]));
+            }
+        }
+        return query_string;
+    }();
+    var paramFromUrl = function(key){
+        if(QueryString[key]){
+            this[key]=QueryString[key];
+        }
+    };
+
+    var playerId = 38392191; //prod
+    //    var playerId = 15203553; //QA
+    var wid = '_27017'; // prod
+    //    var wid = '_5174'; // QA
+    var ks = 'djJ8MjcwMTd8NwDDgdP9Vh1GCSJNKYe956oE9Ln303ogutUBfTXRtCevQQ2FxBWv-eqlLlW5rFjl6_iFFtsbHrc8O2_XpAT_decml7368tkR0sQoN8dhOmuQZXF50PccqSeHplzWW3pIdRwv5DAH2lZUI2t37GHk1GSX6Q2EdBA3rzBiWvnrsiO5zRVTsZ3zzTg7hkVrs8Vl6Q24jrjb7b1Ew8ErN2jcjEjyfwksxvM2dPh13ZsmzE1zfafwgb4O-F_KaHrG42euv8otmakrO_1z6go6kJ3lO-9LLJuShZAo2ZIsHhAxOcbsjrODY089j29T-znQ-0Fz';
+    var entry = "1_nqbg8r5w";
+
+    paramFromUrl("ks");
+    paramFromUrl("wid");
+    paramFromUrl("entry");
+    paramFromUrl("playerId");
+
+
+    //    mw.setConfig( 'Kaltura.ServiceUrl' , 'http://lbd.kaltura.com' );
+    kWidget.featureConfig({
+        'targetId': 'kaltura_player',
+        'wid': wid,
+        'uiconf_id' : playerId,
+        'flashvars': {
+            'autoPlay' : true,
+            'qna': qna,
+            "chapters": {plugin: true},
+            'ks': ks,
+            "webcastPolls":{"plugin":true,"userId":"Eitan","userRole":"unmoderatedAdminRole"},
+            "EmbedPlayer.LiveCuepoints" : true
+        },
+        'entry_id':  entry// vod : 1_bzr97hax | live : 1_afjmm4ie
+
+    });
+
+</script>
+</body>
+</html>
