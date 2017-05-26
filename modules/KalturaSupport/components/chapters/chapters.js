@@ -1073,7 +1073,7 @@
 		},
         disableWindowDvrSlides: function() {
             var currentTime = Math.ceil(this.getPlayer().LiveCurrentTime + this.embedPlayer.getLiveEdgeOffset());
-            var dvrWindow = this.evaluate("{mediaProxy.entry.dvrWindow}");
+            var dvrWindow = this.embedPlayer.evaluate("{mediaProxy.entry.dvrWindow}");
 
             if (isNaN(currentTime)) {
                 //no ID3 data yet - disable all slides until we have timestamp data
