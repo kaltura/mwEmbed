@@ -1,0 +1,438 @@
+
+/*****************************
+General
+*****************************/
+.webcastPolls {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 4;
+    box-sizing: border-box;
+    padding: 1em;
+    background-color:rgba(0,0,0,0.6);
+    font-family: 'Lato', 'Helvetica', 'Arial';
+}
+
+.webcastPolls .poll-container
+{
+    width: 100%;
+    height: 100%;
+    display:table;
+}
+
+.webcastPolls .poll-container-content
+{
+    display:table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
+
+/*****************************
+Loading
+*****************************/
+.webcastPolls .loading-container {
+    display:table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
+
+/*****************************
+Poll (shared)
+*****************************/
+.webcastPolls .poll  {
+    display:none;
+    margin:auto;
+
+}
+
+/**** question elements ****/
+.webcastPolls .poll .question{
+    color: #fff;
+    font-size:19px;
+    line-height:24px;
+    letter-spacing: 1px;
+    margin:auto;
+}
+
+/**** error elements ****/
+.webcastPolls .poll-container .error-container {
+    position:relative;
+    height:100%;
+    width:100%;
+}
+
+.webcastPolls .poll-container .error-container .text {
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align:center;
+    font-size:21px;
+    line-height:28px;
+    letter-spacing: 1px;
+}
+
+/**** question-only elements ****/
+.webcastPolls .poll-container .question-only-container {
+    position:relative;
+    height:100%;
+    width:100%;
+}
+
+.webcastPolls .poll-container .question-only-container .text {
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align:center;
+    font-size:21px;
+    line-height:28px;
+    letter-spacing: 1px;
+}
+
+/**** respond elements ****/
+.webcastPolls .poll .responds {
+    font-size:13px;
+    color: rgba(255,255,255,0.8);
+    line-height: 20px;
+}
+
+.webcastPolls .poll .responds .responds-number {
+    font-size:24px;
+    letter-spacing:2px;
+}
+
+.webcastPolls .poll .responds .responds-text {
+    margin-top:3px;
+    letter-spacing:3px;
+
+}
+
+/**** answers elements ****/
+
+.webcastPolls .poll .answer {
+    margin-bottom: 10px;
+    width:100%;
+    -webkit-border-radius:3px;
+    -moz-border-radius:3px;
+    border-radius:3px;
+    overflow:hidden;
+    background:rgba(241,241,241,0.4);
+    text-align: left;
+    border : rgba(255,255,255,0.1) solid 1px;
+    vertical-align: middle;
+    position:relative;
+    overflow:visible;
+    top:0;
+    left:0;
+    -webkit-transition:  width 1s, height 1s, top 1s, left 1s, margin 1s, background 1s, border 1s;
+    -moz-transition:  width 1s, height 1s, top 1s, left 1s, margin 1s, background 1s, border 1s;
+    -o-transition:  width 1s, height 1s, top 1s, left 1s, margin 1s, background 1s, border 1s;
+    transition: width 1s, height 1s, top 1s, left 1s, margin 1s, background 1s, border 1s;
+
+}
+
+.webcastPolls .poll .answer .answer-row {
+    overflow :visible;
+}
+
+.webcastPolls .poll .answer .answer-result {
+    height:6px;
+    position:absolute;
+    bottom:-4px;
+    left:-1px;
+    width:0%;
+    background: #4B7418;
+    border-radius: 0 6px 6px 0;
+    box-shadow: 2px 0 2px 0 rgba(0, 0, 0, 0.25);
+    -webkit-transition: width 500ms;
+    -moz-transition: width 500ms;
+    -o-transition: width 500ms;
+    transition: width 500ms ;
+}
+
+.webcastPolls .poll .answer .answer-text {
+    font-family: 'Lato Bold', 'Helvetica', 'Arial';
+    font-size: 15px;
+    color:rgba(0,0,0,0.6);
+    letter-spacing: 0.5px;
+    color:black;
+    pointer:cursor;
+
+}
+
+.webcastPolls .poll .answer .answer-result-text {
+    color:black;
+}
+
+.webcastPolls .poll .answer.selected {
+    border: rgba(255, 255, 255, 0.4) solid 2px;
+    background-color: rgba(241,241,241,0.58);
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.3), 0 0 6px 0 rgba(255, 255, 255, 0.3);
+}
+
+.webcastPolls .poll .answer.selected .answer-result {
+    left : -2px;
+}
+
+
+.webcastPolls .poll .answer.popular {
+    width: 110% !important;
+    left : -5%;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5), 0 0 6px 0 rgba(255, 255, 255, 0.7);
+    background-color: rgba(241,241,241,0.96);
+
+}
+
+.webcastPolls .poll .answer.popular .answer-text {
+    color:black;
+    font-size:16px;
+    text-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.44);
+}
+
+
+.webcastPolls .poll .answer.popular .answer-text {
+    color:black;
+    font-size:16px;
+    text-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.44);
+}
+
+
+.webcastPolls .poll .answer.popular .answer-result {
+    background: rgb(126, 211,33);
+}
+
+.webcastPolls .poll .answer.popular .answer-result-text {
+    color:black;
+    text-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.44);
+    font-size:16px;
+    font-weight: bolder;
+}
+
+.webcastPolls.allow-voting .poll .answer {
+    background:rgba(241,241,241,0.7);
+    border : rgba(255,255,255,0.2) solid 1px;
+    cursor: pointer;
+}
+
+
+.webcastPolls.allow-voting .poll .answer-text {
+    text-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.44);
+}
+
+.webcastPolls.allow-voting .poll .answer:hover, .webcastPolls.allow-voting .poll .answer.selected {
+    background-color: rgba(241,241,241,0.96);
+}
+
+.webcastPolls.allow-voting .poll .answer.selected {
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5), 0 0 6px 0 rgba(255, 255, 255, 0.7);
+    border: white solid 2px;
+}
+
+
+/*****************************
+Poll (small)
+*****************************/
+
+.webcastPolls .small-layout
+{
+    position:relative;
+    height:100%;
+    width:100%;
+}
+
+.webcastPolls .small-layout .text{
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align:center;
+    font-size:21px;
+}
+
+
+/*****************************
+Poll (medium)
+*****************************/
+
+.webcastPolls .medium-layout
+{
+    height:100%;
+    width:100%;
+}
+
+
+/**** question only elements ****/
+.webcastPolls  .medium-layout .poll-container .question-only-container .text {
+    width:500px;
+}
+
+/**** Poll container ****/
+.webcastPolls .medium-layout .poll
+{
+    display:table;
+    table-layout:fixed;
+}
+
+.webcastPolls .medium-layout .poll .column-left {
+    display:table-cell;
+    vertical-align: middle;
+}
+
+.webcastPolls .medium-layout .poll .column-left .column-left-container{
+    display:inline-block;
+    text-align:center;
+    width:250px;
+}
+
+.webcastPolls .medium-layout .poll .column-right {
+    display:table-cell;
+    vertical-align: middle;
+    width:350px;
+    text-align:left;
+}
+
+.webcastPolls .medium-layout .poll .column-right .column-right-container{
+    display:inline-block;
+    width:350px;
+    margin:0 0 0 40px;
+}
+
+/**** question elements ****/
+.webcastPolls .medium-layout .poll .question{
+    word-break: keep-all;
+}
+
+.webcastPolls .medium-layout .poll .question-widget{
+    margin-bottom:30px;
+}
+
+.webcastPolls .medium-layout .poll-size-3 .poll .question-widget{
+}
+
+/**** responds elements ****/
+
+.webcastPolls .medium-layout .poll .responds-widget{
+}
+
+/**** answers elements ****/
+.webcastPolls .medium-layout .poll .answers-widget{
+}
+
+.webcastPolls .medium-layout .poll .answer.popular {
+
+}
+
+.webcastPolls .medium-layout .poll .answer.first-answer {
+    margin-top:10px;
+}
+
+
+.webcastPolls .medium-layout .poll .answer {
+    display: inline-block;
+    position:relative;
+    line-height: normal;
+    height:48px;
+}
+
+
+.webcastPolls .medium-layout  .poll .answer-text {
+    position:absolute;
+    top: 50%;
+    transform: translate(0, -50%);
+    width:80%;
+    margin-left:14px;
+}
+
+
+.webcastPolls .medium-layout .poll .answer .answer-result-text {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    letter-spacing: 1px;
+    transform: translate(0, -50%);
+}
+
+
+
+/*****************************
+Poll (large)
+*****************************/
+
+.webcastPolls .large-layout
+{
+    height:100%;
+    width:100%;
+}
+
+.webcastPolls .large-layout .poll  {
+    width:597px;
+}
+
+/**** question elements ****/
+
+.webcastPolls .large-layout .poll .question{
+    width:520px;
+}
+
+.webcastPolls .large-layout .poll .question-widget {
+    position:relative;
+    text-align: center;
+    vertical-align: middle;
+    margin-bottom: 30px;
+}
+
+
+/**** question only elements ****/
+.webcastPolls  .large-layout .poll-container .question-only-container .text {
+    width:580px;
+}
+
+/**** responds elements ****/
+
+.webcastPolls .large-layout .poll .responds-widget{
+    text-align:left;
+    margin-top:46px;
+    margin-right:20px;
+}
+
+.webcastPolls .large-layout .poll .responds-text {
+    margin-left:30px;
+}
+
+
+/**** answers elements ****/
+
+.webcastPolls .large-layout .poll .answers-widget {
+    clear:both;
+    margin-top:10px;
+}
+
+.webcastPolls .large-layout .poll .answer.popular {
+    height: 53px !important;
+    line-height: 53px !important;
+}
+
+.webcastPolls .large-layout .poll .answer {
+    margin-bottom: 10px;
+    height:48px;
+    line-height: 48px;
+    vertical-align: middle;
+}
+
+.webcastPolls .large-layout  .poll .answer-text {
+    margin-left:29px;
+    float:left;
+}
+
+.webcastPolls .large-layout .poll .answer .answer-result-text {
+    float:right;
+    margin-right:15px;
+}
+
+
+.webcastPolls .large-layout .poll .answer .answer-row {
+    clear:both;
+}
