@@ -59,6 +59,7 @@
 
 		// Flag specifying if a mobile device already played. If true - mobile device can autoPlay
 		mobilePlayed: false,
+		mobileAutoPlay:false,
 		// All the native events per:
 		// http://www.w3.org/TR/html5/video.html#mediaevents
 		nativeEvents: [
@@ -103,6 +104,12 @@
 				this.getPlayerElement().removeAttribute("poster");
 			}
 			$(this.getPlayerElement()).css('position', 'absolute');
+
+            if ( mw.isMobileDevice() && mw.getConfig( 'mobileAutoPlay' ) ) {
+            	this.mobileAutoPlay = true;
+                this.setVolume( 0 );
+            }
+
 			if (this.inline) {
 				$(this.getPlayerElement()).attr('playsinline', '');
 			}
@@ -276,9 +283,16 @@
 		/**
 		 * returns true if device can auto play
 		 */
-		canAutoPlay: function () {
-			return (!mw.isAndroid() && !mw.isMobileChrome() && !mw.isIOS()) || this.mobilePlayed;
-		},
+        canAutoPlay: function () {
+            if ( mw.isMobileDevice() ) {
+                var playsinline = true;
+                if ( mw.isIOS() ) {
+                    playsinline = mw.getConfig( 'EmbedPlayer.WebKitPlaysInline' );
+                }
+                return (this.mobileAutoPlay && playsinline) || this.mobilePlayed;
+            }
+            return true;
+        },
 
 		/**
 		 * Post element javascript, binds event listeners and starts monitor

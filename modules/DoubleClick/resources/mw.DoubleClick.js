@@ -437,7 +437,11 @@
             }
             // Initialize the ads manager. In case of ad playlist with a preroll, the preroll will start playing immediately.
             this.adsManager.init( this.embedPlayer.getWidth(), this.embedPlayer.getHeight(), google.ima.ViewMode.NORMAL );
-            this.adsManager.setVolume( this.embedPlayer.getPlayerElementVolume() );
+            if ( this.embedPlayer.mobileAutoPlay ) {
+                this.adsManager.setVolume( 0 );
+            } else {
+                this.adsManager.setVolume( this.embedPlayer.getPlayerElementVolume() );
+            }
             // Start the ad playback. For video and overlay ads, this will start the ads. For automatic ad rules controller ads, this will be ignored.
             mw.log( "DoubleClick::adsManager.play" );
             this.adsManager.start();
@@ -1159,7 +1163,11 @@
                 }
                 var size = _this.getPlayerSize();
                 _this.adsManager.resize( size.width, size.height, google.ima.ViewMode.NORMAL );
-                _this.adsManager.setVolume( _this.embedPlayer.getPlayerElementVolume() );
+                if ( _this.embedPlayer.mobileAutoPlay ) {
+                    _this.adsManager.setVolume( 0 );
+                } else {
+                    _this.adsManager.setVolume( _this.embedPlayer.getPlayerElementVolume() );
+                }
                 if ( _this.isLinear ) {
                     // Hide player content
                     _this.hideContent();
