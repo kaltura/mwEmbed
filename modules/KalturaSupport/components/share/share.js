@@ -184,7 +184,7 @@
 					embedPlayer.triggerHelper( 'onEnableKeyboardBinding' );
 					// re-enable player controls
 					if ( !embedPlayer.isInSequence() ){
-						embedPlayer.enablePlayControls(['related']);
+						embedPlayer.enablePlayControls();
 						embedPlayer.triggerHelper("showLargePlayBtn");
 					}
 					// remove blur

@@ -266,12 +266,11 @@
 			return this.getEntriesFromPlaylistId( '_KDP_CTXPL', callback, true);
 		},
 		isValidResult: function( data ){
-			// Check if we got error
+			// Check if we got error and if entry list is empty disable the button
 			if( !data || data.length === 0	||( data.code && data.message )	){
 				var errMsg = data.message ? data.message : 'No related items were found.';
 				this.log('Error getting related items: ' + errMsg );
-				this.updateTooltip(gM('mwe-embedplayer-related-errMsg'));
-				this.onDisable();
+				this.getBtn().hide();
 				this.error = true;
 				return false;
 			}
