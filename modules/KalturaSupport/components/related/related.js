@@ -266,7 +266,7 @@
 			return this.getEntriesFromPlaylistId( '_KDP_CTXPL', callback, true);
 		},
 		isValidResult: function( data ){
-			// Check if we got error and if entry list is empty disable the button
+			// Check if we got error and if related entry list is empty disable the button
 			if( !data || data.length === 0	||( data.code && data.message )	){
 				var errMsg = data.message ? data.message : 'No related items were found.';
 				this.log('Error getting related items: ' + errMsg );
