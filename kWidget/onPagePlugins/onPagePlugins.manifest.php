@@ -310,4 +310,134 @@ return array(
 			),
 		)
 	),
+    'cielo24Transcriptions' => array(
+        'description' => 'Adds a Cielo24 Media Data Player widget to the page.',
+        'attributes' => array(
+            'onPageJs1' => array(
+                'doc' => "URL for the widget JavaScript.",
+                'initvalue' => "\/\/mediadataplayer.cdn.cielo24.com\/v2\/stable\/kaltura.js",
+                'type' => 'hidden'
+            ),
+            'DynaTransWindowHeight' => array(
+                'doc' => "The height of the widget.",
+                'initvalue' => 400,
+                'type' => 'number',
+            ),
+            'DynaTransWindowTitle' => array(
+                'doc' => "Widget title.",
+                'initvalue' => 'cielo24 Media Data Player',
+                'type' => 'string',
+            ),
+            'DynaTransClientLogo' => array(
+                'doc' => "Logo to display in the widget footer.",
+                'initvalue' => "https:\/\/mediadataplayer.cdn.cielo24.com\/v2\/stable\/widget\/img\/logo-transparent.png",
+                'type' => 'string',
+            ),
+            'DynaTransHideGear' => array(
+                'doc' => "If set to true, the settings icon will be hidden.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+            'DynaTransHideShare' => array(
+                'doc' => "If set to true, the social sharing icon will be hidden.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+            'DynaTransHidePrint' => array(
+                'doc' => "If set to true, the print icon will be hidden.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+            'DynaTransHideDownload' => array(
+                'doc' => "If set to true, the transcript download icon will be hidden.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+            'DynaTransHideLeftMenu' => array(
+                'doc' => "If set to true, the metadata menu icon will be hidden.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+            'DynaTransHideSpeakers' => array(
+                'doc' => "If set to true, speaker names will be hidden by default.",
+                'type' => 'boolean',
+                'initvalue' => true
+            ),
+            'DynaTransHideTimestamps' => array(
+                'doc' => "If set to true, timestamps will be hidden by default.",
+                'type' => 'boolean',
+                'initvalue' => true
+            ),
+            'DynaTransAutoscrollOff' => array(
+                'doc' => "If set to true, auto-scrolling will be disabled by default.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+            'DynaTransWidgetUrl' => array(
+                'doc' => "URL for the widget html.",
+                'initvalue' => "https:\/\/mediadataplayer.cdn.cielo24.com\/v2\/stable\/widget\/widget.html",
+                'type' => 'hidden',
+            ),            
+            'DynaTransHideMetaSpeakers' => array(
+                'doc' => "If set to true, the speakers option in the metadata menu will be hidden.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+            'DynaTransHideMetaTopics' => array(
+                'doc' => "If set to true, the topics option in the metadata menu will be hidden.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+            'DynaTransMetaKeywords' => array(
+                'doc' => "If set to true, the keywords option in the metadata menu will be hidden.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+            'DynaTransAdditionalCSS' => array(
+                'doc' => "Additional CSS to inject into the page that hosts the player. (Optional)",
+                'type' => 'string',
+                'initvalue' => ".action-edit #wrapper.video{margin-bottom:0}#mediaContainer #wrapper.video{height:auto;padding-bottom:0 !important}#mediaContainer #wrapper.video #player div.kWidgetIframeContainer{position:relative;height:400px;left:auto;top:auto}.entryTitle,.stat_data{margin-top:20px}#mediaContainer #wrapper.video #player div#cielo24-iframe-wrapper-kplayer{background:#FFF;height:auto;left:auto;position:relative;top:auto;width:auto}#mediaContainer #wrapper.video #player #cielo24-iframe-wrapper-kplayer iframe{background-color:#FFF;height:inherit;left:unset;position:unset;top:unset;width:none}"
+            ),
+            'DynaTransEnableAdditionalCSS' => array(
+                'doc' => "If set to true, the additional CSS will be injected into the page that hosts the player.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+            'DynaTransTargetDivId' => array(
+                'doc' => "The HTML div into which the player should be rendered. (Optional)",
+                'type' => 'string',
+                'initvalue' => ""
+            ),
+            'DynaTransSearchVar' => array(
+                'doc' => "If passing a search parameter sets variable name (Optional)",
+                'type' => 'string',
+                'initvalue' => ""
+            ),
+            'DynaTransScrollbar' => array(
+                'doc' => "Option to set search scrollbar to be horizontal or vertical, default is vertical. (Optional)",
+                'type' => 'string',
+                'initvalue' => "vertical"
+            ),
+            'DynaTransSponsorLogo' => array(
+                'doc' => "Sponsor logo on the right corner of the widget footer.",
+                'type' => 'string',
+                'initvalue' => ""
+            ),
+            'DynaTransSponsorHref' => array(
+                'doc' => "Link for the Sponsor logo displayed on right side of footer.",
+                'type' => 'string',
+                'initvalue' => ""
+            ),
+            'DynaTransClientHref' => array(
+                'doc' => "Link for the client logo displayed on left side of footer",
+                'type' => 'string',
+                'initvalue' => "https:\/\/cielo24.com"
+            ),
+            'DynaTransHideFooter' => array(
+                'doc' => "Control display of the footer of the widget - including all logos, links, and Display text.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+        )
+    ),
 );
