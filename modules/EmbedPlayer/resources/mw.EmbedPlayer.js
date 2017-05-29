@@ -2777,12 +2777,10 @@
 			_this.previousVolume = _this.volume;
 
 			// Update the volume from the player element
-			if (!mw.getConfig( 'muted' )) {
-                _this.volume = this.getPlayerElementVolume();
-            }
+			_this.volume = this.getPlayerElementVolume();
+
 			// update the mute state from the player element
-			if (_this.muted != _this.getPlayerElementMuted() && !_this.isStopped() && !mw.getConfig( 'muted' )) {
-                console.error("EmbedPlayer::syncVolume: muted does not mach embed player");
+			if (_this.muted != _this.getPlayerElementMuted() && !_this.isStopped()) {
 				_this.toggleMute();
 				// Make sure they match:
 				_this.muted = _this.getPlayerElementMuted();
