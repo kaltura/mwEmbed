@@ -437,6 +437,8 @@
             }
             // Initialize the ads manager. In case of ad playlist with a preroll, the preroll will start playing immediately.
             this.adsManager.init( this.embedPlayer.getWidth(), this.embedPlayer.getHeight(), google.ima.ViewMode.NORMAL );
+
+            // If we're on mobile autoPlay we will start the ad muted just for the first entry
             if ( this.embedPlayer.mobileAutoPlay ) {
                 this.adsManager.setVolume( 0 );
             } else {
@@ -1163,11 +1165,12 @@
                 }
                 var size = _this.getPlayerSize();
                 _this.adsManager.resize( size.width, size.height, google.ima.ViewMode.NORMAL );
-                if ( _this.embedPlayer.mobileAutoPlay ) {
-                    _this.adsManager.setVolume( 0 );
-                } else {
-                    _this.adsManager.setVolume( _this.embedPlayer.getPlayerElementVolume() );
+
+                // If the player volume has been changed since the last ad we need to update the volume for the current ad
+                if ( typeof _this.savedVolume === 'number') {
+                    _this.adsManager.setVolume( _this.savedVolume );
                 }
+
                 if ( _this.isLinear ) {
                     // Hide player content
                     _this.hideContent();
@@ -1571,6 +1574,8 @@
                 if ( _this.adActive ) {
                     mw.log( "DoubleClick::volumeChanged:" + percent );
                     _this.adsManager.setVolume( percent );
+                } else {
+                    _this.savedVolume = percent;
                 }
             } );
 
@@ -1790,6 +1795,7 @@
                     this.embedPlayer.getPlayerElement().sendNotification( 'destroy' );
                 }
             }
+            this.savedVolume = null;
             this.contentDoneFlag = false;
         }
     };
