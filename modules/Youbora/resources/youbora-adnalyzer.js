@@ -79,6 +79,14 @@ $YB.adnalyzers.KalturaAds.prototype.registerListeners = function () {
       adnalyzer.startJoinAdHandler();
     });
 
+      this.ads.bind( 'onPlayerStateChange', function ( event, newState ) {
+          if ( newState === "pause" ) {
+              adnalyzer.pauseAdHandler();
+          } else if ( newState === "play" ) {
+              adnalyzer.resumeAdHandler();
+          }
+      } );
+
     this.ads.bind('AdSupport_AdUpdatePlayhead', function (e, currentTime) {
       adnalyzer.playhead = currentTime;
     });
