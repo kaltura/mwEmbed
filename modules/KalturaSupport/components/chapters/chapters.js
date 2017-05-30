@@ -42,6 +42,7 @@
 
 		mediaList: [], //Hold the medialist items
 		chaptersMap: [],
+        currentId3Time: null,
 		slidesMap: [],
 		pendingMediaItems: [], //Hold the medialist items that are pending to be displayed in live stream
 		cache: {}, //Hold the search data cache
@@ -135,16 +136,16 @@
 			});
 
 			this.bind("seeked", function(){
+				if(_this.embedPlayer.isDVR()){
+					return; // no need to run this on DVR
+				}
 				var item = _this.mediaList[ _this.selectedMediaItemIndex ];
 				if ( item && item.active ) {
 					item.active = false;
 				}
-
 				var activeDomObj = _this.getActiveItem();
 				activeDomObj.find(".slideOverlay").removeClass("watched");
-
 				_this.resetChapterProgress(_this.selectedChapterIndex);
-
 				//On seek reset the active item index so we can find items even if seek is to past time(e.g. rewind)
 				_this.selectedMediaItemIndex = 0;
 				_this.selectedSlideIndex = 0;
@@ -227,6 +228,9 @@
 				_this.blurSearchBar();
 				//Prevent keyboard bindings when menu is hidden
 				_this.maskKeyboardShortcuts = true;
+			});
+			this.bind('onId3Tag', function(e, tag){
+			    _this.currentId3Time = tag.timestamp;
 			});
 			//key bindings
 			if (this.getConfig('enableKeyboardShortcuts')) {
@@ -992,8 +996,16 @@
 					this.getPlayer().sendNotification('doPlay');
 				}
 				if (this.embedPlayer.isDVR()) {
-					var seekTo = this.mediaList[mediaIndex].startTime - this.embedPlayer.evaluate('{mediaProxy.entry.firstBroadcast}') + this.embedPlayer.kalturaPlayerMetaData.firstBroadcast - this.embedPlayer.kalturaPlayerMetaData.currentBroadcastStartTime;
-					this.getPlayer().sendNotification('doSeek', seekTo);
+                    // get current time from Id3
+                    var id3Time = this.currentId3Time/1000;
+                    // get current (in sec) time from video
+                    var currentPlayerTime = this.embedPlayer.currentTime;
+                    // calculate the timestamp of the beginnig of the video
+                    var videoStartTimeStamp = id3Time-currentPlayerTime;
+                    // seek to current-slide timestamp - start of video timestamp. Output is is seconds (E.G. 120 = 2m)
+					var seekTo = this.mediaList[mediaIndex].startTime - videoStartTimeStamp;
+
+					this.getPlayer().sendNotification('doSeek', seekTo  );
 				} else {
 					// seek to start time and play ( +.1 to avoid highlight of prev chapter )
 					this.getPlayer().sendNotification('doSeek', (this.mediaList[mediaIndex].startTime) + 0.1);
