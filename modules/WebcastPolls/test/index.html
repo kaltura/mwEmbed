@@ -60,8 +60,8 @@
     //    var playerId = 15203553; //QA
     var wid = '_27017'; // prod
     //    var wid = '_5174'; // QA
-    var ks = 'djJ8MjcwMTd8NwDDgdP9Vh1GCSJNKYe956oE9Ln303ogutUBfTXRtCevQQ2FxBWv-eqlLlW5rFjl6_iFFtsbHrc8O2_XpAT_decml7368tkR0sQoN8dhOmuQZXF50PccqSeHplzWW3pIdRwv5DAH2lZUI2t37GHk1GSX6Q2EdBA3rzBiWvnrsiO5zRVTsZ3zzTg7hkVrs8Vl6Q24jrjb7b1Ew8ErN2jcjEjyfwksxvM2dPh13ZsmzE1zfafwgb4O-F_KaHrG42euv8otmakrO_1z6go6kJ3lO-9LLJuShZAo2ZIsHhAxOcbsjrODY089j29T-znQ-0Fz';
-    var entry = "1_nqbg8r5w";
+    var ks = 'djJ8MjcwMTd88KeA--Hte7zOujbyVD35vcrpkx0QyyXPhj2SPthjByZBBRRRs2nPUKSoOTua0KjeqjJ8hVJWfD7anjgMlO0gZkjpvjaDZPkiljmO7e_Dtcvsdh11OMf_LjCqq6_Vc__sFJyvLPeR3fV1N_SucJnXVGa1JH45WvqSrY5ngjX5-aSvbYe-gXPSwDpdWRmJYBQ9v3JrjfczHHjg-Iu_tLWK-dGR-RD9HN25_KfdmdNphLujU3Oj0j4RUKyK9-OpkHyNsb8lRunyd7Q0GrMRjBzoBSWFcGe9jktt_k6QWE00Zs8DUg9ULc2bbeH5PXAZSVXl';
+    var entry = "1_knnpnpmw";
 
     paramFromUrl("ks");
     paramFromUrl("wid");
@@ -69,7 +69,6 @@
     paramFromUrl("playerId");
 
 
-    //    mw.setConfig( 'Kaltura.ServiceUrl' , 'http://lbd.kaltura.com' );
     kWidget.featureConfig({
         'targetId': 'kaltura_player',
         'wid': wid,
@@ -85,7 +84,17 @@
         'entry_id':  entry// vod : 1_bzr97hax | live : 1_afjmm4ie
 
     });
-
+    function seekTo(t){
+        document.getElementById("kaltura_player").sendNotification("doSeek",t);
+    }
 </script>
+<br>
+<button onclick="seekTo(140)">140</button>
+<button onclick="seekTo(143)">143</button>
+<button onclick="seekTo(170)">170</button>
+<button onclick="seekTo(175)">175</button>
+<button onclick="seekTo(730)">730</button>
+<button onclick="seekTo(737)">737</button>
+<button onclick="seekTo(2540)">2540</button>
 </body>
 </html>
