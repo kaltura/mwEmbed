@@ -76,6 +76,9 @@ $YB.adnalyzers.KalturaAds.prototype.registerListeners = function () {
     var adnalyzer = this;
 
     this.ads.bind('onAdPlay', function (e, id, system, type, position, duration, podPosition, podStartTime, title, props) {
+      if (type === 'overlay'){
+        return;
+      }
       adnalyzer.title = title;
       adnalyzer.duration = duration;
       adnalyzer.mediaPlayhead = podStartTime;
