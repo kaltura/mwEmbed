@@ -181,12 +181,12 @@
                 //cache sockets by host name
                 var socketKey = result.url.replace(/^(.*\/\/[^\/?#]*).*$/,"$1");
                 // check if there is an existing socket for that specific module by name
-                var socket = _this.socketPool[moduleName];
+                var socket = _this.socketPool[socketKey];
                 if (!socket) {
                     //does not exist - create one for that specific module
-                    socket = new SocketWrapper(moduleName);
+                    socket = new SocketWrapper(socketKey);
                     //store it in case there are more events for this specific module
-                    _this.socketPool[moduleName]=socket;
+                    _this.socketPool[socketKey]=socket;
                     socket.connect(result.url,registerRequest.eventName);
                 }
 
