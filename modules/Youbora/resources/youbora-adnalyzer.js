@@ -100,7 +100,7 @@ $YB.adnalyzers.KalturaAds.prototype.registerListeners = function () {
     });
 
     this.ads.bind('onAdSkip', function () {
-      adnalyzer.endedAdHandler({ skipped: true });
+      adnalyzer.skipAdHandler();
       adnalyzer.resetValues();
     });
 
