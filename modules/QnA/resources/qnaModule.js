@@ -10,8 +10,6 @@
             qnaPlugin: null,
             qnaService: null,
             currentTimeInterval: null,
-            waitFirstPlayInterval: null,
-            answerOnAirQueueUpdateInterval: null,
 
             init: function (embedPlayer, qnaPlugin, qnaService) {
 
@@ -131,25 +129,17 @@
                     }, mw.getConfig("qnaPollingInterval") || 10000);
                 }
 
-                if (this.waitFirstPlayInterval === null){
-                    this.waitFirstPlayInterval = setInterval(function(){
-                        if (embedPlayer.currentTime > 0){
-                            _this.qnaService.AnswerOnAirQueueUpdate(embedPlayer.getPlayerElementTime());
-                            clearInterval(_this.waitFirstPlayInterval);
-                        }
-                    }, 100);
-                }
 
                 $( embedPlayer ).bind('timeupdate', function () {
                     _this.playerTime(embedPlayer.currentTime);
                 });
 
 
+
             },
             destroy: function () {
                 clearInterval(this.currentTimeInterval);
                 this.currentTimeInterval = null;
-                clearInterval(this.answerOnAirQueueUpdateInterval);
                 $(this.embedPlayer).unbind(this.bindPostfix);
             },
             applyLayout: function () {

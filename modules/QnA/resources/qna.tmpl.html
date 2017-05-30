@@ -22,16 +22,18 @@
     <div class="listHolder nano">
         <div class="nano-content">
 
-            <div data-bind="if: myObservableAnswerOnAirQueue().length > 0 && playerTime() > 0 && playerTime() >= myObservableAnswerOnAirQueue()[0]().cuePoint().createdAt">
-                <div class="qnaAnswerOnAirHolder">
-                    <div class="qnaThread qnaEntry qnaAnswerOnAir">
-                        <div class = "AnswerOnAirTriangle"></div>
-                        <div class="qnaAnswerOnAirText" data-bind="text: myObservableAnswerOnAirQueue()[0]().getText()">
-                        </div>
-                        <div>
-                            <div class="qnaAnswerOnAirTitle" data-bind="text: myObservableAnswerOnAirQueue()[0]().getTitle()">
+            <div data-bind="template: { foreach: myObservableAnswerOnAirQueue(), as: 'answerOnAirItem'}">
+                <div data-bind="if: answerOnAirItem.isAnswerOnAirActive($parent.playerTime())">
+                    <div class="qnaAnswerOnAirHolder">
+                        <div class="qnaThread qnaEntry qnaAnswerOnAir">
+                            <div class = "AnswerOnAirTriangle"></div>
+                            <div class="qnaAnswerOnAirText" data-bind="text: answerOnAirItem.getText()">
                             </div>
-                            <div class="answerOnAirIcon qna-icon-answeronair"></div>
+                            <div>
+                                <div class="qnaAnswerOnAirTitle" data-bind="text: answerOnAirItem.getTitle()">
+                                </div>
+                                <div class="answerOnAirIcon qna-icon-answeronair"></div>
+                            </div>
                         </div>
                     </div>
                 </div>

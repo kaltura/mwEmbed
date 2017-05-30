@@ -36,6 +36,8 @@
             });
 			this.bind( 'onChangeMedia', function() {
                 _this.removeBindings();
+				//Reset UI state on change media
+				_this.getBtn().show();
             });
 		},
         initStrings: function(){

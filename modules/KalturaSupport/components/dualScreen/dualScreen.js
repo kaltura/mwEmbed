@@ -1,4 +1,4 @@
-(function ( mw, $ ) {
+(function ( mw, $ ,Hls) {
 	"use strict";
 	mw.PluginManager.add( 'dualScreen', mw.KBaseComponent.extend( {
 
@@ -220,7 +220,7 @@
 						primary.disableDroppable();
 						secondary.disableDroppable();
 
-						if (currentState === 'SbS') {
+						if (currentState === 'SbS' || currentState === 'hide') {
 							primary.enableDroppable();
 							secondary.enableDroppable();
 						} else if (currentState === 'PiP') {
@@ -429,7 +429,7 @@
 			initConfig: function () {
 				var maxWidthPercentage = this.getConfig( 'resizable' ).maxWidth;
 				var playerWidth = this.getPlayer().getWidth();
-				var maxWidth = ( ( playerWidth * this.getConfig( 'resizable' ).maxWidthPercentage ) / 100 );
+				var maxWidth = ( ( playerWidth * maxWidthPercentage ) / 100 );
 				var minWidth = ( ( playerWidth * this.getConfig( 'secondScreen' ).sizeRatio ) / 100 );
 				var resizable = $.extend(
 					{},
@@ -1132,4 +1132,4 @@
 	);
 }
 
-)( window.mw, window.jQuery );
+)( window.mw, window.jQuery,window.Hls);

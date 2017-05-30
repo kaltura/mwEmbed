@@ -12,6 +12,7 @@
 			"showTooltip": true,
 			"labelWidthPercentage": 33,
 			"defaultStream": -1, // -1 is auto
+			"defaultLang": "", // If non empty should conform to RFC-693 or RFC-5646
 			"enableKeyboardShortcuts": true,
 			"smartContainer": "qualitySettings",
 			'smartContainerCloseEvent': 'switchAudioTrack',
@@ -114,7 +115,39 @@
 			return this.streams[this.getCurrentStreamIndex()];
 		},
 		getDefaultStream: function () {
-			return this.streams[(this.getConfig('defaultStream'))];
+			var defaultLangName = this.getConfig("defaultLang");
+			var defaultLangIndex = this.getConfig('defaultStream');
+			if (defaultLangName) {
+				var defaultStreams = $.grep(this.streams, function (lang, index) {
+					//Support both language and label field
+					if (lang && (lang.language || lang.label)) {
+						var language = lang.language || lang.label;
+						//Check that string start matches as we don't actually support RFC-693
+						return language.toLowerCase().indexOf(defaultLangName.toLowerCase()) === 0;
+					}
+					return false;
+				});
+				if (defaultStreams.length > 0) {
+					this.log("found default language by key: " + defaultStreams[0].language);
+					return defaultStreams[0];
+				}
+
+				//Fallback to previous index based selection
+				if (!this.streams[defaultLangIndex]){
+					this.log("warn - language key "+ defaultLangName +" not found, and default language by index " + defaultLangIndex + " doesn't exist!");
+					return null;
+				}
+				this.log("warn - language key "+ defaultLangName +" not found, get default language by index: " + this.streams[defaultLangIndex].language);
+				return this.streams[defaultLangIndex];
+			}
+
+			//Fallback to previous index based selection
+			if (!this.streams[defaultLangIndex]){
+				this.log("warn - language with index " + defaultLangIndex + " doesn't exist!");
+				return null;
+			}
+			this.log("found default language by index: " + this.streams[defaultLangIndex].language);
+			return this.streams[defaultLangIndex];
 		},
 		getCurrentStreamIndex: function () {
 			var _this = this;

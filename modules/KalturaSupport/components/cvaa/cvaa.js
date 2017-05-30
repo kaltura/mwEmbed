@@ -20,7 +20,7 @@
                 backgroundColor: "rgba(0,0,0,0)",
                 backgroundHexColor: "#000000",
                 backgroundOpacity: 0,
-                edgeStyle: "none"
+                edgeStyle: "0 0px 4px rgba(0, 0, 0, 1)"
             },
             cvaaPreset1: {
                 fontFamily: "Arial, Roboto, Arial Unicode Ms, Helvetica, Verdana, PT Sans Caption, sans-serif",
@@ -197,20 +197,20 @@
                 { name: "cvaa-bg",    btnClass: "cvaa-cstm__bg-btn" },
                 { name: "cvaa-color", btnClass: "cvaa-cstm__color-btn" }];
 
-            $(".cvaa .icon-arrow").on("click keydown", function () {
+            $(".cvaa .icon-arrow").on("click keydown", function (event) {
                 if (event.which === 32 || event.which === 13 || event.type == "click") {
                     _this.cvaaMenuChanged(_this.previousScreen);
                 }
             });
 
-            $(".cvaa .icon-close").on("click keydown", function () {
+            $(".cvaa .icon-close").on("click keydown", function (event) {
                 if (event.which === 32 || event.which === 13 || event.type == "click") {
                     _this.cvaaMenuChanged("cvaa-adv");
                 }
             });
 
             $.each(cvaaMenus, function (index, menu) {
-                $(".cvaa ." + menu.btnClass).on("click keydown", function () {
+                $(".cvaa ." + menu.btnClass).on("click keydown", function (event) {
                     if (event.which === 32 || event.which === 13 || event.type == "click") {
                         _this.cvaaMenuChanged(menu.name);
                     }
@@ -517,7 +517,11 @@
         },
 
         isSafeEnviornment: function () {
-            return !mw.isIphone() && !mw.isIE8();
+            if ( mw.isIphone() && mw.getConfig("EmbedPlayer.WebKitPlaysInline") !== true ){
+                return false;
+            }
+
+            return !mw.isIE8();
         }
     });
 

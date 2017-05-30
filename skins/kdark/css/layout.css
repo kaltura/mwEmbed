@@ -2016,6 +2016,10 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
     position: absolute;
     -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
+#flagComments.validationError{
+	outline: none;
+	border:1px solid red;
+}
 .reportButton{
     width: 100px;
     -webkit-border-radius: 2px;
