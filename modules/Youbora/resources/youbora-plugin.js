@@ -154,6 +154,9 @@ $YB.plugins.KalturaV2.prototype.registerListeners = function () {
   });
 
   this.player.bind('playing', function () {
+    if ( context.player.getPlayer().isInSequence ) {
+      return;
+    }
     context.playingHandler();
   });
 
