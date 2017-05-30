@@ -40,10 +40,10 @@
 			}
 		},
 
-		mediaList: [], //Hold the medialist items
-		chaptersMap: [],
+        mediaList: [], //Hold the medialist items
+        chaptersMap: [],
         currentId3Time: null,
-		slidesMap: [],
+        slidesMap: [],
 		pendingMediaItems: [], //Hold the medialist items that are pending to be displayed in live stream
 		cache: {}, //Hold the search data cache
 		dataSet: null, //Hold current dataset returned from API
@@ -1003,9 +1003,9 @@
                     // calculate the timestamp of the beginnig of the video
                     var videoStartTimeStamp = id3Time-currentPlayerTime;
                     // seek to current-slide timestamp - start of video timestamp. Output is is seconds (E.G. 120 = 2m)
-					var seekTo = this.mediaList[mediaIndex].startTime - videoStartTimeStamp;
+                    var seekTo = this.mediaList[mediaIndex].startTime - videoStartTimeStamp;
 
-					this.getPlayer().sendNotification('doSeek', seekTo  );
+                    this.getPlayer().sendNotification('doSeek', seekTo  );
 				} else {
 					// seek to start time and play ( +.1 to avoid highlight of prev chapter )
 					this.getPlayer().sendNotification('doSeek', (this.mediaList[mediaIndex].startTime) + 0.1);
