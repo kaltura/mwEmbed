@@ -40,10 +40,10 @@
 			}
 		},
 
-        mediaList: [], //Hold the medialist items
-        chaptersMap: [],
-        currentId3Time: null,
-        slidesMap: [],
+		mediaList: [], //Hold the medialist items
+		chaptersMap: [],
+		currentId3Time: null,
+		slidesMap: [],
 		pendingMediaItems: [], //Hold the medialist items that are pending to be displayed in live stream
 		cache: {}, //Hold the search data cache
 		dataSet: null, //Hold current dataset returned from API
@@ -981,33 +981,33 @@
 		},
 		//UI Handlers
 		mediaClicked: function (mediaIndex) {
-			//disable click from items out of DVR window
-			if (this.getComponent().find("li[data-mediaBox-index='" + mediaIndex + "']").hasClass("out-of-dvr")) {
-				return;
-			}
-			if (this.getConfig("closeOnClick") && (this.getConfig('parent') === 'sideBarContainer')){
-				this.getPlayer().triggerHelper("closeSideBarContainer");
-			}
-			//Only apply seek in VOD or in live if DVR is supported
-			if ((this.getPlayer().isLive() && this.getPlayer().isDVR()) ||
-					!this.getPlayer().isLive()) {
+		//disable click from items out of DVR window
+		if (this.getComponent().find("li[data-mediaBox-index='" + mediaIndex + "']").hasClass("out-of-dvr")) {
+			return;
+		}
+		if (this.getConfig("closeOnClick") && (this.getConfig('parent') === 'sideBarContainer')){
+			this.getPlayer().triggerHelper("closeSideBarContainer");
+		}
+		//Only apply seek in VOD or in live if DVR is supported
+		if ((this.getPlayer().isLive() && this.getPlayer().isDVR()) ||
+			!this.getPlayer().isLive()) {
 				//Send play request on first click for devices that don't have autoplay, e.g. mobile devices
 				if (!this.getPlayer().canAutoPlay() && this.getPlayer().firstPlay){
 					this.getPlayer().sendNotification('doPlay');
 				}
 				if (this.embedPlayer.isDVR()) {
-                    // get current time from Id3
-                    var id3Time = this.currentId3Time/1000;
-                    // get current (in sec) time from video
-                    var currentPlayerTime = this.embedPlayer.currentTime;
-                    // calculate the timestamp of the beginnig of the video
-                    var videoStartTimeStamp = id3Time-currentPlayerTime;
-                    // seek to current-slide timestamp - start of video timestamp. Output is is seconds (E.G. 120 = 2m)
-                    var seekTo = this.mediaList[mediaIndex].startTime - videoStartTimeStamp;
+					// get current time from Id3
+					var id3Time = this.currentId3Time/1000;
+					// get current (in sec) time from video
+					var currentPlayerTime = this.embedPlayer.currentTime;
+					// calculate the timestamp of the beginnig of the video
+					var videoStartTimeStamp = id3Time-currentPlayerTime;
+					// seek to current-slide timestamp - start of video timestamp. Output is is seconds (E.G. 120 = 2m)
+					var seekTo = this.mediaList[mediaIndex].startTime - videoStartTimeStamp;
 
-                    this.getPlayer().sendNotification('doSeek', seekTo  );
+					this.getPlayer().sendNotification('doSeek', seekTo  );
 				} else {
-					// seek to start time and play ( +.1 to avoid highlight of prev chapter )
+				// seek to start time and play ( +.1 to avoid highlight of prev chapter )
 					this.getPlayer().sendNotification('doSeek', (this.mediaList[mediaIndex].startTime) + 0.1);
 				}
 			}
