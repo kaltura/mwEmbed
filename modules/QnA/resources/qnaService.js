@@ -164,7 +164,10 @@
             return this.cuePoint().text;
         };
 
-        this.isAnswerOnAirActive = function(playerTime) {
+        this.isAnswerOnAirActive = function(playerTime,player) {
+            if(player && player.embedPlayer.isDVR()){
+                playerTime = player.embedPlayer.evaluate("{mediaProxy.entry.currentBroadcastStartTime}")+player.embedPlayer.currentTime;
+            }
             var cuePoint =   this.cuePoint();
             return playerTime>=cuePoint.createdAt &&
                 (!cuePoint.endTime || (cuePoint.createdAt +  cuePoint.endTime- cuePoint.startTime) >= playerTime);
