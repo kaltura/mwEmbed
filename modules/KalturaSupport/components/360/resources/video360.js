@@ -32,7 +32,8 @@
 			return !( mw.isIE8() || mw.isIE9() || mw.isIE10Comp() || // old IEs
 			(mw.isIE11() && (mw.getUserOS() === 'Windows 7' || mw.getUserOS() === 'Windows 8')) || // ie11 on win7/8
 			(mw.isIphone() && mw.isIOSBelow10()) || // iPhone and IOS < 10 - doesn't support inline playback
-			mw.isIOSBelow9() ); // IOS < 9 doesn't support webgl
+			mw.isIOSBelow9() ||  // IOS < 9 doesn't support webgl
+			(!mw.getConfig("forceSameDomainOnIOS") && ( mw.isIOS() || mw.isDesktopSafari()) )); //if we're in iOS and we didnt forceSameDomain - turn off the plugin
 		},
 
 		setup: function () {
@@ -69,13 +70,25 @@
 		addBindings: function () {
 			this.bind("firstPlay", function () {
 				this.attachMotionListeners();
-				$(this.canvas).css('z-index', '2');
+				$(this.canvas).css("z-index", "2");
 				this.add360logo();
+			}.bind(this));
+
+			this.bind("onAdPlay", function () {
+				$(this.canvas).css("z-index", "0");
+			}.bind(this));
+
+			this.bind("onAdSkip", function () {
+				$(this.canvas).css("z-index", "2");
+			}.bind(this));
+
+			this.bind("onAdComplete", function () {
+				$(this.canvas).css("z-index", "2");
 			}.bind(this));
 
 			this.bind("playing", function () {
 				$(this.video).hide();
-				$(this.getPlayer()).css('z-index', '-1');
+				$(this.getPlayer()).css("z-index", "-1");
 				var canvasSize = this.getCanvasSize();
 				this.renderer.setSize(canvasSize.width, canvasSize.height);
 				this.render();

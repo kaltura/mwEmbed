@@ -303,6 +303,8 @@
 		//the offset in hours:minutes:seconds from the playable live edge.
 		liveEdgeOffset: 0,
 
+		liveSyncDurationOffset:0,
+
 		/**
 		 * embedPlayer
 		 *
@@ -1209,7 +1211,10 @@
 		},
 		setDuration: function (newDuration) {
 			this.duration = newDuration;
-			$(this).trigger('durationChange', [newDuration]);
+			if(this.isLive() && this.isDVR()){
+				this.duration -= this.liveSyncDurationOffset;
+			}
+			$(this).trigger('durationChange', [this.duration]);
 		},
 
 		/**
@@ -1397,8 +1402,7 @@
 				return;
 			}
 			// Auto play stopped ( no playerReady has already started playback ) and if not on an iPad with iOS > 3
-			// livestream autoPlay is handled by liveCore
-			if (this.isStopped() && this.autoplay && !this.changeMediaStarted && this.canAutoPlay() && !this.isLive()) {
+			if (this.isStopped() && this.autoplay && !this.changeMediaStarted && this.canAutoPlay()) {
 				mw.log('EmbedPlayer::showPlayer::Do autoPlay');
 				_this.play();
 			}
@@ -1775,7 +1779,6 @@
 				if (_this.getError()) {
 					// Reset changeMediaStarted flag
 					_this.changeMediaStarted = false;
-					_this.showErrorMsg(_this.getError());
 					return;
 				}
 
@@ -1843,10 +1846,18 @@
 			if (!this.widgetLoaded) {
 				this.widgetLoaded = true;
 				mw.log("EmbedPlayer:: Trigger: widgetLoaded");
+				if( mw.getConfig('Kaltura.ForceLayoutRedraw') && ! (this.getInterface().width() === 0) && ! (this.getInterface().height() === 0) ) {
+					var resize = {
+						width: this.getInterface().width(),
+						height: this.getInterface().height() + 1
+					};
+					this.updateInterfaceSize(resize);
+					resize.height--;
+					this.updateInterfaceSize(resize);
+				}
 				this.triggerHelper('widgetLoaded');
 			}
 		},
-
 		/**
 		 * Add a black thumbnail layer on top of the player
 		 */

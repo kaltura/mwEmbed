@@ -82,8 +82,14 @@
 						$(".mwPlayerContainer:not(.mobileSkin)").find(".controlsContainer").attr("style","background: " + value + " !important");
 						break;
 					case 'scrubberColor':
-						$(".mwPlayerContainer:not(.mobileSkin)").find(".playHead").attr("style","background-color: " + value + " !important");
-						$(".mwPlayerContainer:not(.mobileSkin)").find(".playHead").attr("style","background:"  + value + " !important");
+						var BGC = "background-color:"  + value;
+						var BG = "background:"  + value;
+						if (!mw.isIE8()){
+							BGC += " !important";
+							BG += " !important";
+						}
+						$(".mwPlayerContainer:not(.mobileSkin)").find(".playHead").attr("style", BGC);
+						$(".mwPlayerContainer:not(.mobileSkin)").find(".playHead").attr("style", BG);
 						$(".mwPlayerContainer.mobileSkin").find(".playHead").attr("style","background: radial-gradient(ellipse at center, "  + value.replace('rgb','rgba').replace(')',',1)') + "0%," + value.replace('rgb','rgba').replace(')',',1)') + "30%," + value.replace('rgb','rgba').replace(')',',0)') + "31%," + value.replace('rgb','rgba').replace(')',',0)') +  "100% !important");
 						$(".mwPlayerContainer.mobileSkin").find(".playHead.ui-state-active").attr("style","background: radial-gradient(ellipse at center, "  + value.replace('rgb','rgba').replace(')',',1)') + "0%," + value.replace('rgb','rgba').replace(')',',1)') + "30%," + value.replace('rgb','rgba').replace(')',',0.3)') + "31%," + value.replace('rgb','rgba').replace(')',',0.3)') +  "100% !important");
 						break;

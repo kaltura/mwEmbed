@@ -648,7 +648,7 @@
 			elm.innerHTML = '' +
 				'<div style="position: relative; width: 100%; height: 100%;">' +
 				'<button aria-label="Play video content"  class="kWidgetCentered kWidgetPlayBtn" ' + 'id="' + targetId + '_playBtn" ></button>' +
-				'<img class="kWidgetCentered" src="' + this.getKalturaThumbUrl(settings) + '" >' +
+				'<img class="kWidgetCentered" src="' + this.getKalturaThumbUrl(settings) + '" alt="Video thumbnail">' +
 				'</div>';
 			// Add a click binding to do the really embed:
 			var playBtn = document.getElementById(targetId + '_playBtn');

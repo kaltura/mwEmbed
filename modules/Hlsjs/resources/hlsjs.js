@@ -80,7 +80,6 @@
 			isNeeded: function () {
 				if (this.getPlayer().mediaElement.selectedSource.mimeType === "application/vnd.apple.mpegurl") {
 					this.LoadHLS = true;
-					this.embedPlayer.streamerType = 'http';
 				} else {
 					this.LoadHLS = false;
 				}
@@ -114,6 +113,8 @@
 					var hlsConfig = this.getHlsConfig();
 					//Init the HLS playback engine
 					this.hls = new Hls(hlsConfig);
+
+					this.embedPlayer.liveSyncDurationOffset = (this.fragmentDuration || 10) * this.hls.config.liveSyncDurationCount;
 
 					this.loaded = true;
 					//Reset the error recovery counter
@@ -338,7 +339,9 @@
 							this.hls.audioTrack = this.getPlayer().audioTrack.defaultTrack;
 						}.bind(this), 0);
 					}
-					this.getPlayer().triggerHelper('audioTracksReceived', audioTrackData);
+					setTimeout(function(){
+						this.getPlayer().triggerHelper('audioTracksReceived', audioTrackData);
+					}.bind(this), 0);
 				}
 			},
 			/**
@@ -388,6 +391,7 @@
 				if (data && data.frag) {
 					if (data.frag.duration) {
 						this.fragmentDuration = data.frag.duration;
+						this.embedPlayer.liveSyncDurationOffset = this.fragmentDuration * this.hls.config.liveSyncDurationCount;
 					}
 
 					if (this.isLevelSwitching &&
@@ -612,7 +616,7 @@
                 var _this = this;
                 var vid = this.getPlayer().getPlayerElement();
                 this.embedPlayer.goingBackToLive = true;
-                vid.currentTime = vid.duration - (this.fragmentDuration || 10) * 3;
+                vid.currentTime = vid.duration - this.embedPlayer.liveSyncDurationOffset;
                 if ( this.embedPlayer.isDVR() ) {
                     _this.once( 'seeked', function () {
 	                    _this.getPlayer().triggerHelper( 'movingBackToLive' );
@@ -687,10 +691,17 @@
 					this.unbind("seeking");
 					this.hls.attachMedia(this.getPlayer().getPlayerElement());
 				}
-				this.getPlayer().play();
-				if ($.isFunction(switchCallback)) {
-					switchCallback();
-				}
+				if (!this.embedPlayer.isVideoSiblingEnabled()
+					&& !this.embedPlayer.isInSequence()
+					&& this.embedPlayer.adTimeline.currentAdSlotType === "postroll"
+					&& !this.embedPlayer.changeMediaStarted) {
+					// Do not issue play
+				} else {
+                    this.getPlayer().play();
+                }
+                if ($.isFunction(switchCallback)) {
+                    switchCallback();
+                }
 			},
 			/**
 			 * Override player method for playback error

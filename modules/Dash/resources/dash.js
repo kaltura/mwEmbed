@@ -1,8 +1,7 @@
 (function (mw, $, shaka) {
 	"use strict";
-	if (!window.Promise) {
-		shaka.polyfill.installAll();
-	}
+	shaka.polyfill.installAll();
+
 	if (shaka.Player.isBrowserSupported() &&
 		!mw.getConfig("EmbedPlayer.ForceNativeComponent") &&
 		!mw.isDesktopSafari() &&
@@ -47,7 +46,7 @@
 				this.bind("SourceChange", this.isNeeded.bind(this));
 				this.bind("playerReady", this.initShaka.bind(this));
 				this.bind("switchAudioTrack", this.onSwitchAudioTrack.bind(this));
-				this.bind("selectClosedCaptions", this.onSwitchTextTrack.bind(this));
+				this.bind("changeEmbeddedTextTrack", this.onSwitchTextTrack.bind(this));
 				this.bind("onChangeMedia", this.clean.bind(this));
 			},
 
@@ -57,7 +56,6 @@
 			isNeeded: function () {
 				if (this.getPlayer().mediaElement.selectedSource.mimeType === "application/dash+xml") {
 					this.LoadShaka = true;
-					this.embedPlayer.streamerType = 'http';
 				} else {
 					this.LoadShaka = false;
 				}
@@ -141,6 +139,8 @@
 			},
 
 			createPlayer: function () {
+                //Reinstall the polyfills to make sure they weren't ran over by others(VTT.js runs over VTTCue polyfill)
+				shaka.polyfill.installAll();
 				// Create a Player instance.
 				var player = new shaka.Player(this.getPlayer().getPlayerElement());
 
@@ -366,14 +366,14 @@
 
 			onSwitchTextTrack: function (event, data) {
 				if (this.loaded) {
-					if (data === "Off") {
+					if (!data) {
 						player.setTextTrackVisibility(false);
 						this.log("onSwitchTextTrack disable subtitles");
 					} else {
-						player.configure({
-							preferredTextLanguage: data
-						});
-						this.log("onSwitchTextTrack switch to " + data);
+						var selectedTextTracks = this.getTracksByType("text")[data.index];
+						player.setTextTrackVisibility(true);
+						player.selectTrack(selectedTextTracks, false);
+						mw.log("Dash::onSwitchTextTrack switch to ", selectedTextTracks);
 					}
 				}
 			},

@@ -1,7 +1,7 @@
 {
   "ComScoreStreamingTag": {
     "scripts": [
-      "resources/mw.ComscoreStreamingTag.js"
+      "resources/mw.comScoreStreamingTag.js"
     ],
     "dependencies": [
       "mw.EmbedPlayer",
