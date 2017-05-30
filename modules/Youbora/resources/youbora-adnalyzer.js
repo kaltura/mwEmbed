@@ -47,6 +47,9 @@ $YB.adnalyzers.KalturaAds.prototype.getAdPosition = function () {
     case 'postroll':
     case 'post':
       return 'post';
+     case 'bumperPreSeq':
+     case 'bumperPostSeq':
+      return 'bumper';
     default:
       return 'mid';
   }
