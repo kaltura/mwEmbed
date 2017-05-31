@@ -5,8 +5,6 @@
     <script type="text/javascript" src="/html5.kaltura/mwEmbed/mwEmbedLoader.php"></script>
     <script type="text/javascript" src="/html5.kaltura/mwEmbed/docs/js/doc-bootstrap.js"></script>
     <meta charset=UTF-8>
-
-
 </head>
 <body>
 <h1>polls demo</h1>
@@ -60,13 +58,25 @@
     //    var playerId = 15203553; //QA
     var wid = '_27017'; // prod
     //    var wid = '_5174'; // QA
-    var ks = 'djJ8MjcwMTd88KeA--Hte7zOujbyVD35vcrpkx0QyyXPhj2SPthjByZBBRRRs2nPUKSoOTua0KjeqjJ8hVJWfD7anjgMlO0gZkjpvjaDZPkiljmO7e_Dtcvsdh11OMf_LjCqq6_Vc__sFJyvLPeR3fV1N_SucJnXVGa1JH45WvqSrY5ngjX5-aSvbYe-gXPSwDpdWRmJYBQ9v3JrjfczHHjg-Iu_tLWK-dGR-RD9HN25_KfdmdNphLujU3Oj0j4RUKyK9-OpkHyNsb8lRunyd7Q0GrMRjBzoBSWFcGe9jktt_k6QWE00Zs8DUg9ULc2bbeH5PXAZSVXl';
-    var entry = "1_knnpnpmw";
+    var ks = 'djJ8MjcwMTd8fgTWWGFLYwpk-hoi1OiFP90jGugo13IJj_lCU5uZEJc266_iur5WxtfbtO5ltlztGD4uND9mlhdWt2YTg9aLMwm42EiqgDdvZVljyVP5GNefJ3bniFLo4H_2pW1jtpaDQunr_KZsrmK0PPAJDCNN1Ifpr7y9bXR1uannha8D2KHOgSkWJg5UPksKD7EyixrEZPv1mqVRFU0rIczkko-bI9yTn2ymB3uRlCxK6L7NHTHts1rM9awIoZBTC-wKb5qkn9-cK07DDNEt5fFGzPodQD0IbOirVc3Yx-vhE_UBWrI8Mu9pIbgAe6i-A4pWikhg';
+    var entry = "1_wxzgq399";
 
     paramFromUrl("ks");
     paramFromUrl("wid");
     paramFromUrl("entry");
     paramFromUrl("playerId");
+
+
+    var kdp;
+    kWidget.addReadyCallback( function( playerId ){
+        kdp = document.getElementById( playerId );
+
+        kdp.kBind( 'playerReady', function(){
+            setTimeout(function(){
+                kdp.sendNotification("doPlay");
+            },1000)
+        })
+    });
 
 
     kWidget.featureConfig({
@@ -75,6 +85,7 @@
         'uiconf_id' : playerId,
         'flashvars': {
             'autoPlay' : true,
+            "IframeCustomPluginCss1" : "pin-chapters.css",
             'qna': qna,
             "chapters": {plugin: true},
             'ks': ks,
@@ -85,16 +96,29 @@
 
     });
     function seekTo(t){
-        document.getElementById("kaltura_player").sendNotification("doSeek",t);
+        kdp.sendNotification("doSeek",t);
     }
+    function seekRelative(offset){
+        var currentPosition = kdp.evaluate("{video.player.currentTime}");
+        kdp.sendNotification("doSeek",currentPosition+offset);
+    }
+    function openSlidesMenu(){
+        var $iframe = $("#kaltura_player_ifp").contents();
+        var sbc = $iframe.find('.sideBarContainer');
+        sbc.addClass("pinned")
+    }
+
 </script>
 <br>
-<button onclick="seekTo(140)">140</button>
+<button onclick="openSlidesMenu()">openSlidesMenu</button>
+<button onclick="seekTo(7073)">answerOnAir</button>
 <button onclick="seekTo(143)">143</button>
-<button onclick="seekTo(170)">170</button>
-<button onclick="seekTo(175)">175</button>
-<button onclick="seekTo(730)">730</button>
-<button onclick="seekTo(737)">737</button>
-<button onclick="seekTo(2540)">2540</button>
+<button onclick="seekRelative(10)">+10s</button>
+<button onclick="seekRelative(-10)">-10s</button>
+<button onclick="seekRelative(30)">+30s</button>
+<button onclick="seekRelative(-30)">-30</button>
+<button onclick="seekRelative(180)">+3m</button>
+<button onclick="seekRelative(-180)">-3m</button>
+
 </body>
 </html>

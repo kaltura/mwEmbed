@@ -83,10 +83,17 @@
                 this.counter = 0; //reset time update interval counter
                 this.getPlayer().LiveCurrentTime = time;
                 this.getPlayer().flashLiveCurrentTime = time; // for flash player
+                this.setVideoStartTime(time);
                 this.sendTrackEventMonitor(mw.seconds2npt(time), true);
             }
         },
-
+        //Calculate the start time of the video in absolute time
+        setVideoStartTime(t){
+            // set this once - no need to do this rapidly
+            if(!this.getPlayer().liveAbsoluteStartTime && this.getPlayer().currentTime!=0){
+                this.getPlayer().liveAbsoluteStartTime = t-this.getPlayer().currentTime;
+            }
+        },
         sendTrackEventMonitor: function(time, isId3TagTime) {
             var traceString = "id3Tag plugin :: id3 tag time = ";
             if(isId3TagTime) {
