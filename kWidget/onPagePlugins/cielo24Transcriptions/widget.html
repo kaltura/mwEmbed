@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="css/style.css?v=9" media="all" />
+
+    <script src="js/underscore-min.js" ></script>
+    <script src="js/jquery-1.11.1.min.js" ></script>
+    <script src="js/json2.min.js"></script>
+    <script src="js/postMessageSupport.js"></script>
+
+    <script src="js/kalturaClient/KalturaClientBase.js"></script>
+    <script src="js/kalturaClient/webtoolkit.md5.js"></script>
+    <script src="js/kalturaClient/ox.ajast.js"></script>
+    <script src="js/kalturaClient/KalturaVO.js"></script>
+    <script src="js/kalturaClient/KalturaTypes.js"></script>
+    <script src="js/kalturaClient/KalturaServices.js"></script>
+    <script src="js/kalturaClient/KalturaClient.js"></script>
+
+    <script src="js/subtitles.parser.min.js"></script>
+
+    <script src="js/binarySearch.js"></script>
+    <script src="js/FileSaver.js"></script>
+
+    <!--<script src="http://log4javascript.org/js/log4javascript.js"></script>-->
+    <script src="js/jquery.highlight.js"></script>
+
+    <!-- Go to www.addthis.com/dashboard to customize your tools -->
+    <!--<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-53f31ac3392bfecf" async></script>-->
+
+    <script type="text/javascript">
+
+        if(typeof String.prototype.trim !== 'function') {
+            String.prototype.trim = function() {
+                return this.replace(/^\s+|\s+$/g, '');
+            }
+        }
+
+        var console = console;
+        if(typeof(console)=='undefined') {
+
+//            // <![CDATA[
+//            var log = log4javascript.getLogger("main");
+//            var appender = new log4javascript.PopUpAppender();
+//            log.addAppender(appender);
+//            log.debug("This is debugging message from the log4javascript basic demo page");
+
+            console = {
+                log: function(msg) {
+//                    log.info(msg);
+//                    $("#debug").html($("#debug").html()+"<br /><br />"+msg);
+                }
+            };
+        }
+    </script>
+
+</head>
+<body>
+
+<div class="widget">
+
+    <div class="header">
+        <div class="headerLine1 clearfix">
+            <div class="fiflfi-wrapper clearfix">
+                <div class="fiflfi-contentwrapper">
+                    <div class="fiflfi-contentcolumn" style="margin-left: 120px; margin-right: 55px;">
+                        <div class="clearfix stripeWrapper">
+                            <div class="stripe"></div>
+                            <div class="stripeHandles">
+                                <div class="stripeHandlesInner">
+                                    <div class="stripeHandle playheadHandle" style="left: 0;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="fiflfi-leftColumn" style="width: 120px;">
+                    <div id="playheadTime">00:00</div>
+                    <div class="statusBox">Ready</div>
+                </div>
+                <div class="fiflfi-rightColumn totalTime" style="width: 55px; margin-left: -55px;"></div>
+            </div>
+        </div>
+        <div class="headerLine2 clearfix">
+            <div class="leftMenuTrigger">
+                <div class="leftMenuTriggerInner"></div>
+                <div class="leftMenuPopup">
+                    <div class="leftMenuPopupRow leftMenuPopupRowMeta">
+                        <span>Meta</span>
+                        <div class="leftMenuPopup2">
+                            <div class="leftMenuPopup3">
+                                <h3>Topics:</h3>
+                                <div class="topicsWrapper"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="leftMenuPopupRow leftMenuPopupRowSpeakers">
+                        <span>Speakers</span>
+                        <div class="leftMenuPopup2">
+                            <div class="leftMenuPopup3 speakersWrapper"></div>
+                        </div>
+                    </div>
+                    <div class="leftMenuPopupRow leftMenuPopupRowKeywords">
+                        <span>Keywords</span>
+                        <div class="leftMenuPopup2">
+                            <div class="leftMenuPopup3 keywordsWrapper"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="rightMenuTrigger">
+                <div class="rightMenuPopup">
+                    <div class="clearfix rightMenuPopupRow">
+                        <span class="hideSpeakerTrigger active">Hide speakers</span>
+                    </div>
+                    <div class="clearfix rightMenuPopupRow">
+                        <span class="hideTimestampsTrigger active">Hide timestamps</span>
+                    </div>
+                    <div class="clearfix rightMenuPopupRow">
+                        <span class="toggleScrolling active">Autoscroll on</span>
+                    </div>
+                </div>
+            </div>
+            <div class="headerLine2Icons">
+                <div class="headerLine2ArrowLeft"></div>
+                <div class="headerLine2ArrowRight"></div>
+
+                <div class="clearfix headerLine2Icon shareIcon">
+
+                    <div class="clearfix shareDiv">
+                        <div class="clearfix shareDivInner">
+
+                            <a class="shareImage shareFacebook" href="#" target="_blank" ><img style="width: 100%;" src="img/facebook.png?v=6" width="" border="0" alt="Facebook"/></a>
+                            <a class="shareImage shareTwitter" href="#" target="_blank" ><img style="width: 100%;" src="img/twitter.png?v=6" border="0" alt="Twitter"/></a>
+                            <a class="shareImage shareLinkedin" href="#" target="_blank" ><img style="width: 100%;" src="img/linkedin.png?v=6" border="0" alt="Linkedin"/></a>
+                            <!--<a class="shareAddthis" href="https://www.addthis.com/bookmark.php?source=tbx32nj-1.0&v=300&pubid=ra-53f31ac3392bfecf&ct=1&pco=tbxnj-1.0" target="_blank"><img src="https://cache.addthiscdn.com/icons/v2/thumbs/32x32/addthis.png" border="0" alt="Addthis"/></a>-->
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="headerLine2Icon printIcon"></div>
+                <div class="headerLine2Icon downloadIcon"></div>
+            </div>
+            <div class="search">
+                <input class="searchInput" type="text" />
+            </div>
+        </div>
+    </div>
+
+
+    <div id="transcriptionText"></div>
+
+
+
+    <div class="footer">
+        <div class="footerArrowUp"></div>
+        <div class="language">
+            <div class="currentLanguage"></div>
+            <div class="availableLanguages">
+                <div class="languageOption" data-lang="en">English</div>
+                <div class="languageOption" data-lang="ru">Russian</div>
+                <div class="languageOption" data-lang="ge">German</div>
+                <div class="languageOption" data-lang="it">Italian</div>
+                <div class="languageOption" data-lang="es">Spanish</div>
+            </div>
+            <i class="languageArrow"></i>
+        </div>
+
+        <a href="http://svsgtranswidget.co" target="_blank">
+            <div class="poweredBy"></div>
+        </a>
+        <span id="widgetTitle">Media Data Player</span>
+        <a href="http://cielo24.com/" target="_blank">
+            <div class="clientLogoWrapper">
+                <img src="http://cielo24.com/static/cielo24/img/inside_pgs/about/cielo24_logo_small.png" style="width: 100%;" id="clientLogo" />
+            </div>
+        </a>
+    </div>
+
+</div>
+
+
+<script type="text/template" id="stripeSegmentTpl">
+    <div class="stripeSegment speakerBg<%- segmentIndex %>" style="width: <%- segmentWidth %>%;"></div>
+</script>
+<script type="text/template" id="stripeHandleTpl">
+    <div class="stripeHandle" style="left: <%- left %>%;"></div>
+</script>
+
+<script src="js/widget.js?v=9"></script>
+<script src="js/kalturaApi.js?v=9"></script>
+
+</body>
+</html>

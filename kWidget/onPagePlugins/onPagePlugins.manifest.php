@@ -310,4 +310,69 @@ return array(
 			),
 		)
 	),
+    'cielo24Transcriptions' => array(
+        'description' => 'Adds a Cielo24 Transcription widget to the page.',
+        'attributes' => array(
+            'onPageJs1' => array(
+                'doc' => "",
+                'initvalue' => "{onPagePluginPath}\/cielo24Transcriptions\/js\/loader.js",
+                'type' => 'hidden'
+            ),
+            'DynaTransWindowSize' => array(
+                'initvalue' => 400,
+                'doc' => "The height of the widget.",
+                'type' => 'number',
+            ),
+            'DynaTransWindowTitle' => array(
+                'initvalue' => 'Media Data Player',
+                'doc' => "Widget title.",
+                'type' => 'string',
+            ),
+            'DynaTransClientLogo' => array(
+                'initvalue' => "{onPagePluginPath}\/cielo24Transcriptions\/img\/logo-transparent.png",
+                'doc' => "Client Logo.",
+                'type' => 'string',
+            ),
+            'DynaTransHideGear' => array(
+                'doc' => "If set to true, gear icon will be hidden.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+            'DynaTransHideShare' => array(
+                'doc' => "If set to true, share icon will be hidden.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+            'DynaTransHidePrint' => array(
+                'doc' => "If set to true, print icon will be hidden.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+            'DynaTransHideDownload' => array(
+                'doc' => "If set to true, download icon will be hidden.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+            'DynaTransHideLeftMenu' => array(
+                'doc' => "If set to true, left menu icon will be hidden.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+            'DynaTransHideSpeakers' => array(
+                'doc' => "If set to true, speakers will be hidden.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+            'DynaTransHideTimestamps' => array(
+                'doc' => "If set to true, timestamps will be hidden.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+            'DynaTransAutoscrollOff' => array(
+                'doc' => "If set to true, autoscrolling feature will be switched off.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+        )
+    ),
 );
