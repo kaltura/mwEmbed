@@ -720,7 +720,7 @@
         },
 
         canAutoPlay: function () {
-            return true;
+            return false;
         }
     };
 })( mediaWiki, jQuery );

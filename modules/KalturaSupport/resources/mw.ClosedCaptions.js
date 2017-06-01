@@ -29,7 +29,8 @@
 			'smartContainerCloseEvent': 'changedClosedCaptions',
 			"forceWebVTT": false, // force using webvtt on-the-fly. only for kalturaAPI captions
 			"enableOptionsMenu": false,
-			"sortCaptionsAlphabetically": false
+			"sortCaptionsAlphabetically": false,
+			"enableNativeTextTrackCSS": false
 		},
 
 		textSources: [],
@@ -103,6 +104,8 @@
 							source.loaded = true;
 							newSources.push( source );
 						} );
+						_this.textSources = newSources;
+						_this.handleDefaultSource();
 						_this.buildMenu( newSources );
 						outOfBandCaptionEventHandlers.call(_this);
 					}
@@ -239,6 +242,11 @@
 			});
 			this.bind( 'newCaptionsStyles', function (e, stylesObj){
 				_this.customStyle = stylesObj;
+				$('#cvaaStyle').remove();
+				if( _this.getConfig( 'enableNativeTextTrackCSS' ) === true ) {
+					var embeddedCss = _this.getCssFromJson(stylesObj);
+					$('<style id="cvaaStyle" type="text/css"></style>').text(embeddedCss).appendTo('head');
+				}
 			});
 			this.bind( 'onChangeMedia', function (e, stylesObj){
 				//Reset UI state on change media
@@ -377,14 +385,17 @@
 					_this.forceLoadLanguage();
 				}
 
-				if( _this.getConfig('displayCaptions') !== false || ($.cookie( _this.cookieName ) !== 'None' && $.cookie( _this.cookieName )) ){
-					_this.autoSelectSource();
-					if( _this.selectedSource ){
-						_this.setTextSource(_this.selectedSource, false);
-					}
-				}
+				_this.handleDefaultSource();
 				callback();
 			});
+		},
+		handleDefaultSource: function () {
+			if( this.getConfig('displayCaptions') !== false || ($.cookie( this.cookieName ) !== 'None' && $.cookie( this.cookieName )) ){
+				this.autoSelectSource();
+				if( this.selectedSource ){
+					this.setTextSource(this.selectedSource, false);
+				}
+			}
 		},
 		textSourcesInSources: function(sources, textSource){
 			for ( var  i = 0; i < sources.length; i++ ){
@@ -567,17 +578,25 @@
 				if( defaultLangKey == 'None' ){
 					return ;
 				}
+				if ( mw.isIOS() && !mw.isIpad()) {
+					this.selectDefaultIosTrack(defaultLangKey);
+					return ;
+				}
 				source = this.selectSourceByLangKey( defaultLangKey );
 				if( source ){
 					this.log('autoSelectSource: select by defaultLanguageKey: ' + defaultLangKey);
 					this.selectedSource = source;
 					this.embedPlayer.getInterface().find( '[srclang='+ defaultLangKey +']').attr("default", "true");
 					return ;
-				}				
+				}
 			}
             // Get source by "default" property
             if ( !this.selectedSource ) {
                 source = this.selectDefaultSource();
+                if ( source && mw.isIOS() && !mw.isIpad() ) {
+					this.selectDefaultIosTrack(source.srclang);
+					return ;
+                }
                 if( source ){
                     this.log('autoSelectSource: select by default caption');
                     this.selectedSource = source;
@@ -599,6 +618,12 @@
 				this.log('autoSelectSource: select first caption');
 				this.selectedSource = this.textSources[0];
 			}
+		},
+		selectDefaultIosTrack: function (defaultLangKey) {
+			var _this = this;
+			this.once( 'playing', function (){
+				_this.embedPlayer.selectDefaultCaption(defaultLangKey);
+			});
 		},
 		selectSourceByLangKey: function( langKey ){
 			var _this = this;
@@ -884,6 +909,34 @@
 			style["text-shadow"] = "0px 1px 5px #000000";
 			style["text-align"] = "center";
 			style["background"] = "none";
+			return style;
+		},
+		/*
+		* TODO: Make a function to map between those properties, something like this:
+		* https://github.com/jquery/jquery/blob/master/src/core.js#L293
+		*/
+		getCssFromJson: function(cvaaCss) {
+			var style = "video::cue {"
+			for (var key in cvaaCss) {
+				switch (key) {
+					case "fontFamily":
+						style += "font-family" + ": " + cvaaCss[key] + "; ";
+						break;
+					case "fontColor":
+						style += "color" + ": " + cvaaCss[key] + "; ";
+						break;
+					case "fontSize":
+						style += "font-size" + ": " + cvaaCss[key] + "; ";
+						break;
+					case "backgroundColor":
+						style += "background-color" + ": " + cvaaCss[key] + " !important;";
+						break;
+					case "edgeStyle":
+						style += "text-shadow" + ": " + cvaaCss[key] + "; ";
+						break;
+				}
+			}
+			style += "}";
 			return style;
 		},
 		getDefaultCaptionCss: function(){

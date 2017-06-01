@@ -70,13 +70,25 @@
 		addBindings: function () {
 			this.bind("firstPlay", function () {
 				this.attachMotionListeners();
-				$(this.canvas).css('z-index', '2');
+				$(this.canvas).css("z-index", "2");
 				this.add360logo();
+			}.bind(this));
+
+			this.bind("onAdPlay", function () {
+				$(this.canvas).css("z-index", "0");
+			}.bind(this));
+
+			this.bind("onAdSkip", function () {
+				$(this.canvas).css("z-index", "2");
+			}.bind(this));
+
+			this.bind("onAdComplete", function () {
+				$(this.canvas).css("z-index", "2");
 			}.bind(this));
 
 			this.bind("playing", function () {
 				$(this.video).hide();
-				$(this.getPlayer()).css('z-index', '-1');
+				$(this.getPlayer()).css("z-index", "-1");
 				var canvasSize = this.getCanvasSize();
 				this.renderer.setSize(canvasSize.width, canvasSize.height);
 				this.render();

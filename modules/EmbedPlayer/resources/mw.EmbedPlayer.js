@@ -1402,8 +1402,7 @@
 				return;
 			}
 			// Auto play stopped ( no playerReady has already started playback ) and if not on an iPad with iOS > 3
-			// livestream autoPlay is handled by liveCore
-			if (this.isStopped() && this.autoplay && !this.changeMediaStarted && this.canAutoPlay() && !this.isLive()) {
+			if (this.isStopped() && this.autoplay && !this.changeMediaStarted && this.canAutoPlay()) {
 				mw.log('EmbedPlayer::showPlayer::Do autoPlay');
 				_this.play();
 			}
@@ -1780,7 +1779,6 @@
 				if (_this.getError()) {
 					// Reset changeMediaStarted flag
 					_this.changeMediaStarted = false;
-					_this.showErrorMsg(_this.getError());
 					return;
 				}
 
@@ -1848,7 +1846,7 @@
 			if (!this.widgetLoaded) {
 				this.widgetLoaded = true;
 				mw.log("EmbedPlayer:: Trigger: widgetLoaded");
-				if( mw.getConfig('Kaltura.ForceLayoutRedraw') ) {
+				if( mw.getConfig('Kaltura.ForceLayoutRedraw') && ! (this.getInterface().width() === 0) && ! (this.getInterface().height() === 0) ) {
 					var resize = {
 						width: this.getInterface().width(),
 						height: this.getInterface().height() + 1

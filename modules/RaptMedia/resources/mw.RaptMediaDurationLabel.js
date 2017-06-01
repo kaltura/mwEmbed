@@ -13,7 +13,7 @@
 			this._super();
 			
 			var _this = this;
-			this.bind('onChangeMediaDone', function(event) { 
+			this.bind('mediaLoaded', function(event) { 
 				_this.setupRapt();
 			});
 
