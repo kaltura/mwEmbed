@@ -23,7 +23,7 @@
         <div class="nano-content">
 
             <div data-bind="template: { foreach: myObservableAnswerOnAirQueue(), as: 'answerOnAirItem'}">
-                <div data-bind="if: answerOnAirItem.isAnswerOnAirActive($parent.playerTime(),$parent)">
+                <div data-bind="if: answerOnAirItem.isAnswerOnAirActive($parent.playerTime())">
                     <div class="qnaAnswerOnAirHolder">
                         <div class="qnaThread qnaEntry qnaAnswerOnAir">
                             <div class = "AnswerOnAirTriangle"></div>

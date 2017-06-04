@@ -131,7 +131,13 @@
 
 
                 $( embedPlayer ).bind('timeupdate', function () {
-                    _this.playerTime(embedPlayer.currentTime);
+                    // in DVR mode embedPlayer.current time is in seconds - so we need to add dvrAbsoluteStartTime
+                    if(embedPlayer.isDVR()){
+                        _this.playerTime(this.dvrAbsoluteStartTime+this.currentTime);
+                    }else{
+                        // in live (non-dvr) mode embedPlayer.current time is in timestamp - no need to add baseline
+                        _this.playerTime(this.currentTime);
+                    }
                 });
 
 
