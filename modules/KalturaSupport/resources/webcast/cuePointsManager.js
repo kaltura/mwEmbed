@@ -344,8 +344,8 @@
                             var isValidTag = hasTagCondition ? filterByTags.indexOf(cuePoint.tags) !== -1 : false;
 
                             var isValidType = hasTypeCondition ? ($.grep(args.types, function (cuePointType) {
-                                    return (!cuePointType.main || cuePointType.main === cuePoint.cuePointType) && (!cuePointType.sub || cuePointType.sub === cuePoint.subType);
-                                }).length > 0) : false;
+                                return (!cuePointType.main || cuePointType.main === cuePoint.cuePointType) && (!cuePointType.sub || cuePointType.sub === cuePoint.subType);
+                            }).length > 0) : false;
 
                             var passedCustomFilter = (isValidTag || isValidType) && args.filter ? args.filter(cuePoint) : true;
 
