@@ -90,7 +90,7 @@
             }
         },
         //Calculate the start time of the video in absolute time for dvr
-		setDvrStartTime(t){
+        setDvrStartTime(t){
             // set this once - no need to do this rapidly
             if(!this.getPlayer().dvrAbsoluteStartTime && this.getPlayer().currentTime!=0){
                 this.getPlayer().dvrAbsoluteStartTime = t-this.getPlayer().currentTime;
