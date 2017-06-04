@@ -977,15 +977,15 @@
 		},
 		//UI Handlers
 		mediaClicked: function (mediaIndex) {
-		//disable click from items out of DVR window
-		if (this.getComponent().find("li[data-mediaBox-index='" + mediaIndex + "']").hasClass("out-of-dvr")) {
-			return;
-		}
-		if (this.getConfig("closeOnClick") && (this.getConfig('parent') === 'sideBarContainer')){
-			this.getPlayer().triggerHelper("closeSideBarContainer");
-		}
-		//Only apply seek in VOD or in live if DVR is supported
-		if ((this.getPlayer().isLive() && this.getPlayer().isDVR()) ||
+			//disable click from items out of DVR window
+			if (this.getComponent().find("li[data-mediaBox-index='" + mediaIndex + "']").hasClass("out-of-dvr")) {
+				return;
+			}
+			if (this.getConfig("closeOnClick") && (this.getConfig('parent') === 'sideBarContainer')){
+				this.getPlayer().triggerHelper("closeSideBarContainer");
+			}
+			//Only apply seek in VOD or in live if DVR is supported
+			if ((this.getPlayer().isLive() && this.getPlayer().isDVR()) ||
 			!this.getPlayer().isLive()) {
 				//Send play request on first click for devices that don't have autoplay, e.g. mobile devices
 				if (!this.getPlayer().canAutoPlay() && this.getPlayer().firstPlay){
@@ -996,7 +996,7 @@
 					var seekTo = this.mediaList[mediaIndex].startTime - this.getPlayer().liveAbsoluteStartTime;
 					this.getPlayer().sendNotification('doSeek', seekTo  );
 				} else {
-				// seek to start time and play ( +.1 to avoid highlight of prev chapter )
+					// seek to start time and play ( +.1 to avoid highlight of prev chapter )
 					this.getPlayer().sendNotification('doSeek', (this.mediaList[mediaIndex].startTime) + 0.1);
 				}
 			}
