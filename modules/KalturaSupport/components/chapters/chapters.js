@@ -986,7 +986,7 @@
 			}
 			//Only apply seek in VOD or in live if DVR is supported
 			if ((this.getPlayer().isLive() && this.getPlayer().isDVR()) ||
-			!this.getPlayer().isLive()) {
+				!this.getPlayer().isLive()) {
 				//Send play request on first click for devices that don't have autoplay, e.g. mobile devices
 				if (!this.getPlayer().canAutoPlay() && this.getPlayer().firstPlay){
 					this.getPlayer().sendNotification('doPlay');
@@ -1072,33 +1072,33 @@
 				this.disableWindowDvrSlides()
 			}
 		},
-        // disable all items that are our of the DVR window
-        disableWindowDvrSlides: function() {
-            var currentTime = Math.ceil(this.getPlayer().LiveCurrentTime + this.embedPlayer.getLiveEdgeOffset());
-            var dvrWindow = this.embedPlayer.evaluate("{mediaProxy.entry.dvrWindow}");
-            // in case we don't have currentTime (first ID3 wasn't loaded) disable all slides
-            if (isNaN(currentTime)) {
-                //no ID3 data yet - disable all slides until we have timestamp data
-                for (var i = 0; i < this.slidesMap.length; i++) {
-                    var slide = this.getComponent().find("li[data-mediaBox-index='" + i + "']");
-                    $(slide).addClass("out-of-dvr");
-                }
-                return;
-            }
-            // Disable all slides that are out of DVR window and enable all slides that are in it
-            for (var i = 0; i < this.slidesMap.length; i++) {
-                var slide = this.getComponent().find("li[data-mediaBox-index='" + i + "']");
-                if (currentTime && this.slidesMap[i].endTime < currentTime - dvrWindow*60) {
-                    $(slide).addClass("out-of-dvr");
-                } else {
-                    $(slide).removeClass("out-of-dvr");
-                }
-                //handle edge cae of last item
-                if (i == this.slidesMap.length - 1) {
-                    $(slide).removeClass("out-of-dvr");
-                }
-            }
-        },
+		// disable all items that are our of the DVR window
+		disableWindowDvrSlides: function() {
+			var currentTime = Math.ceil(this.getPlayer().LiveCurrentTime + this.embedPlayer.getLiveEdgeOffset());
+			var dvrWindow = this.embedPlayer.evaluate("{mediaProxy.entry.dvrWindow}");
+			// in case we don't have currentTime (first ID3 wasn't loaded) disable all slides
+			if (isNaN(currentTime)) {
+				//no ID3 data yet - disable all slides until we have timestamp data
+				for (var i = 0; i < this.slidesMap.length; i++) {
+					var slide = this.getComponent().find("li[data-mediaBox-index='" + i + "']");
+					$(slide).addClass("out-of-dvr");
+				}
+				return;
+			}
+			// Disable all slides that are out of DVR window and enable all slides that are in it
+			for (var i = 0; i < this.slidesMap.length; i++) {
+				var slide = this.getComponent().find("li[data-mediaBox-index='" + i + "']");
+				if (currentTime && this.slidesMap[i].endTime < currentTime - dvrWindow*60) {
+					$(slide).addClass("out-of-dvr");
+				} else {
+					$(slide).removeClass("out-of-dvr");
+				}
+				//handle edge cae of last item
+				if (i == this.slidesMap.length - 1) {
+					$(slide).removeClass("out-of-dvr");
+				}
+			}
+		},
 		updateActiveSlide: function(){
 			var activeSlideIndex = this.findActiveItem(this.slidesMap, this.selectedSlideIndex);
 			if (activeSlideIndex < 0 && this.isLiveCuepoints()){
