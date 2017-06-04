@@ -83,17 +83,12 @@
                 this.counter = 0; //reset time update interval counter
                 this.getPlayer().LiveCurrentTime = time;
                 this.getPlayer().flashLiveCurrentTime = time; // for flash player
-                if(this.getPlayer().isDVR()){
-                    this.setDvrStartTime(time);
+        		// Calculate the start time of the video in absolute time for dvr
+				// set this once - no need to do this rapidly
+                if(this.getPlayer().isDVR() && !this.getPlayer().dvrAbsoluteStartTime && this.getPlayer().currentTime != 0){
+					this.getPlayer().dvrAbsoluteStartTime = t-this.getPlayer().currentTime;
                 }
                 this.sendTrackEventMonitor(mw.seconds2npt(time), true);
-            }
-        },
-        //Calculate the start time of the video in absolute time for dvr
-        setDvrStartTime(t){
-            // set this once - no need to do this rapidly
-            if(!this.getPlayer().dvrAbsoluteStartTime && this.getPlayer().currentTime!=0){
-                this.getPlayer().dvrAbsoluteStartTime = t-this.getPlayer().currentTime;
             }
         },
         sendTrackEventMonitor: function(time, isId3TagTime) {
