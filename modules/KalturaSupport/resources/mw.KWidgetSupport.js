@@ -540,6 +540,15 @@ mw.KWidgetSupport.prototype = {
 			playerData.meta.partnerData["isLive"] == "true" ) {
 			embedPlayer.setLive( true );
 		}
+		//Update meta tags field
+		if (playerData.meta.partnerData.Metas) {
+            var tags = $.grep(playerData.meta.partnerData.Metas, function (meta) {
+                return meta.Key === "tags";
+            });
+            if (tags && tags[0]) {
+                playerData.meta.tags = tags[0].Value;
+            }
+        }
 		embedPlayer.setKalturaConfig('originalProxyData', embedPlayer.getKalturaConfig('proxyData'));
 		//Set proxyData response data
 		embedPlayer.setKalturaConfig( 'proxyData', playerData.meta.partnerData);
