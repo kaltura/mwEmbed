@@ -535,18 +535,20 @@ mw.KWidgetSupport.prototype = {
 			}
 		} );
 		embedPlayer.replaceSources(flavorAssets);
-		//Set Live
-		if ( playerData.meta.partnerData["isLive"] &&
-			playerData.meta.partnerData["isLive"] == "true" ) {
-			embedPlayer.setLive( true );
-		}
-		//Update meta tags field
-		if (playerData.meta.partnerData.Metas) {
-            var tags = $.grep(playerData.meta.partnerData.Metas, function (meta) {
-                return meta.Key === "tags";
-            });
-            if (tags && tags[0]) {
-                playerData.meta.tags = tags[0].Value;
+        if ( playerData.meta.partnerData) {
+        	var partnerData = playerData.meta.partnerData;
+            //Set Live
+            if (partnerData["isLive"] && partnerData["isLive"] == "true") {
+                embedPlayer.setLive(true);
+            }
+            //Update meta tags field
+            if (partnerData.Metas) {
+                var tags = $.grep(partnerData.Metas, function (meta) {
+                    return meta.Key === "tags";
+                });
+                if (tags && tags[0]) {
+                    playerData.meta.tags = tags[0].Value;
+                }
             }
         }
 		embedPlayer.setKalturaConfig('originalProxyData', embedPlayer.getKalturaConfig('proxyData'));
