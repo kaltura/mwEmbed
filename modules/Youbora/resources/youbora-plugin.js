@@ -154,6 +154,9 @@ $YB.plugins.KalturaV2.prototype.registerListeners = function () {
   });
 
   this.player.bind('playing', function () {
+    if ( context.player.getPlayer().isInSequence ) {
+      return;
+    }
     context.playingHandler();
   });
 
@@ -161,6 +164,10 @@ $YB.plugins.KalturaV2.prototype.registerListeners = function () {
     if (!context.viewManager.isBuffering) {
       context.seekingHandler();
     }
+  });
+
+  this.player.bind('seeked', function () {
+      context.seekedHandler();
   });
 
   // Adnalyzer start
