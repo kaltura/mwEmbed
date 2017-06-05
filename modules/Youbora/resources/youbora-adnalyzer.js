@@ -47,6 +47,10 @@ $YB.adnalyzers.KalturaAds.prototype.getAdPosition = function () {
     case 'postroll':
     case 'post':
       return 'post';
+     case 'bumperPreSeq':
+       return 'pre_sequence_bumper';
+     case 'bumperPostSeq':
+      return 'post_sequence_bumper';
     default:
       return 'mid';
   }
@@ -73,11 +77,22 @@ $YB.adnalyzers.KalturaAds.prototype.registerListeners = function () {
     var adnalyzer = this;
 
     this.ads.bind('onAdPlay', function (e, id, system, type, position, duration, podPosition, podStartTime, title, props) {
+      if (type === 'overlay'){
+        return;
+      }
       adnalyzer.title = title;
       adnalyzer.duration = duration;
       adnalyzer.mediaPlayhead = podStartTime;
       adnalyzer.startJoinAdHandler();
     });
+
+      this.ads.bind( 'onPlayerStateChange', function ( event, newState ) {
+          if ( newState === "pause" ) {
+              adnalyzer.pauseAdHandler();
+          } else if ( newState === "play" ) {
+              adnalyzer.resumeAdHandler();
+          }
+      } );
 
     this.ads.bind('AdSupport_AdUpdatePlayhead', function (e, currentTime) {
       adnalyzer.playhead = currentTime;
@@ -89,7 +104,7 @@ $YB.adnalyzers.KalturaAds.prototype.registerListeners = function () {
     });
 
     this.ads.bind('onAdSkip', function () {
-      adnalyzer.endedAdHandler({ skipped: true });
+      adnalyzer.skipAdHandler();
       adnalyzer.resetValues();
     });
 

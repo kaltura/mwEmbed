@@ -121,7 +121,9 @@
 				if ( !_this.liveStreamStatusUpdated ) {
 					_this.liveStreamStatusUpdated = true;
 					if( onAirObj.onAirStatus ){
-						_this.addPoster();
+						if ( !embedPlayer.isPlaying() ) {
+							_this.addPoster();
+						}
 						_this.getPlayer().enablePlayControls();
 					}else{
 						_this.getPlayer().disablePlayControls();
