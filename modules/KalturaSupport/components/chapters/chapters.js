@@ -138,10 +138,11 @@
 				if(_this.embedPlayer.isDVR()){
 					return; // no need to run this on DVR
 				}
-				var item = _this.mediaList[ _this.selectedMediaItemIndex ];
-				if ( item && item.active ) {
-					item.active = false;
-				}
+				//TODO: eitan - check why this was needed
+				// var item = _this.mediaList[ _this.selectedMediaItemIndex ];
+				// if ( item && item.active ) {
+				// 	item.active = false;
+				// }
 				var activeDomObj = _this.getActiveItem();
 				activeDomObj.find(".slideOverlay").removeClass("watched");
 				_this.resetChapterProgress(_this.selectedChapterIndex);
@@ -1048,8 +1049,13 @@
 				for (var i = 0; i < data.length; i++) {
 					if (currentTime > data[i].startTime && currentTime < data[i].endTime) {
 						activeItemIndex = i;
-						break;
+						return activeItemIndex;
 					}
+				}
+				// edge case - since last item still doesn't have a valid endTime value
+				// if we got here and didn't find active slide - the last slide is the active one
+				if(activeItemIndex == -1 && currentTime > data[data.length -1].startTime){
+					activeItemIndex = data.length -1;
 				}
 			} else {
 				var i = (startIndex > -1) ? startIndex : 0;
@@ -1057,7 +1063,7 @@
 					item = data[i];
 					if ((time >= item.startTime) && (time < item.endTime)) {
 						activeItemIndex = i;
-						break;
+						return activeItemIndex;
 					}
 				}
 			}
@@ -1101,10 +1107,9 @@
 		},
 		updateActiveSlide: function(){
 			var activeSlideIndex = this.findActiveItem(this.slidesMap, this.selectedSlideIndex);
-			if (activeSlideIndex < 0 && this.isLiveCuepoints()){
+			if (activeSlideIndex < 0 && this.isLiveCuepoints() && !this.embedPlayer.isLiveOffSynch()){
 				activeSlideIndex = this.slidesMap[this.slidesMap.length-1].order;
 			}
-
 			if (activeSlideIndex >= 0) {
 				var activeDomObj;
 				// Check if active is not already set:
@@ -1112,18 +1117,19 @@
 				if (this.selectedSlideIndex === activeSlideIndex) {
 					// update state current active slide:
 					item = this.slidesMap[activeSlideIndex];
-					if (item && !item.active) {
+					//TODO eitan - check why this is necessary
+					if (item ) { /* && !item.active */
 						this.setSelectedMedia(item.order);
-						item.active = true;
+						// item.active = true;
 						activeDomObj = this.getActiveItem();
 						activeDomObj.find(".slideOverlay").addClass("watched");
 					}
 				} else {
 					// update state of previous active slide:
 					item = this.slidesMap[this.selectedSlideIndex];
-					if (item && item.active) {
-						item.active = false;
-					}
+					// if (item && item.active) {
+					// 	item.active = false;
+					// }
 					activeDomObj = this.getActiveItem();
 					activeDomObj.find(".slideOverlay").removeClass("watched");
 
