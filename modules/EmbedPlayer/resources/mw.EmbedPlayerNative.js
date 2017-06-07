@@ -882,7 +882,10 @@
 			if (this.playerElement) { // update player
 				this.playerElement.pause();
 			}
-
+            if ( this.mobilePlayed && this.mobileAutoPlay ) {
+                this.mobileAutoPlay = false;
+                this.setVolume( 1 );
+            }
 		},
 
 		/**

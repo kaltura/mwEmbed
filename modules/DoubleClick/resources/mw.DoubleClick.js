@@ -637,7 +637,6 @@
                 }
             }
             $( this.embedPlayer ).trigger( "onPlayerStateChange", [ "pause", this.embedPlayer.currentState ] );
-
             if ( isLinear && !this.isNativeSDK ) {
                 this.clearSkipTimeout();
                 this.embedPlayer.enablePlayControls( [ "scrubber", "share", "infoScreen", "related", "playlistAPI", "nextPrevBtn", "sourceSelector", "qualitySettings", "morePlugins" ] );
@@ -653,6 +652,10 @@
                 } else {
                     _this.embedPlayer.getPlayerElement().pause();
                 }
+            }
+            if ( this.embedPlayer.mobileAutoPlay ) {
+                this.embedPlayer.mobileAutoPlay = false;
+                this.adsManager.setVolume( 1 );
             }
         },
 
