@@ -478,7 +478,7 @@
 				}
 			},
 
-			onAdaptation: function (event, data) {
+			onAdaptation: function () {
 				var selectedAbrTrack = this.getVideoTracks().filter(function (videoTrack) {
 					return videoTrack.active;
 				})[0];
