@@ -131,6 +131,21 @@ if (is_file($html5ManifestFile)) {
     }
     $configRegister['ps'] = $json;
 }
+
+//Traverse the PS modules directory
+global $wgKwidgetPsEnabledModules;
+foreach ($wgKwidgetPsEnabledModules as $moduleName) {
+    $manifestPath = realpath(dirname($wgKalturaPSHtml5SettingsPath) . "/../ps/modules/$moduleName/{$moduleName}.manifest.json");
+    if( is_file( $manifestPath ) ){
+        $plugins = json_decode( file_get_contents($manifestPath), TRUE );
+    }
+    if (isset($plugins)){
+        foreach ($plugins as $key => $value) {
+            $configRegister[$key] = $value;
+        }
+    }
+}
+
 // Parse the request is it needed? as well the presequence bit
 //foreach ($configRegister as $registeredModule) {
 //	foreach ($registeredModule as $pluginId => $plugin) {
@@ -256,6 +271,25 @@ foreach ($menu as $menuItem => &$menuContent) {
         }
     }
 }
+
+//Traverse PS featureStructure
+$psFeaturesStructure = realpath(dirname($wgKalturaPSHtml5SettingsPath) . "/../ps/modules/featuresStructure.php");
+$psMenu = include($psFeaturesStructure);
+foreach ($psMenu as $menuItem => &$menuContent) {
+    foreach ($menuContent['children'] as $pluginName => &$pluginData) {
+        if (isset($configRegister[$pluginName]) && isset($configRegister[$pluginName]['attributes'])) {
+            $pluginData = $menuMaker->Menu($pluginName, $configRegister[$pluginName]);
+        }
+    }
+    if (isset($menu[$menuItem])){
+        $menu[$menuItem]['children'] = array_merge_recursive($menu[$menuItem]['children'], $psMenu[$menuItem]['children']);
+    }
+    //This will enable creating totaly new tabs in studio from PS
+//    else {
+//        $menu[$menuItem] = $psMenu[$menuItem];
+//    }
+}
+
 header("Access-Control-Allow-Origin: *");
 header('Access-Control-Max-Age: 3628800');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
