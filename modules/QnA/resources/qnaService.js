@@ -622,7 +622,7 @@
                 });
 
 
-            return this.kPushServerNotification.registerNotifications([userNotifications,codeNotifications,publicNotifications]);
+            return this.kPushServerNotification.registerNotifications([userNotifications,codeNotifications,publicNotifications] , "qna");
         }
 
     };
