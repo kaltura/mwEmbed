@@ -57,6 +57,10 @@
 			if (currentTime == 0) {
 				return; //no point calculate when time is 0
 			}
+			if(!this.backlogTriggered){
+				this.embedPlayer.sendNotification("backlogPushCuepointsLoaded");
+				this.backlogTriggered = true; // make sure this is triggered once;
+			}
 			// assuming array is sorted - iterate from end to first. We care about the last one that has time less than
 			// current live playhead
 			var len = this.times.length;
@@ -149,7 +153,6 @@
 		 */
 		registerPollingNotifications: function (notificationName , moduleName) {
 			var _this = this;
-			// var _callback = callback;
 			var tempNotification = this.pushServerNotification.createNotificationRequest(
 				notificationName,
 				{
