@@ -240,7 +240,7 @@
 								'kind': 'audioTrack',
 								'language': audioTrack.language,
 								'srclang': audioTrack.language,
-								'label': audioTrack.language,
+                                'label': audioTrack.label ? audioTrack.label:audioTrack.language ,
 								'title': audioTrack.language,
 								'id': audioTrack.id,
 								'index': audioTrackData.languages.length
@@ -266,7 +266,7 @@
 							'kind': 'subtitle',
 							'language': subtitleTrack.language,
 							'srclang': subtitleTrack.language,
-							'label': subtitleTrack.language,
+							'label': subtitleTrack.label ? subtitleTrack.label:subtitleTrack.language ,
 							'title': subtitleTrack.language,
 							'id': subtitleTrack.id,
 							'index': textTrackData.languages.length
