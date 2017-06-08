@@ -141,6 +141,7 @@
 					"userId": userId
 				};
 				_this.getKClient().doRequest(vote, function (result) {
+					defer.resolve({});
 				}, false, function (reason) {
 					//TODO - Eitan handle errors later
 					_this.log("rejecting request due to error from kaltura api server with reason " + (reason ? JSON.stringify(reason) : ''));
@@ -198,6 +199,7 @@
 					"userId": userId
 				};
 				_this.getKClient().doRequest(vote, function (result) {
+					defer.resolve({});
 				}, false, function (reason) {
 					//TODO - Eitan handle errors later
 					_this.log("rejecting request due to error from kaltura api server with reason " + (reason ? JSON.stringify(reason) : ''));

@@ -130,13 +130,13 @@
          */
         filterStateCuePoints : function(context)
         {
+        	this.printTagsAndId(context.cuePoints);
             var _this = this;
             if (context && context.filter && context.cuePoints) {
                 var relevantCuePoints = context.filter({
                     tags: ['select-poll-state', 'remove-selected-thumb', 'select-a-thumb'],
                     sortDesc: true
                 });
-
                 return relevantCuePoints.length > 0 ? relevantCuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
             }
 
@@ -239,6 +239,7 @@
                         // Note that since onplay is triggered also after seeking we don't need to handle that event explicitly
                         _this.log("event '" + eventName + "' - start syncing current poll state");
                         if (_this.cuePointsManager) {
+                        	//TODO Eitan
                             _this.handleStateCuePoints({reset:true});
                             _this.handlePollResultsCuePoints({reset:true});
                         }
@@ -327,7 +328,7 @@
                     {
 						console.log(">>>>> @@", "onCuePointsReached" , args);
                         // new cue points reached - change internal polls status when relevant cue points reached
-                        // debugger;
+						// disconnected from old CP manager
                         // _this.handleStateCuePoints({cuepointsArgs : args});
                         // _this.handlePollResultsCuePoints({cuepointsArgs : args});
                     },_this);
@@ -337,45 +338,46 @@
 
 		},
 
-		executeCuePointReached: function (cuePoint) {
-			var filter = function (args) {
-				var result = [];
+		filter : function (args) {
+			var result = [];
 
-				if (this.cuePoints) {
-					var filterByTags = (args.tags ? args.tags : (args.tag ? [args.tag] : null));
-					result = $.grep(this.cuePoints, function (cuePoint) {
-						var hasTagCondition = filterByTags;
-						var hasTypeCondition = args.types && args.types.length && args.types.length > 0;
-						var isValidTag = hasTagCondition ? filterByTags.indexOf(cuePoint.tags) !== -1 : false;
+			if (this.cuePoints) {
+				var filterByTags = (args.tags ? args.tags : (args.tag ? [args.tag] : null));
+				result = $.grep(this.cuePoints, function (cuePoint) {
+					var hasTagCondition = filterByTags;
+					var hasTypeCondition = args.types && args.types.length && args.types.length > 0;
+					var isValidTag = hasTagCondition ? filterByTags.indexOf(cuePoint.tags) !== -1 : false;
+					var isValidType = hasTypeCondition ? ($.grep(args.types, function (cuePointType) {
+						return (!cuePointType.main || cuePointType.main === cuePoint.cuePointType) && (!cuePointType.sub || cuePointType.sub === cuePoint.subType);
+					}).length > 0) : false;
+					var passedCustomFilter = (isValidTag || isValidType) && args.filter ? args.filter(cuePoint) : true;
+					return (isValidTag || isValidType) && passedCustomFilter;
+				});
 
-						var isValidType = hasTypeCondition ? ($.grep(args.types, function (cuePointType) {
-							return (!cuePointType.main || cuePointType.main === cuePoint.cuePointType) && (!cuePointType.sub || cuePointType.sub === cuePoint.subType);
-						}).length > 0) : false;
+				result.sort(function (a, b) {
+					return args.sortDesc ? (b.createdAt - a.createdAt) : (a.createdAt - b.createdAt);
+				});
+			}
 
-						var passedCustomFilter = (isValidTag || isValidType) && args.filter ? args.filter(cuePoint) : true;
-
-
-						return (isValidTag || isValidType) && passedCustomFilter;
-					});
-
-					result.sort(function (a, b) {
-						return args.sortDesc ? (b.startTime - a.startTime) : (a.startTime - b.startTime);
-					});
-				}
-
-				return result;
-			};
-			this.cuepoints.push(cuePoint);
-
-
-			var args = {cuePoints:[cuePoint],filter:filter};
-			this.handleStateCuePoints({cuepointsArgs : args});
-			this.handlePollResultsCuePoints({cuepointsArgs : args});
-
-			console.log(">>>>>", "executeCuePointReached" , cuePoint);
+			return result;
 		},
 
+		executeCuePointReached: function (cuePoint) {
+			this.addToLocalCuePointsArray(cuePoint);
+			var args = {cuePoints:this.cuepoints,filter:this.filter};
+			this.handleStateCuePoints({cuepointsArgs : args});
+			this.handlePollResultsCuePoints({cuepointsArgs : args});
+		},
 
+		//TODO - remove
+		printTagsAndId (arr){
+			console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>"  );
+			for (var i = 0; i < arr.length; i++) {
+				var obj = arr[i];
+				console.log(">>>>>",obj.id, obj.tags  );
+			}
+			console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>"  );
+		},
 
 
 
@@ -448,10 +450,8 @@
                 resetMode = true;
                 cuepointsArgs = _this.cuePointsManager.getCuePointsReached();
             }
-
             if (cuepointsArgs) {
                 _this.log("start syncing poll results by analyzing " + cuepointsArgs.cuePoints.length + " reached cue points");
-
                 if (_this.pollData.showResults || _this.pollData.showTotals) {
                     // according to poll state should show poll results or totals
                     var pollResultsCuePoint = _this.filterPollResultsCuePoints(cuepointsArgs);
@@ -512,6 +512,8 @@
 
                 var stateCuePointToHandle = _this.filterStateCuePoints(cuepointsArgs);
                 if (stateCuePointToHandle) {
+                	console.clear();
+                	console.log(">>>>>", "stateCuePointToHandle" , stateCuePointToHandle);
                     try {
                         var showingAPoll = stateCuePointToHandle.tags.indexOf('select-poll-state') > -1;
 
@@ -609,6 +611,7 @@
                         _this.pollData.pollId = pollState.pollId;
                     }else if (_this.pollData.failedToExtractContent)
                     {
+						debugger;
                         _this.log("failed to extract poll with id " + pollState.pollId + "'. ignoring state updates");
                         return;
                     }
@@ -622,7 +625,8 @@
                     if (!isShowingRequestedPoll)
                     {
                         // ## show the poll the first time & extract important information
-
+						//TODO - Eitan start investigation here why a new poll gets error
+                        debugger;
                         var pollContent = _this.globals.pollsContentMapping[_this.pollData.pollId];
                         if (pollContent)
                         {
@@ -652,7 +656,7 @@
                         }else
                         {
                             // requesting to show a poll that we dont have data for - show visual error to the user
-                            _this.pollData.failedToExtractContent = true;
+							_this.pollData.failedToExtractContent = true;
                             _this.view.syncPollDOM();
                         }
                     } else {
@@ -667,6 +671,7 @@
                 }
             } catch (e) {
                 _this.log("general error occurred while trying to show a poll " + e);
+				debugger;
                 _this.pollData.failedToExtractContent = true;
                 _this.view.syncPollDOM();
             }
@@ -764,8 +769,6 @@
                 _this.userVote.answer = selectedAnswer;
                 _this.view.syncDOMUserVoting();
 
-
-                debugger;
                 if (_this.userVote.metadataId) {
                     _this.log('user already voted for this poll, update user vote');
                     var invokedByPollId = _this.pollData.pollId;
@@ -786,11 +789,12 @@
                     });
                 } else {
                     _this.log("user didn't vote yet in this poll, add user vote");
-
+					//Eitan this is wrong. We need to get the votes only from BE and not as FE ++
                     // increase total voters by 1
                     if (_this.pollData.pollResults)
                     {
-                        _this.pollData.pollResults.totalVoters++;
+                    	//TODO
+                        // _this.pollData.pollResults.totalVoters++;
                     }else {
                         this.pollData.pollResults = { totalVoters : 1};
                     }
@@ -834,7 +838,9 @@
             }
 
         },
-
+		log : function(msg){
+        	mw.log("webcastPolls :: " + msg)
+		},
         _canCompareTotalVoters: function (newPollResults) {
             var _this = this;
             return _this.pollData && _this.pollData.pollResults && _this.pollData.pollResults.totalVoters && newPollResults.totalVoters;
