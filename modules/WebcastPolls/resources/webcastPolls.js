@@ -119,8 +119,8 @@
             // bind to cue point events
             var _this = this;
 
-            this.bind('onpause onplay onChangeMedia', function (e) {
-                _this.handlePlayerEvent(e.type);
+            this.bind('onpause onplay onChangeMedia backlogPushCuepointsLoaded', function (e,args) {
+                _this.handlePlayerEvent(e.type,args);
             });
         },
         /**
@@ -178,12 +178,48 @@
          * @param eventName the event name invoked by the player.
          * @returns {boolean}
          */
-        handlePlayerEvent : function(eventName)
+        handlePlayerEvent : function(eventName , args)
         {
             var _this = this;
 
             switch(eventName)
             {
+                case 'backlogPushCuepointsLoaded':
+                    //if we got here - the pass cuepoints were loaded
+                    console.log(">>>>>", "backlogPushCuepointsLoaded");
+					for(var i = 0;i< this.cuepoints.length;i++)
+					{
+					    try {
+					        var cuepoint = this.cuepoints[i];
+					        var cuepointContent = cuepoint.partnerData ? JSON.parse(cuepoint.partnerData) : null;
+					        var cuepointTags = cuepoint.tags;
+					        if(cuepointTags && cuepointTags.indexOf("poll-data") == -1){
+					            continue; // process only poll-data cuepoints
+                            }
+					        var pollIdTokens = (cuepoint.tags || '').match(/id:([^, ]*)/);
+					        var pollId = pollIdTokens && pollIdTokens.length === 2 ? pollIdTokens[1] : null;
+
+					        if (cuepointContent && pollId)
+					        {
+					            var pollContent = cuepointContent.text;
+
+					            if (pollId && pollContent) {
+					                _this.log("updated content of poll with id '" + pollId + "'");
+					                if(_this.globals.pollsContentMapping[pollId]) {
+					                     $.extend(_this.globals.pollsContentMapping[pollId], pollContent);
+					                }else {
+					                    _this.globals.pollsContentMapping[pollId] = pollContent;
+					                }
+					            }
+					        }
+
+					    }catch(e)
+					    {
+					        _this.log("ERROR while tring to extract poll information with error " + e);
+					    }
+
+					}
+                    break;
                 case 'onpause':
                     _this.log("event '" + eventName + "' triggered - removing current poll (if any)");
                     // remove current poll is found when player is being paused
@@ -256,49 +292,94 @@
 
                     _this.cuePointsManager.registerMonitoredCuepointTypes(['poll-data'],function(cuepoints)
                     {
-						console.log(">>>>> @@", "registerMonitoredCuepointTypes" , cuepoints);
-                       for(var i = 0;i< cuepoints.length;i++)
-                       {
-                           try {
-                               var cuepoint = cuepoints[i];
-                               var cuepointContent = cuepoint.partnerData ? JSON.parse(cuepoint.partnerData) : null;
-                                var pollIdTokens = (cuepoint.tags || '').match(/id:([^, ]*)/);
-                               var pollId = pollIdTokens && pollIdTokens.length === 2 ? pollIdTokens[1] : null;
-
-                               if (cuepointContent && pollId)
-                               {
-                                   var pollContent = cuepointContent.text;
-
-                                   if (pollId && pollContent) {
-                                       _this.log("updated content of poll with id '" + pollId + "'");
-                                       if(_this.globals.pollsContentMapping[pollId]) {
-                                            $.extend(_this.globals.pollsContentMapping[pollId], pollContent);
-                                       }else {
-                                           _this.globals.pollsContentMapping[pollId] = pollContent;
-                                       }
-                                   }
-                               }
-
-                           }catch(e)
-                           {
-                               _this.log("ERROR while tring to extract poll information with error " + e);
-                           }
-
-                       }
+						// console.log(">>>>> @@", "registerMonitoredCuepointTypes" , cuepoints);
+                       // for(var i = 0;i< cuepoints.length;i++)
+                       // {
+                       //     try {
+                       //         var cuepoint = cuepoints[i];
+                       //         var cuepointContent = cuepoint.partnerData ? JSON.parse(cuepoint.partnerData) : null;
+                       //          var pollIdTokens = (cuepoint.tags || '').match(/id:([^, ]*)/);
+                       //         var pollId = pollIdTokens && pollIdTokens.length === 2 ? pollIdTokens[1] : null;
+					   //
+                       //         if (cuepointContent && pollId)
+                       //         {
+                       //             var pollContent = cuepointContent.text;
+					   //
+                       //             if (pollId && pollContent) {
+                       //                 _this.log("updated content of poll with id '" + pollId + "'");
+                       //                 if(_this.globals.pollsContentMapping[pollId]) {
+                       //                      $.extend(_this.globals.pollsContentMapping[pollId], pollContent);
+                       //                 }else {
+                       //                     _this.globals.pollsContentMapping[pollId] = pollContent;
+                       //                 }
+                       //             }
+                       //         }
+					   //
+                       //     }catch(e)
+                       //     {
+                       //         _this.log("ERROR while tring to extract poll information with error " + e);
+                       //     }
+					   //
+                       // }
                     });
 
                     _this.cuePointsManager.onCuePointsReached = $.proxy(function(args)
                     {
 						console.log(">>>>> @@", "onCuePointsReached" , args);
                         // new cue points reached - change internal polls status when relevant cue points reached
-                        _this.handleStateCuePoints({cuepointsArgs : args});
-                        _this.handlePollResultsCuePoints({cuepointsArgs : args});
+                        // debugger;
+                        // _this.handleStateCuePoints({cuepointsArgs : args});
+                        // _this.handlePollResultsCuePoints({cuepointsArgs : args});
                     },_this);
                 }
             //TODO - detach
 			// }
 
 		},
+
+		executeCuePointReached: function (cuePoint) {
+			var filter = function (args) {
+				var result = [];
+
+				if (this.cuePoints) {
+					var filterByTags = (args.tags ? args.tags : (args.tag ? [args.tag] : null));
+					result = $.grep(this.cuePoints, function (cuePoint) {
+						var hasTagCondition = filterByTags;
+						var hasTypeCondition = args.types && args.types.length && args.types.length > 0;
+						var isValidTag = hasTagCondition ? filterByTags.indexOf(cuePoint.tags) !== -1 : false;
+
+						var isValidType = hasTypeCondition ? ($.grep(args.types, function (cuePointType) {
+							return (!cuePointType.main || cuePointType.main === cuePoint.cuePointType) && (!cuePointType.sub || cuePointType.sub === cuePoint.subType);
+						}).length > 0) : false;
+
+						var passedCustomFilter = (isValidTag || isValidType) && args.filter ? args.filter(cuePoint) : true;
+
+
+						return (isValidTag || isValidType) && passedCustomFilter;
+					});
+
+					result.sort(function (a, b) {
+						return args.sortDesc ? (b.startTime - a.startTime) : (a.startTime - b.startTime);
+					});
+				}
+
+				return result;
+			};
+			this.cuepoints.push(cuePoint);
+
+
+			var args = {cuePoints:[cuePoint],filter:filter};
+			this.handleStateCuePoints({cuepointsArgs : args});
+			this.handlePollResultsCuePoints({cuepointsArgs : args});
+
+			console.log(">>>>>", "executeCuePointReached" , cuePoint);
+		},
+
+
+
+
+
+
         //deep compare
 		jsonEqual : function(a,b) {
 			return JSON.stringify(a) === JSON.stringify(b);
@@ -328,9 +409,6 @@
 		executeCuePointLoaded: function (cuePoint) {
 			console.log(">>>>>", "executeCuePointLoaded" , cuePoint);
 			this.addToLocalCuePointsArray(cuePoint);
-		},
-		executeCuePointReached: function (cuePoint) {
-			console.log(">>>>>", "executeCuePointReached" , cuePoint);
 		},
 		getMetaDataProfile: function () {
 			var _this = this;
@@ -687,7 +765,7 @@
                 _this.view.syncDOMUserVoting();
 
 
-
+                debugger;
                 if (_this.userVote.metadataId) {
                     _this.log('user already voted for this poll, update user vote');
                     var invokedByPollId = _this.pollData.pollId;
