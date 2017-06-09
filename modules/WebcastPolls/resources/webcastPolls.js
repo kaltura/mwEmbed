@@ -186,7 +186,6 @@
             {
                 case 'backlogPushCuepointsLoaded':
                     //if we got here - the pass cuepoints were loaded
-                    console.log(">>>>>", "backlogPushCuepointsLoaded");
 					for(var i = 0;i< this.cuepoints.length;i++)
 					{
 					    try {
@@ -240,8 +239,8 @@
                         _this.log("event '" + eventName + "' - start syncing current poll state");
                         if (_this.cuePointsManager) {
                         	//TODO Eitan
-                            _this.handleStateCuePoints({reset:true});
-                            _this.handlePollResultsCuePoints({reset:true});
+							// _this.handleStateCuePoints({reset:true});
+							// _this.handlePollResultsCuePoints({reset:true});
                         }
                         _this.log("event '" + eventName + "' - done syncing current poll state");
                     }
@@ -329,8 +328,8 @@
 						console.log(">>>>> @@", "onCuePointsReached" , args);
                         // new cue points reached - change internal polls status when relevant cue points reached
 						// disconnected from old CP manager
-                        // _this.handleStateCuePoints({cuepointsArgs : args});
-                        // _this.handlePollResultsCuePoints({cuepointsArgs : args});
+						// _this.handleStateCuePoints({cuepointsArgs : args});
+						// _this.handlePollResultsCuePoints({cuepointsArgs : args});
                     },_this);
                 }
             //TODO - detach
@@ -362,8 +361,24 @@
 			return result;
 		},
 
-		executeCuePointReached: function (cuePoint) {
-			this.addToLocalCuePointsArray(cuePoint);
+		executeCuePointReached: function (cuepoint) {
+			var cuepointTags = cuepoint.tags;
+			// if this is a poll-data, and if it is the first poll-data we need to store the poll
+			if(cuepointTags && cuepointTags.indexOf("poll-data") > -1){
+				var cuepointContent = cuepoint.partnerData ? JSON.parse(cuepoint.partnerData) : null;
+				var pollIdTokens = (cuepoint.tags || '').match(/id:([^, ]*)/);
+				var pollId = pollIdTokens && pollIdTokens.length === 2 ? pollIdTokens[1] : null;
+				var pollContent = cuepointContent.text;
+				if (pollId && pollContent) {
+					this.log("updated content of poll with id '" + pollId + "'");
+					if(this.globals.pollsContentMapping[pollId]) {
+						$.extend(this.globals.pollsContentMapping[pollId], pollContent);
+					}else {
+						this.globals.pollsContentMapping[pollId] = pollContent;
+					}
+				}
+			}
+			this.addToLocalCuePointsArray(cuepoint);
 			var args = {cuePoints:this.cuepoints,filter:this.filter};
 			this.handleStateCuePoints({cuepointsArgs : args});
 			this.handlePollResultsCuePoints({cuepointsArgs : args});
@@ -409,7 +424,6 @@
 			scope.executeCuePointReached(cuePoint);
 		},
 		executeCuePointLoaded: function (cuePoint) {
-			console.log(">>>>>", "executeCuePointLoaded" , cuePoint);
 			this.addToLocalCuePointsArray(cuePoint);
 		},
 		getMetaDataProfile: function () {
@@ -512,8 +526,6 @@
 
                 var stateCuePointToHandle = _this.filterStateCuePoints(cuepointsArgs);
                 if (stateCuePointToHandle) {
-                	console.clear();
-                	console.log(">>>>>", "stateCuePointToHandle" , stateCuePointToHandle);
                     try {
                         var showingAPoll = stateCuePointToHandle.tags.indexOf('select-poll-state') > -1;
 
@@ -611,7 +623,6 @@
                         _this.pollData.pollId = pollState.pollId;
                     }else if (_this.pollData.failedToExtractContent)
                     {
-						debugger;
                         _this.log("failed to extract poll with id " + pollState.pollId + "'. ignoring state updates");
                         return;
                     }
@@ -626,7 +637,6 @@
                     {
                         // ## show the poll the first time & extract important information
 						//TODO - Eitan start investigation here why a new poll gets error
-                        debugger;
                         var pollContent = _this.globals.pollsContentMapping[_this.pollData.pollId];
                         if (pollContent)
                         {
@@ -671,7 +681,6 @@
                 }
             } catch (e) {
                 _this.log("general error occurred while trying to show a poll " + e);
-				debugger;
                 _this.pollData.failedToExtractContent = true;
                 _this.view.syncPollDOM();
             }
