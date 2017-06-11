@@ -372,7 +372,6 @@
             }
         },
         showPollDOMError: function () {
-            debugger;
             var _this = this;
             if (_this.$webcastPoll) {
                 _this.$webcastPoll.find('[name="pollContent"]').hide();
