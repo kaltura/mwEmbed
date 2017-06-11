@@ -427,6 +427,29 @@
 				}
 			},
 
+			updatePlayheadStatus: function () {
+				var embedPlayer = this.getPlayer();
+				if ( embedPlayer.isLive() && embedPlayer.isDVR() ) {
+					// embedPlayer.duration is irrelevant for dash live, we have to calculate the playHeadPercent via player.seekRange().end instead.
+					if ( embedPlayer.currentTime >= 0 && embedPlayer.duration && !embedPlayer.userSlide && !embedPlayer.seeking ) {
+						var delta = player.seekRange().end - embedPlayer.currentTime;
+						var playHeadPercent = ( embedPlayer.duration - delta ) / embedPlayer.duration;
+						embedPlayer.updatePlayHead(playHeadPercent);
+						//update liveEdgeOffset
+						if (embedPlayer.isDVR()) {
+							var perc = parseInt(playHeadPercent * 1000);
+							if (perc > 998) {
+								embedPlayer.liveEdgeOffset = 0;
+							} else {
+								embedPlayer.liveEdgeOffset = embedPlayer.duration - perc / 1000 * embedPlayer.duration;
+							}
+						}
+					}
+				} else {
+					this.orig_updatePlayheadStatus.call(embedPlayer);
+				}
+			},
+
 			onErrorEvent: function (event) {
 				// Extract the shaka.util.Error object from the event.
 				this.onError(event.detail);
@@ -504,6 +527,7 @@
 				this.orig_ondurationchange = this.getPlayer()._ondurationchange;
 				this.orig_backToLive = this.getPlayer().backToLive;
 				this.orig_doSeek = this.getPlayer().doSeek;
+				this.orig_updatePlayheadStatus = this.getPlayer().updatePlayheadStatus;
                 this.orig_clean = this.getPlayer().clean;
                 this.getPlayer().switchSrc = this.switchSrc.bind(this);
 				this.getPlayer().playerSwitchSource = this.playerSwitchSource.bind(this);
@@ -513,6 +537,7 @@
 				this.getPlayer()._ondurationchange = this._ondurationchange.bind(this);
 				this.getPlayer().backToLive = this.backToLive.bind(this);
 				this.getPlayer().doSeek = this.doSeek.bind(this);
+				this.getPlayer().updatePlayheadStatus = this.updatePlayheadStatus.bind(this);
                 this.getPlayer().clean = this.clean.bind(this);
             },
 			/**
@@ -527,6 +552,7 @@
 				this.getPlayer()._ondurationchange = this.orig_ondurationchange;
 				this.getPlayer().backToLive = this.orig_backToLive;
 				this.getPlayer().doSeek = this.orig_doSeek;
+				this.getPlayer().updatePlayheadStatus = this.orig_updatePlayheadStatus;
                 this.getPlayer().clean = this.orig_clean;
             }
 		});
