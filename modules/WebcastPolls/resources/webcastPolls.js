@@ -556,13 +556,26 @@
                 _this.log("done syncing current poll state");
             }
         },
+
+		// return something like ##guestHashSeparator-186168013885295##
+		generateUserId: function(prefix){
+			var _this = this;
+
+			return	"##" +
+				prefix + "HashSeparator" +
+				_this.getKSHash(_this.getPlayer().getFlashvars().ks) +
+				_this.getRandomInt(10000,99999999).toString() +
+				"##";
+		},
+
+
 		getUserID: function () {
 			var _this = this;
 
 			// If our user ID is the same as the configured anonymousUserId we need to generate one, or get it from localStorage (if exists)
 			if (!_this.getConfig("userRole") || _this.getConfig("userRole") === "anonymousRole") {
 
-				var userId = _this.generateUserId();
+				var userId = _this.generateUserId("polls-");
 				//if localStorage is available, get & store the user id from it;
 				if (window.localStorage) {
 					try {
