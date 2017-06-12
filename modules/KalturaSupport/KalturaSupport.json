@@ -19,6 +19,12 @@
     "kalturaLoad": "always",
     "messageFile": "KalturaSupport.i18n.json"
   },
+  "mw.KPushCuePointsManager": {
+    "scripts": "resources/mw.KPushCuePointsManager.js",
+    "dependencies": [
+      "mw.KPushServerNotification"
+    ]
+  },
   "mw.KBaseScreen": {
     "scripts": "resources/mw.KBaseScreen.js",
     "dependencies": [
