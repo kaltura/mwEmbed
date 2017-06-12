@@ -158,16 +158,20 @@
 				{
 					"entryId": _this.embedPlayer.kentryid
 				},
-				function (cuePoint) {
-					mw.log("KPushCuePointsManager cuePoint loaded" + cuePoint[0].createdAt);
-					_this.cuePointloaded(cuePoint[0], notificationName);
+				function (cuePoints) {
+					mw.log("KPushCuePointsManager cuePoints loaded " + cuePoints);
+					_this.cuePointloaded(cuePoints, notificationName);
 				});
 			return this.pushServerNotification.registerNotifications([tempNotification],moduleName)
 		},
-		cuePointloaded: function (cuePoint, notificationName) {
-			this.setLocalCuePoint(cuePoint, notificationName);
-			var cpObject = this.findCuePointdataByTime(cuePoint.createdAt);
-			cpObject.loadedCallback(cpObject.key, cpObject.cuepoint, cpObject.scope);
+		cuePointloaded: function (cuePoints, notificationName) {
+			for (var i = 0; i < cuePoints.length; i++) {
+				var cuePoint = cuePoints[i];
+				this.setLocalCuePoint(cuePoint, notificationName);
+				var cpObject = this.findCuePointdataByTime(cuePoint.createdAt);
+				cpObject.loadedCallback(cpObject.key, cpObject.cuepoint, cpObject.scope);
+			}
+
 		},
 		getMetaDataProfile: function (notificationName, userId) {
 			var _this = this;
