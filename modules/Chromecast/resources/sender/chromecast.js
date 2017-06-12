@@ -91,6 +91,10 @@
             setTimeout( this.checkIfAlreadyConnected.bind( this ), 100 );
         },
 
+        isSafeEnviornment: function () {
+            return mw.isChrome();
+        },
+
         /**
          * Handles the use case of refreshing the page while casting.
          */

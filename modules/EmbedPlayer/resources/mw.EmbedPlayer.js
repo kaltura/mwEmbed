@@ -1734,6 +1734,9 @@
 			// Reset first play to true, to count that play event
 			this.firstPlay = true;
 
+			// Mobile auto play is not relevant anymore
+            this.mobileAutoPlay = false;
+
 			if (resetPlaybackValues || resetPlaybackValues === undefined) {
 				// reset donePlaying count on change media.
 				this.donePlayingCount = 0;
@@ -2782,7 +2785,7 @@
 			// update the mute state from the player element
 			if (_this.muted != _this.getPlayerElementMuted() && !_this.isStopped()) {
 				mw.log("EmbedPlayer::syncVolume: muted does not mach embed player");
-				_this.toggleMute();
+                _this.toggleMute();
 				// Make sure they match:
 				_this.muted = _this.getPlayerElementMuted();
 			}
