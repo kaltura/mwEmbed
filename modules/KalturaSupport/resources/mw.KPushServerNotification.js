@@ -2,14 +2,14 @@
     "use strict";
     mw.KPushServerNotification = function (embedPlayer) {
         return this.init(embedPlayer);
-    }
+    };
 
     mw.KPushServerNotification.getInstance=function(embedPlayer) {
         if (!embedPlayer.kPushServerNotification) {
             embedPlayer.kPushServerNotification = new mw.KPushServerNotification(embedPlayer);
         }
         return embedPlayer.kPushServerNotification;
-    }
+    };
 
     mw.KPushServerNotification.connectionTimeout = 10000;
 
@@ -33,49 +33,49 @@
         this.socket = io.connect(url,options);
 
         this.socket.on('validated', function(){
-            mw.log("Connected to socket for "+url);
+            mw.log("KPushServerNotification:: Connected to socket for "+url);
             deferred.resolve(true);
             _this.connected=true;
 
             $.each(_this.listenKeys,function(key, obj) {
-                //mw.log("SocketWrapper: calling emit for  "+key+ " eventName: "+eventName+" queueNameHash:"+obj.queueNameHash+" queueKeyHash:"+obj.queueKeyHash);
+                mw.log("KPushServerNotification:: SocketWrapper: calling emit for  "+key+ " eventName: "+eventName+" queueNameHash:"+obj.queueNameHash+" queueKeyHash:"+obj.queueKeyHash);
                 _this.socket.emit('listen', obj.queueNameHash,obj.queueKeyHash);
             });
         });
         this.socket.on('disconnect', function () {
-            mw.log('push server was disconnected');
+            mw.log('KPushServerNotification:: push server was disconnected');
         });
         this.socket.on('reconnect', function () {
-            mw.log('push server was reconnected');
+            mw.log('KPushServerNotification:: push server was reconnected');
         });
 
         this.socket.on('reconnect_error', function (e) {
-            mw.log('push server reconnection failed '+e);
+            mw.log('KPushServerNotification:: push server reconnection failed '+e);
         });
 
         this.socket.on('connected', function(queueKey, queueKeyHash) {
             if (_this.listenKeys[queueKeyHash]) {
                 _this.listenKeys[queueKeyHash].deferred.resolve(queueKey);
                 _this.callbackMap[queueKey] = _this.listenKeys[queueKeyHash];
-                mw.log("Listening to queue [" + queueKey + "] for eventName " + eventName+ " queueKeyHash "+queueKeyHash);
+                mw.log("KPushServerNotification:: Listening to queue [" + queueKey + "] for eventName " + eventName+ " queueKeyHash "+queueKeyHash);
             } else {
-                mw.log("Cannot listen to queue [" + queueKey + "] for eventName " + eventName+ " queueKeyHash "+queueKeyHash+" queueKeyHash not found");
+                mw.log("KPushServerNotification:: Cannot listen to queue [" + queueKey + "] for eventName " + eventName+ " queueKeyHash "+queueKeyHash+" queueKeyHash not found");
             }
         });
 
         this.socket.on('message', function(queueKey, msg){
-            mw.log("["+eventName+"][" + queueKey + "]: onMessage" ,msg);
+            mw.log("KPushServerNotification:: ["+eventName+"][" + queueKey + "]: onMessage" ,msg);
 
             if (_this.callbackMap[queueKey]) {
                 _this.callbackMap[queueKey].cb(msg);
             } else {
-                mw.log("["+eventName+"][" + queueKey + "]: onMessage Error couldn't find queueKey in map");
+                mw.log("KPushServerNotification:: ["+eventName+"][" + queueKey + "]: onMessage Error couldn't find queueKey in map");
 
             }
 
         });
         this.socket.on('errorMsg', function( msg){
-            mw.log("["+eventName+"]"+msg);
+            mw.log("KPushServerNotification:: ["+eventName+"]"+msg);
         });
 
         return deferred;
@@ -85,7 +85,7 @@
 
         var deferred = $.Deferred();
 
-        mw.log("Listening to ",eventName," queueNameHash: ",queueNameHash, " queueKeyHash: ",queueKeyHash);
+        mw.log("KPushServerNotification:: Listening to ",eventName," queueNameHash: ",queueNameHash, " queueKeyHash: ",queueKeyHash);
 
         this.listenKeys[queueKeyHash] = {
             deferred: deferred,
@@ -154,7 +154,7 @@
                 onMessage: onMessage
             };
         },
-        registerNotifications:function(registerRequests) {
+        registerNotifications:function(registerRequests,moduleName) {
             var deferred = $.Deferred();
 
             var _this=this;
@@ -168,44 +168,45 @@
                 apiRequests=apiRequests[0];
             }
 
-            mw.log("registering to ",apiRequests);
+            mw.log("KPushServerNotification:: registering to ",apiRequests);
 
             function processResult(registerRequest,result) {
                 var deferred = $.Deferred();
-
                 if (result.objectType==="KalturaAPIException") {
-                    mw.log("Error registering to "+registerRequest.eventName+" message:"+result.message+" ("+result.code+")");
+                    mw.log("KPushServerNotification:: Error registering to "+registerRequest.eventName+" message:"+result.message+" ("+result.code+")");
                     deferred.resolve(result.message);
                     return deferred;
                 }
 
                 //cache sockets by host name
                 var socketKey = result.url.replace(/^(.*\/\/[^\/?#]*).*$/,"$1");
-                var socket = _this.socketPool[socketKey];
+                // check if there is an existing socket for that specific module by name
+                var socket = _this.socketPool[moduleName];
                 if (!socket) {
-                    socket = new SocketWrapper(socketKey);
-                    _this.socketPool[socketKey]=socket;
-
+                    //does not exist - create one for that specific module
+                    socket = new SocketWrapper(moduleName);
+                    //store it in case there are more events for this specific module
+                    _this.socketPool[moduleName]=socket;
                     socket.connect(result.url,registerRequest.eventName);
                 }
 
                 socket.listen(registerRequest.eventName,result.queueName, result.queueKey,function(obj) {
-                    mw.log('received event for '+registerRequest.eventName+ " key: "+result.queueKey);
+                    mw.log('KPushServerNotification:: received event for '+registerRequest.eventName+ " key: "+result.queueKey);
                     registerRequest.onMessage(obj);
                 }).then(function() {
 
                     if (deferred.state()!=="rejected") {
-                        mw.log('Listening to '+registerRequest.eventName+ " for key: "+result.queueKey);
+                        mw.log('KPushServerNotification:: Listening to '+registerRequest.eventName+ " for key: "+result.queueKey);
                         deferred.resolve(true);
                     } else {
-                        mw.log('Listening result for  '+registerRequest.eventName+ " for key: "+result.queueKey+ " came too late! ignoring!");
+                        mw.log('KPushServerNotification:: Listening result for  '+registerRequest.eventName+ " for key: "+result.queueKey+ " came too late! ignoring!");
 
                     }
                 });
 
                 setTimeout(function() {
                     if (deferred.state()!=="resolved") {
-                        mw.log('Timeout waiting for connection  '+registerRequest.eventName+ " for key: "+result.queueKey);
+                        mw.log('KPushServerNotification:: Timeout waiting for connection  '+registerRequest.eventName+ " for key: "+result.queueKey);
                         deferred.reject();
                     }
                 },mw.KPushServerNotification.connectionTimeout);
@@ -214,9 +215,8 @@
             }
 
             this.kClient.doRequest(apiRequests, function(results) {
-
                 if (results.objectType==="KalturaAPIException") {
-                    mw.log("Error registering to event tempalte service :"+results.message+" ("+results.code+")");
+                    mw.log("KPushServerNotification:: Error registering to event tempalte service :"+results.message+" ("+results.code+")");
                     deferred.reject(results.message);
                     return deferred;
                 }
@@ -239,7 +239,7 @@
             },
             false,
             function(error) {
-                mw.log('Error registering to events  '+error);
+                mw.log('KPushServerNotification:: Error registering to events  '+error);
                 deferred.reject(error);
             });
 
