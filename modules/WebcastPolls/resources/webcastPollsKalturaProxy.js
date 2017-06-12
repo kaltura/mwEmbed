@@ -128,7 +128,6 @@
         },
         transmitVoteUpdate : function(metadataId, userId, selectedAnswer,pollId)
         {
-			console.log(">>>>>##", "transmitVoteUpdate");
             var _this = this;
             var defer = $.Deferred();
 			// New polls API for voting
@@ -185,7 +184,6 @@
         },
         transmitNewVote : function(pollId, pollProfileId, userId, selectedAnswer)
         {
-			console.log(">>>>>##", "transmitNewVote");
             var _this = this;
             var defer = $.Deferred();
 
