@@ -83,10 +83,14 @@
                 this.counter = 0; //reset time update interval counter
                 this.getPlayer().LiveCurrentTime = time;
                 this.getPlayer().flashLiveCurrentTime = time; // for flash player
+                // Calculate the start time of the video in absolute time for dvr
+                // set this once - no need to do this rapidly
+                if(this.getPlayer().isDVR() && !this.getPlayer().dvrAbsoluteStartTime && this.getPlayer().currentTime != 0){
+					this.getPlayer().dvrAbsoluteStartTime = time-this.getPlayer().currentTime;
+                }
                 this.sendTrackEventMonitor(mw.seconds2npt(time), true);
             }
         },
-
         sendTrackEventMonitor: function(time, isId3TagTime) {
             var traceString = "id3Tag plugin :: id3 tag time = ";
             if(isId3TagTime) {
