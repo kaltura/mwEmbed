@@ -7,8 +7,11 @@
      */
     mw.PluginManager.add('webcastPolls', mw.KBasePlugin.extend({
         defaultConfig: {
-            'userId' : 'User'
+            'userId' : 'User',
+            'newVoteApi' : false,
+            'usePushNotification' : false
         },
+		polls_push_notification: "POLLS_PUSH_NOTIFICATIONS",
         cuePointsManager: null, // manages all the cue points tracking (cue point reached of poll results, poll states etc).
         kalturaProxy: null, // manages the communication with the Kaltura api (invoke a vote, extract poll data).
         userProfile: null, // manages active user profile
@@ -251,12 +254,17 @@
                 // cue points manager used to monitor and notify when relevant cue points reached (polls status, results).
                 _this.cuePointsManager = new mw.webcast.CuePointsManager(_this.getPlayer(), function () {
                 }, "webcastPolls_CuePointsManager");
+				_this.cuePointsManager.setPushNotificationMode(_this.getConfig('usePushNotification'));
 
-                _this.cuePointsManager.registerMonitoredCuepointTypes(['poll-data'],function(cuepoints)
+				var pushSystemName = null;
+				// send the pushSystemName only if we have usePushNotification set to true
+				if(_this.getConfig("usePushNotification")){
+					pushSystemName = _this.polls_push_notification;
+                }
+				_this.cuePointsManager.registerMonitoredCuepointTypes(['poll-data'],function(cuepoints)
                 {
                    for(var i = 0;i< cuepoints.length;i++)
                    {
-
                        try {
                            var cuepoint = cuepoints[i];
                            var cuepointContent = cuepoint.partnerData ? JSON.parse(cuepoint.partnerData) : null;
@@ -283,7 +291,7 @@
                        }
 
                    }
-                });
+                } , [pushSystemName]);
 
                 _this.cuePointsManager.onCuePointsReached = $.proxy(function(args)
                 {
@@ -628,7 +636,7 @@
                 if (_this.userVote.metadataId) {
                     _this.log('user already voted for this poll, update user vote');
                     var invokedByPollId = _this.pollData.pollId;
-                    _this.kalturaProxy.transmitVoteUpdate(_this.userVote.metadataId, _this.globals.userId, selectedAnswer, _this.pollData.pollId).then(function (result) {
+                    _this.kalturaProxy.transmitVoteUpdate(_this.userVote.metadataId, _this.globals.userId, selectedAnswer, _this.pollData.pollId,_this.getConfig("newVoteApi")).then(function (result) {
                         if (invokedByPollId === _this.pollData.pollId) {
                             _this.log('successfully updated server with user answer');
                             _this.userVote.inProgress = false;
@@ -657,7 +665,7 @@
 
 
                     var invokedByPollId = _this.pollData.pollId;
-                    _this.kalturaProxy.transmitNewVote(_this.pollData.pollId, _this.globals.votingProfileId, _this.globals.userId, selectedAnswer).then(function (result) {
+                    _this.kalturaProxy.transmitNewVote(_this.pollData.pollId, _this.globals.votingProfileId, _this.globals.userId, selectedAnswer,_this.getConfig("newVoteApi")).then(function (result) {
                         if (invokedByPollId === _this.pollData.pollId) {
                             _this.log('successfully updated server with user vote');
                             _this.userVote.inProgress = false;

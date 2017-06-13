@@ -8,6 +8,17 @@
 </head>
 <body>
 <h1>polls demo</h1>
+<br>
+<button onclick="openSlidesMenu()">openSlidesMenu</button>
+<button onclick="seekTo(7073)">answerOnAir</button>
+<button onclick="seekTo(143)">143</button>
+<button onclick="seekRelative(10)">+10s</button>
+<button onclick="seekRelative(-10)">-10s</button>
+<button onclick="seekRelative(30)">+30s</button>
+<button onclick="seekRelative(-30)">-30</button>
+<button onclick="seekRelative(180)">+3m</button>
+<button onclick="seekRelative(-180)">-3m</button>
+
 <div id="kaltura_player" style="width: 885px; height: 630px;float: left;"></div>
 <div id="qnaListHolder" style="width: 220px; height: 330px; float:left; float: left"></div>
 <br style="clear: both;" /><br />
@@ -58,8 +69,8 @@
     //    var playerId = 15203553; //QA
     var wid = '_27017'; // prod
     //    var wid = '_5174'; // QA
-    var ks = 'djJ8MjcwMTd8VD833IbARat5K0kFsUJlSTZJ9jxnQG73t4oXjUkKnumIjBdbaHMNC0dKR5CC9knU_U_Q8V92zSQZCqABW8_VLpM7KkV_7uK_l_tZAzxvu1Pyniy2kMHMI19A2VPQO_4XseDGomzuv9o5fPVs4jwn4UNkXWxdoy-4YS7ckJytf0P_2-CJEUEbHlQupI9yMdfD0r8Z-RVlcN02chdYr-hvT5JRnmWOJKJOg6ZeS2Uv0k5qT2FNoDTTBqD1zV_kwRXcM4a8VRRw3hE3XZJfPlbniL0OCkybgrdpycYo8k3oBCv6VCM5915GaiwcrbkzjSO9';
-    var entry = "1_tcjnlmo8";
+    var ks = 'djJ8MjcwMTd8R8r8OepWAdsY1uxrOV26eoRnjbyu0t3EJaIvpbpD1ttZpXs1wA_j7rhrnnVBYf7ZY26LflPsdMvXmTKr36_U8qOXDXay92cvWSXhTnZTo3hOgjSe6uM7-Vb_5ikssJm57O3SLE7Yw23Ju_U-MNdEdqnVVh4JOovOPl47xDIwe_L0YBnxybv2Dagg4cPHZ3qVzpx5NGpv8Q1uJye0CGq7SjqhG-aAVS6wftfhgrjJ7YI2CwyR49Elk10IBUWUFl3omdgOzp8r9GOLnG5pTgfmt1QSDooJrBFeJc6071lxOSqOPQEzcr7nGmxOtxRIwI9y';
+    var entry = "1_vi8k8yqe";
 
     paramFromUrl("ks");
     paramFromUrl("wid");
@@ -79,6 +90,9 @@
     });
 
 
+    var usePushNotification = true;
+    var newVoteApi = true;
+
     kWidget.featureConfig({
         'targetId': 'kaltura_player',
         'wid': wid,
@@ -89,7 +103,7 @@
             'qna': qna,
             "chapters": {plugin: true},
             'ks': ks,
-            "webcastPolls":{"plugin":true,"userId":"Eitan","userRole":"unmoderatedAdminRole"},
+            "webcastPolls":{"plugin":true,"userId":"Eitan","userRole":"unmoderatedAdminRole" , "usePushNotification":usePushNotification , "newVoteApi" :newVoteApi },
             "EmbedPlayer.LiveCuepoints" : true
         },
         'entry_id':  entry// vod : 1_bzr97hax | live : 1_afjmm4ie
@@ -109,16 +123,6 @@
     }
 
 </script>
-<br>
-<button onclick="openSlidesMenu()">openSlidesMenu</button>
-<button onclick="seekTo(7073)">answerOnAir</button>
-<button onclick="seekTo(143)">143</button>
-<button onclick="seekRelative(10)">+10s</button>
-<button onclick="seekRelative(-10)">-10s</button>
-<button onclick="seekRelative(30)">+30s</button>
-<button onclick="seekRelative(-30)">-30</button>
-<button onclick="seekRelative(180)">+3m</button>
-<button onclick="seekRelative(-180)">-3m</button>
 
 </body>
 </html>
