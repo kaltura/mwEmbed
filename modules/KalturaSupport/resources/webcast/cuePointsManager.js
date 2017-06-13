@@ -70,7 +70,6 @@
                     _this.handleMonitoredCuepoints(_this.getCuePoints());
                     _this.startMonitorProcess();
                 }
-
             });
 
             _this.bind(
@@ -318,7 +317,7 @@
             }
         },
         // register to push server with X notification types
-		registerPollingNotifications: function (systemNames , callback , pluginName , cuepointTypes ) {
+		registerPollingNotifications: function (systemNames , pluginName ) {
             //TODO - join web socket later
 			var _this = this;
 			var tempNotifications = [];
@@ -330,8 +329,8 @@
 					},
 					function (cuePoints) {
 						mw.log("KPushCuePointsManager cuePoints loaded " + cuePoints);
-						var cuePoint = cuepointTypes;
-						_this.cuepointLoaded(cuePoints,cuepointTypes,callback,systemNames[i])
+						_this.handleMonitoredCuepoints(cuePoints);
+						// _this.cuepointLoaded(cuePoints,cuepointTypes,callback,systemNames[i])
 					});
 				tempNotifications.push(tempNotification);
 			}
@@ -355,33 +354,33 @@
             // This is using push
             if(pushSystemNames){
                 //register through push mechanism
-                _this.registerPollingNotifications(pushSystemNames, callback ,_this.pluginName , cuepointTypes ).then(function () {
+                _this.registerPollingNotifications(pushSystemNames ,_this.pluginName ).then(function () {
                     mw.log(cuepointTypes + "successful  registerNotifications");
                 }, function (err) {
                     mw.log(cuepointTypes + "failed  registerNotifications ", err);
                 });
-            }else{
+            }
+            //else{
                 //register via polling mechanism
-                if (cuepointTypes && cuepointTypes.length && callback)
+            if (cuepointTypes && cuepointTypes.length && callback)
+            {
+                _this._monitoredCuepoints.enabled = true;
+                for(var i=0;i<cuepointTypes.length;i++)
                 {
-                    _this._monitoredCuepoints.enabled = true;
-                    for(var i=0;i<cuepointTypes.length;i++)
+                    var cuepointType = cuepointTypes[i];
+                    var callbackList = _this._monitoredCuepoints.typesMapping[cuepointType];
+                    if (!callbackList)
                     {
-                        var cuepointType = cuepointTypes[i];
-                        var callbackList = _this._monitoredCuepoints.typesMapping[cuepointType];
-                        if (!callbackList)
-                        {
-                            callbackList = _this._monitoredCuepoints.typesMapping[cuepointType] = [];
-                            // this type was not registered yet, update the tagsLike condition to be used against Kaltura API
-                            _this._monitoredCuepoints.tagsLike += _this._monitoredCuepoints.tagsLike ? ',' : '';
-                            _this._monitoredCuepoints.tagsLike +=  cuepointType;
-                        }
-
-                        callbackList.push(callback);
-                        _this.log("registerMonitoredCuepointTypes(): added monitor callback for cuepoint of type '" + cuepointType + "'");
+                        callbackList = _this._monitoredCuepoints.typesMapping[cuepointType] = [];
+                        // this type was not registered yet, update the tagsLike condition to be used against Kaltura API
+                        _this._monitoredCuepoints.tagsLike += _this._monitoredCuepoints.tagsLike ? ',' : '';
+                        _this._monitoredCuepoints.tagsLike +=  cuepointType;
                     }
+                    callbackList.push(callback);
+                    _this.log("registerMonitoredCuepointTypes(): added monitor callback for cuepoint of type '" + cuepointType + "'");
                 }
             }
+            //}
 		},
         _createReachedCuePointsArgs: function (cuePoints, context) {
             var _this = this;
