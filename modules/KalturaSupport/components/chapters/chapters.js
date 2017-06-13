@@ -138,11 +138,6 @@
 				if(_this.embedPlayer.isDVR()){
 					return; // no need to run this on DVR
 				}
-				//TODO: eitan - check why this was needed
-				// var item = _this.mediaList[ _this.selectedMediaItemIndex ];
-				// if ( item && item.active ) {
-				// 	item.active = false;
-				// }
 				var activeDomObj = _this.getActiveItem();
 				activeDomObj.find(".slideOverlay").removeClass("watched");
 				_this.resetChapterProgress(_this.selectedChapterIndex);
@@ -1117,8 +1112,7 @@
 				if (this.selectedSlideIndex === activeSlideIndex) {
 					// update state current active slide:
 					item = this.slidesMap[activeSlideIndex];
-					//TODO eitan - check why this is necessary
-					if (item ) { /* && !item.active */
+					if (item ) {
 						this.setSelectedMedia(item.order);
 						// item.active = true;
 						activeDomObj = this.getActiveItem();
@@ -1126,10 +1120,6 @@
 					}
 				} else {
 					// update state of previous active slide:
-					item = this.slidesMap[this.selectedSlideIndex];
-					// if (item && item.active) {
-					// 	item.active = false;
-					// }
 					activeDomObj = this.getActiveItem();
 					activeDomObj.find(".slideOverlay").removeClass("watched");
 
