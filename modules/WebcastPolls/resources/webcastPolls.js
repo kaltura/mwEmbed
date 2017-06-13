@@ -7,8 +7,11 @@
      */
     mw.PluginManager.add('webcastPolls', mw.KBasePlugin.extend({
         defaultConfig: {
-            'userId' : 'User'
+            'userId' : 'User',
+            'newVoteApi' : false,
+            'usePushNotification' : false
         },
+		polls_push_notification: "POLLS_PUSH_NOTIFICATIONS",
         cuePointsManager: null, // manages all the cue points tracking (cue point reached of poll results, poll states etc).
         kalturaProxy: null, // manages the communication with the Kaltura api (invoke a vote, extract poll data).
         userProfile: null, // manages active user profile
@@ -117,7 +120,7 @@
             // bind to cue point events
             var _this = this;
 
-            this.bind('onpause onplay onChangeMedia', function (e) {
+            this.bind('onpause onplay onChangeMedia movingBackToLive', function (e) {
                 _this.handlePlayerEvent(e.type);
             });
         },
@@ -196,7 +199,6 @@
                     _this.globals.pollsContentMapping = {};
                     break;
                 case 'onplay':
-                    if (eventName === 'onplay') {
                         // # we need to sync current poll state when user press playing or seeking.
                         // Note that since onplay is triggered also after seeking we don't need to handle that event explicitly
                         _this.log("event '" + eventName + "' - start syncing current poll state");
@@ -205,7 +207,18 @@
                             _this.handlePollResultsCuePoints({reset:true});
                         }
                         _this.log("event '" + eventName + "' - done syncing current poll state");
-                    }
+                    break;
+                case 'movingBackToLive':
+                    setTimeout(function(){
+                        // the timer is to let the player adjust its getLiveEdgeOffset value.
+                        // when this happens in a sync call stack the player still holds a positive value instead of 0
+                        _this.log("event '" + eventName + "' - start syncing current poll state");
+                        if (_this.cuePointsManager) {
+                            _this.handleStateCuePoints({reset:true});
+                            _this.handlePollResultsCuePoints({reset:true});
+                        }
+                        _this.log("event '" + eventName + "' - done syncing current poll state");
+                        },500);
                     break;
                 default:
                     break;
@@ -241,12 +254,17 @@
                 // cue points manager used to monitor and notify when relevant cue points reached (polls status, results).
                 _this.cuePointsManager = new mw.webcast.CuePointsManager(_this.getPlayer(), function () {
                 }, "webcastPolls_CuePointsManager");
+				_this.cuePointsManager.setPushNotificationMode(_this.getConfig('usePushNotification'));
 
-                _this.cuePointsManager.registerMonitoredCuepointTypes(['poll-data'],function(cuepoints)
+				var pushSystemName = null;
+				// send the pushSystemName only if we have usePushNotification set to true
+				if(_this.getConfig("usePushNotification")){
+					pushSystemName = _this.polls_push_notification;
+                }
+				_this.cuePointsManager.registerMonitoredCuepointTypes(['poll-data'],function(cuepoints)
                 {
                    for(var i = 0;i< cuepoints.length;i++)
                    {
-
                        try {
                            var cuepoint = cuepoints[i];
                            var cuepointContent = cuepoint.partnerData ? JSON.parse(cuepoint.partnerData) : null;
@@ -273,7 +291,7 @@
                        }
 
                    }
-                });
+                } , [pushSystemName]);
 
                 _this.cuePointsManager.onCuePointsReached = $.proxy(function(args)
                 {
@@ -371,7 +389,27 @@
                             _this.log("got state update for current poll  - syncing current poll with state '" + stateCuePointToHandle.partnerData + "'");
 
                             var pollState = JSON.parse(stateCuePointToHandle.partnerData);
-
+                            if(pollState.status == "inProgress" && _this.embedPlayer.isDVR()){
+                                //in DVR mode check if this poll was ended by the moderator
+                                var pollId = pollState.pollId;
+                                var allCuePoints = _this.cuePointsManager.getCuePoints();
+                                // look for same poll id with 'finished' status
+                                for(var i=allCuePoints.length-1;i>0;--i){
+                                    if( allCuePoints[i].partnerData &&
+                                        allCuePoints[i].partnerData.indexOf('"status":"finished"') > -1 &&
+                                        allCuePoints[i].partnerData.indexOf('"showResults":"disabled"') > -1 &&
+                                        allCuePoints[i].partnerData.indexOf(pollId) > -1 ){
+                                            //This state should show the poll as active but in fact it ended - don't allow
+                                            //users to answer - copy ended CP state
+                                            pollState = JSON.parse(allCuePoints[i].partnerData);
+                                            break;
+                                        }
+                                    }
+                                //disable poll if not in live - 30 sec is the threshold
+                                if(_this.embedPlayer.getLiveEdgeOffset() > 30){
+                                    pollState.status = "finished";
+                                }
+                            }
                             if (pollState) {
                                 _this.showOrUpdatePollByState(pollState);
                             }
@@ -598,7 +636,7 @@
                 if (_this.userVote.metadataId) {
                     _this.log('user already voted for this poll, update user vote');
                     var invokedByPollId = _this.pollData.pollId;
-                    _this.kalturaProxy.transmitVoteUpdate(_this.userVote.metadataId, _this.globals.userId, selectedAnswer, _this.pollData.pollId).then(function (result) {
+                    _this.kalturaProxy.transmitVoteUpdate(_this.userVote.metadataId, _this.globals.userId, selectedAnswer, _this.pollData.pollId,_this.getConfig("newVoteApi")).then(function (result) {
                         if (invokedByPollId === _this.pollData.pollId) {
                             _this.log('successfully updated server with user answer');
                             _this.userVote.inProgress = false;
@@ -627,7 +665,7 @@
 
 
                     var invokedByPollId = _this.pollData.pollId;
-                    _this.kalturaProxy.transmitNewVote(_this.pollData.pollId, _this.globals.votingProfileId, _this.globals.userId, selectedAnswer).then(function (result) {
+                    _this.kalturaProxy.transmitNewVote(_this.pollData.pollId, _this.globals.votingProfileId, _this.globals.userId, selectedAnswer,_this.getConfig("newVoteApi")).then(function (result) {
                         if (invokedByPollId === _this.pollData.pollId) {
                             _this.log('successfully updated server with user vote');
                             _this.userVote.inProgress = false;

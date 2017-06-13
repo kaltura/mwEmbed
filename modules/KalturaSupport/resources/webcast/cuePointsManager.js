@@ -9,7 +9,7 @@
 
             /*
              DEVELOPER NOTICE: you should set properties here (they will be scoped per instance)
-            */
+             */
             $.extend(_this,{
                 _nextPendingCuePointIndex: 0,
                 _lastHandledServerTime: null,
@@ -21,17 +21,23 @@
                     typesMapping : {}
                 }
             });
+            //TODO - remove later when find better way to tell this if we are in push-mode
+			if(!this.pushServerNotification){
+				this.pushServerNotification = mw.KPushServerNotification.getInstance(this.embedPlayer);
+			}
 
             _this.resetMonitorVariables();
             _this.addBindings();
 
             _this.log('initialize(): invoked');
         },
+		usePushNotification : false,
+		pushServerNotification : null,
+        pushCuePoints : [],
         getCuePoints : function()
         {
             var player = this.getPlayer();
             var cuePoints = (player && player.kCuePoints) ? player.kCuePoints.getCuePoints() : null;
-
             return cuePoints || [];
         },
         addBindings : function()
@@ -46,7 +52,6 @@
             });
 
             _this.bind("playerReady", function() {
-
                 var player = _this.getPlayer();
                 var shouldRun = player && ((player.isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints")) || player.kCuePoints);
                 if (!shouldRun) {
@@ -55,9 +60,16 @@
                 }
 
                 _this.log('addBindings(playerReady): start the monitor process');
-
-                _this.handleMonitoredCuepoints(_this.getCuePoints());
-                _this.startMonitorProcess();
+                //TODO Eitan find better way to initiate KPushServerNotification
+                if(_this.shouldUsePush() ){
+                    //initiate push logic
+                    if(!_this.pushServerNotification){
+					    _this.pushServerNotification = mw.KPushServerNotification.getInstance(_this.embedPlayer);
+                    }
+                }else{
+                    _this.handleMonitoredCuepoints(_this.getCuePoints());
+                    _this.startMonitorProcess();
+                }
             });
 
             _this.bind(
@@ -78,7 +90,7 @@
                     }
 
 
-                    var currentTime = player.getPlayerElementTime() * 1000;
+                    var currentTime = _this.getCurrentTime();
 
 
                     if (currentTime < 0) {
@@ -95,6 +107,7 @@
                     }
 
                     _this._lastHandledServerTime = currentTime;
+
 
                     if (_this._getCuePointByIndex(_this._nextPendingCuePointIndex)) {
 
@@ -148,6 +161,9 @@
             if (args && args.reset) {
                 _this.resetMonitorVariables();
             }
+        },
+		startMonitorProcessPush : function(){
+
         },
         startMonitorProcess : function() {
             var _this = this;
@@ -300,33 +316,72 @@
                 }
             }
         },
-        registerMonitoredCuepointTypes : function(cuepointTypes, callback)
+        // register to push server with X notification types
+		registerPollingNotifications: function (systemNames , pluginName ) {
+            //TODO - join web socket later
+			var _this = this;
+			var tempNotifications = [];
+			for (var i = 0; i < systemNames.length; i++) {
+				var tempNotification = this.pushServerNotification.createNotificationRequest(
+					systemNames[i],
+                    {
+						"entryId": _this.embedPlayer.kentryid
+					},
+					function (cuePoints) {
+						mw.log("KPushCuePointsManager cuePoints loaded " + cuePoints);
+						_this.handleMonitoredCuepoints(cuePoints);
+						// _this.cuepointLoaded(cuePoints,cuepointTypes,callback,systemNames[i])
+					});
+				tempNotifications.push(tempNotification);
+			}
+			return this.pushServerNotification.registerNotifications(tempNotifications,pluginName);
+		},
+        //Proxy function
+        cuepointLoaded : function (cuePoints,cuepointTypes,callback,systemName){
+			for (var i = 0; i < cuePoints.length; i++) {
+				var cuePoint = cuePoints[i];
+				for (var j = 0; j < cuepointTypes.length; j++) {
+					var cuepointType = cuepointTypes[j];
+                    if(cuePoint.tags && cuePoint.tags.indexOf(cuepointType)>-1){
+						callback(cuePoints);
+                    }
+				}
+			}
+        },
+        registerMonitoredCuepointTypes : function(cuepointTypes,callback,pushSystemNames)
         {
             var _this = this;
-
+            // This is using push
+            if(pushSystemNames){
+                //register through push mechanism
+                _this.registerPollingNotifications(pushSystemNames ,_this.pluginName ).then(function () {
+                    mw.log(cuepointTypes + "successful  registerNotifications");
+                }, function (err) {
+                    mw.log(cuepointTypes + "failed  registerNotifications ", err);
+                });
+            }
+            //else{
+                //register via polling mechanism
             if (cuepointTypes && cuepointTypes.length && callback)
             {
                 _this._monitoredCuepoints.enabled = true;
                 for(var i=0;i<cuepointTypes.length;i++)
                 {
                     var cuepointType = cuepointTypes[i];
-
-
                     var callbackList = _this._monitoredCuepoints.typesMapping[cuepointType];
                     if (!callbackList)
                     {
                         callbackList = _this._monitoredCuepoints.typesMapping[cuepointType] = [];
-
                         // this type was not registered yet, update the tagsLike condition to be used against Kaltura API
                         _this._monitoredCuepoints.tagsLike += _this._monitoredCuepoints.tagsLike ? ',' : '';
                         _this._monitoredCuepoints.tagsLike +=  cuepointType;
                     }
-
                     callbackList.push(callback);
                     _this.log("registerMonitoredCuepointTypes(): added monitor callback for cuepoint of type '" + cuepointType + "'");
                 }
             }
-        },
+            //}
+		},
         _createReachedCuePointsArgs: function (cuePoints, context) {
             var _this = this;
 
@@ -400,8 +455,7 @@
          */
         _reinvokeReachedLogicManually: function () {
             var _this = this;
-            var player = _this.getPlayer();
-            var currentTime = player.getPlayerElementTime() * 1000;
+            var currentTime = _this.getCurrentTime();
             _this.log('reinvokeReachedLogicManually(): server time was modified to a past time (previously ' + _this._lastHandledServerTime + ', current ' + currentTime + "). re-invoke logic by finding all cue points relevant until current time");
             _this._lastHandledServerTime = currentTime;
 
@@ -476,10 +530,17 @@
 
             return result;
         },
+        getCurrentTime: function(){
+            if(this.embedPlayer.isDVR()){
+                return this.getPlayer().LiveCurrentTime*1000;
+            }
+            return this.getPlayer().getPlayerElementTime()*1000;
+        },
+
         getCuePointsReached: function () {
             var _this = this;
             var player = _this.getPlayer();
-            var currentTime = player.getPlayerElementTime() * 1000;
+            var currentTime = _this.getCurrentTime();
             var cuePointsContext = _this._getCuePointsReached(currentTime, 0);
             return _this._createReachedCuePointsArgs(cuePointsContext.cuePoints);
         },
@@ -492,6 +553,16 @@
         {
             // do nothing - will be override by creator
         },
+		setPushNotificationMode : function(usePushNotification){
+            this.usePushNotification = usePushNotification;
+            this.embedPlayer.usePushNotificationForPolls = usePushNotification;
+        },
+        //TODO find alternative way to initiate the CPManager with push
+        shouldUsePush : function(){
+		  return this.embedPlayer.usePushNotificationForPolls
+        },
+
+
         getKalturaClient: function () {
             if (!this.kClient) {
                 this.kClient = mw.kApiGetPartnerClient(this.embedPlayer.kwidgetid);

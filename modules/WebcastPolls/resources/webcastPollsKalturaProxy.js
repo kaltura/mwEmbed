@@ -126,84 +126,142 @@
 
             return defer.promise();
         },
-        transmitVoteUpdate : function(metadataId, userId, selectedAnswer,pollId)
+        transmitVoteUpdate : function(metadataId, userId, selectedAnswer,pollId ,newApi)
         {
             var _this = this;
             var defer = $.Deferred();
+            if(newApi){
+                //using vote API
+				if (pollId && userId && selectedAnswer) {
+					var vote = {
+						"service": "poll_poll",
+						"action": "vote",
+						"pollId": pollId,
+						"answerIds": selectedAnswer, // 1
+						"userId": userId
+					};
+					_this.getKClient().doRequest(vote, function (result) {
+						if(!_this.isErrorResponse(result)){
+							defer.resolve({});
+						}else{
+							_this.log("Got error response from server " + result);
+							defer.reject();
+						}
+					}, false, function (reason) {
+						//TODO - Eitan handle errors later
+						_this.log("rejecting request due to error from kaltura api server with reason " + (reason ? JSON.stringify(reason) : ''));
+						defer.reject();
+					});
+				} else {
+					_this.log("rejecting request due to missing required information from plugin");
+					defer.reject({});
+				}
+				return defer.promise();
+            }else{
+                // using metadata
+                if (metadataId && userId && selectedAnswer) {
+                    var updateMetadataRequest = {
+                        service: "metadata_metadata",
+                        action: "update",
+                        id: metadataId,
+                        xmlData: '<metadata><Answer>' + selectedAnswer + '</Answer><UserId>' + userId + '</UserId></metadata>',
+                    };
 
-            if (metadataId && userId && selectedAnswer) {
-                var updateMetadataRequest = {
-                    service: "metadata_metadata",
-                    action: "update",
-                    id: metadataId,
-                    xmlData: '<metadata><Answer>' + selectedAnswer + '</Answer><UserId>' + userId + '</UserId></metadata>',
-                };
-
-                _this.log("transmitting update of vote for poll with id '" + pollId + "'");
-                _this.getKClient().doRequest(updateMetadataRequest, function (result) {
-                    if (!_this.isErrorResponse(result)) {
-                        _this.log('successfully transmitted update of vote');
-                        defer.resolve({});
-                    } else {
-                        _this.log("rejecting request due to error from kaltura api server");
+                    _this.log("transmitting update of vote for poll with id '" + pollId + "'");
+                    _this.getKClient().doRequest(updateMetadataRequest, function (result) {
+                        if (!_this.isErrorResponse(result)) {
+                            _this.log('successfully transmitted update of vote');
+                            defer.resolve({});
+                        } else {
+                            _this.log("rejecting request due to error from kaltura api server");
+                            defer.reject();
+                        }
+                    }, false, function (reason) {
+                        _this.log("rejecting request due to error from kaltura api server with reason " + (reason ? JSON.stringify(reason) : ''));
                         defer.reject();
-                    }
-                }, false, function (reason) {
-                    _this.log("rejecting request due to error from kaltura api server with reason " + (reason ? JSON.stringify(reason) : ''));
-                    defer.reject();
-                });
-            }else {
-                _this.log("rejecting request due to missing required information from plugin");
-                defer.reject({});
-            }
+                    });
+                }else {
+                    _this.log("rejecting request due to missing required information from plugin");
+                    defer.reject({});
+                }
 
-            return defer.promise();
+                return defer.promise();
+			}
         },
-        transmitNewVote : function(pollId, pollProfileId, userId, selectedAnswer)
+        transmitNewVote : function(pollId, pollProfileId, userId, selectedAnswer , newApi)
         {
-            var _this = this;
-            var defer = $.Deferred();
+			var _this = this;
+			var defer = $.Deferred();
+			// TODO - remove 'if' once switch to new API
+			//using vote API
+			if(newApi){
+				if (pollId && pollProfileId && userId && selectedAnswer) {
+					var vote = {
+						"service": "poll_poll",
+						"action": "vote",
+						"pollId": pollId,
+						"answerIds": selectedAnswer, // 1
+						"userId": userId
+					};
+					_this.getKClient().doRequest(vote, function (result) {
+						if(!_this.isErrorResponse(result)){
+							defer.resolve({});
+						}else{
+							_this.log("Got error response from server " + result);
+							defer.reject();
+						}
+					}, false, function (reason) {
+						_this.log("rejecting request due to error from kaltura api server with reason " + (reason ? JSON.stringify(reason) : ''));
+						defer.reject();
+					});
+				} else {
+					_this.log("rejecting request due to missing required information from plugin");
+					defer.reject({});
+				}
+				return defer.promise();
+			}else{
+			    // TODO - remove once switch to new API
+				// using metadata
+                if (pollId && pollProfileId && userId && selectedAnswer) {
+                    var createCuePointRequest = {
+                        "service": "cuePoint_cuePoint",
+                        "action": "add",
+                        "cuePoint:objectType": "KalturaAnnotation",
+                        "cuePoint:entryId": _this.getPlayer().kentryid,
+                        "cuePoint:isPublic": 0,
+                        "cuePoint:tags": ('id:' + pollId)
+                    };
 
-            if (pollId && pollProfileId && userId && selectedAnswer) {
-                var createCuePointRequest = {
-                    "service": "cuePoint_cuePoint",
-                    "action": "add",
-                    "cuePoint:objectType": "KalturaAnnotation",
-                    "cuePoint:entryId": _this.getPlayer().kentryid,
-                    "cuePoint:isPublic": 0,
-                    "cuePoint:tags": ('id:' + pollId)
-                };
+                    var addMetadataRequest = {
+                        service: "metadata_metadata",
+                        action: "add",
+                        metadataProfileId: pollProfileId,
+                        objectId: "{1:result:id}",
+                        xmlData: '<metadata><Answer>' + selectedAnswer + '</Answer><UserId>' + userId + '</UserId></metadata>',
+                        objectType: "annotationMetadata.Annotation"
+                    };
 
-                var addMetadataRequest = {
-                    service: "metadata_metadata",
-                    action: "add",
-                    metadataProfileId: pollProfileId,
-                    objectId: "{1:result:id}",
-                    xmlData: '<metadata><Answer>' + selectedAnswer + '</Answer><UserId>' + userId + '</UserId></metadata>',
-                    objectType: "annotationMetadata.Annotation"
-                };
+                    _this.log("transmitting new vote for poll with id '" + pollId + "'");
+                    _this.getKClient().doRequest([createCuePointRequest, addMetadataRequest], function (result) {
 
-                _this.log("transmitting new vote for poll with id '" + pollId + "'");
-                _this.getKClient().doRequest([createCuePointRequest, addMetadataRequest], function (result) {
-
-                    if (result && result.length === 2 && !_this.isErrorResponse(result)) {
-                        _this.log("successfully transmitted new vote, got back metadata id '" + result[1].id + "'");
-                        defer.resolve({metadataId: result[1].id});
-                    } else {
-                        _this.log("rejecting request due to error from kaltura api server");
+                        if (result && result.length === 2 && !_this.isErrorResponse(result)) {
+                            _this.log("successfully transmitted new vote, got back metadata id '" + result[1].id + "'");
+                            defer.resolve({metadataId: result[1].id});
+                        } else {
+                            _this.log("rejecting request due to error from kaltura api server");
+                            defer.reject();
+                        }
+                    }, false, function (reason) {
+                        _this.log("rejecting request due to error from kaltura api server with reason " + (reason ? JSON.stringify(reason) : ''));
                         defer.reject();
-                    }
-                }, false, function (reason) {
-                    _this.log("rejecting request due to error from kaltura api server with reason " + (reason ? JSON.stringify(reason) : ''));
-                    defer.reject();
-                });
-            }else {
-                _this.log("rejecting request due to missing required information from plugin");
-                defer.reject({});
-            }
+                    });
+                }else {
+                    _this.log("rejecting request due to missing required information from plugin");
+                    defer.reject({});
+                }
 
-            return defer.promise();
-
+                return defer.promise();
+			}
         },
         getVoteCustomMetadataProfileId : function()
         {
