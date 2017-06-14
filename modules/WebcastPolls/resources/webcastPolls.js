@@ -11,7 +11,7 @@
             'newVoteApi' : false,
             'usePushNotification' : false
         },
-		polls_push_notification: "POLLS_PUSH_NOTIFICATIONS",
+        polls_push_notification: "POLLS_PUSH_NOTIFICATIONS",
         cuePointsManager: null, // manages all the cue points tracking (cue point reached of poll results, poll states etc).
         kalturaProxy: null, // manages the communication with the Kaltura api (invoke a vote, extract poll data).
         userProfile: null, // manages active user profile
@@ -274,12 +274,12 @@
 
                                 // if current poll doesn't have yet poll pollResults - create it now
                                 if(!_this.pollData.pollResults){
-									_this.pollData.pollResults = cuepointContent;
+                                    _this.pollData.pollResults = cuepointContent;
                                 }
                                 if( cuepointContent.totalVoters && cuepointContent.totalVoters >= _this.pollData.pollResults.totalVoters ){
                                     //update only if result is higher than current votes-count
-									_this.pollData.pollResults.totalVoters = cuepointContent.totalVoters;
-									_this.view.syncDOMPollResults();
+                                    _this.pollData.pollResults.totalVoters = cuepointContent.totalVoters;
+                                    _this.view.syncDOMPollResults();
                                 }
 
                             }
