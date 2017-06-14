@@ -18,111 +18,121 @@
 <button onclick="seekRelative(-30)">-30</button>
 <button onclick="seekRelative(180)">+3m</button>
 <button onclick="seekRelative(-180)">-3m</button>
-
+<br>
 <div id="kaltura_player" style="width: 885px; height: 630px;float: left;"></div>
 <div id="qnaListHolder" style="width: 220px; height: 330px; float:left; float: left"></div>
 <br style="clear: both;" /><br />
 
 <script>
 
-    var qna= {
-        'plugin': true,
-        'qnaTargetId': 'qnaListHolder',
-        'qnaPollingInterval': 5000,
-        'onPage': true,
-        'containerPosition': 'right',
-        'moduleWidth' : '200',
-        'userId': "Shimi",
-        'userRole':"userRole", //anonymousRole
-        'allowNewQuestionWhenNotLive': true
-    };
+	var qna= {
+		'plugin': true,
+		'qnaTargetId': 'qnaListHolder',
+		'qnaPollingInterval': 5000,
+		'onPage': true,
+		'containerPosition': 'right',
+		'moduleWidth' : '200',
+		'userId': "Eitan",
+		'userRole':"userRole", //anonymousRole
+		'allowNewQuestionWhenNotLive': true
+	};
 
-    var QueryString = function () {
-        // This function is anonymous, is executed immediately and
-        // the return value is assigned to QueryString!
-        var query_string = {};
-        var query = window.location.search.substring(1);
-        var vars = query.split("&");
-        for (var i=0;i<vars.length;i++) {
-            var pair = vars[i].split("=");
-            // If first entry with this name
-            if (typeof query_string[pair[0]] === "undefined") {
-                query_string[pair[0]] = decodeURIComponent(pair[1]);
-                // If second entry with this name
-            } else if (typeof query_string[pair[0]] === "string") {
-                var arr = [ query_string[pair[0]],decodeURIComponent(pair[1]) ];
-                query_string[pair[0]] = arr;
-                // If third or later entry with this name
-            } else {
-                query_string[pair[0]].push(decodeURIComponent(pair[1]));
-            }
-        }
-        return query_string;
-    }();
-    var paramFromUrl = function(key){
-        if(QueryString[key]){
-            this[key]=QueryString[key];
-        }
-    };
+	var QueryString = function () {
+		// This function is anonymous, is executed immediately and
+		// the return value is assigned to QueryString!
+		var query_string = {};
+		var query = window.location.search.substring(1);
+		var vars = query.split("&");
+		for (var i=0;i<vars.length;i++) {
+			var pair = vars[i].split("=");
+			// If first entry with this name
+			if (typeof query_string[pair[0]] === "undefined") {
+				query_string[pair[0]] = decodeURIComponent(pair[1]);
+				// If second entry with this name
+			} else if (typeof query_string[pair[0]] === "string") {
+				var arr = [ query_string[pair[0]],decodeURIComponent(pair[1]) ];
+				query_string[pair[0]] = arr;
+				// If third or later entry with this name
+			} else {
+				query_string[pair[0]].push(decodeURIComponent(pair[1]));
+			}
+		}
+		return query_string;
+	}();
+	var paramFromUrl = function(key){
+		if(QueryString[key]){
+			this[key]=QueryString[key];
+		}
+	};
 
-    var playerId = 38392191; //prod
-    //    var playerId = 15203553; //QA
-    var wid = '_27017'; // prod
-    //    var wid = '_5174'; // QA
-    var ks = 'djJ8MjcwMTd8EtVhEdDmTP7gjnARm9TjsqM70m4ZINC9DNvKk2IxQVN0J9RS-IlhHUe-2TcEtpwVZMPi3QS7oFvulRrvV69JdYLq3SVb-0GUMKWJpV9maMziPGj-VwsBnTIPQ2kLeuJFr-N22WQSSN5UvA_4_ft68FPmMmJTCcAWSSzvwrJ2h6mIEIzee5aAgquKxOeRlN-8jZ21z04I5swoiFchPsYJgmHX7TcMd6XGGpP4guOy8mLae_SeJPvRnLrtb88uSUR4nj47nPvvlap6aWWqUgc9KcRXzpfPmCQwHyYTAJSxkgjwsDbSjmEffNE2VPmfoMdf';
-    var entry = "1_r93jjjbk";
-
-    paramFromUrl("ks");
-    paramFromUrl("wid");
-    paramFromUrl("entry");
-    paramFromUrl("playerId");
+	var playerId = 39646511; //prod
+	//    var playerId = 15203553; //QA
+	var wid = '_27017'; // prod
+	//    var wid = '_5174'; // QA
+	var ks = 'djJ8MjcwMTd8xWyeuBIgspeo2YVWBMsKhW5818f5vbSjaJMxOBTPEklVTNFHfg2zmvaULXRI9LJ8qpZfB0Nbb00GwP3DFIBpk-V94cHyrV02xLhZ-XzBM3vaOd24Kkv4hPwBcvW-QfJpKcnIhB0tRJR94VP5HV1trqGhHBJBjDV0uchb2fwjCMmTbwUsQ3ATSD5ByW_yISxH0tzHqIAaed2fFknNs2LacIezDXuJFSXxK5fOTNvbdELhOGgr9Jnz3ynYrtU6WMNdezMvOiUBJvdgzoWBqgCPplyXftOmMNGo1hfBD8L19ItN-T3abABQi-pAdzPTlirEHvD1Jvg8WgAtKQy-6An6QpY72Ya4kaabW8E31zLzvwY=';
+	var entry = "1_r8alcm0s"; //1_nwm4y8go
+	var user = "Eitan"; //1_nwm4y8go
 
 
-    var kdp;
-    kWidget.addReadyCallback( function( playerId ){
-        kdp = document.getElementById( playerId );
-
-        kdp.kBind( 'playerReady', function(){
-            setTimeout(function(){
-                kdp.sendNotification("doPlay");
-            },1000)
-        })
-    });
+	paramFromUrl("ks");
+	paramFromUrl("wid");
+	paramFromUrl("entry");
+	paramFromUrl("playerId");
+	paramFromUrl("user");
 
 
-    var usePushNotification = true;
-    var newVoteApi = true;
+	var kdp;
+	kWidget.addReadyCallback( function( playerId ){
+		kdp = document.getElementById( playerId );
 
-    kWidget.featureConfig({
-        'targetId': 'kaltura_player',
-        'wid': wid,
-        'uiconf_id' : playerId,
-        'flashvars': {
-            'autoPlay' : true,
-            "IframeCustomPluginCss1" : "pin-chapters.css",
-            'qna': qna,
-            "chapters": {plugin: true},
-            'ks': ks,
-            "webcastPolls":{"plugin":true,"userId":"Eitan","userRole":"unmoderatedAdminRole" , "usePushNotification":usePushNotification , "newVoteApi" :newVoteApi },
-            "EmbedPlayer.LiveCuepoints" : true
-        },
-        'entry_id':  entry// vod : 1_bzr97hax | live : 1_afjmm4ie
+		kdp.kBind( 'playerReady', function(){
+			setTimeout(function(){
+				kdp.sendNotification("doPlay");
+			},1000)
+		})
+	});
 
-    });
-    function seekTo(t){
-        kdp.sendNotification("doSeek",t);
-    }
-    function seekRelative(offset){
-        var currentPosition = kdp.evaluate("{video.player.currentTime}");
-        kdp.sendNotification("doSeek",currentPosition+offset);
-    }
-    function openSlidesMenu(){
-        var $iframe = $("#kaltura_player_ifp").contents();
-        var sbc = $iframe.find('.sideBarContainer');
-        sbc.addClass("pinned")
-    }
+
+	kWidget.featureConfig({
+		'targetId': 'kaltura_player',
+		'wid': wid,
+		'uiconf_id' : playerId,
+		'flashvars': {
+			'autoPlay' : true,
+			"IframeCustomPluginCss1" : "pin-chapters.css",
+			'qna': qna,
+			"chapters": {plugin: true},
+			'ks': ks,
+			"webcastPolls":{"plugin":true,"userId":user,"userRole":"unmoderatedAdminRole" ,newVoteApi : true , usePushNotification : true },
+			"EmbedPlayer.LiveCuepoints" : true
+		},
+		'entry_id':  entry// vod : 1_bzr97hax | live : 1_afjmm4ie
+
+	});
+	function seekTo(t){
+		kdp.sendNotification("doSeek",t);
+	}
+	function seekRelative(offset){
+		var currentPosition = kdp.evaluate("{video.player.currentTime}");
+		kdp.sendNotification("doSeek",currentPosition+offset);
+	}
+	function openSlidesMenu(){
+		var $iframe = $("#kaltura_player_ifp").contents();
+		var sbc = $iframe.find('.sideBarContainer');
+		sbc.addClass("pinned")
+	}
 
 </script>
+<br>
+<button onclick="openSlidesMenu()">openSlidesMenu</button>
+<button onclick="seekTo(7073)">answerOnAir</button>
+<button onclick="seekTo(143)">143</button>
+<button onclick="seekRelative(10)">+10s</button>
+<button onclick="seekRelative(-10)">-10s</button>
+<button onclick="seekRelative(30)">+30s</button>
+<button onclick="seekRelative(-30)">-30</button>
+<button onclick="seekRelative(180)">+3m</button>
+<button onclick="seekRelative(-180)">-3m</button>
 
 </body>
 </html>
