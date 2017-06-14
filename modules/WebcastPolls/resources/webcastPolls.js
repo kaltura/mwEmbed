@@ -261,10 +261,8 @@
 				if(_this.getConfig("usePushNotification")){
 					pushSystemName = _this.polls_push_notification;
                 }
-				_this.cuePointsManager.registerMonitoredCuepointTypes(['poll-data','poll-results'],function(cuepoints)
-                {
-                    for(var i = 0;i< cuepoints.length;i++)
-                    {
+                _this.cuePointsManager.registerMonitoredCuepointTypes(['poll-data','poll-results'],function(cuepoints){
+                    for(var i = 0;i< cuepoints.length;i++){
                         try {
                             var cuepoint = cuepoints[i];
                             var cuepointContent = cuepoint.partnerData ? JSON.parse(cuepoint.partnerData) : null;
@@ -297,16 +295,14 @@
                                 }
                             }
 
-                        }catch(e)
-                        {
+                        }catch(e){
                             _this.log("ERROR while tring to extract poll information with error " + e);
                         }
 
                     }
                 } , [pushSystemName]);
 
-                _this.cuePointsManager.onCuePointsReached = $.proxy(function(args)
-                {
+                _this.cuePointsManager.onCuePointsReached = $.proxy(function(args){
                     // new cue points reached - change internal polls status when relevant cue points reached
                     _this.handleStateCuePoints({cuepointsArgs : args});
                     _this.handlePollResultsCuePoints({cuepointsArgs : args});
@@ -318,8 +314,7 @@
          * This function searches for relevant cue points and if found changes current poll results
          * @param context arguments provided by cue points manager with support for smart cue points filtering OR value 'true' to handle reset mode
          */
-        handlePollResultsCuePoints: function (context)
-        {
+        handlePollResultsCuePoints: function (context){
             var _this = this;
             var resetMode = false;
             var cuepointsArgs = context.cuepointsArgs;
