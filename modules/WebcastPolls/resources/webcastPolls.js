@@ -261,36 +261,48 @@
 				if(_this.getConfig("usePushNotification")){
 					pushSystemName = _this.polls_push_notification;
                 }
-				_this.cuePointsManager.registerMonitoredCuepointTypes(['poll-data'],function(cuepoints)
+				_this.cuePointsManager.registerMonitoredCuepointTypes(['poll-data','poll-results'],function(cuepoints)
                 {
-                   for(var i = 0;i< cuepoints.length;i++)
-                   {
-                       try {
-                           var cuepoint = cuepoints[i];
-                           var cuepointContent = cuepoint.partnerData ? JSON.parse(cuepoint.partnerData) : null;
+                    for(var i = 0;i< cuepoints.length;i++)
+                    {
+                        try {
+                            var cuepoint = cuepoints[i];
+                            var cuepointContent = cuepoint.partnerData ? JSON.parse(cuepoint.partnerData) : null;
                             var pollIdTokens = (cuepoint.tags || '').match(/id:([^, ]*)/);
-                           var pollId = pollIdTokens && pollIdTokens.length === 2 ? pollIdTokens[1] : null;
+                            var pollId = pollIdTokens && pollIdTokens.length === 2 ? pollIdTokens[1] : null;
+                            //live vote update (don't wait for poll-resaults cuepoint time to trigger).
+                            // Run this only for polls-resaults cuepoitns and if we are in the correct poll
+                            if(cuepoint.tags == "poll-results" && cuepointContent.pollId == _this.pollData.pollId ){
 
-                           if (cuepointContent && pollId)
-                           {
-                               var pollContent = cuepointContent.text;
+                                // if current poll doesn't have yet poll pollResults - create it now
+                                if(!_this.pollData.pollResults){
+									_this.pollData.pollResults = cuepointContent;
+                                }
+                                if( cuepointContent.totalVoters && cuepointContent.totalVoters >= _this.pollData.pollResults.totalVoters ){
+                                    //update only if result is higher than current votes-count
+									_this.pollData.pollResults.totalVoters = cuepointContent.totalVoters;
+									_this.view.syncDOMPollResults();
+                                }
 
-                               if (pollId && pollContent) {
-                                   _this.log("updated content of poll with id '" + pollId + "'");
-                                   if(_this.globals.pollsContentMapping[pollId]) {
+                            }
+                            if (cuepointContent && pollId) {
+                                var pollContent = cuepointContent.text;
+                                if (pollId && pollContent) {
+                                    _this.log("updated content of poll with id '" + pollId + "'");
+                                    if(_this.globals.pollsContentMapping[pollId]) {
                                         $.extend(_this.globals.pollsContentMapping[pollId], pollContent);
-                                   }else {
-                                       _this.globals.pollsContentMapping[pollId] = pollContent;
-                                   }
-                               }
-                           }
+                                    }else{
+                                        _this.globals.pollsContentMapping[pollId] = pollContent;
+                                    }
+                                }
+                            }
 
-                       }catch(e)
-                       {
-                           _this.log("ERROR while tring to extract poll information with error " + e);
-                       }
+                        }catch(e)
+                        {
+                            _this.log("ERROR while tring to extract poll information with error " + e);
+                        }
 
-                   }
+                    }
                 } , [pushSystemName]);
 
                 _this.cuePointsManager.onCuePointsReached = $.proxy(function(args)
@@ -485,7 +497,6 @@
                     _this.pollData.showAnswers = pollState.showAnswers;
                     _this.pollData.showTotals = pollState.showTotals && pollState.showTotals !== 'disabled';
                     _this.pollData.showResults = pollState.showResults && pollState.showResults !== 'disabled';
-
                     if (!isShowingRequestedPoll)
                     {
                         // ## show the poll the first time & extract important information
@@ -657,7 +668,8 @@
                     // increase total voters by 1
                     if (_this.pollData.pollResults)
                     {
-                        _this.pollData.pollResults.totalVoters++;
+                        // get this value only from BE and not from FE
+                        // _this.pollData.pollResults.totalVoters++;
                     }else {
                         this.pollData.pollResults = { totalVoters : 1};
                     }
