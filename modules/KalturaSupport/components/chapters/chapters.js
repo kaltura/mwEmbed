@@ -42,6 +42,7 @@
 
 		mediaList: [], //Hold the medialist items
 		chaptersMap: [],
+		itemCounter: 0,
 		slidesMap: [],
 		pendingMediaItems: [], //Hold the medialist items that are pending to be displayed in live stream
 		cache: {}, //Hold the search data cache
@@ -135,16 +136,10 @@
 			});
 
 			this.bind("seeked", function(){
-				var item = _this.mediaList[ _this.selectedMediaItemIndex ];
-				if ( item && item.active ) {
-					item.active = false;
-				}
-
+				_this.itemCounter = 0;
 				var activeDomObj = _this.getActiveItem();
 				activeDomObj.find(".slideOverlay").removeClass("watched");
-
 				_this.resetChapterProgress(_this.selectedChapterIndex);
-
 				//On seek reset the active item index so we can find items even if seek is to past time(e.g. rewind)
 				_this.selectedMediaItemIndex = 0;
 				_this.selectedSlideIndex = 0;
@@ -155,7 +150,7 @@
 				_this.freezeTimeIndicators = val;
 			});
 
-			this.bind("updatePlayHeadPercent", function () {
+			this.bind("monitorEvent", function () {
 				if (_this.dataIntialized) {
 					_this.handlePendingItems();
 					_this.updateActiveItem();
@@ -174,6 +169,11 @@
 					}
 					_this.renderSearchBar();
 					_this.renderBottomBar();
+				}
+				// adding a DVR class so the DVR css classes will be active and save the DVR window on the class level
+				if (_this.embedPlayer.isDVR()) {
+					$(_this.embedPlayer.getInterface()).addClass("dvr");
+					_this.dvrWindow = this.evaluate("{mediaProxy.entry.dvrWindow}");
 				}
 			});
 
@@ -327,15 +327,16 @@
 			var itemsToRemoveIndexes = [];
 
 			var currentTime = this.getPlayer().getPlayerElementTime();
+			var _this = this;
 
 			//Check for items that weren't displayed yet
 			$.each(this.pendingMediaItems, function (index, item) {
-				if (item.startTime <= currentTime && !item.displayed) {
+				if ( (item.startTime <= currentTime && !item.displayed)
+					|| (_this.getPlayer().isDvrSupported() && item.startTime <= _this.getPlayer().LiveCurrentTime) ) {
 					items.push(item);
 					itemsToRemoveIndexes.push(index);
 				}
 			});
-			var _this = this;
 			$.each(itemsToRemoveIndexes, function (index) {
 				_this.pendingMediaItems.splice(index, 1);
 			});
@@ -971,18 +972,28 @@
 		},
 		//UI Handlers
 		mediaClicked: function (mediaIndex) {
+			//disable click from items out of DVR window
+			if (this.getComponent().find("li[data-mediaBox-index='" + mediaIndex + "']").hasClass("out-of-dvr")) {
+				return;
+			}
 			if (this.getConfig("closeOnClick") && (this.getConfig('parent') === 'sideBarContainer')){
 				this.getPlayer().triggerHelper("closeSideBarContainer");
 			}
 			//Only apply seek in VOD or in live if DVR is supported
 			if ((this.getPlayer().isLive() && this.getPlayer().isDVR()) ||
-					!this.getPlayer().isLive()) {
+				!this.getPlayer().isLive()) {
 				//Send play request on first click for devices that don't have autoplay, e.g. mobile devices
 				if (!this.getPlayer().canAutoPlay() && this.getPlayer().firstPlay){
 					this.getPlayer().sendNotification('doPlay');
 				}
-				// see to start time and play ( +.1 to avoid highlight of prev chapter )
-				this.getPlayer().sendNotification('doSeek', ( this.mediaList[mediaIndex].startTime ) + 0.1);
+				if (this.embedPlayer.isDVR()) {
+					// seek to relative position: clicked item time - video-absolute-startTime
+					var seekTo = this.mediaList[mediaIndex].startTime - this.getPlayer().dvrAbsoluteStartTime;
+					this.getPlayer().sendNotification('doSeek', seekTo + 0.1  );
+				} else {
+					// seek to start time and play ( +.1 to avoid highlight of prev chapter )
+					this.getPlayer().sendNotification('doSeek', (this.mediaList[mediaIndex].startTime) + 0.1);
+				}
 			}
 		},
 		doOnScrollerUpdate: function(data){
@@ -1026,13 +1037,30 @@
 			var activeItemIndex = -1;
 			var time = this.getPlayer().currentTime;
 			var item;
-			var i = (startIndex > -1) ? startIndex : 0;
-
-			for (i; i < data.length; i++){
-				item = data[i];
-				if ((time >= item.startTime ) && (time < item.endTime )){
-					activeItemIndex = i;
-					break;
+			if (this.dvrWindow > 0) {
+				//dvr mode
+				var currentTime = Math.ceil(this.getPlayer().LiveCurrentTime+1);// DVR LiveCurrentTime takes a sec to get
+																				// its real value so this +1 makes
+																				// the UI react faster to clicks
+				for (var i = 0; i < data.length; i++) {
+					if (currentTime > data[i].startTime && currentTime < data[i].endTime) {
+						activeItemIndex = i;
+						return activeItemIndex;
+					}
+				}
+				// edge case - since last item still doesn't have a valid endTime value
+				// if we got here and didn't find active slide - the last slide is the active one
+				if(activeItemIndex == -1 && currentTime > data[data.length -1].startTime){
+					activeItemIndex = data.length -1;
+				}
+			} else {
+				var i = (startIndex > -1) ? startIndex : 0;
+				for (i; i < data.length; i++) {
+					item = data[i];
+					if ((time >= item.startTime) && (time < item.endTime)) {
+						activeItemIndex = i;
+						return activeItemIndex;
+					}
 				}
 			}
 			return activeItemIndex;
@@ -1042,13 +1070,42 @@
 				this.updateActiveChapter();
 				this.updateActiveSlide();
 			}
+			if (this.dvrWindow) {
+				this.disableWindowDvrSlides()
+			}
+		},
+		// disable all items that are our of the DVR window
+		disableWindowDvrSlides: function() {
+			var currentTime = Math.ceil(this.getPlayer().LiveCurrentTime + this.embedPlayer.getLiveEdgeOffset());
+			var dvrWindow = this.embedPlayer.evaluate("{mediaProxy.entry.dvrWindow}");
+			// in case we don't have currentTime (first ID3 wasn't loaded) disable all slides
+			if (isNaN(currentTime)) {
+				//no ID3 data yet - disable all slides until we have timestamp data
+				for (var i = 0; i < this.slidesMap.length; i++) {
+					var slide = this.getComponent().find("li[data-mediaBox-index='" + i + "']");
+					$(slide).addClass("out-of-dvr");
+				}
+				return;
+			}
+			// Disable all slides that are out of DVR window and enable all slides that are in it
+			for (var i = 0; i < this.slidesMap.length; i++) {
+				var slide = this.getComponent().find("li[data-mediaBox-index='" + i + "']");
+				if (currentTime && this.slidesMap[i].endTime < currentTime - dvrWindow*60) {
+					$(slide).addClass("out-of-dvr");
+				} else {
+					$(slide).removeClass("out-of-dvr");
+				}
+				//handle edge cae of last item
+				if (i == this.slidesMap.length - 1) {
+					$(slide).removeClass("out-of-dvr");
+				}
+			}
 		},
 		updateActiveSlide: function(){
 			var activeSlideIndex = this.findActiveItem(this.slidesMap, this.selectedSlideIndex);
-			if (activeSlideIndex < 0 && this.isLiveCuepoints()){
+			if (activeSlideIndex < 0 && this.isLiveCuepoints() && !this.embedPlayer.isLiveOffSynch()){
 				activeSlideIndex = this.slidesMap[this.slidesMap.length-1].order;
 			}
-
 			if (activeSlideIndex >= 0) {
 				var activeDomObj;
 				// Check if active is not already set:
@@ -1056,18 +1113,15 @@
 				if (this.selectedSlideIndex === activeSlideIndex) {
 					// update state current active slide:
 					item = this.slidesMap[activeSlideIndex];
-					if (item && !item.active) {
+					if (item && this.itemCounter<5) {
+						this.itemCounter++;
 						this.setSelectedMedia(item.order);
-						item.active = true;
 						activeDomObj = this.getActiveItem();
 						activeDomObj.find(".slideOverlay").addClass("watched");
 					}
 				} else {
+					this.itemCounter = 0;
 					// update state of previous active slide:
-					item = this.slidesMap[this.selectedSlideIndex];
-					if (item && item.active) {
-						item.active = false;
-					}
 					activeDomObj = this.getActiveItem();
 					activeDomObj.find(".slideOverlay").removeClass("watched");
 

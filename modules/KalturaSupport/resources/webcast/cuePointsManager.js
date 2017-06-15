@@ -9,7 +9,7 @@
 
             /*
              DEVELOPER NOTICE: you should set properties here (they will be scoped per instance)
-            */
+             */
             $.extend(_this,{
                 _nextPendingCuePointIndex: 0,
                 _lastHandledServerTime: null,
@@ -78,7 +78,7 @@
                     }
 
 
-                    var currentTime = player.getPlayerElementTime() * 1000;
+                    var currentTime = _this.getCurrentTime();
 
 
                     if (currentTime < 0) {
@@ -95,6 +95,7 @@
                     }
 
                     _this._lastHandledServerTime = currentTime;
+
 
                     if (_this._getCuePointByIndex(_this._nextPendingCuePointIndex)) {
 
@@ -400,8 +401,7 @@
          */
         _reinvokeReachedLogicManually: function () {
             var _this = this;
-            var player = _this.getPlayer();
-            var currentTime = player.getPlayerElementTime() * 1000;
+            var currentTime = _this.getCurrentTime();
             _this.log('reinvokeReachedLogicManually(): server time was modified to a past time (previously ' + _this._lastHandledServerTime + ', current ' + currentTime + "). re-invoke logic by finding all cue points relevant until current time");
             _this._lastHandledServerTime = currentTime;
 
@@ -476,10 +476,17 @@
 
             return result;
         },
+        getCurrentTime: function(){
+            if(this.embedPlayer.isDVR()){
+                return this.getPlayer().LiveCurrentTime*1000;
+            }
+            return this.getPlayer().getPlayerElementTime()*1000;
+        },
+
         getCuePointsReached: function () {
             var _this = this;
             var player = _this.getPlayer();
-            var currentTime = player.getPlayerElementTime() * 1000;
+            var currentTime = _this.getCurrentTime();
             var cuePointsContext = _this._getCuePointsReached(currentTime, 0);
             return _this._createReachedCuePointsArgs(cuePointsContext.cuePoints);
         },

@@ -1,0 +1,124 @@
+<html>
+<head>
+    <title>polls demo</title>
+    <script type="text/javascript" src="/html5.kaltura/mwEmbed/tests/qunit/qunit-bootstrap.js"></script>
+    <script type="text/javascript" src="/html5.kaltura/mwEmbed/mwEmbedLoader.php"></script>
+    <script type="text/javascript" src="/html5.kaltura/mwEmbed/docs/js/doc-bootstrap.js"></script>
+    <meta charset=UTF-8>
+</head>
+<body>
+<h1>polls demo</h1>
+<div id="kaltura_player" style="width: 885px; height: 630px;float: left;"></div>
+<div id="qnaListHolder" style="width: 220px; height: 330px; float:left; float: left"></div>
+<br style="clear: both;" /><br />
+
+<script>
+
+    var qna= {
+        'plugin': true,
+        'qnaTargetId': 'qnaListHolder',
+        'qnaPollingInterval': 5000,
+        'onPage': true,
+        'containerPosition': 'right',
+        'moduleWidth' : '200',
+        'userId': "Shimi",
+        'userRole':"userRole", //anonymousRole
+        'allowNewQuestionWhenNotLive': true
+    };
+
+    var QueryString = function () {
+        // This function is anonymous, is executed immediately and
+        // the return value is assigned to QueryString!
+        var query_string = {};
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i=0;i<vars.length;i++) {
+            var pair = vars[i].split("=");
+            // If first entry with this name
+            if (typeof query_string[pair[0]] === "undefined") {
+                query_string[pair[0]] = decodeURIComponent(pair[1]);
+                // If second entry with this name
+            } else if (typeof query_string[pair[0]] === "string") {
+                var arr = [ query_string[pair[0]],decodeURIComponent(pair[1]) ];
+                query_string[pair[0]] = arr;
+                // If third or later entry with this name
+            } else {
+                query_string[pair[0]].push(decodeURIComponent(pair[1]));
+            }
+        }
+        return query_string;
+    }();
+    var paramFromUrl = function(key){
+        if(QueryString[key]){
+            this[key]=QueryString[key];
+        }
+    };
+
+    var playerId = 38392191; //prod
+    //    var playerId = 15203553; //QA
+    var wid = '_27017'; // prod
+    //    var wid = '_5174'; // QA
+    var ks = 'djJ8MjcwMTd8VD833IbARat5K0kFsUJlSTZJ9jxnQG73t4oXjUkKnumIjBdbaHMNC0dKR5CC9knU_U_Q8V92zSQZCqABW8_VLpM7KkV_7uK_l_tZAzxvu1Pyniy2kMHMI19A2VPQO_4XseDGomzuv9o5fPVs4jwn4UNkXWxdoy-4YS7ckJytf0P_2-CJEUEbHlQupI9yMdfD0r8Z-RVlcN02chdYr-hvT5JRnmWOJKJOg6ZeS2Uv0k5qT2FNoDTTBqD1zV_kwRXcM4a8VRRw3hE3XZJfPlbniL0OCkybgrdpycYo8k3oBCv6VCM5915GaiwcrbkzjSO9';
+    var entry = "1_tcjnlmo8";
+
+    paramFromUrl("ks");
+    paramFromUrl("wid");
+    paramFromUrl("entry");
+    paramFromUrl("playerId");
+
+
+    var kdp;
+    kWidget.addReadyCallback( function( playerId ){
+        kdp = document.getElementById( playerId );
+
+        kdp.kBind( 'playerReady', function(){
+            setTimeout(function(){
+                kdp.sendNotification("doPlay");
+            },1000)
+        })
+    });
+
+
+    kWidget.featureConfig({
+        'targetId': 'kaltura_player',
+        'wid': wid,
+        'uiconf_id' : playerId,
+        'flashvars': {
+            'autoPlay' : true,
+            "IframeCustomPluginCss1" : "pin-chapters.css",
+            'qna': qna,
+            "chapters": {plugin: true},
+            'ks': ks,
+            "webcastPolls":{"plugin":true,"userId":"Eitan","userRole":"unmoderatedAdminRole"},
+            "EmbedPlayer.LiveCuepoints" : true
+        },
+        'entry_id':  entry// vod : 1_bzr97hax | live : 1_afjmm4ie
+
+    });
+    function seekTo(t){
+        kdp.sendNotification("doSeek",t);
+    }
+    function seekRelative(offset){
+        var currentPosition = kdp.evaluate("{video.player.currentTime}");
+        kdp.sendNotification("doSeek",currentPosition+offset);
+    }
+    function openSlidesMenu(){
+        var $iframe = $("#kaltura_player_ifp").contents();
+        var sbc = $iframe.find('.sideBarContainer');
+        sbc.addClass("pinned")
+    }
+
+</script>
+<br>
+<button onclick="openSlidesMenu()">openSlidesMenu</button>
+<button onclick="seekTo(7073)">answerOnAir</button>
+<button onclick="seekTo(143)">143</button>
+<button onclick="seekRelative(10)">+10s</button>
+<button onclick="seekRelative(-10)">-10s</button>
+<button onclick="seekRelative(30)">+30s</button>
+<button onclick="seekRelative(-30)">-30</button>
+<button onclick="seekRelative(180)">+3m</button>
+<button onclick="seekRelative(-180)">-3m</button>
+
+</body>
+</html>
