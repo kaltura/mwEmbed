@@ -166,7 +166,7 @@
         },
         startMonitorProcess : function() {
             var _this = this;
-            _this.log('startMonitorProcess(): Staring monitor variables');
+            _this.log('startMonitorProcess(): Staring monitor variables by' +_this.pluginName);
 
 
             function retrieveServerCuepoints() {
