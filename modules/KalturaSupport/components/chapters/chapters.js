@@ -42,6 +42,7 @@
 
 		mediaList: [], //Hold the medialist items
 		chaptersMap: [],
+		itemCounter: 0,
 		slidesMap: [],
 		pendingMediaItems: [], //Hold the medialist items that are pending to be displayed in live stream
 		cache: {}, //Hold the search data cache
@@ -135,9 +136,7 @@
 			});
 
 			this.bind("seeked", function(){
-				if(_this.embedPlayer.isDVR()){
-					return; // no need to run this on DVR
-				}
+				_this.itemCounter = 0;
 				var activeDomObj = _this.getActiveItem();
 				activeDomObj.find(".slideOverlay").removeClass("watched");
 				_this.resetChapterProgress(_this.selectedChapterIndex);
@@ -151,7 +150,7 @@
 				_this.freezeTimeIndicators = val;
 			});
 
-			this.bind("updatePlayHeadPercent", function () {
+			this.bind("monitorEvent", function () {
 				if (_this.dataIntialized) {
 					_this.handlePendingItems();
 					_this.updateActiveItem();
@@ -990,7 +989,7 @@
 				if (this.embedPlayer.isDVR()) {
 					// seek to relative position: clicked item time - video-absolute-startTime
 					var seekTo = this.mediaList[mediaIndex].startTime - this.getPlayer().dvrAbsoluteStartTime;
-					this.getPlayer().sendNotification('doSeek', seekTo  );
+					this.getPlayer().sendNotification('doSeek', seekTo + 0.1  );
 				} else {
 					// seek to start time and play ( +.1 to avoid highlight of prev chapter )
 					this.getPlayer().sendNotification('doSeek', (this.mediaList[mediaIndex].startTime) + 0.1);
@@ -1040,7 +1039,9 @@
 			var item;
 			if (this.dvrWindow > 0) {
 				//dvr mode
-				var currentTime = Math.ceil(this.getPlayer().LiveCurrentTime);
+				var currentTime = Math.ceil(this.getPlayer().LiveCurrentTime+1);// DVR LiveCurrentTime takes a sec to get
+																				// its real value so this +1 makes
+																				// the UI react faster to clicks
 				for (var i = 0; i < data.length; i++) {
 					if (currentTime > data[i].startTime && currentTime < data[i].endTime) {
 						activeItemIndex = i;
@@ -1112,13 +1113,14 @@
 				if (this.selectedSlideIndex === activeSlideIndex) {
 					// update state current active slide:
 					item = this.slidesMap[activeSlideIndex];
-					if (item ) {
+					if (item && this.itemCounter<5) {
+						this.itemCounter++;
 						this.setSelectedMedia(item.order);
-						// item.active = true;
 						activeDomObj = this.getActiveItem();
 						activeDomObj.find(".slideOverlay").addClass("watched");
 					}
 				} else {
+					this.itemCounter = 0;
 					// update state of previous active slide:
 					activeDomObj = this.getActiveItem();
 					activeDomObj.find(".slideOverlay").removeClass("watched");
