@@ -272,7 +272,7 @@
                        try {
                            var cuepoint = cuepoints[i];
                            var cuepointContent = cuepoint.partnerData ? JSON.parse(cuepoint.partnerData) : null;
-                            var pollIdTokens = (cuepoint.tags || '').match(/id:([^, ]*)/);
+                           var pollIdTokens = (cuepoint.tags || '').match(/id:([^, ]*)/);
                            var pollId = pollIdTokens && pollIdTokens.length === 2 ? pollIdTokens[1] : null;
 
                            if (cuepointContent && pollId)
