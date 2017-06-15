@@ -360,7 +360,7 @@
                     "entryId": _this.embedPlayer.kentryid
                 },
                 function (cuePoints) {
-                    mw.log("KPushCuePointsManager cuePoints loaded " + cuePoints);
+                    mw.log("KPushCuePointsManager cuePoints loaded from "+_this.pluginName +" " + cuePoints );
                     _this.handleMonitoredCuepoints(cuePoints);
                 });
                 tempNotifications.push(tempNotification);
