@@ -105,7 +105,7 @@
 			}
 			$(this.getPlayerElement()).css('position', 'absolute');
 
-            if ( mw.isMobileDevice() && mw.getConfig( 'mobileAutoPlay' ) ) {
+            if ( (mw.isMobileDevice() || mw.isIpad()) && mw.getConfig( 'mobileAutoPlay' ) ) {
             	this.mobileAutoPlay = true;
                 this.setVolume( 0 );
             }
@@ -127,6 +127,12 @@
 		},
         addBindings: function(){
             var _this = this;
+            this.bindHelper( 'userInitiatedPause userInitiatedSeek onOpenFullScreen' + this.bindPostfix, function () {
+                if ( _this.mobilePlayed &&_this.mobileAutoPlay ) {
+                    _this.mobileAutoPlay = false;
+                    _this.setVolume( 1 );
+                }
+            } );
             this.bindHelper('firstPlay' + this.bindPostfix, function(){
                 _this.parseTracks();
             });
@@ -882,10 +888,6 @@
 			if (this.playerElement) { // update player
 				this.playerElement.pause();
 			}
-            if ( this.mobilePlayed && this.mobileAutoPlay ) {
-                this.mobileAutoPlay = false;
-                this.setVolume( 1 );
-            }
 		},
 
 		/**

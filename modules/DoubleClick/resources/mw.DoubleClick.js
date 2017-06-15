@@ -773,6 +773,10 @@
                             e.stopPropagation();
                             e.preventDefault();
                             $( _this.embedPlayer ).trigger( 'onAdSkip' );
+                            if ( _this.embedPlayer.mobileAutoPlay ) {
+                                _this.embedPlayer.mobileAutoPlay = false;
+                                _this.embedPlayer.setVolume( 1 );
+                            }
                             if ( _this.adPaused ) {
                                 _this.resumeAd( _this.isLinear );
 								//Make sure to kill any timeout so button won't reappear
