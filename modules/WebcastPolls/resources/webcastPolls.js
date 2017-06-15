@@ -7,8 +7,10 @@
      */
     mw.PluginManager.add('webcastPolls', mw.KBasePlugin.extend({
         defaultConfig: {
-            'userId' : 'User'
+            'userId' : 'User',
+            'usePushNotification' : true
         },
+		polls_push_notification: "POLLS_PUSH_NOTIFICATIONS",
         cuePointsManager: null, // manages all the cue points tracking (cue point reached of poll results, poll states etc).
         kalturaProxy: null, // manages the communication with the Kaltura api (invoke a vote, extract poll data).
         userProfile: null, // manages active user profile
@@ -208,7 +210,7 @@
                 case 'movingBackToLive':
                     setTimeout(function(){
                         // the timer is to let the player adjust its getLiveEdgeOffset value.
-                        // when this happens in a sync call stack the player still holds a positive value instead of 0
+                        // when this happens in a synced call, the player still holds a positive value instead of 0
                         _this.log("event '" + eventName + "' - start syncing current poll state");
                         if (_this.cuePointsManager) {
                             _this.handleStateCuePoints({reset:true});
@@ -251,8 +253,16 @@
                 // cue points manager used to monitor and notify when relevant cue points reached (polls status, results).
                 _this.cuePointsManager = new mw.webcast.CuePointsManager(_this.getPlayer(), function () {
                 }, "webcastPolls_CuePointsManager");
+                //set push method
+				_this.cuePointsManager.setPushNotificationMode(_this.getConfig('usePushNotification'));
 
-                _this.cuePointsManager.registerMonitoredCuepointTypes(['poll-data'],function(cuepoints)
+				var pushSystemName = null;
+				// send the pushSystemName only if we have usePushNotification set to true
+				if(_this.getConfig("usePushNotification")){
+					pushSystemName = _this.polls_push_notification;
+                }
+
+				_this.cuePointsManager.registerMonitoredCuepointTypes(['poll-data'],function(cuepoints)
                 {
                    for(var i = 0;i< cuepoints.length;i++)
                    {
@@ -283,7 +293,7 @@
                        }
 
                    }
-                });
+                },[pushSystemName]);
 
                 _this.cuePointsManager.onCuePointsReached = $.proxy(function(args)
                 {

@@ -22,11 +22,17 @@
                 }
             });
 
+            if(!this.pushServerNotification){
+                this.pushServerNotification = mw.KPushServerNotification.getInstance(this.embedPlayer);
+            }
+
             _this.resetMonitorVariables();
             _this.addBindings();
 
             _this.log('initialize(): invoked');
         },
+		usePushNotification : false,
+		pushServerNotification : null,
         getCuePoints : function()
         {
             var player = this.getPlayer();
@@ -56,8 +62,16 @@
 
                 _this.log('addBindings(playerReady): start the monitor process');
 
-                _this.handleMonitoredCuepoints(_this.getCuePoints());
-                _this.startMonitorProcess();
+				//TODO Eitan find better way to initiate KPushServerNotification
+				if(_this.shouldUsePush() ){
+					//initiate push logic
+					if(!_this.pushServerNotification){
+						_this.pushServerNotification = mw.KPushServerNotification.getInstance(_this.embedPlayer);
+					}
+				}else{
+					_this.handleMonitoredCuepoints(_this.getCuePoints());
+					_this.startMonitorProcess();
+				}
             });
 
             _this.bind(
@@ -301,10 +315,35 @@
                 }
             }
         },
-        registerMonitoredCuepointTypes : function(cuepointTypes, callback)
+        registerPollingNotifications: function (systemNames , pluginName ) {
+            //TODO - join web socket later
+            var _this = this;
+            var tempNotifications = [];
+            for (var i = 0; i < systemNames.length; i++) {
+            var tempNotification = this.pushServerNotification.createNotificationRequest(
+            systemNames[i],{
+                "entryId": _this.embedPlayer.kentryid
+            },
+            function (cuePoints) {
+                mw.log("KPushCuePointsManager cuePoints loaded " + cuePoints);
+                _this.handleMonitoredCuepoints(cuePoints);
+                });
+                tempNotifications.push(tempNotification);
+            }
+            return this.pushServerNotification.registerNotifications(tempNotifications,pluginName);
+        },
+        registerMonitoredCuepointTypes : function(cuepointTypes,callback,pushSystemNames)
         {
             var _this = this;
-
+            // This is using push
+            if(pushSystemNames){
+                //register through push mechanism
+                _this.registerPollingNotifications(pushSystemNames ,_this.pluginName ).then(function () {
+                    mw.log(cuepointTypes + "successful  registerNotifications");
+                }, function (err) {
+                    mw.log(cuepointTypes + "failed  registerNotifications ", err);
+                });
+            }
             if (cuepointTypes && cuepointTypes.length && callback)
             {
                 _this._monitoredCuepoints.enabled = true;
@@ -477,6 +516,7 @@
             return result;
         },
         getCurrentTime: function(){
+            //TODO - check if can replaced with isLive !!!
             if(this.embedPlayer.isDVR()){
                 return this.getPlayer().LiveCurrentTime*1000;
             }
@@ -498,6 +538,14 @@
         onCuePointsReached : function(args)
         {
             // do nothing - will be override by creator
+        },
+        setPushNotificationMode : function(usePushNotification){
+            this.usePushNotification = usePushNotification;
+            this.embedPlayer.usePushNotificationForPolls = usePushNotification;
+        },
+        //TODO find alternative way to initiate the CPManager with push
+        shouldUsePush : function(){
+            return this.embedPlayer.usePushNotificationForPolls
         },
         getKalturaClient: function () {
             if (!this.kClient) {
