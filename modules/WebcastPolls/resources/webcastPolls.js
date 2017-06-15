@@ -10,7 +10,7 @@
             'userId' : 'User',
             'usePushNotification' : true
         },
-		polls_push_notification: "POLLS_PUSH_NOTIFICATIONS",
+        polls_push_notification: "POLLS_PUSH_NOTIFICATIONS",
         cuePointsManager: null, // manages all the cue points tracking (cue point reached of poll results, poll states etc).
         kalturaProxy: null, // manages the communication with the Kaltura api (invoke a vote, extract poll data).
         userProfile: null, // manages active user profile
@@ -253,8 +253,10 @@
                 // cue points manager used to monitor and notify when relevant cue points reached (polls status, results).
                 _this.cuePointsManager = new mw.webcast.CuePointsManager(_this.getPlayer(), function () {
                 }, "webcastPolls_CuePointsManager");
-                //set push method
-				_this.cuePointsManager.setPushNotificationMode(_this.getConfig('usePushNotification'));
+                //set push method only with live. For VOD use the existing cuePointManager logic
+                if(_this.embedPlayer.isLive()){
+                    _this.cuePointsManager.setPushNotificationMode(_this.getConfig('usePushNotification'));
+                }
 
 				var pushSystemName = null;
 				// send the pushSystemName only if we have usePushNotification set to true

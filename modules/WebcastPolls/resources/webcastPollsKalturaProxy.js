@@ -157,12 +157,11 @@
             }
             return defer.promise();
 		},
-		transmitNewVote : function(pollId, pollProfileId, userId, selectedAnswer )
-		{
-			var _this = this;
-			var defer = $.Deferred();
-			// TODO - remove 'if' once switch to new API
-			//using vote API
+        transmitNewVote : function(pollId, pollProfileId, userId, selectedAnswer ){
+            var _this = this;
+            var defer = $.Deferred();
+            // TODO - remove 'if' once switch to new API
+            //using vote API
             if (pollId && pollProfileId && userId && selectedAnswer) {
                 var vote = {
                     "service": "poll_poll",
@@ -187,7 +186,7 @@
                 defer.reject({});
             }
             return defer.promise();
-		},
+        },
 
         getVoteCustomMetadataProfileId : function()
         {

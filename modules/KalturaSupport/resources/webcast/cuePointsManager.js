@@ -31,8 +31,8 @@
 
             _this.log('initialize(): invoked');
         },
-		usePushNotification : false,
-		pushServerNotification : null,
+        usePushNotification : false,
+        pushServerNotification : null,
         getCuePoints : function()
         {
             var player = this.getPlayer();
@@ -62,16 +62,16 @@
 
                 _this.log('addBindings(playerReady): start the monitor process');
 
-				//TODO Eitan find better way to initiate KPushServerNotification
-				if(_this.shouldUsePush() ){
-					//initiate push logic
-					if(!_this.pushServerNotification){
-						_this.pushServerNotification = mw.KPushServerNotification.getInstance(_this.embedPlayer);
-					}
-				}else{
-					_this.handleMonitoredCuepoints(_this.getCuePoints());
-					_this.startMonitorProcess();
-				}
+                //TODO Eitan find better way to initiate KPushServerNotification
+                if(_this.shouldUsePush() ){
+                    //initiate push logic
+                    if(!_this.pushServerNotification){
+                        _this.pushServerNotification = mw.KPushServerNotification.getInstance(_this.embedPlayer);
+                    }
+                }else{
+                    _this.handleMonitoredCuepoints(_this.getCuePoints());
+                    _this.startMonitorProcess();
+                }
             });
 
             _this.bind(
@@ -545,7 +545,7 @@
         },
         //TODO find alternative way to initiate the CPManager with push
         shouldUsePush : function(){
-            return this.embedPlayer.usePushNotificationForPolls
+            return this.embedPlayer.usePushNotificationForPolls;
         },
         getKalturaClient: function () {
             if (!this.kClient) {
