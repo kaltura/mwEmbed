@@ -315,53 +315,53 @@
                 }
             }
         },
-		registerMonitoredCuepointTypes : function(cuepointTypes,callback,pushSystemNames)
-		{
-			var _this = this;
-			// This is using push
-			if(pushSystemNames){
-				//register through push mechanism
-				_this.registerPollingNotifications(pushSystemNames ,_this.pluginName ).then(function () {
-					mw.log(cuepointTypes + "successful  registerNotifications");
-				}, function (err) {
-					mw.log(cuepointTypes + "failed  registerNotifications ", err);
-				});
-			}
-			if (cuepointTypes && cuepointTypes.length && callback)
-			{
-				_this._monitoredCuepoints.enabled = true;
-				for(var i=0;i<cuepointTypes.length;i++)
-				{
-					var cuepointType = cuepointTypes[i];
+        registerMonitoredCuepointTypes : function(cuepointTypes,callback,pushSystemNames)
+        {
+            var _this = this;
+            // This is using push
+            if(pushSystemNames){
+                //register through push mechanism
+                _this.registerPollingNotifications(pushSystemNames ,_this.pluginName ).then(function () {
+                    mw.log(cuepointTypes + "successful  registerNotifications");
+                }, function (err) {
+                    mw.log(cuepointTypes + "failed  registerNotifications ", err);
+                });
+            }
+            if (cuepointTypes && cuepointTypes.length && callback)
+            {
+                _this._monitoredCuepoints.enabled = true;
+                for(var i=0;i<cuepointTypes.length;i++)
+                {
+                    var cuepointType = cuepointTypes[i];
 
 
-					var callbackList = _this._monitoredCuepoints.typesMapping[cuepointType];
-					if (!callbackList)
-					{
-						callbackList = _this._monitoredCuepoints.typesMapping[cuepointType] = [];
+                    var callbackList = _this._monitoredCuepoints.typesMapping[cuepointType];
+                    if (!callbackList)
+                    {
+                        callbackList = _this._monitoredCuepoints.typesMapping[cuepointType] = [];
 
-						// this type was not registered yet, update the tagsLike condition to be used against Kaltura API
-						_this._monitoredCuepoints.tagsLike += _this._monitoredCuepoints.tagsLike ? ',' : '';
-						_this._monitoredCuepoints.tagsLike +=  cuepointType;
-					}
+                        // this type was not registered yet, update the tagsLike condition to be used against Kaltura API
+                        _this._monitoredCuepoints.tagsLike += _this._monitoredCuepoints.tagsLike ? ',' : '';
+                        _this._monitoredCuepoints.tagsLike +=  cuepointType;
+                    }
 
-					callbackList.push(callback);
-					_this.log("registerMonitoredCuepointTypes(): added monitor callback for cuepoint of type '" + cuepointType + "'");
-				}
-			}
-		},
+                    callbackList.push(callback);
+                    _this.log("registerMonitoredCuepointTypes(): added monitor callback for cuepoint of type '" + cuepointType + "'");
+                }
+            }
+        },
         registerPollingNotifications: function (systemNames , pluginName ) {
             //TODO - join web socket later
             var _this = this;
             var tempNotifications = [];
             for (var i = 0; i < systemNames.length; i++) {
-            var tempNotification = this.pushServerNotification.createNotificationRequest(
-            systemNames[i],{
-                "entryId": _this.embedPlayer.kentryid
-            },
-            function (cuePoints) {
-                mw.log("KPushCuePointsManager cuePoints loaded " + cuePoints);
-                _this.handleMonitoredCuepoints(cuePoints);
+                var tempNotification = this.pushServerNotification.createNotificationRequest(
+                systemNames[i],{
+                    "entryId": _this.embedPlayer.kentryid
+                },
+                function (cuePoints) {
+                    mw.log("KPushCuePointsManager cuePoints loaded " + cuePoints);
+                    _this.handleMonitoredCuepoints(cuePoints);
                 });
                 tempNotifications.push(tempNotification);
             }
