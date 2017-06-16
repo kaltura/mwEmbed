@@ -147,7 +147,6 @@
                         defer.reject();
                     }
                 }, false, function (reason) {
-                    //TODO - Eitan handle errors later
                     _this.log("rejecting request due to error from kaltura api server with reason " + (reason ? JSON.stringify(reason) : ''));
                     defer.reject();
                 });

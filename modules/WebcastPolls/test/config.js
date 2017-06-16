@@ -1,8 +1,8 @@
 var user1="Eitan";
-var user2="user";
+var user2="Guest";
 var user1Ks="djJ8MjcwMTd8ABTHEGwo7JVObAYrHgiuRJaJzado1QD9pAhiNAX9CU9nKV9HXRfJjFaG1Ss0MSBmzI1LlQvtNvHvHtwR_4AEn7j_YpV_SRChlcWS68DCXtt71hiPHRk0Ifw605pfd3AfyRYkSXE0anV-9k0lNJNCmruPKspmRZJJp7CIQ6C22st2ktfU4hT58a_elSbHQ3Bm4lzshGAVa8j7E5_xE0-Ol23SX3gdiCwSvumsDTFgJWvZ2YLdPVcag23oyx4NnNRnAFIrleylq66-6nL8k_cd-k01W2KIbOUDIT3KbesE2pTJ9xGTdk8NKbLebV0CMeMO";
-var user2Ks="djJ8MjcwMTd8nhoU1Ncr9PxJiBcYmzODe1EaJZW0HOekTMFJkyKFtsy69z_ylP185i0gj84yubBwAGXDciVdzex9t3njM9Y48o9u18VZqg1iaI8I2IXKuL4NGPt3MLFhDdaiOgg8Eaz5Jbwy1_e3Uo04i0syUW-mBFRCbDySTnmIzyQ9u63GIDwGdBRp-aei9ywrWBswA3K3QLL_AOywvFZPoM9YLeFMTWyj6LkdSiuBNHlCVyXLaJn8XIsG7knl5YUbd4sFVnPAQ9jcwZcR2ItSAq8mt1kZ-4wLn4p39JvsDfrK1Y90SMw=";
-var entry="1_2e7u9qfm";
+var user2Ks="djJ8MjcwMTd81al-5IeIqXXj94bzoYykBlnpVFrKMwyiGyhKpzVoKulcEnIBxsKhijuw0pXe-sleD-C79uhJv7QuJaes_IQ2C4ad3PgMraG89FwEIj0JL_qfDGHHTUd2bTwe7H9qvyohImf1xoevQi-zpOLP84dIiMTu6KpN3r3V8BpZkTuzcoNXXC8f8cLbRd4o_rGZigOx9TRJTYkFQjPnnTDStNAapkhZBWxMUB-uJ8N0j7NXOB_Prnhw4C200Jt_zizzkR7SxOER3SMEgf_ANbxbrZy4mg==";
+var entry="1_6955edi9";
 
 
 var playerId = 39666321; //prod OOB
@@ -10,8 +10,12 @@ var playerId = 39666321; //prod OOB
 var wid = '_27017'; // prod
 //    var wid = '_5174'; // QA
 
-var kdp;
 
+
+
+
+// DONT CHANGE ANYTHING BELOW THIS POINT
+var kdp;
 if(!user2Ks && user1Ks){
 	user2Ks = user1Ks;
 }
@@ -47,8 +51,7 @@ var qna = {
 	'onPage': true,
 	'containerPosition': 'right',
 	'moduleWidth': '200',
-	'userId': this.user1,
-	'userRole': "userRole", //anonymousRole
+	'userRole': "anonymousRole", //anonymousRole / userRole
 	'allowNewQuestionWhenNotLive': true
 };
 
