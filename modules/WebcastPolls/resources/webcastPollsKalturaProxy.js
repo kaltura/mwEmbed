@@ -160,7 +160,6 @@
         transmitNewVote : function(pollId, pollProfileId, userId, selectedAnswer ){
             var _this = this;
             var defer = $.Deferred();
-            // TODO - remove 'if' once switch to new API
             //using vote API
             if (pollId && pollProfileId && userId && selectedAnswer) {
                 var vote = {
