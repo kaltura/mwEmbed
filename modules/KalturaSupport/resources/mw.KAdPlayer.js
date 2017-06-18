@@ -661,6 +661,10 @@ mw.KAdPlayer.prototype = {
 					.text( adSlot.skipBtn.text )
 					.addClass( 'ad-component ad-skip-btn' )
 					.bind(clickEventName, function(e){
+                        if ( _this.embedPlayer.mobileAutoPlay ) {
+                            _this.embedPlayer.mobileAutoPlay = false;
+                            _this.embedPlayer.setVolume( 1 );
+                        }
 						$( embedPlayer ).unbind(clickEventName);
 						e.stopPropagation();
 						e.preventDefault();
@@ -1128,6 +1132,10 @@ mw.KAdPlayer.prototype = {
 		$( this.embedPlayer).bind('onPlayerStateChange' +  _this.trackingBindPostfix, function(e, newState, oldState){
 			if( newState == 'pause' ){
 				_this.sendVASTBeacon( trackingEvents, 'pause', true );
+				if (_this.embedPlayer.mobileAutoPlay){
+                    _this.embedPlayer.mobileAutoPlay = false;
+                    _this.embedPlayer.setVolume(1);
+				}
 			}
 		});
 
