@@ -105,14 +105,19 @@
 			}
 			$(this.getPlayerElement()).css('position', 'absolute');
 
-            if ( (mw.isMobileDevice() || mw.isIpad()) && mw.getConfig( 'mobileAutoPlay' ) ) {
-            	this.mobileAutoPlay = true;
-                this.setVolume( 0 );
-            }
-
 			if (this.inline) {
 				$(this.getPlayerElement()).attr('playsinline', '');
 			}
+
+            if ( (mw.isMobileDevice() || mw.isIpad()) && mw.getConfig( 'mobileAutoPlay' ) ) {
+                if ( !mw.isIphone() && this.inline ) {
+                    this.inline = false;
+                    $( this.getPlayerElement() ).removeAttr( 'playsinline' );
+                }
+                this.mobileAutoPlay = true;
+                this.setVolume( 0 );
+            }
+
             this.addBindings();
             readyCallback();
 
@@ -292,8 +297,8 @@
         canAutoPlay: function () {
             if ( mw.isMobileDevice() ) {
                 var playsinline = true;
-                if ( mw.isIOS() ) {
-                    playsinline = mw.getConfig( 'EmbedPlayer.WebKitPlaysInline' );
+                if ( mw.isIphone() ) {
+                    playsinline = this.inline;
                 }
                 return (this.mobileAutoPlay && playsinline) || this.mobilePlayed;
             }
