@@ -1404,7 +1404,13 @@
 			// Auto play stopped ( no playerReady has already started playback ) and if not on an iPad with iOS > 3
 			if (this.isStopped() && this.autoplay && !this.changeMediaStarted && this.canAutoPlay()) {
 				mw.log('EmbedPlayer::showPlayer::Do autoPlay');
-				_this.play();
+				if (mw.isDesktopSafari()) {
+					setTimeout(function () {
+						_this.play();
+					}, 0);
+				} else {
+					_this.play();
+				}
 			}
 		},
 
