@@ -245,6 +245,8 @@
                             _this.playWhenOnline = embedPlayer.isPlaying();
 
                             if (_this.getConfig('showThumbnailWhenOffline')) {
+								embedPlayer.hideSpinner();
+								mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
                                 _this.addPoster();
                             } else {
                                 embedPlayer.layoutBuilder.displayAlert({

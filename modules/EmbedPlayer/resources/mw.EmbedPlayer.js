@@ -1404,7 +1404,13 @@
 			// Auto play stopped ( no playerReady has already started playback ) and if not on an iPad with iOS > 3
 			if (this.isStopped() && this.autoplay && !this.changeMediaStarted && this.canAutoPlay()) {
 				mw.log('EmbedPlayer::showPlayer::Do autoPlay');
-				_this.play();
+				if (mw.isDesktopSafari()) {
+					setTimeout(function () {
+						_this.play();
+					}, 0);
+				} else {
+					_this.play();
+				}
 			}
 		},
 
@@ -1850,12 +1856,14 @@
 				this.widgetLoaded = true;
 				mw.log("EmbedPlayer:: Trigger: widgetLoaded");
 				if( mw.getConfig('Kaltura.ForceLayoutRedraw') && ! (this.getInterface().width() === 0) && ! (this.getInterface().height() === 0) ) {
+					mw.log("EmbedPlayer:: ForceLayoutRedraw");
 					var resize = {
 						width: this.getInterface().width(),
 						height: this.getInterface().height() + 1
 					};
 					this.updateInterfaceSize(resize);
-					resize.height--;
+					resize.height = "100%";
+					resize.width = "100%";
 					this.updateInterfaceSize(resize);
 				}
 				this.triggerHelper('widgetLoaded');
