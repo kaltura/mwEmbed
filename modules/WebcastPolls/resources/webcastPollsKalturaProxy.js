@@ -48,66 +48,30 @@
 
             return hasError;
         },
-        getUserVote : function(pollId, profileId, userId)
+        getUserVote : function(pollId, userId)
         {
             var _this = this;
             var defer = $.Deferred();
 
-            if (profileId && userId && pollId) {
+            if (userId && pollId) {
 
                 var request = {
-                    'service': 'cuepoint_cuepoint',
-                    'action': 'list',
-                    'filter:entryIdEqual': _this.getPlayer().kentryid,
-                    'filter:orderBy': '-createdAt', // although only one vote is allowed per user, we fetch the last one so if for unknown reason we have duplicates, the user will see his last choice
-                    'filter:objectType': 'KalturaAnnotationFilter',
-                    'filter:cuePointTypeIn': 'annotation.Annotation',
-                    'filter:tagsMultiLikeOr': ('id:' + pollId),
-
-                    /*Search  metadata   */
-                    'filter:advancedSearch:objectType': 'KalturaMetadataSearchItem',
-                    'filter:advancedSearch:metadataProfileId': profileId,
-                    "responseProfile:objectType":"KalturaResponseProfileHolder",
-                    "responseProfile:systemName":"pollVoteResponseProfile",
-
-                    //search all messages on my session id
-                    'filter:advancedSearch:items:item1:objectType': "KalturaSearchCondition",
-                    'filter:advancedSearch:items:item1:field': "/*[local-name()='metadata']/*[local-name()='UserId']",
-                    'filter:advancedSearch:items:item1:value': userId,
-
-                    'pager:pageSize': 1,
-                    'pager:pageIndex': 1
+	                'service': 'poll_poll',
+	                'action': 'getVote',
+	                'pollId': pollId,
+	                'userId': userId
                 };
-
                 _this.log("requesting information about poll user vote for poll id '" + pollId + "' for user '" + userId + "'");
                 _this.getKalturaClient().doRequest(request, function (response) {
                     if (!_this.isErrorResponse(response)) {
-                        var cuePoint = (response && response.objects && response.objects.length > 0) ? response.objects[0] : null;
-
-                        if (cuePoint) {
-                            var metadata = (cuePoint.relatedObjects &&
-                                cuePoint.relatedObjects.pollVoteResponseProfile &&
-                                cuePoint.relatedObjects.pollVoteResponseProfile.objects &&
-                                cuePoint.relatedObjects.pollVoteResponseProfile.objects.length > 0
-                            ) ? cuePoint.relatedObjects.pollVoteResponseProfile.objects[0] : null;
-
-                            if (metadata && metadata.xml) {
-                                var voteAnswerToken = metadata.xml.match(/<Answer>([0-9]+?)<[/]Answer>/);
-                                var vote = (voteAnswerToken && voteAnswerToken.length === 2) ? voteAnswerToken[1] : null;
-                                var metadataId = metadata.id;
-
-                                _this.log("resolving request with the following details: answer '" + vote + "' metadataId '" + metadataId + "'");
-                                var result = {metadataId: metadataId, answer: vote};
-                                defer.resolve(result);
-
-                            } else {
-                                // ## got cue point without metadata - invalid situation
-                                _this.log("rejecting request due to invalid response from kaltura api");
-                                defer.reject();
-                            }
+                        //Got a good response - now check if it has a previous vote for this user or not
+                        if (response && response.indexOf("Could not find vote")==-1) {
+                            _this.log("resolving request with the following details: user perform a vote for that poll selecting " + JSON.parse(response)[0]);
+                            var result = {answer: JSON.parse(response)[0]};
+                            defer.resolve(result);
                         }else {
                             _this.log("resolving request with the following details: user didn't perform a vote for that poll");
-                            defer.resolve({});
+	                        defer.resolve({});
                         }
                     } else {
                         _this.log("rejecting request due to error from kaltura api server");

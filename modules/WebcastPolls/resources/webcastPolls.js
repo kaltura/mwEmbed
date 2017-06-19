@@ -274,7 +274,6 @@
 				            //live vote update (don't wait for poll-resaults cuepoint time to trigger).
 				            // Run this only for polls-resaults cuepoitns and if we are in the correct poll
 				            if(cuepoint.tags == "poll-results" && cuepointContent.pollId == _this.pollData.pollId ){
-
 					            // if current poll doesn't have yet poll pollResults - create it now
 					            if(!_this.pollData.pollResults){
 						            _this.pollData.pollResults = cuepointContent;
@@ -351,7 +350,6 @@
                             _this.log("invalid poll results structure - ignoring current result");
                             _this.pollData.pollResults = null;
                         }
-
                     } else {
                         if (resetMode) {
                             _this.log("reset mode - didn't find any relevant poll results, removing current poll results (if any)");
@@ -563,7 +561,7 @@
 
                 if (_this.globals.votingProfileId) {
                     _this.log("requesting user vote for  poll '" + pollId + "' from kaltura api");
-                    _this.kalturaProxy.getUserVote(pollId, _this.globals.votingProfileId, _this.globals.userId).then(function (result) {
+                    _this.kalturaProxy.getUserVote(pollId, _this.globals.userId).then(function (result) {
                         _this.log("retrieved user vote for poll '" + pollId + "' from kaltura api");
                         defer.resolve(result);
                     }, function (reason) {
