@@ -48,66 +48,30 @@
 
             return hasError;
         },
-        getUserVote : function(pollId, profileId, userId)
+        getUserVote : function(pollId, userId)
         {
             var _this = this;
             var defer = $.Deferred();
 
-            if (profileId && userId && pollId) {
+            if (userId && pollId) {
 
                 var request = {
-                    'service': 'cuepoint_cuepoint',
-                    'action': 'list',
-                    'filter:entryIdEqual': _this.getPlayer().kentryid,
-                    'filter:orderBy': '-createdAt', // although only one vote is allowed per user, we fetch the last one so if for unknown reason we have duplicates, the user will see his last choice
-                    'filter:objectType': 'KalturaAnnotationFilter',
-                    'filter:cuePointTypeIn': 'annotation.Annotation',
-                    'filter:tagsMultiLikeOr': ('id:' + pollId),
-
-                    /*Search  metadata   */
-                    'filter:advancedSearch:objectType': 'KalturaMetadataSearchItem',
-                    'filter:advancedSearch:metadataProfileId': profileId,
-                    "responseProfile:objectType":"KalturaResponseProfileHolder",
-                    "responseProfile:systemName":"pollVoteResponseProfile",
-
-                    //search all messages on my session id
-                    'filter:advancedSearch:items:item1:objectType': "KalturaSearchCondition",
-                    'filter:advancedSearch:items:item1:field': "/*[local-name()='metadata']/*[local-name()='UserId']",
-                    'filter:advancedSearch:items:item1:value': userId,
-
-                    'pager:pageSize': 1,
-                    'pager:pageIndex': 1
+	                'service': 'poll_poll',
+	                'action': 'getVote',
+	                'pollId': pollId,
+	                'userId': userId
                 };
-
                 _this.log("requesting information about poll user vote for poll id '" + pollId + "' for user '" + userId + "'");
                 _this.getKalturaClient().doRequest(request, function (response) {
                     if (!_this.isErrorResponse(response)) {
-                        var cuePoint = (response && response.objects && response.objects.length > 0) ? response.objects[0] : null;
-
-                        if (cuePoint) {
-                            var metadata = (cuePoint.relatedObjects &&
-                                cuePoint.relatedObjects.pollVoteResponseProfile &&
-                                cuePoint.relatedObjects.pollVoteResponseProfile.objects &&
-                                cuePoint.relatedObjects.pollVoteResponseProfile.objects.length > 0
-                            ) ? cuePoint.relatedObjects.pollVoteResponseProfile.objects[0] : null;
-
-                            if (metadata && metadata.xml) {
-                                var voteAnswerToken = metadata.xml.match(/<Answer>([0-9]+?)<[/]Answer>/);
-                                var vote = (voteAnswerToken && voteAnswerToken.length === 2) ? voteAnswerToken[1] : null;
-                                var metadataId = metadata.id;
-
-                                _this.log("resolving request with the following details: answer '" + vote + "' metadataId '" + metadataId + "'");
-                                var result = {metadataId: metadataId, answer: vote};
-                                defer.resolve(result);
-
-                            } else {
-                                // ## got cue point without metadata - invalid situation
-                                _this.log("rejecting request due to invalid response from kaltura api");
-                                defer.reject();
-                            }
+                        //Got a good response - now check if it has a previous vote for this user or not
+                        if (response && response.indexOf("Could not find vote")==-1) {
+                            _this.log("resolving request with the following details: user perform a vote for that poll selecting " + JSON.parse(response)[0]);
+                            var result = {answer: JSON.parse(response)[0]};
+                            defer.resolve(result);
                         }else {
                             _this.log("resolving request with the following details: user didn't perform a vote for that poll");
-                            defer.resolve({});
+	                        defer.resolve({});
                         }
                     } else {
                         _this.log("rejecting request due to error from kaltura api server");
@@ -126,85 +90,66 @@
 
             return defer.promise();
         },
-        transmitVoteUpdate : function(metadataId, userId, selectedAnswer,pollId)
-        {
-            var _this = this;
-            var defer = $.Deferred();
-
-            if (metadataId && userId && selectedAnswer) {
-                var updateMetadataRequest = {
-                    service: "metadata_metadata",
-                    action: "update",
-                    id: metadataId,
-                    xmlData: '<metadata><Answer>' + selectedAnswer + '</Answer><UserId>' + userId + '</UserId></metadata>',
+		transmitVoteUpdate : function(metadataId, userId, selectedAnswer,pollId)
+		{
+			var _this = this;
+			var defer = $.Deferred();
+            //using vote API
+            if (pollId && userId && selectedAnswer) {
+                var vote = {
+                    "service": "poll_poll",
+                    "action": "vote",
+                    "pollId": pollId,
+                    "answerIds": selectedAnswer, // 1
+                    "userId": userId
                 };
-
-                _this.log("transmitting update of vote for poll with id '" + pollId + "'");
-                _this.getKClient().doRequest(updateMetadataRequest, function (result) {
-                    if (!_this.isErrorResponse(result)) {
-                        _this.log('successfully transmitted update of vote');
+                _this.getKClient().doRequest(vote, function (result) {
+                    if(!_this.isErrorResponse(result)){
                         defer.resolve({});
-                    } else {
-                        _this.log("rejecting request due to error from kaltura api server");
+                    }else{
+                        _this.log("Got error response from server " + result);
                         defer.reject();
                     }
                 }, false, function (reason) {
                     _this.log("rejecting request due to error from kaltura api server with reason " + (reason ? JSON.stringify(reason) : ''));
                     defer.reject();
                 });
-            }else {
+            } else {
                 _this.log("rejecting request due to missing required information from plugin");
                 defer.reject({});
             }
-
             return defer.promise();
-        },
-        transmitNewVote : function(pollId, pollProfileId, userId, selectedAnswer)
-        {
+		},
+        transmitNewVote : function(pollId, pollProfileId, userId, selectedAnswer ){
             var _this = this;
             var defer = $.Deferred();
-
+            //using vote API
             if (pollId && pollProfileId && userId && selectedAnswer) {
-                var createCuePointRequest = {
-                    "service": "cuePoint_cuePoint",
-                    "action": "add",
-                    "cuePoint:objectType": "KalturaAnnotation",
-                    "cuePoint:entryId": _this.getPlayer().kentryid,
-                    "cuePoint:isPublic": 0,
-                    "cuePoint:tags": ('id:' + pollId)
+                var vote = {
+                    "service": "poll_poll",
+                    "action": "vote",
+                    "pollId": pollId,
+                    "answerIds": selectedAnswer, // 1
+                    "userId": userId
                 };
-
-                var addMetadataRequest = {
-                    service: "metadata_metadata",
-                    action: "add",
-                    metadataProfileId: pollProfileId,
-                    objectId: "{1:result:id}",
-                    xmlData: '<metadata><Answer>' + selectedAnswer + '</Answer><UserId>' + userId + '</UserId></metadata>',
-                    objectType: "annotationMetadata.Annotation"
-                };
-
-                _this.log("transmitting new vote for poll with id '" + pollId + "'");
-                _this.getKClient().doRequest([createCuePointRequest, addMetadataRequest], function (result) {
-
-                    if (result && result.length === 2 && !_this.isErrorResponse(result)) {
-                        _this.log("successfully transmitted new vote, got back metadata id '" + result[1].id + "'");
-                        defer.resolve({metadataId: result[1].id});
-                    } else {
-                        _this.log("rejecting request due to error from kaltura api server");
+                _this.getKClient().doRequest(vote, function (result) {
+                    if(!_this.isErrorResponse(result)){
+                        defer.resolve({});
+                    }else{
+                        _this.log("Got error response from server " + result);
                         defer.reject();
                     }
                 }, false, function (reason) {
                     _this.log("rejecting request due to error from kaltura api server with reason " + (reason ? JSON.stringify(reason) : ''));
                     defer.reject();
                 });
-            }else {
+            } else {
                 _this.log("rejecting request due to missing required information from plugin");
                 defer.reject({});
             }
-
             return defer.promise();
-
         },
+
         getVoteCustomMetadataProfileId : function()
         {
             var _this = this;

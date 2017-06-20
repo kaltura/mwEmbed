@@ -621,7 +621,6 @@
                     _this.processQnA(cuePoints);
                 });
 
-
             return this.kPushServerNotification.registerNotifications([userNotifications,codeNotifications,publicNotifications]);
         }
 
