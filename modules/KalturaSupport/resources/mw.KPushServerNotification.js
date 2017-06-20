@@ -154,7 +154,7 @@
                 onMessage: onMessage
             };
         },
-        registerNotifications:function(registerRequests,moduleName) {
+        registerNotifications:function(registerRequests) {
             var deferred = $.Deferred();
 
             var _this=this;
@@ -167,9 +167,7 @@
             if (apiRequests.length==1) {
                 apiRequests=apiRequests[0];
             }
-
             mw.log("registering to ",apiRequests);
-
             function processResult(registerRequest,result) {
                 var deferred = $.Deferred();
 
@@ -181,10 +179,10 @@
 
                 //cache sockets by host name
                 var socketKey = result.url.replace(/^(.*\/\/[^\/?#]*).*$/,"$1");
-                var socket = _this.socketPool[moduleName];
+                var socket = _this.socketPool[socketKey];
                 if (!socket) {
-                    socket = new SocketWrapper(moduleName);
-                    _this.socketPool[moduleName]=socket;
+                    socket = new SocketWrapper(socketKey);
+                    _this.socketPool[socketKey]=socket;
 
                     socket.connect(result.url,registerRequest.eventName);
                 }

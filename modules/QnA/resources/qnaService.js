@@ -621,8 +621,7 @@
                     _this.processQnA(cuePoints);
                 });
 
-            //TODO - remove "qna"
-            return this.kPushServerNotification.registerNotifications([userNotifications,codeNotifications,publicNotifications],"qna");
+            return this.kPushServerNotification.registerNotifications([userNotifications,codeNotifications,publicNotifications]);
         }
 
     };

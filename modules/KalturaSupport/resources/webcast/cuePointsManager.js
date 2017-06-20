@@ -340,7 +340,7 @@
                 });
                 tempNotifications.push(tempNotification);
             }
-            return this.pushServerNotification.registerNotifications(tempNotifications,pluginName);
+            return this.pushServerNotification.registerNotifications(tempNotifications);
         },
         _createReachedCuePointsArgs: function (cuePoints, context) {
             var _this = this;
