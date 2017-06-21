@@ -66,7 +66,12 @@
 		},
 		addBindings: function () {
 			var _this = this;
-
+			//multicast doesnt run the startMonitor - force doing that
+			if(_this.getPlayer().isMulticast){
+				this.bind('onplay' , function(){
+					_this.embedPlayer.startMonitor();
+				});
+			}
 			this.bind('KalturaSupport_ThumbCuePointsReady', function () {
 				if (!_this.maskChangeStreamEvents) {
 					//Get chapters data from cuepoints
@@ -149,7 +154,6 @@
 			this.bind("freezeTimeIndicators", function(e, val){
 				_this.freezeTimeIndicators = val;
 			});
-
 			this.bind("monitorEvent", function () {
 				if (_this.dataIntialized) {
 					_this.handlePendingItems();
