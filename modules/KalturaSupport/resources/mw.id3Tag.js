@@ -79,6 +79,7 @@
             if(time) {
                 var d = new Date(0); // The 0 there is the key, which sets the date to the epoch
                 d.setUTCSeconds(time);
+	            this.log("Update time from id3 tag: " + d.toUTCString());
                 this.updatedTime = time;
                 this.counter = 0; //reset time update interval counter
                 this.getPlayer().LiveCurrentTime = time;
