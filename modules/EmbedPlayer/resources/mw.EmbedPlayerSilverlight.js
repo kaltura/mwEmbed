@@ -870,7 +870,6 @@
 			if ( this.seeking ) {
 				this.seeking = false;
 			}
-			//TODO Eitan
 			//ignore multicast, slCurrentTime will be updated through id3Tag
 			if(!this.isMulticast) {
 				this.slCurrentTime = playheadValue;
