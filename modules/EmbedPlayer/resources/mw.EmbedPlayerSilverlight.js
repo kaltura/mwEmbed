@@ -67,6 +67,13 @@
 					_this.playerObject.selectTextTrack( data.index );
 				}
 			} );
+			// In multicast mode nothing triggers startMonitor. This fixes that
+			this.bindHelper( 'onplay' , function ( ) {
+				if(_this.isMulticast){
+					_this.startMonitor();
+				}
+			} );
+
 
 			this.bindHelper( 'switchAudioTrack' , function ( e , data ) {
 				if ( _this.playerObject ) {
@@ -863,6 +870,7 @@
 			if ( this.seeking ) {
 				this.seeking = false;
 			}
+			//TODO Eitan
 			//ignore multicast, slCurrentTime will be updated through id3Tag
 			if(!this.isMulticast) {
 				this.slCurrentTime = playheadValue;
