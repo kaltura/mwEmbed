@@ -96,7 +96,7 @@
         };
 
         if (this.connected) {
-            this.socket.emit('listen', queueKeyHash);
+	        this.socket.emit('listen', queueNameHash, queueKeyHash);
         }
         return deferred;
 
