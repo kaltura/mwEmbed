@@ -3,7 +3,7 @@
         "label": "Youbora Analytics",
         "description": "A powerful intelligence analytics and optimization platform to deliver online TV-quality video experiences.<br>",
         "attributes": {
-            "accountName": {
+            "accountCode": {
                  "doc": "The Youbora account id",
                 "type": "string"
             },
