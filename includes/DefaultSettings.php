@@ -20,7 +20,8 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = 'v2.58.rc6_polls_rc6';
+$wgMwEmbedVersion = '2.58.rc8';
+
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {
 	$wgHTTPProtocol = ($_GET['protocol'] == 'https') ? 'https' : 'http';

@@ -133,7 +133,7 @@
         addBindings: function(){
             var _this = this;
             this.bindHelper( 'userInitiatedPause userInitiatedSeek onOpenFullScreen' + this.bindPostfix, function () {
-                if ( _this.mobilePlayed &&_this.mobileAutoPlay ) {
+                if ( _this.mobileAutoPlay ) {
                     _this.mobileAutoPlay = false;
                     _this.setVolume( 1 );
                 }

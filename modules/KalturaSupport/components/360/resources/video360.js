@@ -341,7 +341,7 @@
 	}));
 
 	// set EmbedPlayer.WebKitPlaysInline true for iPhone inline playback
-	var playerConfig = window.kalturaIframePackageData.playerConfig;
+	var playerConfig = mw.getConfig('KalturaSupport.PlayerConfig');
 	if (playerConfig) {
 		if (!playerConfig.vars) {
 			playerConfig.vars = {};
