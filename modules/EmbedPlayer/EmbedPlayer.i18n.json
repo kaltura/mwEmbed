@@ -74,6 +74,7 @@
         "mwe-embedplayer-player-jump-to-live": "Jump to live",
 	    "mwe-embedplayer-related": "Related",
 		"mwe-embedplayer-related-errMsg": "No related<br>videos were<br>found.",
+		"mwe-embedplayer-seek": "seek",
 	    "mwe-embedplayer-no-source": "No sources"
 
     },

@@ -435,6 +435,7 @@
 			var totalDuration = mw.seconds2npt(this.embedPlayer.getDuration());
 			var attributes = {
 				'data-title': title,
+				'aria-label': gM( 'mwe-embedplayer-seek' ),
 				'aria-valuetext': title + " of " + totalDuration,
 				'aria-valuenow': parseInt(perc * 100) + '%'
 			};
