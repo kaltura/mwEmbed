@@ -195,6 +195,10 @@
 						});
 					_this.$screen = $('<div />')
 						.addClass('screen ' + _this.pluginName)
+						.attr({
+							"role" : "dialog",
+							"aria-labelledby" : "dialogTitle"
+						})
 						.append(
 							$('<div class="screen-content" /> ').append(closeBtn).append(data)
 						);
