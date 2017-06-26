@@ -118,6 +118,7 @@
         	return this.$el.hasClass('open');
         },
         open: function(){
+	        console.log(">>>>>", "open");
         	var _this = this;
         	this.$el.addClass('open');
 	        $(".ui-tooltip").hide();
@@ -129,6 +130,8 @@
             	});
                 },0);
             }
+	        this.$el.find("li a").first().focus();
+
         },
         close: function(){
         	this.$el.removeClass('open');
