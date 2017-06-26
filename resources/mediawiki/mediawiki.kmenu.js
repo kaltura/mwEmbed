@@ -118,7 +118,6 @@
         	return this.$el.hasClass('open');
         },
         open: function(){
-	        console.log(">>>>>", "open");
         	var _this = this;
         	this.$el.addClass('open');
 	        $(".ui-tooltip").hide();
