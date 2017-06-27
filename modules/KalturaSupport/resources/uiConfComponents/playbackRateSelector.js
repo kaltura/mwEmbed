@@ -333,6 +333,7 @@
 								.addClass( classes )
 								.attr({
 									'title': this.getConfig('title'),
+									'aria-haspopup':'true',
 									'aria-label': this.getConfig('title')
 								})
 								.text( text )

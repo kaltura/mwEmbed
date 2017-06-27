@@ -237,7 +237,11 @@
 				//TODO: need icon from Shlomit!
 				var $button = $('<button />')
 					.addClass('btn icon-audio')
-					.attr('title', gM('mwe-embedplayer-select_audio'))
+					.attr({
+							'title': gM('mwe-embedplayer-select_audio'),
+							'aria-label': gM('mwe-embedplayer-select_audio'),
+							'aria-haspopup':'true'
+					})
 					.click(function (e) {
 						_this.toggleMenu();
 					});

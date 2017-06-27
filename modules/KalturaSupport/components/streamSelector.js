@@ -396,7 +396,10 @@
 				//TODO: need icon from Shlomit!
 				var $button = $('<button />')
 					.addClass('btn icon-switchSource')
-					.attr('title', gM('mwe-embedplayer-select_stream'))
+					.attr({ 'title': gM('mwe-embedplayer-select_stream'),
+							'aria-label':gM('mwe-embedplayer-select_stream'),
+							'aria-haspopup':'true'
+					})
 					.click(function (e) {
 						_this.toggleMenu();
 					});
