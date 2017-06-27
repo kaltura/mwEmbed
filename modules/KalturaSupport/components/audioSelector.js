@@ -200,7 +200,8 @@
 			this.getMenu().addItem({
 				'label': streamName,
 				'attributes': {
-					'id': id
+					'id': id,
+					'aria-label' : streamName
 				},
 				'callback': function () {
 					_this.setStream(stream);
@@ -262,12 +263,14 @@
 			this.isDisabled = false;
 			this.updateTooltip(gM('mwe-embedplayer-select_audio'));
 			this.getBtn().removeClass('disabled');
+			this.getBtn().attr("aria-disabled","false" );
 		},
 		onDisable: function () {
 			this.isDisabled = true;
 			this.updateTooltip(gM('mwe-embedplayer-select_audio'));
 			this.getComponent().removeClass('open');
 			this.getBtn().addClass('disabled');
+			this.getBtn().attr("aria-disabled","true" );
 		}
 	}));
 
