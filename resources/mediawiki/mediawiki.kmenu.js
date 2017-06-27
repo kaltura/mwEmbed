@@ -109,8 +109,8 @@
 			this.$el.append( $item );
 
             if( item.active ){
-                $item.addClass('active').attr('aria-checked', 'true');
 	            this.selectedIndex = this.itemIdx;
+                $item.find("a").addClass('active').attr('aria-checked', 'true');
             }
 			// Incrase out counter ( for tab index )
 			this.itemIdx++;
@@ -184,7 +184,7 @@
 		            this.mobileMenu.val(this.$el.find( selector ).text());
 	            }
             }
-	        this.$el.find( selector ).addClass( 'active' ).attr('aria-checked', 'true');
+	        this.$el.find( selector ).addClass( 'active' ).find("a").attr('aria-checked', 'true');
 	        this.$el.find( selector +" a").focus();
 	        // for IE8, force screen refresh
 	        if (mw.isIE8()){
@@ -192,7 +192,7 @@
 	        }
         },
         clearActive: function(){
-        	this.$el.find('li').removeClass('active').attr('aria-checked', 'false');
+        	this.$el.find('li').removeClass('active').find("a").attr('aria-checked', 'false');
         },
         destroy: function(){
             this.$el.empty();
