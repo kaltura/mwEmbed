@@ -14,13 +14,17 @@
 			});
 		}
     	// Set some defaults
+	    var labelledby = "menu";
+	    if(options && options.menuName){
+		    labelledby = options.menuName;
+	    }
     	var defaults = {
             cssClass: "dropdown-menu",
             tabIndex: 1,
             closeOnFocusOut: true,
             attributes: {
 				'role': 'menu',
-				'aria-labelledby': 'dLabel'
+				'aria-labelledby': labelledby
 			},
 			dividerClass: 'divider',
             onSelected: null
