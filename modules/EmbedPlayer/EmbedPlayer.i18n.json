@@ -75,6 +75,7 @@
 	    "mwe-embedplayer-related": "Related",
 		"mwe-embedplayer-related-errMsg": "No related<br>videos were<br>found.",
 		"mwe-embedplayer-seek": "seek",
+		"mwe-embedplayer-open_dialog": " - opens dialog",
 	    "mwe-embedplayer-no-source": "No sources"
 
     },

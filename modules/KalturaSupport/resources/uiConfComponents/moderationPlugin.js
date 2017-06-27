@@ -172,7 +172,7 @@
 								.click( function(){
 									_this.drawModal();
 								});
-				this.setAccessibility(this.$el, tooltipLabel);
+				this.setAccessibility(this.$el, tooltipLabel + gM('mwe-embedplayer-open_dialog'));
 			}
 			return this.$el;
 		}

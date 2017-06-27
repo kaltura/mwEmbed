@@ -240,7 +240,7 @@
 					.click(function () {
 						_this.toggleScreen();
 					});
-				this.setAccessibility(this.$el, this.getConfig('tooltip'));
+				this.setAccessibility(this.$el, this.getConfig('tooltip')+gM('mwe-embedplayer-open_dialog'));
 			}
 			return this.$el;
 		}
