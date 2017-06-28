@@ -1075,6 +1075,9 @@ body {
 }
 .mobileSkin.size-tiny .alert-container{
     padding-top: 10px;
+	width: 80%;
+	max-height: 70% !important;
+	margin-top: 0px;
 }
 .alert {
 	display: table-cell;
