@@ -200,32 +200,17 @@
 				this.addSubtitleTracks();
 			},
 
-			getVideoTracks: function () {
-				var variantTracks = player.getVariantTracks();
-				var activeVariantTrack = variantTracks.filter(function (variantTrack) {
-					return variantTrack.active;
-				})[0];
-				var videoTracks = variantTracks.filter(function (variantTrack) {
-					return variantTrack.audioId === activeVariantTrack.audioId;
+			getTracksByType: function (trackType) {
+				var tracks = player.getTracks().filter(function (track) {
+					return track.type == trackType;
 				});
-				return videoTracks;
-			},
-
-			getAudioTracks: function () {
-				var variantTracks = player.getVariantTracks();
-				var activeVariantTrack = variantTracks.filter(function (variantTrack) {
-					return variantTrack.active;
-				})[0];
-				var audioTracks = variantTracks.filter(function (variantTrack) {
-					return variantTrack.videoId === activeVariantTrack.videoId;
-				});
-				return audioTracks;
+				return tracks;
 			},
 
 			addAbrFlavors: function () {
-				var videoTracks = this.getVideoTracks();
+				var videoTracks = this.getTracksByType("video");
 				if (videoTracks && videoTracks.length > 0) {
-					var flavors = videoTracks.map(function (rep, index) {
+					var flavors = videoTracks.map(function (rep) {
 						var sourceAspect = Math.round(( rep.width / rep.height ) * 100) / 100;
 						// Setup a source object:
 						return {
@@ -234,8 +219,7 @@
 							'data-height': rep.height,
 							'data-aspect': sourceAspect,
 							'type': 'video/mp4',
-							'data-assetid': rep.id,
-							'data-flavorid': index
+							'data-assetid': rep.id
 						};
 					});
 					mw.log("Dash::" + videoTracks.length + " ABR flavors were found: ", videoTracks);
@@ -245,7 +229,7 @@
 			},
 
 			addAudioTracks: function () {
-				var audioTracks = this.getAudioTracks();
+				var audioTracks = this.getTracksByType("audio");
 				if (audioTracks && audioTracks.length > 0) {
 					var audioTrackData = {languages: []};
 					var audioTrackLangs = {};
@@ -256,7 +240,7 @@
 								'kind': 'audioTrack',
 								'language': audioTrack.language,
 								'srclang': audioTrack.language,
-								'label': audioTrack.label || audioTrack.language,
+								'label': audioTrack.language,
 								'title': audioTrack.language,
 								'id': audioTrack.id,
 								'index': audioTrackData.languages.length
@@ -274,7 +258,7 @@
 			},
 
 			addSubtitleTracks: function () {
-				var textTracks = player.getTextTracks();
+				var textTracks = this.getTracksByType("text");
 				if (textTracks && textTracks.length > 0) {
 					var textTrackData = {languages: []};
 					$.each(textTracks, function (index, subtitleTrack) {
@@ -282,7 +266,7 @@
 							'kind': 'subtitle',
 							'language': subtitleTrack.language,
 							'srclang': subtitleTrack.language,
-							'label': subtitleTrack.label || subtitleTrack.language,
+							'label': subtitleTrack.language,
 							'title': subtitleTrack.language,
 							'id': subtitleTrack.id,
 							'index': textTrackData.languages.length
@@ -307,10 +291,11 @@
 			 */
 			switchSrc: function (source) {
 				if (source !== -1) {
-					var selectedAbrTrack = this.getVideoTracks()[source.flavorid];
+					var selectedAbrTrack = this.getTracksByType("video").filter(function (abrTrack) {
+						return abrTrack.id === source.getAssetId();
+					})[0];
 					if (selectedAbrTrack) {
-						player.configure({abr:{enabled: false}});
-						player.selectVariantTrack(selectedAbrTrack, false);
+						player.selectTrack(selectedAbrTrack, false);
 						this.getPlayer().triggerHelper("sourceSwitchingStarted", this.currentBitrate);
 						var _this = this;
 						setTimeout(function () {
@@ -319,7 +304,11 @@
 						mw.log("Dash::switchSrc to ", selectedAbrTrack);
 					}
 				} else { // "Auto" option is selected
-					player.configure({abr:{enabled: true}});
+					player.configure({
+						abr: {
+							enabled: true
+						}
+					});
 					this.log("switchSrc to Auto");
 				}
 			},
@@ -367,8 +356,10 @@
 
 			onSwitchAudioTrack: function (event, data) {
 				if (this.loaded) {
-					var selectedAudioTracks = this.getAudioTracks()[data.index];
-					player.selectAudioLanguage(selectedAudioTracks.language);
+					var selectedAudioTracks = this.getTracksByType("audio")[data.index];
+					player.configure({
+						preferredAudioLanguage: selectedAudioTracks.language
+					});
 					mw.log("Dash::onSwitchAudioTrack switch to ", selectedAudioTracks);
 				}
 			},
@@ -379,9 +370,9 @@
 						player.setTextTrackVisibility(false);
 						this.log("onSwitchTextTrack disable subtitles");
 					} else {
-						var selectedTextTracks = player.getTextTracks()[data.index];
+						var selectedTextTracks = this.getTracksByType("text")[data.index];
 						player.setTextTrackVisibility(true);
-						player.selectTextTrack(selectedTextTracks, false);
+						player.selectTrack(selectedTextTracks, false);
 						mw.log("Dash::onSwitchTextTrack switch to ", selectedTextTracks);
 					}
 				}
@@ -502,8 +493,8 @@
 			},
 
 			onAdaptation: function () {
-				var selectedAbrTrack = this.getVideoTracks().filter(function (videoTrack) {
-					return videoTrack.active;
+				var selectedAbrTrack = this.getTracksByType("video").filter(function (abrTrack) {
+					return abrTrack.active;
 				})[0];
 				if (selectedAbrTrack) {
 					var currentBitrate = Math.round(selectedAbrTrack.bandwidth / 1024);
