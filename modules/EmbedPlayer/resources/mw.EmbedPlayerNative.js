@@ -132,11 +132,20 @@
 		},
         addBindings: function(){
             var _this = this;
-            this.bindHelper( 'userInitiatedPause userInitiatedSeek onOpenFullScreen' + this.bindPostfix, function () {
+            function checkMobileAutoPlay() {
                 if ( _this.mobileAutoPlay ) {
                     _this.mobileAutoPlay = false;
                     _this.setVolume( 1 );
                 }
+            }
+            this.bindHelper( 'userInitiatedPause' + this.bindPostfix, function () {
+                checkMobileAutoPlay();
+            } );
+            this.bindHelper( 'userInitiatedSeek' + this.bindPostfix, function () {
+                checkMobileAutoPlay();
+            } );
+            this.bindHelper( 'onOpenFullScreen' + this.bindPostfix, function () {
+                checkMobileAutoPlay();
             } );
             this.bindHelper('firstPlay' + this.bindPostfix, function(){
                 _this.parseTracks();
