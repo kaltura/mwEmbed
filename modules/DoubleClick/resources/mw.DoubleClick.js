@@ -654,7 +654,9 @@
                 }
             }
             if ( this.embedPlayer.mobileAutoPlay ) {
-                this.embedPlayer.mobileAutoPlay = false;
+                if (!mw.isAndroid()) {
+                    this.embedPlayer.mobileAutoPlay = false;
+                }
                 this.adsManager.setVolume( 1 );
             }
         },
@@ -773,7 +775,7 @@
                             e.stopPropagation();
                             e.preventDefault();
                             $( _this.embedPlayer ).trigger( 'onAdSkip' );
-                            if ( _this.embedPlayer.mobileAutoPlay ) {
+                            if ( _this.embedPlayer.mobileAutoPlay && !mw.isAndroid()) {
                                 _this.embedPlayer.mobileAutoPlay = false;
                                 _this.embedPlayer.setVolume( 1 );
                             }
