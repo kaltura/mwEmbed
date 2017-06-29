@@ -21,8 +21,7 @@
                     typesMapping : {}
                 }
             });
-
-            if(!this.pushServerNotification){
+            if(!this.pushServerNotification && _this.embedPlayer.isLive()){
                 this.pushServerNotification = mw.KPushServerNotification.getInstance(this.embedPlayer);
             }
 
