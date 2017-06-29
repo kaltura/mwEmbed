@@ -307,10 +307,45 @@
                 _this.cuePointsManager.onCuePointsReached = $.proxy(function(args)
                 {
                     // new cue points reached - change internal polls status when relevant cue points reached
+                    _this.handlePollDataCuePoints({cuepointsArgs : args});
                     _this.handleStateCuePoints({cuepointsArgs : args});
                     _this.handlePollResultsCuePoints({cuepointsArgs : args});
                 },_this);
             }
+        },
+        /**
+            Find poll-data cue-points that have the poll raw data (has text with 'quesition' attribute)
+            If it finds it - store in globals.pollsContentMapping as a new poll-data.
+        */
+	    handlePollDataCuePoints: function (context){
+            var _this = this;
+            if(context && context.cuepointsArgs && context.cuepointsArgs.cuePoints && context.cuepointsArgs.cuePoints.length  ){
+	            for (var i = 0; i < context.cuepointsArgs.cuePoints.length; i++) {
+		            var cp = context.cuepointsArgs.cuePoints[i];
+		            var partenerData;
+		            try{
+			            partenerData = JSON.parse(cp.partnerData);
+                    }catch (e){
+                    }
+                    if (cp && cp.tags && cp.tags.indexOf("poll-data")>-1
+                        && partenerData.hasOwnProperty("text")
+                        && partenerData.text.hasOwnProperty("question") ){
+	                    var pollIdTokens = (cp.tags || '').match(/id:([^, ]*)/);
+	                    var pollId = pollIdTokens && pollIdTokens.length === 2 ? pollIdTokens[1] : null;
+	                    var pollContent = partenerData.text;
+
+	                    if (pollId && pollContent) {
+		                    _this.log("updated content of poll with id '" + pollId + "'");
+		                    if(_this.globals.pollsContentMapping[pollId]) {
+			                    $.extend(_this.globals.pollsContentMapping[pollId], pollContent);
+		                    }else{
+			                    _this.globals.pollsContentMapping[pollId] = pollContent;
+		                    }
+	                    }
+                    }
+	            }
+            }
+
         },
         /**
          * Modifies current poll results according to cue points reached.
