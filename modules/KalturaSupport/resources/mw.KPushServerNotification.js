@@ -96,7 +96,7 @@
         };
 
         if (this.connected) {
-            this.socket.emit('listen', queueKeyHash);
+	        this.socket.emit('listen', queueNameHash, queueKeyHash);
         }
         return deferred;
 
@@ -167,9 +167,7 @@
             if (apiRequests.length==1) {
                 apiRequests=apiRequests[0];
             }
-
             mw.log("registering to ",apiRequests);
-
             function processResult(registerRequest,result) {
                 var deferred = $.Deferred();
 

@@ -7,8 +7,10 @@
      */
     mw.PluginManager.add('webcastPolls', mw.KBasePlugin.extend({
         defaultConfig: {
-            'userId' : 'User'
+            'userId' : 'User',
+            'usePushNotification' : true
         },
+        polls_push_notification: "POLLS_PUSH_NOTIFICATIONS",
         cuePointsManager: null, // manages all the cue points tracking (cue point reached of poll results, poll states etc).
         kalturaProxy: null, // manages the communication with the Kaltura api (invoke a vote, extract poll data).
         userProfile: null, // manages active user profile
@@ -208,7 +210,7 @@
                 case 'movingBackToLive':
                     setTimeout(function(){
                         // the timer is to let the player adjust its getLiveEdgeOffset value.
-                        // when this happens in a sync call stack the player still holds a positive value instead of 0
+                        // when this happens in a synced call, the player still holds a positive value instead of 0
                         _this.log("event '" + eventName + "' - start syncing current poll state");
                         if (_this.cuePointsManager) {
                             _this.handleStateCuePoints({reset:true});
@@ -251,39 +253,56 @@
                 // cue points manager used to monitor and notify when relevant cue points reached (polls status, results).
                 _this.cuePointsManager = new mw.webcast.CuePointsManager(_this.getPlayer(), function () {
                 }, "webcastPolls_CuePointsManager");
+                //set push method only with live. For VOD use the existing cuePointManager logic
+                if(_this.embedPlayer.isLive()){
+                    _this.cuePointsManager.setPushNotificationMode(_this.getConfig('usePushNotification'));
+                }
 
-                _this.cuePointsManager.registerMonitoredCuepointTypes(['poll-data'],function(cuepoints)
-                {
-                   for(var i = 0;i< cuepoints.length;i++)
-                   {
+				var pushSystemName = null;
+				// send the pushSystemName only if we have usePushNotification set to true
+				if(_this.getConfig("usePushNotification")){
+					pushSystemName = _this.polls_push_notification;
+                }
 
-                       try {
-                           var cuepoint = cuepoints[i];
-                           var cuepointContent = cuepoint.partnerData ? JSON.parse(cuepoint.partnerData) : null;
-                            var pollIdTokens = (cuepoint.tags || '').match(/id:([^, ]*)/);
-                           var pollId = pollIdTokens && pollIdTokens.length === 2 ? pollIdTokens[1] : null;
+	            _this.cuePointsManager.registerMonitoredCuepointTypes(['poll-data','poll-results'],function(cuepoints){
+		            for(var i = 0;i< cuepoints.length;i++){
+			            try {
+				            var cuepoint = cuepoints[i];
+				            var cuepointContent = cuepoint.partnerData ? JSON.parse(cuepoint.partnerData) : null;
+				            var pollIdTokens = (cuepoint.tags || '').match(/id:([^, ]*)/);
+				            var pollId = pollIdTokens && pollIdTokens.length === 2 ? pollIdTokens[1] : null;
+				            //live vote update (don't wait for poll-resaults cuepoint time to trigger).
+				            // Run this only for polls-resaults cuepoitns and if we are in the correct poll
+				            if(cuepoint.tags == "poll-results" && cuepointContent.pollId == _this.pollData.pollId ){
+					            // if current poll doesn't have yet poll pollResults - create it now
+					            if(!_this.pollData.pollResults){
+						            _this.pollData.pollResults = cuepointContent;
+					            }
+					            if( cuepointContent.totalVoters && cuepointContent.totalVoters >= _this.pollData.pollResults.totalVoters ){
+						            //update only if result is higher than current votes-count
+						            _this.pollData.pollResults.totalVoters = cuepointContent.totalVoters;
+						            _this.view.syncDOMPollResults();
+					            }
 
-                           if (cuepointContent && pollId)
-                           {
-                               var pollContent = cuepointContent.text;
+				            }
+				            if (cuepointContent && pollId) {
+					            var pollContent = cuepointContent.text;
+					            if (pollId && pollContent) {
+						            _this.log("updated content of poll with id '" + pollId + "'");
+						            if(_this.globals.pollsContentMapping[pollId]) {
+							            $.extend(_this.globals.pollsContentMapping[pollId], pollContent);
+						            }else{
+							            _this.globals.pollsContentMapping[pollId] = pollContent;
+						            }
+					            }
+				            }
 
-                               if (pollId && pollContent) {
-                                   _this.log("updated content of poll with id '" + pollId + "'");
-                                   if(_this.globals.pollsContentMapping[pollId]) {
-                                        $.extend(_this.globals.pollsContentMapping[pollId], pollContent);
-                                   }else {
-                                       _this.globals.pollsContentMapping[pollId] = pollContent;
-                                   }
-                               }
-                           }
+			            }catch(e){
+				            _this.log("ERROR while tring to extract poll information with error " + e);
+			            }
 
-                       }catch(e)
-                       {
-                           _this.log("ERROR while tring to extract poll information with error " + e);
-                       }
-
-                   }
-                });
+		            }
+	            } , [pushSystemName]);
 
                 _this.cuePointsManager.onCuePointsReached = $.proxy(function(args)
                 {
@@ -331,7 +350,6 @@
                             _this.log("invalid poll results structure - ignoring current result");
                             _this.pollData.pollResults = null;
                         }
-
                     } else {
                         if (resetMode) {
                             _this.log("reset mode - didn't find any relevant poll results, removing current poll results (if any)");
@@ -543,7 +561,7 @@
 
                 if (_this.globals.votingProfileId) {
                     _this.log("requesting user vote for  poll '" + pollId + "' from kaltura api");
-                    _this.kalturaProxy.getUserVote(pollId, _this.globals.votingProfileId, _this.globals.userId).then(function (result) {
+                    _this.kalturaProxy.getUserVote(pollId, _this.globals.userId).then(function (result) {
                         _this.log("retrieved user vote for poll '" + pollId + "' from kaltura api");
                         defer.resolve(result);
                     }, function (reason) {
@@ -646,13 +664,9 @@
                 } else {
                     _this.log("user didn't vote yet in this poll, add user vote");
 
-                    // increase total voters by 1
-                    if (_this.pollData.pollResults)
-                    {
-                        _this.pollData.pollResults.totalVoters++;
-                    }else {
-                        this.pollData.pollResults = { totalVoters : 1};
-                    }
+                    // get this value only from BE and not from FE
+                    // _this.pollData.pollResults.totalVoters++;
+
                     _this.view.syncDOMPollResults();
 
 

@@ -987,10 +987,10 @@
 				if (this.embedPlayer.isDVR()) {
 					// seek to relative position: clicked item time - video-absolute-startTime
 					var seekTo = this.mediaList[mediaIndex].startTime - this.getPlayer().dvrAbsoluteStartTime;
-					this.getPlayer().sendNotification('doSeek', seekTo + 0.1  );
+					this.getPlayer().sendNotification('doSeek', seekTo + 0.3  );
 				} else {
 					// seek to start time and play ( +.1 to avoid highlight of prev chapter )
-					this.getPlayer().sendNotification('doSeek', (this.mediaList[mediaIndex].startTime) + 0.1);
+					this.getPlayer().sendNotification('doSeek', (this.mediaList[mediaIndex].startTime) + 0.3);
 				}
 			}
 		},

@@ -3,19 +3,10 @@
         "label": "Youbora Analytics",
         "description": "A powerful intelligence analytics and optimization platform to deliver online TV-quality video experiences.<br>",
         "attributes": {
-            "accountName": {
+            "accountCode": {
                  "doc": "The Youbora account id",
                 "type": "string"
-            },
-	        "bufferUnderrunThreshold": {
-		        "doc": "The minimum buffering time (in milliseconds) required to trigger the buffer under-run beacon",
-		        "initvalue": 1000,
-		        "type": "number"
-	        },
-	        "trackEventMonitor": {
-		        "doc": "Track Youbora media analytics events with a named callback.",
-		        "type": "string"
-	        }
+            }
         }
     }
 }

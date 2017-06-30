@@ -128,8 +128,6 @@
                         _this.currentTime(new Date().getTime());
                     }, mw.getConfig("qnaPollingInterval") || 10000);
                 }
-
-
                 $( embedPlayer ).bind('timeupdate', function () {
                     // in DVR mode embedPlayer.current time is in seconds - so we need to add dvrAbsoluteStartTime
                     if(embedPlayer.isDVR()){
@@ -139,9 +137,6 @@
                         _this.playerTime(this.currentTime);
                     }
                 });
-
-
-
             },
             destroy: function () {
                 clearInterval(this.currentTimeInterval);

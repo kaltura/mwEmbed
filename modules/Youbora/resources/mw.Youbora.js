@@ -12,12 +12,11 @@
 		},
 
 		setup: function () {
-			this.bindLogs();
-			if (!this.getConfig('accountCode')) {
-				this.log("An accountCode is needed for youbora plugin.")
-			} else {
-				this.youbora = new $YB.plugins.KalturaV2(this, this.getConfig());
-			}
+            this.bindLogs();
+            if ( !this.getConfig( 'accountCode' ) && this.getConfig( 'accountName' ) ) {
+                this.setConfig( 'accountCode', this.getConfig( 'accountName' ) );
+            }
+            this.youbora = new $YB.plugins.KalturaV2( this, this.getConfig() );
 		},
 
 		bindLogs: function () {
