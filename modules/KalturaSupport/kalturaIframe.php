@@ -18,7 +18,7 @@ $kIframe = new kalturaIframeClass();
 if(!ob_start("ob_gzhandler")) ob_start();
 
 // Support Etag and 304
-if( $wgEnableScriptDebug == false && @trim($_SERVER['HTTP_IF_NONE_MATCH']) == $kIframe->getIframeOutputHash() ){
+if( $wgEnableScriptDebug == false && @trim($_SERVER['HTTP_IF_NONE_MATCH']) == "W/\"" . $kIframe->getIframeOutputHash() . "\"" ){
 	header("HTTP/1.1 304 Not Modified"); 
 	exit();
 } 

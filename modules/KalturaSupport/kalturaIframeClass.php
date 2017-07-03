@@ -385,7 +385,7 @@ class kalturaIframeClass {
 		}
 		// Add Etag
 		if( !$addedEtag && !$this->request->get('debug') ){
-			header("Etag: " . $this->getIframeOutputHash() );
+			header("Etag: W/\"" . $this->getIframeOutputHash() . "\"" );
 		}
 	}
 
