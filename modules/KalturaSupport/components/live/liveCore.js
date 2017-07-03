@@ -309,10 +309,14 @@
 						_this.dvrWindow = _this.defaultDVRWindow;
 					}
 					showComponentsArr.push( 'scrubber' );
-                    hideComponentsArr.push( 'currentTimeLabel' ); //new DVR layout: no time label, only negative live edge offset at the mousemove over the scrubber
 				} else {  //live + no DVR
 					showComponentsArr.push( 'liveStatus' );
-                    hideComponentsArr.push( 'scrubber', 'currentTimeLabel' );
+                    hideComponentsArr.push( 'scrubber');
+				}
+
+				if(this.getConfig("hideCurrentTimeLabel")) {
+					// no time label, only negative live edge offset at the mousemove over the scrubber
+					hideComponentsArr.push( 'currentTimeLabel' );
 				}
 			}
 			//not a live entry: restore ui, hide live ui
