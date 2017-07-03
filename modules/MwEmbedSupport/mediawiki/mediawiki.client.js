@@ -93,7 +93,12 @@
 		return ( userAgent.indexOf('Android') != -1 && userAgent.indexOf('Windows') === -1);
 	};
 	mw.isAndroid4andUp = function () {
-		return ( (userAgent.indexOf('Android 4.') != -1) || (userAgent.indexOf('Android 5.') != -1) || (userAgent.indexOf('Android 6.') != -1) ) && userAgent.indexOf('Windows') === -1;
+		var androidUAStringRegEx = /Android ((\d+)(?:\.\d+){1,2})/;
+		var res = androidUAStringRegEx.exec(userAgent);
+		if ( res == null ){
+			return false;
+		}
+		return ( res[2] > 4 && userAgent.indexOf('Windows') === -1);
 	};
 
 	mw.isSamsungStockBrowser = function () {

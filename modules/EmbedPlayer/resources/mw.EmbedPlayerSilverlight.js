@@ -396,7 +396,8 @@
 					flashvars.smoothStreamPlayer = true;
 					flashvars.preload = "auto";
 					flashvars.entryURL = resolvedSrc;
-					//flashvars.debug = true;
+
+                    //flashvars.debug = true;
 
 					if ( isMimeType( "video/playreadySmooth" ) ) {
 						flashvars.preload = "none";
@@ -483,6 +484,9 @@
 				}
 				_this.autoplay = _this.autoplay || _this.isMulticast;
 				flashvars.isLive = _this.isLive();
+				if (_this.multicastSourceAddress) {
+                    flashvars.autoplay = _this.autoplay;
+                }
 				flashvars.isDVR = ( _this.isDVR() == 1 );
 				_this.durationReceived = false;
 				_this.readyCallbackFunc = readyCallback;

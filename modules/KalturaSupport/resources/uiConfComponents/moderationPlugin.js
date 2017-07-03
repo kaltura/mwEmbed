@@ -4,21 +4,22 @@
 
 		defaultConfig: {
 			"parent": mw.isMobileDevice() ? 'topBarContainer' : 'controlsContainer',
-		 	"order": 62,
-		 	"displayImportance": "low",
-		 	"align": "right",
-		 	"showTooltip": true,
+			"order": 62,
+			"displayImportance": "low",
+			"align": "right",
+			"showTooltip": true,
 			"smartContainer": 'morePlugins',
 			"smartContainerCloseEvent": 'closeMenuOverlay',
+			"minDescriptionLength" : 0,
 			"title": gM("ks-MODERATION-REPORT"),
 			"header": gM("ks-MODERATION-HEADER"),
 			"text": gM("ks-MODERATION-TEXT"),
 			"placeholder": gM("ks-MODERATION-PLACEHOLDER"),
-		 	"tooltip": gM("ks-MODERATION-REPORT"),
-		 	"reasonSex": gM("ks-MODERATION-REASON-SEX"),
-		 	"reasonViolence": gM("ks-MODERATION-REASON-VIOLENCE"),
-		 	"reasonHarmful": gM("ks-MODERATION-REASON-HARMFUL"),
-		 	"reasonSpam": gM("ks-MODERATION-REASON-SPAM")
+			"tooltip": gM("ks-MODERATION-REPORT"),
+			"reasonSex": gM("ks-MODERATION-REASON-SEX"),
+			"reasonViolence": gM("ks-MODERATION-REASON-VIOLENCE"),
+			"reasonHarmful": gM("ks-MODERATION-REASON-HARMFUL"),
+			"reasonSpam": gM("ks-MODERATION-REASON-SPAM")
 		},
 
 		setup: function () {
@@ -64,6 +65,11 @@
 				$( '<label for="flagComments">'+ gM("ks-MODERATION-PLACEHOLDER" ) +'</label>' ),
 				$( '<textarea />' )
 					.attr( 'id', 'flagComments' )
+					.bind('input propertychange', function() {
+						if( $(this).val().length == _this.getConfig("minDescriptionLength")){
+						$(this).removeClass("validationError");
+						}
+					})
 					.css({'width': '100%', 'height': '40px', 'margin-top': '10px'}),
 				$('<div/>' ).append(
 					$( '<div />' )
@@ -113,6 +119,11 @@
 		},
 		submitFlag: function(flagObj) {
 			var _this = this;
+			//validation length of description check
+			if (_this.getConfig("minDescriptionLength") != 0 && flagObj.flagComments.length < this.getConfig("minDescriptionLength")  ){
+				this.screen.find("#flagComments").addClass("validationError");
+				return;
+			}
 			this.getPlayer().triggerHelper( 'moderationSubmit', flagObj.flagType );
 			this.getPlayer().addPlayerSpinner();
 			this.getKalturaClient().doRequest( {

@@ -303,6 +303,8 @@
 		//the offset in hours:minutes:seconds from the playable live edge.
 		liveEdgeOffset: 0,
 
+		liveSyncDurationOffset:0,
+
 		/**
 		 * embedPlayer
 		 *
@@ -1209,7 +1211,10 @@
 		},
 		setDuration: function (newDuration) {
 			this.duration = newDuration;
-			$(this).trigger('durationChange', [newDuration]);
+			if(this.isLive() && this.isDVR()){
+				this.duration -= this.liveSyncDurationOffset;
+			}
+			$(this).trigger('durationChange', [this.duration]);
 		},
 
 		/**
@@ -1397,10 +1402,15 @@
 				return;
 			}
 			// Auto play stopped ( no playerReady has already started playback ) and if not on an iPad with iOS > 3
-			// livestream autoPlay is handled by liveCore
-			if (this.isStopped() && this.autoplay && !this.changeMediaStarted && this.canAutoPlay() && !this.isLive()) {
+			if (this.isStopped() && this.autoplay && !this.changeMediaStarted && this.canAutoPlay()) {
 				mw.log('EmbedPlayer::showPlayer::Do autoPlay');
-				_this.play();
+				if (mw.isDesktopSafari()) {
+					setTimeout(function () {
+						_this.play();
+					}, 0);
+				} else {
+					_this.play();
+				}
 			}
 		},
 
@@ -1730,6 +1740,9 @@
 			// Reset first play to true, to count that play event
 			this.firstPlay = true;
 
+			// Mobile auto play is not relevant anymore
+            this.mobileAutoPlay = false;
+
 			if (resetPlaybackValues || resetPlaybackValues === undefined) {
 				// reset donePlaying count on change media.
 				this.donePlayingCount = 0;
@@ -1775,7 +1788,6 @@
 				if (_this.getError()) {
 					// Reset changeMediaStarted flag
 					_this.changeMediaStarted = false;
-					_this.showErrorMsg(_this.getError());
 					return;
 				}
 
@@ -1843,10 +1855,20 @@
 			if (!this.widgetLoaded) {
 				this.widgetLoaded = true;
 				mw.log("EmbedPlayer:: Trigger: widgetLoaded");
+				if( mw.getConfig('Kaltura.ForceLayoutRedraw') && ! (this.getInterface().width() === 0) && ! (this.getInterface().height() === 0) ) {
+					mw.log("EmbedPlayer:: ForceLayoutRedraw");
+					var resize = {
+						width: this.getInterface().width(),
+						height: this.getInterface().height() + 1
+					};
+					this.updateInterfaceSize(resize);
+					resize.height = "100%";
+					resize.width = "100%";
+					this.updateInterfaceSize(resize);
+				}
 				this.triggerHelper('widgetLoaded');
 			}
 		},
-
 		/**
 		 * Add a black thumbnail layer on top of the player
 		 */
@@ -2771,7 +2793,7 @@
 			// update the mute state from the player element
 			if (_this.muted != _this.getPlayerElementMuted() && !_this.isStopped()) {
 				mw.log("EmbedPlayer::syncVolume: muted does not mach embed player");
-				_this.toggleMute();
+                _this.toggleMute();
 				// Make sure they match:
 				_this.muted = _this.getPlayerElementMuted();
 			}

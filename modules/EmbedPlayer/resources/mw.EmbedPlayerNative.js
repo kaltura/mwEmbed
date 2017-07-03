@@ -43,6 +43,9 @@
 		// A local var to store the current seek target time:
 		currentSeekTargetTime: null,
 
+		// A local var to store the current audio track index:
+		audioTrackIndex: null,
+
 		// Flag for ignoring next native error we get from the player.
 		ignoreNextError: false,
 
@@ -56,6 +59,7 @@
 
 		// Flag specifying if a mobile device already played. If true - mobile device can autoPlay
 		mobilePlayed: false,
+		mobileAutoPlay:false,
 		// All the native events per:
 		// http://www.w3.org/TR/html5/video.html#mediaevents
 		nativeEvents: [
@@ -100,9 +104,20 @@
 				this.getPlayerElement().removeAttribute("poster");
 			}
 			$(this.getPlayerElement()).css('position', 'absolute');
+
 			if (this.inline) {
 				$(this.getPlayerElement()).attr('playsinline', '');
 			}
+
+            if ( (mw.isMobileDevice() || mw.isIpad()) && mw.getConfig( 'mobileAutoPlay' ) ) {
+                if ( !mw.isIphone() && this.inline ) {
+                    this.inline = false;
+                    $( this.getPlayerElement() ).removeAttr( 'playsinline' );
+                }
+                this.mobileAutoPlay = true;
+                this.setVolume( 0 );
+            }
+
             this.addBindings();
             readyCallback();
 
@@ -117,6 +132,21 @@
 		},
         addBindings: function(){
             var _this = this;
+            function checkMobileAutoPlay() {
+                if ( _this.mobileAutoPlay ) {
+                    _this.mobileAutoPlay = false;
+                    _this.setVolume( 1 );
+                }
+            }
+            this.bindHelper( 'userInitiatedPause' + this.bindPostfix, function () {
+                checkMobileAutoPlay();
+            } );
+            this.bindHelper( 'userInitiatedSeek' + this.bindPostfix, function () {
+                checkMobileAutoPlay();
+            } );
+            this.bindHelper( 'onOpenFullScreen' + this.bindPostfix, function () {
+                checkMobileAutoPlay();
+            } );
             this.bindHelper('firstPlay' + this.bindPostfix, function(){
                 _this.parseTracks();
             });
@@ -128,6 +158,7 @@
                     _this.resetSrc = true;
                 }
             });
+	        this.bindHelper("changeEmbeddedTextTrack", this.onSwitchTextTrack.bind(this));
         },
 
 		removeBindings: function(){
@@ -272,9 +303,16 @@
 		/**
 		 * returns true if device can auto play
 		 */
-		canAutoPlay: function () {
-			return (!mw.isAndroid() && !mw.isMobileChrome() && !mw.isIOS()) || this.mobilePlayed;
-		},
+        canAutoPlay: function () {
+            if ( mw.isMobileDevice() ) {
+                var playsinline = true;
+                if ( mw.isIphone() ) {
+                    playsinline = this.inline;
+                }
+                return (this.mobileAutoPlay && playsinline) || this.mobilePlayed;
+            }
+            return true;
+        },
 
 		/**
 		 * Post element javascript, binds event listeners and starts monitor
@@ -573,6 +611,49 @@
             }
         },
 		/**
+		 * Selects default caption track for native player
+		 *
+		 * @param {String}
+		 *             Default language key.
+		 */
+		selectDefaultCaption: function (defaultLangKey) {
+			var textTracks = this.getPlayerElement().textTracks;
+			if (this.isTextTrackSelected(textTracks)) {
+				return true;
+			}
+			this.showDefaultTextTrack(textTracks, defaultLangKey);
+		},
+		/**
+		 * Check if default caption track is selected on Native player
+		 *
+		 * @param {Array}
+		 *             Text tracks array.
+		 * @returns {boolean}
+		 */
+		isTextTrackSelected: function (textTracks) {
+			for (var i=0; textTracks.length > i; i++) {
+				if (textTracks[i].mode == "showing") {
+					return true;
+				}
+			}
+			return false;
+		},
+		/**
+		 * Show default text track
+		 *
+		 * @param {Array}
+		 *            Text tracks array.
+		 * @param {String}
+		 *            Default language key
+		 */
+		showDefaultTextTrack: function (textTracks, defaultLangKey) {
+			$.each( textTracks, function( inx, caption) {
+				if (caption.language == defaultLangKey) {
+					caption.mode = "showing";
+				}
+			});
+		},
+		/**
 		 * playerSwitchSource switches the player source working around a few bugs in browsers
 		 *
 		 * @param {Object}
@@ -821,7 +902,6 @@
 			if (this.playerElement) { // update player
 				this.playerElement.pause();
 			}
-
 		},
 
 		/**
@@ -1355,9 +1435,12 @@
 		backToLive: function () {
             var _this = this;
 			var vid = this.getPlayerElement();
+			$(vid).one('loadeddata', function () {
+				this.switchAudioTrack(this.audioTrackIndex);
+			}.bind(this));
 			vid.load();
 			vid.play();
-			this.parseTracks();
+			this.parseTextTracks(vid, 0);
             setTimeout( function() {
                 _this.triggerHelper('movingBackToLive'); //for some reason on Mac the isLive client response is a little bit delayed, so in order to get update liveUI properly, we need to delay "movingBackToLive" helper
             }, 1000 );
@@ -1403,20 +1486,34 @@
         parseTracks: function(){
             var vid = this.getPlayerElement();
             this.parseAudioTracks(vid, 0); //0 is for a setTimer counter. Try to catch audioTracks, give up after 5 seconds
-            if(this.isLive()) {
-                this.parseTextTracks(vid, 0); //0 is for a setTimer counter. Try to catch textTracks.kind === "metadata", give up after 10 seconds
-            }
+            this.parseTextTracks(vid, 0); //0 is for a setTimer counter. Try to catch textTracks, give up after 10 seconds
         },
         parseTextTracks: function(vid, counter){
             var _this = this;
 	        this.parseTextTracksTimeout = setTimeout(function() {
                 if( vid.textTracks.length > 0 ) {
+	                var textTracksData = {languages: []};
                     for (var i = 0; i < vid.textTracks.length; i++) {
-                        if (vid.textTracks[i].kind === "metadata") {
-                            //add id3 tags support
-                            _this.id3Tag(vid.textTracks[i]);
-                            vid.textTracks[i].mode = "hidden";
-                        }
+                    	var textTrack = vid.textTracks[i];
+	                    if (textTrack.kind === 'metadata') {
+		                    //add id3 tags support
+		                    _this.id3Tag(textTrack);
+	                    } else if (textTrack.kind === 'subtitles' || textTrack.kind === 'caption') {
+		                    textTracksData.languages.push({
+			                    'kind': 'subtitle',
+			                    'language': textTrack.label,
+			                    'srclang': textTrack.label,
+			                    'label': textTrack.label,
+			                    'title': textTrack.label,
+			                    'id': textTrack.id,
+			                    'index': i
+		                    });
+	                    }
+	                    textTrack.mode = 'hidden';
+                    }
+                    if (textTracksData.languages.length) {
+	                    mw.log('EmbedPlayerNative:: ' + textTracksData.languages.length + ' subtitles were found: ', textTracksData.languages);
+	                    _this.triggerHelper('textTracksReceived', textTracksData);
                     }
                 }else{
                     //try to catch textTracks.kind === "metadata, give up after 10 seconds
@@ -1450,6 +1547,7 @@
         },
         parseAudioTracks: function(vid, counter){
             var _this = this;
+	        this.audioTrackIndex = null;
 	        this.parseAudioTracksTimeout = setTimeout (function() {
                 if( vid.audioTracks && vid.audioTracks.length > 0 ) {
                     var data ={'languages':[]};
@@ -1503,7 +1601,38 @@
 				} else {
 					audioTracks[audioTrackIndex].enabled = true;
 				}
+				this.audioTrackIndex = audioTrackIndex;
 			}
+		},
+		onSwitchTextTrack: function (event, data) {
+			var vid = this.getPlayerElement();
+			var textTracks = vid.textTracks;
+			if (textTracks && textTracks.length) {
+				if (!data) {
+					var activeSubtitle = this.getActiveSubtitle(textTracks);
+					if (activeSubtitle) {
+						activeSubtitle.mode = 'hidden';
+						this.log('onSwitchTextTrack disable subtitles');
+					}
+				} else {
+					var selectedSubtitle = textTracks[data.index];
+					if (selectedSubtitle) {
+						selectedSubtitle.mode = 'showing';
+						mw.log('EmbedPlayerNative::onSwitchTextTrack switch to ', selectedSubtitle);
+					}
+				}
+			}
+		},
+		getActiveSubtitle: function (textTracks) {
+			if (textTracks) {
+				for (var i = 0; i < textTracks.length; i++) {
+					var textTrack = textTracks[i];
+					if (textTrack.mode === 'showing' && (textTrack.kind === 'subtitles' || textTrack.kind === 'caption')) {
+						return textTrack;
+					}
+				}
+			}
+			return null;
 		},
         getCurrentBufferLength: function(){
             if ( this.playerElement.buffered.length > 0 ) {
@@ -1513,6 +1642,7 @@
         },
 
 		clean:function(){
+			this.audioTrackIndex = null;
 			this.removeBindings();
 			clearTimeout(this.parseAudioTracksTimeout);
 			clearTimeout(this.parseTextTracksTimeout);

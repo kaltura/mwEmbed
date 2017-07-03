@@ -387,8 +387,10 @@
             };
 
             var getNextComponentToShow = function (importanceLevel) {
-                var $s = $container.children('.display-' + importanceLevel + ':hidden');
-                while ($s.length) {
+	            var $s = $container.children('.display-' + importanceLevel).filter(function () {
+		            return this.style.display === 'none';
+	            });
+	            while ($s.length) {
                     var $first = $s.first();
                     if ($first.data('forceHide')) {
                         $s = $s.slice(1);

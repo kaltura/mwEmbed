@@ -1,0 +1,91 @@
+<html>
+<head>
+    <title>polls demo - user2</title>
+    <script type="text/javascript" src="/html5.kaltura/mwEmbed/tests/qunit/qunit-bootstrap.js"></script>
+    <script type="text/javascript" src="/html5.kaltura/mwEmbed/mwEmbedLoader.php"></script>
+    <script type="text/javascript" src="/html5.kaltura/mwEmbed/docs/js/doc-bootstrap.js"></script>
+    <script type="text/javascript" src="config.js"></script>
+    <style>
+        .fwd{
+            background-color: #72db7b;
+        }
+        .bwd{
+            background-color: #db71db;
+        }
+    </style>
+    <meta charset=UTF-8>
+</head>
+<body>
+<h1>polls demo - user 2</h1>
+<br>
+<button onclick="toggleMenu()">openSlidesMenu</button>
+<button onclick="seekTo(7073)">answerOnAir</button>
+<button onclick="seekTo(143)">143</button>
+<button class="bwd" onclick="seekRelative(-15)">-15s</button>
+<button class="fwd" onclick="seekRelative(15)">+15s</button>
+<button class="bwd" onclick="seekRelative(-30)">-30</button>
+<button class="fwd" onclick="seekRelative(30)">+30s</button>
+<button class="bwd" onclick="seekRelative(-180)">-3m</button>
+<button class="fwd" onclick="seekRelative(180)">+3m</button>
+<a href="index.html">User 1 test page</a>
+<div id="kaltura_player" style="width: 885px; height: 630px;float: left;"></div>
+<div id="qnaListHolder" style="width: 220px; height: 330px; float:left; float: left"></div>
+<br style="clear: both;"/><br/>
+
+<script>
+
+	var ks = this.user2Ks;
+	qna.userId = this.user2;
+
+	paramFromUrl("ks");
+	paramFromUrl("wid");
+	paramFromUrl("entry");
+	paramFromUrl("playerId");
+
+	kWidget.addReadyCallback(function (playerId) {
+		kdp = document.getElementById(playerId);
+
+		kdp.kBind('playerReady', function () {
+			setTimeout(function () {
+				//
+			}, 1000)
+		})
+	});
+
+
+	kWidget.featureConfig({
+		'targetId': 'kaltura_player',
+		'wid': wid,
+		'uiconf_id': playerId,
+		'flashvars': {
+			'autoPlay': true,
+			"dualScreen": {
+				"plugin": true
+			},
+			"chapters": {
+				"plugin": true
+			},
+			"topBarContainer": {
+				"plugin": true
+			},
+			"sideBarContainer": {
+				"plugin": true
+			},
+			"IframeCustomPluginCss1": "pin-chapters.css",
+			'qna': qna,
+			'ks': ks,
+			"webcastPolls": {
+				"plugin": true,
+				"userId": this.user2,
+				"userRole": "unmoderatedAdminRole"
+			},
+			"EmbedPlayer.LiveCuepoints": true
+		},
+		'entry_id': entry// vod : 1_bzr97hax | live : 1_afjmm4ie
+	});
+
+
+</script>
+
+</body>
+</html>

@@ -1075,6 +1075,9 @@ body {
 }
 .mobileSkin.size-tiny .alert-container{
     padding-top: 10px;
+	width: 80%;
+	max-height: 70% !important;
+	margin-top: 0px;
 }
 .alert {
 	display: table-cell;
@@ -2015,6 +2018,10 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
     top: -0.5em;
     position: absolute;
     -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+#flagComments.validationError{
+	outline: none;
+	border:1px solid red;
 }
 .reportButton{
     width: 100px;

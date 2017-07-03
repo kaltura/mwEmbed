@@ -1,8 +1,7 @@
 (function (mw, $, shaka) {
 	"use strict";
-	if (!window.Promise) {
-		shaka.polyfill.installAll();
-	}
+	shaka.polyfill.installAll();
+
 	if (shaka.Player.isBrowserSupported() &&
 		!mw.getConfig("EmbedPlayer.ForceNativeComponent") &&
 		!mw.isDesktopSafari() &&
@@ -47,7 +46,7 @@
 				this.bind("SourceChange", this.isNeeded.bind(this));
 				this.bind("playerReady", this.initShaka.bind(this));
 				this.bind("switchAudioTrack", this.onSwitchAudioTrack.bind(this));
-				this.bind("selectClosedCaptions", this.onSwitchTextTrack.bind(this));
+				this.bind("changeEmbeddedTextTrack", this.onSwitchTextTrack.bind(this));
 				this.bind("onChangeMedia", this.clean.bind(this));
 			},
 
@@ -57,7 +56,6 @@
 			isNeeded: function () {
 				if (this.getPlayer().mediaElement.selectedSource.mimeType === "application/dash+xml") {
 					this.LoadShaka = true;
-					this.embedPlayer.streamerType = 'http';
 				} else {
 					this.LoadShaka = false;
 				}
@@ -141,6 +139,8 @@
 			},
 
 			createPlayer: function () {
+                //Reinstall the polyfills to make sure they weren't ran over by others(VTT.js runs over VTTCue polyfill)
+				shaka.polyfill.installAll();
 				// Create a Player instance.
 				var player = new shaka.Player(this.getPlayer().getPlayerElement());
 
@@ -200,17 +200,32 @@
 				this.addSubtitleTracks();
 			},
 
-			getTracksByType: function (trackType) {
-				var tracks = player.getTracks().filter(function (track) {
-					return track.type == trackType;
+			getVideoTracks: function () {
+				var variantTracks = player.getVariantTracks();
+				var activeVariantTrack = variantTracks.filter(function (variantTrack) {
+					return variantTrack.active;
+				})[0];
+				var videoTracks = variantTracks.filter(function (variantTrack) {
+					return variantTrack.audioId === activeVariantTrack.audioId;
 				});
-				return tracks;
+				return videoTracks;
+			},
+
+			getAudioTracks: function () {
+				var variantTracks = player.getVariantTracks();
+				var activeVariantTrack = variantTracks.filter(function (variantTrack) {
+					return variantTrack.active;
+				})[0];
+				var audioTracks = variantTracks.filter(function (variantTrack) {
+					return variantTrack.videoId === activeVariantTrack.videoId;
+				});
+				return audioTracks;
 			},
 
 			addAbrFlavors: function () {
-				var videoTracks = this.getTracksByType("video");
+				var videoTracks = this.getVideoTracks();
 				if (videoTracks && videoTracks.length > 0) {
-					var flavors = videoTracks.map(function (rep) {
+					var flavors = videoTracks.map(function (rep, index) {
 						var sourceAspect = Math.round(( rep.width / rep.height ) * 100) / 100;
 						// Setup a source object:
 						return {
@@ -219,7 +234,8 @@
 							'data-height': rep.height,
 							'data-aspect': sourceAspect,
 							'type': 'video/mp4',
-							'data-assetid': rep.id
+							'data-assetid': rep.id,
+							'data-flavorid': index
 						};
 					});
 					mw.log("Dash::" + videoTracks.length + " ABR flavors were found: ", videoTracks);
@@ -229,7 +245,7 @@
 			},
 
 			addAudioTracks: function () {
-				var audioTracks = this.getTracksByType("audio");
+				var audioTracks = this.getAudioTracks();
 				if (audioTracks && audioTracks.length > 0) {
 					var audioTrackData = {languages: []};
 					var audioTrackLangs = {};
@@ -240,7 +256,7 @@
 								'kind': 'audioTrack',
 								'language': audioTrack.language,
 								'srclang': audioTrack.language,
-								'label': audioTrack.language,
+								'label': audioTrack.label || audioTrack.language,
 								'title': audioTrack.language,
 								'id': audioTrack.id,
 								'index': audioTrackData.languages.length
@@ -258,7 +274,7 @@
 			},
 
 			addSubtitleTracks: function () {
-				var textTracks = this.getTracksByType("text");
+				var textTracks = player.getTextTracks();
 				if (textTracks && textTracks.length > 0) {
 					var textTrackData = {languages: []};
 					$.each(textTracks, function (index, subtitleTrack) {
@@ -266,7 +282,7 @@
 							'kind': 'subtitle',
 							'language': subtitleTrack.language,
 							'srclang': subtitleTrack.language,
-							'label': subtitleTrack.language,
+							'label': subtitleTrack.label || subtitleTrack.language,
 							'title': subtitleTrack.language,
 							'id': subtitleTrack.id,
 							'index': textTrackData.languages.length
@@ -291,11 +307,10 @@
 			 */
 			switchSrc: function (source) {
 				if (source !== -1) {
-					var selectedAbrTrack = this.getTracksByType("video").filter(function (abrTrack) {
-						return abrTrack.id === source.getAssetId();
-					})[0];
+					var selectedAbrTrack = this.getVideoTracks()[source.flavorid];
 					if (selectedAbrTrack) {
-						player.selectTrack(selectedAbrTrack, false);
+						player.configure({abr:{enabled: false}});
+						player.selectVariantTrack(selectedAbrTrack, false);
 						this.getPlayer().triggerHelper("sourceSwitchingStarted", this.currentBitrate);
 						var _this = this;
 						setTimeout(function () {
@@ -304,11 +319,7 @@
 						mw.log("Dash::switchSrc to ", selectedAbrTrack);
 					}
 				} else { // "Auto" option is selected
-					player.configure({
-						abr: {
-							enabled: true
-						}
-					});
+					player.configure({abr:{enabled: true}});
 					this.log("switchSrc to Auto");
 				}
 			},
@@ -356,24 +367,22 @@
 
 			onSwitchAudioTrack: function (event, data) {
 				if (this.loaded) {
-					var selectedAudioTracks = this.getTracksByType("audio")[data.index];
-					player.configure({
-						preferredAudioLanguage: selectedAudioTracks.language
-					});
+					var selectedAudioTracks = this.getAudioTracks()[data.index];
+					player.selectAudioLanguage(selectedAudioTracks.language);
 					mw.log("Dash::onSwitchAudioTrack switch to ", selectedAudioTracks);
 				}
 			},
 
 			onSwitchTextTrack: function (event, data) {
 				if (this.loaded) {
-					if (data === "Off") {
+					if (!data) {
 						player.setTextTrackVisibility(false);
 						this.log("onSwitchTextTrack disable subtitles");
 					} else {
-						player.configure({
-							preferredTextLanguage: data
-						});
-						this.log("onSwitchTextTrack switch to " + data);
+						var selectedTextTracks = player.getTextTracks()[data.index];
+						player.setTextTrackVisibility(true);
+						player.selectTextTrack(selectedTextTracks, false);
+						mw.log("Dash::onSwitchTextTrack switch to ", selectedTextTracks);
 					}
 				}
 			},
@@ -418,6 +427,29 @@
 				}
 			},
 
+			updatePlayheadStatus: function () {
+				var embedPlayer = this.getPlayer();
+				if ( embedPlayer.isLive() && embedPlayer.isDVR() ) {
+					// embedPlayer.duration is irrelevant for dash live, we have to calculate the playHeadPercent via player.seekRange().end instead.
+					if ( embedPlayer.currentTime >= 0 && embedPlayer.duration && !embedPlayer.userSlide && !embedPlayer.seeking ) {
+						var delta = player.seekRange().end - embedPlayer.currentTime;
+						var playHeadPercent = ( embedPlayer.duration - delta ) / embedPlayer.duration;
+						embedPlayer.updatePlayHead(playHeadPercent);
+						//update liveEdgeOffset
+						if (embedPlayer.isDVR()) {
+							var perc = parseInt(playHeadPercent * 1000);
+							if (perc > 998) {
+								embedPlayer.liveEdgeOffset = 0;
+							} else {
+								embedPlayer.liveEdgeOffset = embedPlayer.duration - perc / 1000 * embedPlayer.duration;
+							}
+						}
+					}
+				} else {
+					this.orig_updatePlayheadStatus.call(embedPlayer);
+				}
+			},
+
 			onErrorEvent: function (event) {
 				// Extract the shaka.util.Error object from the event.
 				this.onError(event.detail);
@@ -428,14 +460,17 @@
 			 * @param event
 			 */
 			onError: function (error) {
-				var errorMessage = error.name === "TypeError" ? error.stack : JSON.stringify(error);
-				var errorObj = {
-					message: errorMessage
-				};
-				if (error.category) {
-					errorObj.code = error.category + "000";
+				if (error.code !== 4012) {
+					// workaround for shaka bug https://github.com/google/shaka-player/issues/912
+					var errorMessage = error.name === "TypeError" ? error.stack : JSON.stringify(error);
+					var errorObj = {
+						message: errorMessage
+					};
+					if (error.category) {
+						errorObj.code = error.category + "000";
+					}
+					this.getPlayer().triggerHelper('embedPlayerError', errorObj);
 				}
-				this.getPlayer().triggerHelper('embedPlayerError', errorObj);
 				mw.log("Dash::Error: ", error);
 			},
 
@@ -470,8 +505,8 @@
 			},
 
 			onAdaptation: function () {
-				var selectedAbrTrack = this.getTracksByType("video").filter(function (abrTrack) {
-					return abrTrack.active;
+				var selectedAbrTrack = this.getVideoTracks().filter(function (videoTrack) {
+					return videoTrack.active;
 				})[0];
 				if (selectedAbrTrack) {
 					var currentBitrate = Math.round(selectedAbrTrack.bandwidth / 1024);
@@ -495,6 +530,7 @@
 				this.orig_ondurationchange = this.getPlayer()._ondurationchange;
 				this.orig_backToLive = this.getPlayer().backToLive;
 				this.orig_doSeek = this.getPlayer().doSeek;
+				this.orig_updatePlayheadStatus = this.getPlayer().updatePlayheadStatus;
                 this.orig_clean = this.getPlayer().clean;
                 this.getPlayer().switchSrc = this.switchSrc.bind(this);
 				this.getPlayer().playerSwitchSource = this.playerSwitchSource.bind(this);
@@ -504,6 +540,7 @@
 				this.getPlayer()._ondurationchange = this._ondurationchange.bind(this);
 				this.getPlayer().backToLive = this.backToLive.bind(this);
 				this.getPlayer().doSeek = this.doSeek.bind(this);
+				this.getPlayer().updatePlayheadStatus = this.updatePlayheadStatus.bind(this);
                 this.getPlayer().clean = this.clean.bind(this);
             },
 			/**
@@ -518,6 +555,7 @@
 				this.getPlayer()._ondurationchange = this.orig_ondurationchange;
 				this.getPlayer().backToLive = this.orig_backToLive;
 				this.getPlayer().doSeek = this.orig_doSeek;
+				this.getPlayer().updatePlayheadStatus = this.orig_updatePlayheadStatus;
                 this.getPlayer().clean = this.orig_clean;
             }
 		});

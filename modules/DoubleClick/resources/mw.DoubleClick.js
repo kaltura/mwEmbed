@@ -437,7 +437,13 @@
             }
             // Initialize the ads manager. In case of ad playlist with a preroll, the preroll will start playing immediately.
             this.adsManager.init( this.embedPlayer.getWidth(), this.embedPlayer.getHeight(), google.ima.ViewMode.NORMAL );
-            this.adsManager.setVolume( this.embedPlayer.getPlayerElementVolume() );
+
+            // If we're on mobile autoPlay we will start the ad muted just for the first entry
+            if ( this.embedPlayer.mobileAutoPlay ) {
+                this.adsManager.setVolume( 0 );
+            } else {
+                this.adsManager.setVolume( this.embedPlayer.getPlayerElementVolume() );
+            }
             // Start the ad playback. For video and overlay ads, this will start the ads. For automatic ad rules controller ads, this will be ignored.
             mw.log( "DoubleClick::adsManager.play" );
             this.adsManager.start();
@@ -631,7 +637,6 @@
                 }
             }
             $( this.embedPlayer ).trigger( "onPlayerStateChange", [ "pause", this.embedPlayer.currentState ] );
-
             if ( isLinear && !this.isNativeSDK ) {
                 this.clearSkipTimeout();
                 this.embedPlayer.enablePlayControls( [ "scrubber", "share", "infoScreen", "related", "playlistAPI", "nextPrevBtn", "sourceSelector", "qualitySettings", "morePlugins" ] );
@@ -647,6 +652,12 @@
                 } else {
                     _this.embedPlayer.getPlayerElement().pause();
                 }
+            }
+            if ( this.embedPlayer.mobileAutoPlay ) {
+                if (!mw.isAndroid()) {
+                    this.embedPlayer.mobileAutoPlay = false;
+                }
+                this.adsManager.setVolume( 1 );
             }
         },
 
@@ -764,6 +775,10 @@
                             e.stopPropagation();
                             e.preventDefault();
                             $( _this.embedPlayer ).trigger( 'onAdSkip' );
+                            if ( _this.embedPlayer.mobileAutoPlay && !mw.isAndroid()) {
+                                _this.embedPlayer.mobileAutoPlay = false;
+                                _this.embedPlayer.setVolume( 1 );
+                            }
                             if ( _this.adPaused ) {
                                 _this.resumeAd( _this.isLinear );
 								//Make sure to kill any timeout so button won't reappear
@@ -1159,7 +1174,12 @@
                 }
                 var size = _this.getPlayerSize();
                 _this.adsManager.resize( size.width, size.height, google.ima.ViewMode.NORMAL );
-                _this.adsManager.setVolume( _this.embedPlayer.getPlayerElementVolume() );
+
+                // If the player volume has been changed since the last ad we need to update the volume for the current ad
+                if ( typeof _this.savedVolume === 'number') {
+                    _this.adsManager.setVolume( _this.savedVolume );
+                }
+
                 if ( _this.isLinear ) {
                     // Hide player content
                     _this.hideContent();
@@ -1563,6 +1583,8 @@
                 if ( _this.adActive ) {
                     mw.log( "DoubleClick::volumeChanged:" + percent );
                     _this.adsManager.setVolume( percent );
+                } else {
+                    _this.savedVolume = percent;
                 }
             } );
 
@@ -1782,6 +1804,7 @@
                     this.embedPlayer.getPlayerElement().sendNotification( 'destroy' );
                 }
             }
+            this.savedVolume = null;
             this.contentDoneFlag = false;
         }
     };

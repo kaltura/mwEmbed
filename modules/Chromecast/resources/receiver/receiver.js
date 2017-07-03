@@ -72,6 +72,9 @@ var mediaElement;
  * The receiver's embed player flashvars.
  */
 var receiverFlashVars = {
+    "skipBtn": {
+        'plugin': false
+    },
     "currentTimeLabel": {
         'plugin': false
     },
@@ -203,9 +206,6 @@ function startReceiver() {
     mediaManager.onErrorOrig = mediaManager.onError.bind( mediaManager );
     mediaManager.onError = onError.bind( this );
 
-    mediaManager.customizedStatusCallbackOrig = mediaManager.customizedStatusCallback;
-    mediaManager.customizedStatusCallback = customizedStatusCallback.bind( this );
-
     // Init message bus and setting his event
     messageBus = receiverManager.getCastMessageBus( 'urn:x-cast:com.kaltura.cast.player' );
     messageBus.onMessage = onMessage.bind( this );
@@ -217,19 +217,6 @@ function startReceiver() {
 }
 
 /***** Media Manager Events *****/
-
-// TODO: Remove this workaround when Google will handle the remotePlayer issue
-// TODO: https://code.google.com/p/google-cast-sdk/issues/detail?id=1104&q=remotePlayer
-/* -----> */
-function customizedStatusCallback( mediaStatus ) {
-    if ( mediaStatus.playerState === StateManager.State.IDLE ) {
-        if ( mediaStatus.idleReason === 'FINISHED' || mediaStatus.idleReason === 'CANCELED' || mediaStatus.idleReason === 'INTERRUPTED' ) {
-            mediaStatus.idleReason = null;
-        }
-    }
-    return mediaStatus;
-}
-/* <----- */
 
 /**
  * Override callback for media manager onError.
@@ -310,7 +297,7 @@ function onLoad( event ) {
     // If the sender send us the media metadata, we start to load it.
     // else, we will wait until onloadmetadata will raise and then we will load it our self.
     if ( event.data.media.metadata ) {
-        loadMetadataPromise = ReceiverUtils.loadMediaMetadata( event.data.media.metadata, true );
+        loadMetadataPromise = ReceiverUtils.loadMediaMetadata( event.data.media.metadata );
     }
 
     // Player not initialized yet
@@ -347,7 +334,7 @@ function playNextMedia( mediaConfig ) {
     loadMetadataOnScreen();
 
     // If same entry is sent then reload, else perform changeMedia
-    if ( kdp.evaluate( '{mediaProxy.entry.id}' ) === mediaConfig.entryID ) {
+    if ( kdp.evaluate( '{mediaProxy.entry.id}' ) === mediaConfig.entryID && !ReceiverQueueManager.isQueueActive() ) {
         doReplay( mediaConfig );
     } else {
         doChangeMedia( mediaConfig );
@@ -361,7 +348,6 @@ function configure( config ) {
     if ( config ) {
         ReceiverLogger.log( "MediaManager", "configure", config );
         ReceiverStateManager.configure( config );
-        ReceiverQueueManager.configure( config );
     }
 }
 
@@ -389,16 +375,12 @@ function doChangeMedia( embedConfig ) {
         $( window ).trigger( "onReceiverChangeMedia", true );
         kdp.setKDPAttribute( 'doubleClick', 'adTagUrl', embedConfig.flashVars.doubleClick.adTagUrl );
 
-    } else if ( !adsPluginEnabledNow && adsPluginEnabledNext ) {
-        ReceiverLogger.log( "MediaManager", "doChangeMedia - before: no ads, now: ads" );
-        // Seems that this scenario is not possible right now
-        // Play without ads here also
+    } else {
+        if ( adsPluginEnabledNow && !adsPluginEnabledNext ) {
+            ReceiverLogger.log( "MediaManager", "doChangeMedia - before: ads, now: no ads" );
+            kdp.setKDPAttribute( 'doubleClick', 'adTagUrl', '' );
+        }
         $( window ).trigger( "onReceiverChangeMedia", false );
-
-    } else if ( adsPluginEnabledNow && !adsPluginEnabledNext ) {
-        ReceiverLogger.log( "MediaManager", "doChangeMedia - before: ads, now: no ads" );
-        $( window ).trigger( "onReceiverChangeMedia", false );
-        kdp.setKDPAttribute( 'doubleClick', 'adTagUrl', '' );
     }
     if ( embedConfig.flashVars && embedConfig.flashVars.proxyData ) {
         kdp.sendNotification( "changeMedia", {
