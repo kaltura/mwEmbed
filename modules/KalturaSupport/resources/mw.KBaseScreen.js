@@ -44,12 +44,12 @@
 				_this.error = false;
 			}, this));
 			this.bind('showScreenByName', $.proxy(function (e, screenName) {
-				if(this.pluginName == screenName && this.isScreenVisible()){
+				if(this.pluginName == screenName && !this.isScreenVisible()){
 					this.showScreen();
 				}
 			}, this));
 			this.bind('hideScreenByName', $.proxy(function (e, screenName) {
-				if(this.pluginName == screenName && !this.isScreenVisible()){
+				if(this.pluginName == screenName && this.isScreenVisible()){
 					this.hideScreen();
 				}
 			}, this));
