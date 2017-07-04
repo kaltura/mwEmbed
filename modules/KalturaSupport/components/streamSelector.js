@@ -213,14 +213,16 @@
 				_this.setStream(_this.getDefaultStream());
 				_this.setActiveMenuItem();
 			});
-			// Add S Sigh for open menu
-			addKeyCallback(this.getConfig("keyboardShortcutsMap" ).openMenu, function () {
-				_this.getMenu().open();
-			});
-			// Add Shift+S Sigh for close menu
-			addKeyCallback(this.getConfig("keyboardShortcutsMap" ).closeMenu, function () {
-				_this.getMenu().close();
-			});
+			if ( !_this.getPlayer().playerConfig.plugins.video360.plugin ) {
+				// Add S Sigh for open menu
+				addKeyCallback(this.getConfig("keyboardShortcutsMap" ).openMenu, function () {
+					_this.getMenu().open();
+				});
+				// Add Shift+S Sigh for close menu
+				addKeyCallback(this.getConfig("keyboardShortcutsMap" ).closeMenu, function () {
+					_this.getMenu().close();
+				});
+			}
 		},
 		getNextStream: function () {
 			if (this.streams[this.getCurrentStreamIndex() + 1]) {
