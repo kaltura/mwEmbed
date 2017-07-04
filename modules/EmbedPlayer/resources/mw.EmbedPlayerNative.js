@@ -618,7 +618,7 @@
 		 */
 		selectDefaultCaption: function (defaultLangKey) {
 			var textTracks = this.getPlayerElement().textTracks;
-			if (this.isTextTrackSelected(textTracks)) {
+			if (this.isTextTrackSelected(textTracks, defaultLangKey)) {
 				return true;
 			}
 			this.showDefaultTextTrack(textTracks, defaultLangKey);
@@ -630,9 +630,9 @@
 		 *             Text tracks array.
 		 * @returns {boolean}
 		 */
-		isTextTrackSelected: function (textTracks) {
+		isTextTrackSelected: function (textTracks, defaultLangKey) {
 			for (var i=0; textTracks.length > i; i++) {
-				if (textTracks[i].mode == "showing") {
+				if (textTracks[i].mode === "showing" && textTracks[i].language === defaultLangKey) {
 					return true;
 				}
 			}
@@ -648,7 +648,10 @@
 		 */
 		showDefaultTextTrack: function (textTracks, defaultLangKey) {
 			$.each( textTracks, function( inx, caption) {
-				if (caption.language == defaultLangKey) {
+				caption.mode = "hidden";
+			});
+			$.each( textTracks, function( inx, caption) {
+				if (caption.language === defaultLangKey) {
 					caption.mode = "showing";
 				}
 			});
