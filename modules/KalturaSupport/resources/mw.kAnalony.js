@@ -37,7 +37,7 @@
 		bufferTime : 0,
 		eventIndex : 1,
 		currentBitRate: -1,
-		currentFlavourId: -1,
+		currentflavorId: -1,
 		eventType: 1,
 		firstPlay: true,
 		viewEventInterval: null,
@@ -92,7 +92,8 @@
 			this.eventIndex = 1;
 			this.bufferTime = 0;
 			this.currentBitRate = -1;
-			this.addBindings();
+            this.entryPlayCounter = 0;
+            this.addBindings();
 	    },
 
 		addBindings : function() {
@@ -100,7 +101,14 @@
 			var playerEvent = this.PlayerEvent;
 			this.embedPlayer.bindHelper( 'playerReady' , function () {
 				_this.resetPlayerflags();
-		        if ( _this.kalturaContextData && _this.kalturaContextData.flavorAssets && _this.kalturaContextData.flavorAssets.length === 1 ){
+				//If the entryId has changed then add
+                var entryId = _this.getPlayer().kentryid;
+				if (_this.currentEntryId !== entryId) {
+                    _this.entryPlayCounter = ++_this.entryPlayCounter;
+                }
+                //Update the currently playing entry ID
+                _this.currentEntryId = entryId;
+                if ( _this.kalturaContextData && _this.kalturaContextData.flavorAssets && _this.kalturaContextData.flavorAssets.length === 1 ){
 			        _this.currentBitRate = _this.kalturaContextData.flavorAssets[0].bitrate;
 		        }
 				_this.sendAnalytics(playerEvent.IMPRESSION);
@@ -203,8 +211,8 @@
 				_this.sendAnalytics(playerEvent.CAPTIONS, { "caption": language});
 			});
 
-			this.embedPlayer.bindHelper( 'newSourceSelected' , function (e, flavourId) {
-				_this.sendAnalytics(playerEvent.SOURCE_SELECTED, { "flavourId": flavourId});
+			this.embedPlayer.bindHelper( 'newSourceSelected' , function (e, flavorId) {
+				_this.sendAnalytics(playerEvent.SOURCE_SELECTED, { "flavorId": flavorId});
 			});
 
 			this.embedPlayer.bindHelper( 'infoScreenOpen' , function () {
@@ -245,7 +253,7 @@
 					_this.currentBitRate = source.getBitrate();
 				}
 				if (source.getAssetId()){
-					_this.currentFlavourId = source.getAssetId();
+					_this.currentflavorId = source.getAssetId();
 				}
 			});
 
@@ -343,7 +351,14 @@
 			},_this.reportingInterval,_this.monitorIntervalObj);
 
 		},
+		getEntrySessionId: function(){
+			return this.embedPlayer.evaluate('{configProxy.sessionId}') + "-" + this.entryPlayCounter;
+		},
 		sendAnalytics : function(eventType, additionalData){
+			//Don't send analytics if entry or partner id are missing
+			if (!(this.embedPlayer.kentryid && this.embedPlayer.kpartnerid)){
+				return;
+			}
 			var _this = this;
 			this.calculateBuffer(true);
 			this.kClient = mw.kApiGetPartnerClient( this.embedPlayer.kwidgetid );
@@ -366,12 +381,12 @@
 				'entryId'           : this.embedPlayer.kentryid,
 				'partnerId'         : this.embedPlayer.kpartnerid,
 				'eventType'         : eventType,
-				'sessionId'         : this.embedPlayer.evaluate('{configProxy.sessionId}'),
+				'sessionId'         : this.getEntrySessionId(),
 				'eventIndex'        : this.eventIndex,
 				'bufferTime'        : this.bufferTime,
 				'actualBitrate'     : this.currentBitRate,
-				'flavourId'         : this.currentFlavourId,
-				'referrer'          : encodeURIComponent( mw.getConfig('EmbedPlayer.IframeParentUrl') ),
+				'flavorId'          : this.currentflavorId,
+				'referrer'          : mw.getConfig('EmbedPlayer.IframeParentUrl'),
 				'deliveryType'      : this.embedPlayer.streamerType,
 				'sessionStartTime'  : this.startTime,
 				'uiConfId'          : this.embedPlayer.kuiconfid,
@@ -379,6 +394,18 @@
 				'position'          : position,
 				'playbackType'      : playbackType
 			};
+
+            var flashVarEvents = {
+                'playbackContext' : 'playbackContext',
+                'applicationName' : 'application',
+                'userId' : 'userId'
+            };
+            // support legacy ( deprecated ) top level config
+            for( var fvKey in flashVarEvents){
+                if( this.embedPlayer.getKalturaConfig( '', fvKey ) ){
+                    statsEvent[ flashVarEvents[ fvKey ] ] = this.embedPlayer.getKalturaConfig('', fvKey );
+                }
+            }
 
 			// add ks if available
 			var ks = this.kClient.getKs();
