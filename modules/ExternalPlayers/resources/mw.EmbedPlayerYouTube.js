@@ -222,7 +222,9 @@
 					rel: 0,
 					fs: 0,
 					wmode: 'opaque',
-					showinfo:0
+					showinfo:0,
+					start: embedPlayer.startTime || undefined,
+					end: embedPlayer.pauseTime || undefined
 				};
 
 				if(window['KeyValueParams'])
