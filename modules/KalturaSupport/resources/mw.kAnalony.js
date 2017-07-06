@@ -92,7 +92,7 @@
 			this.eventIndex = 1;
 			this.bufferTime = 0;
 			this.currentBitRate = -1;
-            this.entryPlayCounter = 0;
+            this.entryPlayCounter = 1;
             this.addBindings();
 	    },
 
@@ -101,14 +101,7 @@
 			var playerEvent = this.PlayerEvent;
 			this.embedPlayer.bindHelper( 'playerReady' , function () {
 				_this.resetPlayerflags();
-				//If the entryId has changed then add
-                var entryId = _this.getPlayer().kentryid;
-				if (_this.currentEntryId !== entryId) {
-                    _this.entryPlayCounter = ++_this.entryPlayCounter;
-                }
-                //Update the currently playing entry ID
-                _this.currentEntryId = entryId;
-                if ( _this.kalturaContextData && _this.kalturaContextData.flavorAssets && _this.kalturaContextData.flavorAssets.length === 1 ){
+				if ( _this.kalturaContextData && _this.kalturaContextData.flavorAssets && _this.kalturaContextData.flavorAssets.length === 1 ){
 			        _this.currentBitRate = _this.kalturaContextData.flavorAssets[0].bitrate;
 		        }
 				_this.sendAnalytics(playerEvent.IMPRESSION);
@@ -116,6 +109,7 @@
 
 			this.embedPlayer.bindHelper( 'onChangeMedia' , function () {
 				_this.firstPlay = true;
+                _this.entryPlayCounter++;
 			});
 
 			this.embedPlayer.bindHelper( 'userInitiatedPlay' , function () {
