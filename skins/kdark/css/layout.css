@@ -1838,7 +1838,9 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 .previewPlayer .expandPlayerBtn {
 	display: inline-block;
 }
-
+.screen .tmpl a{
+	color: #C4C3FF
+}
 .share .screen-content, .airPlay .screen-content {
 	padding: 10px;
 	position: relative;
