@@ -1638,8 +1638,8 @@
 			return null;
 		},
         getCurrentBufferLength: function(){
-            if ( this.playerElement.buffered.length > 0 ) {
-				return parseInt(this.playerElement.buffered.end(this.playerElement.buffered.length-1) - this.playerElement.currentTime); //return buffer length in seconds
+            if ( this.playerElement.seekable.length > 0 ) {
+				return parseInt(this.playerElement.seekable.end(this.playerElement.seekable.length-1) - this.playerElement.currentTime); //return buffer length in seconds
             }
             return 0;
         },
