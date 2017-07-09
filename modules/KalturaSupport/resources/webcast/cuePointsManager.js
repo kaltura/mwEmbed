@@ -21,8 +21,12 @@
                     typesMapping : {}
                 }
             });
-            if(!this.pushServerNotification && _this.embedPlayer.isLive()){
-                this.pushServerNotification = mw.KPushServerNotification.getInstance(this.embedPlayer);
+            if(!this.pushServerNotification){
+                try{
+                    this.pushServerNotification = mw.KPushServerNotification.getInstance(this.embedPlayer);
+                } catch (e){
+                    mw.log("Failed to initiate pushServerNotification from " + this.pluginName);
+                }
             }
 
             _this.resetMonitorVariables();
@@ -292,14 +296,18 @@
         registerMonitoredCuepointTypes : function(cuepointTypes,callback,pushSystemNames)
         {
             var _this = this;
-            // This is using push
-            if(pushSystemNames){
+            // Register to push notification only if usePushNotification was set
+            if(pushSystemNames && this.usePushNotification ){
                 //register through push mechanism
-                _this.registerPollingNotifications(pushSystemNames ,_this.pluginName ).then(function () {
-                    mw.log(cuepointTypes + "successful  registerNotifications");
-                }, function (err) {
-                    mw.log(cuepointTypes + "failed  registerNotifications ", err);
-                });
+                try{
+                    _this.registerPollingNotifications(pushSystemNames ,_this.pluginName ).then(function () {
+                        mw.log(cuepointTypes + "successful  registerNotifications");
+                    }, function (err) {
+                        mw.log(cuepointTypes + "failed  registerNotifications ", err);
+                    });
+                } catch (e) {
+                    mw.log("Failed to register to " + cuepointTypes + " from " + this.pluginName );
+                }
             }
             if (cuepointTypes && cuepointTypes.length && callback)
             {
@@ -325,21 +333,22 @@
             }
         },
         registerPollingNotifications: function (systemNames , pluginName ) {
-            //TODO - join web socket later
             var _this = this;
             var tempNotifications = [];
-            for (var i = 0; i < systemNames.length; i++) {
-                var tempNotification = this.pushServerNotification.createNotificationRequest(
-                systemNames[i],{
-                    "entryId": _this.embedPlayer.kentryid
-                },
-                function (cuePoints) {
-                    mw.log("KPushCuePointsManager cuePoints loaded from "+_this.pluginName +" " + cuePoints );
-                    _this.handleMonitoredCuepoints(cuePoints);
-                });
-                tempNotifications.push(tempNotification);
+            if(this.pushServerNotification){
+                for (var i = 0; i < systemNames.length; i++) {
+                    var tempNotification = this.pushServerNotification.createNotificationRequest(
+                    systemNames[i],{
+                        "entryId": _this.embedPlayer.kentryid
+                    },
+                    function (cuePoints) {
+                        mw.log("KPushCuePointsManager cuePoints loaded from "+_this.pluginName +" " + cuePoints );
+                        _this.handleMonitoredCuepoints(cuePoints);
+                    });
+                    tempNotifications.push(tempNotification);
+                }
+                return this.pushServerNotification.registerNotifications(tempNotifications);
             }
-            return this.pushServerNotification.registerNotifications(tempNotifications);
         },
         _createReachedCuePointsArgs: function (cuePoints, context) {
             var _this = this;
