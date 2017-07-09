@@ -13,7 +13,7 @@ $YB.plugins.KalturaV2 = function (player, options) {
     this.pluginName = 'kaltura-js';
 
     /** Version of the plugin. ie: 5.1.0-name */
-    this.pluginVersion = '5.3.0-' + VERSION + '-kaltura-js';
+    this.pluginVersion = '5.4.5-' + VERSION + '-kaltura-js';
 
     /* Initialize YouboraJS */
     this.startMonitoring(player, options);
