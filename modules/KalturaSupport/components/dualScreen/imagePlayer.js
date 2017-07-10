@@ -15,7 +15,7 @@
 		},
 		cuePointsManager : null,
 		cuePoints: [],
-		showFirstCuePointOnLoad : true,
+		showFirstSlideOnLoad : false,
 		forcedFirstCuePoint: false,
 		syncEnabled: true,
 		slidesCuePointTypes : null,
@@ -108,13 +108,18 @@
 
 			this.bind('KalturaSupport_ThumbCuePointsReady' , function(){
 				if (_this.getPlayer().isLive()){
-					//Live mode doesn't support chapters so disable toggling
+					//Forcing 1st slide is only on VOD entry
 					return;
 				}
 				// on non-autoplayed player - check if required to force-show the 1st CP
 				var chaptersRawData = _this.getCuePoints();
+				//Since imagePlayer doesn't have a uiconf element - copy the value from dualScreen which has representation in the uiconf;
+				if (_this.embedPlayer.getKalturaConfig("chapters","showFirstSlideOnLoad")){
+					_this.showFirstSlideOnLoad = _this.embedPlayer.getKalturaConfig("chapters","showFirstSlideOnLoad");
+				}
+
 				if(chaptersRawData && chaptersRawData.length
-					&& _this.showFirstCuePointOnLoad && !_this.embedPlayer.getFlashvars().autoPlay ){
+					&& _this.showFirstSlideOnLoad && !_this.embedPlayer.getFlashvars().autoPlay ){
 					var firstSlide = chaptersRawData[0];
 					_this.sync(firstSlide);
 					_this.forcedFirstCuePoint = true;

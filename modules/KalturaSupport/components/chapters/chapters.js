@@ -40,6 +40,7 @@
 			}
 		},
 
+		showFirstSlideOnLoad: false,
 		mediaList: [], //Hold the medialist items
 		chaptersMap: [],
 		itemCounter: 0,
