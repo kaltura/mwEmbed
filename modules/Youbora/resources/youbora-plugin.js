@@ -15,7 +15,13 @@ $YB.plugins.KalturaV2 = function (player, options) {
     /** Version of the plugin. ie: 5.1.0-name */
     this.pluginVersion = '5.4.5-' + VERSION + '-kaltura-js';
 
-    /* Initialize YouboraJS */
+    options.username = options.username || options.userId || "";
+
+	options.extraParams = this.getCustomParams(options);
+
+	options.transactionCode = 'Free',
+
+		  /* Initialize YouboraJS */
     this.startMonitoring(player, options);
 
     this.bitrate = -1;
@@ -183,17 +189,24 @@ $YB.plugins.KalturaV2.prototype.reset = function () {
 };
 
 $YB.plugins.KalturaV2.prototype.setMetadata = function () {
-  this.setOptions({
-    properties: {
-      kalturaInfo: {
-        sessionId: this.player.getPlayer().evaluate("{configProxy.sessionId}"),
-        uiConfigId: this.player.getPlayer().evaluate("{configProxy.kw.uiConfId}"),
-        content: {
-          id: this.player.getPlayer().evaluate("{mediaProxy.entry.id}"),
-          title: this.player.getPlayer().evaluate("{mediaProxy.entry.name}"),
-          duration: this.player.getPlayer().evaluate("{mediaProxy.entry.duration}")
-        }
-      }
-    }
-  });
+	this.setOptions({
+		properties: {
+			kalturaInfo: {
+				entryId: this.player.getPlayer().evaluate("{mediaProxy.entry.id}"),
+				sessionId: this.player.getPlayer().evaluate("{configProxy.sessionId}"),
+				uiConfigId: this.player.getPlayer().evaluate("{configProxy.kw.uiConfId}")
+			}
+		}
+	});
+};
+
+$YB.plugins.KalturaV2.prototype.getCustomParams = function (options) {
+	var paramObj = {};
+	for (var i = 1; i < 10; i++) {
+		var param = options["param" + i];
+		if (param) {
+			paramObj["param" + i] = param;
+		}
+	}
+	return paramObj;
 };
