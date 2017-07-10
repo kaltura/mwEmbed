@@ -94,32 +94,32 @@
         "scripts": "resources/jquery/jquery.serialize-object.js"
     },
     "jquery.ui.core": {
-        "scripts": "resources/jquery.ui/jquery-ui.js",
+        "scripts": "resources/jquery.ui/jquery-ui.min.js",
         "skinStyles": {
             "default": [
-                "resources/jquery.ui/jquery-ui.js"
+                "resources/jquery.ui/jquery-ui.min.js"
             ],
             "vector": [
-                "resources/jquery.ui/jquery-ui.js"
+                "resources/jquery.ui/jquery-ui.min.js"
             ]
         },
         "dependencies": "jquery"
     },
     "jquery.ui.widget": {
-        "scripts": "resources/jquery.ui/jquery-ui.js"
+        "scripts": "resources/jquery.ui/jquery-ui.min.js"
     },
     "jquery.ui.mouse": {
-        "scripts": "resources/jquery.ui/jquery-ui.js",
+        "scripts": "resources/jquery.ui/jquery-ui.min.js",
         "dependencies": "jquery.ui.widget"
     },
     "jquery.ui.position": {
-        "scripts": "resources/jquery.ui/jquery-ui.js"
+        "scripts": "resources/jquery.ui/jquery-ui.min.js"
     },
     "jquery.ui.selectable": {
-        "scripts": "resources/jquery.ui/jquery.ui.selectable.js",
+        "scripts": "resources/jquery.ui/jquery-ui.min.js",
         "skinStyles": {
-            "default": "resources/jquery.ui/jquery-ui.css",
-            "vector": "resources/jquery.ui/jquery-ui.css"
+            "default": "resources/jquery.ui/jquery-ui.min.css",
+            "vector": "resources/jquery.ui/jquery-ui.min.css"
         },
         "dependencies": [
             "jquery.ui.core",
@@ -128,7 +128,7 @@
         ]
     },
     "jquery.ui.sortable": {
-        "scripts": "resources/jquery.ui/jquery-ui.js",
+        "scripts": "resources/jquery.ui/jquery-ui.min.js",
         "dependencies": [
             "jquery.ui.core",
             "jquery.ui.widget",
@@ -136,18 +136,18 @@
         ]
     },
     "jquery.ui.tooltip": {
-        "scripts": "resources/jquery.ui/jquery-ui.js",
+        "scripts": "resources/jquery.ui/jquery-ui.min.js",
         "dependencies": [
             "jquery.ui.core",
             "jquery.ui.widget",
             "jquery.ui.position"
         ],
         "skinStyles": {
-            "no-theme": "resources/jquery.ui/jquery-ui.css"
+            "no-theme": "resources/jquery.ui/jquery-ui.min.css"
         }
     },
     "jquery.ui.draggable": {
-        "scripts": "resources/jquery.ui/jquery-ui.js",
+        "scripts": "resources/jquery.ui/jquery-ui.min.js",
         "dependencies": [
             "jquery.ui.core",
             "jquery.ui.widget",
@@ -155,7 +155,7 @@
         ]
     },
     "jquery.ui.droppable": {
-        "scripts": "resources/jquery.ui/jquery-ui.js",
+        "scripts": "resources/jquery.ui/jquery-ui.min.js",
         "dependencies": [
             "jquery.ui.core",
             "jquery.ui.widget",
@@ -164,30 +164,30 @@
         ]
     },
     "jquery.ui.resizable": {
-        "scripts": "resources/jquery.ui/jquery-ui.js",
+        "scripts": "resources/jquery.ui/jquery-ui.min.js",
         "dependencies": [
             "jquery.ui.core",
             "jquery.ui.widget",
             "jquery.ui.mouse"
         ],
         "skinStyles": {
-            "default": "resources/jquery.ui/jquery-ui.css",
-            "no-theme": "resources/jquery.ui/jquery-ui.css "
+            "default": "resources/jquery.ui/jquery-ui.min.css",
+            "no-theme": "resources/jquery.ui/jquery-ui.min.css"
         }
     },
     "jquery.ui.accordion": {
-        "scripts": "resources/jquery.ui/jquery-ui.js",
+        "scripts": "resources/jquery.ui/jquery-ui.min.js",
         "dependencies": [
             "jquery.ui.core",
             "jquery.ui.widget"
         ],
         "skinStyles": {
-            "default": "resources/jquery.ui/jquery-ui.css",
-            "vector": "resources/jquery.ui/jquery-ui.css"
+            "default": "resources/jquery.ui/jquery-ui.min.css",
+            "vector": "resources/jquery.ui/jquery-ui.min.css"
         }
     },
     "jquery.ui.autocomplete": {
-        "scripts": "resources/jquery.ui/jquery-ui.js",
+        "scripts": "resources/jquery.ui/jquery-ui.min.js",
         "dependencies": [
             "jquery.ui.core",
             "jquery.ui.widget",
@@ -195,28 +195,28 @@
             "jquery.ui.menu"
         ],
         "skinStyles": {
-            "default": "resources/jquery.ui/jquery-ui.css",
-            "vector": "resources/jquery.ui/jquery-ui.css"
+            "default": "resources/jquery.ui/jquery-ui.min.css",
+            "vector": "resources/jquery.ui/jquery-ui.min.css"
         }
     },
     "jquery.ui.menu": {
-        "scripts": "resources/jquery.ui/jquery-ui.js",
+        "scripts": "resources/jquery.ui/jquery-ui.min.js",
         "dependencies": [
             "jquery.ui.core",
             "jquery.ui.widget",
             "jquery.ui.position"
         ],
         "skinStyles": {
-            "default": "resources/jquery.ui/jquery-ui.css",
-            "vector": "resources/jquery.ui/jquery-ui.css"
+            "default": "resources/jquery.ui/jquery-ui.min.css",
+            "vector": "resources/jquery.ui/jquery-ui.min.css"
         }
     },
     "jquery.ui.datepicker": {
-        "scripts": "resources/jquery.ui/jquery-ui.js",
+        "scripts": "resources/jquery.ui/jquery-ui.min.js",
         "dependencies": "jquery.ui.core",
         "skinStyles": {
-            "default": "resources/jquery.ui/jquery-ui.css",
-            "vector": "resources/jquery.ui/jquery-ui.css"
+            "default": "resources/jquery.ui/jquery-ui.min.css",
+            "vector": "resources/jquery.ui/jquery-ui.min.css"
         },
         "languageScripts": {
             "af": "resources/jquery.ui/i18n/jquery.ui.datepicker-af.js",
@@ -274,38 +274,38 @@
         }
     },
     "jquery.ui.progressbar": {
-        "scripts": "resources/jquery.ui/jquery-ui.js",
+        "scripts": "resources/jquery.ui/jquery-ui.min.css",
         "dependencies": [
             "jquery.ui.core",
             "jquery.ui.widget"
         ],
         "skinStyles": {
-            "default": "resources/jquery.ui/jquery-ui.css",
-            "vector": "resources/jquery.ui/jquery-ui.css"
+            "default": "resources/jquery.ui/jquery-ui.min.css",
+            "vector": "resources/jquery.ui/jquery-ui.min.css"
         }
     },
     "jquery.ui.slider": {
-        "scripts": "resources/jquery.ui/jquery-ui.js",
+        "scripts": "resources/jquery.ui/jquery-ui.min.js",
         "dependencies": [
             "jquery.ui.core",
             "jquery.ui.widget",
             "jquery.ui.mouse"
         ],
         "skinStyles": {
-            "no-theme": "resources/jquery.ui/jquery-ui.css",
-            "default": "resources/jquery.ui/jquery-ui.css",
-            "vector": "resources/jquery.ui/jquery-ui.css"
+            "no-theme": "resources/jquery.ui/jquery-ui.min.css",
+            "default": "resources/jquery.ui/jquery-ui.min.css",
+            "vector": "resources/jquery.ui/jquery-ui.min.css"
         }
     },
     "jquery.ui.tabs": {
-        "scripts": "resources/jquery.ui/jquery-ui.js",
+        "scripts": "resources/jquery.ui/jquery-ui.min.js",
         "dependencies": [
             "jquery.ui.core",
             "jquery.ui.widget"
         ],
         "skinStyles": {
-            "default": "resources/jquery.ui/jquery-ui.css",
-            "vector": "resources/jquery.ui/jquery-ui.css"
+            "default": "resources/jquery.ui/jquery-ui.min.css",
+            "vector": "resources/jquery.ui/jquery-ui.min.css"
         }
     },
     "jquery.effects.core": {
