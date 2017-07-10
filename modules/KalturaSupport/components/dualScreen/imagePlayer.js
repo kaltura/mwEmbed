@@ -15,6 +15,8 @@
 		},
 		cuePointsManager : null,
 		cuePoints: [],
+		showFirstCuePointOnLoad : true,
+		forcedFirstCuePoint: false,
 		syncEnabled: true,
 		slidesCuePointTypes : null,
 		setup: function() {
@@ -104,6 +106,22 @@
 		addBinding: function(){
 			var _this = this;
 
+			this.bind('KalturaSupport_ThumbCuePointsReady' , function(){
+				if (_this.getPlayer().isLive()){
+					//Live mode doesn't support chapters so disable toggling
+					return;
+				}
+				// on non-autoplayed player - check if required to force-show the 1st CP
+				var chaptersRawData = _this.getCuePoints();
+				if(chaptersRawData && chaptersRawData.length
+					&& _this.showFirstCuePointOnLoad && !_this.embedPlayer.getFlashvars().autoPlay ){
+					var firstSlide = chaptersRawData[0];
+					_this.sync(firstSlide);
+					_this.forcedFirstCuePoint = true;
+				}
+			})
+
+
 			if (this.getPlayer().playerReadyFlag) {
 				this.initializeCuePointsManager();
 			} else {
@@ -113,6 +131,11 @@
 			}
 
 			this.bind( 'onplay', function () {
+				if(_this.forcedFirstCuePoint){
+					// in case we forced-loaded the 1st cuepoint - remove it on play.
+					_this.sync(null);
+					_this.forcedFirstCuePoint = false;
+				}
 				_this.loadAdditionalAssets();
 			} );
 
