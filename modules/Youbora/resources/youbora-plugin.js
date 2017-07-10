@@ -183,17 +183,13 @@ $YB.plugins.KalturaV2.prototype.reset = function () {
 };
 
 $YB.plugins.KalturaV2.prototype.setMetadata = function () {
-  this.setOptions({
-    properties: {
-      kalturaInfo: {
-        sessionId: this.player.getPlayer().evaluate("{configProxy.sessionId}"),
-        uiConfigId: this.player.getPlayer().evaluate("{configProxy.kw.uiConfId}"),
-        content: {
-          id: this.player.getPlayer().evaluate("{mediaProxy.entry.id}"),
-          title: this.player.getPlayer().evaluate("{mediaProxy.entry.name}"),
-          duration: this.player.getPlayer().evaluate("{mediaProxy.entry.duration}")
-        }
-      }
-    }
-  });
+	this.setOptions({
+		properties: {
+			kalturaInfo: {
+				entryId: this.player.getPlayer().evaluate("{mediaProxy.entry.id}"),
+				sessionId: this.player.getPlayer().evaluate("{configProxy.sessionId}"),
+				uiConfigId: this.player.getPlayer().evaluate("{configProxy.kw.uiConfId}")
+			}
+		}
+	});
 };
