@@ -15,13 +15,7 @@ $YB.plugins.KalturaV2 = function (player, options) {
     /** Version of the plugin. ie: 5.1.0-name */
     this.pluginVersion = '5.4.5-' + VERSION + '-kaltura-js';
 
-    options.username = options.username || options.userId || "";
-
-	options.extraParams = this.getCustomParams(options);
-
-	options.transactionCode = 'Free',
-
-		  /* Initialize YouboraJS */
+    /* Initialize YouboraJS */
     this.startMonitoring(player, options);
 
     this.bitrate = -1;
@@ -198,15 +192,4 @@ $YB.plugins.KalturaV2.prototype.setMetadata = function () {
 			}
 		}
 	});
-};
-
-$YB.plugins.KalturaV2.prototype.getCustomParams = function (options) {
-	var paramObj = {};
-	for (var i = 1; i < 10; i++) {
-		var param = options["param" + i];
-		if (param) {
-			paramObj["param" + i] = param;
-		}
-	}
-	return paramObj;
 };
