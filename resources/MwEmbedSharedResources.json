@@ -94,32 +94,32 @@
         "scripts": "resources/jquery/jquery.serialize-object.js"
     },
     "jquery.ui.core": {
-        "scripts": "resources/jquery.ui/jquery.ui.core.js",
+        "scripts": "resources/jquery.ui/jquery-ui.js",
         "skinStyles": {
             "default": [
-                "resources/jquery.ui/themes/default/jquery.ui.core.css"
+                "resources/jquery.ui/jquery-ui.js"
             ],
             "vector": [
-                "resources/jquery.ui/themes/vector/jquery.ui.core.css"
+                "resources/jquery.ui/jquery-ui.js"
             ]
         },
         "dependencies": "jquery"
     },
     "jquery.ui.widget": {
-        "scripts": "resources/jquery.ui/jquery.ui.widget.js"
+        "scripts": "resources/jquery.ui/jquery-ui.js"
     },
     "jquery.ui.mouse": {
-        "scripts": "resources/jquery.ui/jquery.ui.mouse.js",
+        "scripts": "resources/jquery.ui/jquery-ui.js",
         "dependencies": "jquery.ui.widget"
     },
     "jquery.ui.position": {
-        "scripts": "resources/jquery.ui/jquery.ui.position.js"
+        "scripts": "resources/jquery.ui/jquery-ui.js"
     },
     "jquery.ui.selectable": {
         "scripts": "resources/jquery.ui/jquery.ui.selectable.js",
         "skinStyles": {
-            "default": "resources/jquery.ui/themes/default/jquery.ui.selectable.css",
-            "vector": "resources/jquery.ui/themes/vector/jquery.ui.selectable.css"
+            "default": "resources/jquery.ui/jquery-ui.css",
+            "vector": "resources/jquery.ui/jquery-ui.css"
         },
         "dependencies": [
             "jquery.ui.core",
@@ -128,7 +128,7 @@
         ]
     },
     "jquery.ui.sortable": {
-        "scripts": "resources/jquery.ui/jquery.ui.sortable.js",
+        "scripts": "resources/jquery.ui/jquery-ui.js",
         "dependencies": [
             "jquery.ui.core",
             "jquery.ui.widget",
@@ -136,18 +136,18 @@
         ]
     },
     "jquery.ui.tooltip": {
-        "scripts": "resources/jquery.ui/jquery.ui.tooltip.js",
+        "scripts": "resources/jquery.ui/jquery-ui.js",
         "dependencies": [
             "jquery.ui.core",
             "jquery.ui.widget",
             "jquery.ui.position"
         ],
         "skinStyles": {
-            "no-theme": "resources/jquery.ui/themes/no-theme/jquery.ui.tooltip.css"
+            "no-theme": "resources/jquery.ui/jquery-ui.css"
         }
     },
     "jquery.ui.draggable": {
-        "scripts": "resources/jquery.ui/jquery.ui.draggable.js",
+        "scripts": "resources/jquery.ui/jquery-ui.js",
         "dependencies": [
             "jquery.ui.core",
             "jquery.ui.widget",
@@ -155,7 +155,7 @@
         ]
     },
     "jquery.ui.droppable": {
-        "scripts": "resources/jquery.ui/jquery.ui.droppable.js",
+        "scripts": "resources/jquery.ui/jquery-ui.js",
         "dependencies": [
             "jquery.ui.core",
             "jquery.ui.widget",
@@ -164,30 +164,30 @@
         ]
     },
     "jquery.ui.resizable": {
-        "scripts": "resources/jquery.ui/jquery.ui.resizable.js",
+        "scripts": "resources/jquery.ui/jquery-ui.js",
         "dependencies": [
             "jquery.ui.core",
             "jquery.ui.widget",
             "jquery.ui.mouse"
         ],
         "skinStyles": {
-            "default": "resources/jquery.ui/themes/no-theme/jquery.ui.resizable.css",
-            "no-theme": "resources/jquery.ui/themes/no-theme/jquery.ui.resizable.css"
+            "default": "resources/jquery.ui/jquery-ui.css",
+            "no-theme": "resources/jquery.ui/jquery-ui.css "
         }
     },
     "jquery.ui.accordion": {
-        "scripts": "resources/jquery.ui/jquery.ui.accordion.js",
+        "scripts": "resources/jquery.ui/jquery-ui.js",
         "dependencies": [
             "jquery.ui.core",
             "jquery.ui.widget"
         ],
         "skinStyles": {
-            "default": "resources/jquery.ui/themes/default/jquery.ui.accordion.css",
-            "vector": "resources/jquery.ui/themes/vector/jquery.ui.accordion.css"
+            "default": "resources/jquery.ui/jquery-ui.css",
+            "vector": "resources/jquery.ui/jquery-ui.css"
         }
     },
     "jquery.ui.autocomplete": {
-        "scripts": "resources/jquery.ui/jquery.ui.autocomplete.js",
+        "scripts": "resources/jquery.ui/jquery-ui.js",
         "dependencies": [
             "jquery.ui.core",
             "jquery.ui.widget",
@@ -195,28 +195,28 @@
             "jquery.ui.menu"
         ],
         "skinStyles": {
-            "default": "resources/jquery.ui/themes/default/jquery.ui.autocomplete.css",
-            "vector": "resources/jquery.ui/themes/vector/jquery.ui.autocomplete.css"
+            "default": "resources/jquery.ui/jquery-ui.css",
+            "vector": "resources/jquery.ui/jquery-ui.css"
         }
     },
     "jquery.ui.menu": {
-        "scripts": "resources/jquery.ui/jquery.ui.menu.js",
+        "scripts": "resources/jquery.ui/jquery-ui.js",
         "dependencies": [
             "jquery.ui.core",
             "jquery.ui.widget",
             "jquery.ui.position"
         ],
         "skinStyles": {
-            "default": "resources/jquery.ui/themes/default/jquery.ui.menu.css",
-            "vector": "resources/jquery.ui/themes/vector/jquery.ui.menu.css"
+            "default": "resources/jquery.ui/jquery-ui.css",
+            "vector": "resources/jquery.ui/jquery-ui.css"
         }
     },
     "jquery.ui.datepicker": {
-        "scripts": "resources/jquery.ui/jquery.ui.datepicker.js",
+        "scripts": "resources/jquery.ui/jquery-ui.js",
         "dependencies": "jquery.ui.core",
         "skinStyles": {
-            "default": "resources/jquery.ui/themes/default/jquery.ui.datepicker.css",
-            "vector": "resources/jquery.ui/themes/vector/jquery.ui.datepicker.css"
+            "default": "resources/jquery.ui/jquery-ui.css",
+            "vector": "resources/jquery.ui/jquery-ui.css"
         },
         "languageScripts": {
             "af": "resources/jquery.ui/i18n/jquery.ui.datepicker-af.js",
@@ -274,38 +274,38 @@
         }
     },
     "jquery.ui.progressbar": {
-        "scripts": "resources/jquery.ui/jquery.ui.progressbar.js",
+        "scripts": "resources/jquery.ui/jquery-ui.js",
         "dependencies": [
             "jquery.ui.core",
             "jquery.ui.widget"
         ],
         "skinStyles": {
-            "default": "resources/jquery.ui/themes/default/jquery.ui.progressbar.css",
-            "vector": "resources/jquery.ui/themes/vector/jquery.ui.progressbar.css"
+            "default": "resources/jquery.ui/jquery-ui.css",
+            "vector": "resources/jquery.ui/jquery-ui.css"
         }
     },
     "jquery.ui.slider": {
-        "scripts": "resources/jquery.ui/jquery.ui.slider.js",
+        "scripts": "resources/jquery.ui/jquery-ui.js",
         "dependencies": [
             "jquery.ui.core",
             "jquery.ui.widget",
             "jquery.ui.mouse"
         ],
         "skinStyles": {
-            "no-theme": "resources/jquery.ui/themes/no-theme/jquery.ui.slider.css",
-            "default": "resources/jquery.ui/themes/default/jquery.ui.slider.css",
-            "vector": "resources/jquery.ui/themes/vector/jquery.ui.slider.css"
+            "no-theme": "resources/jquery.ui/jquery-ui.css",
+            "default": "resources/jquery.ui/jquery-ui.css",
+            "vector": "resources/jquery.ui/jquery-ui.css"
         }
     },
     "jquery.ui.tabs": {
-        "scripts": "resources/jquery.ui/jquery.ui.tabs.js",
+        "scripts": "resources/jquery.ui/jquery-ui.js",
         "dependencies": [
             "jquery.ui.core",
             "jquery.ui.widget"
         ],
         "skinStyles": {
-            "default": "resources/jquery.ui/themes/default/jquery.ui.tabs.css",
-            "vector": "resources/jquery.ui/themes/vector/jquery.ui.tabs.css"
+            "default": "resources/jquery.ui/jquery-ui.css",
+            "vector": "resources/jquery.ui/jquery-ui.css"
         }
     },
     "jquery.effects.core": {
