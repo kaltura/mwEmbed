@@ -690,6 +690,7 @@
 					.addClass('caption')
 					.css('pointer-events', 'auto')
 					.css('z-index', '3')
+					.css('pointer-events', 'none')
 				);
 
 			this.displayTextTarget($textTarget);

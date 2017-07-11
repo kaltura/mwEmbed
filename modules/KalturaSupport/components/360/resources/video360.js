@@ -62,10 +62,13 @@
 		},
 
 		set360Config: function () {
-			//Get user configuration
+			//Get user camera configuration
 			var userCameraOptions = this.getConfig("cameraOptions");
 			//Deep extend custom config
 			this.cameraOptions = $.extend({}, this.defaultConfig.cameraOptions, userCameraOptions);
+
+			//Get user vr mode configuration
+			this.vrMode = this.getConfig('vrMode') || false;
 		},
 
 		addBindings: function () {
@@ -322,7 +325,7 @@
 			this.detachMotionListeners();
 			this.remove360logo();
 			this.is360 = false;
-			this.vrMode = false;
+			this.vrMode = this.getConfig('vrMode') || false;
 			this.initCameraTarget();
 		},
 
