@@ -552,6 +552,7 @@ function setMediaManagerEvents() {
 			}
 
 			if (licenseUrl) {
+                mediaHost.protectionSystem = cast.player.api.ContentProtection.WIDEVINE;
 				mediaHost.licenseUrl = licenseUrl;
 			}
 
