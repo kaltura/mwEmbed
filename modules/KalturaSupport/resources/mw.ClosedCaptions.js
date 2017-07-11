@@ -689,6 +689,7 @@
 				.html($(caption.content)
 					.addClass('caption')
 					.css('pointer-events', 'auto')
+					.css('z-index', '3')
 				);
 
 			this.displayTextTarget($textTarget);

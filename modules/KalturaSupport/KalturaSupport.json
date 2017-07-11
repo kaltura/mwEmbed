@@ -274,6 +274,11 @@
     ],
     "kalturaPluginName": "video360"
   },
+  "vrButton": {
+    "scripts": "components/360/resources/vrButton.js",
+    "dependencies": "mw.KBaseComponent",
+    "kalturaPluginName": "vrButton"
+  },
   "closeFSMobile": {
     "scripts": "components/closeFSMobile.js",
     "dependencies": "mw.KBaseComponent",

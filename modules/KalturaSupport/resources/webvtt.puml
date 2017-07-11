@@ -1,0 +1,40 @@
+@startuml
+title __WebVTT Flow__\n
+participant Player
+participant mw.ClosedCaptions as CC
+participant mw.TextSource as TS
+participant vtt.js as vtt
+activate Player
+Player -> CC: on "playerReady"
+activate  CC
+CC -> TS: Create instance
+activate TS
+TS -> Server: Get caption file
+activate Server
+Server --> TS : Caption file
+deactivate Server
+'TS -> TS : getCaptionFromVTT()
+TS -> vtt : parse cues
+activate vtt
+vtt --> TS : parsed cues
+deactivate vtt
+deactivate TS
+...
+|||
+loop every native interval
+    CC -> TS: Get caption for current time
+    activate TS
+    TS -> vtt : process relevant cues
+    activate vtt
+    vtt --> TS :processed cues
+    deactivate vtt
+    TS --> CC: relevant captions
+    deactivate TS
+    CC -> Player : display captions
+end
+|||
+deactivate CC
+|||
+deactivate Player
+|||
+@enduml

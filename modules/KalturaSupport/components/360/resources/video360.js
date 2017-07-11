@@ -15,6 +15,7 @@
 		},
 		manualControl: false,
 		is360: false,
+		vrMode: false,
 		longitude: 180,
 		latitude: 0,
 		savedX: 0,
@@ -108,6 +109,12 @@
 					this.renderer.setSize(canvasSize.width, canvasSize.height);
 				}
 			}.bind(this));
+
+			this.bind("toggleVR", function () {
+				this.vrMode = !this.vrMode;
+				var canvasSize = this.getCanvasSize();
+				this.renderer.setSize(canvasSize.width, canvasSize.height);
+			}.bind(this));
 		},
 
 		initComponents: function () {
@@ -138,6 +145,9 @@
 			// geometry + material = mesh (actual object)
 			var sphereMesh = new THREE.Mesh(sphere, sphereMaterial);
 			this.scene.add(sphereMesh);
+
+			// Apply VR stereo rendering to renderer
+			this.effect = new THREE.StereoEffect(this.renderer);
 		},
 
 		overrideVideoTextureMethod: function () {
@@ -210,7 +220,11 @@
 			this.updateCamera();
 
 			// calling again render function
-			this.renderer.render(this.scene, this.camera);
+			if (this.vrMode) {
+				this.effect.render( this.scene , this.camera );
+			} else {
+				this.renderer.render( this.scene , this.camera );
+			}
 		},
 
 		// when the mouse is pressed, we switch to manual control and save current coordinates
@@ -308,6 +322,7 @@
 			this.detachMotionListeners();
 			this.remove360logo();
 			this.is360 = false;
+			this.vrMode = false;
 			this.initCameraTarget();
 		},
 
@@ -317,6 +332,7 @@
 			this.unbind("doStop");
 			this.unbind("onChangeMedia");
 			this.unbind("updateLayout");
+			this.unbind("toggleVR");
 		},
 
 		detachMotionListeners: function () {
@@ -336,7 +352,10 @@
 		},
 
 		remove360logo: function () {
-			$.find('.logo360')[0].remove();
+			var logo = $.find('.logo360')[0];
+			if (logo) {
+				logo.remove();
+			}
 		}
 	}));
 
