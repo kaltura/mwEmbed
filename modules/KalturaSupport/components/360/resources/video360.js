@@ -258,6 +258,15 @@
 			if (event.type === "touchstart") {
 				$("#touchOverlay").trigger("touchstart");
 			}
+			this.getPlayer().triggerHelper('onComponentsHoverDisabled');
+			setTimeout(function () {
+				this.getPlayer().triggerHelper('onComponentsHoverEnabled');
+			}.bind(this), 1500);
+			$('.controlsContainer').one("mouseleave", function(){
+				setTimeout(function () {
+					this.getPlayer().triggerHelper('onComponentsHoverEnabled');
+				}.bind(this), 500);
+			}.bind(this));
 		},
 
 		// when the mouse moves, if in manual control we adjust coordinates
