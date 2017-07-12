@@ -1,9 +1,16 @@
 (function (mw, $, THREE) {
 	"use strict";
 
-	mw.PluginManager.add('video360', mw.KBasePlugin.extend({
+	mw.PluginManager.add('video360', mw.KBaseComponent.extend({
 
 		defaultConfig: {
+			// vr button default config
+			align: "right",
+			parent: 'controlsContainer',
+			displayImportance: "high",
+			showTooltip: true,
+			order: 70,
+			// 360 default config
 			moveMultiplier: 0.3,
 			mobileVibrationValue: (mw.isIOS() ? 0.0365 : 1),
 			cameraOptions: {
@@ -30,16 +37,32 @@
 		},
 
 		isSafeEnviornment: function () {
-			return !( mw.isIE8() || mw.isIE9() || mw.isIE10Comp() || // old IEs
-			(mw.isIE11() && (mw.getUserOS() === 'Windows 7' || mw.getUserOS() === 'Windows 8')) || // ie11 on win7/8
-			(mw.isIphone() && mw.isIOSBelow10()) || // iPhone and IOS < 10 - doesn't support inline playback
-			mw.isIOSBelow9() ||  // IOS < 9 doesn't support webgl
-			(!mw.getConfig("forceSameDomainOnIOS") && ( mw.isIOS() || mw.isDesktopSafari()) )); //if we're in iOS and we didnt forceSameDomain - turn off the plugin
+			return this.getPlayer().is360() &&
+				!( mw.isIE8() || mw.isIE9() || mw.isIE10Comp() || // old IEs
+				(mw.isIE11() && (mw.getUserOS() === 'Windows 7' || mw.getUserOS() === 'Windows 8')) || // ie11 on win7/8
+				(mw.isIphone() && mw.isIOSBelow10()) || // iPhone and IOS < 10 - doesn't support inline playback
+				mw.isIOSBelow9() ||  // IOS < 9 doesn't support webgl
+				(!mw.getConfig("forceSameDomainOnIOS") && ( mw.isIOS() || mw.isDesktopSafari()) )); //if we're in iOS and we didnt forceSameDomain - turn off the plugin
+		},
+
+		getComponent: function() {
+			if( !this.$el ) {
+				this.$el = $( '<button />' )
+					.attr( 'title', 'VR' )
+					.addClass( "btn icon-vr" + this.getCssClass() )
+					.click( function() {
+						this.vrMode = !this.vrMode;
+						var canvasSize = this.getCanvasSize();
+						this.renderer.setSize(canvasSize.width, canvasSize.height);
+					}.bind(this));
+			}
+			return this.$el;
 		},
 
 		setup: function () {
 			this.set360Config();
 			this.bind("playerReady", function () {
+				this.hide();
 				if (this.getPlayer().is360()) {
 					this.is360 = true;
 					this.addBindings();
@@ -76,6 +99,7 @@
 				this.attachMotionListeners();
 				$(this.canvas).css("z-index", "2");
 				this.add360logo();
+				this.getPlayer().is360() && this.getConfig('vr') !== false ? this.show() : this.hide();
 			}.bind(this));
 
 			this.bind("onAdPlay", function () {
@@ -111,12 +135,6 @@
 					var canvasSize = this.getCanvasSize();
 					this.renderer.setSize(canvasSize.width, canvasSize.height);
 				}
-			}.bind(this));
-
-			this.bind("toggleVR", function () {
-				this.vrMode = !this.vrMode;
-				var canvasSize = this.getCanvasSize();
-				this.renderer.setSize(canvasSize.width, canvasSize.height);
 			}.bind(this));
 		},
 
@@ -335,7 +353,6 @@
 			this.unbind("doStop");
 			this.unbind("onChangeMedia");
 			this.unbind("updateLayout");
-			this.unbind("toggleVR");
 		},
 
 		detachMotionListeners: function () {
