@@ -268,6 +268,8 @@
 .mobileSkin .icon-close:before {
     content: "\e918";
 }
-
+.icon-vr:before {
+    content: "\e91f";
+}
 
 
