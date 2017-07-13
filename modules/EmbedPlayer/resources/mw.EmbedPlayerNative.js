@@ -1435,17 +1435,31 @@
 		backToLive: function () {
 			this.goingBackToLive = true;
 			var vid = this.getPlayerElement();
-			if (this.isDVR()) {
-				this.bindOnceHelper("seeked", function() {
+			if (mw.isSafari()) {
+				if (this.isDVR()) {
+					this.bindOnceHelper("seeked", function() {
+						this.triggerHelper('movingBackToLive');
+						this.goingBackToLive = false;
+					}.bind(this));
+				} else {
 					this.triggerHelper('movingBackToLive');
 					this.goingBackToLive = false;
-				}.bind(this));
+				}
+				vid.currentTime = vid.seekable.end(vid.seekable.length - 1);
 			} else {
-				this.triggerHelper('movingBackToLive');
-				this.goingBackToLive = false;
+				$(vid).one('loadeddata', function () {
+					this.switchAudioTrack(this.audioTrackIndex);
+				}.bind(this));
+				vid.load();
+				vid.play();
+				this.parseTextTracks(vid, 0);
+				setTimeout( function() {
+					this.triggerHelper('movingBackToLive'); //for some reason on Mac the isLive client response is a little bit delayed, so in order to get update liveUI properly, we need to delay "movingBackToLive" helper
+					this.goingBackToLive = false;
+				}.bind(this), 1000 );
 			}
-			vid.currentTime = vid.seekable.end(vid.seekable.length - 1);
 		},
+
 		isVideoSiblingEnabled: function () {
 			if (mw.isIphone() || mw.isAndroid2() || mw.isWindowsPhone() || mw.isAndroid40() || mw.isMobileChrome()
 				||
