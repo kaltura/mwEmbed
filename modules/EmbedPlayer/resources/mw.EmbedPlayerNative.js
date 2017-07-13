@@ -43,6 +43,9 @@
 		// A local var to store the current seek target time:
 		currentSeekTargetTime: null,
 
+		// A local var to store the current audio track index:
+		audioTrackIndex: null,
+
 		// Flag for ignoring next native error we get from the player.
 		ignoreNextError: false,
 
@@ -106,17 +109,17 @@
 				$(this.getPlayerElement()).attr('playsinline', '');
 			}
 
-            if ( (mw.isMobileDevice() || mw.isIpad()) && mw.getConfig( 'mobileAutoPlay' ) ) {
-                if ( !mw.isIphone() && this.inline ) {
-                    this.inline = false;
-                    $( this.getPlayerElement() ).removeAttr( 'playsinline' );
-                }
-                this.mobileAutoPlay = true;
-                this.setVolume( 0 );
-            }
+			if ( (mw.isMobileDevice() || mw.isIpad()) && mw.getConfig( 'mobileAutoPlay' ) ) {
+				if ( !mw.isIphone() && this.inline ) {
+					this.inline = false;
+					$( this.getPlayerElement() ).removeAttr( 'playsinline' );
+				}
+				this.mobileAutoPlay = true;
+				this.setVolume( 0 );
+			}
 
-            this.addBindings();
-            readyCallback();
+			this.addBindings();
+			readyCallback();
 
 			// disable network errors on unload:
 			$(window).unload(function () {
@@ -127,36 +130,36 @@
 				}
 			});
 		},
-        addBindings: function(){
-            var _this = this;
-            function checkMobileAutoPlay() {
-                if ( _this.mobileAutoPlay ) {
-                    _this.mobileAutoPlay = false;
-                    _this.setVolume( 1 );
-                }
-            }
-            this.bindHelper( 'userInitiatedPause' + this.bindPostfix, function () {
-                checkMobileAutoPlay();
-            } );
-            this.bindHelper( 'userInitiatedSeek' + this.bindPostfix, function () {
-                checkMobileAutoPlay();
-            } );
-            this.bindHelper( 'onOpenFullScreen' + this.bindPostfix, function () {
-                checkMobileAutoPlay();
-            } );
-            this.bindHelper('firstPlay' + this.bindPostfix, function(){
-                _this.parseTracks();
-            });
-            this.bindHelper('switchAudioTrack' + this.bindPostfix, function (e, data) {
-                _this.switchAudioTrack(data.index);
-            });
-            this.bindHelper('liveOnline' + this.bindPostfix, function(){
-                if( _this.isLive() && !_this.isDVR() ) {
-                    _this.resetSrc = true;
-                }
-            });
-	        this.bindHelper("changeEmbeddedTextTrack", this.onSwitchTextTrack.bind(this));
-        },
+		addBindings: function(){
+			var _this = this;
+			function checkMobileAutoPlay() {
+				if ( _this.mobileAutoPlay ) {
+					_this.mobileAutoPlay = false;
+					_this.setVolume( 1 );
+				}
+			}
+			this.bindHelper( 'userInitiatedPause' + this.bindPostfix, function () {
+				checkMobileAutoPlay();
+			} );
+			this.bindHelper( 'userInitiatedSeek' + this.bindPostfix, function () {
+				checkMobileAutoPlay();
+			} );
+			this.bindHelper( 'onOpenFullScreen' + this.bindPostfix, function () {
+				checkMobileAutoPlay();
+			} );
+			this.bindHelper('firstPlay' + this.bindPostfix, function(){
+				_this.parseTracks();
+			});
+			this.bindHelper('switchAudioTrack' + this.bindPostfix, function (e, data) {
+				_this.switchAudioTrack(data.index);
+			});
+			this.bindHelper('liveOnline' + this.bindPostfix, function(){
+				if( _this.isLive() && !_this.isDVR() ) {
+					_this.resetSrc = true;
+				}
+			});
+			this.bindHelper("changeEmbeddedTextTrack", this.onSwitchTextTrack.bind(this));
+		},
 
 		removeBindings: function(){
 			this.unbindHelper('firstPlay' + this.bindPostfix);
@@ -292,7 +295,7 @@
 			var tagName = this.isAudio() ? 'audio' : 'video';
 
 			return    $('<' + tagName + ' />')
-				// Add the special nativeEmbedPlayer to avoid any rewrites of of this video tag.
+			// Add the special nativeEmbedPlayer to avoid any rewrites of of this video tag.
 				.addClass('persistentNativePlayer nativeEmbedPlayerPid')
 				.attr(playerAttribtues)
 				.css(cssSet);
@@ -300,16 +303,16 @@
 		/**
 		 * returns true if device can auto play
 		 */
-        canAutoPlay: function () {
-            if ( mw.isMobileDevice() ) {
-                var playsinline = true;
-                if ( mw.isIphone() ) {
-                    playsinline = this.inline;
-                }
-                return (this.mobileAutoPlay && playsinline) || this.mobilePlayed;
-            }
-            return true;
-        },
+		canAutoPlay: function () {
+			if ( mw.isMobileDevice() ) {
+				var playsinline = true;
+				if ( mw.isIphone() ) {
+					playsinline = this.inline;
+				}
+				return (this.mobileAutoPlay && playsinline) || this.mobilePlayed;
+			}
+			return true;
+		},
 
 		/**
 		 * Post element javascript, binds event listeners and starts monitor
@@ -475,7 +478,7 @@
 						if (vid.duration > 0) {
 							_this.log("player can seek");
 							clearTimeout( _this.canSeekTimeout );
-                            _this.canSeekTimeout = null;
+							_this.canSeekTimeout = null;
 							setTimeout( function () {
 								return checkVideoStateDeferred.resolve();
 							}, 10 );
@@ -504,7 +507,7 @@
 				}
 				this.log("player can't seek - wait video element ready state");
 				this.canSeekTimeout = setTimeout(function () {
-                    _this.canSeekTimeout = null;
+					_this.canSeekTimeout = null;
 					_this.canSeek(checkVideoStateDeferred, callbackCount + 1);
 				}, 1000);
 			} else {
@@ -529,19 +532,19 @@
 		 * 		Function called once time has been set.
 		 */
 		setCurrentTime: function( time ) {
-            if( this.isLive() && !this.isDVR() ){
-                this.LiveCurrentTime = time;
-            }else {
-                this.log("setCurrentTime seekTime:" + time);
-                // Try to update the playerElement time:
-                try {
-                    var vid = this.getPlayerElement();
-                    vid.currentTime = this.currentSeekTargetTime;
-                } catch (e) {
-                    this.log("Error: Could not set video tag seekTime");
-                    this.triggerHelper("seeked");
-                }
-            }
+			if( this.isLive() && !this.isDVR() ){
+				this.LiveCurrentTime = time;
+			}else {
+				this.log("setCurrentTime seekTime:" + time);
+				// Try to update the playerElement time:
+				try {
+					var vid = this.getPlayerElement();
+					vid.currentTime = this.currentSeekTargetTime;
+				} catch (e) {
+					this.log("Error: Could not set video tag seekTime");
+					this.triggerHelper("seeked");
+				}
+			}
 		},
 		/**
 		 * Get the embed player time
@@ -556,8 +559,8 @@
 				return false;
 			}
 			if( this.isLive() && !this.isDVR() ){
-                return this.LiveCurrentTime ? this.LiveCurrentTime : 0;
-            }
+				return this.LiveCurrentTime ? this.LiveCurrentTime : 0;
+			}
 			var ct = this.playerElement.currentTime;
 			// Return 0 or a positive number:
 			if (!ct || isNaN(ct) || ct < 0 || !isFinite(ct)) {
@@ -600,13 +603,13 @@
 		 * Android Live doesn't send timeupdate events
 		 * @returns {boolean}
 		 */
-        isTimeUpdateSupported: function () {
-            if (this.isLive() && (mw.isAndroid() || !this.isDVR())) {
-                return false;
-            } else {
-                return true;
-            }
-        },
+		isTimeUpdateSupported: function () {
+			if (this.isLive() && (mw.isAndroid() || !this.isDVR())) {
+				return false;
+			} else {
+				return true;
+			}
+		},
 		/**
 		 * Selects default caption track for native player
 		 *
@@ -884,8 +887,8 @@
 			}
 			// Remove any poster div ( that would overlay the player )
 			if (!this.isAudioPlayer && !mw.getConfig("EmbedPlayer.KeepPoster") === true) {
-                this.removePoster();
-            }
+				this.removePoster();
+			}
 			// Restore video pos before calling sync syze
 			$(vid).css({
 				'left': '0px',
@@ -1097,8 +1100,8 @@
 			// don't handle seek event on Android native browser
 			var nua = navigator.userAgent;
 			var is_native_android_browser = ((nua.indexOf('Mozilla/5.0') > -1 &&
-				nua.indexOf('Android ') > -1 &&
-				nua.indexOf('AppleWebKit') > -1) && !(nua.indexOf('Chrome') > -1));
+			nua.indexOf('Android ') > -1 &&
+			nua.indexOf('AppleWebKit') > -1) && !(nua.indexOf('Chrome') > -1));
 
 			if (is_native_android_browser) {
 				return;
@@ -1219,12 +1222,12 @@
 		_ondurationchange: function (event, data) {
 			if ( this.playerElement && !isNaN(this.playerElement.duration) && isFinite(this.playerElement.duration) ) {
 				this.setDuration(this.getPlayerElement().duration);
-                return;
+				return;
 			}
-            // fix for ipad air 2 and El Capitan that sends 0 as duration for new live streams (webcast)
-            if ( this.playerElement && !isFinite(this.playerElement.duration) && this.isLive() && !this.isDVR() ) {
-                this.setDuration(this.getPlayerElement().duration); //set duration to infinity in order to pass updatePlayheadStatus (embedPlayer)
-            }
+			// fix for ipad air 2 and El Capitan that sends 0 as duration for new live streams (webcast)
+			if ( this.playerElement && !isFinite(this.playerElement.duration) && this.isLive() && !this.isDVR() ) {
+				this.setDuration(this.getPlayerElement().duration); //set duration to infinity in order to pass updatePlayheadStatus (embedPlayer)
+			}
 		},
 		/**
 		 * Handle the native paused event
@@ -1244,7 +1247,7 @@
 			if ((!this.seeking || this.isInSequence()) && !this.userSlide
 				&&
 				timeSincePlay > mw.getConfig('EmbedPlayer.MonitorRate')
-				) {
+			) {
 				_this.parent_pause();
 			} else {
 				// try to continue playback:
@@ -1296,7 +1299,7 @@
 				&& !isNaN(this.playerElement.duration)
 				&&
 				isFinite(this.playerElement.duration)
-				) {
+			) {
 				this.log('onloadedmetadata metadata ready Update duration:' + this.playerElement.duration + ' old dur: ' + this.getDuration());
 				this.setDuration(this.playerElement.duration);
 			}
@@ -1351,10 +1354,10 @@
 				}
 			}
 
-	},
+		},
 		/**
-		* playback error
-		*/
+		 * playback error
+		 */
 		_onerror: function ( event ) {
 			if( this.ignoreNextError ) {
 				return;
@@ -1433,8 +1436,8 @@
 		},
 
 		backToLive: function () {
-			this.goingBackToLive = true;
 			var vid = this.getPlayerElement();
+			this.goingBackToLive = true;
 			if (mw.isSafari()) {
 				if (this.isDVR()) {
 					this.bindOnceHelper("seeked", function() {
@@ -1464,7 +1467,7 @@
 			if (mw.isIphone() || mw.isAndroid2() || mw.isWindowsPhone() || mw.isAndroid40() || mw.isMobileChrome()
 				||
 				( mw.isIpad() && !mw.isIpad3() )
-				) {
+			) {
 				return false;
 			} else {
 				return this.parent_isVideoSiblingEnabled();
@@ -1498,50 +1501,50 @@
 		setInline: function ( state ) {
 			this.getPlayerElement().attr('webkit-playsinline', '');
 		},
-        parseTracks: function(){
-            var vid = this.getPlayerElement();
-            this.parseAudioTracks(vid, 0); //0 is for a setTimer counter. Try to catch audioTracks, give up after 5 seconds
-            this.parseTextTracks(vid, 0); //0 is for a setTimer counter. Try to catch textTracks, give up after 10 seconds
-        },
-        parseTextTracks: function(vid, counter){
-            var _this = this;
-	        this.parseTextTracksTimeout = setTimeout(function() {
-                if( vid.textTracks.length > 0 ) {
-	                var textTracksData = {languages: []};
-                    for (var i = 0; i < vid.textTracks.length; i++) {
-                    	var textTrack = vid.textTracks[i];
-	                    if (textTrack.kind === 'metadata') {
-		                    //add id3 tags support
-		                    _this.id3Tag(textTrack);
-	                    } else if (textTrack.kind === 'subtitles' || textTrack.kind === 'caption') {
-		                    textTracksData.languages.push({
-			                    'kind': 'subtitle',
-			                    'language': textTrack.label,
-			                    'srclang': textTrack.label,
-			                    'label': textTrack.label,
-			                    'title': textTrack.label,
-			                    'id': textTrack.id,
-			                    'index': i
-		                    });
-	                    }
-	                    textTrack.mode = 'hidden';
-                    }
-                    if (textTracksData.languages.length) {
-	                    mw.log('EmbedPlayerNative:: ' + textTracksData.languages.length + ' subtitles were found: ', textTracksData.languages);
-	                    _this.triggerHelper('textTracksReceived', textTracksData);
-                    }
-                }else{
-                    //try to catch textTracks.kind === "metadata, give up after 10 seconds
-                    if( counter < 10 ){
-                        _this.parseTextTracks(vid, ++counter);
-                    }
-                }
-            }, 1000);
-        },
-        id3Tag: function(metadataTrack){
-            var _this = this;
-            metadataTrack.addEventListener("cuechange", function (evt) {
-                try {
+		parseTracks: function(){
+			var vid = this.getPlayerElement();
+			this.parseAudioTracks(vid, 0); //0 is for a setTimer counter. Try to catch audioTracks, give up after 5 seconds
+			this.parseTextTracks(vid, 0); //0 is for a setTimer counter. Try to catch textTracks, give up after 10 seconds
+		},
+		parseTextTracks: function(vid, counter){
+			var _this = this;
+			this.parseTextTracksTimeout = setTimeout(function() {
+				if( vid.textTracks.length > 0 ) {
+					var textTracksData = {languages: []};
+					for (var i = 0; i < vid.textTracks.length; i++) {
+						var textTrack = vid.textTracks[i];
+						if (textTrack.kind === 'metadata') {
+							//add id3 tags support
+							_this.id3Tag(textTrack);
+						} else if (textTrack.kind === 'subtitles' || textTrack.kind === 'caption') {
+							textTracksData.languages.push({
+								'kind': 'subtitle',
+								'language': textTrack.label,
+								'srclang': textTrack.label,
+								'label': textTrack.label,
+								'title': textTrack.label,
+								'id': textTrack.id,
+								'index': i
+							});
+						}
+						textTrack.mode = 'hidden';
+					}
+					if (textTracksData.languages.length) {
+						mw.log('EmbedPlayerNative:: ' + textTracksData.languages.length + ' subtitles were found: ', textTracksData.languages);
+						_this.triggerHelper('textTracksReceived', textTracksData);
+					}
+				}else{
+					//try to catch textTracks.kind === "metadata, give up after 10 seconds
+					if( counter < 10 ){
+						_this.parseTextTracks(vid, ++counter);
+					}
+				}
+			}, 1000);
+		},
+		id3Tag: function(metadataTrack){
+			var _this = this;
+			metadataTrack.addEventListener("cuechange", function (evt) {
+				try {
 					var id3Tag;
 					if ( mw.isEdge() ){
 						//Get the data from the event + Unicode transform
@@ -1554,49 +1557,50 @@
 						id3Tag = JSON.parse(this.activeCues[0].value.data);
 					}
 					_this.triggerHelper('onId3Tag', id3Tag);
-                }
-                catch (e) {
-                    mw.log("Native player :: id3Tag :: ERROR :: "+e);
-                }
-            }, false);
-        },
-        parseAudioTracks: function(vid, counter){
-            var _this = this;
-	        this.parseAudioTracksTimeout = setTimeout (function() {
-                if( vid.audioTracks && vid.audioTracks.length > 0 ) {
-                    var data ={'languages':[]};
-                    for (var i = 0; i < vid.audioTracks.length; i++) {
+				}
+				catch (e) {
+					mw.log("Native player :: id3Tag :: ERROR :: "+e);
+				}
+			}, false);
+		},
+		parseAudioTracks: function(vid, counter){
+			var _this = this;
+			this.audioTrackIndex = null;
+			this.parseAudioTracksTimeout = setTimeout (function() {
+				if( vid.audioTracks && vid.audioTracks.length > 0 ) {
+					var data ={'languages':[]};
+					for (var i = 0; i < vid.audioTracks.length; i++) {
 						var audioTrack = vid.audioTracks[i];
 						//Edge doesn't parse "NAME" field to label attribute for some reason, use "LANGUAGE" instead
 						var label = audioTrack.label || audioTrack.language;
-                        if( label !== "" ) {
-                            var lang = {};
-                            lang.index = i;
-                            lang.label = label;
-                            data.languages.push(lang);
-                        }
-                    }
-                    if( data.languages.length > 0 ) {
-                        _this.triggerHelper('audioTracksReceived', data);
-                    }
-                }else{
-                    //try to catch audioTracks, give up after 5 seconds
-                    if( counter < 5 ){
-                        _this.parseAudioTracks(vid, ++counter);
-                    }
-                }
-            }, 1000);
-        },
+						if( label !== "" ) {
+							var lang = {};
+							lang.index = i;
+							lang.label = label;
+							data.languages.push(lang);
+						}
+					}
+					if( data.languages.length > 0 ) {
+						_this.triggerHelper('audioTracksReceived', data);
+					}
+				}else{
+					//try to catch audioTracks, give up after 5 seconds
+					if( counter < 5 ){
+						_this.parseAudioTracks(vid, ++counter);
+					}
+				}
+			}, 1000);
+		},
 		switchAudioTrack: function(audioTrackIndex){
 			var vid  = this.getPlayerElement();
 			var audioTracks = vid.audioTracks;
 			if(audioTracks && audioTracks[audioTrackIndex] && !audioTracks[audioTrackIndex].enabled) {
 				if(mw.isEdge()){
 
-				// Edge has a problem to switch audio track at playback time, so as a workaround - pause before the switching.
-				// When this issue will be fixed we can remove the entire code for Edge.
-		        // This issue should be fixed in Windows 10 build #14366.
-		        // See here: https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/7871229/
+					// Edge has a problem to switch audio track at playback time, so as a workaround - pause before the switching.
+					// When this issue will be fixed we can remove the entire code for Edge.
+					// This issue should be fixed in Windows 10 build #14366.
+					// See here: https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/7871229/
 
 					var _this = this;
 					var currentValue = this._propagateEvents;
@@ -1615,6 +1619,7 @@
 				} else {
 					audioTracks[audioTrackIndex].enabled = true;
 				}
+				this.audioTrackIndex = audioTrackIndex;
 			}
 		},
 		onSwitchTextTrack: function (event, data) {
@@ -1647,14 +1652,15 @@
 			}
 			return null;
 		},
-        getCurrentBufferLength: function(){
-            if ( this.playerElement.seekable.length > 0 ) {
+		getCurrentBufferLength: function(){
+			if ( this.playerElement.seekable.length > 0 ) {
 				return parseInt(this.playerElement.seekable.end(this.playerElement.seekable.length-1) - this.playerElement.currentTime); //return buffer length in seconds
-            }
-            return 0;
-        },
+			}
+			return 0;
+		},
 
 		clean:function(){
+			this.audioTrackIndex = null;
 			this.removeBindings();
 			clearTimeout(this.parseAudioTracksTimeout);
 			clearTimeout(this.parseTextTracksTimeout);
