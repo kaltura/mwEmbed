@@ -270,6 +270,7 @@
 				this.log('Error getting related items: ' + errMsg );
 				this.getBtn().hide();
 				this.error = true;
+				this.getPlayer().sendNotification('relatedEmpty');
 				return false;
 			}
 			this.error = false;
