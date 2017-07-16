@@ -126,7 +126,7 @@
         },
 
         checkBeforeSeek:function (seektime,stopAfterSeek,stopSeek) {
-            var _this= this;
+            var _this= this; 
             if ( _this.adDataLoaded
                 && _this.hasPreroll
                 && _this.embedPlayer.kPreSeekTime == 0 ) {
