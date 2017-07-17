@@ -29,7 +29,8 @@
 	mw.PluginManager.add( 'raptMedia', mw.KBaseComponent.extend( {
 
 		defaultConfig: {
-			'raptMediaScriptUrl': 'https://cdn1.raptmedia.com/system/player/v1/engine.min.js'
+			raptMediaScriptUrl: 'https://cdn1.raptmedia.com/system/player/v1/engine.min.js',
+			parent: 'videoHolder'
 		},
 
 		setup: function(){
@@ -142,8 +143,8 @@
 			this.setConfig('status', 'loading', true);
 			this.setConfig('projectId', raptProjectId, true);
 
-			// Prevent the last segment from incorrectly triggering ended / replay behavior
-			// this.getPlayer().onDoneInterfaceFlag = false;
+			// Attempt to prevent the last segment from incorrectly triggering ended / replay behavior
+			this.getPlayer().onDoneInterfaceFlag = false;
 
 			$.when(
 				this.loadEngine(),
@@ -192,7 +193,7 @@
 			this.initialize();
 
 			// Re-enable ended / replay behavior
-			// this.getPlayer().onDoneInterfaceFlag = true;
+			this.getPlayer().onDoneInterfaceFlag = true;
 
 			this.emit('raptMedia_cleanup');
 			this.getPlayer().sendNotification('reattachTimeUpdate');
