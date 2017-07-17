@@ -91,8 +91,8 @@
 				vid.webkitRequestFullscreen();
 				return ;
 			}
-			if( mw.getConfig('EmbedPlayer.NewWindowFullscreen') && !screenfull && ((!mw.isIphone() && mw.getConfig('EmbedPlayer.IsFriendlyIframe'))
-				|| !(mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen') && mw.isIpad()))){
+			if( mw.getConfig('EmbedPlayer.NewWindowFullscreen') && !screenfull && (!mw.isIphone() && mw.getConfig('EmbedPlayer.IsFriendlyIframe'))
+				&& !(mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen') && mw.isIpad())){
 				this.openNewWindow();
 				return;
 			}
