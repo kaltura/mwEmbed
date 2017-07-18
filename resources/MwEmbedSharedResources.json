@@ -172,7 +172,7 @@
         ],
         "skinStyles": {
             "default": "resources/jquery.ui/jquery-ui.min.css",
-            "no-theme": "resources/jquery.ui/jquery-ui.min.css "
+            "no-theme": "resources/jquery.ui/jquery-ui.min.css"
         }
     },
     "jquery.ui.accordion": {
