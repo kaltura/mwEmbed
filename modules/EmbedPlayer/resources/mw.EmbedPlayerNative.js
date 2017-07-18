@@ -154,9 +154,7 @@
 				_this.switchAudioTrack(data.index);
 			});
 			this.bindHelper('liveOnline' + this.bindPostfix, function(){
-				if( _this.isLive() && !_this.isDVR() ) {
-					_this.resetSrc = true;
-				}
+				_this.load();
 			});
 			this.bindHelper("changeEmbeddedTextTrack", this.onSwitchTextTrack.bind(this));
 		},
@@ -929,7 +927,7 @@
 						_this.log(" issue native play call:");
 						// make sure the source is set:
 						if (!_this.skipUpdateSource) {
-							if ( $( vid ).attr( 'src' ) != _this.getSrc() || _this.resetSrc ) {
+							if ( $( vid ).attr( 'src' ) != _this.getSrc() ) {
 								$( vid ).attr( 'src' , _this.getSrc() );
 								//trigger play again for iPad and El Capitan
 								setTimeout( function () {
@@ -938,7 +936,6 @@
 										_this.parseTracks();
 									}
 								} , 300 );
-								_this.resetSrc = false;
 							}
 						}
 						_this.hideSpinnerOncePlaying();
