@@ -60,6 +60,9 @@
 					_this.prevIconClass = _this.onAirIconClass ;
 				}
 			} );
+			this.bind( 'liveOnline' + _this.bindPostfix, function() {
+				_this.prevIconClass = this.onAirIconClass;
+			} );
 			this.once('playing' + _this.bindPostfix,function() {
 				_this.bind( 'seeked' + _this.bindPostfix + ' seeking' + _this.bindPostfix + ' onpause' + _this.bindPostfix + ' onLiveOffSynchChanged' + _this.bindPostfix , function ( e , param ) {
 					if (!_this.getPlayer().goingBackToLive) {

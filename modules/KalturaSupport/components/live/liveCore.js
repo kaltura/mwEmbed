@@ -152,31 +152,6 @@
 						embedPlayer.play();
 						_this.playWhenOnline = false;
 					}
-
-					//reload livestream
-					if ( !embedPlayer.firstPlay && _this.isDVR() ) {
-						embedPlayer.disablePlayControls();
-						var shouldPause = !embedPlayer.isPlaying();
-						var playingEvtName = "seeked.backToLive playing.backToLive";
-						embedPlayer.bindHelper( playingEvtName , function() {
-							embedPlayer.unbindHelper( playingEvtName );
-							setTimeout( function() {
-								embedPlayer.enablePlayControls();
-								if ( shouldPause ) {
-									embedPlayer.pause();
-								}
-							}, 1);
-
-						});
-
-						setTimeout( function() {
-							_this.maxCurrentTime = 0;
-							//in case player was in 'ended' state change to 'paused' state
-							embedPlayer.pauseInterfaceUpdate();
-							embedPlayer.backToLive();
-						}, 1000 );
-
-					}
 				}
 
 				_this.onAirStatus = onAirObj.onAirStatus;
