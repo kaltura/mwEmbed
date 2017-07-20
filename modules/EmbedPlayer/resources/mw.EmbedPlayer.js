@@ -2862,7 +2862,7 @@
 			}
 		},
 		checkClipDoneCondition: function(){
-			if ( this.currentTime >= 0 && this.duration ) {
+			if ( mw.getConfig('EmbedPlayer.EnableClipDoneGuard') && (this.currentTime >= 0 && this.duration) ) {
 				// Check if we are "done"
 				if (!this.isLive()) {
 					var endPresentationTime = this.duration;
