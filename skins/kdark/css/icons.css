@@ -185,76 +185,85 @@
 .icon-new-tab:before {
     content: "\e628";
 }
-.mobileSkin .icon-cog:before {
+.icon-vr:before {
     content: "\e900";
 }
-.mobileSkin .icon-share:before {
+.mobileSkin .icon-cog:before {
     content: "\e901";
 }
-.mobileSkin .icon-more:before {
+.mobileSkin .icon-share:before {
     content: "\e902";
 }
-.mobileSkin .icon-chromecast:before {
+.mobileSkin .icon-more:before {
     content: "\e903";
 }
-.mobileSkin .icon-airplay:before {
+.mobileSkin .icon-chromecast:before {
     content: "\e904";
 }
-.mobileSkin .icon-contract:before {
+.mobileSkin .icon-airplay:before {
     content: "\e905";
 }
-.mobileSkin .icon-expand:before {
+.mobileSkin .icon-contract:before {
     content: "\e906";
+}
+.mobileSkin .icon-expand:before {
+    content: "\e907";
 }
 .mobileSkin .icon-play:before {
     text-shadow: 0px 0px 2px rgba(0,0,0,0.10);
-    content: "\e907";
+    content: "\e908";
 }
 .mobileSkin .icon-pause:before {
     text-shadow: 0px 0px 2px rgba(0,0,0,0.10);
-    content: "\e908";
-}
-.mobileSkin .icon-prev:before {
     content: "\e909";
 }
-.mobileSkin .icon-next:before {
+.mobileSkin .icon-prev:before {
     content: "\e90a";
 }
-.mobileSkin .icon-richmedia:before {
+.mobileSkin .icon-next:before {
     content: "\e90b";
 }
-.mobileSkin .icon-info:before {
+.mobileSkin .icon-richmedia:before {
     content: "\e90c";
 }
-.mobileSkin .icon-cc:before {
+.mobileSkin .icon-info:before {
     content: "\e90d";
 }
-.mobileSkin .icon-speedrate:before {
+.mobileSkin .icon-cc:before {
     content: "\e90e";
 }
-.mobileSkin .icon-flag:before {
+.mobileSkin .icon-speedrate:before {
     content: "\e90f";
 }
-.mobileSkin .icon-attachments:before {
+.mobileSkin .icon-flag:before {
     content: "\e910";
 }
-.mobileSkin .icon-download:before {
+.mobileSkin .icon-attachments:before {
     content: "\e911";
 }
-.mobileSkin .icon-swap:before {
+.mobileSkin .icon-download:before {
     content: "\e912";
 }
-.mobileSkin .icon-mainslide:before {
+.mobileSkin .icon-swap:before {
     content: "\e913";
 }
-.mobileSkin .icon-single:before {
+.mobileSkin .icon-mainslide:before {
     content: "\e914";
 }
-.mobileSkin .icon-split:before {
+.mobileSkin .icon-single:before {
     content: "\e915";
 }
-.mobileSkin .icon-viewpoint:before {
+.mobileSkin .icon-split:before {
     content: "\e916";
+}
+.mobileSkin .icon-viewpoint:before {
+    content: "\e917";
+}
+.mobileSkin .icon-arrow-left:before {
+    content: "\e918";
+}
+.mobileSkin .icon-close:before {
+    content: "\e919";
 }
 .mobileSkin .icon-related:before {
     content: "\e91c";
@@ -262,14 +271,4 @@
 .mobileSkin .icon-ad:before {
     content: "\e91e";
 }
-.mobileSkin .icon-arrow-left:before {
-    content: "\e917";
-}
-.mobileSkin .icon-close:before {
-    content: "\e918";
-}
-.icon-vr:before {
-    content: "\e91f";
-}
-
 
