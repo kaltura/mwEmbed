@@ -690,7 +690,9 @@
 				if (!this.mediaAttached){
 					this.unbind("firstPlay");
 					this.unbind("seeking");
-					this.hls.attachMedia(this.getPlayer().getPlayerElement());
+					this.bind("firstPlay", function() {
+						this.hls.attachMedia(this.getPlayer().getPlayerElement());
+					}.bind(this));
 				}
 				if (!this.embedPlayer.isVideoSiblingEnabled()
 					&& !this.embedPlayer.isInSequence()
