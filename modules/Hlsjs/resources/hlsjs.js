@@ -690,15 +690,9 @@
 				if (!this.mediaAttached){
 					this.unbind("firstPlay");
 					this.unbind("seeking");
-					if (this.embedPlayer.adTimeline) {
-						var self = this;
-						this.bind('AdSupport_preSequenceComplete', function () {
-							self.unbind('AdSupport_preSequenceComplete');
-							self.hls.attachMedia(self.getPlayer().getPlayerElement());
-						});
-					} else {
+					this.bind("firstPlay", function() {
 						this.hls.attachMedia(this.getPlayer().getPlayerElement());
-					}
+					}.bind(this));
 				}
 				if (!this.embedPlayer.isVideoSiblingEnabled()
 					&& !this.embedPlayer.isInSequence()
