@@ -1211,7 +1211,11 @@
 				var $menu = $( '<ul />' ).addClass( 'dropdown-menu' );
 				var $button = $( '<button />' )
 								.addClass( 'btn icon-cc' )
-								.attr('title', _this.getConfig('title') )
+								.attr({
+									'title' : _this.getConfig('title'),
+									'aria-label' : _this.getConfig('title'),
+									'aria-haspopup':'true'
+								})
 								.click( function(e){
 									if ( _this.getMenu().numOfChildren() > 0 ) {
 										_this.getMenu().toggle();
@@ -1230,7 +1234,8 @@
 		getMenu: function(){
 			if( !this.menu ) {
 				this.menu = new mw.KMenu(this.getComponent().find('ul'), {
-					tabIndex: this.getBtn().attr('tabindex')
+					tabIndex: this.getBtn().attr('tabindex'),
+					menuName: this.getConfig("title")
 				});
 			}
 			return this.menu;			

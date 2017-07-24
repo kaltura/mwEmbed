@@ -639,7 +639,7 @@
             if (_this.KIVQModule.quizSubmitted) {
                 $(".ftr-right").html(gM('mwe-quiz-next')).on('click', function () {
                     _this.KIVQModule.continuePlay();
-                });
+                }).attr({'tabindex': 6.3, "role" : "button"});
                 return;
             }
             if (_this.KIVQModule.reviewMode) {
@@ -649,7 +649,7 @@
 
                 $(".ftr-right").html(gM('mwe-quiz-next')).on('click', function () {
                     _this.KIVQModule.continuePlay();
-                }).attr('role', 'button').attr('tabindex', 5).on('keydown', _this.keyDownHandler);
+                }).attr({'tabindex': 6.3, "role" : "button"}).on('keydown', _this.keyDownHandler);
             } else {
                 $(".ftr-left").append($('<span> ' + gM('mwe-quiz-question') + ' ' + this.KIVQModule.i2q(questionNr)
                 + '/' + $.cpObject.cpArray.length + '</span>')
