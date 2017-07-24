@@ -70,6 +70,7 @@
 				this.bind("SourceChange", this.isNeeded.bind(this));
 				this.bind("playerReady", this.initHls.bind(this));
 				this.bind("onChangeMedia", this.clean.bind(this));
+				this.bind("liveOnline", this.onLiveOnline.bind(this));
 				if (mw.getConfig("hlsLogs")) {
 					this.bind("monitorEvent", this.monitorDebugInfo.bind(this));
 				}
@@ -109,7 +110,7 @@
 					this.log("Init");
 					//Set streamerType to hls
 					this.embedPlayer.streamerType = 'hls';
-					
+
 					var hlsConfig = this.getHlsConfig();
 					//Init the HLS playback engine
 					this.hls = new Hls(hlsConfig);
@@ -689,7 +690,9 @@
 				if (!this.mediaAttached){
 					this.unbind("firstPlay");
 					this.unbind("seeking");
-					this.hls.attachMedia(this.getPlayer().getPlayerElement());
+					this.bind("firstPlay", function() {
+						this.hls.attachMedia(this.getPlayer().getPlayerElement());
+					}.bind(this));
 				}
 				if (!this.embedPlayer.isVideoSiblingEnabled()
 					&& !this.embedPlayer.isInSequence()
@@ -753,6 +756,14 @@
 					this.unbind("firstPlay");
 					this.unbind("seeking");
 					this.hls.attachMedia(this.getPlayer().getPlayerElement());
+				}
+			},
+
+			onLiveOnline: function () {
+				if (this.embedPlayer.isDVR()) {
+					this.hls.detachMedia();
+					this.hls.attachMedia(this.embedPlayer.getPlayerElement());
+					this.hls.nextLevel = -1;
 				}
 			},
 

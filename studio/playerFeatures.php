@@ -274,20 +274,22 @@ foreach ($menu as $menuItem => &$menuContent) {
 
 //Traverse PS featureStructure
 $psFeaturesStructure = realpath(dirname($wgKalturaPSHtml5SettingsPath) . "/../ps/modules/featuresStructure.php");
-$psMenu = include($psFeaturesStructure);
-foreach ($psMenu as $menuItem => &$menuContent) {
-    foreach ($menuContent['children'] as $pluginName => &$pluginData) {
-        if (isset($configRegister[$pluginName]) && isset($configRegister[$pluginName]['attributes'])) {
-            $pluginData = $menuMaker->Menu($pluginName, $configRegister[$pluginName]);
+if (is_file($psFeaturesStructure)){
+    $psMenu = include($psFeaturesStructure);
+    foreach ($psMenu as $menuItem => &$menuContent) {
+        foreach ($menuContent['children'] as $pluginName => &$pluginData) {
+            if (isset($configRegister[$pluginName]) && isset($configRegister[$pluginName]['attributes'])) {
+                $pluginData = $menuMaker->Menu($pluginName, $configRegister[$pluginName]);
+            }
         }
+        if (isset($menu[$menuItem])){
+            $menu[$menuItem]['children'] = array_merge_recursive($menu[$menuItem]['children'], $psMenu[$menuItem]['children']);
+        }
+        //This will enable creating totaly new tabs in studio from PS
+    //    else {
+    //        $menu[$menuItem] = $psMenu[$menuItem];
+    //    }
     }
-    if (isset($menu[$menuItem])){
-        $menu[$menuItem]['children'] = array_merge_recursive($menu[$menuItem]['children'], $psMenu[$menuItem]['children']);
-    }
-    //This will enable creating totaly new tabs in studio from PS
-//    else {
-//        $menu[$menuItem] = $psMenu[$menuItem];
-//    }
 }
 
 header("Access-Control-Allow-Origin: *");

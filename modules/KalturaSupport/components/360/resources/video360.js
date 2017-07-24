@@ -1,9 +1,16 @@
 (function (mw, $, THREE) {
 	"use strict";
 
-	mw.PluginManager.add('video360', mw.KBasePlugin.extend({
+	mw.PluginManager.add('video360', mw.KBaseComponent.extend({
 
 		defaultConfig: {
+			// vr button default config
+			align: "right",
+			parent: 'controlsContainer',
+			displayImportance: "high",
+			showTooltip: true,
+			order: 70,
+			// 360 default config
 			moveMultiplier: 0.3,
 			mobileVibrationValue: (mw.isIOS() ? 0.0365 : 1),
 			cameraOptions: {
@@ -15,6 +22,7 @@
 		},
 		manualControl: false,
 		is360: false,
+		vrMode: false,
 		longitude: 180,
 		latitude: 0,
 		savedX: 0,
@@ -29,16 +37,32 @@
 		},
 
 		isSafeEnviornment: function () {
-			return !( mw.isIE8() || mw.isIE9() || mw.isIE10Comp() || // old IEs
-			(mw.isIE11() && (mw.getUserOS() === 'Windows 7' || mw.getUserOS() === 'Windows 8')) || // ie11 on win7/8
-			(mw.isIphone() && mw.isIOSBelow10()) || // iPhone and IOS < 10 - doesn't support inline playback
-			mw.isIOSBelow9() ||  // IOS < 9 doesn't support webgl
-			(!mw.getConfig("forceSameDomainOnIOS") && ( mw.isIOS() || mw.isDesktopSafari()) )); //if we're in iOS and we didnt forceSameDomain - turn off the plugin
+			return this.getPlayer().is360() &&
+				!( mw.isIE8() || mw.isIE9() || mw.isIE10Comp() || // old IEs
+				(mw.isIE11() && (mw.getUserOS() === 'Windows 7' || mw.getUserOS() === 'Windows 8')) || // ie11 on win7/8
+				(mw.isIphone() && mw.isIOSBelow10()) || // iPhone and IOS < 10 - doesn't support inline playback
+				mw.isIOSBelow9() ||  // IOS < 9 doesn't support webgl
+				(!mw.getConfig("forceSameDomainOnIOS") && ( mw.isIOS() || mw.isDesktopSafari()) )); //if we're in iOS and we didnt forceSameDomain - turn off the plugin
+		},
+
+		getComponent: function() {
+			if( !this.$el ) {
+				this.$el = $( '<button />' )
+					.attr( 'title', 'VR' )
+					.addClass( "btn icon-vr" + this.getCssClass() )
+					.click( function() {
+						this.vrMode = !this.vrMode;
+						var canvasSize = this.getCanvasSize();
+						this.renderer.setSize(canvasSize.width, canvasSize.height);
+					}.bind(this));
+			}
+			return this.$el;
 		},
 
 		setup: function () {
 			this.set360Config();
 			this.bind("playerReady", function () {
+				this.hide();
 				if (this.getPlayer().is360()) {
 					this.is360 = true;
 					this.addBindings();
@@ -61,10 +85,13 @@
 		},
 
 		set360Config: function () {
-			//Get user configuration
+			//Get user camera configuration
 			var userCameraOptions = this.getConfig("cameraOptions");
 			//Deep extend custom config
 			this.cameraOptions = $.extend({}, this.defaultConfig.cameraOptions, userCameraOptions);
+
+			//Get user vr mode configuration
+			this.vrMode = this.getConfig('vrMode') || false;
 		},
 
 		addBindings: function () {
@@ -72,6 +99,7 @@
 				this.attachMotionListeners();
 				$(this.canvas).css("z-index", "2");
 				this.add360logo();
+				this.getPlayer().is360() && this.getConfig('vr') !== false ? this.show() : this.hide();
 			}.bind(this));
 
 			this.bind("onAdPlay", function () {
@@ -138,6 +166,9 @@
 			// geometry + material = mesh (actual object)
 			var sphereMesh = new THREE.Mesh(sphere, sphereMaterial);
 			this.scene.add(sphereMesh);
+
+			// Apply VR stereo rendering to renderer
+			this.effect = new THREE.StereoEffect(this.renderer);
 		},
 
 		overrideVideoTextureMethod: function () {
@@ -210,7 +241,11 @@
 			this.updateCamera();
 
 			// calling again render function
-			this.renderer.render(this.scene, this.camera);
+			if (this.vrMode) {
+				this.effect.render( this.scene , this.camera );
+			} else {
+				this.renderer.render( this.scene , this.camera );
+			}
 		},
 
 		// when the mouse is pressed, we switch to manual control and save current coordinates
@@ -223,6 +258,15 @@
 			if (event.type === "touchstart") {
 				$("#touchOverlay").trigger("touchstart");
 			}
+			this.getPlayer().triggerHelper('onComponentsHoverDisabled');
+			setTimeout(function () {
+				this.getPlayer().triggerHelper('onComponentsHoverEnabled');
+			}.bind(this), 1500);
+			$('.controlsContainer').one("mouseleave", function(){
+				setTimeout(function () {
+					this.getPlayer().triggerHelper('onComponentsHoverEnabled');
+				}.bind(this), 500);
+			}.bind(this));
 		},
 
 		// when the mouse moves, if in manual control we adjust coordinates
@@ -308,6 +352,7 @@
 			this.detachMotionListeners();
 			this.remove360logo();
 			this.is360 = false;
+			this.vrMode = this.getConfig('vrMode') || false;
 			this.initCameraTarget();
 		},
 
@@ -336,7 +381,10 @@
 		},
 
 		remove360logo: function () {
-			$.find('.logo360')[0].remove();
+			var logo = $.find('.logo360')[0];
+			if (logo) {
+				logo.remove();
+			}
 		}
 	}));
 

@@ -48,6 +48,7 @@
     "EmbedPlayer.MonitorRate": 250,
     "EmbedPlayer.UseFlashOnAndroid": false,
     "EmbedPlayer.EnableURLTimeEncoding": false,
+    "EmbedPlayer.EnableClipDoneGuard": true,
     "EmbedPLayer.IFramePlayer.DomainWhiteList": "*",
     "EmbedPlayer.PageDomainIframe": true,
     "EmbedPlayer.NotPlayableDownloadLink": true,
