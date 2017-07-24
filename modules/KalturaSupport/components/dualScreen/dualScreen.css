@@ -187,5 +187,8 @@
     transition: visibility 0.35s ease-out ,opacity 0.35s ease-out;
 }
 
+.multicast .dualScreen .persistentNativePlayer {
+    display: none;
+}
 
 

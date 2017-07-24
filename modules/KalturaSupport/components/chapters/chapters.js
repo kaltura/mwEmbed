@@ -66,7 +66,6 @@
 		},
 		_addBindings: function () {
 			var _this = this;
-
 			this._super();
 
 			// Unbind existing updateLayout callback and bind debounced one
@@ -180,7 +179,6 @@
 			this.bind("freezeTimeIndicators", function(e, val){
 				_this.freezeTimeIndicators = val;
 			});
-
 			this.bind("monitorEvent", function () {
 				if (_this.dataIntialized) {
 					_this.handlePendingItems();

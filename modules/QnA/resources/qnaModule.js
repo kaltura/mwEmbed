@@ -9,7 +9,6 @@
             bindPostfix: '.KQnaModule',
             qnaPlugin: null,
             qnaService: null,
-            currentTimeInterval: null,
 
             init: function (embedPlayer, qnaPlugin, qnaService) {
 
@@ -121,26 +120,17 @@
                     // Get thread by ID and set it to be collapsed / Expanded
                     entry.getThread().isCollapsed(!entry.getThread().isCollapsed());
                 };
-
-                // update current time to update display
-                if (this.currentTimeInterval === null) {
-                    this.currentTimeInterval = setInterval(function () {
-                        _this.currentTime(new Date().getTime());
-                    }, mw.getConfig("qnaPollingInterval") || 10000);
-                }
                 $( embedPlayer ).bind('timeupdate', function () {
                     // in DVR mode embedPlayer.current time is in seconds - so we need to add dvrAbsoluteStartTime
                     if(embedPlayer.isDVR()){
                         _this.playerTime(this.dvrAbsoluteStartTime+this.currentTime);
                     }else{
                         // in live (non-dvr) mode embedPlayer.current time is in timestamp - no need to add baseline
-                        _this.playerTime(this.currentTime);
+                        _this.playerTime(this.LiveCurrentTime);
                     }
                 });
             },
             destroy: function () {
-                clearInterval(this.currentTimeInterval);
-                this.currentTimeInterval = null;
                 $(this.embedPlayer).unbind(this.bindPostfix);
             },
             applyLayout: function () {
