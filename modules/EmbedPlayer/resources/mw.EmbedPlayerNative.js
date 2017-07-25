@@ -1461,7 +1461,7 @@
 		},
 
 		isVideoSiblingEnabled: function () {
-			if (mw.isIphone() || mw.isAndroid2() || mw.isWindowsPhone() || mw.isAndroid40() || mw.isMobileChrome()
+			if (mw.isIphone() || mw.isAndroid2() || mw.isWindowsPhone() || mw.isAndroid40()
 				||
 				( mw.isIpad() && !mw.isIpad3() )
 			) {

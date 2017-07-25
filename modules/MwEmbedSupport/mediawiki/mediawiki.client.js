@@ -98,7 +98,7 @@
 		if ( res == null ){
 			return false;
 		}
-		return ( res[2] > 4 && userAgent.indexOf('Windows') === -1);
+		return ( res[2] >= 4 && userAgent.indexOf('Windows') === -1);
 	};
 
 	mw.isSamsungStockBrowser = function () {
