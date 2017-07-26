@@ -138,6 +138,9 @@
 					_this.setVolume( 1 );
 				}
 			}
+            this.bindHelper( 'userInitiatedPlay' + this.bindPostfix, function () {
+                checkMobileAutoPlay();
+            } );
 			this.bindHelper( 'userInitiatedPause' + this.bindPostfix, function () {
 				checkMobileAutoPlay();
 			} );
