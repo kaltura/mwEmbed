@@ -527,21 +527,15 @@
 			var layout = this.getLayout();
 			var list = this.getMedialistComponent();
 			var listSize = layout === 'vertical' ? list.width() : list.height();
-			if (this._lastListSize === layout + listSize) {
-				// no need to update elements
-				return;
-			}
-
-			this._lastListSize = layout + listSize;
 
 			// Collect chapters/slides to update
 			var chapters = [];
 			var slides = [];
-			var mediaList = this.mediaList;
 			this.getMediaListDomElements().each(function (index, mediaBox) {
-				if (mediaList[index].type === mw.KCuePoints.THUMB_SUB_TYPE.CHAPTER) {
+				var type = Number(mediaBox.getAttribute('data-box-type'));
+				if (type === mw.KCuePoints.THUMB_SUB_TYPE.CHAPTER) {
 					chapters.push(mediaBox);
-				} else {
+				} else if (type === mw.KCuePoints.THUMB_SUB_TYPE.SLIDE) {
 					slides.push(mediaBox);
 				}
 			});
