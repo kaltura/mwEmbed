@@ -126,7 +126,10 @@
 			});
 
 			this.bind('seeked', function() {
-				_this.updateEngine();
+				// Attempt to work around mobile safari weirdness
+				setTimeout(function() {
+					_this.updateEngine();
+				}, 0);
 			});
 		},
 
