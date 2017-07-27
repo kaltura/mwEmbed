@@ -349,19 +349,28 @@
 		},
 
 		getPlayerUncertainty: function(discontinuityIndex) {
+			var streamerType = this.getPlayer().evaluate('{utility.streamerType}');
 			var position = discontinuityIndex + 1;
+
 			var AAC_FRAME_SIZE = 1024;
 			var MIN_SAMPLE_RATE = 44100;
-			var MIN_FRAME_RATE = 24;
 
+			var AAC_UNCERTAINTY = AAC_FRAME_SIZE / MIN_SAMPLE_RATE;
+
+			var MIN_FRAME_RATE = 24;
+			var MAX_DTS_OFFSET = 2;
+
+			var DTS_UNCERTAINTY = MAX_DTS_OFFSET / MIN_FRAME_RATE;
 			// Segment duration is based on the duration of all video frames, however on discontinuities HLS.js appears to take the longer of the audio or video duration.
 			// Audio will always be a multiple of AAC frame size (1024 samples) so we assume the maximum error of 1 AAC frame at the lowest sampling rate per discontinuity.
-			return (
-				// Audio length uncertainty
-				((AAC_FRAME_SIZE / MIN_SAMPLE_RATE) * position) +
-				// PTS vs. DTS uncertainty
-				(2 / MIN_FRAME_RATE)
-			);
+
+			switch (streamerType) {
+				case 'hls':
+					return AAC_UNCERTAINTY * position + DTS_UNCERTAINTY;
+				case 'mpegdash':
+				default:
+					return DTS_UNCERTAINTY;
+			}
 		},
 
 		loadSegments: function(raptProjectId) {
@@ -400,7 +409,7 @@
 
 						var msUncertainty = _this.getPlayerUncertainty(i) * 1000;
 
-						var startTime = Math.ceil((msStartOffset + msUncertainty) / 10) / 100;
+						var startTime = i === 0 ? 0 : Math.ceil((msStartOffset + msUncertainty) / 10) / 100;
 						var endTime = Math.floor((msStartOffset + entry.msDuration - msUncertainty) / 10) / 100;
 						var duration = endTime - startTime;
 						var uncertainty = Math.ceil(msUncertainty / 10) / 100;
@@ -550,9 +559,9 @@
 			var absoluteTime = this.getPlayer().currentTime;
 			var segmentTime = absoluteTime - this.currentSegment.startTime;
 
-			var isBefore = segmentTime < 0;
+			var isBefore = segmentTime < -0.001;
 			var isEnding = segmentTime > this.currentSegment.duration - END_EPSILON;
-			var isAfter = segmentTime > this.currentSegment.duration;
+			var isAfter = segmentTime > this.currentSegment.duration + 0.001;
 
 			var flags = [];
 			if (isBefore) { flags.push('before'); }
