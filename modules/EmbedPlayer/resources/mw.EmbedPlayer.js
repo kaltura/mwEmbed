@@ -1862,8 +1862,14 @@
 						height: this.getInterface().height() + 1
 					};
 					this.updateInterfaceSize(resize);
-					resize.height = "100%";
-					resize.width = "100%";
+					if(this.isPlaylistScreen()) {
+						resize.width = this.getInterface().width();
+						resize.height = this.getInterface().height() - 1;
+					}
+					else {
+						resize.width = "100%";
+						resize.height = "100%";
+					}
 					this.updateInterfaceSize(resize);
 				}
 				this.triggerHelper('widgetLoaded');
