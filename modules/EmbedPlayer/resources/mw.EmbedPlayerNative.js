@@ -138,6 +138,9 @@
 					_this.setVolume( 1 );
 				}
 			}
+            this.bindHelper( 'userInitiatedPlay' + this.bindPostfix, function () {
+                checkMobileAutoPlay();
+            } );
 			this.bindHelper( 'userInitiatedPause' + this.bindPostfix, function () {
 				checkMobileAutoPlay();
 			} );
@@ -1461,7 +1464,7 @@
 		},
 
 		isVideoSiblingEnabled: function () {
-			if (mw.isIphone() || mw.isAndroid2() || mw.isWindowsPhone() || mw.isAndroid40() || mw.isMobileChrome()
+			if (mw.isIphone() || mw.isAndroid2() || mw.isWindowsPhone() || mw.isAndroid40()
 				||
 				( mw.isIpad() && !mw.isIpad3() )
 			) {

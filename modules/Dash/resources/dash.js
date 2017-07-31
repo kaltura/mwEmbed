@@ -394,7 +394,7 @@
 					var seekRange = player.seekRange();
 					this.getPlayer().setDuration(seekRange.end - seekRange.start);
 				} else {
-					this.orig_ondurationchange(event, data);
+					this.orig_ondurationchange.call(this.getPlayer(), event, data);
 				}
 			},
 

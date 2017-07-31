@@ -66,7 +66,6 @@
 		},
 		_addBindings: function () {
 			var _this = this;
-
 			this._super();
 
 			// Unbind existing updateLayout callback and bind debounced one
@@ -180,7 +179,6 @@
 			this.bind("freezeTimeIndicators", function(e, val){
 				_this.freezeTimeIndicators = val;
 			});
-
 			this.bind("monitorEvent", function () {
 				if (_this.dataIntialized) {
 					_this.handlePendingItems();
@@ -529,21 +527,15 @@
 			var layout = this.getLayout();
 			var list = this.getMedialistComponent();
 			var listSize = layout === 'vertical' ? list.width() : list.height();
-			if (this._lastListSize === layout + listSize) {
-				// no need to update elements
-				return;
-			}
-
-			this._lastListSize = layout + listSize;
 
 			// Collect chapters/slides to update
 			var chapters = [];
 			var slides = [];
-			var mediaList = this.mediaList;
 			this.getMediaListDomElements().each(function (index, mediaBox) {
-				if (mediaList[index].type === mw.KCuePoints.THUMB_SUB_TYPE.CHAPTER) {
+				var type = Number(mediaBox.getAttribute('data-box-type'));
+				if (type === mw.KCuePoints.THUMB_SUB_TYPE.CHAPTER) {
 					chapters.push(mediaBox);
-				} else {
+				} else if (type === mw.KCuePoints.THUMB_SUB_TYPE.SLIDE) {
 					slides.push(mediaBox);
 				}
 			});

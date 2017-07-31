@@ -71,17 +71,26 @@
         parseTag: function(tag){
             var time;
             if ( tag ) {
+                // on IE the tag needs to be parsed
                 time = tag.timestamp / 1000;
+                if(!time){
+                    //Some browsers do not parse the JSON well
+	                time = JSON.parse(tag).timestamp / 1000;
+                }
             } else {
                 mw.log("id3Tag plugin :: ERROR parsing tag.");
             }
             if(time) {
                 var d = new Date(0); // The 0 there is the key, which sets the date to the epoch
                 d.setUTCSeconds(time);
-                this.log("Update time from id3 tag: " + d.toUTCString());
+	            this.log("Update time from id3 tag: " + d.toUTCString());
                 this.updatedTime = time;
                 this.counter = 0; //reset time update interval counter
                 this.getPlayer().LiveCurrentTime = time;
+                if(this.getPlayer().isMulticast){
+	                //set the current time for MC from the ID3 tag and not from the SL element that has always 0
+	                this.getPlayer().currentTime = time
+                }
                 this.getPlayer().flashLiveCurrentTime = time; // for flash player
                 // Calculate the start time of the video in absolute time for dvr
                 // set this once - no need to do this rapidly
