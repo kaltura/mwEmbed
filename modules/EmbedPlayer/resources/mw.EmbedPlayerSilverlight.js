@@ -130,7 +130,14 @@
 				var lastIndex=flavor.url.lastIndexOf("/kLive");
 				var key=flavor.url.substring(0,lastIndex);
 
-				var index = flavor.url.indexOf("kMulticast/") + 11;
+				var kMulticastIndex = flavor.url.indexOf("kMulticast/");
+
+				//in case server returned a non-multicast url
+				if (kMulticastIndex===-1) {
+					return;
+				}
+
+				var index = kMulticastIndex + 11;
 				//var hls = flavor.url.substring(index);
 				if (!KESMapping.hasOwnProperty(key)) {
 					KESMapping[key] = {"flavors": [], "baseUrl": flavor.url.substring(0, index)};
@@ -178,7 +185,8 @@
 				this.isError = true;
 				var errorObj = {message: gM('ks-LIVE-STREAM-NOT-AVAILABLE'), title: gM('ks-ERROR')};
 				this.showErrorMsg(errorObj);
-			} else {
+                this.fallbackToUnicast();
+            } else {
 				index = (index + 1) % this._availableMulticastManifests.length;
 				this.multiastServerUrl = this._availableMulticastManifests[index];
 
