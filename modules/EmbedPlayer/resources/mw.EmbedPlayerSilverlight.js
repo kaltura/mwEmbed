@@ -130,7 +130,7 @@
 				var lastIndex=flavor.url.lastIndexOf("/kLive");
 				var key=flavor.url.substring(0,lastIndex);
 
-				let kMulticastIndex = flavor.url.indexOf("kMulticast/");
+				var kMulticastIndex = flavor.url.indexOf("kMulticast/");
 
 				//in case server returned a non-multicast url
 				if (kMulticastIndex===-1) {
