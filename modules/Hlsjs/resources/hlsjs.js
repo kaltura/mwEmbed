@@ -616,16 +616,22 @@
 			backToLive: function () {
                 var _this = this;
                 var vid = this.getPlayer().getPlayerElement();
-                this.embedPlayer.goingBackToLive = true;
-                vid.currentTime = vid.duration - this.embedPlayer.liveSyncDurationOffset;
-                if ( this.embedPlayer.isDVR() ) {
-                    _this.once( 'seeked', function () {
-	                    _this.getPlayer().triggerHelper( 'movingBackToLive' );
-                        _this.embedPlayer.goingBackToLive = false;
-                    } );
-                } else {
-	                _this.getPlayer().triggerHelper( 'movingBackToLive' );
-                    _this.embedPlayer.goingBackToLive = false;
+				this.embedPlayer.goingBackToLive = true;
+                try {
+	                vid.currentTime = vid.duration - this.embedPlayer.liveSyncDurationOffset;
+	                if ( this.embedPlayer.isDVR() ) {
+		                _this.once( 'seeked', function () {
+			                _this.getPlayer().triggerHelper( 'movingBackToLive' );
+			                _this.embedPlayer.goingBackToLive = false;
+		                } );
+	                } else {
+		                _this.getPlayer().triggerHelper( 'movingBackToLive' );
+		                _this.embedPlayer.goingBackToLive = false;
+	                }
+                } catch (e) {
+	                this.getPlayer().triggerHelper( 'movingBackToLive' );
+	                this.embedPlayer.goingBackToLive = false;
+	                this.log(e);
                 }
             },
 
@@ -761,9 +767,13 @@
 
 			onLiveOnline: function () {
 				if (this.embedPlayer.isDVR()) {
-					this.hls.detachMedia();
+					this.log(' onLiveOnline:: renew hls instance');
+					this.hls.destroy();
+					var hlsConfig = this.getHlsConfig();
+					this.hls = new Hls(hlsConfig);
+					this.registerHlsEvents();
+					this.mediaAttached = false;
 					this.hls.attachMedia(this.embedPlayer.getPlayerElement());
-					this.hls.nextLevel = -1;
 				}
 			},
 
