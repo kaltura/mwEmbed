@@ -116,7 +116,8 @@ class EntryResult
 
     function getCacheKey()
     {
-        global $wgForceCache;
+        //Cache by entryId and protocol
+        global $wgForceCache, $wgHTTPProtocol;
         $key = '';
         if ($this->request->isEmbedServicesEnabled() && $this->request->isEmbedServicesRequest()) {
             if ($wgForceCache) {
@@ -136,6 +137,7 @@ class EntryResult
         if ($this->request->getReferenceId()) {
             $key .= $this->request->getReferenceId();
         }
+        $key .= ".".$wgHTTPProtocol;
         return $key;
     }
 
