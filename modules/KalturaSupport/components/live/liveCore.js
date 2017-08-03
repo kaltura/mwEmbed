@@ -393,7 +393,9 @@
 				if ( callback ) {
 					callback( true );
 				}
-				embedPlayer.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : true } );
+				setTimeout(function () {
+					embedPlayer.triggerHelper('liveStreamStatusUpdate', {'onAirStatus': true});
+				}, 0);
 				return;
 			}
 
