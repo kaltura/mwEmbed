@@ -396,10 +396,7 @@
 				//TODO: need icon from Shlomit!
 				var $button = $('<button />')
 					.addClass('btn icon-switchSource')
-					.attr({ 'title': gM('mwe-embedplayer-select_stream'),
-							'aria-label':gM('mwe-embedplayer-select_stream'),
-							'aria-haspopup':'true'
-					})
+					.attr('title', gM('mwe-embedplayer-select_stream'))
 					.click(function (e) {
 						_this.toggleMenu();
 					});
@@ -413,8 +410,7 @@
 		getMenu: function () {
 			if (!this.menu) {
 				this.menu = new mw.KMenu(this.getComponent().find('ul'), {
-					tabIndex: this.getBtn().attr('tabindex'),
-					menuName: this.getConfig("title")
+					tabIndex: this.getBtn().attr('tabindex')
 				});
 			}
 			return this.menu;

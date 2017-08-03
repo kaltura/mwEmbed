@@ -200,8 +200,7 @@
 			this.getMenu().addItem({
 				'label': streamName,
 				'attributes': {
-					'id': id,
-					'aria-label' : streamName
+					'id': id
 				},
 				'callback': function () {
 					_this.setStream(stream);
@@ -237,11 +236,7 @@
 				//TODO: need icon from Shlomit!
 				var $button = $('<button />')
 					.addClass('btn icon-audio')
-					.attr({
-							'title': gM('mwe-embedplayer-select_audio'),
-							'aria-label': gM('mwe-embedplayer-select_audio'),
-							'aria-haspopup':'true'
-					})
+					.attr('title', gM('mwe-embedplayer-select_audio'))
 					.click(function (e) {
 						_this.toggleMenu();
 					});
@@ -255,8 +250,7 @@
 		getMenu: function () {
 			if (!this.menu) {
 				this.menu = new mw.KMenu(this.getComponent().find('ul'), {
-					tabIndex: this.getBtn().attr('tabindex'),
-					menuName: this.getConfig("title")
+					tabIndex: this.getBtn().attr('tabindex')
 				});
 			}
 			return this.menu;
@@ -268,14 +262,12 @@
 			this.isDisabled = false;
 			this.updateTooltip(gM('mwe-embedplayer-select_audio'));
 			this.getBtn().removeClass('disabled');
-			this.getBtn().attr("aria-disabled","false" );
 		},
 		onDisable: function () {
 			this.isDisabled = true;
 			this.updateTooltip(gM('mwe-embedplayer-select_audio'));
 			this.getComponent().removeClass('open');
 			this.getBtn().addClass('disabled');
-			this.getBtn().attr("aria-disabled","true" );
 		}
 	}));
 
