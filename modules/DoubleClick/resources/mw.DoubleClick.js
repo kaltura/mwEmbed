@@ -1005,7 +1005,7 @@
                 adsRenderingSettings[ "uiElements" ] = [];
             }
             adsRenderingSettings.useStyledNonLinearAds = true;
-            if (this.onAdsManagerLoaded) {
+            if (this.adsManager) {
                 this.adsManager.destroy();
             }
             this.adsManager = loadedEvent.getAdsManager( this.embedPlayer, adsRenderingSettings );
