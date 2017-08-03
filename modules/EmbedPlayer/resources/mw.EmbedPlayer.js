@@ -1857,20 +1857,7 @@
 				mw.log("EmbedPlayer:: Trigger: widgetLoaded");
 				if( mw.getConfig('Kaltura.ForceLayoutRedraw') && ! (this.getInterface().width() === 0) && ! (this.getInterface().height() === 0) ) {
 					mw.log("EmbedPlayer:: ForceLayoutRedraw");
-					var resize = {
-						width: this.getInterface().width(),
-						height: this.getInterface().height() + 1
-					};
-					this.updateInterfaceSize(resize);
-					if(this.isPlaylistScreen()) {
-						resize.width = this.getInterface().width();
-						resize.height = this.getInterface().height() - 1;
-					}
-					else {
-						resize.width = "100%";
-						resize.height = "100%";
-					}
-					this.updateInterfaceSize(resize);
+					this.doUpdateLayout(true);
 				}
 				this.triggerHelper('widgetLoaded');
 			}
