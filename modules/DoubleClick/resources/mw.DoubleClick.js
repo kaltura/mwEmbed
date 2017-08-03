@@ -441,9 +441,11 @@
             // If we're on mobile autoPlay we will start the ad muted just for the first entry
             if ( this.embedPlayer.mobileAutoPlay ) {
                 $(this.getAdContainer()).one('click', function () {
-                    this.embedPlayer.mobileAutoPlay = false;
-                    this.adsManager.setVolume(1);
-                    this.embedPlayer.setVolume(1);
+                    if (this.embedPlayer.mobileAutoPlay) {
+                        this.embedPlayer.mobileAutoPlay = false;
+                        this.adsManager.setVolume(1);
+                        this.embedPlayer.setVolume(1);
+                    }
                 }.bind(this));
                 this.adsManager.setVolume(0);
             } else {
