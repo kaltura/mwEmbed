@@ -968,23 +968,25 @@
                 this.adsLoader.getSettings().setAutoPlayAdBreaks( false );
             }
 
-            // Attach the events before making the request.
-            this.adsLoader.addEventListener(
-                google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
-                function ( event ) {
-                    _this.onAdsManagerLoaded( event );
-                },
-                false );
-            this.adsLoader.addEventListener(
-                google.ima.AdErrorEvent.Type.AD_ERROR,
-                function ( event ) {
-                    _this.hideAdContainer( true );
-                    _this.onAdError( event );
-                },
-                false );
-
+            if (!this.adsLoaderLoaded) {
+                // Attach the events before making the request.
+                this.adsLoader.addEventListener(
+                    google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
+                    function (event) {
+                        _this.onAdsManagerLoaded(event);
+                    },
+                    false);
+                this.adsLoader.addEventListener(
+                    google.ima.AdErrorEvent.Type.AD_ERROR,
+                    function (event) {
+                        _this.hideAdContainer(true);
+                        _this.onAdError(event);
+                    },
+                    false);
+            }
             // 4. Make the request.
             try {
+                this.adsLoaderLoaded = true;
                 this.adsLoader.requestAds( adsRequest );
             } catch ( e ) {
                 this.onAdError( e );
@@ -1003,6 +1005,9 @@
                 adsRenderingSettings[ "uiElements" ] = [];
             }
             adsRenderingSettings.useStyledNonLinearAds = true;
+            if (this.adsManager) {
+                this.adsManager.destroy();
+            }
             this.adsManager = loadedEvent.getAdsManager( this.embedPlayer, adsRenderingSettings );
             this.adManagerLoaded = true;
 
