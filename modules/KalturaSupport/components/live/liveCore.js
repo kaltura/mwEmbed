@@ -417,6 +417,10 @@
             if ( mw.isIOSAbove7() ) {
                 requestObj.rnd = Math.random();
             }
+            		
+            		var oldExpiry = _this.getKalturaClient().baseParam.expiry;
+			_this.getKalturaClient().baseParam.expiry = 5; //Setting is live expiry to 5 seconds
+			
 			_this.getKalturaClient().doRequest( requestObj, function( data ) {
 				var onAirStatus = false;
 				if ( data === true ) {
@@ -430,6 +434,8 @@
 				mw.log("Error occur while trying to check onAir status");
 				embedPlayer.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : false } );
 			} );
+			
+			_this.getKalturaClient().baseParam.expiry = oldExpiry; //Setting expiry back to old value
 		},
 
 		getKalturaClient: function() {
