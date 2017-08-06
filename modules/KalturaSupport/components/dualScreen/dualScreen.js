@@ -372,10 +372,12 @@
 					}
 					_this.getPlayer().triggerHelper('dualScreenStateChange', action);
 				});
-				// Add w Sigh for switch view
-				addKeyCallback(this.getConfig("keyboardShortcutsMap").switchView, function () {
-					_this.getPlayer().triggerHelper('dualScreenStateChange', "switchView");
-				});
+				// Add w Sigh for switch view, with video360 this is not enabled as it blocks the keyboard shortcuts
+				if ( !_this.getPlayer().playerConfig.plugins.video360.plugin ) {
+					addKeyCallback(this.getConfig("keyboardShortcutsMap").switchView, function () {
+						_this.getPlayer().triggerHelper('dualScreenStateChange', "switchView");
+					});
+				}
 			},
             renderDualScreenView: function(){
                 if( this.secondPlayer ) {
