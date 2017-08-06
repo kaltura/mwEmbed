@@ -199,6 +199,9 @@ return array(
 		"model" => "plugins",
 		"children"=> array(
 			/*"chaptersView" => "",*/
+			"chromecast" => "",
+			"airPlay" => "",
+			"nativeCallout" => "",
 			"keyboardShortcuts" => "",
 			"moderation" => "",
 			"playbackRateSelector" => "",

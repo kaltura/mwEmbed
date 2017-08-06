@@ -1782,8 +1782,9 @@
     },
     "airPlay": {
         "description": "Enables wireless streaming of audio, video, and photos, together with related metadata between devices, for iOS.",
+        "attributes": {},
         "type": "featuremenu",
-        "label": "airPlay",
+        "label": "Airplay",
         "model": "config.plugins.airPlay"
     },
     "nativeCallout": {
