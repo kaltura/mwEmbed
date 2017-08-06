@@ -67,6 +67,13 @@
 					_this.playerObject.selectTextTrack( data.index );
 				}
 			} );
+			// In multicast mode nothing triggers startMonitor. This fixes that
+			this.bindHelper( 'onplay' , function ( ) {
+				if(_this.isMulticast){
+					_this.startMonitor();
+				}
+			} );
+
 
 			this.bindHelper( 'switchAudioTrack' , function ( e , data ) {
 				if ( _this.playerObject ) {
@@ -296,7 +303,7 @@
 		} ,
 		fallbackToUnicast: function () {
 			var _this = this;
-
+			_this.getInterface().removeClass("multicast"); //remove multicast class in case of fallback
 			this.isError = true;
 
 			if ( this.playerObject ) {
@@ -542,6 +549,7 @@
 
 			if ( _this.isLive() ) {
 				_this.isMulticast= isMimeType( "video/multicast" );
+				_this.getInterface().addClass("multicast"); // add multicast class to the top-level container
 				_this.loadLive( doEmbedFunc , readyCallback );
 			} else {
 				_this.resolveSrcURL( _this.getSrc() ).then( doEmbedFunc );

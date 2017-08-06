@@ -9,7 +9,7 @@ var VERSION = '1.0.0';
 
 $YB.adnalyzers.KalturaAds = function (plugin) {
   try {
-    this.adnalyzerVersion = '5.3.0-' + VERSION + '-kalturaads-js';
+    this.adnalyzerVersion = '5.4.5-' + VERSION + '-kalturaads-js';
 
     // Reference to the plugin where it was called.
     this.startMonitoring(plugin, plugin.player);
@@ -20,7 +20,7 @@ $YB.adnalyzers.KalturaAds = function (plugin) {
   } catch (err) {
     $YB.error(err);
   }
-}
+};
 
 // Inheritance
 $YB.adnalyzers.KalturaAds.prototype = new $YB.adnalyzers.Generic();
@@ -39,7 +39,7 @@ $YB.adnalyzers.KalturaAds.prototype.getAdPlayhead = function () {
 };
 
 $YB.adnalyzers.KalturaAds.prototype.getAdPosition = function () {
-  var pos = this.ads.getPlayer().adTimeline.currentAdSlotType
+  var pos = this.ads.getPlayer().adTimeline.currentAdSlotType;
   switch (pos) {
     case 'preroll':
     case 'pre':

@@ -158,7 +158,6 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 			var title = gM('mwe-embedplayer-volume-value', percent );
             var $slider = this.getSlider().find('a');
             this.setAccessibility($slider, title);
-            $slider.attr("role", "paragraph");
 		}
 	},
 	updateVolumeUI: function( percent ){

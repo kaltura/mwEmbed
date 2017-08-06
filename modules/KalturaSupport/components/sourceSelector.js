@@ -265,6 +265,11 @@
 		        return true;
 	        }
 
+	        if ( this.getPlayer().streamerType == "hls" ){
+		        this.addAutoToMenu();
+		        return true;
+	        }
+
 	        //HLS, HDS
             if (mw.isNativeApp()) {
             	this.sourcesList = [];
@@ -282,11 +287,6 @@
 				this.secondIteration = true;
 	            return false;
             }
-
-			if ( this.getPlayer().streamerType == "hls" ){
-				this.addAutoToMenu();
-				return true;
-			}
 
 			if ( this.getPlayer().streamerType == "http" ){
 				return true;
@@ -422,7 +422,8 @@
 		getMenu: function(){
 			if( !this.menu ) {
 				this.menu = new mw.KMenu(this.getComponent().find('ul'), {
-					tabIndex: this.getBtn().attr('tabindex')
+					tabIndex: this.getBtn().attr('tabindex'),
+					menuName: this.getConfig("title")
 				});
 			}
 			return this.menu;

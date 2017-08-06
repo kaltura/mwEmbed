@@ -43,6 +43,16 @@
 			this.bind('playerReady', $.proxy(function (e, size) {
 				_this.error = false;
 			}, this));
+			this.bind('showScreenByName', $.proxy(function (e, screenName) {
+				if(this.pluginName == screenName && !this.isScreenVisible()){
+					this.showScreen();
+				}
+			}, this));
+			this.bind('hideScreenByName', $.proxy(function (e, screenName) {
+				if(this.pluginName == screenName && this.isScreenVisible()){
+					this.hideScreen();
+				}
+			}, this));
 
 			this.bind('playerSizeClassUpdate', $.proxy(function (e, size) {
 				if (size == 'tiny') {
@@ -195,6 +205,10 @@
 						});
 					_this.$screen = $('<div />')
 						.addClass('screen ' + _this.pluginName)
+						.attr({
+							"role" : "dialog",
+							"aria-labelledby" : "dialogTitle"
+						})
 						.append(
 							$('<div class="screen-content" /> ').append(closeBtn).append(data)
 						);
@@ -236,7 +250,7 @@
 					.click(function () {
 						_this.toggleScreen();
 					});
-				this.setAccessibility(this.$el, this.getConfig('tooltip'));
+				this.setAccessibility(this.$el, this.getConfig('tooltip')+gM('mwe-embedplayer-open_dialog'));
 			}
 			return this.$el;
 		}

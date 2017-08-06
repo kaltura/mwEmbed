@@ -777,6 +777,7 @@
                             $( _this.embedPlayer ).trigger( 'onAdSkip' );
                             if ( _this.embedPlayer.mobileAutoPlay && !mw.isAndroid()) {
                                 _this.embedPlayer.mobileAutoPlay = false;
+                                _this.adsManager.setVolume( 1 );
                                 _this.embedPlayer.setVolume( 1 );
                             }
                             if ( _this.adPaused ) {

@@ -11,78 +11,59 @@
 <p style="width:600px">HLS</p>
 <div id="kdp" style="width:600px;height:370px;float:left"></div>
 <script>
-    kWidget.embed({
-        "targetId": "kdp",
+	kWidget.embed({
+		"targetId": "kdp",
         "wid": "_2196781",
         "uiconf_id": "12905712",
         "entry_id": "1_afvj3z0u",
-        "flashvars": {
+//        "wid": "_1082342", // disney embeded subtitle
+//        "uiconf_id": "35673902",
+//        "entry_id": "1_hhtuoo3u",
+		"flashvars": {
+//			'EmbedPlayer.EnableMobileSkin': true,
 //            'EmbedPlayer.WebKitPlaysInline':true,
-            'disableHLSOnJs':false,
-            'video360': {
-                'plugin': true
-            },
-            'largePlayBtn': {
-                'plugin': false
-            }
-        }
-    });
-</script>
-<p style="width:600px">dash</p>
-<div id="kdp1" style="width:600px;height:370px;float:left"></div>
-<script>
-    kWidget.embed({
-        "targetId": "kdp1",
-        "wid": "_2196781",
-        "uiconf_id": "12905712",
-        "entry_id": "1_afvj3z0u",
-        "flashvars": {
-//            'EmbedPlayer.WebKitPlaysInline':true,
-            'disableHLSOnJs':true,
-            'video360': {
-                'plugin': true
-            },
-            'dash':{
-                'plugin':true
-            },
-            'largePlayBtn': {
-                'plugin': false
-            }
-        }
-    });
-</script>
-<p style="width:600px">mp4</p>
-<div id="kdp2" style="width:600px;height:370px;float:left"></div>
-<script>
-    kWidget.embed({
-        "targetId": "kdp2",
-        "wid": "_2196781",
-        "uiconf_id": "12905712",
-        "entry_id": "1_afvj3z0u",
-        "flashvars": {
-//            'EmbedPlayer.WebKitPlaysInline':true,
-            'disableHLSOnJs':true,
-            'video360': {
-//                moveMultiplier: 1,
-                'plugin': true
-            },
-            'share': {
-                'plugin': true
-            },
-            "controlBarContainer": {
-                "hover": false
-            },
-            'largePlayBtn': {
-                'plugin': false
-            },
-            'doubleClick':{
-                'plugin':true,
-                'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=xml_vmap1&unviewed_position_start=1&cust_params=sample_ar%3Dpremidpost&cmsid=496&vid=short_onecue&correlator=[timestamp]',
-                'disableCompanionAds' : false,
-                'debugMode':false
-            }
-        }
-    });
+			'disableHLSOnJs':false,
+			'video360': {
+				'plugin': true
+			},
+			'closedCaptions': {
+				"useExternalClosedCaptions":true,
+				'plugin': true
+			},
+			'largePlayBtn': {
+				'plugin': false
+			},
+			"controlBarContainer": {
+				'plugin': true,
+				"hover": false
+			}
+		}
+	    ,readyCallback: function(){
+		    var kdp = document.getElementById('kdp');
+		    kdp.kBind( 'playerReady', function () {
+			    kdp.sendNotification("loadExternalClosedCaptions", {
+				    languages: [{
+					    "language": "Hebrew",
+					    "languageCode": "he",
+					    "isDefault": true,
+					    "label": "Hebrew",
+					    "type": "vtt",
+					    "src": "http://localhost/test1.vtt",
+					    "fileExt": "vtt"
+				    },{
+					    "language": "English",
+					    "languageCode": "gg",
+					    "isDefault": true,
+					    "label": "English",
+					    "type": "vtt",
+					    "src": "http://localhost/test.vtt",
+					    "fileExt": "vtt"
+
+				    }]
+			    });
+		    });
+	    }
+	});
 </script>
 </body>
 </html>

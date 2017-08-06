@@ -17,10 +17,10 @@
                 fontOpacity: 100,
                 fontSize: "1em",
                 fontPxSize: 12,
-                backgroundColor: "rgba(0,0,0,0)",
+                backgroundColor: "rgba(0,0,0,1)",
                 backgroundHexColor: "#000000",
-                backgroundOpacity: 0,
-                edgeStyle: "0 0px 4px rgba(0, 0, 0, 1)"
+                backgroundOpacity: 100,
+                edgeStyle: "none"
             },
             cvaaPreset1: {
                 fontFamily: "Arial, Roboto, Arial Unicode Ms, Helvetica, Verdana, PT Sans Caption, sans-serif",

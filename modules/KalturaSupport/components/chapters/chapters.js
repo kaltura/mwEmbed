@@ -29,6 +29,7 @@
 			'minDisplayWidth': 0,
 			'minDisplayHeight': 0,
 			'chapterSlideBoxRatio': (2/3),
+			'cssClamp': false, // provides better performance for large lists than jQuery.dotdotdot
 			enableKeyboardShortcuts: true,
 			"keyboardShortcutsMap": {
 				"goToActiveTile": "shift+73",   // Add Shift+I Sign for go to active tile
@@ -59,13 +60,42 @@
 		maskKeyboardShortcuts: true,
 
 		setup: function () {
-			this.addBindings();
 			if (this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints")) {
 				this.setConfig("includeMediaItemDuration", false);
 			}
 		},
-		addBindings: function () {
+		_addBindings: function () {
 			var _this = this;
+			this._super();
+
+			// Unbind existing updateLayout callback and bind debounced one
+			this.unbind('updateLayout');
+			this.bind('updateLayout', debounce(function () {
+				if (_this.getPlayer().layoutBuilder.isInFullScreen() ||
+						(!_this.getConfig("fullScreenDisplayOnly") &&
+							_this.getConfig("minDisplayWidth") <= _this.getPlayer().getWidth() &&
+							_this.getConfig("minDisplayHeight") <= _this.getPlayer().getHeight())) {
+					_this.render = true;
+				} else {
+					_this.render = false;
+				}
+
+				if (_this.getConfig('parent')) {
+					setTimeout(function () {
+						if (_this.render) {
+							_this.getComponent().show();
+							if (_this.getTemplateData().length) {
+								_this.configMediaListFeatures();
+							} else {
+								_this.renderMediaList();
+							}
+							_this.setSelectedMedia(_this.selectedMediaItemIndex);
+						} else {
+							_this.getComponent().hide();
+						}
+					}, 0);
+				}
+			}, 300));
 
 			this.bind('KalturaSupport_ThumbCuePointsReady', function () {
 				if (!_this.maskChangeStreamEvents) {
@@ -149,7 +179,6 @@
 			this.bind("freezeTimeIndicators", function(e, val){
 				_this.freezeTimeIndicators = val;
 			});
-
 			this.bind("monitorEvent", function () {
 				if (_this.dataIntialized) {
 					_this.handlePendingItems();
@@ -206,12 +235,17 @@
 				}
 			});
 
-			this.bind('mediaListLayoutReady slideAnimationEnded updateLayout', function () {
-				setTimeout(function(){
-					_this.getComponent()
-						.find(".k-title-container.mediaBoxText, .k-description-container.mediaBoxText").dotdotdot();
-				}, 100);
-			});
+			this.bind('mediaListLayoutReady slideAnimationEnded updateLayout', this.getConfig('cssClamp') ?
+				debounce(function () {
+					_this.clampTitles();
+				}, 1000) :
+				function () {
+					setTimeout(function(){
+						_this.getComponent()
+							.find(".k-title-container.mediaBoxText, .k-description-container.mediaBoxText").dotdotdot();
+					}, 100);
+				}
+			);
 
 			this.bind('onShowSideBar', function(){
 				//Enable keyboard bindings when menu is visible
@@ -489,23 +523,41 @@
 			this.log("Adding " + mediaItems.length + " new item(s)");
 			this.mediaList = this.mediaList.concat(mediaItems);
 		},
-		getMediaBoxHeight: function(mediaItem){
-			//Get media box height by mediaItemRatio and by media item type (Chapter/Slide)
-			var	width = this.getMedialistComponent().width();
-			var	newHeight = width * (1 / this.getConfig("mediaItemRatio"));
-			newHeight = (mediaItem.type === mw.KCuePoints.THUMB_SUB_TYPE.CHAPTER)?
-				newHeight :
-				(newHeight * this.getConfig('chapterSlideBoxRatio'));
-			return newHeight;
-		},
-		getMediaBoxWidth: function(mediaItem){
-			//Get media box width by mediaItemRatio and by media item type (Chapter/Slide)
-			var	height = this.getMedialistComponent().height();
-			var	newWidth = height * (1 / this.getConfig("mediaItemRatio"));
-			newWidth = (mediaItem.type === mw.KCuePoints.THUMB_SUB_TYPE.CHAPTER)?
-				newWidth :
-				(newWidth * this.getConfig('chapterSlideBoxRatio'));
-			return newWidth;
+		setMediaBoxesDimensions: function(){
+			var layout = this.getLayout();
+			var list = this.getMedialistComponent();
+			var listSize = layout === 'vertical' ? list.width() : list.height();
+
+			// Collect chapters/slides to update
+			var chapters = [];
+			var slides = [];
+			this.getMediaListDomElements().each(function (index, mediaBox) {
+				var type = Number(mediaBox.getAttribute('data-box-type'));
+				if (type === mw.KCuePoints.THUMB_SUB_TYPE.CHAPTER) {
+					chapters.push(mediaBox);
+				} else if (type === mw.KCuePoints.THUMB_SUB_TYPE.SLIDE) {
+					slides.push(mediaBox);
+				}
+			});
+
+			var chapterBoxSize = listSize / this.getConfig('mediaItemRatio');
+			var slideBoxSize = chapterBoxSize * this.getConfig('chapterSlideBoxRatio')
+
+			// Hide list to prevent redundant reflows
+			list.hide();
+
+			if (layout === 'vertical') {
+				// Get media box height by mediaItemRatio and by media item type (Chapter/Slide)
+				$(chapters).height(chapterBoxSize);
+				$(slides).height(slideBoxSize);
+			} else {
+				// Get media box width by mediaItemRatio and by media item type (Chapter/Slide)
+				$(chapters).width(chapterBoxSize);
+				$(slides).width(slideBoxSize);
+			}
+
+			// Restore list visibility
+			list.show();
 		},
 		disableChapterToggle: function(){
 			this.chapterToggleEnabled = false;
@@ -1339,6 +1391,75 @@
 				fn.apply(this);
 			}
 		},
+		clampTitles: function(){
+			var elementsToClamp = [];
+			var titleProps = null;
+			var descriptionProps = null;
+			var _this = this;
+			this.getComponent().find('.chapterBox:visible')
+				.each(function (i, chapterBox) {
+					var mediaItem = _this.mediaList[chapterBox.getAttribute('data-mediabox-index')];
+					if (!mediaItem) {
+						return;
+					}
+
+					if (mediaItem.title) {
+						var $title = $(chapterBox).find('.k-chapter-title');
+						if (!$title.length) {
+							return;
+						}
+
+						if (!titleProps) {
+							var $titleContainer = $title.parent();
+							var titleLineHeight = lineHeight($title[0]);
+							var titleLines = Math.max(1, Math.floor($titleContainer.innerHeight() / titleLineHeight));
+							titleProps = {
+								lineHeight: titleLineHeight,
+								lines: titleLines,
+								height: titleLines * titleLineHeight
+							};
+						}
+
+						elementsToClamp.push($.extend({
+							$el: $title
+						}, titleProps));
+					}
+
+					if (mediaItem.description) {
+						var $description = $(chapterBox).find('.k-description');
+						if (!$description.length) {
+							return;
+						}
+
+						if (!descriptionProps) {
+							var $descriptionContainer = $description.parent();
+							var descriptionLineHeight = lineHeight($description[0]);
+							var descriptionLines = Math.max(1, Math.floor($descriptionContainer.innerHeight() / descriptionLineHeight));
+							descriptionProps = {
+								lineHeight: descriptionLineHeight,
+								lines: descriptionLines,
+								height: descriptionLines * descriptionLineHeight
+							};
+						}
+
+						elementsToClamp.push($.extend({
+							$el: $description
+						}, descriptionProps));
+					}
+				});
+
+			var supportsNativeClamping = CSS && CSS.supports('-webkit-line-clamp', 1);
+			this.getComponent().hide();
+			$.each(elementsToClamp, function (i, item) {
+				var clamped = item.$el.addClass('fast-clamp');
+				if (supportsNativeClamping) {
+					clamped.attr('style', '-webkit-line-clamp: ' + item.lines);
+				} else {
+					clamped.height(item.height);
+				}
+			});
+			this.getComponent().show();
+		},
 		show: function(){
 			this.getComponent().show();
 			this.getComponent().attr("data-visibility", "visible");
@@ -1350,4 +1471,141 @@
 			this.getPlayer().triggerHelper("layoutChange." + this.getConfig("parent"));
 		}
 	}));
+
+	// Underscore.js 1.8.3
+	// http://underscorejs.org
+	// (c) 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+	// Underscore may be freely distributed under the MIT license.
+	function debounce(func, wait, immediate) {
+		var timeout, args, context, timestamp, result;
+
+		var later = function () {
+			var last = new Date().getTime() - timestamp;
+
+			if (last < wait && last >= 0) {
+				timeout = setTimeout(later, wait - last);
+			} else {
+				timeout = null;
+				if (!immediate) {
+					result = func.apply(context, args);
+					if (!timeout) context = args = null;
+				}
+			}
+		};
+
+		return function () {
+			context = this;
+			args = arguments;
+			timestamp = new Date().getTime();
+			var callNow = immediate && !timeout;
+			if (!timeout) timeout = setTimeout(later, wait);
+			if (callNow) {
+				result = func.apply(context, args);
+				context = args = null;
+			}
+
+			return result;
+		};
+	}
+
+	/**
+	 * https://github.com/twolfson/line-height
+	 * MIT license
+	 * Calculate the `line-height` of a given node
+	 * @param {HTMLElement} node Element to calculate line height of. Must be in the DOM.
+	 * @returns {Number} `line-height` of the element in pixels
+	 */
+	function lineHeight(node) {
+		// Grab the line-height via style
+		var lnHeightStr = computedStyle(node, 'line-height');
+		var lnHeight = parseFloat(lnHeightStr, 10);
+
+		// If the lineHeight did not contain a unit (i.e. it was numeric), convert it to ems (e.g. '2.3' === '2.3em')
+		if (lnHeightStr === lnHeight + '') {
+			// Save the old lineHeight style and update the em unit to the element
+			var _lnHeightStyle = node.style.lineHeight;
+			node.style.lineHeight = lnHeightStr + 'em';
+
+			// Calculate the em based height
+			lnHeightStr = computedStyle(node, 'line-height');
+			lnHeight = parseFloat(lnHeightStr, 10);
+
+			// Revert the lineHeight style
+			if (_lnHeightStyle) {
+				node.style.lineHeight = _lnHeightStyle;
+			} else {
+				delete node.style.lineHeight;
+			}
+		}
+
+		// If the lineHeight is in `pt`, convert it to pixels (4px for 3pt)
+		// DEV: `em` units are converted to `pt` in IE6
+		// Conversion ratio from https://developer.mozilla.org/en-US/docs/Web/CSS/length
+		if (lnHeightStr.indexOf('pt') !== -1) {
+			lnHeight *= 4;
+			lnHeight /= 3;
+			// Otherwise, if the lineHeight is in `mm`, convert it to pixels (96px for 25.4mm)
+		} else if (lnHeightStr.indexOf('mm') !== -1) {
+			lnHeight *= 96;
+			lnHeight /= 25.4;
+			// Otherwise, if the lineHeight is in `cm`, convert it to pixels (96px for 2.54cm)
+		} else if (lnHeightStr.indexOf('cm') !== -1) {
+			lnHeight *= 96;
+			lnHeight /= 2.54;
+			// Otherwise, if the lineHeight is in `in`, convert it to pixels (96px for 1in)
+		} else if (lnHeightStr.indexOf('in') !== -1) {
+			lnHeight *= 96;
+			// Otherwise, if the lineHeight is in `pc`, convert it to pixels (12pt for 1pc)
+		} else if (lnHeightStr.indexOf('pc') !== -1) {
+			lnHeight *= 16;
+		}
+
+		// If the line-height is "normal", calculate by font-size
+		if (lnHeightStr === 'normal') {
+			// Create a temporary node
+			var nodeName = node.nodeName;
+			var _node = document.createElement(nodeName);
+			_node.innerHTML = '&nbsp;';
+
+			// If we have a text area, reset it to only 1 row
+			if (nodeName.toUpperCase() === 'TEXTAREA') {
+				_node.setAttribute('rows', '1');
+			}
+
+			// Set the font-size of the element
+			var fontSizeStr = computedStyle(node, 'font-size');
+			_node.style.fontSize = fontSizeStr;
+
+			// Remove default padding/border which can affect offset height
+			_node.style.padding = '0px';
+			_node.style.border = '0px';
+
+			// Append it to the body
+			var body = document.body;
+			body.appendChild(_node);
+
+			// Assume the line height of the element is the height
+			var height = _node.offsetHeight;
+			lnHeight = height;
+
+			// Remove our child from the DOM
+			body.removeChild(_node);
+		}
+
+		// Return the calculated height
+		return lnHeight;
+	}
+	function computedStyle(el, prop, getComputedStyle) {
+		getComputedStyle = window.getComputedStyle;
+
+		return (
+			getComputedStyle ?
+				getComputedStyle(el) :
+				el.currentStyle
+		)[
+			prop.replace(/-(\w)/gi, function (word, letter) {
+				return letter.toUpperCase();
+			})
+		];
+	}
 })(window.mw, window.jQuery);
