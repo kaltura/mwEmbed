@@ -14,30 +14,54 @@
 <div id="kaltura_player_1434365991" style=" width: 585px; height: 330px;float: left;"></div>
 <br style="clear: both;" /><br />
 <script>
-    kWidget.featureConfig({
-        'width':'870',
-        'height':'519',
-        'targetId': 'kaltura_player_1434365991',
-        'wid': '_102',
-        'uiconf_id': '23448178',
-        'flashvars': {
-            'autoPlay': true,
-            'quiz': {
-                'plugin': true
-            },
-            'controlBarContainer': {
-                'plugin': true,
-                "hover": false
-            },
-            'streamerType': 'auto',
-            'ks':'NzI4YTA5NzdjNjY2M2U5MzZhOTU1ZjllYjY0YzE2NWE4NDYyYWQwMHwxMDE7MTAxOzE0NTE5ODA2ODE7MDsxNDUxODk0MjgxLjA5OTU7bWFyay5mZWRlckBrYWx0dXJhLmNvbTs7Ow=='
-        },
 
-        'entry_id':'0_dgmdni21',
+	function renderPlayer(){
 
-        'readyCallback': function( playerId ){
-        }
-    });
+		var selectedLang = $("#lang").val();
+
+		kWidget.destroy('kaltura_player_1434365991');
+
+		kWidget.featureConfig({
+			'width':'870',
+			'height':'519',
+			'targetId': 'kaltura_player_1434365991',
+			'wid': '_27017',
+			'uiconf_id': '39666321',
+			'flashvars': {
+				'autoPlay': true,
+				'quiz': {
+					'autoPlay': true,
+					'plugin': true
+				},
+				'controlBarContainer': {
+					'plugin': true,
+					"hover": false
+				},
+				'localizationCode':selectedLang,
+				'streamerType': 'auto'
+			},
+
+			'entry_id':'1_utkyzy74',
+
+			'readyCallback': function( playerId ){
+			}
+		});
+	}
+	// make sure player gets rendered only after lang UI is ready
+	$( document ).ready( function(){
+		renderPlayer();
+	} );
+
 </script>
+
+
+<li onchange="renderPlayer()">
+	<label for="lang">Select language:</label>
+	<select name="lang" id="lang">
+		<option value="en">English</option>
+		<option value="fr">French</option>
+	</select>
+</li>
+
 </body>
 </html>
