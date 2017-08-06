@@ -1799,6 +1799,7 @@
                     _this.removeAdContainer();
                     if ( _this.adsLoader ) {
                         _this.adsLoader.destroy();
+                        _this.adsLoaderLoaded = false;
                     }
                 }, 100 );
             } else {
