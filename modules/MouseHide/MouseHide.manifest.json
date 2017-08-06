@@ -1,0 +1,13 @@
+{
+    "mouseHide": {
+        "label": "mouseHide info",
+        "description": "convivaHTML5 alalitics plugin ",
+        "attributes": {
+            "parent": {
+                "doc": "Hiding mouse on fullscreen after 3sec",
+                "type": "enum",
+                "enum": ["videoHolder"]
+            }
+        }
+    }
+}
