@@ -127,8 +127,9 @@
 
             this.mediaHost.onManifestReady = function () {
                 var tracksInfo = this.parseTracks();
-                if ( tracksInfo ) {
-                    this.triggerHelper( "onTracksParsed", tracksInfo );
+                if (tracksInfo) {
+                    tracksInfo = this.setInitialCaptions(tracksInfo);
+                    this.triggerHelper("onTracksParsed", tracksInfo);
                 }
             }.bind( this );
 
@@ -172,6 +173,28 @@
                     this.wasPreload = true;
                 }
             }
+        },
+
+        setInitialCaptions: function (tracksInfo) {
+            if (this.getKalturaConfig('embedPlayerChromecastReceiver', 'defaultLanguageKey')) {
+                var languageKey = this.getKalturaConfig('embedPlayerChromecastReceiver', 'defaultLanguageKey');
+                var textTrack = tracksInfo.tracks.find(function (track) {
+                    if (typeof track.language === 'string') {
+                        return track.language.startsWith(languageKey);
+                    }
+                    return false;
+                });
+                if (textTrack && (textTrack.trackId !== this.textStreamIndex)) {
+                    var index = tracksInfo.activeTrackIds.indexOf(this.textStreamIndex);
+                    if (index > -1) {
+                        tracksInfo.activeTrackIds.splice(index, 1);
+                    }
+                    tracksInfo.activeTrackIds.push(textTrack.trackId);
+                    this.disableTextTrack(this.textStreamIndex);
+                    this.enableTextTrack(textTrack.trackId);
+                }
+            }
+            return tracksInfo;
         },
 
         buildUdrmLicenseUri: function ( mimeType ) {
