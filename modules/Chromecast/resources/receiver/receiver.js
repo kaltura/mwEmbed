@@ -347,6 +347,9 @@ function playNextMedia( mediaConfig ) {
 function configure( config ) {
     if ( config ) {
         ReceiverLogger.log( "MediaManager", "configure", config );
+        if (config.defaultLanguageKey) {
+            receiverFlashVars.embedPlayerChromecastReceiver.defaultLanguageKey = config.defaultLanguageKey;
+        }
         ReceiverStateManager.configure( config );
     }
 }
@@ -579,6 +582,7 @@ function setConfiguration( embedInfo ) {
  */
 function getFlashVars( senderPlayFrom, senderAutoPlay, senderFlashVars ) {
     try {
+        debugger;
         // Embed the media info params from onLoad event into mwEmbedChromecastReceiver
         if ( $.isNumeric( senderPlayFrom ) ) {
             receiverFlashVars.mediaProxy.mediaPlayFrom = senderPlayFrom;
