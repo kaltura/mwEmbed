@@ -1,6 +1,6 @@
 {
     "chromecast": {
-        "description": "Enable casting the video stream to Google Chromecast.",
+        "description": "The Cast functionality allows your videos to be cast from the Kaltura player, via the Chromecast plugin, directly to a Kaltura Player receiver application on a Chromecast-connected TV.",
         "attributes": {
             "parent": {
                 "doc": "Parent container for component. Components include default placement, leave as null if unsure.",
