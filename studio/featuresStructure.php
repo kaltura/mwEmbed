@@ -208,6 +208,7 @@ return array(
 			"audioSelector" => "",
 			"download" => "",
 			"strings" => "",
+			"chromecast" => "",
 			"video360" => "",
 			"uiVars" => ""
 		)

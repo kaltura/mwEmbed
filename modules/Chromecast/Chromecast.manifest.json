@@ -7,9 +7,24 @@
                 "type": "enum",
                 "enum": [
                     "topBarContainer",
-                    "videoHolder",
                     "controlsContainer"
-                ]
+                ],
+                "options": [
+                    {
+                        "label": "Top bar container",
+                        "value": "topBarContainer"
+                    },
+                    {
+                        "label": "Controls container",
+                        "value": "controlsContainer"
+                    }
+                ],
+                "initvalue": "controlsContainer"
+            },
+            "applicationID": {
+                "label": "Application ID",
+                "doc": "The Chromecast Application ID. Leave empty if default Kaltura receiver is used",
+                "type": "string"
             }
         }
     }
