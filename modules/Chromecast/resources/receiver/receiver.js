@@ -582,7 +582,6 @@ function setConfiguration( embedInfo ) {
  */
 function getFlashVars( senderPlayFrom, senderAutoPlay, senderFlashVars ) {
     try {
-        debugger;
         // Embed the media info params from onLoad event into mwEmbedChromecastReceiver
         if ( $.isNumeric( senderPlayFrom ) ) {
             receiverFlashVars.mediaProxy.mediaPlayFrom = senderPlayFrom;
