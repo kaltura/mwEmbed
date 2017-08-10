@@ -113,7 +113,7 @@
 				}
 				// on non-autoplayed player - check if required to force-show the 1st CP
 				var chaptersRawData = _this.getCuePoints();
-				//Since imagePlayer doesn't have a uiconf element - copy the value from dualScreen which has representation in the uiconf;
+				//Since imagePlayer doesn't have a uiconf element - copy the value from chapters plugin which has representation in the uiconf;
 				if (_this.embedPlayer.plugins.hasOwnProperty("chapters")
 					&& _this.embedPlayer.getKalturaConfig("chapters","showFirstSlideOnLoad")){
 					_this.showFirstSlideOnLoad = _this.embedPlayer.getKalturaConfig("chapters","showFirstSlideOnLoad");
