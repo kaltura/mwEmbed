@@ -561,7 +561,7 @@
 
         getReceiverConfig: function () {
             var receiverConfig = this.getKalturaConfig('chromecast').receiverConfig || {};
-            receiverConfig.defaultLanguageKey = this.beforeCastParams.captions[0] ? this.beforeCastParams.captions[0].lang : null;
+            receiverConfig.defaultLanguageKey = this.beforeCastParams.captions.length === 1 ? this.beforeCastParams.captions[0].lang : null;
             return receiverConfig;
         },
 
