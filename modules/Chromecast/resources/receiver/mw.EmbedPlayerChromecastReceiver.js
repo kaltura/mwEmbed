@@ -188,10 +188,10 @@
                     var index = tracksInfo.activeTrackIds.indexOf(this.textStreamIndex);
                     if (index > -1) {
                         tracksInfo.activeTrackIds.splice(index, 1);
+                        this.disableTextTrack(this.textStreamIndex);
                     }
-                    tracksInfo.activeTrackIds.push(textTrack.trackId);
-                    this.disableTextTrack(this.textStreamIndex);
                     this.enableTextTrack(textTrack.trackId);
+                    tracksInfo.activeTrackIds.push(textTrack.trackId);
                 }
             }
             return tracksInfo;
