@@ -29,7 +29,8 @@
 			'minDisplayWidth': 0,
 			'minDisplayHeight': 0,
 			'chapterSlideBoxRatio': (2/3),
-			enableKeyboardShortcuts: true,
+			'showFirstSlideOnLoad': true,
+			'enableKeyboardShortcuts': true,
 			"keyboardShortcutsMap": {
 				"goToActiveTile": "shift+73",   // Add Shift+I Sign for go to active tile
 				"expend": "190",                // Add > Sign for expend current chapter slides
@@ -40,7 +41,6 @@
 			}
 		},
 
-		showFirstSlideOnLoad: false,
 		mediaList: [], //Hold the medialist items
 		chaptersMap: [],
 		itemCounter: 0,
