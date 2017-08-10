@@ -281,16 +281,6 @@
             this.startRemotePlayerMonitor();
             this.updateScreen();
             this.updatePosterHTML();
-            if ( firstCast ) {
-                this.activeBeforeCastCaptions();
-            }
-        },
-
-        activeBeforeCastCaptions: function () {
-            if ( this.beforeCastParams.captions.length === 1 ) {
-                var lang = this.beforeCastParams.captions[ 0 ].lang;
-                this.switchTextTracks( null, null, lang );
-            }
         },
 
         onLiveMediaLoaded: function ( firstCast ) {
@@ -300,7 +290,6 @@
                 this.movingBackToLive = false;
             }
             if ( firstCast ) {
-                this.activeBeforeCastCaptions();
                 if ( this.beforeCastParams.state !== this.LOCAL_PLAYER_STATE.PLAY ) {
                     this.play();
                 }
@@ -571,8 +560,9 @@
         },
 
         getReceiverConfig: function () {
-            var chromecastConfig = this.getKalturaConfig( 'chromecast' );
-            return chromecastConfig.receiverConfig;
+            var receiverConfig = this.getKalturaConfig('chromecast').receiverConfig || {};
+            receiverConfig.defaultLanguageKey = this.beforeCastParams.captions[0] ? this.beforeCastParams.captions[0].lang : null;
+            return receiverConfig;
         },
 
         getMediaMetadata: function () {
