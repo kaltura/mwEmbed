@@ -1,58 +1,58 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>CustomData Player Test</title>
-<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
-<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
-<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
-<script type="text/javascript">
-function jsKalturaPlayerTest( videoId ){
-	// Name this module
-  module('entry metadata');
+	<title>CustomData Player Test</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+	<script type="text/javascript">
+		function jsKalturaPlayerTest(videoId) {
+			// Name this module
+			module('entry metadata');
 
-	var kdp = $('#' + videoId)[0];
+			var kdp = $('#' + videoId)[0];
 
-	asyncTest('on player load', function () {
-		expect(2);
+			asyncTest('on player load', function () {
+				expect(2);
 
-		kalturaQunitWaitForPlayer(function () {
-			runChecks();
-			start();
-			
-			setTimeout(function () {
-				kdp.sendNotification('changeMedia', { entryId: '1_5mu8b75h' });
-				asyncTest('on media changed', function () {
-					expect(2);
+				kalturaQunitWaitForPlayer(function () {
+					runChecks();
+					start();
 
-					kdp.addJsListener('onChangeMediaDone', function () {
-						runChecks();
-						start();
-					});
+					setTimeout(function () {
+						kdp.sendNotification('changeMedia', { entryId: '1_5mu8b75h' });
+						asyncTest('on media changed', function () {
+							expect(2);
+
+							kdp.addJsListener('onChangeMediaDone', function () {
+								runChecks();
+								start();
+							});
+						});
+					}, 1000);
 				});
-			}, 1000);
-		});
-	});
+			});
 
-	function runChecks() {
-		var metadata = kdp.evaluate('{mediaProxy.entryMetadata}');
-		notEqual(metadata, undefined, 'metadata is present');
-		equal(metadata.DepartmentName, 'Test department', 'metadata is valid');
-	}
-}
-</script>
-<script type="text/javascript" src="../tests/resources/qunit-kaltura-bootstrap.js"></script>
+			function runChecks() {
+				var metadata = kdp.evaluate('{mediaProxy.entryMetadata}');
+				notEqual(metadata, undefined, 'metadata is present');
+				equal(metadata.DepartmentName, 'Test department', 'metadata is valid');
+			}
+		}
+	</script>
+	<script type="text/javascript" src="../tests/resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2>CustomData Test</h2>
-<div id="kaltura_player" style="width:400px;height:330px;"></div>
-<script>
-kWidget.featureConfig({
-	targetId: 'kaltura_player',
-	wid: '_2286371',
-	uiconf_id: '39451081',
-	entry_id: '1_iyjj9fs7',
-	flashvars: {}
-});
-</script>
+	<h2>CustomData Test</h2>
+	<div id="kaltura_player" style="width:400px;height:330px;"></div>
+	<script>
+		kWidget.featureConfig({
+			targetId: 'kaltura_player',
+			wid: '_2286371',
+			uiconf_id: '39451081',
+			entry_id: '1_iyjj9fs7',
+			flashvars: {}
+		});
+	</script>
 </body>
 </html>
