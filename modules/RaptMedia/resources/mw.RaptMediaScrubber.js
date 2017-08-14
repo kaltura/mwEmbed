@@ -42,6 +42,31 @@
 			return config;
 		},
 
+		showThumbnailPreview: function(data) {
+			var embedPlayer = this.getPlayer();
+			var status = embedPlayer.evaluate('{raptMedia.status}');
+			var segment = embedPlayer.evaluate('{raptMedia.currentSegment}');
+
+			if (status !== 'enabled') {
+				this._super(data);
+			}
+
+			if (segment == null) {
+				this.log('Warning: missing segment data');
+				return;
+			}
+
+			var original = data.val;
+
+			// Update thumbnail
+			data.val = data.val * (segment.duration / this.duration) + 1000 * (segment.startTime / this.duration);
+			this._super(data);
+
+			// Overwrite timestamp
+			var $sliderPreviewTime = this.getComponent().find(".sliderPreview .sliderPreviewTime");
+			$sliderPreviewTime.text(kWidget.seconds2npt(original / 1000 * this.getDuration()));
+		},
+
 		updateAttr: function(ui) {
 			var perc = ui.value / 1000;
 			var $slider = this.$el;
