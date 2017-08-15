@@ -179,5 +179,10 @@ mw.OpenXController.prototype = {
     }
 };
 
+// TODO: This part is from the loader. Need to figure out how to not do it here.
+mw.addKalturaPlugin(['mw.BaseAdPlugin', 'mw.AdTimeline', 'mw.KAdPlayer'], 'OpenX', function(embedPlayer, callback){
+    embedPlayer.openx = new mw.OpenXController(embedPlayer, callback);
+});
+
 })(window.mw, window.jQuery);
 
