@@ -461,17 +461,14 @@
 		 * @param event
 		 */
 		onError: function (error) {
-			if (error.code !== 4012) {
-				// workaround for shaka bug https://github.com/google/shaka-player/issues/912
-				var errorMessage = error.name === "TypeError" ? error.stack : JSON.stringify(error);
-				var errorObj = {
-					message: errorMessage
-				};
-				if (error.category) {
-					errorObj.code = error.category + "000";
-				}
-				this.getPlayer().triggerHelper('embedPlayerError', errorObj);
+			var errorMessage = error.name === "TypeError" ? error.stack : JSON.stringify(error);
+			var errorObj = {
+				message: errorMessage
+			};
+			if (error.category) {
+				errorObj.code = error.category + "000";
 			}
+			this.getPlayer().triggerHelper('embedPlayerError', errorObj);
 			mw.log("Dash::Error: ", error);
 		},
 
