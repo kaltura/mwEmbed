@@ -16,15 +16,19 @@
         "wid": "_2196781",
         "uiconf_id": "12905712",
         "entry_id": "1_afvj3z0u",
-//        "wid": "_1082342", // disney embeded subtitle
-//        "uiconf_id": "35673902",
-//        "entry_id": "1_hhtuoo3u",
 		"flashvars": {
 //			'EmbedPlayer.EnableMobileSkin': true,
 //            'EmbedPlayer.WebKitPlaysInline':true,
+			"Kaltura.LeadHLSOnAndroid": true,
 			'disableHLSOnJs':false,
 			'video360': {
-				'plugin': true
+				'plugin': true,
+                'enableVr': true,
+                'autoLoadAsVr': false
+			},
+			'sourceSelector': {
+				'plugin': true,
+				'displayMode' : 'sizebitrate'
 			},
 			'closedCaptions': {
 				"useExternalClosedCaptions":true,
