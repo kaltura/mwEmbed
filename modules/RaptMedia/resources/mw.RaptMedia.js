@@ -246,7 +246,7 @@
 		},
 
 		whenReady: function(callback) {
-			const status = this.getConfig('status');
+			var status = this.getConfig('status');
 
 			if (status === 'enabled') {
 				return callback();
@@ -286,7 +286,6 @@
 
 		seek: function(segment, time, stopAfterSeek) {
 			var _this = this;
-
 
 			this.whenReady(function() {
 				if (segment == null) {
