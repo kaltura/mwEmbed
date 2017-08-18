@@ -165,13 +165,15 @@
 									} else {
 										mw.log("Error: " + this.pluginName + " could not find CSS link");
 									}
-
-									$(window['parent'].document).find('.onpagePlaylistInterface').remove(); // remove any previously created playlists
+									
 									var iframeParent = window['parent'].document.getElementById(this.embedPlayer.id);
 									if (this.getConfig('clipListTargetId') && $(iframeParent).parents().find("#" + this.getConfig('clipListTargetId')).length > 0) {
-										$(iframeParent).parents().find("#" + this.getConfig('clipListTargetId')).html("<div class='onpagePlaylistInterface'></div>");
-										this.$mediaListContainer = $(iframeParent).parents().find(".onpagePlaylistInterface");
+										var $clipListTarget = $(iframeParent).parents().find("#" + this.getConfig('clipListTargetId'));
+										$clipListTarget.find('.onpagePlaylistInterface').remove(); // remove any previously created playlists
+										$clipListTarget.html("<div class='onpagePlaylistInterface'></div>");
+										this.$mediaListContainer = $clipListTarget.find(".onpagePlaylistInterface");
 									} else {
+										$(window['parent'].document).find('.onpagePlaylistInterface').remove(); // remove any previously created playlists
 										$(iframeParent).after("<div class='onpagePlaylistInterface'></div>");
 										this.$mediaListContainer = $(iframeParent).parent().find(".onpagePlaylistInterface");
 										$(this.$mediaListContainer).width($(iframeParent).width());
