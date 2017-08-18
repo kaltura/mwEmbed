@@ -165,7 +165,7 @@
 									} else {
 										mw.log("Error: " + this.pluginName + " could not find CSS link");
 									}
-									
+
 									var iframeParent = window['parent'].document.getElementById(this.embedPlayer.id);
 									if (this.getConfig('clipListTargetId') && $(iframeParent).parents().find("#" + this.getConfig('clipListTargetId')).length > 0) {
 										var $clipListTarget = $(iframeParent).parents().find("#" + this.getConfig('clipListTargetId'));
