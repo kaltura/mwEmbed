@@ -29,7 +29,6 @@
 			'minDisplayWidth': 0,
 			'minDisplayHeight': 0,
 			'chapterSlideBoxRatio': (2/3),
-			'showFirstSlideOnLoad': true,
 			'enableKeyboardShortcuts': true,
 			"keyboardShortcutsMap": {
 				"goToActiveTile": "shift+73",   // Add Shift+I Sign for go to active tile
