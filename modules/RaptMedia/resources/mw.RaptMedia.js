@@ -113,15 +113,7 @@
 				_this.resizeEngine();
 			});
 
-			this.bind('monitorEvent', function(){
-				_this.updateEngine();
-			});
-
-			this.bind('onplay', function() {
-				_this.updateEngine();
-			});
-
-			this.bind('onpause', function() {
+			this.bind('monitorEvent onplay onpause', function(){
 				_this.updateEngine();
 			});
 
