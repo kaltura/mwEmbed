@@ -42,8 +42,8 @@
 				"minDisplayHeight": 0,
 				"enableKeyboardShortcuts": true,
 				"keyboardShortcutsMap": {
-					"nextState": 81,   // Add q Sign for next state
-					"switchView": 87   // Add w Sigh for switch views
+					"nextState": 90,   // Add q Sign for next state
+					"switchView": 88   // Add w Sigh for switch views
 				}
 			},
 			display: {},

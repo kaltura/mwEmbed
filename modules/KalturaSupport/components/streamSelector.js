@@ -21,8 +21,6 @@
 				"nextStream": 221,   // Add ] Sign for next stream
 				"prevStream": 219,   // Add [ Sigh for previous stream
 				"defaultStream": 220, // Add \ Sigh for default stream
-				"openMenu": 83, // Add S Sigh for open menu
-				"closeMenu": "shift+83" // Add Shift+S Sigh for close menu
 			}
 		},
 
