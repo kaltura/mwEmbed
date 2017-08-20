@@ -875,9 +875,9 @@
                 // check if entry has cue-points (PPT presentation has been recorded)
                 var hasCuePoints = this.hasSlides();
                 var passthroughConfig = {
-					showFirstSlideOnLoad: this.getConfig('showFirstSlideOnLoad'),
-					prefetch: this.getConfig('prefetch'),
-					cuePointType: this.getConfig('cuePointType')
+                showFirstSlideOnLoad: this.getConfig('showFirstSlideOnLoad'),
+                prefetch: this.getConfig('prefetch'),
+                cuePointType: this.getConfig('cuePointType')
                 };
                 var imagePlayer = hasCuePoints && new mw.dualScreen.imagePlayer(this.getPlayer(), function () {
                     this.setConfig(passthroughConfig);
