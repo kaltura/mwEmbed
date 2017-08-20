@@ -1772,6 +1772,12 @@
                         "value": "no-parent"
                     }
                 ]
+            },
+            "showFirstSlideOnLoad": {
+                "label": "Show first slide",
+                "doc": "Display first slide when player loads",
+                "type": "boolean",
+                "initvalue": true
             }
         }
     },
