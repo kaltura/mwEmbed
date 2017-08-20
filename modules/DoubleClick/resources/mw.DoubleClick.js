@@ -303,6 +303,7 @@
                     }
                     _this.adCuePoints.push( cuePointWrapper.cuePoint.id );
                     _this.adManagerAutoStart = true;
+                    _this.isdestroy = false;
                     _this.requestAds();
                 }
             } );
@@ -473,9 +474,10 @@
                     if ( _this.isChromeless || _this.isNativeSDK ) {
                         _this.requestAds();
                     } else {
+                        _this.getAdDisplayContainer().initialize();
                         if ( !_this.getConfig( "adTagUrl" ) && !_this.getConfig( "prerollUrl" ) && !_this.getConfig( 'prerollUrlJS' ) ) {
-                            mw.log( "DoubleClick::No adTagUrl defined. Restore player and resume playback." )
-                            _this.restorePlayer( true );
+                            mw.log( "DoubleClick::No adTagUrl defined. Restore player and resume playback." );
+                            _this.restorePlayer( !_this.trackCuePoints );
                             return;
                         }
                         // Set the content element to player element:
@@ -486,7 +488,6 @@
                             playerElement.load();
                         }
                         _this.saveTimeWhenSwitchMedia = mw.isMobileDevice();
-                        _this.getAdDisplayContainer().initialize();
                         if ( _this.adManagerLoaded ) {
                             _this.startAdsManager();
                         } else {
