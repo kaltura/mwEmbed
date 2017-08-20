@@ -59,7 +59,7 @@
 
                 var _this = this;
 
-                this.doRequest(url, data).then(
+                this.doRequest(url, data, {async: false}).then(
                     function (res) {
                         var mediaLink = getResponseLink(res);
                         if (mediaLink) {

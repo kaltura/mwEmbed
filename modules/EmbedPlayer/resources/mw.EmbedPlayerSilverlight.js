@@ -67,6 +67,13 @@
 					_this.playerObject.selectTextTrack( data.index );
 				}
 			} );
+			// In multicast mode nothing triggers startMonitor. This fixes that
+			this.bindHelper( 'onplay' , function ( ) {
+				if(_this.isMulticast){
+					_this.startMonitor();
+				}
+			} );
+
 
 			this.bindHelper( 'switchAudioTrack' , function ( e , data ) {
 				if ( _this.playerObject ) {
@@ -123,7 +130,14 @@
 				var lastIndex=flavor.url.lastIndexOf("/kLive");
 				var key=flavor.url.substring(0,lastIndex);
 
-				var index = flavor.url.indexOf("kMulticast/") + 11;
+				var kMulticastIndex = flavor.url.indexOf("kMulticast/");
+
+				//in case server returned a non-multicast url
+				if (kMulticastIndex===-1) {
+					return;
+				}
+
+				var index = kMulticastIndex + 11;
 				//var hls = flavor.url.substring(index);
 				if (!KESMapping.hasOwnProperty(key)) {
 					KESMapping[key] = {"flavors": [], "baseUrl": flavor.url.substring(0, index)};
@@ -171,7 +185,8 @@
 				this.isError = true;
 				var errorObj = {message: gM('ks-LIVE-STREAM-NOT-AVAILABLE'), title: gM('ks-ERROR')};
 				this.showErrorMsg(errorObj);
-			} else {
+                this.fallbackToUnicast();
+            } else {
 				index = (index + 1) % this._availableMulticastManifests.length;
 				this.multiastServerUrl = this._availableMulticastManifests[index];
 
@@ -296,7 +311,7 @@
 		} ,
 		fallbackToUnicast: function () {
 			var _this = this;
-
+			_this.getInterface().removeClass("multicast"); //remove multicast class in case of fallback
 			this.isError = true;
 
 			if ( this.playerObject ) {
@@ -542,6 +557,7 @@
 
 			if ( _this.isLive() ) {
 				_this.isMulticast= isMimeType( "video/multicast" );
+				_this.getInterface().addClass("multicast"); // add multicast class to the top-level container
 				_this.loadLive( doEmbedFunc , readyCallback );
 			} else {
 				_this.resolveSrcURL( _this.getSrc() ).then( doEmbedFunc );

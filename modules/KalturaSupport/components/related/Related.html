@@ -16,8 +16,16 @@
 <br />
 <div id="kdp" style="width:600px;height:370px;float:left"></div>
 <script type="text/javascript" src="../../tests/resources/qunit-kaltura-bootstrap.js"></script>
+
 <script>
-	// will be poulated via ace editor: 
+	// will be poulated via ace editor:
+    var triggerRelated = function(){
+      kdp.sendNotification("showScreenByName","related")
+    };
+    var hideRelated = function(){
+      kdp.sendNotification("hideScreenByName","related")
+    };
+    var kdp;
 	var customRelatedEntries = null
 	var doPlayerEmbed = function(){
 		kWidget.featureConfig({
@@ -46,7 +54,7 @@
 				'titleLabel.plugin': true
 			},
 			'readyCallback': function( playerId ){
-				var kdp = $('#' + playerId)[0];
+                kdp = $('#' + playerId)[0];
 				kdp.kBind( 'relatedVideoSelect', function( relatedData ){
 					$('#relatedVideoSelectLog').append( "Selected: " + relatedData.entryId  + "<br>" );
 				});
@@ -60,6 +68,8 @@
 	doPlayerEmbed();
 </script>
 <div style="clear:both"></div>
+<button onclick="triggerRelated()">Show related</button>
+<button onclick="hideRelated()">Hide related</button>
 <h3> Tracking related video clicks: </h3>
 <pre class="prettyprint linenums">
 'readyCallback': function( playerId ){

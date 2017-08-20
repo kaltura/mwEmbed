@@ -162,6 +162,7 @@
     opacity: 0.68;
     filter: alpha(opacity=68);
     text-transform: capitalize;
+    overflow: hidden;
 }
 .chapters > .k-chapters-container .k-title-container{
     opacity: 1;
@@ -669,4 +670,19 @@ input#searchBox::-ms-clear {
     box-shadow: none;
     border: none;
     box-sizing: border-box;
+}
+
+.chapterBox .fast-clamp {
+    position: relative;
+    display: block;
+    overflow: hidden;
+}
+
+@supports (-webkit-line-clamp: 1) {
+    .chapterBox .fast-clamp {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+    }
 }

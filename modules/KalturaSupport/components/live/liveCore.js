@@ -179,6 +179,16 @@
 					}
 				}
 
+				//check for pending autoPlay
+				if ( onAirObj.onAirStatus &&
+					embedPlayer.firstPlay &&
+					embedPlayer.autoplay &&
+					embedPlayer.canAutoPlay() &&
+					!embedPlayer.isInSequence() &&
+					!embedPlayer.isPlaying() ) {
+					embedPlayer.play();
+				}
+
 				_this.onAirStatus = onAirObj.onAirStatus;
 			} );
 
@@ -383,7 +393,9 @@
 				if ( callback ) {
 					callback( true );
 				}
-				embedPlayer.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : true } );
+				setTimeout(function () {
+					embedPlayer.triggerHelper('liveStreamStatusUpdate', {'onAirStatus': true});
+				}, 0);
 				return;
 			}
 

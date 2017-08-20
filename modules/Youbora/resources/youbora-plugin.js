@@ -13,7 +13,7 @@ $YB.plugins.KalturaV2 = function (player, options) {
     this.pluginName = 'kaltura-js';
 
     /** Version of the plugin. ie: 5.1.0-name */
-    this.pluginVersion = '5.3.0-' + VERSION + '-kaltura-js';
+    this.pluginVersion = '5.4.5-' + VERSION + '-kaltura-js';
 
     /* Initialize YouboraJS */
     this.startMonitoring(player, options);
@@ -183,17 +183,13 @@ $YB.plugins.KalturaV2.prototype.reset = function () {
 };
 
 $YB.plugins.KalturaV2.prototype.setMetadata = function () {
-  this.setOptions({
-    properties: {
-      kalturaInfo: {
-        sessionId: this.player.getPlayer().evaluate("{configProxy.sessionId}"),
-        uiConfigId: this.player.getPlayer().evaluate("{configProxy.kw.uiConfId}"),
-        content: {
-          id: this.player.getPlayer().evaluate("{mediaProxy.entry.id}"),
-          title: this.player.getPlayer().evaluate("{mediaProxy.entry.name}"),
-          duration: this.player.getPlayer().evaluate("{mediaProxy.entry.duration}")
-        }
-      }
-    }
-  });
+	this.setOptions({
+		properties: {
+			kalturaInfo: {
+				entryId: this.player.getPlayer().evaluate("{mediaProxy.entry.id}"),
+				sessionId: this.player.getPlayer().evaluate("{configProxy.sessionId}"),
+				uiConfigId: this.player.getPlayer().evaluate("{configProxy.kw.uiConfId}")
+			}
+		}
+	});
 };

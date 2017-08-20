@@ -222,7 +222,9 @@
 					rel: 0,
 					fs: 0,
 					wmode: 'opaque',
-					showinfo:0
+					showinfo:0,
+					start: embedPlayer.startTime || undefined,
+					end: embedPlayer.pauseTime || undefined
 				};
 
 				if(window['KeyValueParams'])
@@ -669,7 +671,13 @@
 		 * Get the embed player time
 		 */
 		getPlayerElementTime : function(){
-			return this.getPlayerElement().getCurrentTime();
+			var playerElement = this.getPlayerElement();
+			var time = 0;
+			//If YT API player is not loaded yet then return 0
+			if (playerElement && playerElement.getCurrentTime) {
+                time = playerElement.getCurrentTime();
+            }
+            return time;
 		},
 
 		/**

@@ -68,7 +68,8 @@
 				this.tryInitSecondPlayer();
 			},
 			isSafeEnviornment: function () {
-                return !(mw.isIE7() || mw.isIE8() || this.getPlayer().instanceOf === 'Silverlight');
+				//don't block the feature when it is silverlight + live (multicast support)
+                return !(mw.isIE7() || mw.isIE8() || (this.getPlayer().instanceOf === 'Silverlight' && !this.embedPlayer.isLive()));
 			},
 			isPlaylistPersistent: function(){
 				return (this.getPlayer().playerConfig &&
@@ -82,8 +83,8 @@
                 this.bind( 'playerReady', function (  ) {
 
                     mw.log('DualScreen - playerReady');
-                    //block DualScreen for spalyer
-                    if ( _this.getPlayer().instanceOf === 'Silverlight' ) {
+                    //block DualScreen for spalyer on VOD. Don't block when this is a live (for multicast)
+                    if ( _this.getPlayer().instanceOf === 'Silverlight' && !_this.getPlayer().isLive()) {
                         _this.destroy();
                         return;
                     }
