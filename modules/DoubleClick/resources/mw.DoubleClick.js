@@ -93,6 +93,9 @@
         adCuePoints: [],
         skipTimeoutId: null,
         chromelessAdManagerLoadedId: null,
+        
+        //Turn on to disable ads if live stream entry is offline
+        disablePlaylistAdsOnLiveStream: false,
 
         init: function ( embedPlayer, callback, pluginName ) {
             if ( embedPlayer.casting || mw.getConfig( "EmbedPlayer.UseExternalAdPlayer" ) === true ) {
@@ -885,7 +888,9 @@
         },
         // This function requests the ads.
         requestAds: function ( adType ) {
-            if ( !this.adTagUrl ) {
+            //Add a flag to disable ads if live stream entry is offline
+            if ( !this.adTagUrl || ( this.getConfig( "disablePlaylistAdsOnLiveStream" ) === true && this.embedPlayer.isPlaylistScreen()
+                && this.embedPlayer.isLive() && this.embedPlayer.isOffline() ) ) {
                 if ( $.isFunction( this.restorePlayerCallback ) ) {
                     this.restorePlayerCallback();
                 }
