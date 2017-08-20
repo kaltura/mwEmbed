@@ -303,7 +303,6 @@
                     }
                     _this.adCuePoints.push( cuePointWrapper.cuePoint.id );
                     _this.adManagerAutoStart = true;
-                    _this.isdestroy = false;
                     _this.requestAds();
                 }
             } );
