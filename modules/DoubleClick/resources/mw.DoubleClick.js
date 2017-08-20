@@ -94,7 +94,7 @@
         skipTimeoutId: null,
         chromelessAdManagerLoadedId: null,
         
-        //Turn on to disable ads if live stream entry is offline
+        //Turn on to disable ads if live stream entry is offline inside a playlist
         disablePlaylistAdsOnLiveStream: false,
 
         init: function ( embedPlayer, callback, pluginName ) {
@@ -888,7 +888,6 @@
         },
         // This function requests the ads.
         requestAds: function ( adType ) {
-            //Add a flag to disable ads if live stream entry is offline
             if ( !this.adTagUrl || ( this.getConfig( "disablePlaylistAdsOnLiveStream" ) === true && this.embedPlayer.isPlaylistScreen()
                 && this.embedPlayer.isLive() && this.embedPlayer.isOffline() ) ) {
                 if ( $.isFunction( this.restorePlayerCallback ) ) {
