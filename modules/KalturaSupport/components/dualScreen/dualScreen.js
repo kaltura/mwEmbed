@@ -876,8 +876,8 @@
                 var hasCuePoints = this.hasSlides();
                 var passthroughConfig = {
 					showFirstSlideOnLoad: this.getConfig('showFirstSlideOnLoad'),
-                    prefetch: this.getConfig('prefetch'),
-                    cuePointType: this.getConfig('cuePointType')
+					prefetch: this.getConfig('prefetch'),
+					cuePointType: this.getConfig('cuePointType')
                 };
                 var imagePlayer = hasCuePoints && new mw.dualScreen.imagePlayer(this.getPlayer(), function () {
                     this.setConfig(passthroughConfig);
