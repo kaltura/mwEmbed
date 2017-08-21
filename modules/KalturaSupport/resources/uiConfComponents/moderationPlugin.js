@@ -32,6 +32,12 @@
 				$(this.getPlayer().getPlayerElement()).removeClass( "blur" );
 				this.getPlayer().getPlayerPoster().removeClass( "blur" );
 			}, this));
+
+			this.bind('showScreen', function (event, screenName) {
+				if ( screenName === "moderation" ){
+					this.getInterface().find(".overlay-win .icon-close").focus();
+				}
+			});
 		},
 		getScreen: function(){
 			return $.Deferred().resolve(this.screen);

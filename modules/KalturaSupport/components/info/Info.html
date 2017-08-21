@@ -27,7 +27,10 @@
 				minWidthClass: 'infoScreenSmall',
 				template: ""
 			},
-			'topBarContainer.plugin': true
+			'topBarContainer' : {
+				'plugin' : true ,
+                'hover' : false
+			}
 		},
 		'readyCallback': function( playerId ){
 			var kdp = $('#' + playerId )[0];

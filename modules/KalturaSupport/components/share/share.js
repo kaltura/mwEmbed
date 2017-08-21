@@ -172,6 +172,7 @@
 					_this.getScreen().then(function(screen){
 						$( "#" + embedPlayer.getPlayerElement().id ).addClass("blur");
 						embedPlayer.getPlayerPoster().addClass("blur");
+						embedPlayer.getInterface().find(".share .icon-close").focus();
 					});
 				}
 			});
