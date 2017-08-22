@@ -82,6 +82,11 @@
 				if (this.embedPlayer.isMobileSkin() && (this.embedPlayer.changeMediaStarted || this.embedPlayer.buffering || this.embedPlayer.isInSequence())){
 					return; // prevent showing large play button on top of the spinner when using mobile skin and changing media or during ads
 				}
+				//Do not show the large play button after first play when using iPad native controls
+				if(mw.isIpad() && !mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') && !this.embedPlayer.firstPlay ) {
+					this.hide();
+					return;
+				}
 
 				if (this.embedPlayer.isMobileSkin()){
 					if (mw.isIOS8()){
