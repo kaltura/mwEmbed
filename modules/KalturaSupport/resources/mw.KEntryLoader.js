@@ -174,7 +174,7 @@ mw.KEntryLoader.prototype = {
 			var xml = $.parseXML( data.objects[0].xml );
 			var $xml = $( xml ).find('metadata').children();
 			$.each( $xml, function(inx, node){
-				result[ node.nodeName ] = node.textContent;
+				result[ node.nodeName ] = $.text(node);
 			});
 		} 
 		return result;
