@@ -205,10 +205,6 @@
 						});
 					_this.$screen = $('<div />')
 						.addClass('screen ' + _this.pluginName)
-						.attr({
-							"role" : "dialog",
-							"aria-labelledby" : "dialogTitle"
-						})
 						.append(
 							$('<div class="screen-content" /> ').append(closeBtn).append(data)
 						);
@@ -250,7 +246,7 @@
 					.click(function () {
 						_this.toggleScreen();
 					});
-				this.setAccessibility(this.$el, this.getConfig('tooltip')+gM('mwe-embedplayer-open_dialog'));
+				this.setAccessibility(this.$el, this.getConfig('tooltip'));
 			}
 			return this.$el;
 		}

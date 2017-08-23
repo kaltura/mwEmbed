@@ -21,8 +21,6 @@
 				"nextStream": 221,   // Add ] Sign for next stream
 				"prevStream": 219,   // Add [ Sigh for previous stream
 				"defaultStream": 220, // Add \ Sigh for default stream
-				"openMenu": 83, // Add S Sigh for open menu
-				"closeMenu": "shift+83" // Add Shift+S Sigh for close menu
 			}
 		},
 
@@ -396,10 +394,7 @@
 				//TODO: need icon from Shlomit!
 				var $button = $('<button />')
 					.addClass('btn icon-switchSource')
-					.attr({ 'title': gM('mwe-embedplayer-select_stream'),
-							'aria-label':gM('mwe-embedplayer-select_stream'),
-							'aria-haspopup':'true'
-					})
+					.attr('title', gM('mwe-embedplayer-select_stream'))
 					.click(function (e) {
 						_this.toggleMenu();
 					});
@@ -413,8 +408,7 @@
 		getMenu: function () {
 			if (!this.menu) {
 				this.menu = new mw.KMenu(this.getComponent().find('ul'), {
-					tabIndex: this.getBtn().attr('tabindex'),
-					menuName: this.getConfig("title")
+					tabIndex: this.getBtn().attr('tabindex')
 				});
 			}
 			return this.menu;

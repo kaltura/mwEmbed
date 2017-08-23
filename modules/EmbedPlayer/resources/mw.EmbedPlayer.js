@@ -1856,7 +1856,7 @@
 			if (!this.widgetLoaded) {
 				this.widgetLoaded = true;
 				mw.log("EmbedPlayer:: Trigger: widgetLoaded");
-				if( mw.getConfig('Kaltura.ForceLayoutRedraw') && ! (this.getInterface().width() === 0) && ! (this.getInterface().height() === 0) ) {
+				if( mw.getConfig('Kaltura.ForceLayoutRedraw') && ! (this.getInterface().width() === 0) && ! (this.getInterface().height() === 0)  && ! this.isPlaylistScreen() ) {
 					mw.log("EmbedPlayer:: ForceLayoutRedraw");
 					var resize = {
 						width: this.getInterface().width(),

@@ -130,37 +130,35 @@
 				}
 			});
 		},
-		addBindings: function(){
-			var _this = this;
-			function checkMobileAutoPlay() {
-				if ( _this.mobileAutoPlay ) {
-					_this.mobileAutoPlay = false;
-					_this.setVolume( 1 );
-				}
-			}
-            this.bindHelper( 'userInitiatedPlay' + this.bindPostfix, function () {
-                checkMobileAutoPlay();
-            } );
-			this.bindHelper( 'userInitiatedPause' + this.bindPostfix, function () {
-				checkMobileAutoPlay();
-			} );
-			this.bindHelper( 'userInitiatedSeek' + this.bindPostfix, function () {
-				checkMobileAutoPlay();
-			} );
-			this.bindHelper( 'onOpenFullScreen' + this.bindPostfix, function () {
-				checkMobileAutoPlay();
-			} );
-			this.bindHelper('firstPlay' + this.bindPostfix, function(){
-				_this.parseTracks();
-			});
-			this.bindHelper('switchAudioTrack' + this.bindPostfix, function (e, data) {
-				_this.switchAudioTrack(data.index);
-			});
-			this.bindHelper('liveOnline' + this.bindPostfix, function(){
-				_this.load();
-			});
-			this.bindHelper("changeEmbeddedTextTrack", this.onSwitchTextTrack.bind(this));
-		},
+        addBindings: function () {
+            var _this = this;
+
+            if (_this.mobileAutoPlay) {
+                var unMuteEventTriggers = ['userInitiatedPlay', 'userInitiatedPause', 'userInitiatedSeek', 'onOpenFullScreen'];
+                unMuteEventTriggers.forEach(function (eventName) {
+                    _this.bindHelper(eventName + _this.bindPostfix, function () {
+                        if (_this.mobileAutoPlay) {
+                            _this.mobileAutoPlay = false;
+                            _this.setVolume(1);
+                        }
+                        unMuteEventTriggers.forEach(function (eventName) {
+                            _this.unbindHelper(eventName + _this.bindPostfix);
+                        });
+                    });
+                });
+            }
+
+            this.bindHelper('firstPlay' + this.bindPostfix, function () {
+                _this.parseTracks();
+            });
+            this.bindHelper('switchAudioTrack' + this.bindPostfix, function (e, data) {
+                _this.switchAudioTrack(data.index);
+            });
+            this.bindHelper('liveOnline' + this.bindPostfix, function () {
+                _this.load();
+            });
+            this.bindHelper("changeEmbeddedTextTrack", this.onSwitchTextTrack.bind(this));
+        },
 
 		removeBindings: function(){
 			this.unbindHelper('firstPlay' + this.bindPostfix);

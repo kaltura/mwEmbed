@@ -41,8 +41,7 @@
 								}
 							})
 							.attr({
-								'title': this.getConfig('title'),
-								'aria-label': this.getConfig('title')
+								'title': this.getConfig('title')
 							}).append($img)
 					);
 			}
