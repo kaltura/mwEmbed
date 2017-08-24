@@ -352,15 +352,14 @@
 		mediaClicked: function (index) {
 			if (this.getConfig('onPage')) {
 				try {
-					var doc = window['parent'].document;
-					$(doc).find(".chapterBox").removeClass('active');
+					this.getComponent().find(".chapterBox").removeClass('active');
 				} catch (e) {
 				}
 				;
 			} else {
 				$(".chapterBox").removeClass('active');
 			}
-			$(".chapterBox").find("[data-mediaBox-index='" + index + "']").addClass('active');
+			this.getComponent().find(".chapterBox").find("[data-mediaBox-index='" + index + "']").addClass('active');
 			if ( mw.isMobileDevice() ){
 				this.embedPlayer.mobilePlayed = true; // since the user clicked the screen, we can set mobilePlayed to true to enable canAutoPlay
 			}
