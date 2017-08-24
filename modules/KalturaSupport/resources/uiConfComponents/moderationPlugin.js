@@ -47,7 +47,7 @@
 
 			// Disable space key binding to enable entering "space" inside the textarea
 		 	this.getPlayer().triggerHelper( 'onDisableKeyboardBinding' );
-		 	var $header = $( '<h2 id="dialogTitle" />' ).text(this.getConfig( 'header' ));
+		 	var $header = $( '<h2 />' ).text(this.getConfig( 'header' ));
 			var $moderationMessage = $( '<div />' ).append(
 				$( '<span />' ).text(this.getConfig( 'text' )),
 				$('<div></div>').append(
@@ -101,12 +101,8 @@
 			};
 			this.screen = $moderationScreen;
 			this.showScreen();
-			this.showModal($moderationScreen, closeCallback);
 
-			$moderationScreen.parent().parent().attr({
-				"role" : "dialog",
-				"aria-labelledby" : "dialogTitle"
-			})
+			this.showModal($moderationScreen, closeCallback);
 		},
 		showModal: function(screen, closeCallback){
 			this.getPlayer().disablePlayControls();
@@ -172,7 +168,7 @@
 								.click( function(){
 									_this.drawModal();
 								});
-				this.setAccessibility(this.$el, tooltipLabel + gM('mwe-embedplayer-open_dialog'));
+				this.setAccessibility(this.$el, tooltipLabel);
 			}
 			return this.$el;
 		}

@@ -440,7 +440,14 @@
 
             // If we're on mobile autoPlay we will start the ad muted just for the first entry
             if ( this.embedPlayer.mobileAutoPlay ) {
-                this.adsManager.setVolume( 0 );
+                $(this.getAdContainer()).one('click', function () {
+                    if (this.embedPlayer.mobileAutoPlay) {
+                        this.embedPlayer.mobileAutoPlay = false;
+                        this.adsManager.setVolume(1);
+                        this.embedPlayer.setVolume(1);
+                    }
+                }.bind(this));
+                this.adsManager.setVolume(0);
             } else {
                 this.adsManager.setVolume( this.embedPlayer.getPlayerElementVolume() );
             }
@@ -653,12 +660,6 @@
                     _this.embedPlayer.getPlayerElement().pause();
                 }
             }
-            if ( this.embedPlayer.mobileAutoPlay ) {
-                if (!mw.isAndroid()) {
-                    this.embedPlayer.mobileAutoPlay = false;
-                }
-                this.adsManager.setVolume( 1 );
-            }
         },
 
         resumeAd: function ( isLinear ) {
@@ -775,17 +776,12 @@
                             e.stopPropagation();
                             e.preventDefault();
                             $( _this.embedPlayer ).trigger( 'onAdSkip' );
-                            if ( _this.embedPlayer.mobileAutoPlay && !mw.isAndroid()) {
-                                _this.embedPlayer.mobileAutoPlay = false;
-                                _this.adsManager.setVolume( 1 );
-                                _this.embedPlayer.setVolume( 1 );
-                            }
                             if ( _this.adPaused ) {
                                 _this.resumeAd( _this.isLinear );
-								//Make sure to kill any timeout so button won't reappear
-								_this.clearSkipTimeout();
+                                //Make sure to kill any timeout so button won't reappear
+                                _this.clearSkipTimeout();
                             }
-							if ( _this.isChromeless ) {
+                            if ( _this.isChromeless ) {
                                 _this.embedPlayer.getPlayerElement().sendNotification( 'skipAd' );
                             } else {
                                 _this.adsManager.stop();
@@ -972,23 +968,25 @@
                 this.adsLoader.getSettings().setAutoPlayAdBreaks( false );
             }
 
-            // Attach the events before making the request.
-            this.adsLoader.addEventListener(
-                google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
-                function ( event ) {
-                    _this.onAdsManagerLoaded( event );
-                },
-                false );
-            this.adsLoader.addEventListener(
-                google.ima.AdErrorEvent.Type.AD_ERROR,
-                function ( event ) {
-                    _this.hideAdContainer( true );
-                    _this.onAdError( event );
-                },
-                false );
-
+            if (!this.adsLoaderLoaded) {
+                // Attach the events before making the request.
+                this.adsLoader.addEventListener(
+                    google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
+                    function (event) {
+                        _this.onAdsManagerLoaded(event);
+                    },
+                    false);
+                this.adsLoader.addEventListener(
+                    google.ima.AdErrorEvent.Type.AD_ERROR,
+                    function (event) {
+                        _this.hideAdContainer(true);
+                        _this.onAdError(event);
+                    },
+                    false);
+            }
             // 4. Make the request.
             try {
+                this.adsLoaderLoaded = true;
                 this.adsLoader.requestAds( adsRequest );
             } catch ( e ) {
                 this.onAdError( e );
@@ -1007,6 +1005,9 @@
                 adsRenderingSettings[ "uiElements" ] = [];
             }
             adsRenderingSettings.useStyledNonLinearAds = true;
+            if (this.adsManager) {
+                this.adsManager.destroy();
+            }
             this.adsManager = loadedEvent.getAdsManager( this.embedPlayer, adsRenderingSettings );
             this.adManagerLoaded = true;
 
@@ -1052,63 +1053,63 @@
                         var adSlotHeight = companionsArr[ 2 ];
                         var companionAds = [];
 
-						try {
-							var selectionCriteria = new google.ima.CompanionAdSelectionSettings();
-							selectionCriteria.resourceType = google.ima.CompanionAdSelectionSettings.ResourceType.ALL;
-							selectionCriteria.creativeType = google.ima.CompanionAdSelectionSettings.CreativeType.ALL;
-							switch( this.getConfig( 'companionSizeCriteria' ) ){
-								case 'SELECT_NEAR_MATCH' :selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.SELECT_NEAR_MATCH;
-									break;
-								case 'IGNORE' :
-									selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.IGNORE;
-									break;
-								default:
-									selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.SELECT_EXACT_MATCH;
-							}
-							companionAds = ad.getCompanionAds(adSlotWidth, adSlotHeight, selectionCriteria);
-						} catch(e) {
-							mw.log("Error: DoubleClick could not access getCompanionAds");
-						}
-						// match companions to targets
-						if (companionAds.length > 0){
-							var companionAd = companionAds[0];
-							// Get HTML content from the companion ad.
-							var content = companionAd.getContent();
-							this.showCompanion(companionID, content);
-						}
-					}
-				}
-			}
-		},
-		showCompanion: function(companionID, content){
-			// Check the iframe parent target:
-			try{
-				var targetElm = window['parent'].document.getElementById( companionID );
-				if( targetElm ){
-					targetElm.innerHTML = content;
-				}
-			} catch( e ){
-				mw.log( "Error: DoubleClick could not access parent iframe" );
-			}
-		},
-		addAdMangerListeners: function(){
-			var _this = this;
-			var adsListener = function( eventType, callback ){
-				_this.adsManager.addEventListener(
-					google.ima.AdEvent.Type[ eventType ],
-					function( event ){
-						mw.log( "DoubleClick::AdsEvent:" + eventType );
-						if (event.type === google.ima.AdEvent.Type.STARTED) {
-							// Get the ad from the event and display companions.
-							_this.displayCompanions(event.getAd());
-						}
-						if( $.isFunction( callback ) ){
-							callback( event );
-						}
-					},
-					false
-				);
-			};
+                        try {
+                            var selectionCriteria = new google.ima.CompanionAdSelectionSettings();
+                            selectionCriteria.resourceType = google.ima.CompanionAdSelectionSettings.ResourceType.ALL;
+                            selectionCriteria.creativeType = google.ima.CompanionAdSelectionSettings.CreativeType.ALL;
+                            switch( this.getConfig( 'companionSizeCriteria' ) ){
+                                case 'SELECT_NEAR_MATCH' :selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.SELECT_NEAR_MATCH;
+                                    break;
+                                case 'IGNORE' :
+                                    selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.IGNORE;
+                                    break;
+                                default:
+                                    selectionCriteria.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.SELECT_EXACT_MATCH;
+                            }
+                            companionAds = ad.getCompanionAds(adSlotWidth, adSlotHeight, selectionCriteria);
+                        } catch(e) {
+                            mw.log("Error: DoubleClick could not access getCompanionAds");
+                        }
+                        // match companions to targets
+                        if (companionAds.length > 0){
+                            var companionAd = companionAds[0];
+                            // Get HTML content from the companion ad.
+                            var content = companionAd.getContent();
+                            this.showCompanion(companionID, content);
+                        }
+                    }
+                }
+            }
+        },
+        showCompanion: function(companionID, content){
+            // Check the iframe parent target:
+            try{
+                var targetElm = window['parent'].document.getElementById( companionID );
+                if( targetElm ){
+                    targetElm.innerHTML = content;
+                }
+            } catch( e ){
+                mw.log( "Error: DoubleClick could not access parent iframe" );
+            }
+        },
+        addAdMangerListeners: function(){
+            var _this = this;
+            var adsListener = function( eventType, callback ){
+                _this.adsManager.addEventListener(
+                    google.ima.AdEvent.Type[ eventType ],
+                    function( event ){
+                        mw.log( "DoubleClick::AdsEvent:" + eventType );
+                        if (event.type === google.ima.AdEvent.Type.STARTED) {
+                            // Get the ad from the event and display companions.
+                            _this.displayCompanions(event.getAd());
+                        }
+                        if( $.isFunction( callback ) ){
+                            callback( event );
+                        }
+                    },
+                    false
+                );
+            };
 
             // Add error listener:
             _this.adsManager.addEventListener(
@@ -1333,12 +1334,12 @@
                     if(mw.isIE11() && mw.getUserOS() === 'Windows 8.1'){
                         // for FEC-6421 workaround to cause video element rendering
                         var videoElement = $(_this.embedPlayer.getPlayerElement());
-	                    var position = videoElement.css('position');
-	                    videoElement.css('position', '');
-	                    _this.restorePlayer();
-	                    videoElement.css('position', position);
+                        var position = videoElement.css('position');
+                        videoElement.css('position', '');
+                        _this.restorePlayer();
+                        videoElement.css('position', position);
                     } else {
-	                    _this.restorePlayer();
+                        _this.restorePlayer();
                     }
                 }
             } );
@@ -1687,50 +1688,50 @@
             _this.updateRemainingAdTime( _this.duration - _this.adsManager.getRemainingTime() );
         },
 
-		updateRemainingAdTime: function(remainTime){
-			if ( this.embedPlayer.getInterface().find(".ad-skip-label").length ){
-				var offsetRemaining = Math.max(Math.ceil(parseFloat(this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' )) - remainTime), 0);
-				this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining', offsetRemaining );
-				this.embedPlayer.getInterface().find(".ad-skip-label").text(this.embedPlayer.evaluate( this.embedPlayer.getRawKalturaConfig('skipNotice','text')) );
-			}
-		},
-		// Handler for various ad errors.
-		onAdError: function( errorEvent ) {
-			if (errorEvent) {var errorMsg = ( typeof errorEvent.getError != 'undefined' ) ? errorEvent.getError() : errorEvent;
-			mw.log('DoubleClick:: onAdError: ' + errorMsg );
-			if (!this.adLoaderErrorFlag){
-				$( this.embedPlayer ).trigger("adErrorEvent");
-				this.adLoaderErrorFlag = true;
-			}
-			if (this.adsManager && $.isFunction( this.adsManager.unload ) ) {
-				this.adsManager.unload();
-			}
-			if (this.embedPlayer.isInSequence() || (this.embedPlayer.autoplay && this.embedPlayer.canAutoPlay())){
-				this.restorePlayer(this.contentDoneFlag);
-				this.embedPlayer.play();
-			}else{
-				this.destroy();}
-			}
-		},
-		restorePlayer: function( onContentComplete, adPlayed ){
-			if (this.isdestroy && this.adTagUrl){ // DFP trafficed and already destroyed
-				return;
-			}
-			mw.log("DoubleClick::restorePlayer: content complete:" + onContentComplete);
-			var _this = this;
-			this.adActive = false;
-			this.embedPlayer.getInterface().find(".ad-notice-label").remove();
-			if (this.isChromeless){
-				if (_this.isLinear || _this.adLoaderErrorFlag){
-					$(".mwEmbedPlayer").show();
-				}
-				this.embedPlayer.getPlayerElement().redrawObject(50);
-			}else{
-				if (_this.isLinear !== false || _this.adLoaderErrorFlag){
-					_this.hideAdContainer(true);
-				}
-			}
-			this.embedPlayer.sequenceProxy.isInSequence = false;
+        updateRemainingAdTime: function(remainTime){
+            if ( this.embedPlayer.getInterface().find(".ad-skip-label").length ){
+                var offsetRemaining = Math.max(Math.ceil(parseFloat(this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' )) - remainTime), 0);
+                this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining', offsetRemaining );
+                this.embedPlayer.getInterface().find(".ad-skip-label").text(this.embedPlayer.evaluate( this.embedPlayer.getRawKalturaConfig('skipNotice','text')) );
+            }
+        },
+        // Handler for various ad errors.
+        onAdError: function( errorEvent ) {
+            if (errorEvent) {var errorMsg = ( typeof errorEvent.getError != 'undefined' ) ? errorEvent.getError() : errorEvent;
+                mw.log('DoubleClick:: onAdError: ' + errorMsg );
+                if (!this.adLoaderErrorFlag){
+                    $( this.embedPlayer ).trigger("adErrorEvent");
+                    this.adLoaderErrorFlag = true;
+                }
+                if (this.adsManager && $.isFunction( this.adsManager.unload ) ) {
+                    this.adsManager.unload();
+                }
+                if (this.embedPlayer.isInSequence() || (this.embedPlayer.autoplay && this.embedPlayer.canAutoPlay())){
+                    this.restorePlayer(this.contentDoneFlag);
+                    this.embedPlayer.play();
+                }else{
+                    this.destroy();}
+            }
+        },
+        restorePlayer: function( onContentComplete, adPlayed ){
+            if (this.isdestroy && this.adTagUrl){ // DFP trafficed and already destroyed
+                return;
+            }
+            mw.log("DoubleClick::restorePlayer: content complete:" + onContentComplete);
+            var _this = this;
+            this.adActive = false;
+            this.embedPlayer.getInterface().find(".ad-notice-label").remove();
+            if (this.isChromeless){
+                if (_this.isLinear || _this.adLoaderErrorFlag){
+                    $(".mwEmbedPlayer").show();
+                }
+                this.embedPlayer.getPlayerElement().redrawObject(50);
+            }else{
+                if (_this.isLinear !== false || _this.adLoaderErrorFlag){
+                    _this.hideAdContainer(true);
+                }
+            }
+            this.embedPlayer.sequenceProxy.isInSequence = false;
 
             // Check for sequence proxy style restore:
             if ( $.isFunction( this.restorePlayerCallback ) && !onContentComplete ) {
@@ -1798,6 +1799,7 @@
                     _this.removeAdContainer();
                     if ( _this.adsLoader ) {
                         _this.adsLoader.destroy();
+                        _this.adsLoaderLoaded = false;
                     }
                 }, 100 );
             } else {
