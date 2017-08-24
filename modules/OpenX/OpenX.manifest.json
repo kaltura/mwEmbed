@@ -1,0 +1,33 @@
+{
+    "OpenX": {
+        "label": "OpenX",
+        "description": "OpenX plugin for Kaltura enables the monetization of the video content by auctioning each advertisement opportunity through the OpenX ad exchange. In order to setup OpenX plugin please e-mail contact@openx.com.",
+        "attributes": {
+            "preroll": {
+                "doc": "Ad unit URL for the preroll ad.",
+                "label": "Preroll URL",
+                "type": "url"
+            },
+            "postroll": {
+                "doc": "Ad unit URL for the postroll ad.",
+                "label": "Postroll URL",
+                "type": "url"
+            },
+            "pd": {
+                "doc": "Cookie sync URL for the account.",
+                "label": "Cookie Sync",
+                "type": "url"
+            },
+            "skip": {
+                "doc": "The text to show for skipping the ad. (default: Skip Ad)",
+                "label": "Skip Text",
+                "type": "string"
+            },
+            "skip": {
+                "doc": "Notice to show while the ad is playing. (default: Advertisement 0:00)",
+                "label": "Ad Notice",
+                "type": "string"
+            }
+        }
+    }
+}

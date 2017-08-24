@@ -1,0 +1,11 @@
+{
+    "mw.OpenX": {
+        "scripts": "resources/mw.OpenXController.js",
+        "dependencies": [
+            'mw.BaseAdPlugin', 
+            'mw.AdTimeline', 
+            'mw.KAdPlayer'
+        ],
+        "kalturaPluginName": "OpenX"
+    }
+}
