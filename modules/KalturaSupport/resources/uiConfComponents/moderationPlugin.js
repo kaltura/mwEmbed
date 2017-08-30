@@ -27,6 +27,8 @@
 		},
 
 		addBindings: function () {
+            var embedPlayer = this.getPlayer();
+
 			this.bind('onChangeMedia', $.proxy(function () {
 				this.getPlayer().triggerHelper( 'onEnableKeyboardBinding' );
 				$(this.getPlayer().getPlayerElement()).removeClass( "blur" );
@@ -36,6 +38,16 @@
 			this.bind('showScreen', function (event, screenName) {
 				if ( screenName === "moderation" ){
 					this.getInterface().find(".overlay-win .icon-close").focus();
+
+					embedPlayer.getInterface().find(".overlay").keydown(function(e){
+                        if(e.keyCode === 9){// keyCode = 9 - tab button
+                            setTimeout(function () {
+                                if(!$(':focus').parents('.overlay').hasClass('overlay')){
+                                    embedPlayer.getInterface().find(".overlay-win .icon-close").focus();
+                                }
+                            }, 0);
+                        }
+					});
 				}
 			});
 		},
