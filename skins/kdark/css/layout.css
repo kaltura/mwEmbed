@@ -646,6 +646,10 @@ body {
 	transition: width 0.3s ease-in-out;
 	cursor: pointer;
 }
+.volumeControl .ui-slider-horizontal.slider:focus {
+	width: 5em;
+	margin-right: 10px;
+}
 .volumeControl.noTransition .ui-slider-horizontal.slider{
 	-moz-transition: none ;
 	-webkit-transition: none ;
