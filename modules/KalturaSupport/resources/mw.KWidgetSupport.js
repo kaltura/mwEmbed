@@ -930,7 +930,12 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.inline = true;
 		}
 
-		
+		// Check for banSeek:
+        var banSeek = getAttr( 'banSeek' );
+		if(banSeek){
+            embedPlayer.banSeek = true;
+		}
+
 		// Check for autoMute:
 		var autoMute = getAttr( 'autoMute' );
 		if( autoMute && !mw.isMobileDevice()){

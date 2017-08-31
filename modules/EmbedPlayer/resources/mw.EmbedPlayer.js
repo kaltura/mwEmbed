@@ -305,6 +305,15 @@
 
 		liveSyncDurationOffset:0,
 
+		//time in sec how much I have  already looked entry
+        timeWhatIAlreadySaw:0,
+
+		//if true - we cannot seek to non watched part of video
+        banSeek: false,
+
+		//did i already show alert when I try to seek for allowed time
+        didIShowBanSeekAlert: false,
+
 		/**
 		 * embedPlayer
 		 *
@@ -1152,9 +1161,38 @@
 				$(this).trigger('seeked');
 			} else {
 				var _this = this;
-				this.canSeek().then(function () {
-					_this.doSeek(seekTime, stopAfterSeek);
-				});
+                var canISeek;
+				if(this.banSeek){
+					canISeek = false;
+                    if(this.timeWhatIAlreadySaw <= this.kPreSeekTime ){
+                        this.timeWhatIAlreadySaw = this.kPreSeekTime;
+                    }
+                    if( this.timeWhatIAlreadySaw <= this.currentTime ){
+                        this.currentTime = this.kPreSeekTime;
+                        seekTime = this.kPreSeekTime;
+                        this.seeking = false;
+                        if(!_this.didIShowBanSeekAlert){
+                            _this.didIShowBanSeekAlert = true;
+                            this.sendNotification( "alert", {
+                                'message': 'You are not allowed to seek forword',
+                                'callbackFunction': function(){ _this.play()}
+                            });
+						}
+                    }else {
+                        seekTime = this.currentTime;
+                        canISeek = true;
+                    }
+
+				}else {
+                    canISeek = true;
+                    _this.canIUseScrubber = true;
+				}
+
+                if(canISeek){
+					this.canSeek().then(function () {
+						_this.doSeek(seekTime, stopAfterSeek);
+					});
+				}
 			}
 		},
 		/**
