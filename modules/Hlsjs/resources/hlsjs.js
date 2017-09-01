@@ -70,6 +70,7 @@
 				this.bind("SourceChange", this.isNeeded.bind(this));
 				this.bind("playerReady", this.initHls.bind(this));
 				this.bind("onChangeMedia", this.clean.bind(this));
+				this.bind("liveOnline", this.onLiveOnline.bind(this));
 				if (mw.getConfig("hlsLogs")) {
 					this.bind("monitorEvent", this.monitorDebugInfo.bind(this));
 				}
@@ -109,7 +110,7 @@
 					this.log("Init");
 					//Set streamerType to hls
 					this.embedPlayer.streamerType = 'hls';
-					
+
 					var hlsConfig = this.getHlsConfig();
 					//Init the HLS playback engine
 					this.hls = new Hls(hlsConfig);
@@ -615,16 +616,22 @@
 			backToLive: function () {
                 var _this = this;
                 var vid = this.getPlayer().getPlayerElement();
-                this.embedPlayer.goingBackToLive = true;
-                vid.currentTime = vid.duration - this.embedPlayer.liveSyncDurationOffset;
-                if ( this.embedPlayer.isDVR() ) {
-                    _this.once( 'seeked', function () {
-	                    _this.getPlayer().triggerHelper( 'movingBackToLive' );
-                        _this.embedPlayer.goingBackToLive = false;
-                    } );
-                } else {
-	                _this.getPlayer().triggerHelper( 'movingBackToLive' );
-                    _this.embedPlayer.goingBackToLive = false;
+				this.embedPlayer.goingBackToLive = true;
+                try {
+	                vid.currentTime = vid.duration - this.embedPlayer.liveSyncDurationOffset;
+	                if ( this.embedPlayer.isDVR() ) {
+		                _this.once( 'seeked', function () {
+			                _this.getPlayer().triggerHelper( 'movingBackToLive' );
+			                _this.embedPlayer.goingBackToLive = false;
+		                } );
+	                } else {
+		                _this.getPlayer().triggerHelper( 'movingBackToLive' );
+		                _this.embedPlayer.goingBackToLive = false;
+	                }
+                } catch (e) {
+	                this.getPlayer().triggerHelper( 'movingBackToLive' );
+	                this.embedPlayer.goingBackToLive = false;
+	                this.log(e);
                 }
             },
 
@@ -689,7 +696,9 @@
 				if (!this.mediaAttached){
 					this.unbind("firstPlay");
 					this.unbind("seeking");
-					this.hls.attachMedia(this.getPlayer().getPlayerElement());
+					this.bind("firstPlay", function() {
+						this.hls.attachMedia(this.getPlayer().getPlayerElement());
+					}.bind(this));
 				}
 				if (!this.embedPlayer.isVideoSiblingEnabled()
 					&& !this.embedPlayer.isInSequence()
@@ -753,6 +762,18 @@
 					this.unbind("firstPlay");
 					this.unbind("seeking");
 					this.hls.attachMedia(this.getPlayer().getPlayerElement());
+				}
+			},
+
+			onLiveOnline: function () {
+				if (this.embedPlayer.isDVR()) {
+					this.log(' onLiveOnline:: renew hls instance');
+					this.hls.destroy();
+					var hlsConfig = this.getHlsConfig();
+					this.hls = new Hls(hlsConfig);
+					this.registerHlsEvents();
+					this.mediaAttached = false;
+					this.hls.attachMedia(this.embedPlayer.getPlayerElement());
 				}
 			},
 

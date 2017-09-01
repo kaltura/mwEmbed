@@ -179,7 +179,7 @@
 		updateUnreadBadge: function(){
 			var _this = this;
 			// if its a number and is greater then 0 - show & update the badge
-			var num = _this.KQnaModule.getUnreadCount();
+			var num = _this.KQnaModule ? _this.KQnaModule.getUnreadCount() : 0;
 			if (isNaN(num) || num <=0 ){
 				$('.qna-badge').hide();
 			}

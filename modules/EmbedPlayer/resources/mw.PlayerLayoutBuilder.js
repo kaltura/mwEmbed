@@ -1316,6 +1316,9 @@
             var embedPlayer = this.embedPlayer;
             var callback;
             mw.log('PlayerLayoutBuilder::displayAlert:: ' + alertObj.title);
+            // update size classes for styling error messages according to player size
+            this.updatePlayerSizeClass();
+
             // Check if callback is external or internal (Internal by default)
 
             // Check if overlay window is already present:

@@ -1402,7 +1402,8 @@
 				return;
 			}
 			// Auto play stopped ( no playerReady has already started playback ) and if not on an iPad with iOS > 3
-			if (this.isStopped() && this.autoplay && !this.changeMediaStarted && this.canAutoPlay()) {
+			// livestream autoPlay is handled by liveCore
+			if (this.isStopped() && this.autoplay && !this.changeMediaStarted && this.canAutoPlay() && !this.isLive()) {
 				mw.log('EmbedPlayer::showPlayer::Do autoPlay');
 				if (mw.isDesktopSafari()) {
 					setTimeout(function () {
@@ -1855,7 +1856,7 @@
 			if (!this.widgetLoaded) {
 				this.widgetLoaded = true;
 				mw.log("EmbedPlayer:: Trigger: widgetLoaded");
-				if( mw.getConfig('Kaltura.ForceLayoutRedraw') && ! (this.getInterface().width() === 0) && ! (this.getInterface().height() === 0) ) {
+				if( mw.getConfig('Kaltura.ForceLayoutRedraw') && ! (this.getInterface().width() === 0) && ! (this.getInterface().height() === 0)  && ! this.isPlaylistScreen() ) {
 					mw.log("EmbedPlayer:: ForceLayoutRedraw");
 					var resize = {
 						width: this.getInterface().width(),
@@ -2867,7 +2868,7 @@
 			}
 		},
 		checkClipDoneCondition: function(){
-			if ( this.currentTime >= 0 && this.duration ) {
+			if ( mw.getConfig('EmbedPlayer.EnableClipDoneGuard') && (this.currentTime >= 0 && this.duration) ) {
 				// Check if we are "done"
 				if (!this.isLive()) {
 					var endPresentationTime = this.duration;

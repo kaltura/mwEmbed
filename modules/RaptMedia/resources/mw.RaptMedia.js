@@ -115,7 +115,7 @@
 					// pause the video
 					_this.getPlayer().layoutBuilder.displayAlert({
 						keepOverlay: true,
-						message: 'Error loading the RAPT Media engine. Please try to reload the page, or contact Support stating the URL of this page if the issue persists.',
+						message: 'Error loading the Rapt Media engine. Please try reloading the page, or contact Support if the issue persists.',
 						title: 'Error loading RAPT Media engine',
 						noButtons: true
 					});
@@ -194,7 +194,7 @@
 						if (!(currentEntryId in _this.raptSegments) || _this.raptSegments[currentEntryId] == null) {
 							_this.getPlayer().layoutBuilder.displayAlert({
 								keepOverlay: true,
-								message: 'There was an error loading this segment of the RAPT Media experience. Please try to reload the page, or contact Support stating the URL of this page if the issue persists.',
+								message: 'There was an error loading this segment of the Rapt Media experience. Please try reloading the page, or contact Support if the issue persists.',
 								title: 'Error playing RAPT Media segment',
 								noButtons: true
 							});
@@ -266,7 +266,7 @@
 						_this.log('Engine error: ' + error);
 						_this.getPlayer().layoutBuilder.displayAlert({
 							keepOverlay: true,
-							message: 'Somthing gone bad with this RAPT Media experience :( Please try to reload the page, or contact Support stating the URL of this page if the issue persists. (' + error + ')',
+							message: 'Something went wrong. Please try reloading the page, or contact Support if the issue persists.',
 							title: 'Error playing RAPT Media experience',
 							noButtons: true
 						});
