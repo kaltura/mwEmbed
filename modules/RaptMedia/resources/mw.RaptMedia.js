@@ -78,17 +78,6 @@
 			});
 
 			this.bind('prePlayAction', function(event, data) {
-				// Block playback until engine is initialized and the project is loaded
-				if (_this.getConfig('status') === 'loading') {
-					_this.log('Deferring play, rapt project still loading');
-
-					_this.whenReady(function() {
-						_this.getPlayer().play();
-					});
-
-					data.allowPlayback = false;
-				}
-
 				// Block playback when the current segment has ended
 				if (_this.segmentEnded) {
 					data.allowPlayback = false;
@@ -96,12 +85,19 @@
 				}
 			});
 
+			this.bind('checkPlayerSourcesEvent', function(event, callback) {
+				_this.playbackCallback = callback;
+			});
+
 			this.bind('KalturaSupport_EntryDataReady', function(event) {
 				_this.log('Checking if Entry is an Interactive Video');
 
 				var raptProjectId = _this.readRaptProjectId();
 				if (raptProjectId) {
+					_this.once('raptMedia_ready', _this.playbackCallback);
 					_this.enableRapt(raptProjectId);
+				} else {
+					_this.playbackCallback();
 				}
 			});
 
@@ -237,86 +233,62 @@
 			});
 		},
 
-		whenReady: function(callback) {
-			var status = this.getConfig('status');
-
-			if (status === 'enabled') {
-				return callback();
-			}
-
-			if (status === 'loading') {
-				return this.once('raptMedia_ready', callback);
-			}
-
-			this.log('Dropping callback. Rapt Media status: ' + status + '.');
-		},
-
 		execute: function(command) {
-			var _this = this;
-			this.whenReady(function() {
-				_this.raptMediaEngine.execute(command);
-			});
+			if (!this.raptMediaEngine || this.getConfig('status') !== 'enabled') {
+				this.log('WARNING: Rapt Media commands received before initialization is complete');
+				return;
+			}
+
+			this.raptMediaEngine.execute(command);
 		},
 
 		//
 
 		play: function() {
-			var _this = this;
-
-			this.whenReady(function() {
-				_this.getPlayer().sendNotification('doPlay');
-			});
+			this.getPlayer().sendNotification('doPlay');
 		},
 
 		pause: function() {
-			var _this = this;
-
-			this.whenReady(function() {
-				_this.getPlayer().sendNotification('doPause');
-			});
+			this.getPlayer().sendNotification('doPause');
 		},
 
 		seek: function(segment, time, stopAfterSeek) {
-			var _this = this;
+			if (segment == null) {
+				segment = this.currentSegment;
+			} else if (this.currentSegment !== segment) {
+				this.currentSegment = segment;
 
-			this.whenReady(function() {
-				if (segment == null) {
-					segment = _this.currentSegment;
-				} else if (_this.currentSegment !== segment) {
-					_this.currentSegment = segment;
+				// Clear before set to prevent default object merge behavior
+				this.setConfig('currentSegment', undefined, true);
+				this.setConfig('currentSegment', segment, true);
 
-					// Clear before set to prevent default object merge behavior
-					_this.setConfig('currentSegment', undefined, true);
-					_this.setConfig('currentSegment', segment, true);
+				this.emit('raptMedia_newSegment', segment);
+			}
 
-					_this.emit('raptMedia_newSegment', segment);
-				}
+			var segmentTime = Math.min(segment.duration, Math.max(0, time));
+			var absoluteTime = segment.startTime + segmentTime;
+			this.segmentEnded = time > segment.duration - END_EPSILON;
 
-				var segmentTime = Math.min(segment.duration, Math.max(0, time));
-				var absoluteTime = segment.startTime + segmentTime;
-				_this.segmentEnded = time > segment.duration - END_EPSILON;
+			if (this.segmentEnded) {
+				stopAfterSeek = true;
+			}
 
-				if (_this.segmentEnded) {
-					stopAfterSeek = true;
-				}
+			if (stopAfterSeek == null && this.getPlayer().seeking) {
+				stopAfterSeek = this.getPlayer().stopAfterSeeking;
+			}
 
-				if (stopAfterSeek == null && _this.getPlayer().seeking) {
-					stopAfterSeek = _this.getPlayer().stopAfterSeeking;
-				}
+			var flags = [];
+			if (this.segmentEnded) { flags.push('ending'); }
 
-				var flags = [];
-				if (_this.segmentEnded) { flags.push('ending'); }
+			this.log('Seeking -- ' +
+				'absolute time: ' + absoluteTime.toFixed(3) + ', ' +
+				'segment: ' + segment.id + ', ' +
+				'segment time: ' + segmentTime.toFixed(3) + ', ' +
+				'flags: [' + flags.join(' ') + ']'
+			);
 
-				_this.log('Seeking -- ' +
-					'absolute time: ' + absoluteTime.toFixed(3) + ', ' +
-					'segment: ' + segment.id + ', ' +
-					'segment time: ' + segmentTime.toFixed(3) + ', ' +
-					'flags: [' + flags.join(' ') + ']'
-				);
-
-				_this.getPlayer().seek(absoluteTime, stopAfterSeek);
-				_this.broadcastTime(segmentTime, segment.duration);
-			});
+			this.getPlayer().seek(absoluteTime, stopAfterSeek);
+			this.broadcastTime(segmentTime, segment.duration);
 		},
 
 		// Initialization Support
@@ -619,11 +591,11 @@
 		resizeEngine: function() {
 			var _this = this;
 
-			this.whenReady(function() {
-				_this.raptMediaEngine.resize({
-					width: _this.getPlayer().getVideoHolder().width(),
-					height: _this.getPlayer().getVideoHolder().height()
-				});
+			if (!this.raptMediaEngine) { return; }
+
+			this.raptMediaEngine.resize({
+				width: _this.getPlayer().getVideoHolder().width(),
+				height: _this.getPlayer().getVideoHolder().height()
 			});
 		},
 
