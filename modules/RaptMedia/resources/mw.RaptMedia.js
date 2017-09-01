@@ -346,11 +346,11 @@
 			// Audio will always be a multiple of AAC frame size (1024 samples) so we assume the maximum error of 1 AAC frame at the lowest sampling rate per discontinuity.
 
 			switch (streamerType) {
-				case 'hls':
-					return AAC_UNCERTAINTY * position + DTS_UNCERTAINTY;
 				case 'mpegdash':
-				default:
 					return DTS_UNCERTAINTY;
+				case 'hls':
+				default:
+					return AAC_UNCERTAINTY * position + DTS_UNCERTAINTY;
 			}
 		},
 
