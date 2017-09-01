@@ -95,15 +95,21 @@
 			});
 
 			this.bind('KalturaSupport_EntryDataReady', function(event) {
-				_this.log('Checking if Entry is an Interactive Video');
+				// KalturaSupport_EntryDataReady can be called synchronously from a
+				// `checkPlayerSourcesEvent` handler if the required data is already
+				// cached. In that case `_this.playbackCallback` may not be available
+				// synchronously, so we force asynchronous evaluation
+				setTimeout(function() {
+					_this.log('Checking if Entry is an Interactive Video');
 
-				var raptProjectId = _this.readRaptProjectId();
-				if (raptProjectId) {
-					_this.once('raptMedia_ready', _this.playbackCallback);
-					_this.enableRapt(raptProjectId);
-				} else {
-					_this.playbackCallback();
-				}
+					var raptProjectId = _this.readRaptProjectId();
+					if (raptProjectId) {
+						_this.once('raptMedia_ready', _this.playbackCallback);
+						_this.enableRapt(raptProjectId);
+					} else {
+						_this.playbackCallback();
+					}
+				}, 0);
 			});
 
 			this.bind('onChangeMedia', function(event) {
