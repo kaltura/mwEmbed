@@ -491,13 +491,14 @@
 						embedPlayer.play();
 					},500); // timeout is required when loading live entries
 				}
-
 				if (mw.isMobileDevice() && !mobileAutoPlay){
 					mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
 					embedPlayer.updatePosterHTML();
 				}
 			});
 			mw.log("PlaylistAPI::playClip::changeMedia entryId: " + id);
+			//Need to enable the controls if the previous entry was an offline live stream, Livecore.js handles the controls logic for live stream entries.
+			this.getPlayer().enablePlayControls();
 
 			if (!this.firstPlay && this.getConfig('hideClipPoster') === true && !mw.isIphone()) {
 				mw.setConfig('EmbedPlayer.HidePosterOnStart', true);
