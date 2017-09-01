@@ -2,22 +2,23 @@
 
 <h1>OpenX Kaltura Ad Player Demo Page</h1>
 
-<script src="http://cdnapi.kaltura.com/p/2250601/sp/225060100/embedIframeJs/uiconf_id/38483122/partner_id/2250601"></script>
+<script src="../../mwEmbedLoader.php"></script>
 <div id="kaltura_player_1487966923" style="width: 560px; height: 395px;"></div>
 <script>
+    mw.setConfig("Kaltura.LeadWithHTML5", true);
 kWidget.embed({
   "targetId": "kaltura_player_1487966923",
   "wid": "_2250601",
   "uiconf_id": 38483122,
   "flashvars": {
     "streamerType": "auto",
-    "OpenX": {
+    "openX": {
        //This line turn on the plugin
-       'plugin': true,
+       'plugin': true
 
        //This line sets the plugin file path
        //"iframeHTML5Js" : "OpenX.loader.js",
-       "iframeHTML5Js" : "resources/mw.OpenXController.js"
+//       "iframeHTML5Js" : "resources/mw.OpenXController.js"
     }
   },
   "cache_st": 1487966923,
