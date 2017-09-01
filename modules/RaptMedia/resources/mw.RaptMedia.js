@@ -81,6 +81,11 @@
 				// Block playback when the current segment has ended
 				if (_this.segmentEnded) {
 					data.allowPlayback = false;
+				}
+			});
+
+			this.bind('userInitiatedPlay', function() {
+				if (_this.segmentEnded) {
 					_this.seek(null, 0, false);
 				}
 			});
@@ -245,7 +250,11 @@
 		//
 
 		play: function() {
-			this.getPlayer().sendNotification('doPlay');
+			if (this.segmentEnded) {
+				this.seek(null, 0, false);
+			} else {
+				this.getPlayer().sendNotification('doPlay');
+			}
 		},
 
 		pause: function() {
