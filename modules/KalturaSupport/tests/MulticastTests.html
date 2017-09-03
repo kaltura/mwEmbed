@@ -11,8 +11,9 @@
 <br style="clear: both;" /><br />
 
 <script>
-    var localhost="192.168.163.88";
-    //var localhost="10.0.0.15";
+
+    //  var localhost="10.211.55.2";
+    var localhost="192.168.0.227";
 
     //   var ismSource='http://'+localhost+':1935/live/abc123/Manifest';
     //ismsource="http://tglsch8a-s.akamaihd.net/live/234736_234737/channel8.isml/Manifest";
@@ -28,15 +29,15 @@
      }
      */
     //var hlssource='http://'+localhost+':1935/live/abc123/playlist.m3u8';
-    //var hlssource='http://kalsegsec-a.akamaihd.net/dc-1/m/ny-live-publish3/kLive/smil:1_oorxcge2_publish.smil/chunklist_b2096000.m3u8';
+    var hlssource='http://klive-a.akamaihd.net/dc-0/m/pa-live-publish5/live/legacy/p/931702/e/1_oorxcge2/sd/10000/t/QQAuvHb0DN9ChxKuPfB5Fg/master.m3u8';
 
-   // var multicast='http://'+localhost+':9000/kMulticast/'+hlssource;
-//    var multicast='234.2.2.3:12340';
+    var multicast='http://'+localhost+':9000/kMulticast/'+hlssource;
+    //    var multicast='234.2.2.3:12340';
 
     var replaceSources=[];
     if (window.multicast) {
         replaceSources.push( {
-        'type': 'video/multicast',
+            'type': 'video/multicast',
             'src': multicast
 
         });
@@ -59,7 +60,7 @@
     }
 
     if (replaceSources.length>0) {
-        mw.setConfig('EmbedPlayer.ReplaceSources', replaceSources);
+        //    mw.setConfig('EmbedPlayer.ReplaceSources', replaceSources);
     }
     kWidget.featureConfig({
         'targetId': 'kaltura_player',
@@ -69,7 +70,7 @@
             "liveCore":{"plugin":true} ,
 
             'LeadWithHLSOnFlash':true,
-          // 'LeadWithUnicastToMulticast': true,
+            'LeadWithUnicastToMulticast': true,
             'debugInfo': {
                 'plugin': true,
                 'isVisible':true
@@ -85,9 +86,9 @@
             },
             "EmbedPlayer.LiveCuepoints": true,
             'disableMulticastFallback':false,
-           'autoPlay': true
+            'autoPlay': true
         },
-        'entry_id': "1_yinsgmiv"
+        'entry_id': "1_6m5ls6eh"
 
     });
 </script>
