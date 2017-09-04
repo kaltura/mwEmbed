@@ -39,10 +39,12 @@
                 //If start from beginning is set then on initial playing event seek to 0
                 //we keep a flag and reset it on change media so this will get trigger for next time as well
                 this.bind("playing", function () {
-                    if (_this.seekOnPlaying) {
-                        _this.seekOnPlaying = false;
-                        _this.getPlayer().seek(0, false);
-                    }
+                    setTimeout(function(){
+                        if (_this.seekOnPlaying) {
+                            _this.seekOnPlaying = false;
+                            _this.getPlayer().seek(0, false);
+                        }
+                    }, 0);
                 });
                 this.bind("onChangeMedia", function () {
                     _this.seekOnPlaying = true;
