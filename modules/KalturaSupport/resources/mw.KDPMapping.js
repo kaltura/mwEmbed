@@ -1222,7 +1222,7 @@
 					break;
 				case 'changeMedia':
 					//if we use banSeek - whe should to change time of already watched entry time
-					embedPlayer.timeWhatIAlreadySaw = 0;
+					embedPlayer.watchedTime = 0;
 
 					// Check changeMedia if we don't have entryId and referenceId and they both not -1 - Empty sources
 					if( ( ! notificationData.entryId || notificationData.entryId == "" || notificationData.entryId == -1 )

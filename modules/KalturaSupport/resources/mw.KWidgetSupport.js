@@ -931,9 +931,9 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		// Check for banSeek:
-        var banSeek = getAttr( 'banSeek' );
+		var banSeek = getAttr( 'banSeek' );
 		if(banSeek){
-            embedPlayer.banSeek = true;
+			embedPlayer.banSeek = true;
 		}
 
 		// Check for autoMute:
