@@ -1728,7 +1728,7 @@
                 this.embedPlayer.getPlayerElement().redrawObject(50);
             }else{
                 if (_this.isLinear !== false || _this.adLoaderErrorFlag){
-                    _this.hideAdContainer(true);
+                    _this.hideAdContainer(_this.trackCuePoints?false:true);
                 }
             }
             this.embedPlayer.sequenceProxy.isInSequence = false;
