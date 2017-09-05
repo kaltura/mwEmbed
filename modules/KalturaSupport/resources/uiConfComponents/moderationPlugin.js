@@ -27,7 +27,7 @@
 		},
 
 		addBindings: function () {
-            var embedPlayer = this.getPlayer();
+			var embedPlayer = this.getPlayer();
 
 			this.bind('onChangeMedia', $.proxy(function () {
 				this.getPlayer().triggerHelper( 'onEnableKeyboardBinding' );
@@ -40,13 +40,13 @@
 					this.getInterface().find(".overlay-win .icon-close").focus();
 
 					embedPlayer.getInterface().find(".overlay").keydown(function(e){
-                        if(e.keyCode === 9){// keyCode = 9 - tab button
-                            setTimeout(function () {
-                                if(!$(':focus').parents('.overlay').hasClass('overlay')){
-                                    embedPlayer.getInterface().find(".overlay-win .icon-close").focus();
-                                }
-                            }, 0);
-                        }
+						if(e.keyCode === 9){// keyCode = 9 - tab button
+							setTimeout(function () {
+								if(!$(':focus').parents('.overlay').hasClass('overlay')){
+									embedPlayer.getInterface().find(".overlay-win .icon-close").focus();
+								}
+							}, 0);
+						}
 					});
 				}
 			});

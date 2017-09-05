@@ -50,13 +50,13 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		if( $.isFunction( this.getMenu ) ) {
 			this.bindFocusOutPlayer();
 		}
-        if( $.isFunction( this.getComponent ) && $.isFunction( this.getMenu ) ) {
-            this.getComponent().keydown(function(e){
-                if(e.keyCode === 9){//keyCode = 9 - TAB
-                    _this.getMenu().close();
-                }
-            });
-        }
+		if( $.isFunction( this.getComponent ) && $.isFunction( this.getMenu ) ) {
+			this.getComponent().keydown(function(e){
+				if(e.keyCode === 9){//keyCode = 9 - TAB
+					_this.getMenu().close();
+				}
+			});
+		}
 		this.bind( 'layoutBuildDone', function(){
 			if( !_this.getConfig('visible') ){
 				_this.hide();

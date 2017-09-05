@@ -180,27 +180,27 @@
 							var prevFocusedElement = $(':focus');//when you press TAB - focus does not change yet, and in focus will be prev element
 							var prevFocusedElementParent = prevFocusedElement.parents('.share-input-container');
 							setTimeout(function () {
-                                var currentFocusedElement = $(':focus');//when timeout will done - new element will be in focus
-                                var currentFocusedElementParents  = currentFocusedElement.parents('.share-input-container');
-                                if(!currentFocusedElement.parents('.videoHolder').hasClass('videoHolder')){
+								var currentFocusedElement = $(':focus');//when timeout will done - new element will be in focus
+								var currentFocusedElementParents  = currentFocusedElement.parents('.share-input-container');
+								if(!currentFocusedElement.parents('.videoHolder').hasClass('videoHolder')){
 									_this.getPlayer().getInterface().find(".share .icon-close").focus();
 								}
 								if(
-                                    prevFocusedElementParent.attr('class') &&
-                                    prevFocusedElementParent.attr('class').indexOf('-offset-container') !==-1 &&
+									prevFocusedElementParent.attr('class') &&
+									prevFocusedElementParent.attr('class').indexOf('-offset-container') !==-1 &&
 									(
-                                        currentFocusedElementParents.attr('class') === undefined ||
-                                        currentFocusedElementParents.attr('class').indexOf('-offset-container') === -1
+										currentFocusedElementParents.attr('class') === undefined ||
+										currentFocusedElementParents.attr('class').indexOf('-offset-container') === -1
 									)
 								){
-                                    prevFocusedElementParent.hide();
+									prevFocusedElementParent.hide();
 								}
 
 								if( currentFocusedElementParents.hasClass('share-input-container') &&
-                                    currentFocusedElementParents.next('.share-input-container').attr('class') &&
-                                    currentFocusedElementParents.next('.share-input-container').attr('class').indexOf('-offset-container') !==-1
+									currentFocusedElementParents.next('.share-input-container').attr('class') &&
+									currentFocusedElementParents.next('.share-input-container').attr('class').indexOf('-offset-container') !==-1
 								){
-                                    currentFocusedElementParents.next('.share-input-container').show();
+									currentFocusedElementParents.next('.share-input-container').show();
 								}
 							}, 0);
 
@@ -400,10 +400,10 @@
 			// close button override
 			$(".share .icon-close").on("mousedown", function(e){
 				_this.closeScreen();
-            }).keyup(function (e) {
-                if(e.keyCode === 13){
-                    _this.closeScreen();
-                }
+			}).keyup(function (e) {
+				if(e.keyCode === 13){
+					_this.closeScreen();
+				}
 			});
 
 		},

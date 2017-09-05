@@ -13,7 +13,7 @@
 		error: false,
 		enablePlayDuringScreen: false,
 
-        lastNonScreenFocus: $('.playPauseBtn'),//play button by default
+		lastNonScreenFocus: $('.playPauseBtn'),//play button by default
 		// Returns KBaseComponent config with screen config
 		getBaseConfig: function () {
 			var parentConfig = this._super();
@@ -64,23 +64,23 @@
 				}
 			}, this));
 
-            if($.isFunction(_this.drawModal)){
-                this.bind('preHideScreen', function () {
-                    $(_this.lastNonScreenFocus).focus();
-                });
-                $(document).on('focus','.mwPlayerContainer',function () {
-                    var onfocus = $(':focus');
-                    if( !$(onfocus).parents().hasClass('overlay')){
-                        _this.lastNonScreenFocus = onfocus;
+			if($.isFunction(_this.drawModal)){
+				this.bind('preHideScreen', function () {
+					$(_this.lastNonScreenFocus).focus();
+				});
+				$(document).on('focus','.mwPlayerContainer',function () {
+					var onfocus = $(':focus');
+					if( !$(onfocus).parents().hasClass('overlay')){
+						_this.lastNonScreenFocus = onfocus;
 					}
-                });
+				});
 			}else {
-                $(document).on('focus','.mwPlayerContainer',function () {
-                    var onfocus = $(':focus');
-                    if(!$(onfocus).parents().hasClass('screen')){
-                        _this.lastNonScreenFocus = onfocus;
-                    }
-                });
+				$(document).on('focus','.mwPlayerContainer',function () {
+					var onfocus = $(':focus');
+					if(!$(onfocus).parents().hasClass('screen')){
+						_this.lastNonScreenFocus = onfocus;
+					}
+				});
 			}
 		},
 
@@ -90,10 +90,10 @@
 				this.removeScreen();
 			}, this));
 
-            this.bind('onChangeMedia', $.proxy(function () {
-	            this.enablePlayDuringScreen = false;
-                this.hideScreen();
-            }, this));
+			this.bind('onChangeMedia', $.proxy(function () {
+				this.enablePlayDuringScreen = false;
+				this.hideScreen();
+			}, this));
 		},
 
 		removeScreen: function () {
@@ -120,7 +120,7 @@
 					this.getScreen().then(function(screen){
 						screen.fadeOut( 400, $.proxy( function () {
 							_this.getPlayer().triggerHelper( 'hideScreen', [_this.pluginName] );
-                            $(_this.lastNonScreenFocus).focus();
+							$(_this.lastNonScreenFocus).focus();
 						}, this ) );
 					});
 				}
@@ -215,7 +215,7 @@
 							_this.hideScreen();
 						}).keyup(function (e) {
 							if(e.keyCode === 13){
-                                _this.hideScreen();
+								_this.hideScreen();
 							}
 						});
 					_this.$screen = $('<div />')
