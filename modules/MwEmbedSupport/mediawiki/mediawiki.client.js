@@ -172,6 +172,10 @@
 		return ( /OS 10_/.test(userAgent) || /Version\/10/.test(userAgent) ) && mw.isIOS();
 	};
 
+    mw.isIOS11 = function () {
+        return ( /OS 11_/.test(userAgent) || /Version\/11/.test(userAgent) ) && mw.isIOS();
+    };
+
 	mw.isIOSBelow9 = function () {
 		// mw.isIOSV() methods check mw.isIOS(), but because of the OR operator it will be checked multiple times. 
 		// Short-circuit to save many calls.
@@ -183,7 +187,7 @@
 	};
 
 	mw.isIOSAbove7 = function () {
-		return mw.isIOS8() || mw.isIOS9() || mw.isIOS10();
+		return mw.isIOS8() || mw.isIOS9() || mw.isIOS10() || mw.isIOS11();
 	};
 
 	mw.isSilk = function () {

@@ -11,8 +11,8 @@
 			showTooltip: true,
 			order: 70,
 			// 360 default config
-			moveMultiplier: 0.3,
-			mobileVibrationValue: (mw.isIOS() ? 0.0365 : 1),
+			moveMultiplier: 0.5,
+			mobileVibrationValue: (mw.isIOS() ? 0.0365 : 2.5),
 			cameraOptions: {
 				fov: 75,
 				aspect: window.innerWidth / window.innerHeight,
@@ -90,7 +90,7 @@
 			this.cameraOptions = $.extend({}, this.defaultConfig.cameraOptions, userCameraOptions);
 
 			//Get user vr mode configuration
-			this.vrMode = this.getConfig('vrMode') || false;
+			this.vrMode = this.getConfig('autoLoadAsVr') || false;
 		},
 
 		addBindings: function () {
@@ -98,7 +98,7 @@
 				this.attachMotionListeners();
 				$(this.canvas).css("z-index", "2");
 				this.add360logo();
-				this.getPlayer().is360() && this.getConfig('vr') !== false ? this.show() : this.hide();
+				this.getPlayer().is360() && this.getConfig('enableVr') !== false ? this.show() : this.hide();
 			}.bind(this));
 
 			this.bind("onAdPlay", function () {
@@ -351,7 +351,7 @@
 			this.detachMotionListeners();
 			this.remove360logo();
 			this.is360 = false;
-			this.vrMode = this.getConfig('vrMode') || false;
+			this.vrMode = this.getConfig('autoLoadAsVr') || false;
 			this.initCameraTarget();
 		},
 

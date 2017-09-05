@@ -201,7 +201,6 @@ mw.KAnalytics.prototype = {
 			delete(eventSet.userId);
 		}
 
-
 		// Add referrer parameter
 		var pageReferrer =  mw.getConfig('EmbedPlayer.IsFriendlyIframe') ? mw.getConfig('EmbedPlayer.IframeParentUrl') : document.referrer;
 		eventSet[ 'referrer' ] = encodeURIComponent( pageReferrer );
@@ -211,6 +210,11 @@ mw.KAnalytics.prototype = {
 		// Add event parameters
 		for( var i in eventSet){
 			eventRequest[ 'event:' + i] = eventSet[i];
+		}
+
+		var kanalonyConfig = this.embedPlayer.getKalturaConfig( 'kAnalony' );
+		if (kanalonyConfig && kanalonyConfig.plugin ){
+			eventRequest[ 'hasKanalony' ] = true;
 		}
 
 		// Send events for this player:

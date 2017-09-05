@@ -347,6 +347,9 @@ function playNextMedia( mediaConfig ) {
 function configure( config ) {
     if ( config ) {
         ReceiverLogger.log( "MediaManager", "configure", config );
+        if (config.defaultLanguageKey) {
+            receiverFlashVars.embedPlayerChromecastReceiver.defaultLanguageKey = config.defaultLanguageKey;
+        }
         ReceiverStateManager.configure( config );
     }
 }

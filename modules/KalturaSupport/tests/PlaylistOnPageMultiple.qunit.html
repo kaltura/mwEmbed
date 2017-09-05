@@ -1,0 +1,226 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <title>Multiple playlists on page</title>
+
+  <style>
+    .player-wrap {
+      overflow: hidden;
+    }
+
+    .player {
+      float: left;
+      height: 300px;
+      width: 400px;
+    }
+
+    .playlist {
+      float: left;
+      width: 400px;
+      height: 300px;
+      background-color: grey;
+    }
+  </style>
+
+  <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+  <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+  <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+
+  <script type="text/javascript">
+    (function (QUnit, mw, kWidget) {
+      'use strict';
+
+      if (!QUnit) {
+        return;
+      }
+
+      // Force html5 if not running flash qUnit tests:
+      if (document.URL.indexOf('runFlashQunitTests') === -1 &&
+          typeof window.disablePlaybackModeSelector === 'undefined') {
+        mw.setConfig( 'forceMobileHTML5', true );
+      }
+
+      QUnit.start();
+
+      window.addPlayerTest = function addPlayerTest(playerId, testFn) {
+        var readyCallbackFired = false;
+        var onPlayerReady = null;
+        var mediaReadyCallbacks = [];
+        var mediaReadyFired = false;
+
+        QUnit.asyncTest('KalturaSupport::PlayerLoaded ' + playerId, function () {
+          setTimeout(function () {
+            QUnit.ok(false, 'Player timed out');
+            QUnit.start();
+          }, 180000);
+
+          onPlayerReady = function () {
+            QUnit.ok(true, 'Player loaded: ' + playerId);
+
+            // Run user tests
+            testFn(playerId, function (onMediaReadyFn) {
+              if (mediaReadyFired) {
+                onMediaReadyFn();
+                return;
+              }
+
+              mediaReadyCallbacks.push(onMediaReadyFn);
+            });
+
+            // add timeout for async test to register
+            setTimeout(function () {
+              QUnit.start();
+            }, 100);
+          };
+
+          if (readyCallbackFired) {
+            onPlayerReady();
+          }
+        });
+
+        kWidget.addReadyCallback(function (loadedPlayerId) {
+          if (loadedPlayerId !== playerId) {
+            return;
+          }
+
+          var scriptLoaderUrl = window.SCRIPT_LOADER_URL;
+          var domainRegEx = new RegExp(/^((http[s]?):\/)?\/?([^:/\s]+)(:([^/]*))?((\/\w+)*\/)([\w\-.]+[^#?\s]+)(\?([^#]*))?(#(.*))?$/);
+          var match = document.URL.match(domainRegEx);
+          var pageDomain = match[3];
+          var scriptMatch = scriptLoaderUrl.match(domainRegEx);
+
+          if ((match && scriptLoaderUrl[2] === 'http') ||
+              (scriptLoaderUrl[2] === 'https' && scriptMatch[3] !== pageDomain)) {
+            QUnit.ok(false, 'Error: trying to test across domains, no iframe inspection is possible' + match + ' != ' + pageDomain);
+            QUnit.stop();
+          }
+
+          // Add entry ready listener
+          document.getElementById(loadedPlayerId)
+            .addJsListener('mediaReady', onMediaReady);
+
+          readyCallbackFired = true;
+          if (typeof onPlayerReady === 'function') {
+            onPlayerReady(loadedPlayerId);
+          }
+        });
+
+        function onMediaReady() {
+          // Run in async call to ensure non-blocking build out is in dom
+          setTimeout(function () {
+            while (mediaReadyCallbacks.length) {
+              mediaReadyCallbacks.shift()();
+            }
+
+            mediaReadyFired = true;
+          }, 0);
+        }
+      }
+    })(window.QUnit, window.mw, window.kWidget);
+
+
+    // playlist on page tests
+    (function ($, addPlayerTest) {
+      'use strict';
+
+      if (addPlayerTest) {
+        addPlayerTest('kaltura_player_1', playerTest);
+        addPlayerTest('kaltura_player_2', playerTest);
+      }
+
+      function playerTest(playerId, waitForMediaReadyFn) {
+        // Name this module
+        module('onPage playlist');
+
+        var kdp = document.getElementById(playerId);
+
+        asyncTest('Check for onPage playlist for player ' + playerId, function () {
+          waitForMediaReadyFn(function () {
+            var $playlistContainer = $('#' + kdp.evaluate('{playlistAPI.clipListTargetId}'));
+            var $playlistInterface = $playlistContainer.find('.onpagePlaylistInterface');
+            ok($playlistInterface.length > 0, 'Found playlistOnPage div');
+            
+            var actualThumbnailWidth = $playlistInterface.find('.k-thumb').width();;
+            var expectedThumbnailWidth = kdp.evaluate('{playlistAPI.thumbnailWidth}');
+            equal(actualThumbnailWidth, expectedThumbnailWidth, 'ThumbWidth is set correctly');
+
+            var actualDescription = $playlistInterface.find('.k-description:first').html().substr(0, 5);
+            var expectedDescription = kdp.evaluate('{mediaProxy.entry.description}');
+            ok(expectedDescription.indexOf(actualDescription) === 0, 'description matches kdp description');
+            start();
+          });
+        });
+      }
+    })(window.jQuery, window.addPlayerTest);
+  </script>
+</head>
+
+<body>
+  <h2>Multiple playlists on page</h2>
+  <p>This player demonstrates rendering the playlist out of the player IFrame, on the page.</p>
+  <p>If you specify a DIV ID in the <b>clipListTargetId</b> property, the playlist will be rendered into that div. If not, the
+    playlist is added to the page after the video player.</p>
+
+  <h3>Player #1</h3>
+  <div class="player-wrap">
+    <div id="kaltura_player_1" class="player"></div>
+    <div id="playlist_holder_1" class="playlist"></div>
+  </div>
+
+  <h3>Player #2</h3>
+  <div class="player-wrap">
+    <div id="kaltura_player_2" class="player"></div>
+    <div id="playlist_holder_2" class="playlist"></div>
+  </div>
+
+  <script>
+    (function (kWidget, mw, $) {
+      'use strict';
+
+      // Enable uiconf js which includes external resources
+      mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
+
+      kWidget.embed(getEmbedConfig('kaltura_player_1', 'playlist_holder_1'));
+      kWidget.embed(getEmbedConfig('kaltura_player_2', 'playlist_holder_2', true));
+
+      function getEmbedConfig(playerId, playlistContainerId, reversePlaylists) {
+        var playlists = [{
+          url: 'http://www.kaltura.com/index.php/partnerservices2/executeplaylist?playlist_id=1_e387kavu&partner_id=243342&subp_id=24334200&format=8&ks={ks}',
+          name: 'simple two clip pl'
+        }, {
+          url: 'http://www.kaltura.com/index.php/partnerservices2/executeplaylist?playlist_id=0_9ahdych6&partner_id=243342&subp_id=24334200&format=8&ks={ks}',
+          name: 'electric sheep test'
+        }];
+
+        var plConfig = {};
+        $.each(reversePlaylists ? playlists.reverse() : playlists, function (index, playlist) {
+          plConfig['kpl' + index + 'Url'] = playlist.url;
+          plConfig['kpl' + index + 'Name'] = playlist.name;
+        });
+
+        return {
+          targetId: playerId,
+          wid: '_243342',
+          uiconf_id: '25975211',
+          flashvars: {
+            playlistAPI: $.extend({
+              clipListTargetId: playlistContainerId,
+              onPageCss1: '../components/playlist/playList.css',
+              autoContinue: true,
+              includeInLayout: true,
+              autoPlay: true,
+              loop: true,
+              onPage: true
+            }, plConfig),
+            nextPrevBtn: {
+              plugin: true
+            }
+          }
+        };
+      }
+    })(window.kWidget, window.mw, window.jQuery);
+  </script>
+</body>
+
+</html>
