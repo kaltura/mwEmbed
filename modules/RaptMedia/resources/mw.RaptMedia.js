@@ -36,6 +36,7 @@
 		setup: function(){
 			this.initialize();
 			this.addBindings();
+			this.addOverrides();
 		},
 
 		initialize: function() {
@@ -132,6 +133,22 @@
 			});
 		},
 
+		addOverrides: function() {
+			var _this = this;
+			var player = this.getPlayer();
+
+			this.originalSeek = player.seek;
+			player.seek = function(seekTime, stopAfterSeek) {
+				var args = arguments;
+
+				if (!_this.isEnabled()) {
+					return _this.originalSeek.apply(player, args);
+				} else {
+					return _this.seek(null, seekTime, stopAfterSeek);
+				}
+			}
+		},
+
 		readRaptProjectId: function() {
 			var partnerData = this.getPlayer().evaluate('{mediaProxy.entry.partnerData}');
 			var segments = (partnerData || "").split(';');
@@ -208,6 +225,10 @@
 
 		// Utility Functions
 
+		isEnabled: function() {
+			return this.getConfig('status') === 'enabled';
+		},
+
 		emit: function(event, data) {
 			this.getPlayer().sendNotification(event, data);
 		},
@@ -245,7 +266,7 @@
 		},
 
 		execute: function(command) {
-			if (!this.raptMediaEngine || this.getConfig('status') !== 'enabled') {
+			if (!this.raptMediaEngine || !this.isEnabled()) {
 				this.log('WARNING: Rapt Media commands received before initialization is complete');
 				return;
 			}
@@ -302,7 +323,7 @@
 				'flags: [' + flags.join(' ') + ']'
 			);
 
-			this.getPlayer().seek(absoluteTime, stopAfterSeek);
+			this.originalSeek.call(this.getPlayer(), absoluteTime, stopAfterSeek);
 			this.broadcastTime(segmentTime, segment.duration);
 		},
 
@@ -525,7 +546,7 @@
 		},
 
 		updateEngine: function(){
-			if (this.getConfig('status') !== 'enabled') {
+			if (!this.isEnabled()) {
 				return;
 			}
 
