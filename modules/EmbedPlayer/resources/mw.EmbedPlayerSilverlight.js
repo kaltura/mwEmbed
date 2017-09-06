@@ -183,9 +183,7 @@
 				this.multiastServerUrl=null;
 				mw.log('selectNextKES no available multicast manifests ');
 				this.isError = true;
-				var errorObj = {message: gM('ks-LIVE-STREAM-NOT-AVAILABLE'), title: gM('ks-ERROR')};
-				this.showErrorMsg(errorObj);
-                this.fallbackToUnicast();
+				this.fallbackToUnicast();
             } else {
 				index = (index + 1) % this._availableMulticastManifests.length;
 				this.multiastServerUrl = this._availableMulticastManifests[index];
