@@ -213,7 +213,8 @@
 						.attr('role', 'button')
 						.on('click', function(){
 							_this.hideScreen();
-						}).keyup(function (e) {
+						})
+						.keyup(function (e) {
 							if(e.keyCode === 13){
 								_this.hideScreen();
 							}

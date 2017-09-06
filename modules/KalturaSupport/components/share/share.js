@@ -184,6 +184,7 @@
 								var currentFocusedElementParents  = currentFocusedElement.parents('.share-input-container');
 								if(!currentFocusedElement.parents('.videoHolder').hasClass('videoHolder')){
 									_this.getPlayer().getInterface().find(".share .icon-close").focus();
+									return;
 								}
 								if(
 									prevFocusedElementParent.attr('class') &&
