@@ -1625,19 +1625,26 @@
 			var textTracks = vid.textTracks;
 			if (textTracks && textTracks.length) {
 				if (!data) {
-					var activeSubtitle = this.getActiveSubtitle(textTracks);
-					if (activeSubtitle) {
-						activeSubtitle.mode = 'hidden';
-						this.log('onSwitchTextTrack disable subtitles');
-					}
+					this.hideTextTrack(textTracks);
 				} else {
-					var selectedSubtitle = textTracks[data.index];
-					if (selectedSubtitle) {
-						selectedSubtitle.mode = 'showing';
-						mw.log('EmbedPlayerNative::onSwitchTextTrack switch to ', selectedSubtitle);
-					}
+                    this.hideTextTrack(textTracks);
+					this.showTextTrack(textTracks, data);
 				}
 			}
+		},
+		hideTextTrack: function(textTracks){
+            var activeSubtitle = this.getActiveSubtitle(textTracks);
+            if (activeSubtitle) {
+                activeSubtitle.mode = 'hidden';
+                this.log('onSwitchTextTrack disable subtitles');
+            }
+		},
+		showTextTrack: function(textTracks, data){
+            var selectedSubtitle = textTracks[data.index];
+            if (selectedSubtitle) {
+                selectedSubtitle.mode = 'showing';
+                mw.log('EmbedPlayerNative::onSwitchTextTrack switch to ', selectedSubtitle);
+            }
 		},
 		getActiveSubtitle: function (textTracks) {
 			if (textTracks) {
