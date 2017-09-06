@@ -213,9 +213,10 @@ mw.KAnalytics.prototype = {
 		}
 
 		var kanalonyConfig = this.embedPlayer.getKalturaConfig( 'kAnalony' );
-		if (kanalonyConfig && kanalonyConfig.plugin ){
-			eventRequest[ 'hasKanalony' ] = true;
-		}
+
+		if (kanalonyConfig && kanalonyConfig.plugin != false) {
+            eventRequest['hasKanalony'] = true;
+    }
 
 		// Send events for this player:
 		$( this.embedPlayer ).trigger( 'KalturaSendAnalyticEvent', [ KalturaStatsEventKey, eventSet ] );
