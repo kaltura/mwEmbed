@@ -409,6 +409,7 @@
 				var $button = $( '<button />' )
 					.addClass( 'btn icon-cog' )
 					.attr('title', _this.selectSourceTitle)
+					.attr('aria-haspopup', true)
 					.click( function(e){
 						_this.toggleMenu();
 					});
