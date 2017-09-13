@@ -433,7 +433,7 @@
 			var $slider = this.$el;
 			var title = mw.seconds2npt(perc * this.embedPlayer.getDuration());
 			var totalDuration = mw.seconds2npt(this.embedPlayer.getDuration());
-			var duration = isNaN(this.embedPlayer.getDuration()) ? 0 :this.embedPlayer.getDuration();
+			var duration = isNaN(this.embedPlayer.getDuration()) ? 0 : this.embedPlayer.getDuration();
 			var attributes = {
 				'data-title': title,
 				'aria-label': gM( 'mwe-embedplayer-seek' ),
