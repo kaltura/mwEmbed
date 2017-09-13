@@ -1,5 +1,8 @@
 ## Library Overview 
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/68c69af12df344a79bb0aeb74efac86a)](https://www.codacy.com/app/PlayKit/mwEmbed?utm_source=github.com&utm_medium=referral&utm_content=kaltura/mwEmbed&utm_campaign=badger)
+
+
 __Kaltura's HTML5 Media Library__ enables you leverage a unified configuration and development API for both HTML5 and Flash. It enables delivery of rich on page and in player experiences backed by robust metadata and per device asset delivery of the [kaltura platform](http://corp.kaltura.com/). It supports a [wide range of features](http://html5video.org/kaltura-player/docs/), an external and internal plugin model, advanced html5 player, and custom skins. 
 
 ## Documentation
