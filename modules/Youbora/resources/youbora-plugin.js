@@ -183,6 +183,7 @@ $YB.plugins.KalturaV2.prototype.reset = function () {
 };
 
 $YB.plugins.KalturaV2.prototype.setMetadata = function () {
+  //Set default kaltura properties
   this.setOptions({
     properties: {
       kalturaInfo: {
@@ -196,4 +197,8 @@ $YB.plugins.KalturaV2.prototype.setMetadata = function () {
       }
     }
   });
+  //Set new youbora media config
+  var player = this.player.getPlayer();
+  var config = player.getKalturaConfig("youbora");
+  this.setOptions(config);
 };
