@@ -258,11 +258,14 @@
 				$("#touchOverlay").trigger("touchstart");
 			}
 			this.getPlayer().triggerHelper('onComponentsHoverDisabled');
-			setTimeout(function () {
+			var timeToShow = mw.isTouchDevice() ? 4000 : 1500;
+			clearTimeout(this.timeOutToShow);
+			this.timeOutToShow = setTimeout(function () {
 				this.getPlayer().triggerHelper('onComponentsHoverEnabled');
-			}.bind(this), 1500);
+			}.bind(this), timeToShow);
 			$('.controlsContainer').one("mouseleave", function(){
-				setTimeout(function () {
+				clearTimeout(this.timeOutToShow);
+				this.timeOutToShow = setTimeout(function () {
 					this.getPlayer().triggerHelper('onComponentsHoverEnabled');
 				}.bind(this), 500);
 			}.bind(this));
@@ -353,6 +356,7 @@
 			this.is360 = false;
 			this.vrMode = this.getConfig('autoLoadAsVr') || false;
 			this.initCameraTarget();
+			this.timeOutToShow = null;
 		},
 
 		removeBindings: function () {
