@@ -401,12 +401,12 @@
 			// close button override
 			$(".share .icon-close").on("mousedown", function(e){
 				_this.closeScreen();
-			}).keyup(function (e) {
+			})
+			.keyup(function (e) {
 				if(e.keyCode === 13){
 					_this.closeScreen();
 				}
 			});
-
 		},
 
 		addScroll: function(){
