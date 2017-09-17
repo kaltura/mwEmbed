@@ -238,6 +238,7 @@
 	text-decoration: none;
 }
 .share a:hover {
+	color: #ffffff;
 	text-decoration: none;
 	text-shadow: 0px 0px 10px #fff;
 }

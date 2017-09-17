@@ -99,6 +99,11 @@
 								_this.close();
 							})
 							.attr('aria-label', accessibilityLabel)
+							.keydown(function(e){
+								if(e.keyCode === 9){//keyCode = 9 - TAB
+									_this.close();
+								}
+							})
                         );
 
             // If not the first item
