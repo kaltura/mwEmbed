@@ -3,6 +3,7 @@
 			//indicates we were explicitly asked to show the button (will be used when re-enabling the button)
 			shouldShow : false,
 			isDisabled: false,
+			ariaText: '',
 			defaultConfig: {
 				'parent': 'videoHolder',
 				'order': 20,
@@ -14,6 +15,14 @@
 
 			addBindings: function() {
 				var _this = this;
+				$(this.getPlayer()).on('mouseenter', function() {
+					_this.show();
+				});
+                $(this.getPlayer()).on('mouseleave', function(event) {
+                    if (event.relatedTarget !== this.getComponent()) {
+                    	_this.hide();
+					}
+                });
 
 				this.bind('onpause onRemovePlayerSpinner', function(){
 					if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() ){
@@ -25,13 +34,13 @@
 				});
 				this.bind('onPlayerStateChange', function(e, newState, oldState){
 					if( newState == 'load' ){
-						_this.hide(true);
+                        _this.show();
 					}
 					if( newState == 'pause' && _this.getPlayer().isPauseLoading ) {
 						_this.hide();
 					}
 					if (newState == 'start') {
-						_this.hide(true);
+                        _this.show();
 					}
 					if (newState == 'play') {
 						_this.hide(true);
@@ -56,6 +65,7 @@
 			clickButton: function( event ){
 				event.preventDefault();
 				event.stopPropagation();
+                this.embedPlayer.getPlayerElement().pause();
 				this.getPlayer().sendNotification(this.getConfig('eventName'), this.embedPlayer.currentTime);
 			},
 			onEnable: function(){
@@ -79,6 +89,7 @@
 						.attr( {
 							'tabindex': '-1',
 							'href' : '#',
+							'aria-label': this.ariaText,
 							'title' : gM( 'mwe-customButton-label' ),
 							'class'	: this.getCssClass()
 						} )
