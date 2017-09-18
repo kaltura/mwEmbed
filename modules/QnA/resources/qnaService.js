@@ -198,13 +198,15 @@
         };
 
         this.getText = function(){
-           var text = this.cuePoint().text+' ';
+            var text = this.cuePoint().text+' ';
             var reg = /(http:\/\/|https:\/\/).+?\s/gi;
             var result = text.replace(reg, function (str) {
                 return "<a target='_blank' href='"+str+"'>"+str+"</a> ";
             });
             if (this.getType() === "AnswerOnAir"){
                 return '"' + result + '"';
+            }else if(this.getType() === "Question" || this.getType() ==="Answer"){
+                return text;
             }
             return result;
         };
