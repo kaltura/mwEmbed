@@ -3,11 +3,11 @@
 			//indicates we were explicitly asked to show the button (will be used when re-enabling the button)
 			shouldShow : false,
 			isDisabled: false,
-			ariaText: '',
 			defaultConfig: {
+				'ariaText': '',
 				'parent': 'videoHolder',
 				'order': 20,
-                'eventName' : 'custom_button_clicked'
+				'eventName' : 'custom_button_clicked'
 			},
 			setup: function() {
 				this.addBindings();
@@ -18,11 +18,11 @@
 				$(this.getPlayer()).on('mouseenter', function() {
 					_this.show();
 				});
-                $(this.getPlayer()).on('mouseleave', function(event) {
-                    if (event.relatedTarget !== this.getComponent()) {
-                    	_this.hide();
+				$(this.getPlayer()).on('mouseleave', function(event) {
+					if (event.relatedTarget !== _this.getComponent()) {
+						_this.hide();
 					}
-                });
+				});
 
 				this.bind('onpause onRemovePlayerSpinner', function(){
 					if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() ){
@@ -32,17 +32,17 @@
 				this.bind('playing AdSupport_StartAdPlayback onAddPlayerSpinner onHideControlBar', function(){
 					_this.hide(true);
 				});
-				this.bind('onPlayerStateChange', function(e, newState, oldState){
-					if( newState == 'load' ){
-                        _this.show();
+				this.bind('onPlayerStateChange', function(e, newState){
+					if( newState === 'load' ){
+						_this.show();
 					}
-					if( newState == 'pause' && _this.getPlayer().isPauseLoading ) {
+					if( newState === 'pause' && _this.getPlayer().isPauseLoading ) {
 						_this.hide();
 					}
-					if (newState == 'start') {
-                        _this.show();
+					if (newState === 'start') {
+						_this.show();
 					}
-					if (newState == 'play') {
+					if (newState === 'play') {
 						_this.hide(true);
 					}
 				});
@@ -65,7 +65,7 @@
 			clickButton: function( event ){
 				event.preventDefault();
 				event.stopPropagation();
-                this.embedPlayer.getPlayerElement().pause();
+				this.embedPlayer.getPlayerElement().pause();
 				this.getPlayer().sendNotification(this.getConfig('eventName'), this.embedPlayer.currentTime);
 			},
 			onEnable: function(){
@@ -89,7 +89,7 @@
 						.attr( {
 							'tabindex': '-1',
 							'href' : '#',
-							'aria-label': this.ariaText,
+							'aria-label': this.getConfig("ariaText"),
 							'title' : gM( 'mwe-customButton-label' ),
 							'class'	: this.getCssClass()
 						} )
