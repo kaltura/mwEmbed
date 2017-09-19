@@ -388,13 +388,15 @@
 	}));
 
 	// set EmbedPlayer.WebKitPlaysInline true for iPhone inline playback
-	var playerConfig = mw.getConfig('KalturaSupport.PlayerConfig');
-	if (playerConfig) {
-		if (!playerConfig.vars) {
-			playerConfig.vars = {};
+	if (mw.getConfig('Kaltura.AddWebKitPlaysInline')){
+		var playerConfig = mw.getConfig('KalturaSupport.PlayerConfig');
+		if (playerConfig) {
+			if (!playerConfig.vars) {
+				playerConfig.vars = {};
+			}
+			playerConfig.vars["EmbedPlayer.WebKitPlaysInline"] = true;
+			mw.setConfig('KalturaSupport.PlayerConfig', playerConfig);
 		}
-		playerConfig.vars["EmbedPlayer.WebKitPlaysInline"] = true;
-		mw.setConfig('KalturaSupport.PlayerConfig', playerConfig);
 	}
 
 })(window.mw, window.jQuery, window.THREE);
