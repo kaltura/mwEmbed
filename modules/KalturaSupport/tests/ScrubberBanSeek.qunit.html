@@ -12,12 +12,61 @@ function jsKalturaPlayerTest( videoId ){
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+    <style>
+        .fwd{
+            background-color: #9acfea;
+        }
+        .bwd{
+            background-color: #c0a16b;
+        }
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 200px
+        }
+
+        td,th,tr {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+    </style>
 </head>
 <body>
 <h2> Scrubber with Controls Container parent</h2>
 moves the control bar into the 
 <div id="kaltura_player" style="width:400px;height:330px;"></div>
 <script>
+
+    var maxi = 0;
+    var _this = this;
+    var kdp;
+    kWidget.addReadyCallback( function( playerId ){
+		kdp = document.getElementById( playerId );
+		// Add a binding for when seek is completed:
+		kdp.kBind('playerUpdatePlayhead', function(){
+			var position = kdp.evaluate("{video.player.currentTime}");
+			if (_this.maxi <= position){
+				_this.maxi = position;
+			$("#mv").text(_this.maxi);
+
+            }
+			$("#cp").text(position);
+		});
+		// Wait for "media ready" before starting playback:
+		kdp.kBind('mediaReady', function(){
+			$("#dur").text(kdp.evaluate("{mediaProxy.entry.duration}"))
+		})
+	});
+
+    function seekTo(t) {
+	    kdp.sendNotification("doSeek", t);
+    }
+    function seekRelative(offset) {
+	    var currentPosition = kdp.evaluate("{video.player.currentTime}");
+	    kdp.sendNotification("doSeek", currentPosition + offset);
+    }
 	kWidget.featureConfig({
 		'targetId': 'kaltura_player',
 		'wid': '_243342',
@@ -28,5 +77,31 @@ moves the control bar into the
 		}
 	});
 </script>
+<br>
+Seek buttons:
+<br>
+<button class="bwd" onclick="seekRelative(-5)">-5s</button>
+<button class="fwd" onclick="seekRelative(5)">+5s</button>&nbsp;&nbsp;
+<button class="bwd" onclick="seekRelative(-15)">-15s</button>
+<button class="fwd" onclick="seekRelative(15)">+15s</button>&nbsp;&nbsp;
+<button class="bwd" onclick="seekRelative(-30)">-30s</button>
+<button class="fwd" onclick="seekRelative(30)">+30s</button>&nbsp;&nbsp;
+<button class="bwd" onclick="seekRelative(-60)">-1m</button>
+<button class="fwd" onclick="seekRelative(60)">+1m</button>
+<br>
+<br>
+
+<table>
+    <tr>
+        <th>Duration (s)</th>
+        <th>Current position</th>
+        <th>Max visited</th>
+    </tr>
+    <tr>
+        <td id="dur"></td>
+        <td id="cp"></td>
+        <td id="mv"></td>
+    </tr>
+</table>
 </body>
 </html>
