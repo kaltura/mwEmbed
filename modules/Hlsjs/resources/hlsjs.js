@@ -561,7 +561,7 @@
 			 * @param levels
 			 */
 			addAbrFlavors: function (levels) {
-				if (levels && levels.length > 1) {
+				if (levels && levels.length > 0) {
 					var flavors = levels.map(function (level, index) {
 						var sourceAspect = Math.round(( level.width / level.height ) * 100) / 100;
 						// Setup a source object:
