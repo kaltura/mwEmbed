@@ -157,7 +157,9 @@
             this.bindHelper('liveOnline' + this.bindPostfix, function () {
                 _this.load();
             });
-            this.bindHelper("changeEmbeddedTextTrack", this.onSwitchTextTrack.bind(this));
+            this.bindHelper('changeEmbeddedTextTrack' + this.bindPostfix, function (e, data) {
+                _this.onSwitchTextTrack(e, data);
+            });
         },
 
 		removeBindings: function(){
