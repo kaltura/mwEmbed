@@ -40,7 +40,6 @@
 			this.bind("SourceChange", this.isNeeded.bind(this));
 			this.bind("playerReady", this.initShaka.bind(this));
 			this.bind("switchAudioTrack", this.onSwitchAudioTrack.bind(this));
-			this.bind("changeEmbeddedTextTrack", this.onSwitchTextTrack.bind(this));
 			this.bind("onChangeMedia", this.clean.bind(this));
 		},
 
@@ -525,6 +524,7 @@
 			this.orig_load = this.getPlayer().load;
 			this.orig_parseTracks = this.getPlayer().parseTracks;
 			this.orig_switchAudioTrack = this.getPlayer().switchAudioTrack;
+			this.orig_onSwitchTextTrack = this.getPlayer().onSwitchTextTrack;
 			this.orig_ondurationchange = this.getPlayer()._ondurationchange;
 			this.orig_backToLive = this.getPlayer().backToLive;
 			this.orig_doSeek = this.getPlayer().doSeek;
@@ -535,6 +535,7 @@
 			this.getPlayer().load = this.load.bind(this);
 			this.getPlayer().parseTracks = this.parseTracks.bind(this);
 			this.getPlayer().switchAudioTrack = this.switchAudioTrack.bind(this);
+			this.getPlayer().onSwitchTextTrack = this.onSwitchTextTrack.bind(this);
 			this.getPlayer()._ondurationchange = this._ondurationchange.bind(this);
 			this.getPlayer().backToLive = this.backToLive.bind(this);
 			this.getPlayer().doSeek = this.doSeek.bind(this);
@@ -547,6 +548,7 @@
 		restorePlayerMethods: function () {
 			this.getPlayer().switchSrc = this.orig_switchSrc;
 			this.getPlayer().playerSwitchSource = this.orig_playerSwitchSource;
+			this.getPlayer().onSwitchTextTrack = this.orig_onSwitchTextTrack;
 			this.getPlayer().load = this.orig_load;
 			this.getPlayer().parseTracks = this.orig_parseTracks;
 			this.getPlayer().switchAudioTrack = this.orig_switchAudioTrack;
