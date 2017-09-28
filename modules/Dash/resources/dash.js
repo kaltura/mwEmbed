@@ -139,13 +139,32 @@
 			return drmConfig;
 		},
 
+		getShakaConfig: function(){
+            var config = this.getConfig("shakaConfig");
+            if (this.getPlayer().plugins &&this.getPlayer().plugins.closedCaptions) {
+                try {
+                    var closedCaptions = this.getPlayer().plugins.closedCaptions;
+                    var textLang = closedCaptions.getUserLanguageKeyPrefrence();
+                    if (!textLang) {
+                        textLang = closedCaptions.getConfig('defaultLanguageKey');
+                    }
+                    if (textLang) {
+                        config.preferredTextLanguage = textLang;
+                    }
+                } catch(e) {
+                	this.log("Unable to get default captions config");
+				}
+            }
+            return config;
+		},
+
 		createPlayer: function () {
 			//Reinstall the polyfills to make sure they weren't ran over by others(VTT.js runs over VTTCue polyfill)
 			shaka.polyfill.installAll();
 			// Create a Player instance.
 			var player = new shaka.Player(this.getPlayer().getPlayerElement());
 
-			player.configure(this.getConfig("shakaConfig"));
+			player.configure(this.getShakaConfig());
 
 			// Attach player to the window to make it easy to access in the JS console.
 			window.player = player;
