@@ -141,13 +141,10 @@
 
 		getShakaConfig: function(){
             var config = this.getConfig("shakaConfig");
-            if (this.getPlayer().plugins &&this.getPlayer().plugins.closedCaptions) {
+            if (this.getPlayer().plugins && this.getPlayer().plugins.closedCaptions) {
                 try {
                     var closedCaptions = this.getPlayer().plugins.closedCaptions;
-                    var textLang = closedCaptions.getUserLanguageKeyPrefrence();
-                    if (!textLang) {
-                        textLang = closedCaptions.getConfig('defaultLanguageKey');
-                    }
+                    var textLang = closedCaptions.getUserLanguageKeyPrefrence() || closedCaptions.getConfig('defaultLanguageKey');
                     if (textLang) {
                         config.preferredTextLanguage = textLang;
                     }
