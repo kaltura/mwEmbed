@@ -310,6 +310,8 @@
 
 		//if true - we cannot seek to non watched part of video
         banSeek: false,
+        //if true - we show alert
+        showBanSeekAlert: true,
 
 		//did i already show alert when I try to seek for allowed time
         banAlertDisplayed: false,
@@ -1171,7 +1173,7 @@
 						this.currentTime = this.kPreSeekTime;
 						seekTime = this.kPreSeekTime;
 						this.seeking = false;
-						if(!_this.banAlertDisplayed){
+						if(!_this.banAlertDisplayed && _this.showBanSeekAlert){
 							_this.banAlertDisplayed = true;
 							this.sendNotification( "alert", {
 								'message': 'You are not allowed to seek forword',
