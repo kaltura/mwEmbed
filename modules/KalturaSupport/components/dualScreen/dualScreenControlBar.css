@@ -17,7 +17,7 @@
     position: relative;
     clear: both;
     float: right;
-    padding-bottom: 20px;
+    padding-bottom: 40px;
 }
 .ds-collapsible-content {
     max-width: 0;
@@ -62,7 +62,6 @@
     color: rgb(255, 255, 255);
     cursor: pointer;
     transition: transform 0.5s ease-out, filter 0.5s ease-out;
-    padding: 10px;
 }
 .controlBarBtn:only-child {
     margin-left: 0;
