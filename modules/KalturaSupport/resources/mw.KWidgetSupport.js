@@ -933,8 +933,8 @@ mw.KWidgetSupport.prototype = {
 		// Check for banSeek:
 		var banSeek = getAttr( 'banSeek' );
 		if(banSeek){
-            var showBanSeekAlert = getAttr( 'showBanSeekAlert' );
-            embedPlayer.showBanSeekAlert = typeof showBanSeekAlert !== "undefined" ? showBanSeekAlert : true;
+			var showBanSeekAlert = getAttr( 'showBanSeekAlert' );
+			embedPlayer.showBanSeekAlert = typeof showBanSeekAlert !== "undefined" ? showBanSeekAlert : true;
 			embedPlayer.banSeek = true;
 		}
 
