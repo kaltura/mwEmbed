@@ -157,7 +157,9 @@
             this.bindHelper('liveOnline' + this.bindPostfix, function () {
                 _this.load();
             });
-            this.bindHelper("changeEmbeddedTextTrack", this.onSwitchTextTrack.bind(this));
+            this.bindHelper('changeEmbeddedTextTrack' + this.bindPostfix, function (e, data) {
+                _this.onSwitchTextTrack(e, data);
+            });
         },
 
 		removeBindings: function(){
@@ -958,7 +960,16 @@
 
 						// issue a play request
 						if (!_this.playing) {
-							vid.play();
+							var playPromise = vid.play();
+                            if (playPromise !== undefined) {
+                                playPromise.then(function() {
+                                    mw.log("play promise resolved");
+                                }).catch(function(error) {
+                                    mw.log("play promise rejected");
+                                    //If play is rejected then return UI state to pause so user can take action
+                                    _this.pause();
+                                });
+                            }
 						}
 
 						_this.mobilePlayed = true;

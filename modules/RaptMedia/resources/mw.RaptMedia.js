@@ -131,6 +131,13 @@
 					_this.updateEngine();
 				}, 0);
 			});
+
+			this.bind('Kaltura_ConfigChanged', function(event, pluginName, property, value) {
+				if (_this.raptMediaEngine == null) { return; }
+				if (pluginName === 'googleAnalytics' && property === 'urchinCode') {
+					_this.raptMediaEngine.execute({ type: 'config:set', payload: { key: 'ga', value: value } });
+				}
+			});
 		},
 
 		addOverrides: function() {
@@ -530,7 +537,12 @@
 			var _this = this;
 
 			if (!this.raptMediaEngine) {
-				var config = this.getConfig('raptEngine');
+				var config = this.getConfig('raptEngine') || {};
+
+				var ua = this.getPlayer().getKalturaConfig('googleAnalytics', 'urchinCode');
+				if (ua != null) {
+					config.ga = ua;
+				}
 
 				this.raptMediaEngine = new Rapt.Engine(
 					this.getDelegate(),
