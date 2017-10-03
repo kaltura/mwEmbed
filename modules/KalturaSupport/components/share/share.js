@@ -172,40 +172,39 @@
 					_this.getScreen().then(function(screen){
 						$( "#" + embedPlayer.getPlayerElement().id ).addClass("blur");
 						embedPlayer.getPlayerPoster().addClass("blur");
-						embedPlayer.getInterface().find(".share .icon-close").focus();
-					});
-
-					embedPlayer.getInterface().find(".screen.share").keydown(function(e){
-						if(e.keyCode === 9){// keyCode = 9 - tab button
-							var prevFocusedElement = $(':focus');//when you press TAB - focus does not change yet, and in focus will be prev element
-							var prevFocusedElementParent = prevFocusedElement.parents('.share-input-container');
-							setTimeout(function () {
-								var currentFocusedElement = $(':focus');//when timeout will done - new element will be in focus
-								var currentFocusedElementParents  = currentFocusedElement.parents('.share-input-container');
-								if(!currentFocusedElement.parents('.videoHolder').hasClass('videoHolder')){
-									_this.getPlayer().getInterface().find(".share .icon-close").focus();
-									return;
-								}
-								if(
-									prevFocusedElementParent.attr('class') &&
-									prevFocusedElementParent.attr('class').indexOf('-offset-container') !==-1 &&
-									(
-										currentFocusedElementParents.attr('class') === undefined ||
-										currentFocusedElementParents.attr('class').indexOf('-offset-container') === -1
-									)
-								){
-									prevFocusedElementParent.hide();
-								}
-
-								if( currentFocusedElementParents.hasClass('share-input-container') &&
-									currentFocusedElementParents.next('.share-input-container').attr('class') &&
-									currentFocusedElementParents.next('.share-input-container').attr('class').indexOf('-offset-container') !==-1
-								){
-									currentFocusedElementParents.next('.share-input-container').show();
-								}
-							}, 0);
-
-						}
+						screen.find(".icon-close").focus();
+						screen.keydown(function(e){
+							if(e.keyCode === 9){// keyCode = 9 - tab button
+								var prevFocusedElement = $(':focus');//when you press TAB - focus does not change yet, and in focus will be prev element
+								var prevFocusedElementParent = prevFocusedElement.parents('.share-input-container');
+								setTimeout(function () {
+									var currentFocusedElement = $(':focus');//when timeout will done - new element will be in focus
+									var currentFocusedElementParents  = currentFocusedElement.parents('.share-input-container');
+									if(!currentFocusedElement.parents('.videoHolder').hasClass('videoHolder')){
+											 _this.getPlayer().getInterface().find(".share .icon-close").focus();
+											return;
+									}
+									if(
+										prevFocusedElementParent.attr('class') &&
+										prevFocusedElementParent.attr('class').indexOf('-offset-container') !==-1 &&
+										(
+											currentFocusedElementParents.attr('class') === undefined ||
+											currentFocusedElementParents.attr('class').indexOf('-offset-container') === -1
+										)
+									){
+										prevFocusedElementParent.hide();
+									}
+									
+									if( currentFocusedElementParents.hasClass('share-input-container') &&
+										currentFocusedElementParents.next('.share-input-container').attr('class') &&
+										currentFocusedElementParents.next('.share-input-container').attr('class').indexOf('-offset-container') !==-1
+									){
+										currentFocusedElementParents.next('.share-input-container').show();
+									}
+								}, 0);
+								
+							}
+						});
 					});
 
 				}
