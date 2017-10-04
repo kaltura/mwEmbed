@@ -742,3 +742,117 @@ ol.second-row{
 .track {
     bottom:9vh!important;
 }
+
+@media (min-width: 940px) and (max-height: 500px) {
+    .playlistInterface .welcome {
+        font-size: 7vw;
+    }
+    .playlistInterface .welcomeMessage {
+        max-width: 100%;
+        padding-top: 4vh;
+    }
+    .playlistInterface .InvideoTipMessage {
+        padding-top: 4vh;
+        max-width: 100%;
+    }
+
+    .playlistInterface .title-text {
+        font-size: 4.9vw;
+    }
+    .playlistInterface .sub-text {
+        font-size: 1.5vw;
+    }
+    .playlistInterface .scoreBig {
+        font-size: 2vw;
+        font-weight: 900;
+    }
+
+    .playlistInterface .hexagon-container {
+        max-width: 100%;
+    }
+    .playlistInterface .q-box {
+        width: 8vw;
+        height: 8vw;
+        line-height: 8vw;
+    }
+    .playlistInterface .q-box-false {
+        width: 8vw;
+        height: 8vw;
+        line-height: 8vw;
+    }
+    .playlistInterface .confirm-box {
+        height: 6vw;
+        line-height: 6vw;
+    }
+
+    .playlistInterface .display-question {
+        font-size: 1.5vw;
+    }
+    .playlistInterface .answers-container {
+        width: 100%;
+    }
+    .playlistInterface .single-answer-box-bk {
+        padding-top: 1.5vw;
+        padding-bottom: 1.5vw;
+        width: 92%;
+    }
+    .playlistInterface .single-answer-box-txt {
+        font-size: 1.2vw;
+        width: 88%;
+    }
+    .playlistInterface .single-answer-box-bk.wide {
+        width: 96%;
+        margin-left: 1vw;
+    }
+    .playlistInterface .single-answer-box-txt-wide {
+        font-size: 1.2vw;
+        width: 88%;
+    }
+    .playlistInterface .single-answer-box-apply {
+        width: 16%;
+        font-size: 1.4vw;
+    }
+    .playlistInterface .ftr-container {
+        bottom: 4vh;
+    }
+    .playlistInterface .ftr-right {
+        font-size: 1.2vw;
+    }
+    .playlistInterface .quizDone-cont {
+        width:7vw;
+        height: 8vw;
+        position: absolute;
+        top: inherit;
+        bottom: 3vw;
+    }
+}
+@media (min-width: 1170px) and (max-height: 500px) {
+    .playlistInterface .single-answer-box-bk {
+        padding-top: 1.2vw;
+        padding-bottom: 1.2vw;
+    }
+    .playlistInterface .confirm-box {
+        height: 5vw;
+        line-height: 5vw;
+    }
+}
+@media (min-width: 1470px) and (max-height: 500px) {
+    .playlistInterface .single-answer-box-bk {
+        padding-top: 1vw;
+        padding-bottom: 1vw;
+    }
+    .playlistInterface .single-answer-box-txt {
+        font-size: 1vw;
+        width: 86%;
+    }
+    .playlistInterface ol.first-row {
+         margin: 10px 0;
+    }
+    .playlistInterface .confirm-box {
+        height: 5vw;
+        line-height: 5vw;
+    }
+    .ftr-left {
+        font-size: 1.2vw;
+    }
+}
