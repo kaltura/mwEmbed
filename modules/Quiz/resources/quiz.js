@@ -162,6 +162,9 @@
                     _this.enablePlayDuringScreen = false;
                 }
             });
+	        this.bind('durationChange', function (event, duration) {
+		        _this.KIVQModule.showQuizOnScrubber();
+	        });
 
             embedPlayer.bindHelper('seeked'+_this.KIVQModule.bindPostfix, function () {
                 // KMS-13599
@@ -701,7 +704,7 @@
                 displayClass = val.isAnswerd ? "bubble bubble-ans " + buSize.bubbleAnsSize
                     : "bubble bubble-un-ans " + buSize.bubbleUnAnsSize;
 
-                var pos = (Math.round(((val.startTime/embedPlayer.kalturaPlayerMetaData.msDuration)*100) * 10)/10)-1;
+                var pos = (Math.round(((val.startTime/(embedPlayer.duration*1000))*100) * 10)/10)-1;
                 $('.bubble-cont').append($('<div id ="' + key + '" style="margin-left:' + pos + '%">' +
                     _this.KIVQModule.i2q(key) + ' </div>')
                         .addClass(displayClass).attr('role', 'button').attr('tabindex', 5).on('keydown', _this.keyDownHandler)
