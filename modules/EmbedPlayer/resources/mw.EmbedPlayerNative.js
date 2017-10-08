@@ -109,6 +109,14 @@
 				$(this.getPlayerElement()).attr('playsinline', '');
 			}
 
+            if (mw.isSafari() && !mw.isMobileDevice() && mw.getConfig('autoPlay')) {
+                this.savedVolume = this.volume;
+                this.setVolume(0);
+                this.bindHelper('playing' + this.bindPostfix, function () {
+                    this.setVolume(this.savedVolume);
+                }.bind(this));
+            }
+
 			if ( (mw.isMobileDevice() || mw.isIpad()) && mw.getConfig( 'mobileAutoPlay' ) ) {
 				if ( !mw.isIphone() && this.inline ) {
 					this.inline = false;
@@ -116,7 +124,7 @@
 				}
 				this.mobileAutoPlay = true;
 				this.setVolume( 0 );
-			}
+            }
 
 			this.addBindings();
 			readyCallback();
