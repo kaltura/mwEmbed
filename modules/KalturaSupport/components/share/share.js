@@ -196,7 +196,6 @@
 							currentFocusedElementParents.next('.share-input-container').show();
 						}
 					}, 0);
-
 				}
 			};
 			this.bind('showScreen', function (event, screenName) {
