@@ -543,6 +543,7 @@ class kalturaIframeClass {
 	private function getLangKey(){
 		global $coreLanguageNames;
 		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
+		$playerConfig['vars']['localizationCode'] =  strlen($playerConfig['vars']['localizationCode']) > 2 ? substr($playerConfig['vars']['localizationCode'], 0, 2) :  $playerConfig['vars']['localizationCode'];
 		if( isset( $playerConfig['vars']['localizationCode'] ) ){
 			// get the list of language names
 			require_once( dirname( __FILE__ ) . '/../../includes/languages/Names.php' );
