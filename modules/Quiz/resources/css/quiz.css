@@ -852,7 +852,7 @@ ol.second-row{
         height: 5vw;
         line-height: 5vw;
     }
-    .ftr-left {
+    .playlistInterface .ftr-left {
         font-size: 1.2vw;
     }
 }
