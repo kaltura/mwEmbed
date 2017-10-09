@@ -162,9 +162,11 @@
                     _this.enablePlayDuringScreen = false;
                 }
             });
-	        this.bind('durationChange', function (event, duration) {
-		        _this.KIVQModule.showQuizOnScrubber();
-	        });
+            this.bind('durationChange', function (event, duration) {
+                if (!_this.isScreenVisible()) {
+                    _this.KIVQModule.showQuizOnScrubber();
+                }
+            });
 
             embedPlayer.bindHelper('seeked'+_this.KIVQModule.bindPostfix, function () {
                 // KMS-13599
