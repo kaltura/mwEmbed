@@ -222,12 +222,12 @@
     margin-left: auto;
     margin-right: auto;
     color: #ffffff;
-    font-size: 2.3vw;
+    font-size: 2.1vw;
     font-weight: 700;
     text-align: center;
     width: 80%;
     word-wrap: break-word;
-    padding-top: 3vh;
+    padding-top: 2vh;
     cursor: default!important;
 }
 .display-question:focus{

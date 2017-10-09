@@ -43,6 +43,7 @@ mw.PluginManager.add( 'infoScreen', mw.KBaseScreen.extend({
 				_this.getScreen().then(function(screen){
 					$(embedPlayer.getPlayerElement()).addClass("blur");
 					embedPlayer.getPlayerPoster().addClass("blur");
+					embedPlayer.getInterface().find(".infoScreen .icon-close").focus();
 				});
 			}
 		});

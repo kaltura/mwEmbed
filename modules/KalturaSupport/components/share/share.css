@@ -46,6 +46,9 @@
 .share input:focus {
 	outline:none;
 }
+.share .share-secured:focus {
+	outline: -webkit-focus-ring-color solid 1px;
+}
 .share .screen-content .tmpl{
 	display: table;
 	width: 100%;
@@ -236,6 +239,10 @@
 }
 .share a:hover {
 	color: #ffffff;
+	text-decoration: none;
+	text-shadow: 0px 0px 10px #fff;
+}
+.share a:focus {
 	text-decoration: none;
 	text-shadow: 0px 0px 10px #fff;
 }
