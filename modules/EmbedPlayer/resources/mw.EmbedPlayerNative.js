@@ -133,11 +133,14 @@
 			});
 		},
         shouldAutoPlayMuted: function () {
-            // If it's mobile device and mobile auto play was configured
-            var mobileAutoPlayMode = (mw.isMobileDevice() || mw.isIpad()) && mw.getConfig('mobileAutoPlay');
-            // If it's safari desktop and auto play was configured
-            var autoPlayFallbackToMuteMode = (mw.isDesktopSafari() && mw.getConfig('autoPlayFallbackToMute') && mw.getConfig('autoPlay'));
-            return (mobileAutoPlayMode || autoPlayFallbackToMuteMode);
+			if (!mw.getConfig('autoMute')) {
+                // If it's mobile device and mobile auto play was configured
+                var mobileAutoPlayMode = (mw.isMobileDevice() || mw.isIpad()) && mw.getConfig('mobileAutoPlay');
+                // If it's safari desktop and auto play was configured
+                var autoPlayFallbackToMuteMode = (mw.isDesktopSafari() && mw.getConfig('autoPlayFallbackToMute') && mw.getConfig('autoPlay'));
+                return (mobileAutoPlayMode || autoPlayFallbackToMuteMode);
+            }
+            return false;
         },
         addBindings: function () {
             var _this = this;
@@ -923,7 +926,6 @@
 		 */
 		play: function () {
 			var vid = this.getPlayerElement();
-            this.getPlayerElement().load();
 			// parent.$('body').append( $('<a />').attr({ 'style': 'position: absolute; top:0;left:0;', 'target': '_blank', 'href': this.getPlayerElement().src }).text('SRC') );
 			var _this = this;
 
@@ -976,7 +978,6 @@
                                     mw.log("play promise resolved");
                                 }).catch(function(error) {
                                     mw.log("play promise rejected");
-                                    debugger;
                                     //If play is rejected then return UI state to pause so user can take action
                                     _this.pause();
                                 });
