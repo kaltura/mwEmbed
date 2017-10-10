@@ -109,7 +109,6 @@
 				$(this.getPlayerElement()).attr('playsinline', '');
 			}
 
-            // Mobile auto play
             if (this.shouldAutoPlayMuted()) {
                 this.autoplay = true;
                 if (!mw.isIphone() && this.inline) {
