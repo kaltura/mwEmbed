@@ -154,7 +154,7 @@
             // as for now slave video doesn't run as HDS
             // (flash loads mp4 progressive download)
             var relevantFlavors = stream.data.contextData.flavorAssets.filter(function (flavor) {
-                return flavor.tags.indexOf('ipadnew') !== -1;
+	            return flavor.tags.indexOf('ipadnew') !== -1 || flavor.tags.indexOf('iphonenew') !== -1
             });
 
             if (!relevantFlavors.length) {
