@@ -544,7 +544,7 @@ class kalturaIframeClass {
 		global $coreLanguageNames;
 		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
 		if( isset( $playerConfig['vars']['localizationCode'] ) ){
-			$playerConfig['vars']['localizationCode'] =  strlen($playerConfig['vars']['localizationCode']) > 2 ? substr($playerConfig['vars']['localizationCode'], 0, 2) :  $playerConfig['vars']['localizationCode'];
+			$playerConfig['vars']['localizationCode'] = $this->prepareRegionCode($playerConfig['vars']['localizationCode']);
 			// get the list of language names
 			require_once( dirname( __FILE__ ) . '/../../includes/languages/Names.php' );
 			// validate localization code.
@@ -554,6 +554,13 @@ class kalturaIframeClass {
 		}
 		// if no language code is specified default to english: 
 		return 'en';
+	}
+	/**
+	 * Region code in i18n files consist of 2 letters.
+	 * If we get more than 2 - take only 2 first letters
+	 * */
+	private function prepareRegionCode($lang){
+		return strlen($lang) > 2 ? substr($lang, 0, 2) :  $lang;
 	}
 	/**
 	 * Get the location of the mwEmbed library
