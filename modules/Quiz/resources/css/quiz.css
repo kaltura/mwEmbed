@@ -114,10 +114,10 @@
 .welcomeMessage{
     font-family: "Helvetica" , "Arial";
     font-family: "LatoLight";
-    font-size: 5.4vh;
+    font-size: 4.4vh;
     color: #ffffff;
     padding-left: 4vw;
-    padding-top: 6vh;
+    padding-top: 5vh;
     font-weight: 300;
     text-align: left;
     transform: scaleY(1.0009);
@@ -130,7 +130,7 @@
     font-size: 4vh;
     color: #ffffff;
     padding-left: 4vw;
-    padding-top: 7vh;
+    padding-top: 5vh;
     font-weight: 300;
     text-align: left;
     transform: scaleY(1.0009);
@@ -741,4 +741,14 @@ ol.second-row{
 .quizDone-cont:focus{outline:none;}
 .track {
     bottom:9vh!important;
+}
+@media(max-width: 604px){
+    .size-small .screen.quiz ,
+    .size-medium .screen.quiz {
+        padding-top: 10px;
+    }
+    .size-small .bottomContainer,
+    .size-medium .bottomContainer {
+        padding-top: 10px!important;
+    }
 }
