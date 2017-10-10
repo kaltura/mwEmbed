@@ -1,0 +1,10 @@
+{
+  "unMuteOverlayButton": {
+    "scripts": [
+      "resources/unMuteOverlayButton.js"
+    ],
+    "styles": "resources/css/unMuteOverlayButton.css",
+    "dependencies": "mw.KBaseButton",
+    "kalturaPluginName": "unMuteOverlayButton"
+  }
+}
