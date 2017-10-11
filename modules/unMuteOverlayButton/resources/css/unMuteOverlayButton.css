@@ -1,0 +1,7 @@
+.unMuteOverlayButton {
+    width: 5em;
+    height: 5em;
+    position: absolute;
+    margin-top: 22%;
+    cursor: pointer;
+}
