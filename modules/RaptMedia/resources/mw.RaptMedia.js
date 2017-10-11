@@ -172,6 +172,9 @@
 			// Attempt to prevent the last segment from incorrectly triggering ended / replay behavior
 			this.getPlayer().onDoneInterfaceFlag = false;
 
+			// Keep the poster around until playback begins
+			mw.setConfig('EmbedPlayer.KeepPoster', true);
+
 			$.when(
 				this.loadEngine(),
 				this.loadSegments(raptProjectId)
@@ -217,6 +220,8 @@
 			}
 
 			this.initialize();
+
+			mw.setConfig('EmbedPlayer.KeepPoster', false);
 
 			// Re-enable ended / replay behavior
 			this.getPlayer().onDoneInterfaceFlag = true;
@@ -485,9 +490,14 @@
 				load: function(media, flags) {
 					var entryId = media.sources[0].src;
 					var nextSegment = _this.segments[entryId];
+					var stopAfterSeek = true;
+
+					if (_this.getConfig('status') === 'loading') {
+						stopAfterSeek = undefined;
+					}
 
 					if (nextSegment) {
-						_this.seek(nextSegment, 0, true);
+						_this.seek(nextSegment, 0, stopAfterSeek);
 					} else {
 						_this.fatal(
 							'Error in RAPT playback',
@@ -516,6 +526,10 @@
 					switch (event.type) {
 						case 'project:ended':
 							// TODO: Trigger end screen
+							break;
+						case 'project:start':
+							mw.setConfig('EmbedPlayer.KeepPoster', false);
+							_this.getPlayer().removePoster();
 							break;
 					}
 
