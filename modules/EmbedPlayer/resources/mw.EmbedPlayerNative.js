@@ -116,7 +116,9 @@
                     $(this.getPlayerElement()).removeAttr('playsinline');
                 }
                 this.mobileAutoPlay = true;
-                this.setVolume(0);
+                this.bindOnceHelper('playerReady', function () {
+                    _this.setVolume(0);
+                });
             }
 
 			this.addBindings();
@@ -132,12 +134,15 @@
 			});
 		},
         shouldAutoPlayMuted: function () {
-			if (!mw.getConfig('autoMute')) {
-                // If it's mobile device and mobile auto play was configured
-                var mobileAutoPlayMode = (mw.isMobileDevice() || mw.isIpad()) && mw.getConfig('mobileAutoPlay');
-                // If it's safari desktop and auto play was configured
-                var autoPlayFallbackToMuteMode = (mw.isDesktopSafari() && mw.getConfig('autoPlayFallbackToMute') && mw.getConfig('autoPlay'));
-                return (mobileAutoPlayMode || autoPlayFallbackToMuteMode);
+            if (!mw.getConfig('autoMute')) {
+                if (mw.isMobileDevice() || mw.isIpad()) {
+                    return mw.getConfig('mobileAutoPlay');
+                } else if (mw.isDesktopSafari() && mw.getConfig('autoPlay')) {
+                    if (typeof mw.getConfig('autoPlayFallbackToMute') !== 'boolean') {
+                        mw.setConfig('autoPlayFallbackToMute', true)
+                    }
+                    return mw.getConfig('autoPlayFallbackToMute');
+                }
             }
             return false;
         },
