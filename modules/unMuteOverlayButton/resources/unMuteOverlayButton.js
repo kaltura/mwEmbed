@@ -10,6 +10,7 @@
             },
 
             playerVolume: null,
+            isDisabled: false,
 
             setup: function () {
                 this.playerVolume = this.getPlayer().getPlayerElementVolume();
@@ -18,12 +19,15 @@
 
             isSafeEnviornment: function () {
                 return ((mw.isMobileDevice() || mw.isIpad()) && mw.getConfig('mobileAutoPlay')) ||
-                    (mw.isDesktopSafari() && mw.getConfig('autoPlayFallbackToMute') && mw.getConfig('autoPlay'));
+                    (mw.isDesktopSafari() && mw.getConfig('autoPlay')) ||
+                    this.getPlayer().getRawKalturaConfig('playlistAPI', 'autoPlay');
             },
 
             addBindings: function () {
                 this.bind('playerReady', function () {
-                    this.show();
+                    if (!this.isDisabled) {
+                        this.show();
+                    }
                 }.bind(this));
 
                 this.bind('volumeChanged', function () {
@@ -34,6 +38,9 @@
             },
 
             show: function () {
+                var playerHeight = this.getPlayer().getPlayerHeight() / 2;
+                var compHeight = this.getComponent().height() / 2;
+                this.getComponent().css('margin-top', playerHeight - compHeight);
                 this.getComponent().fadeIn('slow');
             },
 
@@ -42,6 +49,7 @@
             },
 
             destroy: function () {
+                this.isDisabled = true;
                 this.hide();
                 this.unbind('playerReady');
                 this.unbind('volumeChanged');
