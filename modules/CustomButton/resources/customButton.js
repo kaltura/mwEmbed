@@ -46,6 +46,15 @@
 						_this.hide(true);
 					}
 				});
+
+				this.bind('customButton.disable', function() {
+					_this.onDisable();
+				});
+
+                this.bind('customButton.enable', function() {
+                    _this.onEnable();
+                });
+
 			},
 			show: function(){
 				if ( !this.isDisabled ) {
@@ -76,7 +85,7 @@
 			},
 			onDisable: function(){
 				this.isDisabled = true;
-				this.hideComponent();
+				this.hideComponent(true);
 			},
 			getComponent: function() {
 				var _this = this;
