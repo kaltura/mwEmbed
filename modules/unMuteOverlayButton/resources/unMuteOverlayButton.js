@@ -55,7 +55,7 @@
                 if (!this.$el) {
                     this.$el = $('<button/>')
                         .addClass('icon-volume-mute ' + this.getCssClass())
-                        .html('<span>Unmute</div>')
+                        .html('<span>' + gM("mwe-embedplayer-unmute-label") + '</span>')
                         .click(function () {
                             this.getPlayer().setVolume(this.playerVolume);
                         }.bind(this))
