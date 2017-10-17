@@ -737,6 +737,9 @@
                     .attr('title', 'click to end quiz now').on('keydown', _this.keyDownHandler).attr('id', 'quiz-done-continue-button').focus();
             // verify focus in IE
             document.getElementById('quiz-done-continue-button').focus();
+            setTimeout(function () {
+                $(_this.embedPlayer.getInterface()).find('.quizDone-cont').first().addClass('small');
+            },3000);
         }
     }));
 })(window.mw, window.jQuery);
