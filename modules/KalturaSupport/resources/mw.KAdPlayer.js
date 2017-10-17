@@ -1282,7 +1282,10 @@ mw.KAdPlayer.prototype = {
 			});
 			vid.src = source.getSrc();
 			vid.load();
-			vid.play().catch(doneCallback);
+			var playPromise = vid.play();
+			if (playPromise) {
+				playPromise.catch(doneCallback);
+			}
 			// Update the main player state per ad playback:
 			_this.embedPlayer.playInterfaceUpdate();
 
