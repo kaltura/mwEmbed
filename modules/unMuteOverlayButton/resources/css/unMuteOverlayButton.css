@@ -1,6 +1,18 @@
 .unMuteOverlayButton {
-    width: 5em;
-    height: 5em;
+    width: 8em;
+    height: 2.2em;
     position: relative;
+    margin: 12px 12px;
+    border: none;
+    background-color: rgba(0, 0, 0, 0.5);
+    font-size: 13px;
+    color: white;
+    border-radius: 3px;
     cursor: pointer;
+}
+
+.unMuteOverlayButton span {
+    font-size: 13px;
+    font-family: sans-serif;
+    font-weight: bold;
 }
