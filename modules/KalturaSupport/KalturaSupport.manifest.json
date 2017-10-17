@@ -15,6 +15,10 @@
         "doc": "If the player should start playback once ready.",
         "type": "boolean"
     },
+    "autoPlayFallbackToMute": {
+        "doc": "If the player should fallback to muted playback if audible autoplay fails.",
+        "type": "boolean"
+    },
     "autoMute": {
         "doc": "If set to true, player will start with audio muted. This will be respected across entries and ads, until the user enables volume in the player. Note some VPAID ads do not support auto mute.",
         "type": "boolean"
