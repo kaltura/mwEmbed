@@ -89,6 +89,14 @@ return array(
 				"model" => "config.uiVars.autoPlay"
 			),
 			array(
+                "label" => "Fallback to muted autoplay",
+                "helpnote" => "Some browsers do not allow autoplay with sound (Safari on Mac, Chrome 64 and above). This flag allows you to choose whether you would like to fall back to muted autoplay on these browsers or require an explicit play click",
+                "type" => "checkbox",
+                "initvalue" => true,
+                "endline" => "true",
+                "model" => "config.uiVars.autoPlayFallbackToMute"
+            ),
+			array(
 				"label" => "Start player muted",
 				"type" => "checkbox",
 				"endline" => "true",
