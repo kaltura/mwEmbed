@@ -377,9 +377,7 @@ mw.KAdPlayer.prototype = {
 							_this.waitingForLoadedData = false;
 						}
 					});
-					if (_this.embedPlayer.muted){
-						_this.adSibling.changeVolume(0);
-					}
+					_this.adSibling.changeVolume(_this.embedPlayer.volume);
 				},
 				function(){
 					adSlot.playbackDone();
@@ -1270,6 +1268,12 @@ mw.KAdPlayer.prototype = {
 
 
 			var vid = _this.getVideoAdSiblingElement( source );
+
+			if ( mw.isSafari11() ) {
+				// use the user gesture to open the main video tag
+				_this.embedPlayer.load();
+				$( '#' + _this.getVideoAdSiblingId() + '_container' ).css('visibility', 'visible');
+			}
 			//Register error state and continue with player flow in case of
 			$(vid ).bind('error.playVideoSibling', function(e){
 				$( vid ).unbind( 'error.playVideoSibling' );
@@ -1278,7 +1282,7 @@ mw.KAdPlayer.prototype = {
 			});
 			vid.src = source.getSrc();
 			vid.load();
-			vid.play();
+			vid.play().catch(doneCallback);
 			// Update the main player state per ad playback:
 			_this.embedPlayer.playInterfaceUpdate();
 
@@ -1287,7 +1291,7 @@ mw.KAdPlayer.prototype = {
 			}
 
 			if( $.isFunction( doneCallback ) ){
-				$( vid ).bind('ended.playVideoSibling', function(){
+				$( vid ).unbind( 'ended.playVideoSibling' ).bind('ended.playVideoSibling', function(){
 					mw.log("kAdPlayer::playVideoSibling: ended");
 					$( vid ).unbind( 'ended.playVideoSibling' );
 					_this.restoreEmbedPlayer();
@@ -1299,10 +1303,16 @@ mw.KAdPlayer.prototype = {
 		}, 0);
 	},
 	restoreEmbedPlayer: function(){
-		// remove the video sibling:
-		$( '#' + this.getVideoAdSiblingId() ).remove();
-		$( '#' + this.getVideoAdSiblingId() + '_container' ).remove();
-		this.adSibling = null;
+		if ( mw.isSafari11() ) {
+			// do not remove the video sibling to avoid user gesture issue. hide it instead.
+			$( '#' + this.getVideoAdSiblingId() + '_container' ).css('visibility', 'hidden');
+			this.adSibling.getElement().pause();
+		} else {
+			// remove the video sibling:
+			$( '#' + this.getVideoAdSiblingId() ).remove();
+			$( '#' + this.getVideoAdSiblingId() + '_container' ).remove();
+			this.adSibling = null;
+		}
 		this.adSiblingFlashPlayer = null;
 		// remove click through binding
 		this.embedPlayer.getVideoHolder().unbind( this.adClickPostFix );
