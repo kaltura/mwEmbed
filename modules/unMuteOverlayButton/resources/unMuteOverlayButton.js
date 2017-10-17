@@ -37,7 +37,7 @@
             },
 
             show: function () {
-                var playerHeight = this.getPlayer().getPlayerHeight() / 2;
+                var playerHeight = this.getPlayer().getPlayerHeight() / 6;
                 var compHeight = this.getComponent().height() / 2;
                 this.getComponent().css('margin-top', playerHeight - compHeight);
                 this.getComponent().fadeIn('slow');
@@ -56,11 +56,9 @@
 
             getComponent: function () {
                 if (!this.$el) {
-                    this.$el = $('<img />')
-                        .addClass(this.getCssClass())
-                        .attr({
-                            'src': this.getConfig('icon')
-                        })
+                    this.$el = $('<button/>')
+                        .addClass('icon-volume-mute ' + this.getCssClass())
+                        .html('<span>Unmute</div>')
                         .click(function () {
                             this.getPlayer().setVolume(this.playerVolume);
                         }.bind(this))
