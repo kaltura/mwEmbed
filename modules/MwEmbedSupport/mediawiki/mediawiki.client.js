@@ -43,6 +43,9 @@
 	mw.isSafari = function () {
 		return (/safari/).test(userAgent.toLowerCase()) && !mw.isChrome() && !mw.isEdge();
 	};
+	mw.isSafari11 = function () {
+		return mw.isSafari() && (/version\/11/).test(userAgent.toLowerCase());
+	};
 	mw.isIE9Comp = function () {
 		return (/msie 7/.test(userAgent.toLowerCase()) && /trident\/5/.test(userAgent.toLowerCase()));
 	};
