@@ -386,10 +386,7 @@
             _this.KIVQScreenTemplate.tmplAllCompleted();
 
             $(".title-text").html(gM('mwe-quiz-completed'));
-            $(".sub-text").html(gM('mwe-quiz-TakeAMoment') + '<strong> '+ gM('mwe-quiz-review').toLowerCase() +' </strong>'
-                + gM('mwe-quiz-yourAnswers') + '</br><strong> '+ gM('mwe-quiz-or') +' </strong>'
-                + gM('mwe-quiz-goAhead')+ '<strong> '+ gM('mwe-quiz-submit').toLowerCase() +' </strong>'
-            );
+            $(".sub-text").html(gM('mwe-quiz-sub-text'));
 
             $(".review-button").html(gM('mwe-quiz-review'))
                 .on('click', function () {

@@ -37,7 +37,8 @@
     "mwe-quiz-welcome": "Welcome",
     "mwe-quiz-why": "WHY",
     "mwe-quiz-yourAnswer": "Your Answer:",
-    "mwe-quiz-yourAnswers": "your answers"
+    "mwe-quiz-yourAnswers": "your answers",
+    "mwe-quiz-sub-text": "Take a moment to<strong> review </strong>your answers</br><strong> or </strong>go ahead and<strong> submit </strong>"
   },
   "de": {
     "mwe-quiz-Submitted": "Abgesendet",
