@@ -37,9 +37,6 @@
             },
 
             show: function () {
-                var playerHeight = this.getPlayer().getPlayerHeight() / 6;
-                var compHeight = this.getComponent().height() / 2;
-                this.getComponent().css('margin-top', playerHeight - compHeight);
                 this.getComponent().fadeIn('slow');
             },
 
