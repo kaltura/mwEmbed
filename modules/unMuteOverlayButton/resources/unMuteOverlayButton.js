@@ -19,7 +19,7 @@
 
             isSafeEnviornment: function () {
                 return ((mw.isMobileDevice() || mw.isIpad()) && mw.getConfig('mobileAutoPlay')) ||
-                    (mw.isDesktopSafari() && (mw.getConfig('autoPlay') || this.getPlayer().getRawKalturaConfig('playlistAPI', 'autoPlay')));
+                    (mw.isDesktopSafari11() && (mw.getConfig('autoPlay') || this.getPlayer().getRawKalturaConfig('playlistAPI', 'autoPlay')));
             },
 
             addBindings: function () {

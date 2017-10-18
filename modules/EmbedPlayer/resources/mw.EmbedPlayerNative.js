@@ -137,7 +137,7 @@
             if (!mw.getConfig('autoMute')) {
                 if (mw.isMobileDevice() || mw.isIpad()) {
                     return mw.getConfig('mobileAutoPlay');
-                } else if (mw.isDesktopSafari() && mw.getConfig('autoPlay')) {
+                } else if (mw.isDesktopSafari11() && mw.getConfig('autoPlay')) {
                     if (typeof mw.getConfig('autoPlayFallbackToMute') !== 'boolean') {
                         mw.setConfig('autoPlayFallbackToMute', true)
                     }
