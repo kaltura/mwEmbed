@@ -372,6 +372,9 @@ button.qContinue, button.qApplied {
     vertical-align: middle;
     color: rgb(78, 166, 240);
 }
+.hint-why-box.smaller-font {
+    font-size:1vw;
+}
 
 .hint-why-box:hover{
     cursor: pointer;
