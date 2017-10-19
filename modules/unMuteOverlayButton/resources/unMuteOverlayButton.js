@@ -18,8 +18,9 @@
             },
 
             isSafeEnviornment: function () {
-                return ((mw.isMobileDevice() || mw.isIpad()) && mw.getConfig('mobileAutoPlay')) ||
-                    (mw.isDesktopSafari11() && (mw.getConfig('autoPlay') || this.getPlayer().getRawKalturaConfig('playlistAPI', 'autoPlay')));
+                var isMobileAutoPlay = (mw.isMobileDevice() || mw.isIpad()) && mw.getConfig('mobileAutoPlay');
+                var isFallbackToMutedAutoPlay = (mw.isDesktopSafari11() && (mw.getConfig('autoPlay') || this.getPlayer().getRawKalturaConfig('playlistAPI', 'autoPlay')));
+                return !!(isMobileAutoPlay || isFallbackToMutedAutoPlay);
             },
 
             addBindings: function () {
