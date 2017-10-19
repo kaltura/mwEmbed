@@ -745,6 +745,12 @@ ol.second-row{
     top: 89vh;
     margin-left: 97%;
 }
+.fullscreen .quizDone-cont.small {
+    width: 2vw;
+    height: 2vw;
+    top: 95vh;
+    margin-left: 97%;
+}
 .quizDone-cont:focus{outline:none;}
 .track {
     bottom:9vh!important;
