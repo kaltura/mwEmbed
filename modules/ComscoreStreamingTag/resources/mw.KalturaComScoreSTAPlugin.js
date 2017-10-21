@@ -2,7 +2,7 @@
     "use strict";
 
     var PLUGIN_PLATFORM_NAME = 'kaltura',
-        PLUGIN_VERSION = '1.2.3.170522',
+        PLUGIN_VERSION = '1.3.0.170908',
         PLAYER_VERSION = mw.getConfig('version');
 
     function KalturaComScoreSTAPlugin(playerPluginInstance) {
