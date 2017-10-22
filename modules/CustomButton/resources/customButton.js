@@ -74,7 +74,7 @@
 			clickButton: function( event ){
 				event.preventDefault();
 				event.stopPropagation();
-				this.embedPlayer.getPlayerElement().pause();
+                this.getPlayer().sendNotification('doPause');
 				this.getPlayer().sendNotification(this.getConfig('eventName'), this.embedPlayer.currentTime);
 			},
 			onEnable: function(){
