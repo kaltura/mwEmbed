@@ -15,12 +15,13 @@
 
 			addBindings: function() {
 				var _this = this;
-				$(this.getPlayer()).on('mouseenter', function() {
-					_this.show();
-				});
-				$(this.getPlayer()).on('mouseleave', function(event) {
-					if (event.relatedTarget !== _this.getComponent()) {
-						_this.hide();
+
+                $(this.getPlayer().getInterface()).on('mouseenter', function() {
+                    _this.show();
+                });
+				$(this.getPlayer().getInterface()).on('mouseleave', function(event) {
+                    if(_this.getPlayer().isPlaying()){
+                        _this.hide(true);
 					}
 				});
 
