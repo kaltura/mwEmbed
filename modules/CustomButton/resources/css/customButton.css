@@ -12,6 +12,7 @@
 	width: 100px;
 	height: 110px;
     outline: none;
+	z-index: 3;
 }
 
 .customButton:hover, .customButton:focus {
