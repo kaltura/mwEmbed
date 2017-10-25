@@ -1592,7 +1592,7 @@
 			var _this = this;
 			this.audioTrackIndex = null;
 			this.parseAudioTracksTimeout = setTimeout (function() {
-				if( vid.audioTracks && vid.audioTracks.length > 0 ) {
+				if(vid && vid.audioTracks && vid.audioTracks.length > 0 ) {
 					var data ={'languages':[]};
 					for (var i = 0; i < vid.audioTracks.length; i++) {
 						var audioTrack = vid.audioTracks[i];
