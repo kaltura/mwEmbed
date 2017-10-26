@@ -158,6 +158,7 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 			var title = gM('mwe-embedplayer-volume-value', percent );
             var $slider = this.getSlider().find('a');
             this.setAccessibility($slider, title);
+            this.updateVolumeUI(percent/100);
 		}
 	},
 	updateVolumeUI: function( percent ){
@@ -208,7 +209,11 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 			}else{
 				$sliderContainer = $( '<div />' ).addClass( 'slider' );
 			}
-			$sliderContainer.attr('tabindex',3);
+			$sliderContainer.attr({
+				'tabindex':3,
+				'aria-valuemax': 100,
+				'aria-valuemin': 0
+			});
 			this.$el = $('<div />')
 				.addClass( this.getCssClass() + layoutClass )
 				.append(
