@@ -218,7 +218,37 @@
                     };
                 }
             });
+	        this.tabKeyBind = function(e){
+		        if(e.keyCode === 9){// keyCode = 9 - tab button
+			        setTimeout(function () {
+				        var currentFocusedElement = $(':focus');//when timeout will done - new element will be in focus
+				        if(!currentFocusedElement.parents('.screen.quiz').hasClass('screen')){
+					        var elForFocus = _this.getElementToFirstFocusInScreen();
+					        $(elForFocus).focus();
+					        return;
+				        }
+			        }, 0);
+		        }
+            };
+		
+            embedPlayer.bindHelper('showScreen'+_this.KIVQModule.bindPostfix, function (event, screenName) {
+	            $('.screen').keydown( $.proxy( _this.tabKeyBind, _this )  );
+            });
           },
+        getElementToFirstFocusInScreen: function () {
+            var allTabindex = $(document).find('.screen [tabindex]');
+            var onlyActiveTabindex = [];
+            for(var i = 0; i<allTabindex.length; i++){
+                if(!$(allTabindex[i]).is(':visible'))continue;
+                onlyActiveTabindex.push(allTabindex[i]);
+            }
+            function sortByTabindex(a, b) {
+                if (a.tabindex > b.tabindex) return 1;
+                if (a.tabindex < b.tabindex) return -1;
+            }
+            var result  = onlyActiveTabindex.sort(sortByTabindex);
+            return !result[0] ? $('.screen') : result[0];
+        },
         getKClient: function () {
             if (!this.kClient) {
                 this.kClient = mw.kApiGetPartnerClient(this.embedPlayer.kwidgetid);
@@ -278,7 +308,7 @@
             $(".ivqContainer").attr("title", "Kaltura Video Quiz "+_this.embedPlayer.evaluate( '{mediaProxy.entry.name}' ));
             
             // make welcome "continue" button accessible
-            $(".confirm-box").html(gM('mwe-quiz-continue')).show().attr("tabindex", 5).attr("title", "Click to start the quiz").on('keydown', _this.keyDownHandler)
+            $(".confirm-box").html(gM('mwe-quiz-continue')).show().attr({"tabindex": 5,"role":"button"}).attr("title", "Click to start the quiz").on('keydown', _this.keyDownHandler)
                 .on('click', function () {
                     _this.KIVQModule.checkIfDone(-1);
                 }).focus().attr('id', 'welcome-continue-button');
@@ -294,9 +324,9 @@
             _this.ivqShowScreen();
             _this.KIVQScreenTemplate.tmplAlmostDone();
 
-            $(".title-text").html(gM('mwe-quiz-almostDone'));
+            $(".title-text").html(gM('mwe-quiz-almostDone')).attr('tabindex', 5).focus();
             $(".sub-text").html(gM('mwe-quiz-remainUnAnswered') + '</br>' + gM('mwe-quiz-pressRelevatToAnswer'))
-            $(".confirm-box").html(gM('mwe-quiz-okGotIt'));
+            $(".confirm-box").html(gM('mwe-quiz-okGotIt')).attr({"tabindex": 5,"role":"button"}).on('keydown', _this.keyDownHandler);
 
             $(document).off('click','.confirm-box')
                 .on('click', '.confirm-box', function () {
@@ -385,7 +415,7 @@
             _this.ivqShowScreen();
             _this.KIVQScreenTemplate.tmplAllCompleted();
 
-            $(".title-text").html(gM('mwe-quiz-completed'));
+            $(".title-text").html(gM('mwe-quiz-completed')).attr('tabindex',5).focus();
             $(".sub-text").html(gM('mwe-quiz-TakeAMoment') + '<strong> '+ gM('mwe-quiz-review').toLowerCase() +' </strong>'
                 + gM('mwe-quiz-yourAnswers') + '</br><strong> '+ gM('mwe-quiz-or') +' </strong>'
                 + gM('mwe-quiz-goAhead')+ '<strong> '+ gM('mwe-quiz-submit').toLowerCase() +' </strong>'
@@ -395,14 +425,17 @@
                 .on('click', function () {
                     _this.embedPlayer.seek(0,true);
                     _this.KIVQModule.continuePlay();
-                });
+                })
+                .on('keydown', _this.keyDownHandler);
 
             $(".submit-button").html(gM('mwe-quiz-submit'))
                 .on('click', function () {
                     $(this).off('click');
                     $(this).html(gM('mwe-quiz-plsWait'));
                     _this.KIVQModule.setSubmitQuiz();
-                });
+                })
+                .on('keydown', _this.keyDownHandler);
+
         },
         ssSubmitted: function (score) {
             var _this = this,cpArray = $.cpObject.cpArray;
@@ -450,6 +483,7 @@
             }
             $(document).off('click','.confirm-box')
             $(".confirm-box").html(gM('mwe-quiz-done'))
+                .attr({"role":"button"})
                 .on('click', function () {
                     if (mw.isMobileDevice() || _this.embedPlayer.getPlayerElementTime() === 0 ){
                         _this.KIVQModule.continuePlay();
