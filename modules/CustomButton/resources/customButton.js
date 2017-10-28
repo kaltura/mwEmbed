@@ -4,9 +4,10 @@
 			shouldShow : false,
 			isDisabled: false,
 			defaultConfig: {
+				'ariaText': '',
 				'parent': 'videoHolder',
 				'order': 20,
-                'eventName' : 'custom_button_clicked'
+				'eventName' : 'custom_button_clicked'
 			},
 			setup: function() {
 				this.addBindings();
@@ -14,6 +15,14 @@
 
 			addBindings: function() {
 				var _this = this;
+				$(this.getPlayer()).on('mouseenter', function() {
+					_this.show();
+				});
+				$(this.getPlayer()).on('mouseleave', function(event) {
+					if (event.relatedTarget !== _this.getComponent()) {
+						_this.hide();
+					}
+				});
 
 				this.bind('onpause onRemovePlayerSpinner', function(){
 					if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() ){
@@ -23,20 +32,29 @@
 				this.bind('playing AdSupport_StartAdPlayback onAddPlayerSpinner onHideControlBar', function(){
 					_this.hide(true);
 				});
-				this.bind('onPlayerStateChange', function(e, newState, oldState){
-					if( newState == 'load' ){
-						_this.hide(true);
+				this.bind('onPlayerStateChange', function(e, newState){
+					if( newState === 'load' ){
+						_this.show();
 					}
-					if( newState == 'pause' && _this.getPlayer().isPauseLoading ) {
+					if( newState === 'pause' && _this.getPlayer().isPauseLoading ) {
 						_this.hide();
 					}
-					if (newState == 'start') {
-						_this.hide(true);
+					if (newState === 'start') {
+						_this.show();
 					}
-					if (newState == 'play') {
+					if (newState === 'play') {
 						_this.hide(true);
 					}
 				});
+
+				this.bind('customButton.disable', function() {
+					_this.onDisable();
+				});
+
+                this.bind('customButton.enable', function() {
+                    _this.onEnable();
+                });
+
 			},
 			show: function(){
 				if ( !this.isDisabled ) {
@@ -56,6 +74,7 @@
 			clickButton: function( event ){
 				event.preventDefault();
 				event.stopPropagation();
+				this.embedPlayer.getPlayerElement().pause();
 				this.getPlayer().sendNotification(this.getConfig('eventName'), this.embedPlayer.currentTime);
 			},
 			onEnable: function(){
@@ -66,7 +85,7 @@
 			},
 			onDisable: function(){
 				this.isDisabled = true;
-				this.hideComponent();
+				this.hideComponent(true);
 			},
 			getComponent: function() {
 				var _this = this;
@@ -79,6 +98,7 @@
 						.attr( {
 							'tabindex': '-1',
 							'href' : '#',
+							'aria-label': this.getConfig("ariaText"),
 							'title' : gM( 'mwe-customButton-label' ),
 							'class'	: this.getCssClass()
 						} )

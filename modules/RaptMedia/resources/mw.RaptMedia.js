@@ -131,6 +131,13 @@
 					_this.updateEngine();
 				}, 0);
 			});
+
+			this.bind('Kaltura_ConfigChanged', function(event, pluginName, property, value) {
+				if (_this.raptMediaEngine == null) { return; }
+				if (pluginName === 'googleAnalytics' && property === 'urchinCode') {
+					_this.raptMediaEngine.execute({ type: 'config:set', payload: { key: 'ga', value: value } });
+				}
+			});
 		},
 
 		addOverrides: function() {
@@ -164,6 +171,9 @@
 
 			// Attempt to prevent the last segment from incorrectly triggering ended / replay behavior
 			this.getPlayer().onDoneInterfaceFlag = false;
+
+			// Keep the poster around until playback begins
+			mw.setConfig('EmbedPlayer.KeepPoster', true);
 
 			$.when(
 				this.loadEngine(),
@@ -210,6 +220,8 @@
 			}
 
 			this.initialize();
+
+			mw.setConfig('EmbedPlayer.KeepPoster', false);
 
 			// Re-enable ended / replay behavior
 			this.getPlayer().onDoneInterfaceFlag = true;
@@ -478,9 +490,14 @@
 				load: function(media, flags) {
 					var entryId = media.sources[0].src;
 					var nextSegment = _this.segments[entryId];
+					var stopAfterSeek = true;
+
+					if (_this.getConfig('status') === 'loading') {
+						stopAfterSeek = undefined;
+					}
 
 					if (nextSegment) {
-						_this.seek(nextSegment, 0, true);
+						_this.seek(nextSegment, 0, stopAfterSeek);
 					} else {
 						_this.fatal(
 							'Error in RAPT playback',
@@ -510,6 +527,10 @@
 						case 'project:ended':
 							// TODO: Trigger end screen
 							break;
+						case 'project:start':
+							mw.setConfig('EmbedPlayer.KeepPoster', false);
+							_this.getPlayer().removePoster();
+							break;
 					}
 
 					_this.emit("raptMedia_event", event);
@@ -530,7 +551,12 @@
 			var _this = this;
 
 			if (!this.raptMediaEngine) {
-				var config = this.getConfig('raptEngine');
+				var config = this.getConfig('raptEngine') || {};
+
+				var ua = this.getPlayer().getKalturaConfig('googleAnalytics', 'urchinCode');
+				if (ua != null) {
+					config.ga = ua;
+				}
 
 				this.raptMediaEngine = new Rapt.Engine(
 					this.getDelegate(),

@@ -1,43 +1,82 @@
 <!doctype html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>Quiz Demo</title>
+    <meta charset="UTF-8">
+    <title>Quiz Demo</title>
     <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
-	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
-	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
-	<script>mw.setConfig('forceMobileHTML5', true);</script>
+    <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+    <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+    <script>mw.setConfig('forceMobileHTML5', true);</script>
 </head>
 <body>
 <h1>Quiz Demo</h1>
 <!--<script src="http://dev-backend8.dev.kaltura.com:80/p/102/sp/10200/embedIframeJs/uiconf_id/23448178/partner_id/102"></script>-->
+<select id="selectLang">
+    <option>Choose a language</option>
+</select>
+<br>
 <div id="kaltura_player_1434365991" style=" width: 585px; height: 330px;float: left;"></div>
-<br style="clear: both;" /><br />
+
+<br style="clear: both;"/><br/>
 <script>
-    kWidget.featureConfig({
-        'width':'870',
-        'height':'519',
-        'targetId': 'kaltura_player_1434365991',
-        'wid': '_102',
-        'uiconf_id': '23448178',
-        'flashvars': {
-            'autoPlay': true,
-            'quiz': {
-                'plugin': true
-            },
-            'controlBarContainer': {
-                'plugin': true,
-                "hover": false
-            },
-            'streamerType': 'auto',
-            'ks':'NzI4YTA5NzdjNjY2M2U5MzZhOTU1ZjllYjY0YzE2NWE4NDYyYWQwMHwxMDE7MTAxOzE0NTE5ODA2ODE7MDsxNDUxODk0MjgxLjA5OTU7bWFyay5mZWRlckBrYWx0dXJhLmNvbTs7Ow=='
-        },
+	var _this = this;
+	var langArr = [
+		{l: "English", c: "en"},
+		{l: "French", c: "fr"},
+		{l: "German", c: "de"},
+		{l: "Japanese", c: "ja"},
+		{l: "Dutch", c: "nl"},
+		{l: "Portuguese", c: "pt"},
+		{l: "Russian", c: "ru"},
+		{l: "Chinese", c: "zh"}
+	];
 
-        'entry_id':'0_dgmdni21',
+	var select = document.getElementById("selectLang");
 
-        'readyCallback': function( playerId ){
-        }
-    });
+
+	for (var i = 0; i < langArr.length; i++) {
+		var opt = langArr[i];
+		var el = document.createElement("option");
+		el.textContent = opt.l;
+		el.value = opt.c;
+		select.appendChild(el);
+	}
+
+
+
+	var reload = function (){
+		var l = $("#selectLang").val();
+        kWidget.destroy('kaltura_player_1434365991');
+		kWidget.embed({
+			'width': '870',
+			'height': '519',
+			'targetId': 'kaltura_player_1434365991',
+			'wid': '_27017',
+			'uiconf_id': '39666321',
+			'flashvars': {
+				"localizationCode": l,
+				'autoPlay': true,
+				'quiz': {
+					'plugin': true
+				},
+				'controlBarContainer': {
+					'plugin': true,
+					"hover": false
+				},
+				'streamerType': 'auto',
+			},
+
+			'entry_id': '1_1nbhfvej',
+
+			'readyCallback': function (playerId) {
+			}
+		});
+	}
+	$("#selectLang").change($.proxy(reload , _this) );
+
+
 </script>
+
+
 </body>
 </html>

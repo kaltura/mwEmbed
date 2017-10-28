@@ -1144,7 +1144,7 @@
 			}
 
 			// Check if we need to capture a play event ( iOS sync embed call )
-			if (settings.captureClickEventForiOS && (this.isIOS() || this.isAndroid())) {
+			if (settings.captureClickEventForiOS && (this.isSafari() || this.isAndroid())) {
 				this.captureClickWrapedIframeUpdate(targetId, requestSettings, iframe);
 			} else {
 				// get the callback name:
@@ -1830,6 +1830,9 @@
 		isAndroid: function () {
 			return (navigator.userAgent.indexOf('Android ') !== -1 && navigator.userAgent.indexOf('Windows') === -1);
 		},
+		isSafari: function () {
+            return (/safari/).test(navigator.userAgent.toLowerCase());
+        },
 		isWindowsDevice: function () {
 			var appVer = navigator.appVersion;
 			return  ((appVer.indexOf("Win") != -1 &&

@@ -50,7 +50,8 @@
                         <div data-bind='css:{  "qnaAnnouncementText" : !isRead(),
                                                 "qnaAnnouncementTextRead" : isRead()
                                             },
-                                        text: entries()[0]().getText()'>
+                                        html: entries()[0]().getText(),
+                                        click: $parent.openLinkInNewTab'>
                         </div>
                         <br>
                         <div>

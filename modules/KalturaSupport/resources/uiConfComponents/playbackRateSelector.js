@@ -331,7 +331,11 @@
 				var classes = this.embedPlayer.isMobileSkin() ? 'btn icon-speedrate' : 'btn';
 				var $button = $( '<button />' )
 								.addClass( classes )
-								.attr('title', this.getConfig('title'))
+								.attr({
+									'title': this.getConfig('title'),
+									'aria-haspopup':'true',
+									'aria-label': this.getConfig('title')
+								})
 								.text( text )
 								.click( function(e){
 									_this.toggleMenu();
@@ -346,7 +350,8 @@
 		getMenu: function(){
 			if( !this.menu ) {
 				this.menu = new mw.KMenu(this.getComponent().find('ul'), {
-					tabIndex: this.getBtn().attr('tabindex')
+					tabIndex: this.getBtn().attr('tabindex'),
+					menuName: this.getConfig("title")
 				});
 			}
 			return this.menu;			

@@ -409,6 +409,7 @@
 				var $button = $( '<button />' )
 					.addClass( 'btn icon-cog' )
 					.attr('title', _this.selectSourceTitle)
+					.attr('aria-haspopup', true)
 					.click( function(e){
 						_this.toggleMenu();
 					});
@@ -422,7 +423,8 @@
 		getMenu: function(){
 			if( !this.menu ) {
 				this.menu = new mw.KMenu(this.getComponent().find('ul'), {
-					tabIndex: this.getBtn().attr('tabindex')
+					tabIndex: this.getBtn().attr('tabindex'),
+					menuName: this.getConfig("title")
 				});
 			}
 			return this.menu;

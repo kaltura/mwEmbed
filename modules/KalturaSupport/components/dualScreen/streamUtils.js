@@ -153,9 +153,20 @@
             // TODO: make HDS work.
             // as for now slave video doesn't run as HDS
             // (flash loads mp4 progressive download)
-            var relevantFlavors = stream.data.contextData.flavorAssets.filter(function (flavor) {
-                return flavor.tags.indexOf('ipadnew') !== -1;
+
+            var ipadNewFlavors = stream.data.contextData.flavorAssets.filter(function (flavor) {
+	            return flavor.tags.indexOf('ipadnew') !== -1;
             });
+            var iphoneNewFlavors = stream.data.contextData.flavorAssets.filter(function (flavor) {
+	            return flavor.tags.indexOf('iphonenew') !== -1;
+            });
+            var relevantFlavors = [];
+            if(ipadNewFlavors.length){
+	            relevantFlavors = ipadNewFlavors
+            } else if(iphoneNewFlavors.length) {
+	            relevantFlavors = iphoneNewFlavors
+            }
+
 
             if (!relevantFlavors.length) {
                 return;
