@@ -165,6 +165,8 @@
 				this.hls.on(Hls.Events.MEDIA_ATTACHED, this.onMediaAttachedHandler);
 				this.onManifestParsedHandler = this.onManifestParsed.bind(this);
 				this.hls.on(Hls.Events.MANIFEST_PARSED, this.onManifestParsedHandler);
+				this.onManifestLoadedHandler = this.onManifestLoaded.bind(this);
+				this.hls.on(Hls.Events.MANIFEST_LOADED, this.onManifestLoadedHandler);
 				this.onAudioTracksUpdatedHandler = this.onAudioTracksUpdated.bind(this);
 				this.hls.on(Hls.Events.AUDIO_TRACKS_UPDATED, this.onAudioTracksUpdatedHandler);
 				this.onAudioTrackSwitchingHandler = this.onAudioTrackSwitching.bind(this);
@@ -200,7 +202,9 @@
 				this.onMediaAttachedHandler = null;
 				this.hls.off(Hls.Events.MANIFEST_PARSED, this.onManifestParsedHandler);
 				this.onManifestParsedHandler = null;
-				this.hls.off(Hls.Events.FRAG_LOADING, this.onFragLoadingHandler);
+                this.hls.off(Hls.Events.MANIFEST_PARSED, this.onManifestLoadedHandler);
+                this.onManifestLoadedHandler = null;
+                this.hls.off(Hls.Events.FRAG_LOADING, this.onFragLoadingHandler);
 				this.onFragLoadingHandler = null;
 				this.hls.off(Hls.Events.FRAG_LOADED, this.onFragLoadedHandler);
 				this.onFragLoadedHandler = null;
@@ -308,6 +312,19 @@
 					this.configFailoverSettings();
 				}
 			},
+            /**
+             * manifest loaded handler.
+             */
+            onManifestLoaded: function () {
+                //HLS.JS by default sets showing to text track for default HLS manifest text track
+				//we want to handle it on ourselves so always set it to hidden after hls.js makes its decision
+            	this.log("manifest loaded");
+                var vid = this.getPlayer().getPlayerElement();
+                var textTracks = vid.textTracks;
+                for (var i=0; i < textTracks.length; i++){
+                	textTracks[i].mode = "hidden";
+                }
+            },
 			/**
 			 * Extract available audio tracks metadata from parsed manifest data
 			 * @param event
