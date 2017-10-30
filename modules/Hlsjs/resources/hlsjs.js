@@ -677,23 +677,27 @@
 			 * Override player method for source switch
 			 * @param source
 			 */
-			switchSrc: function (source) {
-				if (source !== -1) {
-					var sourceIndex = this.getPlayer().getSourceIndex(source);
-					if ( sourceIndex !== null ) {
-                        this.levelIndex = sourceIndex;
-                        if ( !(this.hls.autoLevelEnabled || this.isLevelSwitching) && (this.hls.currentLevel === sourceIndex) ) {
-                            this.onLevelSwitch( Hls.Events.LEVEL_SWITCH, { level: sourceIndex } );
-                            this.onFragChanged( Hls.Events.LEVEL_LOADED, { frag: { level: sourceIndex } } );
-                            this.getPlayer().currentBitrate = source.getBitrate();
+            switchSrc: function (source) {
+                if (source !== -1) {
+                    var sourceIndex = this.getPlayer().getSourceIndex(source);
+                    if ( sourceIndex !== null) {
+                        if (this.hls.levels && (sourceIndex < this.hls.levels.length)){
+                            this.levelIndex = sourceIndex;
+                            if (!(this.hls.autoLevelEnabled || this.isLevelSwitching) && (this.hls.currentLevel === sourceIndex)) {
+                                this.onLevelSwitch(Hls.Events.LEVEL_SWITCH, {level: sourceIndex});
+                                this.onFragChanged(Hls.Events.LEVEL_LOADED, {frag: {level: sourceIndex}});
+                                this.getPlayer().currentBitrate = source.getBitrate();
+                            } else {
+                                this.hls.nextLevel = sourceIndex;
+                                this.isLevelSwitching = true;
+                            }
                         } else {
-                            this.hls.nextLevel = sourceIndex;
-                            this.isLevelSwitching = true;
+                            this.log("unable to switch level!");
                         }
                     }
-				} else {
-					this.hls.nextLevel = -1;
-				}
+                } else {
+                    this.hls.nextLevel = -1;
+                }
 			},
 			/**
 			 * Override player method for loading the video element
