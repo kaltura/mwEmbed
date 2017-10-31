@@ -232,9 +232,6 @@
     padding-top: 2vh;
     cursor: default!important;
 }
-.display-question:focus{
-    /*outline: none;*/
-}
 .single-answer-box-bk.wide{
     width: 96vw;
     margin-left: 1vw;
