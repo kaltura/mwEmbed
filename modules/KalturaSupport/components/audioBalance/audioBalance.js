@@ -54,7 +54,7 @@
 						max:'1',
 						value:_this.getConfig('value'),
 						step:_this.getConfig('step')
-					}).addClass( "btn "+ this.getCssClass() );
+					}).addClass( this.getCssClass() );
 			}
 			return this.$el;
 		}
