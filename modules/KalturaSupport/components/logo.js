@@ -9,9 +9,9 @@
 			displayImportance: 'low',
 			align: "right",
 			cssClass: "kaltura-logo",
-			href: null,
-			title: null,
-			img: null
+			href: 'http://www.kaltura.com',
+			title: 'Kaltura',
+			img: 'http://kgit.html5video.org/branches/master//skins/kdark/images/kalturaLogo.png'
 		},
 		getComponent: function () {
 			var _this = this;
@@ -42,7 +42,8 @@
 							.addClass('btnFixed')
 							.attr({
 								'title': this.getConfig('title'),
-								'aria-label': this.getConfig('title')
+								'aria-label': this.getConfig('title'),
+								'href':this.getConfig('href')
 							}).append($img)
 					);
 			}
