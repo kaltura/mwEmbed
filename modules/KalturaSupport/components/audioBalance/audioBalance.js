@@ -14,6 +14,9 @@
 		context:null,
 		panner:null,
 		source:null,
+		isSafeEnviornment: function () {
+			return !( mw.isIE() || mw.isIphone() || mw.isIOS() || mw.isDesktopSafari() );
+		},
 		setup: function() {
 			this.addBindings();
 		},
