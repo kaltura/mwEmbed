@@ -37,24 +37,30 @@
 				this.panner = this.context.createStereoPanner();
 				this.source = this.context.createMediaElementSource(video);
 			}
+			var balanceSlider = this.getComponent().find('.balanceSlider')[0];
 			this.source.connect(this.panner);
 			this.panner.connect(this.context.destination);
-			this.panner.pan.value = this.getComponent()[0].value;
-			this.getComponent()[0].oninput = function() {
+			this.panner.pan.value = balanceSlider.value;
+			balanceSlider.oninput = function() {
 				_this.panner.pan.value = this.value;
 			};
 		},
 		getComponent: function() {
 			var _this = this;
 			if( !this.$el ) {
-				this.$el = $( '<input />' )
+				var input = $( '<input />' )
 					.attr({
 						type:'range',
 						min:'-1',
 						max:'1',
 						value:_this.getConfig('value'),
 						step:_this.getConfig('step')
-					}).addClass( this.getCssClass() );
+					}).addClass('balanceSlider');
+				var left = $('<span />').addClass('balancePosition').append('L');
+				var right = $('<span />').addClass('balancePosition').append('R');
+				
+				this.$el = $( '<div />' ).addClass(this.getCssClass())
+							.append( left, input, right );
 			}
 			return this.$el;
 		}

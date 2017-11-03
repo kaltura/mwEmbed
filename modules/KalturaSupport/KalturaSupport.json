@@ -227,6 +227,7 @@
   },
   "audioBalance": {
     "scripts": "components/audioBalance/audioBalance.js",
+    "styles": "components/audioBalance/audioBalance.css",
     "dependencies": "mw.KBaseComponent",
     "kalturaPluginName": "audioBalance"
   },
