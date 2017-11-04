@@ -468,8 +468,14 @@
 		},
 
 		onErrorEvent: function (event) {
-			// Extract the shaka.util.Error object from the event.
-			this.onError(event.detail);
+            // Extract the shaka.util.Error object from the event.
+            var error = event && event.detail;
+            //Only throw critical error
+			if (error &&
+				error.severity &&
+				error.severity === shaka.util.Error.Severity.CRITICAL) {
+                this.onError(error);
+            }
 		},
 
 		/**
