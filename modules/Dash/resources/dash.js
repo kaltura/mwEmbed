@@ -468,8 +468,20 @@
 		},
 
 		onErrorEvent: function (event) {
-			// Extract the shaka.util.Error object from the event.
-			this.onError(event.detail);
+            // Extract the shaka.util.Error object from the event.
+            var error = event && event.detail;
+            try {
+                var errorString = JSON.stringify(error, null, "\t");
+                this.log("error: " + errorString);
+			} catch (e){
+                this.log("error: unable to stringify Shaka error");
+			}
+            //Only throw critical error
+			if (error &&
+				error.severity &&
+				error.severity === shaka.util.Error.Severity.CRITICAL) {
+                this.onError(error);
+            }
 		},
 
 		/**
