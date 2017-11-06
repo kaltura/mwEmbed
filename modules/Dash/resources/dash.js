@@ -1,6 +1,19 @@
 (function (mw, $, shaka) {
 	"use strict";
+	/*
+	for browsers which don't have VTT cue we need to install a polyfill for both isBrowserSupported	check
+	and also for playback, but we might not use Shaka so if we install the polyfill now just for browser support check
+	then uninstall it after, and call it again if we actually use Shaka for playback on init
+	this is in order to avoid collisions with other libs
+	 */
+	var resetVttPolyfill = false;
+	if (!window.VTTCue) {
+		resetVttPolyfill = true;
+	}
 	shaka.polyfill.installAll();
+	if (resetVttPolyfill) {
+		window.VTTCue = undefined;
+	}
 
 	if (shaka.Player.isBrowserSupported() &&
 		!mw.getConfig("EmbedPlayer.ForceNativeComponent") &&
@@ -32,10 +45,7 @@
 		 * @returns {boolean}
 		 */
 		isSafeEnviornment: function () {
-
-
 			return shaka.Player.isBrowserSupported() ;
-
 		},
 		/**
 		 * Setup the shaka playback engine wrapper with supplied config options
