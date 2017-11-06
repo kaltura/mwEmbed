@@ -11,7 +11,7 @@
 			cssClass: "kaltura-logo",
 			href: 'http://www.kaltura.com',
 			title: 'Kaltura',
-			img: 'http://kgit.html5video.org/branches/master//skins/kdark/images/kalturaLogo.png'
+			img: 'http://cdnapi.kaltura.com/html5/html5lib/v2.62/skins/kdark/images/kalturaLogo.png'
 		},
 		getComponent: function () {
 			var _this = this;
