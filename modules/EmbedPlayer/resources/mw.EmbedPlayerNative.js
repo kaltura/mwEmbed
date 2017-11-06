@@ -1648,32 +1648,32 @@
 			}
 		},
 		onSwitchTextTrack: function (event, data) {
-			var vid = this.getPlayerElement();
-			var textTracks = vid.textTracks;
-			if (textTracks && textTracks.length) {
-				if (!data) {
-					this.hideTextTrack(textTracks);
-				} else {
-                    this.hideTextTrack(textTracks);
-					this.showTextTrack(textTracks, data);
-				}
+			this.hideTextTrack();
+			if (data) {
+				this.showTextTrack(data);
 			}
 		},
-		hideTextTrack: function(textTracks){
-            var activeSubtitle = this.getActiveSubtitle(textTracks);
+		hideTextTrack: function(){
+            var activeSubtitle = this.getActiveSubtitle();
             if (activeSubtitle) {
                 activeSubtitle.mode = 'hidden';
                 this.log('onSwitchTextTrack disable subtitles');
             }
 		},
-		showTextTrack: function(textTracks, data){
-            var selectedSubtitle = textTracks[data.index];
-            if (selectedSubtitle) {
-                selectedSubtitle.mode = 'showing';
-                mw.log('EmbedPlayerNative::onSwitchTextTrack switch to ', selectedSubtitle);
-            }
+		showTextTrack: function(data){
+			var vid = this.getPlayerElement();
+			var textTracks = vid.textTracks;
+			if (textTracks) {
+				var selectedSubtitle = textTracks[data.index];
+				if (selectedSubtitle) {
+					selectedSubtitle.mode = 'showing';
+					mw.log('EmbedPlayerNative::onSwitchTextTrack switch to ', selectedSubtitle);
+				}
+			}
 		},
-		getActiveSubtitle: function (textTracks) {
+		getActiveSubtitle: function () {
+			var vid = this.getPlayerElement();
+			var textTracks = vid.textTracks;
 			if (textTracks) {
 				for (var i = 0; i < textTracks.length; i++) {
 					var textTrack = textTracks[i];
@@ -1681,6 +1681,7 @@
 						return textTrack;
 					}
 				}
+				return {label : 'off'};
 			}
 			return null;
 		},
