@@ -730,7 +730,6 @@
                             'left': '0px'
                         } )
                 );
-                this.addCountdownNotice();
             }
             return $( '#' + this.getAdContainerId() ).get( 0 );
         },
