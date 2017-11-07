@@ -730,7 +730,6 @@
                             'left': '0px'
                         } )
                 );
-                this.addCountdownNotice();
             }
             return $( '#' + this.getAdContainerId() ).get( 0 );
         },
@@ -1253,6 +1252,7 @@
                 if ( _this.isLinear ) {
                     if ( !_this.adSkippable ) {
                         _this.showSkipBtn();
+                        _this.addCountdownNotice();
                     }
                     _this.playingLinearAd = true;
                     // hide spinner:
