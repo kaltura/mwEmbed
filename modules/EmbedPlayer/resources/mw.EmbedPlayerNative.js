@@ -667,11 +667,14 @@
 			$.each( textTracks, function( inx, caption) {
 				caption.mode = "hidden";
 			});
-			$.each( textTracks, function( inx, caption) {
-				if (caption.language === defaultLangKey) {
-					caption.mode = "showing";
+
+			for (var i = 0; i < textTracks.length; i++) {
+				if (textTracks[i].language === defaultLangKey) {
+					textTracks[i].mode = "showing";
+					// select the first match
+					return;
 				}
-			});
+			}
 		},
 		/**
 		 * playerSwitchSource switches the player source working around a few bugs in browsers

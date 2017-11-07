@@ -253,12 +253,12 @@
 				_this.getBtn().show();
 			});
 			this.bind( 'onOpenFullScreen', function (){
-				if ( mw.isIOS() && !mw.isIpad() && _this.selectedSource ) {
+				if ( mw.isIOS() && !mw.isIpad() && _this.isNativeFullScreenEnabled() && _this.selectedSource ) {
 					_this.embedPlayer.selectDefaultCaption(_this.selectedSource.srclang);
 				}
 			});
 			this.bind( 'onCloseFullScreen', function (){
-				if ( mw.isIOS() && !mw.isIpad() ) {
+				if ( mw.isIOS() && !mw.isIpad() && _this.isNativeFullScreenEnabled() ) {
 					var nativeSource = _this.embedPlayer.getActiveSubtitle();
 					_this.embedPlayer.hideTextTrack();
 					if (nativeSource) {
@@ -273,6 +273,9 @@
 					}
 				}
 			});
+		},
+		isNativeFullScreenEnabled: function () {
+			return ( mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen') && this.embedPlayer.getPlayerElement().webkitSupportsFullscreen );
 		},
 		addTextSource: function(captionData){
 			// Try to insert the track source:
