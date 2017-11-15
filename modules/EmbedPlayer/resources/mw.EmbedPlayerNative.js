@@ -1555,12 +1555,14 @@
 								'index': i
 							});
 						}
-						textTrack.mode = 'hidden';
 					}
 					if (textTracksData.languages.length) {
 						mw.log('EmbedPlayerNative:: ' + textTracksData.languages.length + ' subtitles were found: ', textTracksData.languages);
 						_this.triggerHelper('textTracksReceived', textTracksData);
 					}
+					setTimeout(function () {
+						_this.hideTextTrack();
+					}, 500);
 				}else{
 					//try to catch textTracks.kind === "metadata, give up after 10 seconds
 					if( counter < 10 ){
