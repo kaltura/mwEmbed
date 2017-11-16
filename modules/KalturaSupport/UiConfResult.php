@@ -222,6 +222,7 @@ class UiConfResult {
 			"liveAnalytics"=>array(),
 			"kAnalony"=>array(),
 			"hlsjs"=>array(),
+			"unMuteOverlayButton"=>array(),
 			"kgitGuard"=>array()
 			//"playersJsReceiver" => array()
 		);
@@ -559,7 +560,8 @@ class UiConfResult {
 			"liveCore" => array(),
 			"liveStatus" => array(),
 			"reportError" => array(),
-            "hlsjs"=>array()
+            "hlsjs"=>array(),
+            "unMuteOverlayButton"=>array()
 		);
 
 		$closedCaptionPlugin = array(

@@ -516,12 +516,26 @@
 					this.log("Try flash fallback");
 					this.fallbackToFlash();
 				} else {
-					var errorObj = {
-						message : JSON.stringify(data),
-						// hls fatal error code could be either Network Error (1000) or Media Errors (3000)
-						code : data.type === "networkError" ? "1000" : "3000"
-					};
-					this.getPlayer().triggerHelper('embedPlayerError', errorObj);
+					try {
+						var dataObj = {
+							type: data.type,
+							details: data.details,
+							fatal: data.fatal,
+							response: data.response,
+							networkDetails: data.networkDetails
+						};
+						var errorObj = {
+							message: JSON.stringify(dataObj),
+							// hls fatal error code could be either Network Error (1000) or Media Errors (3000)
+							code: data.type === "networkError" ? "1000" : "3000"
+						};
+						this.getPlayer().triggerHelper('embedPlayerError', errorObj);
+					}
+					catch (e) {
+						this.getPlayer().triggerHelper('embedPlayerError', {
+							message: "hlsjs error"
+						});
+					}
 				}
 			},
 			fallbackToFlash: function () {
@@ -547,7 +561,7 @@
 			 * @param levels
 			 */
 			addAbrFlavors: function (levels) {
-				if (levels && levels.length > 1) {
+				if (levels && levels.length > 0) {
 					var flavors = levels.map(function (level, index) {
 						var sourceAspect = Math.round(( level.width / level.height ) * 100) / 100;
 						// Setup a source object:

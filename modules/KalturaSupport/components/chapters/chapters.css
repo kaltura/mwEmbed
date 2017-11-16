@@ -432,6 +432,7 @@
 
 /*Slider*/
 .nano > .nano-pane   {
+    z-index: 3;
     background: none;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;

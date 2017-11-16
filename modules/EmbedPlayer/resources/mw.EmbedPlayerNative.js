@@ -109,14 +109,17 @@
 				$(this.getPlayerElement()).attr('playsinline', '');
 			}
 
-			if ( (mw.isMobileDevice() || mw.isIpad()) && mw.getConfig( 'mobileAutoPlay' ) ) {
-				if ( !mw.isIphone() && this.inline ) {
-					this.inline = false;
-					$( this.getPlayerElement() ).removeAttr( 'playsinline' );
-				}
-				this.mobileAutoPlay = true;
-				this.setVolume( 0 );
-			}
+            if (this.shouldAutoPlayMuted()) {
+                this.autoplay = true;
+                if (!mw.isIphone() && this.inline) {
+                    this.inline = false;
+                    $(this.getPlayerElement()).removeAttr('playsinline');
+                }
+                this.mobileAutoPlay = true;
+                this.bindOnceHelper('playerReady', function () {
+                    _this.setVolume(0);
+                });
+            }
 
 			this.addBindings();
 			readyCallback();
@@ -130,6 +133,19 @@
 				}
 			});
 		},
+        shouldAutoPlayMuted: function () {
+            if (!mw.getConfig('autoMute')) {
+                if (mw.isMobileDevice() || mw.isIpad()) {
+                    return mw.getConfig('mobileAutoPlay');
+                } else if (mw.isDesktopSafari11() && mw.getConfig('autoPlay')) {
+                    if (typeof mw.getConfig('autoPlayFallbackToMute') !== 'boolean') {
+                        mw.setConfig('autoPlayFallbackToMute', true)
+                    }
+                    return mw.getConfig('autoPlayFallbackToMute');
+                }
+            }
+            return false;
+        },
         addBindings: function () {
             var _this = this;
 
@@ -157,7 +173,9 @@
             this.bindHelper('liveOnline' + this.bindPostfix, function () {
                 _this.load();
             });
-            this.bindHelper("changeEmbeddedTextTrack", this.onSwitchTextTrack.bind(this));
+            this.bindHelper('changeEmbeddedTextTrack' + this.bindPostfix, function (e, data) {
+                _this.onSwitchTextTrack(e, data);
+            });
         },
 
 		removeBindings: function(){
@@ -958,7 +976,16 @@
 
 						// issue a play request
 						if (!_this.playing) {
-							vid.play();
+							var playPromise = vid.play();
+                            if (playPromise !== undefined) {
+                                playPromise.then(function() {
+                                    mw.log("play promise resolved");
+                                }).catch(function(error) {
+                                    mw.log("play promise rejected");
+                                    //If play is rejected then return UI state to pause so user can take action
+                                    _this.pause();
+                                });
+                            }
 						}
 
 						_this.mobilePlayed = true;

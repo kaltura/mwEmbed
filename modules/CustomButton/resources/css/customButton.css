@@ -4,13 +4,13 @@
 	top: 50%;
 	left: 50%;
 	font-size: 3em;
-	margin: -0.79em 0 0 -1em;
+	margin: -50px 0 0 -50px;
 	text-decoration: none;
 	border-radius: 0.1em;
 	background-image: url("../imgs/AddQ_up.svg");
 	background-repeat: no-repeat;
-	width: 86px;
-	height: 96px;
+	width: 100px;
+	height: 110px;
     outline: none;
 }
 

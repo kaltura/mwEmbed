@@ -104,6 +104,8 @@
 
 		},
 		hideRegisteredPlugins: function(){
+			var $sc = this.embedPlayer.getVideoHolder().find(".smartContainer");
+			$sc.css("z-index", "-1");
 			this.pluginsScreenOpened = false;
 			this.embedPlayer.getInterface().removeClass( "pluginsScreenOpened" );
 			$(this.embedPlayer.getPlayerElement()).removeClass("blur");
@@ -128,6 +130,7 @@
 			this.pluginsScreenOpened = true;
 
 			var $sc = this.embedPlayer.getVideoHolder().find(".smartContainer");
+			$sc.css("z-index", "1");
 			$sc.children().hide();
 
 			this.embedPlayer.getInterface().addClass( "pluginsScreenOpened" );

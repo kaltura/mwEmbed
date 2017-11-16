@@ -198,10 +198,17 @@
         };
 
         this.getText = function(){
+            var text = this.cuePoint().text+' ';
+            var reg = /(http:\/\/|https:\/\/).+?\s/gi;
+            var result = text.replace(reg, function (str) {
+                return "<a target='_blank' href='"+str+"'>"+str+"</a> ";
+            });
             if (this.getType() === "AnswerOnAir"){
-                return '"' + this.cuePoint().text + '"';
+                return '"' + result + '"';
+            }else if(this.getType() === "Question" || this.getType() ==="Answer"){
+                return text;
             }
-            return this.cuePoint().text;
+            return result;
         };
 
         this.getCurrentTime = function(){
