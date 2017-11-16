@@ -10,7 +10,7 @@
 		bindPostfix: '.sPlayer' ,
 		playerPrefix: 'EmbedPlayerSilverlight' ,
 		//default playback start time to wait before falling back to unicast in millisecods
-		defaultMulticastStartTimeout: 10000 ,
+		defaultMulticastStartTimeout: 20000 ,
 		defaultMulticastKeepAliveInterval: 10000 ,
 		defaultMulticastKESKtimeout: 10000 ,
 		defaultMulticastKESStartInterval: 2000 ,
@@ -490,14 +490,8 @@
 					flashvars.multicastPolicyOverMulticastEnabled = _this.multicastPolicyOverMulticastEnabled;
 					//flashvars.debug = true;
 
-					//check if multicast not available
-					var timeout = _this.getKalturaConfig( null , 'multicastStartTimeout' ) || _this.defaultMulticastStartTimeout;
 					_this.isError = false;
-					setTimeout( function () {
-						if ( !_this.gotFirstMulticastFrame ) {
-							_this.fallbackToUnicast();
-						}
-					} , timeout );
+
 				}
 				_this.autoplay = _this.autoplay || _this.isMulticast;
 				flashvars.isLive = _this.isLive();
@@ -554,6 +548,17 @@
 						_this.durationReceived = true;
 					}
 					readyCallback();
+
+                    if ( isMimeType( "video/multicast" ) ) {
+                        var timeout = _this.getKalturaConfig( null , 'multicastStartTimeout' ) || _this.defaultMulticastStartTimeout;
+                        mw.log('Starting timeout for fallbackToUnicast');
+                        setTimeout(function () {
+                            if (!_this.gotFirstMulticastFrame) {
+                                mw.log('timeout waiting for frame!!!!');
+                                _this.fallbackToUnicast();
+                            }
+                        }, timeout);
+                    }
 				} );
 			}
 

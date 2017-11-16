@@ -30,6 +30,7 @@
 		if ( mw.config.exists( 'mw.log.prefix' ) ) {
 			string = mw.config.get( 'mw.log.prefix' ) + '> ' + string;
 		}
+		string = (new Date()).toLocaleTimeString()+" "+string;
 		if ( mw.config.get('debugTarget') !== null ){
 			var target = $("#" + mw.config.get('debugTarget'), window.parent.document);
 			if ( target.length ){
