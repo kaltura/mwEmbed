@@ -111,6 +111,12 @@
 					}
 				} );
 			} else {
+				this.bind( 'playing', function () {
+					// hide native text tracks since 'showEmbeddedCaptions' is false
+					setTimeout(function () {
+						_this.embedPlayer.hideTextTrack();
+					}, 500);
+				});
 				if (!this.getConfig("useExternalClosedCaptions")) {
 					this.bind( 'playerReady', function () {
 						_this.destory();
