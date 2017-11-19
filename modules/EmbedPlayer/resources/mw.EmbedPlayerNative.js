@@ -1555,6 +1555,7 @@
 								'index': i
 							});
 						}
+						textTrack.mode = 'hidden';
 					}
 					if (textTracksData.languages.length) {
 						mw.log('EmbedPlayerNative:: ' + textTracksData.languages.length + ' subtitles were found: ', textTracksData.languages);
