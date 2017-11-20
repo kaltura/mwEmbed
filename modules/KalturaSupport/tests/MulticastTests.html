@@ -10,6 +10,8 @@
 <div id="kaltura_player" style="width: 885px; height: 630px;float: left;"></div>
 <br style="clear: both;" /><br />
 
+<button onclick="show()">Show all</button>
+<button onclick="preview()">Preview</button>
 <script>
 
     //  var localhost="10.211.55.2";
@@ -62,6 +64,8 @@
     if (replaceSources.length>0) {
         //    mw.setConfig('EmbedPlayer.ReplaceSources', replaceSources);
     }
+
+    var entryId="1_6m5ls6eh";
     kWidget.featureConfig({
         'targetId': 'kaltura_player',
         'wid': '_1802381',
@@ -70,7 +74,7 @@
             "liveCore":{"plugin":true} ,
 
             'LeadWithHLSOnFlash':true,
-            'LeadWithUnicastToMulticast': true,
+            'LeadWithUnicastToMulticast': false ,
             'debugInfo': {
                 'plugin': true,
                 'isVisible':true
@@ -88,9 +92,31 @@
             'disableMulticastFallback':false,
             'autoPlay': true
         },
-        'entry_id': "1_6m5ls6eh"
+        'entry_id': entryId
 
     });
+
+
+    var ks="ZWFlMmZiYjZhMjQ4ZWZiMDgwZjQyMmM0YzUyZDc1NjkxZjQ2YWJjZXwtNTstNTsxNTExMjUxMTMwOzI7MTUxMTE2NDczMC44Njk7Ozs7"
+
+    function __testPageAPIcall(viewMode) {
+        var url="https://www.kaltura.com/api_v3/index.php?service=livestream&action=update&entryId="+entryId+"&liveStreamEntry:viewMode="+viewMode+"&ks="+ks;
+        $.ajax({url: url,
+            success:   function(result){
+                console.warn(result);
+            }
+        });
+
+    }
+    function show() {
+
+        __testPageAPIcall(1);
+    }
+    function preview() {
+
+        __testPageAPIcall(0);
+    }
+
 </script>
 </body>
 </html>
