@@ -111,6 +111,12 @@
 					}
 				} );
 			} else {
+				this.bind( 'playing', function () {
+					// hide native text tracks since 'showEmbeddedCaptions' is false
+					setTimeout(function () {
+						_this.embedPlayer.hideTextTrack();
+					}, 500);
+				});
 				if (!this.getConfig("useExternalClosedCaptions")) {
 					this.bind( 'playerReady', function () {
 						_this.destory();
@@ -252,6 +258,30 @@
 				//Reset UI state on change media
 				_this.getBtn().show();
 			});
+			this.bind( 'onOpenFullScreen', function (){
+				if ( mw.isIOS() && !mw.isIpad() && _this.isNativeFullScreenEnabled() && _this.selectedSource ) {
+					_this.embedPlayer.selectDefaultCaption(_this.selectedSource.srclang);
+				}
+			});
+			this.bind( 'onCloseFullScreen', function (){
+				if ( mw.isIOS() && !mw.isIpad() && _this.isNativeFullScreenEnabled() ) {
+					var nativeSource = _this.embedPlayer.getActiveSubtitle();
+					_this.embedPlayer.hideTextTrack();
+					if (nativeSource) {
+						_this.getMenu().$el.find('li.active').removeClass('active');
+						if (nativeSource.label === 'off') {
+							_this.selectOff();
+						} else {
+							var source = _this.selectSourceByLangKey(nativeSource.language);
+							_this.getMenu().$el.find('li a:contains(' + source.label +')').parent().addClass('active');
+							_this.selectSource(source);
+						}
+					}
+				}
+			});
+		},
+		isNativeFullScreenEnabled: function () {
+			return ( mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen') && this.embedPlayer.getPlayerElement().webkitSupportsFullscreen );
 		},
 		addTextSource: function(captionData){
 			// Try to insert the track source:
@@ -347,7 +377,7 @@
 		getCaptionURL: function( captionId ){
 			if( this.captionURLs && this.captionURLs[ captionId ] ){
 				return this.captionURLs[ captionId ];
-			} 
+			}
 			return null;
 		},
 		updateTimeOffset: function(){
@@ -455,7 +485,7 @@
 				captionIds = [];
 			// Generate multi-request for captions URLs
 			$.each( captions, function( inx, caption ) {
-				multiRequest.push({ 
+				multiRequest.push({
 					'service' : 'caption_captionasset',
 					'action' : 'getUrl',
 					'id' : caption.id
@@ -513,7 +543,7 @@
 			var captionsSrc;
 			if( mw.isIphone() && !mw.getConfig('disableTrackElement') && !this.getConfig('forceLoadLanguage') || this.getConfig("forceWebVTT") ) {
 				// getting generated vtt file from dfxp/srt
-				var ks = _this.getFlashvars('ks');
+				var ks = _this.embedPlayer.getFlashvars('ks');
 				captionsSrc = mw.getConfig('Kaltura.ServiceUrl') +
 							"/api_v3/index.php/service/caption_captionasset/action/serveWebVTT/captionAssetId/" +
 							dbTextSource.id +
@@ -578,10 +608,6 @@
 				if( defaultLangKey == 'None' ){
 					return ;
 				}
-				if ( mw.isIOS() && !mw.isIpad()) {
-					this.selectDefaultIosTrack(defaultLangKey);
-					return ;
-				}
 				source = this.selectSourceByLangKey( defaultLangKey );
 				if( source ){
 					this.log('autoSelectSource: select by defaultLanguageKey: ' + defaultLangKey);
@@ -593,10 +619,6 @@
             // Get source by "default" property
             if ( !this.selectedSource ) {
                 source = this.selectDefaultSource();
-                if ( source && mw.isIOS() && !mw.isIpad() ) {
-					this.selectDefaultIosTrack(source.srclang);
-					return ;
-                }
                 if( source ){
                     this.log('autoSelectSource: select by default caption');
                     this.selectedSource = source;
@@ -618,12 +640,6 @@
 				this.log('autoSelectSource: select first caption');
 				this.selectedSource = this.textSources[0];
 			}
-		},
-		selectDefaultIosTrack: function (defaultLangKey) {
-			var _this = this;
-			this.once( 'playing', function (){
-				_this.embedPlayer.selectDefaultCaption(defaultLangKey);
-			});
 		},
 		selectSourceByLangKey: function( langKey ){
 			var _this = this;
@@ -867,7 +883,7 @@
 			this.updateLayoutEventFired = true;
 			 _this.embedPlayer.doUpdateLayout();
 			this.updateLayoutEventFired = false;
-		},		
+		},
 		/**
 		 * Gets a text size percent relative to about 30 columns of text for 400
 		 * pixel wide player, at 100% text size.
@@ -1123,14 +1139,17 @@
                         _this.selectedSource = null;
                         _this.setConfig('displayCaptions', false);
                     } else {
-                        _this.setTextSource(src);
-                        _this.embedPlayer.triggerHelper( "selectClosedCaptions", [ src.label, src.srclang ] );
-                        _this.getActiveCaption();
+                    	_this.selectSource(src);
                     }
                 },
                 'active': ( _this.selectedSource === src && _this.getConfig("displayCaptions")  )
             });
         },
+		selectSource: function (src) {
+			this.setTextSource(src);
+			this.embedPlayer.triggerHelper( "selectClosedCaptions", [ src.label, src.srclang ] );
+			this.getActiveCaption();
+		},
 		addOffButton: function() {
 			var _this = this;
 			this.getMenu().addItem({
@@ -1139,15 +1158,18 @@
 					'class': "offBtn"
 				},
 				'callback': function(){
-					_this.selectedSource = null;
-					_this.embedPlayer.triggerHelper("selectClosedCaptions", "Off");
-					_this.embedPlayer.triggerHelper('changedClosedCaptions', {language: ""});
-					_this.setConfig('displayCaptions', false);
-					// also update the cookie to "None"
-					_this.getPlayer().setCookie( _this.cookieName, 'None' );
+					_this.selectOff();
 				},
-				'active': ! _this.getConfig( "displayCaptions" ) 
+				'active': ! _this.getConfig( "displayCaptions" )
 			});
+		},
+		selectOff: function () {
+			this.selectedSource = null;
+			this.embedPlayer.triggerHelper("selectClosedCaptions", "Off");
+			this.embedPlayer.triggerHelper('changedClosedCaptions', {language: ""});
+			this.setConfig('displayCaptions', false);
+			// also update the cookie to "None"
+			this.getPlayer().setCookie( this.cookieName, 'None' );
 		},
 		addOptionsButton: function(btnOptions) {
 			var _this = this;
@@ -1238,7 +1260,7 @@
 					menuName: this.getConfig("title")
 				});
 			}
-			return this.menu;			
+			return this.menu;
 		},
 		getBtn: function(){
 			return this.getComponent().find('button');

@@ -148,6 +148,12 @@
     visibility: visible !important;
 }
 
+@media screen and (max-height: 250px) {
+    .displayControlGroup {
+        padding-bottom: 20px;
+    }
+}
+
 @media all and  (max-width: 500px), screen and (max-height: 300px) {
     #displayControlBar{
         /*width:250px;*/

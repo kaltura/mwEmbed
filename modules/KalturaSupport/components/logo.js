@@ -24,22 +24,22 @@
 							src: this.getConfig('img')
 						}).removeAttr("width height");
 				}
-				this.$el = $('<div />')
+				this.$el = $('<button />')
 					.addClass(this.getCssClass())
 					.addClass('btn')
+					.click(function () {
+						if( _this.isDisabled ) return ;
+						if (_this.getConfig('href')) {
+							if (mw.isNativeApp()) {
+								_this.openInNativeApp();
+							} else {
+								window.open(_this.getConfig('href'), "_blank");
+							}
+						}
+					})
 					.append(
 						$('<a />')
 							.addClass('btnFixed')
-							.click(function () {
-								if( _this.isDisabled ) return ;
-								if (_this.getConfig('href')) {
-									if (mw.isNativeApp()) {
-										_this.openInNativeApp();
-									} else {
-										window.open(_this.getConfig('href'), "_blank");
-									}
-								}
-							})
 							.attr({
 								'title': this.getConfig('title'),
 								'aria-label': this.getConfig('title')

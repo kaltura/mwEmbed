@@ -15,12 +15,13 @@
 
 			addBindings: function() {
 				var _this = this;
-				$(this.getPlayer()).on('mouseenter', function() {
-					_this.show();
-				});
-				$(this.getPlayer()).on('mouseleave', function(event) {
-					if (event.relatedTarget !== _this.getComponent()) {
-						_this.hide();
+
+                $(this.getPlayer().getInterface()).on('mouseenter', function() {
+                    _this.show();
+                });
+				$(this.getPlayer().getInterface()).on('mouseleave', function(event) {
+                    if(_this.getPlayer().isPlaying()){
+                        _this.hide(true);
 					}
 				});
 
@@ -74,7 +75,7 @@
 			clickButton: function( event ){
 				event.preventDefault();
 				event.stopPropagation();
-				this.embedPlayer.getPlayerElement().pause();
+                this.getPlayer().sendNotification('doPause');
 				this.getPlayer().sendNotification(this.getConfig('eventName'), this.embedPlayer.currentTime);
 			},
 			onEnable: function(){

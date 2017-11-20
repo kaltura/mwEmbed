@@ -310,7 +310,11 @@
         ssDisplayHint: function(questionNr){
             var _this = this;
             var embedPlayer = _this.getPlayer();
-            $("<div>"+ gM('mwe-quiz-hint') +"</div>").prependTo(".header-container").addClass('hint-why-box')
+            var className = 'hint-why-box';
+            if(gM('mwe-quiz-hint').length > 4){
+                className = 'hint-why-box smaller-font';
+            }
+            $("<div>"+ gM('mwe-quiz-hint') +"</div>").prependTo(".header-container").addClass(className)
                 .on('click', function () {
                     _this.KIVQScreenTemplate.tmplHint();
                     $(".header-container").addClass('close-button')
@@ -386,10 +390,7 @@
             _this.KIVQScreenTemplate.tmplAllCompleted();
 
             $(".title-text").html(gM('mwe-quiz-completed'));
-            $(".sub-text").html(gM('mwe-quiz-TakeAMoment') + '<strong> '+ gM('mwe-quiz-review').toLowerCase() +' </strong>'
-                + gM('mwe-quiz-yourAnswers') + '</br><strong> '+ gM('mwe-quiz-or') +' </strong>'
-                + gM('mwe-quiz-goAhead')+ '<strong> '+ gM('mwe-quiz-submit').toLowerCase() +' </strong>'
-            );
+            $(".sub-text").html(gM('mwe-quiz-sub-text'));
 
             $(".review-button").html(gM('mwe-quiz-review'))
                 .on('click', function () {

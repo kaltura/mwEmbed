@@ -257,6 +257,7 @@ AdsManager.prototype = {
      */
     _onAdErrorEvent: function () {
         ReceiverLogger.error( this.CLASS_NAME, "_onAdErrorEvent" );
+        this.destroy();
     },
 
     /**

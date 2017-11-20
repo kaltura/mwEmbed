@@ -416,9 +416,9 @@
                 }
             }, timeoutVal );
 
-            var imaURL = '//s0.2mdn.net/instream/html5/ima3.js';
+            var imaURL = '//imasdk.googleapis.com/js/sdkloader/ima3.js';
             if ( this.getConfig( 'debugMode' ) === true ) {
-                imaURL = '//s0.2mdn.net/instream/html5/ima3_debug.js';
+                imaURL = '//imasdk.googleapis.com/js/sdkloader/ima3_debug.js';
             }
             $.getScript( imaURL, function () {
                 isLoaded = true;
@@ -730,7 +730,6 @@
                             'left': '0px'
                         } )
                 );
-                this.addCountdownNotice();
             }
             return $( '#' + this.getAdContainerId() ).get( 0 );
         },
@@ -1253,6 +1252,7 @@
                 if ( _this.isLinear ) {
                     if ( !_this.adSkippable ) {
                         _this.showSkipBtn();
+                        _this.addCountdownNotice();
                     }
                     _this.playingLinearAd = true;
                     // hide spinner:

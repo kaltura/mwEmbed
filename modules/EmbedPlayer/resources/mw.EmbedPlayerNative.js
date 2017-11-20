@@ -667,11 +667,14 @@
 			$.each( textTracks, function( inx, caption) {
 				caption.mode = "hidden";
 			});
-			$.each( textTracks, function( inx, caption) {
-				if (caption.language === defaultLangKey) {
-					caption.mode = "showing";
+
+			for (var i = 0; i < textTracks.length; i++) {
+				if (textTracks[i].language === defaultLangKey) {
+					textTracks[i].mode = "showing";
+					// select the first match
+					return;
 				}
-			});
+			}
 		},
 		/**
 		 * playerSwitchSource switches the player source working around a few bugs in browsers
@@ -1648,32 +1651,32 @@
 			}
 		},
 		onSwitchTextTrack: function (event, data) {
-			var vid = this.getPlayerElement();
-			var textTracks = vid.textTracks;
-			if (textTracks && textTracks.length) {
-				if (!data) {
-					this.hideTextTrack(textTracks);
-				} else {
-                    this.hideTextTrack(textTracks);
-					this.showTextTrack(textTracks, data);
-				}
+			this.hideTextTrack();
+			if (data) {
+				this.showTextTrack(data);
 			}
 		},
-		hideTextTrack: function(textTracks){
-            var activeSubtitle = this.getActiveSubtitle(textTracks);
-            if (activeSubtitle) {
+		hideTextTrack: function(){
+            var activeSubtitle = this.getActiveSubtitle();
+            if (activeSubtitle && activeSubtitle.mode) {
                 activeSubtitle.mode = 'hidden';
                 this.log('onSwitchTextTrack disable subtitles');
             }
 		},
-		showTextTrack: function(textTracks, data){
-            var selectedSubtitle = textTracks[data.index];
-            if (selectedSubtitle) {
-                selectedSubtitle.mode = 'showing';
-                mw.log('EmbedPlayerNative::onSwitchTextTrack switch to ', selectedSubtitle);
-            }
+		showTextTrack: function(data){
+			var vid = this.getPlayerElement();
+			var textTracks = vid.textTracks;
+			if (textTracks) {
+				var selectedSubtitle = textTracks[data.index];
+				if (selectedSubtitle) {
+					selectedSubtitle.mode = 'showing';
+					mw.log('EmbedPlayerNative::onSwitchTextTrack switch to ', selectedSubtitle);
+				}
+			}
 		},
-		getActiveSubtitle: function (textTracks) {
+		getActiveSubtitle: function () {
+			var vid = this.getPlayerElement();
+			var textTracks = vid.textTracks;
 			if (textTracks) {
 				for (var i = 0; i < textTracks.length; i++) {
 					var textTrack = textTracks[i];
@@ -1681,6 +1684,7 @@
 						return textTrack;
 					}
 				}
+				return {label : 'off'};
 			}
 			return null;
 		},

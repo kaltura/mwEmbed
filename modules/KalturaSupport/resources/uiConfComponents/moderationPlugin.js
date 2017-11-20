@@ -66,7 +66,7 @@
 			// Disable space key binding to enable entering "space" inside the textarea
 		 	this.getPlayer().triggerHelper( 'onDisableKeyboardBinding' );
 		 	var $header = $( '<h2 id="dialogTitle" />' ).text(this.getConfig( 'header' ));
-			var $moderationMessage = $( '<div />' ).append(
+			var $moderationMessage = $( '<div id="moderationText" />' ).append(
 				$( '<span />' ).text(this.getConfig( 'text' )),
 				$('<div></div>').append(
 						$('<i></i>')
