@@ -251,7 +251,7 @@
                 return
             }
 
-            var isPlaying = embedPlayer.isPlaying() && embedPlayer.buffering;
+            var isPlaying = embedPlayer.isPlaying() && !embedPlayer.buffering;
             var explicitLive= embedPlayer.evaluate("{mediaProxy.entry}").explicitLive;
 
             if (!explicitLive && isPlaying) {
@@ -267,7 +267,7 @@
                     embedPlayer.triggerHelper('liveEventEnded');
                 } else {
                     //remember last state
-                    this.playWhenOnline = false;
+                    this.playWhenOnline = true;
 
                     if (this.getConfig('showThumbnailWhenOffline')) {
                         embedPlayer.hideSpinner();
@@ -292,7 +292,7 @@
                 }
                 this.resetOffAirCheck();
             } else {
-                mw.log("Stream is offline, but player position ("+new Date(1000*embedPlayer.currentTime)+") is before offline time: "+new Date(1000*this.offAirTime)+")");
+                mw.log("Stream is offline, but player position ("+new Date(1000*embedPlayer.currentTime)+") is before offline time: "+new Date(1000*    this.offAirTime)+")");
             }
         },
 
