@@ -259,7 +259,7 @@
                 mw.log("Don't stop if we are still playing");
                 return;
             }
-            if (!isPlaying && embedPlayer.currentTime	 > this.offAirTime) {
+            if (!isPlaying || embedPlayer.currentTime	 > this.offAirTime) {
 
                 mw.log("Player position ("+new Date(1000*embedPlayer.currentTime)+") is passed offline time: "+new Date(1000*this.offAirTime)+")!!, stopping!");
 
