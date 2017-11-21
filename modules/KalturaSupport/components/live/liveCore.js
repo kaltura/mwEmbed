@@ -259,9 +259,12 @@
                 mw.log("Don't stop if we are still playing");
                 return;
             }
-            if (!isPlaying || embedPlayer.currentTime	 > this.offAirTime) {
 
-                mw.log("Player position ("+new Date(1000*embedPlayer.currentTime)+") is passed offline time: "+new Date(1000*this.offAirTime)+")!!, stopping!");
+            var liveCurrentTime=embedPlayer.LiveCurrentTime;
+            
+            if (!isPlaying || liveCurrentTime > this.offAirTime) {
+
+                mw.log("Player position ("+new Date(1000*liveCurrentTime)+") is passed offline time: "+new Date(1000*this.offAirTime)+")!!, stopping!");
 
                 if (this.isDVR()) {
                     embedPlayer.triggerHelper('liveEventEnded');
@@ -292,7 +295,7 @@
                 }
                 this.resetOffAirCheck();
             } else {
-                mw.log("Stream is offline, but player position ("+new Date(1000*embedPlayer.currentTime)+") is before offline time: "+new Date(1000*    this.offAirTime)+")");
+                mw.log("Stream is offline, but player position ("+new Date(1000*liveCurrentTime)+") is before offline time: "+new Date(1000*    this.offAirTime)+")");
             }
         },
 
