@@ -18,8 +18,9 @@
             },
 
             isSafeEnviornment: function () {
-                var isMobileAutoPlay = (mw.isMobileDevice() || mw.isIpad()) && mw.getConfig('mobileAutoPlay');
-                var isFallbackToMutedAutoPlay = (mw.isDesktopSafari11() && (mw.getConfig('autoPlay') || this.getPlayer().getRawKalturaConfig('playlistAPI', 'autoPlay')));
+                var isThumbEmbed = !!mw.getConfig('thumbEmbedOrigin');
+                var isMobileAutoPlay = (mw.isMobileDevice() || mw.isIpad()) && mw.getConfig('mobileAutoPlay') && !isThumbEmbed;
+                var isFallbackToMutedAutoPlay = (!isThumbEmbed && mw.isDesktopSafari11() && (mw.getConfig('autoPlay') || this.getPlayer().getRawKalturaConfig('playlistAPI', 'autoPlay')));
                 return !!(isMobileAutoPlay || isFallbackToMutedAutoPlay);
             },
 

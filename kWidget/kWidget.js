@@ -637,6 +637,7 @@
 			}
 			// autoPlay media after thumbnail interaction
 			settings.flashvars.autoPlay = true;
+            settings.flashvars.thumbEmbedOrigin = true;
 			// inject the centered css rule ( if not already )
 			this.addThumbCssRules();
 

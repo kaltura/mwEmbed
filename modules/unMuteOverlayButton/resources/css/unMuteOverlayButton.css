@@ -9,6 +9,7 @@
     color: white;
     border-radius: 3px;
     cursor: pointer;
+    z-index: 1;
 }
 
 .unMuteOverlayButton span {
