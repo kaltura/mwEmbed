@@ -157,6 +157,9 @@ mw.KWidgetSupport.prototype = {
 		embedPlayer.bindHelper( 'AddEmptyBlackSources', function( event, vid ){
 			$(vid).empty();
 			$.each( mw.getConfig( 'Kaltura.BlackVideoSources' ), function(inx, sourceAttr ){
+				if (location.protocol === "https:") {
+                    sourceAttr.src = sourceAttr.src.replace('http', 'https');
+				}
 				$(vid).append(
 					$( '<source />' ).attr( sourceAttr )
 				);
