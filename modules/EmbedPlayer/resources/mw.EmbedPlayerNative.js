@@ -159,7 +159,7 @@
                     _this.bindHelper(eventName + _this.bindPostfix, function () {
                         if (_this.mobileAutoPlay) {
                             _this.mobileAutoPlay = false;
-                            _this.setVolume(1);
+                            _this.setVolume(1, true);
                         }
                         unMuteEventTriggers.forEach(function (eventName) {
                             _this.unbindHelper(eventName + _this.bindPostfix);

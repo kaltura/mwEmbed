@@ -32,7 +32,7 @@
                 }.bind(this));
 
                 this.bind('volumeChanged', function () {
-                    if (this.getPlayer().getPlayerElementVolume() > 0) {
+                    if ((this.getPlayer().getPlayerElementVolume() > 0) && !this.getPlayer().isMuted()) {
                         this.destroy();
                     }
                 }.bind(this));
@@ -59,7 +59,7 @@
                         .addClass('icon-volume-mute ' + this.getCssClass())
                         .html('<span>' + gM("mwe-embedplayer-unmute-label") + '</span>')
                         .click(function () {
-                            this.getPlayer().setVolume(this.playerVolume);
+                            this.getPlayer().setVolume(this.playerVolume, true);
                         }.bind(this))
                         .hide()
                 }
