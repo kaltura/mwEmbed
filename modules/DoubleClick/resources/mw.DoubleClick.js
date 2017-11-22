@@ -444,7 +444,7 @@
                     if (this.embedPlayer.mobileAutoPlay) {
                         this.embedPlayer.mobileAutoPlay = false;
                         this.adsManager.setVolume(1);
-                        this.embedPlayer.setVolume(1);
+                        this.embedPlayer.setVolume(1, true);
                     }
                 }.bind(this));
                 this.adsManager.setVolume(0);
