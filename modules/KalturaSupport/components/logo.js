@@ -11,8 +11,9 @@
 			cssClass: "kaltura-logo",
 			href: null,
 			title: null,
-			img: null
-		},
+			img: null,
+            showTooltip: true
+        },
 		getComponent: function () {
 			var _this = this;
 			if (!this.$el) {
@@ -26,6 +27,7 @@
 				}
 				this.$el = $('<button />')
 					.addClass(this.getCssClass())
+                    .attr( 'title', this.getConfig('title') )
 					.addClass('btn')
 					.click(function () {
 						if( _this.isDisabled ) return ;
