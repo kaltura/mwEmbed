@@ -1266,12 +1266,8 @@
 			newDoc.open();
 			// grab a black source
             var vidSrc;
-            if ( location.protocol === 'https:' ) {
-                vidSrc = location.protocol + '//www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_6wf0o9n7/format/url/protocol/https/a.mp4';
-            }
-            else {
-                vidSrc = location.protocol + '//www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_6wf0o9n7/format/url/protocol/http/a.mp4';
-            }
+            var protocol = ((location.protocol && location.protocol.slice(0, -1) || "https");
+            vidSrc = protocol + "://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_6wf0o9n7/format/url/protocol/"+ protocol +"/a.mp4";
 
 			// Add the iframe skeleton with video element to the iframe
 			newDoc.write('<html>' +
