@@ -1266,7 +1266,7 @@
 			newDoc.open();
 			// grab a black source
             var vidSrc;
-            var protocol = ((location.protocol && location.protocol.slice(0, -1) || "https");
+            var protocol = ((location.protocol && location.protocol.slice(0, -1) || "https"));
             vidSrc = protocol + "://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_6wf0o9n7/format/url/protocol/"+ protocol +"/a.mp4";
 
 			// Add the iframe skeleton with video element to the iframe
