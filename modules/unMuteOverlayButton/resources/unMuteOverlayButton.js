@@ -59,7 +59,7 @@
                         .addClass('icon-volume-mute ' + this.getCssClass())
                         .html('<span>' + gM("mwe-embedplayer-unmute-label") + '</span>')
                         .click(function () {
-                            this.getPlayer().setVolume(this.playerVolume, true);
+                            this.getPlayer().setVolume(this.playerVolume, null, mw.isIOS());
                         }.bind(this))
                         .hide()
                 }
