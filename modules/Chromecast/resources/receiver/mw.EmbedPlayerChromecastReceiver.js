@@ -107,6 +107,21 @@
                     break;
             }
 
+            this.mediaHost.updateManifestRequestInfo = function (requestInfo) {
+                if (!requestInfo.url) {
+                    requestInfo.url = this.getSrc();
+                }
+                requestInfo.withCredentials = true;
+            }.bind(this);
+
+            this.mediaHost.updateLicenseRequestInfo = function (requestInfo) {
+                requestInfo.withCredentials = true;
+            };
+
+            this.mediaHost.updateSegmentRequestInfo = function (requestInfo) {
+                requestInfo.withCredentials = true;
+            };
+
             this.mediaHost.getQualityLevel = function ( streamIndex, qualityLevel ) {
                 if ( streamIndex === this.videoStreamIndex && this.videoQualityIndex !== -1 ) {
                     return this.videoQualityIndex;
