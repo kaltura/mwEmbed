@@ -2625,7 +2625,7 @@
 			this.previousVolume = this.volume;
 
 			// Do not trigger change if no change was made
-			if (this.previousVolume == percent) {
+			if (this.previousVolume == percent && triggerChange !== true) {
 				triggerChange = false;
 			}
 

@@ -231,15 +231,32 @@
 			} );
 
 			this.embedPlayer.bindHelper('onPlayerStateChange', function(e, newState, oldState) {
-				if (newState === "pause" ){
-					_this.stopViewTracking();
-				}
-				if (newState === "play"){
-					if ( oldState === "start" || oldState === "pause" ){
-						_this.startViewTracking();
-					}
-				}
+				if (!this.isInSequence()) {
+                    if (newState === "pause") {
+                        _this.stopViewTracking();
+                    }
+                    if (newState === "play") {
+                        if (oldState === "start" || oldState === "pause") {
+                            _this.startViewTracking();
+                        }
+                    }
+                }
 			});
+
+            this.embedPlayer.bindHelper( 'AdSupport_midroll AdSupport_postroll' , function () {
+                _this.savedPosition = _this.embedPlayer.currentTime; // during ad playback (mid and post only), report position as the last player position
+            });
+
+            this.embedPlayer.bindHelper( 'AdSupport_EndAdPlayback' , function () {
+                setTimeout(function(){
+                    _this.savedPosition = null; // use timeout to use the savedPosition for events reported immediately after ad finish (play event)
+                },0);
+                _this.startViewTracking();
+            });
+
+            this.embedPlayer.bindHelper('AdSupport_StartAdPlayback', function() {
+                _this.stopViewTracking();
+            });
 
 			// events for capturing the bitrate of the currently playing source
 			this.embedPlayer.bindHelper( 'SourceSelected' , function (e, source) {
@@ -255,17 +272,6 @@
 				if (newSource.newBitrate){
 					_this.currentBitRate = newSource.newBitrate;
 				}
-			});
-
-			this.embedPlayer.bindHelper( 'AdSupport_midroll AdSupport_postroll' , function () {
-				_this.savedPosition = _this.embedPlayer.currentTime; // during ad playback (mid and post only), report position as the last player position
-			});
-
-			this.embedPlayer.bindHelper( 'AdSupport_EndAdPlayback' , function () {
-				setTimeout(function(){
-					_this.savedPosition = null; // use timeout to use the savedPosition for events reported immediately after ad finish (play event)
-				},0);
-
 			});
 		},
 		resetPlayerflags:function(){
