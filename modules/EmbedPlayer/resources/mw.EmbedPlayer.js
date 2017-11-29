@@ -2614,8 +2614,10 @@
 		 *      percent Percent of full volume
 		 * @param {triggerChange}
 		 *        boolean change if the event should be triggered
+		 * @param {forceTriggerChange}
+         *		  boolean force if the event should be triggered
 		 */
-		setVolume: function (percent, triggerChange) {
+		setVolume: function (percent, triggerChange, forceTriggerChange) {
 			var _this = this;
 			// ignore NaN percent:
 			if (isNaN(percent)) {
@@ -2625,7 +2627,7 @@
 			this.previousVolume = this.volume;
 
 			// Do not trigger change if no change was made
-			if (this.previousVolume == percent && triggerChange !== true) {
+			if (this.previousVolume == percent && forceTriggerChange !== true) {
 				triggerChange = false;
 			}
 
