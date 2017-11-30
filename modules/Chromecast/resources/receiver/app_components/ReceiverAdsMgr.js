@@ -60,6 +60,7 @@ AdsManager.prototype = {
         kdp.kUnbind( "postSequenceStart" );
         kdp.kUnbind( "postSequenceComplete" );
         kdp.kUnbind( "onAllAdsCompleted" );
+        kdp.kUnbind( "onEndedDone" );
 
         ReceiverAdsManager = null;
     },
@@ -140,6 +141,7 @@ AdsManager.prototype = {
         kdp.kBind( "postSequenceStart", this._onPostSequenceStart.bind( this ) );
         kdp.kBind( "postSequenceComplete", this._onPostSequenceComplete.bind( this ) );
         kdp.kBind( "onAllAdsCompleted", this._onAllAdsCompleted.bind( this ) );
+        kdp.kBind( "onEndedDone", this._onEndedDone.bind( this ) );
     },
 
     /**
@@ -315,5 +317,15 @@ AdsManager.prototype = {
         if ( this.postSequenceStart ) {
             this._onEnded();
         }
+    },
+
+    /**
+     * Kills the media session.
+     * @private
+     */
+    _onEndedDone: function () {
+        ReceiverLogger.log(this.CLASS_NAME, "_onEndedDone");
+        this.destroy();
+        mediaManager.onEnded();
     }
 };
