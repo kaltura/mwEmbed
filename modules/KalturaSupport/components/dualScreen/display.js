@@ -283,7 +283,7 @@
 					.droppable({
 						accept: '.ds-stream',
 						hoverClass: 'ui-state-hover',
-						activeClass: 'ui-state-active',
+						activeClass: 'droppable-ui-state-active',
 						greedy: !useParentAsTarget,
 						drop: $.proxy(this.onDrop, this)
 					});
