@@ -411,10 +411,8 @@
 		 */
 		getNextCuePoint: function (time) {
             function compareByStartTime(a, b) {
-                if (a.startTime < b.startTime)
-                    return -1;
-                if (a.startTime > b.startTime)
-                    return 1;
+                if (a.startTime < b.startTime) return -1;
+                if (a.startTime > b.startTime) return 1;
                 return 0;
             }
 
@@ -454,7 +452,6 @@
 		 * @param (Object) Cue Point object
 		 **/
 		triggerCuePoint: function (rawCuePoint) {
-		    debugger;
 			/**
 			 *  We need different events for each cue point type
 			 */
