@@ -240,7 +240,10 @@
 							this.hls.loadSource(source);
 						}.bind(this),
 						function () { //error
-							this.hls.loadSource(selectedSource);
+							if (selectedSource === this.getPlayer().getSrc()) {
+								// the media has not been changed meanwhile
+								this.hls.loadSource(selectedSource);
+							}
 						}.bind(this)
 					);
 				}

@@ -365,6 +365,7 @@
 			}
 			this.log( "addLiveStreamStatusMonitor" );
 			var _this = this;
+			clearInterval( this.liveStreamStatusMonitor );
 			this.liveStreamStatusMonitor = setInterval( function() {
 				_this.getLiveStreamStatusFromAPI();
 			}, _this.liveStreamStatusInterval * 1000 );
