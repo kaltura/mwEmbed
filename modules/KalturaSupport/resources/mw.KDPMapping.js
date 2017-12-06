@@ -1305,6 +1305,9 @@
 				case 'alert':
 					embedPlayer.layoutBuilder.displayAlert( notificationData );
 					break;
+				case 'showMessage':
+					embedPlayer.layoutBuilder.showMessage( notificationData );
+					break;
 				case 'removealert':
 					embedPlayer.layoutBuilder.closeAlert();
 					break;

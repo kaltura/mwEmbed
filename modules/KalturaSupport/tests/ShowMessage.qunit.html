@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Watermark plugin</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+	<style>
+		.showMessageBtnBlock{
+			display: block;
+			width: 100%;
+			float: left;
+			margin-top: 40px;
+		}
+	</style>
+</head>
+<body>
+<h2> Watermark plugin </h2>
+<br />
+<div id="myVideoTarget" style="width:400px;height:330px;float:left">
+</div>
+<div class="showMessageBtnBlock">
+	<button class="showMessage">showMessage</button>
+</div>
+
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+<script>
+	kWidget.featureConfig({
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '21099702',
+		'entry_id' : '0_uka1msg4',
+		'flashvars': {
+		
+		},
+	});
+	kWidget.addReadyCallback(function(playerId){
+		var kdp = document.getElementById( 'myVideoTarget' );
+		$( '.showMessage' ).click(function(){
+			kdp.sendNotification( "showMessage", {text:"some test text will be on screen for 2 seconds",timeout:2});
+		});
+	});
+</script>
+
+</body>
+</html>

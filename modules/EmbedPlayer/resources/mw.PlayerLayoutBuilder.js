@@ -1432,6 +1432,27 @@
             $container.append($title, $message, $buttonsContainer);
             return this.displayMenuOverlay($container, false, true);
         },
+        /**
+         * Generic function to display message overlay on video.
+         *
+         * @param (Object) Object which includes:
+         *   text message in popup
+         *   timeout time in seconds to hide popup
+         */
+        showMessage: function (data) {
+            if(data.text && data.timeout){
+                var $text = $('<p/>').addClass('text').text(data.text);
+                var $container = $('<div />').addClass('soft-message').append($text);
+                $(this.embedPlayer).append($container);
+                setTimeout(function () {
+                    $container.fadeOut("hide");
+                }, data.timeout * 1000)
+            }else {
+                mw.log('PlayerLayoutBuilder::showMessage:: ERROR! You should set message text and time in seconds to hide popup');
+            }
+            
+        },
+
 
         /**
          * Get component jQuery element
