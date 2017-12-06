@@ -357,7 +357,7 @@
             if (cPo.question.length < 68){
                 $(".display-question").addClass("padding7");
             }
-            $(".display-question").text(cPo.question).attr('tabindex', 5).focus();
+            $(".display-question").text(cPo.question).attr({'tabindex': 5,"aria-lable":cPo.question}).focus();
             //$(".display-question").attr('title', "Question number "+questionNr);
             $.each(cPo.answeres, function (key, value) {
                 var div= $("<div class ='single-answer-box-bk'>"
