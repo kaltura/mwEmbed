@@ -1826,12 +1826,12 @@ mw.KWidgetSupport.prototype = {
 			deviceSources = this.removeAdaptiveFlavors( deviceSources );
 		}
 
-		// Prefer H264 flavor over HLS on Android browser,
+		// Prefer HLS on Android browser over H264 flavor,
 		// on SDK prefer HLS with h264 baseline flavors
 		if( !this.removedAdaptiveFlavors &&
 				(mw.isAndroid() && !mw.isNativeApp()) &&
 				hasH264Flavor &&
-				!mw.getConfig( 'Kaltura.LeadHLSOnAndroid' ) ) {
+				mw.getConfig( 'Kaltura.LeadHLSOnAndroid' ) == "false" ) {
 			deviceSources = this.removeHlsFlavor( deviceSources );
 		}
 
