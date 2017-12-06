@@ -79,7 +79,8 @@
 					if (cuePoint.cuePointType === 'codeCuePoint.Code')
 					{
 						newCodeCuePointsArray.push(cuePoint);
-					}else if (cuePoint.cuePointType != "eventCuePoint.Event") {
+                        newCuePointsArray.push(cuePoint);
+                    }else if (cuePoint.cuePointType != "eventCuePoint.Event") {
 						newCuePointsArray.push(cuePoint);
 					}
 				}
@@ -409,9 +410,17 @@
 		 * @param {Number} time Time in milliseconds
 		 */
 		getNextCuePoint: function (time) {
-			if (!isNaN(time) && time >= 0) {
+            function compareByStartTime(a, b) {
+                if (a.startTime < b.startTime)
+                    return -1;
+                if (a.startTime > b.startTime)
+                    return 1;
+                return 0;
+            }
 
+            if (!isNaN(time) && time >= 0) {
 				var cuePoints = this.midCuePointsArray;
+				cuePoints.sort(compareByStartTime);
 				// Start looking for the cue point via time, return FIRST match:
 				for (var i = 0; i < cuePoints.length; i++) {
 					if (cuePoints[i].startTime >= time) {
@@ -445,6 +454,7 @@
 		 * @param (Object) Cue Point object
 		 **/
 		triggerCuePoint: function (rawCuePoint) {
+		    debugger;
 			/**
 			 *  We need different events for each cue point type
 			 */
