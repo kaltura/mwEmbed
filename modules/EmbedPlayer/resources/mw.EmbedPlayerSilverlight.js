@@ -469,27 +469,30 @@
 				} else if ( isMimeType( "video/multicast" ) ) {
 
 
-					_this.bindHelper( "liveOffline" , function () {
-						//if stream became offline
-						mw.log('PlayerSilverlight. went offline');
-						if ( _this.playerObject ) {
-							_this.playerObject.stop();
-						}
-						_this.isOnline = false;
-					} );
-					_this.bindHelper( "liveOnline" , function () {
-						mw.log('PlayerSilverlight. went online');
-						_this.isOnline = true;
-					} );
+                    _this.bindHelper("liveOffline", function () {
+                        //if stream became offline
+                        mw.log('PlayerSilverlight. went offline');
+                        if (_this.playerObject) {
+                            _this.playerObject.stop();
+                        }
+                        _this.isOnline = false;
+                    });
+                    _this.bindHelper("liveOnline", function () {
+                        mw.log('PlayerSilverlight. went online');
+                        _this.isOnline = true;
+                    });
 
-					flashvars.multicastPlayer = true;
-					flashvars.streamAddress = resolvedSrc;
-					if (_this.multicastSourceAddress) {
-						flashvars.sourceAddress = _this.multicastSourceAddress;
+                    flashvars.multicastPlayer = true;
+                    flashvars.streamAddress = resolvedSrc;
+                    if (_this.multicastSourceAddress) {
+                        flashvars.sourceAddress = _this.multicastSourceAddress;
+                    }
+                    flashvars.multicastPolicyOverMulticastEnabled = _this.multicastPolicyOverMulticastEnabled;
+                    var slLogLevel=mw.config.get('slLogLevel');
+                    if (slLogLevel) {
+                    	mw.log("PlayerSilverlight setting logLevel = "+slLogLevel)
+						flashvars.logLevel = slLogLevel;
 					}
-					flashvars.multicastPolicyOverMulticastEnabled = _this.multicastPolicyOverMulticastEnabled;
-					//flashvars.debug = true;
-
 					_this.isError = false;
 
 				}
