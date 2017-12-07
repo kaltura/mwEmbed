@@ -112,6 +112,7 @@
 				var transformedHTML = mw.util.tmpl( rawHTML );
 				transformedHTML = transformedHTML({buttons: this.controlBarComponents});
 				this.$controlBar = $( '<div />' )
+					.attr({'tabindex':10})
 					.addClass( 'controlBar componentOff dualScreen' + this.getCssClass() )
 					.append(transformedHTML);
 				//If top bar exist then position controlBar under it
@@ -142,13 +143,27 @@
 			var _this = this;
 			//TODO:hook these events to layoutbuilder events
 			this.embedPlayer.getInterface()
-				.on( 'mousemove' + this.postFix +' touchstart' + this.postFix, function(){
+				.on( 'mousemove' + this.postFix +' touchstart' + this.postFix + ' focus', function(){
 					_this.show();
 				})
 				.on( 'mouseleave' + this.postFix, function(){
 					if (!mw.isMobileDevice()){
 						_this.hide();
 					}
+				});
+			this.getComponent().add(_this.getComponent().find('.controlBarBtn'))
+				.on( 'focus', function(){
+					_this.show();
+				})
+				.on( 'blur' + this.postFix, function(){
+					setTimeout(function () {
+						var currentFocusElement = $(':focus');
+						if(!currentFocusElement.parents('.dualScreenControlBar').hasClass('dualScreenControlBar') && !currentFocusElement.hasClass('dualScreenControlBar')){
+							if (!mw.isMobileDevice()){
+								_this.hide();
+							}
+						}
+					},0);
 				});
 
 			//add drop shadow containers for control bar

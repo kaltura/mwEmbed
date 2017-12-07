@@ -155,7 +155,7 @@
     visibility: visible;
     opacity: 1;
 }
-.componentOff{
+.componentOff *{
     visibility: hidden;
     opacity: 0;
 }
