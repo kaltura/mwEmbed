@@ -37,7 +37,10 @@
 	kWidget.addReadyCallback(function(playerId){
 		var kdp = document.getElementById( 'myVideoTarget' );
 		$( '.showMessage' ).click(function(){
-			kdp.sendNotification( "showMessage", {text:"some test text will be on screen for 2 seconds",timeout:2});
+			kdp.sendNotification( "showMessage", {text:"some test text will be on screen for 2 seconds",timeout:2,backgroundColor:'black',fontColor:'#fff'});
+			 setTimeout(function () {
+				 kdp.sendNotification( "showMessage", {text:"some test text will be on screen for 3 seconds",timeout:2,fontColor:'red',backgroundColor:'green'});
+			 }, 3 * 1000)
 		});
 	});
 </script>

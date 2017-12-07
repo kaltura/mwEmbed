@@ -2109,9 +2109,7 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 	top: 31px;
 	left: 0;
 	right: 0;
-	height: 100%;
 	max-width: 80%;
-	max-height: 40%;
 	background: #dfdfdf;
 	border-radius: 3px;
 	margin: 0 auto;
@@ -2121,10 +2119,7 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 	padding: 20px;
 }
 .soft-message .text{
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	margin: 0;
+	margin: 10px 0;
 	font-size: 14px;
+	text-align: center;
 }

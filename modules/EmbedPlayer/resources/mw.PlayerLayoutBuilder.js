@@ -1437,16 +1437,35 @@
          *
          * @param (Object) Object which includes:
          *   text message in popup
-         *   timeout time in seconds to hide popup
+         *   timeout time in seconds to hide popup. by default 2 seconds
+         *   backgroundColor background-color of all area
+         *   fontSize font-size of text
+         *   fontColor color of text
          */
         showMessage: function (data) {
-            if(data.text && data.timeout){
-                var $text = $('<p/>').addClass('text').text(data.text);
-                var $container = $('<div />').addClass('soft-message').append($text);
-                $(this.embedPlayer).append($container);
+            var _this = this;
+            var timeout = data.timeout ? data.timeout: 2;
+            var backgroundColor = data.backgroundColor ? {"background-color":data.backgroundColor} : {};
+            var fontColor = data.fontColor ? {"color":data.fontColor} : {};
+            var fontSize = data.fontSize ? {"font-size":data.fontSize} : {};
+            var textStyle  = $.extend(fontColor,fontSize);
+            if(data.text){
+                var $container  = $(_this.embedPlayer).find('.soft-message').first();
+                if(!$container[0]){
+                    $container = $('<div />').addClass('soft-message');
+                    $(this.embedPlayer).append($container);
+                }
+                var $text = $('<p/>').addClass('text').css(textStyle).text(data.text);
+                $container.show().css(backgroundColor).append($text);
                 setTimeout(function () {
-                    $container.fadeOut("hide");
-                }, data.timeout * 1000)
+                    $text.fadeOut("hide",function () {
+                        $text.remove();
+                        var children = $container.children();
+                        if(!children.length){
+                            $container.fadeOut("hide");
+                        }
+                    });
+                }, timeout * 1000)
             }else {
                 mw.log('PlayerLayoutBuilder::showMessage:: ERROR! You should set message text and time in seconds to hide popup');
             }
