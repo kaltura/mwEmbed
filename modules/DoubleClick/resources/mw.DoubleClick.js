@@ -1294,15 +1294,6 @@
                 _this.embedPlayer.sendNotification( 'doPause' );
             } );
 
-            adsListener('LOG', function (event) {
-                var adData = event.getAdData();
-                if (adData['adError']) {
-                    console.log('Non-fatal error occurred: ' + adData['adError'].getMessage());
-                    _this.restorePlayer(_this.contentDoneFlag);
-                    _this.embedPlayer.play();
-                }
-            });
-
             adsListener( 'CLICK', function ( adEvent ) {
                 var ad = adEvent.getAd();
                 var isLinear = ad.isLinear();
