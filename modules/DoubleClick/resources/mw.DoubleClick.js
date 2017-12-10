@@ -1159,6 +1159,7 @@
                 }
             } );
             adsListener( 'LOADED', function ( adEvent ) {
+                _this.nonFatalError = false;
                 _this.showAdContainer();
                 var adData = adEvent.getAdData();
                 if ( adData ) {
@@ -1330,8 +1331,20 @@
                 mw.log( "DoubleClick:: adSkipped" );
                 $( _this.embedPlayer ).trigger( 'onAdSkip' );
             } );
+
+            adsListener('LOG', function (event) {
+                if (_this.nonFatalError) return;
+                var adData = event.getAdData();
+                if (adData['adError']) {
+                    console.log('Non-fatal error occurred: ' + adData['adError'].getMessage());
+                    _this.nonFatalError = true;
+                    _this.onAdError(event);
+                }
+            });
+
             // Resume content:
             adsListener( 'CONTENT_RESUME_REQUESTED', function () {
+                if (_this.nonFatalError) return;
                 $( _this.embedPlayer ).trigger( 'onContentResumeRequested' );
                 _this.playingLinearAd = false;
                 // Update slot type, if a preroll switch to midroll
@@ -1706,6 +1719,16 @@
         },
         // Handler for various ad errors.
         onAdError: function( errorEvent ) {
+            if (this.nonFatalError) {
+                var ad = errorEvent.getAd();
+                var podInfo = ad && ad.getAdPodInfo();
+                var totalPodAds = podInfo && podInfo.getTotalAds();
+                if (!ad || totalPodAds === 1) {
+                    this.restorePlayer(this.contentDoneFlag);
+                    this.embedPlayer.play();
+                }
+                return;
+            }
             if (errorEvent) {var errorMsg = ( typeof errorEvent.getError != 'undefined' ) ? errorEvent.getError() : errorEvent;
                 mw.log('DoubleClick:: onAdError: ' + errorMsg );
                 if (!this.adLoaderErrorFlag){
