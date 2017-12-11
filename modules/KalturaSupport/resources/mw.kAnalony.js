@@ -250,8 +250,8 @@
             this.embedPlayer.bindHelper( 'AdSupport_EndAdPlayback' , function () {
                 setTimeout(function(){
                     _this.savedPosition = null; // use timeout to use the savedPosition for events reported immediately after ad finish (play event)
-                },0);
-                _this.startViewTracking();
+                    _this.startViewTracking();
+				},0);
             });
 
             this.embedPlayer.bindHelper('AdSupport_StartAdPlayback', function() {
