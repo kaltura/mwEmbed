@@ -1328,8 +1328,7 @@
                 var adData = event.getAdData();
                 if (adData['adError']) {
                     console.log('Non-fatal error occurred: ' + adData['adError'].getMessage());
-                    _this.nonFatalError = true;
-                    _this.onAdError(event);
+                    this.handleNonFatalError(event);
                 }
             });
 
@@ -1708,18 +1707,18 @@
                 this.embedPlayer.getInterface().find(".ad-skip-label").text(this.embedPlayer.evaluate( this.embedPlayer.getRawKalturaConfig('skipNotice','text')) );
             }
         },
+        handleNonFatalError: function (event) {
+            this.nonFatalError = true;
+            var ad = event.getAd();
+            var podInfo = ad && ad.getAdPodInfo();
+            var totalPodAds = podInfo && podInfo.getTotalAds();
+            if (!ad || totalPodAds === 1) {
+                this.restorePlayer(this.contentDoneFlag);
+                this.embedPlayer.play();
+            }
+        },
         // Handler for various ad errors.
         onAdError: function( errorEvent ) {
-            if (this.nonFatalError) {
-                var ad = errorEvent.getAd();
-                var podInfo = ad && ad.getAdPodInfo();
-                var totalPodAds = podInfo && podInfo.getTotalAds();
-                if (!ad || totalPodAds === 1) {
-                    this.restorePlayer(this.contentDoneFlag);
-                    this.embedPlayer.play();
-                }
-                return;
-            }
             if (errorEvent) {var errorMsg = ( typeof errorEvent.getError != 'undefined' ) ? errorEvent.getError() : errorEvent;
                 mw.log('DoubleClick:: onAdError: ' + errorMsg );
                 if (!this.adLoaderErrorFlag){
