@@ -1157,6 +1157,7 @@
                 }
             } );
             adsListener( 'LOADED', function ( adEvent ) {
+                _this.nonFatalError = false;
                 _this.showAdContainer();
                 var adData = adEvent.getAdData();
                 if ( adData ) {
@@ -1319,8 +1320,19 @@
                 mw.log( "DoubleClick:: adSkipped" );
                 $( _this.embedPlayer ).trigger( 'onAdSkip' );
             } );
+
+            adsListener('LOG', function (event) {
+                if (_this.nonFatalError) return;
+                var adData = event.getAdData();
+                if (adData['adError']) {
+                    console.log('Non-fatal error occurred: ' + adData['adError'].getMessage());
+                    this.handleNonFatalError(event);
+                }
+            });
+
             // Resume content:
             adsListener( 'CONTENT_RESUME_REQUESTED', function () {
+                if (_this.nonFatalError) return;
                 $( _this.embedPlayer ).trigger( 'onContentResumeRequested' );
                 _this.playingLinearAd = false;
                 // Update slot type, if a preroll switch to midroll
@@ -1691,6 +1703,16 @@
                 var offsetRemaining = Math.max(Math.ceil(parseFloat(this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' )) - remainTime), 0);
                 this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining', offsetRemaining );
                 this.embedPlayer.getInterface().find(".ad-skip-label").text(this.embedPlayer.evaluate( this.embedPlayer.getRawKalturaConfig('skipNotice','text')) );
+            }
+        },
+        handleNonFatalError: function (event) {
+            this.nonFatalError = true;
+            var ad = event.getAd();
+            var podInfo = ad && ad.getAdPodInfo();
+            var totalPodAds = podInfo && podInfo.getTotalAds();
+            if (!ad || totalPodAds === 1) {
+                this.restorePlayer(this.contentDoneFlag);
+                this.embedPlayer.play();
             }
         },
         // Handler for various ad errors.
