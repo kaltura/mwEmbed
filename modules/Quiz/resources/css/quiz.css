@@ -745,6 +745,10 @@ ol.second-row{
 .track {
     bottom:9vh!important;
 }
+.que-navigation-btn{
+    color: white;
+    margin: 10px;
+}
 @media(max-width: 604px){
     .size-small .screen.quiz ,
     .size-medium .screen.quiz {

@@ -634,8 +634,49 @@
             $('#kplayer_pid_kplayer').css('display', 'block');
             $('#kplayer_pid_kplayer').attr('aria-hidden', 'false');
         },
+
+        addQuePointsNavigationButtons:function (questionNr) {
+            var _this = this;
+            var allPoints = $.cpObject.cpArray;
+            var currentPoint = allPoints[questionNr];
+            var nextBtn = '';
+            var prevBtn = '';
+            
+            if(currentPoint.key > allPoints[0].key){
+                var prevQuePoint = allPoints[currentPoint.key-1];
+                if( (prevQuePoint && _this.KIVQModule.canSkip) || (!_this.KIVQModule.canSkip && prevQuePoint && prevQuePoint.isAnswerd)){
+                    prevBtn = $('<a/>').attr({'href':'#','tabindex': 7}).addClass('que-navigation-btn prev-que').text('previous question')
+                        .on('keydown', _this.keyDownHandler)
+                        .on('click',function (e) {
+                            e.preventDefault();
+                            _this.KIVQModule.continuePlay();
+                            _this.seekToQuestionTime = prevQuePoint.startTime;
+                            _this.KIVQModule.gotoScrubberPos(prevQuePoint.key);
+                            _this.isSeekingIVQ = true;
+                            mw.log("Quiz: gotoScrubberPos : " + prevQuePoint.key);
+                        });
+                }
+            }
+            if(currentPoint.key < allPoints[allPoints.length-1].key){
+                var nextQuePoint = allPoints[currentPoint.key+1];
+                if( (nextQuePoint && _this.KIVQModule.canSkip) || (!_this.KIVQModule.canSkip && nextQuePoint && nextQuePoint.isAnswerd)){
+                    nextBtn = $('<a/>').attr({'href':'#','tabindex': 8}).addClass('que-navigation-btn next-que').text('next question')
+                        .on('keydown', _this.keyDownHandler)
+                        .on('click',function (e) {
+                            e.preventDefault();
+                            _this.KIVQModule.continuePlay();
+                            _this.seekToQuestionTime = nextQuePoint.startTime;
+                            _this.KIVQModule.gotoScrubberPos(nextQuePoint.key);
+                            _this.isSeekingIVQ = true;
+                            mw.log("Quiz: gotoScrubberPos : " + nextQuePoint.key);
+                        });
+                }
+            }
+            $('.ftr-container').append( prevBtn, nextBtn );
+        },
         addFooter: function (questionNr) {
             var _this = this;
+            _this.addQuePointsNavigationButtons(questionNr);
 
             if (_this.KIVQModule.quizSubmitted) {
                 $(".ftr-right").html(gM('mwe-quiz-next')).on('click', function () {
