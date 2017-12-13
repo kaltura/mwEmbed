@@ -493,7 +493,6 @@
                     	mw.log("PlayerSilverlight setting logLevel = "+slLogLevel)
 						flashvars.logLevel = slLogLevel;
 					}
-					flashvars.logLevel="Verbose";
 					_this.isError = false;
 
 				}
@@ -502,7 +501,7 @@
 				if (_this.multicastSourceAddress) {
                     flashvars.autoplay = _this.autoplay;
                 }
-				flashvars.isDVR = ( _this.isDVR() == 1 );
+                flashvars.isDVR = ( _this.isDVR() == 1 );
 				_this.durationReceived = false;
 				_this.readyCallbackFunc = readyCallback;
 				var playerElement = new mw.PlayerElementSilverlight( _this.containerId , 'splayer_' + _this.pid , flashvars , _this , function () {
@@ -551,18 +550,25 @@
 					) {
 						_this.durationReceived = true;
 					}
-					readyCallback();
-
                     if ( isMimeType( "video/multicast" ) ) {
-                        var timeout = _this.getKalturaConfig( null , 'multicastStartTimeout' ) || _this.defaultMulticastStartTimeout;
-                        mw.log('Starting timeout for fallbackToUnicast');
-                        setTimeout(function () {
-                            if (!_this.gotFirstMulticastFrame) {
-                                mw.log('timeout waiting for frame!!!!');
-                                _this.fallbackToUnicast();
-                            }
-                        }, timeout);
+                        _this.play();
                     }
+
+                    setTimeout( function() {
+
+                        readyCallback();
+
+                        if (isMimeType("video/multicast")) {
+                            var timeout = _this.getKalturaConfig(null, 'multicastStartTimeout') || _this.defaultMulticastStartTimeout;
+                            mw.log('Starting timeout for fallbackToUnicast');
+                            setTimeout(function () {
+                                if (!_this.gotFirstMulticastFrame) {
+                                    mw.log('timeout waiting for frame!!!!');
+                                    _this.fallbackToUnicast();
+                                }
+                            }, timeout);
+                        }
+                    },1000);
 				} );
 			}
 
