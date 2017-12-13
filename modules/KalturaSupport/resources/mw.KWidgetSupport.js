@@ -304,12 +304,13 @@ mw.KWidgetSupport.prototype = {
 					if (action.pattern && action.replacement) {
 						var regExp=new RegExp(action.pattern, "i");
 						var urlsToModify = ['Kaltura.ServiceUrl','Kaltura.StatsServiceUrl','Kaltura.ServiceBase','Kaltura.LiveStatsServiceUrl','Kaltura.AnalyticsUrl'];
+						var self = this;
 						urlsToModify.forEach(function (key) {
 
-							if (!this.originalServiceUrl[key]) {
-                                this.originalServiceUrl[key] = mw.config.get(key);
+							if (!self.originalServiceUrl[key]) {
+                                self.originalServiceUrl[key] = mw.config.get(key);
 							}
-							var serviceUrl = this.originalServiceUrl[key];
+							var serviceUrl = self.originalServiceUrl[key];
 							var match = serviceUrl.match( regExp );
 
 							if (match) {
