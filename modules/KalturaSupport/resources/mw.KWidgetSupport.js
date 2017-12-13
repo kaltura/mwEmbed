@@ -20,6 +20,7 @@ mw.KWidgetSupport.prototype = {
 	kClient : null,
 	kSessionId: null, // Used for Analytics events
 	originalStreamerType: null,
+	originalServiceUrl: {},
 
 	// Constructor check settings etc
 	init: function( options ){
@@ -303,8 +304,13 @@ mw.KWidgetSupport.prototype = {
 					if (action.pattern && action.replacement) {
 						var regExp=new RegExp(action.pattern, "i");
 						var urlsToModify = ['Kaltura.ServiceUrl','Kaltura.StatsServiceUrl','Kaltura.ServiceBase','Kaltura.LiveStatsServiceUrl','Kaltura.AnalyticsUrl'];
+						var self = this;
 						urlsToModify.forEach(function (key) {
-							var serviceUrl = mw.config.get(key);
+
+							if (!self.originalServiceUrl[key]) {
+                                self.originalServiceUrl[key] = mw.config.get(key);
+							}
+							var serviceUrl = self.originalServiceUrl[key];
 							var match = serviceUrl.match( regExp );
 
 							if (match) {
