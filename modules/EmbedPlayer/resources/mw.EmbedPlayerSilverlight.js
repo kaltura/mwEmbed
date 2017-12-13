@@ -493,6 +493,7 @@
                     	mw.log("PlayerSilverlight setting logLevel = "+slLogLevel)
 						flashvars.logLevel = slLogLevel;
 					}
+					flashvars.logLevel="Verbose";
 					_this.isError = false;
 
 				}
