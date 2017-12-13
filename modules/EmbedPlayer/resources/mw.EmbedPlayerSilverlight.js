@@ -488,7 +488,7 @@
                         flashvars.sourceAddress = _this.multicastSourceAddress;
                     }
                     flashvars.multicastPolicyOverMulticastEnabled = _this.multicastPolicyOverMulticastEnabled;
-                    var slLogLevel=mw.config.get('slLogLevel');
+                    var slLogLevel=_this.getFlashvars('slLogLevel');
                     if (slLogLevel) {
                     	mw.log("PlayerSilverlight setting logLevel = "+slLogLevel)
 						flashvars.logLevel = slLogLevel;
