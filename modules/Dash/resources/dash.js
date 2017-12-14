@@ -316,6 +316,7 @@
 							'label': subtitleTrack.label || subtitleTrack.language,
 							'title': subtitleTrack.language,
 							'id': subtitleTrack.id,
+							'default': subtitleTrack.active,
 							'index': textTrackData.languages.length
 						});
 					});
