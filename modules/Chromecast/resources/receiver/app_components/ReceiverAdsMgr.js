@@ -1,12 +1,10 @@
 var ReceiverAdsManager = null;
 
 $( window ).bind( 'onReceiverKDPReady', function ( event ) {
-    if (kdp.evaluate('{doubleClick.plugin}')) {
-        var doubleClick = kdp.evaluate('{doubleClick}');
-        ReceiverLogger.log("ReceiverAdsManager", "event-->onReceiverKDPReady", {'adsEnabled?': !!doubleClick.adTagUrl});
-        if (doubleClick.adTagUrl) {
-            ReceiverAdsManager = new AdsManager();
-        }
+    var doubleClick = kdp.evaluate('{doubleClick}');
+    ReceiverLogger.log("ReceiverAdsManager", "event-->onReceiverKDPReady", {'adsEnabled?': !!(doubleClick && doubleClick.adTagUrl)});
+    if (doubleClick && doubleClick.adTagUrl) {
+        ReceiverAdsManager = new AdsManager();
     }
 } );
 
