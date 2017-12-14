@@ -316,8 +316,8 @@
 							'label': subtitleTrack.label || subtitleTrack.language,
 							'title': subtitleTrack.language,
 							'id': subtitleTrack.id,
-							'index': textTrackData.languages.length,
-							'default': subtitleTrack.active
+							'default': subtitleTrack.active,
+							'index': textTrackData.languages.length
 						});
 					});
 					mw.log("Dash::" + textTracks.length + " text tracks were found: ", textTracks);
