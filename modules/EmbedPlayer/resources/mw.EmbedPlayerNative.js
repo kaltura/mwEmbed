@@ -1556,7 +1556,8 @@
 								'label': textTrack.label,
 								'title': textTrack.label,
 								'id': textTrack.id,
-								'index': i
+								'index': i,
+								'default': textTrack.mode === 'showing'
 							});
 						}
 						textTrack.mode = 'hidden';
