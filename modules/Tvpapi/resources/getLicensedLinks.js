@@ -24,6 +24,10 @@
 					_this.getMediaLicenseLink( event, source );
 				}
 			});
+            this.bind("onChangeMedia", function(event, source){
+                //reset the last selected source param
+                _this.lastSelectedSource="";
+            });
 		},
 
 		getMediaLicenseLink: function(event, source){
