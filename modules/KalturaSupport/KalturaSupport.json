@@ -225,6 +225,12 @@
     "dependencies": "mw.KBaseComponent",
     "kalturaPluginName": "audioSelector"
   },
+  "audioBalance": {
+    "scripts": "components/audioBalance/audioBalance.js",
+    "styles": "components/audioBalance/audioBalance.css",
+    "dependencies": "mw.KBaseComponent",
+    "kalturaPluginName": "audioBalance"
+  },
   "expandToggleBtn": {
     "scripts": "components/expandToggleBtn.js",
     "dependencies": "mw.KBaseButton",

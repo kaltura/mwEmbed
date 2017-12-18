@@ -1,0 +1,20 @@
+.audioBalance{
+	display: inline-block;
+	height: 100%;
+}
+.audioBalance .balanceSlider{
+	width: 80px;
+	height: 1.2em;
+}
+.audioBalance .balancePosition{
+	position: relative;
+	font-size: 0.84em;
+	display: inline;
+	line-height: 2.7em;
+	top: -2px;
+}
+@media (max-width:723px) {
+	.audioBalance .balanceSlider{
+		width: 60px;
+	}
+}

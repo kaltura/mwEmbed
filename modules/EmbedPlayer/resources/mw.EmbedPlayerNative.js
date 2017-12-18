@@ -134,12 +134,16 @@
 			});
 		},
         shouldAutoPlayMuted: function () {
+			if (mw.getConfig('thumbEmbedOrigin')){
+                mw.setConfig('autoPlayFallbackToMute', false);
+				return false;
+			}
             if (!mw.getConfig('autoMute')) {
                 if (mw.isMobileDevice() || mw.isIpad()) {
                     return mw.getConfig('mobileAutoPlay');
                 } else if (mw.isDesktopSafari11() && mw.getConfig('autoPlay')) {
                     if (typeof mw.getConfig('autoPlayFallbackToMute') !== 'boolean') {
-                        mw.setConfig('autoPlayFallbackToMute', true)
+                        mw.setConfig('autoPlayFallbackToMute', true);
                     }
                     return mw.getConfig('autoPlayFallbackToMute');
                 }
@@ -155,7 +159,7 @@
                     _this.bindHelper(eventName + _this.bindPostfix, function () {
                         if (_this.mobileAutoPlay) {
                             _this.mobileAutoPlay = false;
-                            _this.setVolume(1);
+                            _this.setVolume(1, null, mw.isIOS());
                         }
                         unMuteEventTriggers.forEach(function (eventName) {
                             _this.unbindHelper(eventName + _this.bindPostfix);

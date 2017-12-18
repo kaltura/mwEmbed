@@ -167,6 +167,7 @@
 				}
 				//autoplay
 				if(mw.getConfig('autoPlay') && _this.canAutoPlay()){
+					_this.unbindHelper("preSeek");
 					_this.play();
 				}else{
 					window['hidePlayer']();
@@ -346,7 +347,7 @@
 		},
 		setDuration: function(){
 			//set duration only if current duration is 0 or different from the video duration. on Android native browser sometimes we get duration=1 so working around that here...
-			var dur = this.getPlayerElement().getDuration();
+			var dur = (this.getPlayerElement().getDuration && this.getPlayerElement().getDuration()) || this.getDuration();
 			if (dur && dur != 1 && (this.duration == 0 || (this.duration > 0 && this.duration != dur)) ){
 				this.duration = this.getPlayerElement().getDuration();
 				this.triggerHelper('durationChange',[this.duration]);
@@ -529,7 +530,9 @@
 				}
 				if (this.parent_play()) {
 					if (_this.getPlayerElement()) {
-						_this.getPlayerElement().playVideo();
+						_this.playerReady.promise().then(function(){
+							_this.getPlayerElement().playVideo();
+						});
 					}
 				}
 				this.monitor();
@@ -589,18 +592,20 @@
 			var _this = this;
 			this.stopSeekWatchDog();
 			var currentTime = this.getPlayerElementTime();
-			var yt = this.getPlayerElement();
-			yt.seekTo( seekTime, true );
-			// Since Youtube don't have a seeked event , we must turn off the seeking flag and restore pause state if needed
-			if ( !this.isPlaying() ){
-				setTimeout(function(){
-					_this.currentTime = seekTime;
-					_this.triggerHelper( 'seeked' );
-					_this.pause();
-				},500);
-			} else {
-				this.startSeekWatchDog(currentTime);
-			}
+			this.playerReady.promise().then(function(){
+				var yt = _this.getPlayerElement();
+				yt.seekTo( seekTime, true );
+				// Since Youtube don't have a seeked event , we must turn off the seeking flag and restore pause state if needed
+				if ( !_this.isPlaying() ){
+					setTimeout(function(){
+						_this.currentTime = seekTime;
+						_this.triggerHelper( 'seeked' );
+						_this.pause();
+					},500);
+				} else {
+					_this.startSeekWatchDog(currentTime);
+				}
+			});
 		},
 		startSeekWatchDog: function(refTime){
 			this.log("startSeekWatchDog");
