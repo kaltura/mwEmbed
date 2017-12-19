@@ -383,10 +383,16 @@
 				filteredCuePoints = $.grep( filteredCuePoints, function ( cuePoint ) {
 					var foundCuePointType = _this.validateCuePointAttribute(cuePoint, "cuePointType", type);
 					var foundCuePointSubType = _this.validateCuePointAttribute(cuePoint, "subType", subType);
-					return foundCuePointType && foundCuePointSubType;
+					var checkCuePointsTag = _this.validateCuePointTags(cuePoint, "__PREVIEW_CUEPOINT_TAG__", subType);
+					return foundCuePointType && foundCuePointSubType && checkCuePointsTag;
 				} );
 			}
 			return filteredCuePoints;
+		},
+		//hide CP with tagName
+		validateCuePointTags: function(cuePoint, tagName){
+			var __PREVIEW_CUEPOINT_TAG__ = cuePoint.tags.indexOf(tagName);
+			return __PREVIEW_CUEPOINT_TAG__ === -1;
 		},
 		validateCuePointAttribute: function(cuePoint, attrName, attrValues){
 			var foundAttr = false;
