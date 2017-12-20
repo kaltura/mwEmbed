@@ -391,7 +391,13 @@
 		},
 		//hide CP with tagName
 		validateCuePointTags: function(cuePoint, tagName){
-			return cuePoint.tags.indexOf(tagName) === -1;
+			var result  = cuePoint.tags.indexOf(tagName) === -1;
+			var playerConfig = this.embedPlayer.playerConfig;
+			if(playerConfig && playerConfig.plugins && playerConfig.plugins.dualScreen && playerConfig.plugins.dualScreen.allowAdminCuePoints){
+				result =  true;
+			}
+			return result;
+			
 		},
 		validateCuePointAttribute: function(cuePoint, attrName, attrValues){
 			var foundAttr = false;
