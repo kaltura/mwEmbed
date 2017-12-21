@@ -385,6 +385,10 @@
 					var foundCuePointSubType = _this.validateCuePointAttribute(cuePoint, "subType", subType);
 					return foundCuePointType && foundCuePointSubType;
 				} );
+				// filter same CP
+				filteredCuePoints = filteredCuePoints.filter(function( item,index,allInArray ) {
+					return _this.validateSameCuePoints(allInArray,index);
+				});
 			}
 			return filteredCuePoints;
 		},
@@ -404,6 +408,36 @@
 				foundAttr = true;
 			}
 			return foundAttr;
+		},
+		/**
+		 * if have same CP earlier - hide current CuePoint
+		 * @param  allCP - array of CP where try to find same CP
+		 * @param  currentCuePointIndex - position from current CP
+		 *
+		 */
+		validateSameCuePoints:function (allCP, currentCuePointIndex) {
+			var currentCP = allCP[currentCuePointIndex];
+			var prevCP = this.getPrevCPWithCorrectType(allCP,currentCuePointIndex-1);
+			if(prevCP !== false && currentCP){
+				var differentByCreatedAt = Math.abs(currentCP.createdAt - prevCP.createdAt);
+				var differentByStartTime = Math.abs(currentCP.startTime - prevCP.startTime);
+				var isTheSamePartnerData = currentCP.partnerData === prevCP.partnerData;
+				var isTheSameTags = currentCP.tags === prevCP.tags;
+				if(isTheSamePartnerData && isTheSameTags && (differentByCreatedAt <= 3000 || differentByStartTime <= 3000)){
+					return false;
+				}
+			}
+			return true;
+		},
+		getPrevCPWithCorrectType: function (allCP,currentCuePointIndex) {
+			var prevCP = false;
+			for(var i = currentCuePointIndex; i>=0;i--){
+				if(allCP[i].cuePointType === "thumbCuePoint.Thumb"){
+					prevCP = allCP[i];
+					break;
+				}
+			}
+			return prevCP;
 		},
 		/**
 		 * Returns the next cuePoint object for requested time

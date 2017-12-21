@@ -375,6 +375,9 @@
 
                             return (isValidTag || isValidType) && passedCustomFilter;
                         });
+                        result = result.filter(function( item,index,allInArray ) {
+                            return _this.getPlayer().kCuePoints.validateSameCuePoints(allInArray,index);
+                        });
 
                         result.sort(function (a, b) {
                             return args.sortDesc ? (b.startTime - a.startTime) : (a.startTime - b.startTime);

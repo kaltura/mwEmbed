@@ -462,8 +462,12 @@
 
 			//Get current item number
 			var orderId = this.mediaList.length;
+			
+			var clearSameCP = items.filter(function( item,index,allInArray ) {
+				return _this.getPlayer().kCuePoints.validateSameCuePoints(allInArray,index);
+			});
 			//Map items to mediaList items
-			var mediaItems = $.map(items, function (item) {
+			var mediaItems = $.map(clearSameCP, function (item) {
 				var mediaItem;
 				var customData = item.partnerData ? JSON.parse(item.partnerData) : {};
 				var title = item.title || customData.title;
