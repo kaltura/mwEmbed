@@ -218,7 +218,8 @@
 			});
 
 			if( this.getConfig('layout') == 'below'){
-				this.updateBelowVideoCaptionContainer();
+                this.getPlayer().triggerHelper("removeTextSize");
+                this.updateBelowVideoCaptionContainer();
 			}
 
 			if ( this.getConfig('layout') == 'ontop' ) {
@@ -900,7 +901,7 @@
 			this.updateLayoutEventFired = true;
 			 _this.embedPlayer.doUpdateLayout();
 			this.updateLayoutEventFired = false;
-		},
+        },
 		/**
 		 * Gets a text size percent relative to about 30 columns of text for 400
 		 * pixel wide player, at 100% text size.
