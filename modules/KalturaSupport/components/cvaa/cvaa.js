@@ -166,15 +166,6 @@
                 }
             });
 
-            //Remove the large and extra large size if CC layout is set to below
-            this.bind('removeTextSize', function () {
-                var currentPreset = _this.getConfig("cvaaOptions"),
-                    newCurrentPreset = $.extend(currentPreset, {size: currentPreset.size.slice(0, 2)});
-                //Change Medium text to large
-                newCurrentPreset.size[1].text = "Large";
-                this.getPlayer().triggerHelper("newCaptionsStyles", newCurrentPreset);
-            });
-
             this.bind('preHideScreen', function (event, screenName) {
                 if (screenName === "cvaa") {
                     //set correct currently selected language
@@ -516,6 +507,13 @@
                 "optionsLabel": this.locale.optionsBtnLabel,
                 "optionsEvent": "openCvaaOptions"
             }
+        },
+
+        setBelowConfig: function () {
+            var currentPreset = this.getConfig("cvaaOptions"),
+                newCurrentPreset = $.extend(currentPreset, {size: currentPreset.size.slice(0, 2)});
+            //Change Medium text to large
+            newCurrentPreset.size[1].text = "Large";
         },
 
         getTemplateData: function () {

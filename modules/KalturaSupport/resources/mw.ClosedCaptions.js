@@ -52,9 +52,12 @@
 				this.setConfig('displayCaptions', false );
 			}
 
-			if(_this.getConfig("enableOptionsMenu")){
-				this.optionsMenu = new mw.closedCaptions.cvaa(this.getPlayer(), function () {
-				}, "cvaa");
+            if(_this.getConfig("enableOptionsMenu")){
+                this.optionsMenu = new mw.closedCaptions.cvaa(this.getPlayer(), function () {
+                    if ( _this.getConfig('layout') === 'below') {
+                        this.setBelowConfig();
+                    }
+                }, "cvaa");
 
 				if(!this.optionsMenu.isSafeEnviornment()){
 					this.setConfig('enableOptionsMenu', false );
@@ -217,12 +220,12 @@
 				}
 			});
 
-			if( this.getConfig('layout') == 'below'){
-                this.getPlayer().triggerHelper("removeTextSize");
+			if( this.getConfig('layout') === 'below'){
+                //this.getPlayer().triggerHelper("removeTextSize");
                 this.updateBelowVideoCaptionContainer();
 			}
 
-			if ( this.getConfig('layout') == 'ontop' ) {
+			if ( this.getConfig('layout') === 'ontop' ) {
 				this.bind('onHideControlBar onShowControlBar', function (event, layout) {
 					if (!_this.ended && _this.getPlayer().isOverlayControls()) {
 						_this.defaultBottom = layout.bottom;
