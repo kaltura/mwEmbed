@@ -1306,7 +1306,7 @@ mw.KAdPlayer.prototype = {
 		}, 0);
 	},
 	restoreEmbedPlayer: function(){
-		if ( mw.isSafari11() ) {
+		if ( mw.isSafari11() && !mw.isIphone() && !mw.isIpad() ) {
 			// do not remove the video sibling to avoid user gesture issue. hide it instead.
 			$( '#' + this.getVideoAdSiblingId() + '_container' ).css('visibility', 'hidden');
 			this.adSibling.getElement().pause();
