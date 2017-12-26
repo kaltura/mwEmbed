@@ -371,7 +371,7 @@
                             }).length > 0) : false;
 
                             var passedCustomFilter = (isValidTag || isValidType) && args.filter ? args.filter(cuePoint) : true;
-                            var checkCuePointsTag = _this.getPlayer().kCuePoints.validateCuePointTags(cuePoint, "__PREVIEW_CUEPOINT_TAG__");
+                            var checkCuePointsTag = _this.getPlayer().kCuePoints.validateCuePointTags(cuePoint, _this.getPlayer().kCuePoints.getPreviewCuePointTag());
                             return (isValidTag || isValidType) && passedCustomFilter && checkCuePointsTag;
                         });
 

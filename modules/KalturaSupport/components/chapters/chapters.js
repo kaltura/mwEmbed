@@ -464,7 +464,7 @@
 			var orderId = this.mediaList.length;
 			//Map items to mediaList items
 			var filterItems = items.filter(function( item ) {
-				return _this.getPlayer().kCuePoints.validateCuePointTags(item, "__PREVIEW_CUEPOINT_TAG__");
+				return _this.getPlayer().kCuePoints.validateCuePointTags(item, _this.getPlayer().kCuePoints.getPreviewCuePointTag());
 			});
 			var mediaItems = $.map(filterItems, function (item) {
 				var mediaItem;

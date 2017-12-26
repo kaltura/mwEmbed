@@ -383,7 +383,7 @@
 				filteredCuePoints = $.grep( filteredCuePoints, function ( cuePoint ) {
 					var foundCuePointType = _this.validateCuePointAttribute(cuePoint, "cuePointType", type);
 					var foundCuePointSubType = _this.validateCuePointAttribute(cuePoint, "subType", subType);
-					var checkCuePointsTag = _this.validateCuePointTags(cuePoint, "__PREVIEW_CUEPOINT_TAG__");
+					var checkCuePointsTag = _this.validateCuePointTags(cuePoint, _this.getPreviewCuePointTag());
 					return foundCuePointType && foundCuePointSubType && checkCuePointsTag;
 				} );
 			}
@@ -398,6 +398,14 @@
 			}
 			return result;
 			
+		},
+		getPreviewCuePointTag:function () {
+			var tagName = "__PREVIEW_CUEPOINT_TAG__";
+			var playerConfig = this.embedPlayer.playerConfig;
+			if(playerConfig && playerConfig.plugins && playerConfig.plugins.dualScreen && playerConfig.plugins.dualScreen.PREVIEW_CUEPOINT_TAG){
+				tagName =  playerConfig.plugins.dualScreen.PREVIEW_CUEPOINT_TAG;
+			}
+			return tagName;
 		},
 		validateCuePointAttribute: function(cuePoint, attrName, attrValues){
 			var foundAttr = false;
