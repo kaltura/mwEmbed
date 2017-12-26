@@ -52,9 +52,12 @@
 				this.setConfig('displayCaptions', false );
 			}
 
-			if(_this.getConfig("enableOptionsMenu")){
-				this.optionsMenu = new mw.closedCaptions.cvaa(this.getPlayer(), function () {
-				}, "cvaa");
+            if(_this.getConfig("enableOptionsMenu")){
+                this.optionsMenu = new mw.closedCaptions.cvaa(this.getPlayer(), function () {
+                    if ( _this.getConfig('layout') === 'below') {
+                        this.setBelowConfig();
+                    }
+                }, "cvaa");
 
 				if(!this.optionsMenu.isSafeEnviornment()){
 					this.setConfig('enableOptionsMenu', false );
@@ -217,11 +220,11 @@
 				}
 			});
 
-			if( this.getConfig('layout') == 'below'){
-				this.updateBelowVideoCaptionContainer();
+			if( this.getConfig('layout') === 'below'){
+                this.updateBelowVideoCaptionContainer();
 			}
 
-			if ( this.getConfig('layout') == 'ontop' ) {
+			if ( this.getConfig('layout') === 'ontop' ) {
 				this.bind('onHideControlBar onShowControlBar', function (event, layout) {
 					if (!_this.ended && _this.getPlayer().isOverlayControls()) {
 						_this.defaultBottom = layout.bottom;
@@ -900,7 +903,7 @@
 			this.updateLayoutEventFired = true;
 			 _this.embedPlayer.doUpdateLayout();
 			this.updateLayoutEventFired = false;
-		},
+        },
 		/**
 		 * Gets a text size percent relative to about 30 columns of text for 400
 		 * pixel wide player, at 100% text size.
