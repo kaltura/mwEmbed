@@ -464,7 +464,7 @@
 			var orderId = this.mediaList.length;
 			
 			var clearSameCP = items.filter(function( item,index,allInArray ) {
-				return _this.getPlayer().kCuePoints.validateSameCuePoints(allInArray,index);
+				return _this.getPlayer().kCuePoints.removeDuplicatedCuePoints(allInArray,index);
 			});
 			//Map items to mediaList items
 			var mediaItems = $.map(clearSameCP, function (item) {

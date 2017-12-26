@@ -387,7 +387,7 @@
 				} );
 				// filter same CP
 				filteredCuePoints = filteredCuePoints.filter(function( item,index,allInArray ) {
-					return _this.validateSameCuePoints(allInArray,index);
+					return _this.removeDuplicatedCuePoints(allInArray,index);
 				});
 			}
 			return filteredCuePoints;
@@ -415,15 +415,16 @@
 		 * @param  currentCuePointIndex - position from current CP
 		 *
 		 */
-		validateSameCuePoints:function (allCP, currentCuePointIndex) {
+		removeDuplicatedCuePoints:function (allCP, currentCuePointIndex) {
+			var defaultThreshold = this.getThreshold();
 			var currentCP = allCP[currentCuePointIndex];
-			var prevCP = this.getPrevCPWithCorrectType(allCP,currentCuePointIndex-1);
+			var prevCP = this.getPrevCPWithCorrectType(allCP,currentCuePointIndex);
 			if(prevCP !== false && currentCP){
-				var differentByCreatedAt = Math.abs(currentCP.createdAt - prevCP.createdAt);
-				var differentByStartTime = Math.abs(currentCP.startTime - prevCP.startTime);
+				var createdAtDelta = Math.abs(currentCP.createdAt - prevCP.createdAt);
+				var startTimeDelta = Math.abs(currentCP.startTime - prevCP.startTime);
 				var isTheSamePartnerData = currentCP.partnerData === prevCP.partnerData;
 				var isTheSameTags = currentCP.tags === prevCP.tags;
-				if(isTheSamePartnerData && isTheSameTags && (differentByCreatedAt <= 3000 || differentByStartTime <= 3000)){
+				if(isTheSamePartnerData && isTheSameTags && (createdAtDelta <= defaultThreshold*1000 || startTimeDelta <= defaultThreshold*1000)){
 					return false;
 				}
 			}
@@ -431,13 +432,30 @@
 		},
 		getPrevCPWithCorrectType: function (allCP,currentCuePointIndex) {
 			var prevCP = false;
-			for(var i = currentCuePointIndex; i>=0;i--){
-				if(allCP[i].cuePointType === "thumbCuePoint.Thumb"){
+			var previousIndex = currentCuePointIndex - 1;
+			var currentCP = allCP[currentCuePointIndex];
+			for(var i = previousIndex; i>=0;i--){
+				var defaultThreshold = this.getThreshold();
+				var createdAtDelta = Math.abs(currentCP.createdAt - allCP[i].createdAt);
+				var startTimeDelta = Math.abs(currentCP.startTime - allCP[i].startTime);
+				//if delta of createdAt and startTime is more than defaultThreshold - we do not have same CP
+				if(createdAtDelta > defaultThreshold*1000 || startTimeDelta > defaultThreshold*1000){
+					break;
+				}
+				if(allCP[i].cuePointType === currentCP.cuePointType){
 					prevCP = allCP[i];
 					break;
 				}
 			}
 			return prevCP;
+		},
+		getThreshold:function () {
+			var defaultThreshold =  3;
+			var playerConfig = this.embedPlayer.playerConfig;
+			if(playerConfig && playerConfig.plugins && playerConfig.plugins.dualScreen && playerConfig.plugins.dualScreen.thresholdForDuplicateCP){
+				defaultThreshold = playerConfig.plugins.dualScreen.thresholdForDuplicateCP;
+			}
+			return defaultThreshold;
 		},
 		/**
 		 * Returns the next cuePoint object for requested time

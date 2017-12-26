@@ -376,7 +376,7 @@
                             return (isValidTag || isValidType) && passedCustomFilter;
                         });
                         result = result.filter(function( item,index,allInArray ) {
-                            return _this.getPlayer().kCuePoints.validateSameCuePoints(allInArray,index);
+                            return _this.getPlayer().kCuePoints.removeDuplicatedCuePoints(allInArray,index);
                         });
 
                         result.sort(function (a, b) {
