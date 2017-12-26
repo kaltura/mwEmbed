@@ -55,13 +55,16 @@
 
         renderStreams: function () {
             var streamsContainer = this.getComponent().find('.ds-streams').empty();
+            var getTabIndexAttr = streamsContainer.attr('tabindex');
+            // debugger;
             var contentSelectionGroup = this.getComponent().find('.displayControlGroup-contentSelection');
             var dragDropEnabled = !this.getConfig('disableDragDrop');
             if (this.streams && this.streams.length) {
                 streamsContainer.append($.map(this.streams, function (stream, index) {
                     var $stream = $('<div/>', {
                         'class': 'ds-stream',
-                        'data-stream-index': index
+                        'data-stream-index': index,
+                        'tabindex':getTabIndexAttr+'.'+index
                     }).append($('<img/>', {
                         src: stream.thumbnailUrl,
                         'class': 'ds-stream__thumb'
@@ -202,7 +205,7 @@
 				.on( 'click' + this.postFix + ' touchstart' + this.postFix, '.ds-streams > .ds-stream', function () {
 					_this.embedPlayer.triggerHelper('dualScreenChangeMainDisplayStream', [$(this).data('stream')]);
 					return false;
-				} );
+				} ).on('keydown' + this.postFix + ' touchstart' + this.postFix, '.ds-streams > .ds-stream', _this.keyDownHandler);;
 
 			if (mw.isNativeApp()){
 				switchBtn.addClass("disabled" ).attr("title", _this.nativeAppTooltip );
@@ -247,6 +250,12 @@
 			_this.bind('displayDropped dualScreenChangeMainDisplayStream', function () {
 				$('.displayControlGroup').removeClass('ds-blur ds-open');
 			});
+		},
+		keyDownHandler: function(ev){
+			if(ev.which === 13 || ev.which === 32)
+			{
+				$(ev.target).click();
+			}
 		},
 		/**
 		 * Changes the style of the buttons according to the selected view mode.

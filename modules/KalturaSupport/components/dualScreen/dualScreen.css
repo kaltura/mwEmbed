@@ -155,7 +155,7 @@
     visibility: visible;
     opacity: 1;
 }
-.componentOff *{
+.dualScreen.componentOff *{
     visibility: hidden;
     opacity: 0;
 }
