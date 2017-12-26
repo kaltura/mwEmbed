@@ -221,7 +221,6 @@
 			});
 
 			if( this.getConfig('layout') === 'below'){
-                //this.getPlayer().triggerHelper("removeTextSize");
                 this.updateBelowVideoCaptionContainer();
 			}
 
