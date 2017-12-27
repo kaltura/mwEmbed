@@ -1552,7 +1552,7 @@
 							textTracksData.languages.push({
 								'kind': 'subtitle',
 								'language': textTrack.label,
-								'srclang': textTrack.label,
+								'srclang': textTrack.language || textTrack.label,
 								'label': textTrack.label,
 								'title': textTrack.label,
 								'id': textTrack.id,

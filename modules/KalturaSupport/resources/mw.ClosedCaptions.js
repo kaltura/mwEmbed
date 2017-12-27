@@ -78,6 +78,10 @@
 				}
 			});
 
+			if ( this.isNativeIOSPlayback() ) {
+				this.setConfig('showEmbeddedCaptions', true);
+			}
+
 			if ( this.getConfig('showEmbeddedCaptions') === true ) {
 
 				if ( this.getConfig('showEmbeddedCaptionsStyle') === true ) {
@@ -282,6 +286,9 @@
 					}
 				}
 			});
+		},
+		isNativeIOSPlayback: function() {
+			return mw.isIOS() && !mw.isIpad() && !mw.getConfig('EmbedPlayer.WebKitPlaysInline');
 		},
 		isNativeFullScreenEnabled: function () {
 			return ( mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen') && this.embedPlayer.getPlayerElement().webkitSupportsFullscreen );
@@ -611,7 +618,7 @@
 				if( defaultLangKey == 'None' ){
 					return ;
 				}
-				if ( mw.isIOS() && !mw.isIpad() && !mw.getConfig('EmbedPlayer.WebKitPlaysInline') ) {
+				if ( this.isNativeIOSPlayback() ) {
 					this.selectDefaultIosTrack(defaultLangKey);
 					return ;
 				}
@@ -626,7 +633,7 @@
             // Get source by "default" property
             if ( !this.selectedSource ) {
                 source = this.selectDefaultSource();
-	            if ( source && mw.isIOS() && !mw.isIpad() && !mw.getConfig('EmbedPlayer.WebKitPlaysInline') ) {
+	            if ( source && this.isNativeIOSPlayback() ) {
 		            this.selectDefaultIosTrack(source.srclang);
 		            return ;
 	            }
