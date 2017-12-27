@@ -434,12 +434,11 @@
 			var prevCP = false;
 			var previousIndex = currentCuePointIndex - 1;
 			var currentCP = allCP[currentCuePointIndex];
+			var thresholdTime = this.getThreshold();
 			for(var i = previousIndex; i>=0;i--){
-				var defaultThreshold = this.getThreshold();
-				var createdAtDelta = Math.abs(currentCP.createdAt - allCP[i].createdAt);
 				var startTimeDelta = Math.abs(currentCP.startTime - allCP[i].startTime);
-				//if delta of createdAt and startTime is more than defaultThreshold - we do not have same CP
-				if(createdAtDelta > defaultThreshold*1000 || startTimeDelta > defaultThreshold*1000){
+				//if delta of createdAt and startTime is more than thresholdTime - we do not have same CP
+				if(startTimeDelta > thresholdTime*1000){
 					break;
 				}
 				if(allCP[i].cuePointType === currentCP.cuePointType){
@@ -449,6 +448,9 @@
 			}
 			return prevCP;
 		},
+		/**
+		 * Returns time time in seconds
+		 */
 		getThreshold:function () {
 			var defaultThreshold =  3;
 			var playerConfig = this.embedPlayer.playerConfig;
