@@ -266,12 +266,12 @@
 				_this.getBtn().show();
 			});
 			this.bind( 'onOpenFullScreen', function (){
-				if ( mw.isIOS() && !mw.isIpad() && _this.isNativeFullScreenEnabled() && _this.selectedSource ) {
+				if ( mw.isIOS() && _this.isNativeFullScreenEnabled() && _this.selectedSource ) {
 					_this.embedPlayer.selectDefaultCaption(_this.selectedSource.srclang);
 				}
 			});
 			this.bind( 'onCloseFullScreen', function (){
-				if ( mw.isIOS() && !mw.isIpad() && _this.isNativeFullScreenEnabled() ) {
+				if ( mw.isIOS() && _this.isNativeFullScreenEnabled() ) {
 					var nativeSource = _this.embedPlayer.getActiveSubtitle();
 					_this.embedPlayer.hideTextTrack();
 					if (nativeSource) {
