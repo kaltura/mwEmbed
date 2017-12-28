@@ -672,7 +672,7 @@
 			var _this = this;
 			var selectedSource = null;
 			$.each(this.textSources, function(idx, source){
-				if( (source.srclang && langKey == source.srclang.toLowerCase()) || (source.title && langKey.toLowerCase() == source.title.toLowerCase()) ){
+				if( source.srclang && langKey == source.srclang.toLowerCase() ){
 					selectedSource = source;
 					_this.embedPlayer.triggerHelper("sourceSelectedByLangKey",[selectedSource.label]);
 					return false;
