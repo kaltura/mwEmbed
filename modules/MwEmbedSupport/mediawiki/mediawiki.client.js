@@ -117,6 +117,11 @@
 	mw.isChrome = function () {
 		return ( userAgent.indexOf('Chrome') != -1 && !mw.isEdge() );
 	};
+    mw.isChrome64AndUp = function () {
+        var chromeVersion = mw.getChromeVersion();
+        var chromeMajorVersion = chromeVersion[0];
+		return ( mw.isChrome() && chromeMajorVersion >= 64 );
+    };
 	mw.isAndroidNativeBrowser = function () {
 		return (mw.isAndroid() && !mw.isFirefox() && !mw.isChrome());
 	};
@@ -378,6 +383,19 @@
 		} catch (e) {
 		}
 		return '0,0,0';
+	};
+
+    /**
+	 * get chrome version parts
+     * @returns {Array}
+     */
+	mw.getChromeVersion = function(){
+        var chromeVersionParts = [0, 0, 0, 0];
+		var chromeVersion = userAgent.match(/.*Chrome\/([0-9\.]+)/)[1];
+        if (chromeVersion){
+            chromeVersionParts = chromeVersion.split(".");
+		}
+		return chromeVersionParts;
 	};
 
 })(window.mediaWiki);
