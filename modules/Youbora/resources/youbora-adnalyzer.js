@@ -9,7 +9,7 @@ var VERSION = '1.0.0';
 
 $YB.adnalyzers.KalturaAds = function (plugin) {
   try {
-    this.adnalyzerVersion = '5.5.4-' + VERSION + '-kalturaads-js';
+    this.adnalyzerVersion = '5.4.5-' + VERSION + '-kalturaads-js';
 
     // Reference to the plugin where it was called.
     this.startMonitoring(plugin, plugin.player);
@@ -47,9 +47,9 @@ $YB.adnalyzers.KalturaAds.prototype.getAdPosition = function () {
     case 'postroll':
     case 'post':
       return 'post';
-    case 'bumperPreSeq':
-      return 'pre_sequence_bumper';
-    case 'bumperPostSeq':
+     case 'bumperPreSeq':
+       return 'pre_sequence_bumper';
+     case 'bumperPostSeq':
       return 'post_sequence_bumper';
     default:
       return 'mid';
@@ -77,7 +77,7 @@ $YB.adnalyzers.KalturaAds.prototype.registerListeners = function () {
     var adnalyzer = this;
 
     this.ads.bind('onAdPlay', function (e, id, system, type, position, duration, podPosition, podStartTime, title, props) {
-      if (type === 'overlay') {
+      if (type === 'overlay'){
         return;
       }
       adnalyzer.title = title;
@@ -86,13 +86,13 @@ $YB.adnalyzers.KalturaAds.prototype.registerListeners = function () {
       adnalyzer.startJoinAdHandler();
     });
 
-    this.ads.bind('onPlayerStateChange', function (event, newState) {
-      if (newState === "pause") {
-        adnalyzer.pauseAdHandler();
-      } else if (newState === "play") {
-        adnalyzer.resumeAdHandler();
-      }
-    });
+      this.ads.bind( 'onPlayerStateChange', function ( event, newState ) {
+          if ( newState === "pause" ) {
+              adnalyzer.pauseAdHandler();
+          } else if ( newState === "play" ) {
+              adnalyzer.resumeAdHandler();
+          }
+      } );
 
     this.ads.bind('AdSupport_AdUpdatePlayhead', function (e, currentTime) {
       adnalyzer.playhead = currentTime;
@@ -108,13 +108,6 @@ $YB.adnalyzers.KalturaAds.prototype.registerListeners = function () {
       adnalyzer.resetValues();
     });
 
-    this.ads.bind('adClick', function () {
-      adnalyzer.clickAdHandler(""); // Unknown ad url
-    });
-
-    this.ads.bind('adErrorEvent', function () {
-      adnalyzer.errorAdHandler("Ad error");
-    });
 
   } catch (error) {
     $YB.error(error);
