@@ -673,7 +673,7 @@
 			});
 
 			for (var i = 0; i < textTracks.length; i++) {
-				if (textTracks[i].language === defaultLangKey) {
+				if (textTracks[i].language === defaultLangKey || textTracks[i].label === defaultLangKey) {
 					textTracks[i].mode = "showing";
 					// select the first match
 					return;
