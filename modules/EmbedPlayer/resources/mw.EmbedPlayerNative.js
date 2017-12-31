@@ -1548,7 +1548,7 @@
 						if (textTrack.kind === 'metadata') {
 							//add id3 tags support
 							_this.id3Tag(textTrack);
-						} else if (textTrack.kind === 'subtitles' || textTrack.kind === 'caption') {
+						} else if (textTrack.kind === 'subtitles' || textTrack.kind === 'captions') {
 							textTracksData.languages.push({
 								'kind': 'subtitle',
 								'language': textTrack.label,
