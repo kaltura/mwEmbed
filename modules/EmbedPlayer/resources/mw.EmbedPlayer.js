@@ -1124,6 +1124,7 @@
 			var stopSeek = {value: false};
 			this.triggerHelper('preSeek', [seekTime, stopAfterSeek, stopSeek]);
 			if (stopSeek.value) {
+				this.seeking = false;
 				return false;
 			}
 
