@@ -391,9 +391,9 @@
      */
 	mw.getChromeVersion = function(){
         var chromeVersionParts = [0, 0, 0, 0];
-		var chromeVersion = userAgent.match(/.*Chrome\/([0-9\.]+)/)[1];
-        if (chromeVersion){
-            chromeVersionParts = chromeVersion.split(".");
+		var chromeVersion = userAgent.match(/.*Chrome\/([0-9\.]+)/);
+        if (chromeVersion && chromeVersion[1]){
+            chromeVersionParts = chromeVersion[1].split(".");
 		}
 		return chromeVersionParts;
 	};
