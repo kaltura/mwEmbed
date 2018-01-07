@@ -97,7 +97,7 @@
 
             switch ( mimeType ) {
                 case "application/vnd.apple.mpegurl":
-                    this.mediaProtocol = cast.player.api.CreateHlsStreamingProtocol( this.mediaHost );
+                    this.mediaProtocol = cast.player.api.CreateHlsStreamingProtocol( this.mediaHost, cast.player.api.HlsSegmentFormat.MPEG2_TS );
                     break;
                 case "application/dash+xml":
                     this.mediaProtocol = cast.player.api.CreateDashStreamingProtocol( this.mediaHost );
