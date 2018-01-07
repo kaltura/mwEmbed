@@ -396,14 +396,14 @@
                 .on('click', function () {
                     _this.embedPlayer.seek(0,true);
                     _this.KIVQModule.continuePlay();
-                });
+                }).on('keydown', _this.keyDownHandler);
 
             $(".submit-button").html(gM('mwe-quiz-submit'))
                 .on('click', function () {
                     $(this).off('click');
                     $(this).html(gM('mwe-quiz-plsWait'));
                     _this.KIVQModule.setSubmitQuiz();
-                });
+                }).on('keydown', _this.keyDownHandler);
         },
         ssSubmitted: function (score) {
             var _this = this,cpArray = $.cpObject.cpArray;
