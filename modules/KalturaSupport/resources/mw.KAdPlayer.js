@@ -1290,7 +1290,7 @@ mw.KAdPlayer.prototype = {
 					if (vid.paused) {
 						doneCallback();
 					}
-				}, 2000);
+				}, 1500);
 			}
 			// Update the main player state per ad playback:
 			_this.embedPlayer.playInterfaceUpdate();
