@@ -1269,9 +1269,9 @@ mw.KAdPlayer.prototype = {
 
 			var vid = _this.getVideoAdSiblingElement( source );
 
-			if ( mw.isSafari11() ) {
+			if ( mw.isSafari11() || mw.isMobileChrome()) {
 				// use the user gesture to open the main video tag
-				_this.embedPlayer.load();
+				_this.embedPlayer.getPlayerElement().load();
 				$( '#' + _this.getVideoAdSiblingId() + '_container' ).css('visibility', 'visible');
 			}
 			//Register error state and continue with player flow in case of
