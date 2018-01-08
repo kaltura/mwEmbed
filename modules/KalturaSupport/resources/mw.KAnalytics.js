@@ -214,7 +214,7 @@ mw.KAnalytics.prototype = {
 
 		var kanalonyConfig = this.embedPlayer.getKalturaConfig( 'kAnalony' );
 		eventRequest['hasKanalony'] = false;
-		if (kanalonyConfig && kanalonyConfig.plugin != false) {
+		if (kanalonyConfig && kanalonyConfig.plugin && kanalonyConfig.plugin != false) {
 			eventRequest['hasKanalony'] = true;
 		}
 
