@@ -1285,6 +1285,12 @@ mw.KAdPlayer.prototype = {
 			var playPromise = vid.play();
 			if (playPromise) {
 				playPromise.catch(doneCallback);
+			} else {
+				setTimeout(function () {
+					if (vid.paused) {
+						doneCallback();
+					}
+				}, 1500);
 			}
 			// Update the main player state per ad playback:
 			_this.embedPlayer.playInterfaceUpdate();
