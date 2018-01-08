@@ -168,9 +168,6 @@
                 });
             }
 
-            this.bindHelper('firstPlay' + this.bindPostfix, function () {
-                _this.parseTracks();
-            });
             this.bindHelper('switchAudioTrack' + this.bindPostfix, function (e, data) {
                 _this.switchAudioTrack(data.index);
             });
@@ -1323,6 +1320,7 @@
 		 */
 		_onloadedmetadata: function () {
 			this.getPlayerElement();
+            this.parseTracks();
 			// only update duration if we don't have one: ( some browsers give bad duration )
 			// like Android 4 default browser
 			if (!this.duration
