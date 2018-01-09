@@ -1320,7 +1320,14 @@
 		 */
 		_onloadedmetadata: function () {
 			this.getPlayerElement();
-            this.parseTracks();
+			var _this = this;
+			if (this.firstPlay) {
+				this.bindOnceHelper('firstPlay' + this.bindPostfix, function () {
+					_this.parseTracks();
+				});
+			} else {
+				this.parseTracks();
+			}
 			// only update duration if we don't have one: ( some browsers give bad duration )
 			// like Android 4 default browser
 			if (!this.duration
