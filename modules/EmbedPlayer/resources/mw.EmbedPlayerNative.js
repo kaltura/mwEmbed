@@ -1549,7 +1549,6 @@
 			this.parseTextTracksTimeout = setTimeout(function() {
 				if( vid.textTracks.length > 0 ) {
 					var textTracksData = {languages: []};
-					console.info(counter, vid.textTracks.length, vid.textTracks);
 					for (var i = 0; i < vid.textTracks.length; i++) {
 						var textTrack = vid.textTracks[i];
 						if (textTrack.kind === 'metadata' && !_this.id3TrackAdded) {
@@ -1576,11 +1575,9 @@
 					} else {
 						//if no caption or subtitle text track were added keep on looking
 						//In live we keep on looking till we found 608/708 caption without a counter to limit
-                        if( !_this.isLive() && (counter < 10) ){
+                        if( (_this.isLive()) || (!_this.isLive() && (counter < 10)) ){
                             _this.parseTextTracks(vid, ++counter);
-                        } else if (_this.isLive()){
-			    _this.parseTextTracks(vid, 0);
-			}
+                        }
 					}
 				}else{
 					//try to catch textTracks.kind === "metadata, give up after 10 seconds
