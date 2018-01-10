@@ -1578,7 +1578,9 @@
 						//In live we keep on looking till we found 608/708 caption without a counter to limit
                         if( !_this.isLive() && (counter < 10) ){
                             _this.parseTextTracks(vid, ++counter);
-                        }
+                        } else if (_this.isLive()){
+			    _this.parseTextTracks(vid, 0);
+			}
 					}
 				}else{
 					//try to catch textTracks.kind === "metadata, give up after 10 seconds
