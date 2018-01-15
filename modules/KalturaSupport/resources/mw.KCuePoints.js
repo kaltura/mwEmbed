@@ -26,6 +26,7 @@
 		midCuePointsArray: [],
 		codeCuePointsArray : [],
 		liveCuePointsIntervalId: null,
+		threshold: null,
 		supportedCuePoints: [
 			mw.KCuePoints.TYPE.CODE,
 			mw.KCuePoints.TYPE.THUMB,
@@ -449,15 +450,20 @@
 			return prevCP;
 		},
 		/**
-		 * Returns time time in seconds
+		 * Returns time in seconds
 		 */
 		getThreshold:function () {
-			var defaultThreshold =  3;
-			var playerConfig = this.embedPlayer.playerConfig;
-			if(playerConfig && playerConfig.plugins && playerConfig.plugins.dualScreen && playerConfig.plugins.dualScreen.thresholdForDuplicateCP){
-				defaultThreshold = playerConfig.plugins.dualScreen.thresholdForDuplicateCP;
+			if(!this.threshold){
+				var defaultThreshold =  3;
+				var playerConfig = this.embedPlayer.playerConfig;
+				if(playerConfig && playerConfig.plugins && playerConfig.plugins.dualScreen && playerConfig.plugins.dualScreen.thresholdForDuplicateCP){
+					defaultThreshold = playerConfig.plugins.dualScreen.thresholdForDuplicateCP;
+				}
+				this.threshold = defaultThreshold;
+				return defaultThreshold;
+			}else {
+				return this.threshold;
 			}
-			return defaultThreshold;
 		},
 		/**
 		 * Returns the next cuePoint object for requested time
