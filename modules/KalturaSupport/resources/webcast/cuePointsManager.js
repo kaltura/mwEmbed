@@ -361,6 +361,7 @@
 
                     if (this.cuePoints) {
                         var filterByTags = (args.tags ? args.tags : (args.tag ? [args.tag] : null));
+                        var previewCuePointTag = _this.getPlayer().kCuePoints.getPreviewCuePointTag();
                         result = $.grep(this.cuePoints, function (cuePoint) {
                             var hasTagCondition = filterByTags;
                             var hasTypeCondition = args.types && args.types.length && args.types.length > 0;
@@ -371,7 +372,7 @@
                             }).length > 0) : false;
 
                             var passedCustomFilter = (isValidTag || isValidType) && args.filter ? args.filter(cuePoint) : true;
-                            var checkCuePointsTag = _this.getPlayer().kCuePoints.validateCuePointTags(cuePoint, _this.getPlayer().kCuePoints.getPreviewCuePointTag());
+                            var checkCuePointsTag = _this.getPlayer().kCuePoints.validateCuePointTags(cuePoint, previewCuePointTag);
                             return (isValidTag || isValidType) && passedCustomFilter && checkCuePointsTag;
                         });
 

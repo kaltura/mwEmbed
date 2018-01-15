@@ -31,6 +31,7 @@
 			mw.KCuePoints.TYPE.THUMB,
 			mw.KCuePoints.TYPE.QUIZ_QUESTION
 		],
+		previewCuePointTag:null,
 
 		init: function (embedPlayer) {
 			var _this = this;
@@ -389,7 +390,12 @@
 			}
 			return filteredCuePoints;
 		},
-		//hide CP with tagName
+		/**
+		 * check if CP have tag tagName which we do not want to show
+		 * @param cuePoint - Cp which we want to check
+		 * @param tagName - tag name which we do not want to show
+		 * @return {boolean} result - if true - will show current CP
+		 */
 		validateCuePointTags: function(cuePoint, tagName){
 			var result  = cuePoint.tags.indexOf(tagName) === -1;
 			var playerConfig = this.embedPlayer.playerConfig;
@@ -400,12 +406,17 @@
 			
 		},
 		getPreviewCuePointTag:function () {
-			var tagName = "__PREVIEW_CUEPOINT_TAG__";
-			var playerConfig = this.embedPlayer.playerConfig;
-			if(playerConfig && playerConfig.plugins && playerConfig.plugins.dualScreen && playerConfig.plugins.dualScreen.PREVIEW_CUEPOINT_TAG){
-				tagName =  playerConfig.plugins.dualScreen.PREVIEW_CUEPOINT_TAG;
+			if(!this.previewCuePointTag){
+				var tagName = "__PREVIEW_CUEPOINT_TAG__";
+				var playerConfig = this.embedPlayer.playerConfig;
+				if(playerConfig && playerConfig.plugins && playerConfig.plugins.dualScreen && playerConfig.plugins.dualScreen.PREVIEW_CUEPOINT_TAG){
+					tagName =  playerConfig.plugins.dualScreen.PREVIEW_CUEPOINT_TAG;
+				}
+				this.previewCuePointTag = tagName;
+				return tagName;
 			}
-			return tagName;
+			return this.previewCuePointTag;
+			
 		},
 		validateCuePointAttribute: function(cuePoint, attrName, attrValues){
 			var foundAttr = false;

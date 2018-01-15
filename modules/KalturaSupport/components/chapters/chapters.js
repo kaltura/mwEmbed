@@ -463,8 +463,9 @@
 			//Get current item number
 			var orderId = this.mediaList.length;
 			//Map items to mediaList items
+			var previewCuePointTag = _this.getPlayer().kCuePoints.getPreviewCuePointTag();
 			var filterItems = items.filter(function( item ) {
-				return _this.getPlayer().kCuePoints.validateCuePointTags(item, _this.getPlayer().kCuePoints.getPreviewCuePointTag());
+				return _this.getPlayer().kCuePoints.validateCuePointTags(item, previewCuePointTag);
 			});
 			var mediaItems = $.map(filterItems, function (item) {
 				var mediaItem;
