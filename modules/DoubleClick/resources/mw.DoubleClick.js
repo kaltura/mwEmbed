@@ -87,6 +87,9 @@
 
         trackCuePoints: false,
 
+        //flag for checking if ad type is vpaid
+        isVPAID: false,
+
         //override cuepoint url with the preroll url
         overrideCuePointWithPreRoll: false,
 
@@ -639,7 +642,7 @@
             if ( this.isChromeless ) {
                 $( ".videoDisplay" ).prepend( adCover );
             } else {
-                if ( !mw.isIphone() ) {
+                if ( !mw.isIphone() && !_this.isVPAID) {
                     $( this.getAdContainer() ).append( adCover );
                 }
             }
@@ -1204,6 +1207,9 @@
                 var ad = adEvent.getAd();
                 _this.isLinear = ad.isLinear();
                 var currentAdSlotType = _this.isLinear ? _this.currentAdSlotType : "overlay";
+                if(ad.g.vpaid === true) {
+                    _this.isVPAID = true;
+                }
                 if ( mw.isIpad() && _this.embedPlayer.getPlayerElement().paused ) {
                     _this.embedPlayer.getPlayerElement().play();
                 }
