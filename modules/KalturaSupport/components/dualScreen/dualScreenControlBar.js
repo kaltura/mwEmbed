@@ -56,7 +56,6 @@
         renderStreams: function () {
             var streamsContainer = this.getComponent().find('.ds-streams').empty();
             var getTabIndexAttr = streamsContainer.attr('tabindex');
-            // debugger;
             var contentSelectionGroup = this.getComponent().find('.displayControlGroup-contentSelection');
             var dragDropEnabled = !this.getConfig('disableDragDrop');
             if (this.streams && this.streams.length) {
