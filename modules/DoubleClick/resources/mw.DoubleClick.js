@@ -1207,7 +1207,7 @@
                 var ad = adEvent.getAd();
                 _this.isLinear = ad.isLinear();
                 var currentAdSlotType = _this.isLinear ? _this.currentAdSlotType : "overlay";
-                if(ad.g.vpaid === true) {
+                if( ad.getContentType() === "application/javascript" ) {
                     _this.isVPAID = true;
                 }
                 if ( mw.isIpad() && _this.embedPlayer.getPlayerElement().paused ) {
