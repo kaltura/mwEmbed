@@ -13,7 +13,13 @@
 	<div id="kaltura_player" style="width: 585px; height: 330px;float: left;"></div>
 	<br style="clear: both;" /><br />
 <script>
+var kdp;
+    function onReadyCallback(playerID){
+        kdp = $('#' + playerID )[0];
+    }
+
 	kWidget.featureConfig({
+        'readyCallback': onReadyCallback,
 		'targetId': 'kaltura_player',
 		'wid': '_101',
 		'uiconf_id' : '23448207',
@@ -25,7 +31,18 @@
 		},
 		"entry_id": "0_im2q59ot"
 	});
+
+
+
+	function disableButton() {
+		kdp.sendNotification('customButton.disable');
+	}
+	function enableButton() {
+        kdp.sendNotification('customButton.enable');
+	}
 </script>
 
+<button onclick="disableButton()"> disable </button>
+<button onclick="enableButton()"> enable </button>
 </body>
 </html>

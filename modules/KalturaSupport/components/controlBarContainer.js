@@ -8,6 +8,7 @@
 
 		keepOnScreen: false,
 		screenOpen: false,
+		timerId: null,
 
 		setup: function(){
 			if (this.embedPlayer.isMobileSkin()){
@@ -44,6 +45,27 @@
 
 			// Bind hover events
 			if( this.getConfig('hover') ){
+				this.bind('playerReady',function () {
+					$(document).keydown( function (e) {
+						if(e.keyCode === 9){
+							setTimeout(function () {
+								var elInFocus = $(':focus');
+								if(elInFocus.parents('.controlBarContainer').hasClass('controlBarContainer') &&
+									( !_this.getPlayer().isControlsVisible || ( _this.timerId && _this.getPlayer().isControlsVisible ) )
+								){
+									_this.keepOnScreen = true;
+									_this.show();
+									if(_this.timerId){
+										clearTimeout(_this.timerId);
+										_this.timerId = null;
+									}
+									_this.timerId = setTimeout(function() { _this.keepOnScreen= false }, 5000);
+								}
+							},0);
+
+						}
+					});
+				});
 				// Show / Hide controlbar on hover
 				this.bind( 'showPlayerControls', function(e, data){
 					_this.show();

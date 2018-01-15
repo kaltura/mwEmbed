@@ -114,10 +114,10 @@
 .welcomeMessage{
     font-family: "Helvetica" , "Arial";
     font-family: "LatoLight";
-    font-size: 5.4vh;
+    font-size: 4.4vh;
     color: #ffffff;
     padding-left: 4vw;
-    padding-top: 6vh;
+    padding-top: 5vh;
     font-weight: 300;
     text-align: left;
     transform: scaleY(1.0009);
@@ -130,7 +130,7 @@
     font-size: 4vh;
     color: #ffffff;
     padding-left: 4vw;
-    padding-top: 7vh;
+    padding-top: 5vh;
     font-weight: 300;
     text-align: left;
     transform: scaleY(1.0009);
@@ -371,6 +371,9 @@ button.qContinue, button.qApplied {
     background-size: 100% 100%;
     vertical-align: middle;
     color: rgb(78, 166, 240);
+}
+.hint-why-box.smaller-font {
+    font-size:1vw;
 }
 
 .hint-why-box:hover{
@@ -743,6 +746,7 @@ ol.second-row{
     bottom:9vh!important;
 }
 
+
 @media (min-width: 940px) and (max-height: 500px) {
     .playlistInterface .welcome {
         font-size: 7vw;
@@ -856,3 +860,15 @@ ol.second-row{
         font-size: 1.2vw;
     }
 }
+
+@media(max-width: 604px){
+    .size-small .screen.quiz ,
+    .size-medium .screen.quiz {
+        padding-top: 10px;
+    }
+    .size-small .bottomContainer,
+    .size-medium .bottomContainer {
+        padding-top: 10px!important;
+    }
+}
+

@@ -416,9 +416,9 @@
                 }
             }, timeoutVal );
 
-            var imaURL = '//s0.2mdn.net/instream/html5/ima3.js';
+            var imaURL = '//imasdk.googleapis.com/js/sdkloader/ima3.js';
             if ( this.getConfig( 'debugMode' ) === true ) {
-                imaURL = '//s0.2mdn.net/instream/html5/ima3_debug.js';
+                imaURL = '//imasdk.googleapis.com/js/sdkloader/ima3_debug.js';
             }
             $.getScript( imaURL, function () {
                 isLoaded = true;
@@ -444,7 +444,7 @@
                     if (this.embedPlayer.mobileAutoPlay) {
                         this.embedPlayer.mobileAutoPlay = false;
                         this.adsManager.setVolume(1);
-                        this.embedPlayer.setVolume(1);
+                        this.embedPlayer.setVolume(1, null, mw.isIOS());
                     }
                 }.bind(this));
                 this.adsManager.setVolume(0);
@@ -482,7 +482,7 @@
                         // Set the content element to player element:
                         var playerElement = _this.embedPlayer.getPlayerElement();
                         //Load the video tag to enable setting the source by doubleClick library
-                        if ( mw.isMobileDevice() && !_this.playerElementLoaded ) {
+                        if ((mw.isDesktopSafari() || mw.isMobileDevice()) && !_this.playerElementLoaded) {
                             _this.playerElementLoaded = true;
                             playerElement.load();
                         }
@@ -730,7 +730,6 @@
                             'left': '0px'
                         } )
                 );
-                this.addCountdownNotice();
             }
             return $( '#' + this.getAdContainerId() ).get( 0 );
         },
@@ -1160,6 +1159,7 @@
                 }
             } );
             adsListener( 'LOADED', function ( adEvent ) {
+                _this.nonFatalError = false;
                 _this.showAdContainer();
                 var adData = adEvent.getAdData();
                 if ( adData ) {
@@ -1253,6 +1253,7 @@
                 if ( _this.isLinear ) {
                     if ( !_this.adSkippable ) {
                         _this.showSkipBtn();
+                        _this.addCountdownNotice();
                     }
                     _this.playingLinearAd = true;
                     // hide spinner:
@@ -1321,8 +1322,19 @@
                 mw.log( "DoubleClick:: adSkipped" );
                 $( _this.embedPlayer ).trigger( 'onAdSkip' );
             } );
+
+            adsListener('LOG', function (event) {
+                if (_this.nonFatalError) return;
+                var adData = event.getAdData();
+                if (adData['adError']) {
+                    console.log('Non-fatal error occurred: ' + adData['adError'].getMessage());
+                    this.handleNonFatalError(event);
+                }
+            });
+
             // Resume content:
             adsListener( 'CONTENT_RESUME_REQUESTED', function () {
+                if (_this.nonFatalError) return;
                 $( _this.embedPlayer ).trigger( 'onContentResumeRequested' );
                 _this.playingLinearAd = false;
                 // Update slot type, if a preroll switch to midroll
@@ -1693,6 +1705,16 @@
                 var offsetRemaining = Math.max(Math.ceil(parseFloat(this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' )) - remainTime), 0);
                 this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining', offsetRemaining );
                 this.embedPlayer.getInterface().find(".ad-skip-label").text(this.embedPlayer.evaluate( this.embedPlayer.getRawKalturaConfig('skipNotice','text')) );
+            }
+        },
+        handleNonFatalError: function (event) {
+            this.nonFatalError = true;
+            var ad = event.getAd();
+            var podInfo = ad && ad.getAdPodInfo();
+            var totalPodAds = podInfo && podInfo.getTotalAds();
+            if (!ad || totalPodAds === 1) {
+                this.restorePlayer(this.contentDoneFlag);
+                this.embedPlayer.play();
             }
         },
         // Handler for various ad errors.

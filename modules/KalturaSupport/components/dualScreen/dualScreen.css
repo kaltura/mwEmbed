@@ -86,7 +86,7 @@
 .dualScreen > .ui-resizable-se{
     cursor: nwse-resize;
 }
-.ui-state-active:after{
+.droppable-ui-state-active:after{
     content: '';
     z-index: 1;
     position: absolute;
@@ -98,7 +98,7 @@
     opacity: 0.7;
     transition: opacity 0.2s ease-out;
 }
-.ui-state-active.ui-state-hover:after {
+.droppable-ui-state-active.ui-state-hover:after {
     opacity: 0.1;
 }
 /*Custom UI corner position handlers for second screen*/

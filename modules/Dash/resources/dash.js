@@ -1,6 +1,19 @@
 (function (mw, $, shaka) {
 	"use strict";
+	/*
+	for browsers which don't have VTT cue we need to install a polyfill for both isBrowserSupported	check
+	and also for playback, but we might not use Shaka so if we install the polyfill now just for browser support check
+	then uninstall it after, and call it again if we actually use Shaka for playback on init
+	this is in order to avoid collisions with other libs
+	 */
+	var resetVttPolyfill = false;
+	if (!window.VTTCue) {
+		resetVttPolyfill = true;
+	}
 	shaka.polyfill.installAll();
+	if (resetVttPolyfill) {
+		window.VTTCue = undefined;
+	}
 
 	if (shaka.Player.isBrowserSupported() &&
 		!mw.getConfig("EmbedPlayer.ForceNativeComponent") &&
@@ -14,8 +27,9 @@
 		});
 		var dash = mw.KBasePlugin.extend({
 
-			/** type {boolean} */
-			loaded: false,
+
+		/** type {boolean} */
+		loaded: false,
 
 			/** type {boolean} */
 			LoadShaka: false,
@@ -25,30 +39,31 @@
 
 			destroyPromise: null,
 
-			currentBitrate: null,
-			/**
-			 * Check is shaka is supported
-			 * @returns {boolean}
-			 */
-			isSafeEnviornment: function () {
-				return shaka.Player.isBrowserSupported();
-			},
-			/**
-			 * Setup the shaka playback engine wrapper with supplied config options
-			 */
-			setup: function () {
-				this.addBindings();
-			},
-			/**
-			 *
-			 */
-			addBindings: function () {
-				this.bind("SourceChange", this.isNeeded.bind(this));
-				this.bind("playerReady", this.initShaka.bind(this));
-				this.bind("switchAudioTrack", this.onSwitchAudioTrack.bind(this));
-				this.bind("changeEmbeddedTextTrack", this.onSwitchTextTrack.bind(this));
-				this.bind("onChangeMedia", this.clean.bind(this));
-			},
+		currentBitrate: null,
+		/**
+		 * Check is shaka is supported
+		 * @returns {boolean}
+		 */
+		isSafeEnviornment: function () {
+			return shaka.Player.isBrowserSupported() ;
+		},
+		/**
+		 * Setup the shaka playback engine wrapper with supplied config options
+		 */
+		setup: function () {
+			this.addBindings();
+		},
+		/**
+		 *
+		 */
+		addBindings: function () {
+
+			this.bind("SourceChange", this.isNeeded.bind(this));
+			this.bind("playerReady", this.initShaka.bind(this));
+			this.bind("switchAudioTrack", this.onSwitchAudioTrack.bind(this));
+
+			this.bind("onChangeMedia", this.clean.bind(this));
+		},
 
 			/**
 			 * Check if Shaka engine is required, e.g. the selected source is dash
@@ -138,13 +153,29 @@
 				return drmConfig;
 			},
 
-			createPlayer: function () {
-                //Reinstall the polyfills to make sure they weren't ran over by others(VTT.js runs over VTTCue polyfill)
-				shaka.polyfill.installAll();
-				// Create a Player instance.
-				var player = new shaka.Player(this.getPlayer().getPlayerElement());
+		getShakaConfig: function(){
+            var config = this.getConfig("shakaConfig");
+            if (this.getPlayer().plugins && this.getPlayer().plugins.closedCaptions) {
+                try {
+                    var closedCaptions = this.getPlayer().plugins.closedCaptions;
+                    var textLang = closedCaptions.getUserLanguageKeyPrefrence() || closedCaptions.getConfig('defaultLanguageKey');
+                    if (textLang) {
+                        config.preferredTextLanguage = textLang;
+                    }
+                } catch(e) {
+                	this.log("Unable to get default captions config");
+				}
+            }
+            return config;
+		},
 
-				player.configure(this.getConfig("shakaConfig"));
+		createPlayer: function () {
+			//Reinstall the polyfills to make sure they weren't ran over by others(VTT.js runs over VTTCue polyfill)
+			shaka.polyfill.installAll();
+			// Create a Player instance.
+			var player = new shaka.Player(this.getPlayer().getPlayerElement());
+
+				player.configure(this.getShakaConfig());
 
 				// Attach player to the window to make it easy to access in the JS console.
 				window.player = player;
@@ -285,6 +316,7 @@
 							'label': subtitleTrack.label || subtitleTrack.language,
 							'title': subtitleTrack.language,
 							'id': subtitleTrack.id,
+							'default': subtitleTrack.active,
 							'index': textTrackData.languages.length
 						});
 					});
@@ -450,29 +482,38 @@
 				}
 			},
 
-			onErrorEvent: function (event) {
-				// Extract the shaka.util.Error object from the event.
-				this.onError(event.detail);
-			},
+		onErrorEvent: function (event) {
+			// Extract the shaka.util.Error object from the event.
+			var error = event &&event.detail;
+try {
+                var errorString = JSON.stringify(error, null, "\t");
+                this.log("error: " + errorString);
+			} catch (e){
+                this.log("error: unable to stringify Shaka error");
+			}
+            //Only throw critical error
+			if (error &&
+				error.severity &&
+				error.severity === shaka.util.Error.Severity.CRITICAL) {
+                this.onError(error);
+            }
+		},
 
-			/**
-			 * Error handler
-			 * @param event
-			 */
-			onError: function (error) {
-				if (error.code !== 4012) {
-					// workaround for shaka bug https://github.com/google/shaka-player/issues/912
-					var errorMessage = error.name === "TypeError" ? error.stack : JSON.stringify(error);
-					var errorObj = {
-						message: errorMessage
-					};
-					if (error.category) {
-						errorObj.code = error.category + "000";
-					}
-					this.getPlayer().triggerHelper('embedPlayerError', errorObj);
+		/**
+		 * Error handler
+		 * @param event
+		 */
+		onError: function (error) {
+				var errorMessage = error.name === "TypeError" ? error.stack : JSON.stringify(error);
+				var errorObj = {
+					message: errorMessage
+				};
+				if (error.category) {
+					errorObj.code = error.category + "000";
 				}
-				mw.log("Dash::Error: ", error);
-			},
+				this.getPlayer().triggerHelper('embedPlayerError', errorObj);
+			mw.log("Dash::Error: ", error);
+		},
 
             onShakaDestroyEnded:function (  ) {
                 this.log( "The player has been destroyed" );
@@ -518,47 +559,50 @@
 				}
 			},
 
-			/**
-			 * Enable override player methods for Dash playback
-			 */
-			overridePlayerMethods: function () {
-				this.orig_switchSrc = this.getPlayer().switchSrc;
-				this.orig_playerSwitchSource = this.getPlayer().playerSwitchSource;
-				this.orig_load = this.getPlayer().load;
-				this.orig_parseTracks = this.getPlayer().parseTracks;
-				this.orig_switchAudioTrack = this.getPlayer().switchAudioTrack;
-				this.orig_ondurationchange = this.getPlayer()._ondurationchange;
-				this.orig_backToLive = this.getPlayer().backToLive;
-				this.orig_doSeek = this.getPlayer().doSeek;
-				this.orig_updatePlayheadStatus = this.getPlayer().updatePlayheadStatus;
-                this.orig_clean = this.getPlayer().clean;
-                this.getPlayer().switchSrc = this.switchSrc.bind(this);
-				this.getPlayer().playerSwitchSource = this.playerSwitchSource.bind(this);
-				this.getPlayer().load = this.load.bind(this);
-				this.getPlayer().parseTracks = this.parseTracks.bind(this);
-				this.getPlayer().switchAudioTrack = this.switchAudioTrack.bind(this);
-				this.getPlayer()._ondurationchange = this._ondurationchange.bind(this);
-				this.getPlayer().backToLive = this.backToLive.bind(this);
-				this.getPlayer().doSeek = this.doSeek.bind(this);
-				this.getPlayer().updatePlayheadStatus = this.updatePlayheadStatus.bind(this);
-                this.getPlayer().clean = this.clean.bind(this);
-            },
-			/**
-			 * Disable override player methods for Dash playback
-			 */
-			restorePlayerMethods: function () {
-				this.getPlayer().switchSrc = this.orig_switchSrc;
-				this.getPlayer().playerSwitchSource = this.orig_playerSwitchSource;
-				this.getPlayer().load = this.orig_load;
-				this.getPlayer().parseTracks = this.orig_parseTracks;
-				this.getPlayer().switchAudioTrack = this.orig_switchAudioTrack;
-				this.getPlayer()._ondurationchange = this.orig_ondurationchange;
-				this.getPlayer().backToLive = this.orig_backToLive;
-				this.getPlayer().doSeek = this.orig_doSeek;
-				this.getPlayer().updatePlayheadStatus = this.orig_updatePlayheadStatus;
-                this.getPlayer().clean = this.orig_clean;
-            }
-		});
+		/**
+		 * Enable override player methods for Dash playback
+		 */
+		overridePlayerMethods: function () {
+			this.orig_switchSrc = this.getPlayer().switchSrc;
+			this.orig_playerSwitchSource = this.getPlayer().playerSwitchSource;
+			this.orig_load = this.getPlayer().load;
+			this.orig_parseTracks = this.getPlayer().parseTracks;
+			this.orig_switchAudioTrack = this.getPlayer().switchAudioTrack;
+			this.orig_onSwitchTextTrack = this.getPlayer().onSwitchTextTrack;
+			this.orig_ondurationchange = this.getPlayer()._ondurationchange;
+			this.orig_backToLive = this.getPlayer().backToLive;
+			this.orig_doSeek = this.getPlayer().doSeek;
+			this.orig_updatePlayheadStatus = this.getPlayer().updatePlayheadStatus;
+			this.orig_clean = this.getPlayer().clean;
+			this.getPlayer().switchSrc = this.switchSrc.bind(this);
+			this.getPlayer().playerSwitchSource = this.playerSwitchSource.bind(this);
+			this.getPlayer().load = this.load.bind(this);
+			this.getPlayer().parseTracks = this.parseTracks.bind(this);
+			this.getPlayer().switchAudioTrack = this.switchAudioTrack.bind(this);
+			this.getPlayer().onSwitchTextTrack = this.onSwitchTextTrack.bind(this);
+			this.getPlayer()._ondurationchange = this._ondurationchange.bind(this);
+			this.getPlayer().backToLive = this.backToLive.bind(this);
+			this.getPlayer().doSeek = this.doSeek.bind(this);
+			this.getPlayer().updatePlayheadStatus = this.updatePlayheadStatus.bind(this);
+			this.getPlayer().clean = this.clean.bind(this);
+		},
+		/**
+		 * Disable override player methods for Dash playback
+		 */
+		restorePlayerMethods: function () {
+			this.getPlayer().switchSrc = this.orig_switchSrc;
+			this.getPlayer().playerSwitchSource = this.orig_playerSwitchSource;
+			this.getPlayer().onSwitchTextTrack = this.orig_onSwitchTextTrack;
+			this.getPlayer().load = this.orig_load;
+			this.getPlayer().parseTracks = this.orig_parseTracks;
+			this.getPlayer().switchAudioTrack = this.orig_switchAudioTrack;
+			this.getPlayer()._ondurationchange = this.orig_ondurationchange;
+			this.getPlayer().backToLive = this.orig_backToLive;
+			this.getPlayer().doSeek = this.orig_doSeek;
+			this.getPlayer().updatePlayheadStatus = this.orig_updatePlayheadStatus;
+			this.getPlayer().clean = this.orig_clean;
+		}
+	});
 
 		mw.PluginManager.add('Dash', dash);
 

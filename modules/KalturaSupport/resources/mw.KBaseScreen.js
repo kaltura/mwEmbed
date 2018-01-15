@@ -13,6 +13,7 @@
 		error: false,
 		enablePlayDuringScreen: false,
 
+		lastNonScreenFocus: $('.playPauseBtn'),//play button by default
 		// Returns KBaseComponent config with screen config
 		getBaseConfig: function () {
 			var parentConfig = this._super();
@@ -72,6 +73,25 @@
 					this.toggleScreen();
 				}
 			}, this));
+
+			if($.isFunction(_this.drawModal)){
+				this.bind('preHideScreen', function () {
+					$(_this.lastNonScreenFocus).focus();
+				});
+				$(document).on('focus','.mwPlayerContainer',function () {
+					var onfocus = $(':focus');
+					if( !$(onfocus).parents().hasClass('overlay')){
+						_this.lastNonScreenFocus = onfocus;
+					}
+				});
+			}else {
+				$(document).on('focus','.mwPlayerContainer',function () {
+					var onfocus = $(':focus');
+					if(!$(onfocus).parents().hasClass('screen')){
+						_this.lastNonScreenFocus = onfocus;
+					}
+				});
+			}
 		},
 
 		bindCleanScreen: function () {
@@ -80,10 +100,10 @@
 				this.removeScreen();
 			}, this));
 
-            this.bind('onChangeMedia', $.proxy(function () {
-	            this.enablePlayDuringScreen = false;
-                this.hideScreen();
-            }, this));
+			this.bind('onChangeMedia', $.proxy(function () {
+				this.enablePlayDuringScreen = false;
+				this.hideScreen();
+			}, this));
 		},
 
 		removeScreen: function () {
@@ -110,6 +130,7 @@
 					this.getScreen().then(function(screen){
 						screen.fadeOut( 400, $.proxy( function () {
 							_this.getPlayer().triggerHelper( 'hideScreen', [_this.pluginName] );
+							$(_this.lastNonScreenFocus).focus();
 						}, this ) );
 					});
 				}
@@ -202,9 +223,18 @@
 						.attr('role', 'button')
 						.on('click', function(){
 							_this.hideScreen();
+						})
+						.keyup(function (e) {
+							if(e.keyCode === 13){
+								_this.hideScreen();
+							}
 						});
 					_this.$screen = $('<div />')
 						.addClass('screen ' + _this.pluginName)
+						.attr({
+							"role" : "dialog",
+							"aria-labelledby" : "dialogTitle"
+						})
 						.append(
 							$('<div class="screen-content" /> ').append(closeBtn).append(data)
 						);
@@ -246,7 +276,7 @@
 					.click(function () {
 						_this.toggleScreen();
 					});
-				this.setAccessibility(this.$el, this.getConfig('tooltip'));
+				this.setAccessibility(this.$el, this.getConfig('tooltip')+gM('mwe-embedplayer-open_dialog'));
 			}
 			return this.$el;
 		}

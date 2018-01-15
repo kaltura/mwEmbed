@@ -43,6 +43,12 @@
 	mw.isSafari = function () {
 		return (/safari/).test(userAgent.toLowerCase()) && !mw.isChrome() && !mw.isEdge();
 	};
+	mw.isSafari11 = function () {
+		return mw.isSafari() && (/version\/11/).test(userAgent.toLowerCase());
+	};
+	mw.isDesktopSafari11 = function () {
+		return mw.isDesktopSafari() && mw.isSafari11();
+    };
 	mw.isIE9Comp = function () {
 		return (/msie 7/.test(userAgent.toLowerCase()) && /trident\/5/.test(userAgent.toLowerCase()));
 	};
@@ -111,6 +117,11 @@
 	mw.isChrome = function () {
 		return ( userAgent.indexOf('Chrome') != -1 && !mw.isEdge() );
 	};
+    mw.isChrome64AndUp = function () {
+        var chromeVersion = mw.getChromeVersion();
+        var chromeMajorVersion = chromeVersion[0];
+		return ( mw.isChrome() && chromeMajorVersion >= 64 );
+    };
 	mw.isAndroidNativeBrowser = function () {
 		return (mw.isAndroid() && !mw.isFirefox() && !mw.isChrome());
 	};
@@ -372,6 +383,19 @@
 		} catch (e) {
 		}
 		return '0,0,0';
+	};
+
+    /**
+	 * get chrome version parts
+     * @returns {Array}
+     */
+	mw.getChromeVersion = function(){
+        var chromeVersionParts = [0, 0, 0, 0];
+		var chromeVersion = userAgent.match(/.*Chrome\/([0-9\.]+)/);
+        if (chromeVersion && chromeVersion[1]){
+            chromeVersionParts = chromeVersion[1].split(".");
+		}
+		return chromeVersionParts;
 	};
 
 })(window.mediaWiki);

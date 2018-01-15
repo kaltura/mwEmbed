@@ -14,13 +14,17 @@
 			});
 		}
     	// Set some defaults
+	    var labelledby = "menu";
+	    if(options && options.menuName){
+		    labelledby = options.menuName;
+	    }
     	var defaults = {
             cssClass: "dropdown-menu",
             tabIndex: 1,
             closeOnFocusOut: true,
             attributes: {
 				'role': 'menu',
-				'aria-labelledby': 'dLabel'
+				'aria-labelledby': labelledby
 			},
 			dividerClass: 'divider',
             onSelected: null
@@ -95,6 +99,11 @@
 								_this.close();
 							})
 							.attr('aria-label', accessibilityLabel)
+							.keydown(function(e){
+								if(e.keyCode === 9){//keyCode = 9 - TAB
+									_this.close();
+								}
+							})
                         );
 
             // If not the first item
@@ -105,7 +114,8 @@
 			this.$el.append( $item );
 
             if( item.active ){
-                $item.addClass('active').attr('aria-checked', 'true');
+	            $item.addClass('active').attr('aria-checked', 'true');
+	            $item.find('a').attr('aria-checked', 'true');
 	            this.selectedIndex = this.itemIdx;
             }
 			// Incrase out counter ( for tab index )
@@ -179,7 +189,7 @@
 	            }
             }
 	        this.$el.find( selector ).addClass( 'active' ).attr('aria-checked', 'true');
-	        this.$el.find( selector +" a").focus();
+	        this.$el.find( selector +" a").attr('aria-checked', 'true').focus();
 	        // for IE8, force screen refresh
 	        if (mw.isIE8()){
 		        this.$el.addClass('dummy').removeClass('dummy');
@@ -187,6 +197,7 @@
         },
         clearActive: function(){
         	this.$el.find('li').removeClass('active').attr('aria-checked', 'false');
+        	this.$el.find('li a').attr('aria-checked', 'false');
         },
         destroy: function(){
             this.$el.empty();

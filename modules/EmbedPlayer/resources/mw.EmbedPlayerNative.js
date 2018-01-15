@@ -109,14 +109,17 @@
 				$(this.getPlayerElement()).attr('playsinline', '');
 			}
 
-			if ( (mw.isMobileDevice() || mw.isIpad()) && mw.getConfig( 'mobileAutoPlay' ) ) {
-				if ( !mw.isIphone() && this.inline ) {
-					this.inline = false;
-					$( this.getPlayerElement() ).removeAttr( 'playsinline' );
-				}
-				this.mobileAutoPlay = true;
-				this.setVolume( 0 );
-			}
+            if (this.shouldAutoPlayMuted()) {
+                this.autoplay = true;
+                if (!mw.isIphone() && this.inline) {
+                    this.inline = false;
+                    $(this.getPlayerElement()).removeAttr('playsinline');
+                }
+                this.mobileAutoPlay = true;
+                this.bindOnceHelper('playerReady', function () {
+                    _this.setVolume(0);
+                });
+            }
 
 			this.addBindings();
 			readyCallback();
@@ -130,6 +133,23 @@
 				}
 			});
 		},
+        shouldAutoPlayMuted: function () {
+			if (mw.getConfig('thumbEmbedOrigin')){
+                mw.setConfig('autoPlayFallbackToMute', false);
+				return false;
+			}
+            if (!mw.getConfig('autoMute')) {
+                if (mw.isMobileDevice() || mw.isIpad()) {
+                    return mw.getConfig('mobileAutoPlay');
+                } else if ((mw.isDesktopSafari11() || mw.isChrome64AndUp()) && mw.getConfig('autoPlay')) {
+                    if (typeof mw.getConfig('autoPlayFallbackToMute') !== 'boolean') {
+                        mw.setConfig('autoPlayFallbackToMute', true);
+                    }
+                    return mw.getConfig('autoPlayFallbackToMute');
+                }
+            }
+            return false;
+        },
         addBindings: function () {
             var _this = this;
 
@@ -139,7 +159,7 @@
                     _this.bindHelper(eventName + _this.bindPostfix, function () {
                         if (_this.mobileAutoPlay) {
                             _this.mobileAutoPlay = false;
-                            _this.setVolume(1);
+                            _this.setVolume(1, null, mw.isIOS());
                         }
                         unMuteEventTriggers.forEach(function (eventName) {
                             _this.unbindHelper(eventName + _this.bindPostfix);
@@ -148,16 +168,15 @@
                 });
             }
 
-            this.bindHelper('firstPlay' + this.bindPostfix, function () {
-                _this.parseTracks();
-            });
             this.bindHelper('switchAudioTrack' + this.bindPostfix, function (e, data) {
                 _this.switchAudioTrack(data.index);
             });
             this.bindHelper('liveOnline' + this.bindPostfix, function () {
                 _this.load();
             });
-            this.bindHelper("changeEmbeddedTextTrack", this.onSwitchTextTrack.bind(this));
+            this.bindHelper('changeEmbeddedTextTrack' + this.bindPostfix, function (e, data) {
+                _this.onSwitchTextTrack(e, data);
+            });
         },
 
 		removeBindings: function(){
@@ -649,11 +668,14 @@
 			$.each( textTracks, function( inx, caption) {
 				caption.mode = "hidden";
 			});
-			$.each( textTracks, function( inx, caption) {
-				if (caption.language === defaultLangKey) {
-					caption.mode = "showing";
+
+			for (var i = 0; i < textTracks.length; i++) {
+				if (textTracks[i].language === defaultLangKey || textTracks[i].label === defaultLangKey) {
+					textTracks[i].mode = "showing";
+					// select the first match
+					return;
 				}
-			});
+			}
 		},
 		/**
 		 * playerSwitchSource switches the player source working around a few bugs in browsers
@@ -958,7 +980,16 @@
 
 						// issue a play request
 						if (!_this.playing) {
-							vid.play();
+							var playPromise = vid.play();
+                            if (playPromise !== undefined) {
+                                playPromise.then(function() {
+                                    mw.log("play promise resolved");
+                                }).catch(function(error) {
+                                    mw.log("play promise rejected");
+                                    //If play is rejected then return UI state to pause so user can take action
+                                    _this.pause();
+                                });
+                            }
 						}
 
 						_this.mobilePlayed = true;
@@ -1289,6 +1320,14 @@
 		 */
 		_onloadedmetadata: function () {
 			this.getPlayerElement();
+			var _this = this;
+			if (this.firstPlay) {
+				this.bindOnceHelper('firstPlay' + this.bindPostfix, function () {
+					_this.parseTracks();
+				});
+			} else {
+				this.parseTracks();
+			}
 			// only update duration if we don't have one: ( some browsers give bad duration )
 			// like Android 4 default browser
 			if (!this.duration
@@ -1501,6 +1540,7 @@
 		},
 		parseTracks: function(){
 			var vid = this.getPlayerElement();
+            this.id3TrackAdded = false;
 			this.parseAudioTracks(vid, 0); //0 is for a setTimer counter. Try to catch audioTracks, give up after 5 seconds
 			this.parseTextTracks(vid, 0); //0 is for a setTimer counter. Try to catch textTracks, give up after 10 seconds
 		},
@@ -1511,10 +1551,11 @@
 					var textTracksData = {languages: []};
 					for (var i = 0; i < vid.textTracks.length; i++) {
 						var textTrack = vid.textTracks[i];
-						if (textTrack.kind === 'metadata') {
+						if (textTrack.kind === 'metadata' && !_this.id3TrackAdded) {
+                            _this.id3TrackAdded = true;
 							//add id3 tags support
 							_this.id3Tag(textTrack);
-						} else if (textTrack.kind === 'subtitles' || textTrack.kind === 'caption') {
+						} else if (textTrack.kind === 'subtitles' || textTrack.kind === 'captions') {
 							textTracksData.languages.push({
 								'kind': 'subtitle',
 								'language': textTrack.label,
@@ -1522,6 +1563,7 @@
 								'label': textTrack.label,
 								'title': textTrack.label,
 								'id': textTrack.id,
+								'default': textTrack.mode === 'showing',
 								'index': i
 							});
 						}
@@ -1530,6 +1572,12 @@
 					if (textTracksData.languages.length) {
 						mw.log('EmbedPlayerNative:: ' + textTracksData.languages.length + ' subtitles were found: ', textTracksData.languages);
 						_this.triggerHelper('textTracksReceived', textTracksData);
+					} else {
+						//if no caption or subtitle text track were added keep on looking
+						//In live we keep on looking till we found 608/708 caption without a counter to limit
+                        if( (_this.isLive()) || (!_this.isLive() && (counter < 10)) ){
+                            _this.parseTextTracks(vid, ++counter);
+                        }
 					}
 				}else{
 					//try to catch textTracks.kind === "metadata, give up after 10 seconds
@@ -1621,39 +1669,40 @@
 			}
 		},
 		onSwitchTextTrack: function (event, data) {
-			var vid = this.getPlayerElement();
-			var textTracks = vid.textTracks;
-			if (textTracks && textTracks.length) {
-				if (!data) {
-					this.hideTextTrack(textTracks);
-				} else {
-                    this.hideTextTrack(textTracks);
-					this.showTextTrack(textTracks, data);
-				}
+			this.hideTextTrack();
+			if (data) {
+				this.showTextTrack(data);
 			}
 		},
-		hideTextTrack: function(textTracks){
-            var activeSubtitle = this.getActiveSubtitle(textTracks);
-            if (activeSubtitle) {
+		hideTextTrack: function(){
+            var activeSubtitle = this.getActiveSubtitle();
+            if (activeSubtitle && activeSubtitle.mode) {
                 activeSubtitle.mode = 'hidden';
                 this.log('onSwitchTextTrack disable subtitles');
             }
 		},
-		showTextTrack: function(textTracks, data){
-            var selectedSubtitle = textTracks[data.index];
-            if (selectedSubtitle) {
-                selectedSubtitle.mode = 'showing';
-                mw.log('EmbedPlayerNative::onSwitchTextTrack switch to ', selectedSubtitle);
-            }
+		showTextTrack: function(data){
+			var vid = this.getPlayerElement();
+			var textTracks = vid.textTracks;
+			if (textTracks) {
+				var selectedSubtitle = textTracks[data.index];
+				if (selectedSubtitle) {
+					selectedSubtitle.mode = 'showing';
+					mw.log('EmbedPlayerNative::onSwitchTextTrack switch to ', selectedSubtitle);
+				}
+			}
 		},
-		getActiveSubtitle: function (textTracks) {
+		getActiveSubtitle: function () {
+			var vid = this.getPlayerElement();
+			var textTracks = vid.textTracks;
 			if (textTracks) {
 				for (var i = 0; i < textTracks.length; i++) {
 					var textTrack = textTracks[i];
-					if (textTrack.mode === 'showing' && (textTrack.kind === 'subtitles' || textTrack.kind === 'caption')) {
+					if (textTrack.mode === 'showing' && (textTrack.kind === 'subtitles' || textTrack.kind === 'captions')) {
 						return textTrack;
 					}
 				}
+				return {label : 'off'};
 			}
 			return null;
 		},
