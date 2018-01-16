@@ -1366,6 +1366,7 @@
                 // ALL_ADS_COMPLETED after preroll not after all ad opportunities for this content have expired.
                 // set the allAdsCompletedFlag to not call restore player twice
                 _this.allAdsCompletedFlag = true;
+                _this.isVPAID = false;
                 if ( _this.contentDoneFlag ) {
                     // restore the player but don't play content since ads are done:
                     _this.restorePlayer( true );
