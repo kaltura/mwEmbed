@@ -163,13 +163,17 @@
          * @returns {{currentTime: *, duration: *, volume: (*|Float)}}
          */
         getEmbedPlayerPlaybackParams: function () {
-            return {
+            var playbackParams = {
                 currentTime: this.embedPlayer.getPlayerElementTime(),
                 duration: this.embedPlayer.getDuration(),
                 volume: this.embedPlayer.getPlayerElementVolume(),
                 state: this.embedPlayer.currentState,
-                captions: this.embedPlayer.getInterface().find( '.track' )
+                captions: []
+            };
+            if (this.embedPlayer.plugins && this.embedPlayer.plugins.closedCaptions){
+                playbackParams.captions = this.embedPlayer.plugins.closedCaptions.selectedSource;
             }
+            return playbackParams;
         },
 
         /**
