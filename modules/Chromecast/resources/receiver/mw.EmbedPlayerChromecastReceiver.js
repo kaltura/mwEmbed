@@ -449,7 +449,13 @@
 
         changeMediaCallback: function ( callback ) {
             mw.log( "EmbedPlayerChromecastReceiver::changeMediaCallback()" );
+            //Reset all state flags
             this.changeMediaStarted = false;
+            this.videoQualityIndex = -1;
+            this.videoStreamIndex = -1;
+            this.audioQualityIndex = -1;
+            this.audioStreamIndex = -1;
+            this.textStreamIndex = -1;
             this.preloadMediaSourceExtension();
             if ( callback ) {
                 callback();
