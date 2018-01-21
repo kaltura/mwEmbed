@@ -80,7 +80,7 @@
         },
         getSortedTracks: function(){
             var tracks = player.getVariantTracks();
-            var sortedTracks = tracks.map((obj)=>{return {id:obj.id,bandwidth:obj.bandwidth,active:obj.active}}).sort((obj1,obj2)=>{return obj1.bandwidth>obj2.bandwidth});
+            var sortedTracks = tracks.map((obj)=>{return {id:obj.id,bandwidth:obj.bandwidth,active:obj.active}}).sort((obj1,obj2)=>{return obj1.bandwidth - obj2.bandwidth});
             return sortedTracks;
         },
         getCurrentQuality:function(){
