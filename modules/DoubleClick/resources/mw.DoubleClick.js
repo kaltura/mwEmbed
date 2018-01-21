@@ -1326,6 +1326,9 @@
             // Resume content:
             adsListener( 'SKIPPED', function () {
                 mw.log( "DoubleClick:: adSkipped" );
+                if(_this.isVPAID === true) {
+                    _this.isVPAID = false;
+                }
                 $( _this.embedPlayer ).trigger( 'onAdSkip' );
             } );
 
@@ -1341,6 +1344,9 @@
             // Resume content:
             adsListener( 'CONTENT_RESUME_REQUESTED', function () {
                 if (_this.nonFatalError) return;
+                if(_this.isVPAID === true) {
+                    _this.isVPAID = false;
+                }
                 $( _this.embedPlayer ).trigger( 'onContentResumeRequested' );
                 _this.playingLinearAd = false;
                 // Update slot type, if a preroll switch to midroll
@@ -1366,7 +1372,6 @@
                 // ALL_ADS_COMPLETED after preroll not after all ad opportunities for this content have expired.
                 // set the allAdsCompletedFlag to not call restore player twice
                 _this.allAdsCompletedFlag = true;
-                _this.isVPAID = false;
                 if ( _this.contentDoneFlag ) {
                     // restore the player but don't play content since ads are done:
                     _this.restorePlayer( true );
