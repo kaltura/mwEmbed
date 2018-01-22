@@ -83,6 +83,12 @@
 			}
 
 			if ( this.getConfig('showEmbeddedCaptions') === true ) {
+                this.bind( 'playerReady', function () {
+                    _this.destory();
+                    _this.setupTextSources( function () {
+                        _this.buildMenu( _this.textSources );
+                    } );
+                } );
 
 				if ( this.getConfig('showEmbeddedCaptionsStyle') === true ) {
 					this.bind( 'textTrackIndexChanged', function( e, captionData ) {
