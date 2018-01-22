@@ -84,10 +84,7 @@
 
 			if ( this.getConfig('showEmbeddedCaptions') === true ) {
                 this.bind( 'playerReady', function () {
-                    _this.destory();
-                    _this.setupTextSources( function () {
-                        _this.buildMenu( _this.textSources );
-                    } );
+                    _this.updateCaptionsMenu();
                 } );
 
 				if ( this.getConfig('showEmbeddedCaptionsStyle') === true ) {
@@ -132,10 +129,7 @@
 				});
 				if (!this.getConfig("useExternalClosedCaptions")) {
 					this.bind( 'playerReady', function () {
-						_this.destory();
-						_this.setupTextSources( function () {
-							_this.buildMenu( _this.textSources );
-						} );
+                        _this.updateCaptionsMenu();
 					} );
 					outOfBandCaptionEventHandlers.call(this);
 				}
@@ -366,6 +360,13 @@
 			}
 			this._super( property, value );
 		},
+		updateCaptionsMenu: function () {
+			var _this = this;
+            _this.destory();
+            _this.setupTextSources( function () {
+                _this.buildMenu( _this.textSources );
+            } );
+        },
 		hideCaptions: function(){
 			if( !this.getConfig('displayCaptions') || this.textSources.length === 0 ) {
 				if (this.getConfig('showOffButton')){
