@@ -55,13 +55,15 @@
 
         renderStreams: function () {
             var streamsContainer = this.getComponent().find('.ds-streams').empty();
+            var getTabIndexAttr = streamsContainer.attr('tabindex');
             var contentSelectionGroup = this.getComponent().find('.displayControlGroup-contentSelection');
             var dragDropEnabled = !this.getConfig('disableDragDrop');
             if (this.streams && this.streams.length) {
                 streamsContainer.append($.map(this.streams, function (stream, index) {
                     var $stream = $('<div/>', {
                         'class': 'ds-stream',
-                        'data-stream-index': index
+                        'data-stream-index': index,
+                        'tabindex':getTabIndexAttr+'.'+index
                     }).append($('<img/>', {
                         src: stream.thumbnailUrl,
                         'class': 'ds-stream__thumb'
@@ -112,6 +114,7 @@
 				var transformedHTML = mw.util.tmpl( rawHTML );
 				transformedHTML = transformedHTML({buttons: this.controlBarComponents});
 				this.$controlBar = $( '<div />' )
+					.attr({'tabindex':10})
 					.addClass( 'controlBar componentOff dualScreen' + this.getCssClass() )
 					.append(transformedHTML);
 				//If top bar exist then position controlBar under it
@@ -142,13 +145,27 @@
 			var _this = this;
 			//TODO:hook these events to layoutbuilder events
 			this.embedPlayer.getInterface()
-				.on( 'mousemove' + this.postFix +' touchstart' + this.postFix, function(){
+				.on( 'mousemove' + this.postFix +' touchstart' + this.postFix + ' focus', function(){
 					_this.show();
 				})
 				.on( 'mouseleave' + this.postFix, function(){
 					if (!mw.isMobileDevice()){
 						_this.hide();
 					}
+				});
+			this.getComponent().add(_this.getComponent().find('.controlBarBtn'))
+				.on( 'focus', function(){
+					_this.show();
+				})
+				.on( 'blur' + this.postFix, function(){
+					setTimeout(function () {
+						var currentFocusElement = $(':focus');
+						if(!currentFocusElement.parents('.dualScreenControlBar').hasClass('dualScreenControlBar') && !currentFocusElement.hasClass('dualScreenControlBar')){
+							if (!mw.isMobileDevice()){
+								_this.hide();
+							}
+						}
+					},0);
 				});
 
 			//add drop shadow containers for control bar
@@ -187,7 +204,7 @@
 				.on( 'click' + this.postFix + ' touchstart' + this.postFix, '.ds-streams > .ds-stream', function () {
 					_this.embedPlayer.triggerHelper('dualScreenChangeMainDisplayStream', [$(this).data('stream')]);
 					return false;
-				} );
+				} ).on('keydown' + this.postFix + ' touchstart' + this.postFix, '.ds-streams > .ds-stream', _this.keyDownHandler);;
 
 			if (mw.isNativeApp()){
 				switchBtn.addClass("disabled" ).attr("title", _this.nativeAppTooltip );
@@ -232,6 +249,12 @@
 			_this.bind('displayDropped dualScreenChangeMainDisplayStream', function () {
 				$('.displayControlGroup').removeClass('ds-blur ds-open');
 			});
+		},
+		keyDownHandler: function(ev){
+			if(ev.which === 13 || ev.which === 32)
+			{
+				$(ev.target).click();
+			}
 		},
 		/**
 		 * Changes the style of the buttons according to the selected view mode.
