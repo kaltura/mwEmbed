@@ -74,7 +74,7 @@
 						$('<i></i>')
 							.addClass("icon-toggle")).append(
 				$( '<select />' )
-					.attr( {'id':'flagType', 'aria-label': 'Chose your reason', 'role':'listbox'} )
+					.attr( {'id':'flagType', 'aria-label': 'Choose your reason', 'role':'listbox'} )
 					.append(
 						$( '<option />' ).attr( {'value': 1, 'role':'option', 'aria-label':_this.getConfig( 'reasonSex' )} ).text( _this.getConfig( 'reasonSex' ) ),
 						$( '<option />' ).attr( {'value': 2, 'role':'option', 'aria-label':_this.getConfig( 'reasonViolence' )} ).text( _this.getConfig( 'reasonViolence' ) ),
