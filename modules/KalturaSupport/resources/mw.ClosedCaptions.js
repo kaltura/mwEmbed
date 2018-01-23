@@ -83,9 +83,6 @@
 			}
 
 			if ( this.getConfig('showEmbeddedCaptions') === true ) {
-                this.bind( 'playerReady', function () {
-                    _this.updateCaptionsMenu();
-                } );
 
 				if ( this.getConfig('showEmbeddedCaptionsStyle') === true ) {
 					this.bind( 'textTrackIndexChanged', function( e, captionData ) {
@@ -263,6 +260,7 @@
 			});
 			this.bind( 'onChangeMedia', function (e, stylesObj){
 				//Reset UI state on change media
+				_this.updateCaptionsMenu();
 				_this.getBtn().show();
 			});
 			this.bind( 'onOpenFullScreen', function (){
