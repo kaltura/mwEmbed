@@ -399,7 +399,7 @@
 		validateCuePointTags: function(cuePoint, tagName){
 			var result  = cuePoint.tags.indexOf(tagName) === -1;
 			var playerConfig = this.embedPlayer.playerConfig;
-			if(playerConfig && playerConfig.plugins && playerConfig.plugins.dualScreen && playerConfig.plugins.dualScreen.allowAdminCuePoints){
+			if(playerConfig && playerConfig.plugins && playerConfig.plugins.dualScreen && playerConfig.plugins.dualScreen.allowAdminCuePoints && !result){
 				result =  true;
 			}
 			return result;
