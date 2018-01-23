@@ -168,7 +168,9 @@
 				if (!_this.getConfig( 'onPage' )) {
 					$( ".videoHolder, .mwPlayerContainer" ).css( "width", "100%" );	}
 			});
+
 			this.bind('onCloseFullScreen', function() {
+                qnaObject.show();
 				_this.changeVideoToggleIcon();
 				if (!_this.getConfig( 'onPage' )){
 					$(".videoHolder, .mwPlayerContainer").css("width", _this.originalPlayerWidth + "px");
