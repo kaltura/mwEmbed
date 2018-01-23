@@ -3431,6 +3431,18 @@
 			}
 		},
 
+		showTextTrack: function () {
+
+		},
+
+		hideTextTrack: function () {
+
+		},
+
+		getActiveSubtitle: function () {
+			return null;
+		},
+
 		getCurrentBufferLength: function(){
 			mw.log("Error: getPlayerElementTime should be implemented by embed library");
 		}
