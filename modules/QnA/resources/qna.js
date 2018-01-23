@@ -163,14 +163,14 @@
 			});
 
 			this.bind('onOpenFullScreen', function() {
-                qnaObject.hide();
+			    qnaObject.hide();
 				_this.changeVideoToggleIcon();
 				if (!_this.getConfig( 'onPage' )) {
 					$( ".videoHolder, .mwPlayerContainer" ).css( "width", "100%" );	}
 			});
 
 			this.bind('onCloseFullScreen', function() {
-                qnaObject.show();
+			    qnaObject.show();
 				_this.changeVideoToggleIcon();
 				if (!_this.getConfig( 'onPage' )){
 					$(".videoHolder, .mwPlayerContainer").css("width", _this.originalPlayerWidth + "px");
