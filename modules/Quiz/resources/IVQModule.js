@@ -53,11 +53,28 @@
                     }
                     else {
                         $.quizParams = data[1];
+                        var banSeekTrigger = false;
+                        var dataForBanSeek = {
+                            status:false,
+                            alertText:''
+                        };
                         $.grep($.quizParams.uiAttributes, function (e) {
+                            
+                            if (e.key == "banSeek" && e.value) {
+                                banSeekTrigger = true;
+                                dataForBanSeek.status = true;
+                            }
+                            if (e.key == "alertText") {
+                                dataForBanSeek.alertText =  e.value;
+                            }
                             if (e.key == "canSkip") {
                                 _this.canSkip = (e.value.toLowerCase() === 'true');
                             }
                         });
+                        //send notification to banSeekManager with params from Editor
+                        if(banSeekTrigger && !_this.canSkip){
+                            _this.embedPlayer.sendNotification('activateBanSeek',dataForBanSeek);
+                        }
                         if (data[0].totalCount > 0) {
                             switch (String(data[0].objects[0].status)) {
                                 case 'quiz.3':
