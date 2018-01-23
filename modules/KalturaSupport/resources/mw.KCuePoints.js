@@ -39,6 +39,7 @@
 			this.destroy();
 			// Setup player ref:
 			this.embedPlayer = embedPlayer;
+			this.threshold = this.getThreshold();
 
 			// Process cue points
 			embedPlayer.bindHelper('KalturaSupport_CuePointsReady' + this.bindPostfix, function () {
@@ -417,7 +418,7 @@
 		 *
 		 */
 		removeDuplicatedCuePoints:function (allCP, currentCuePointIndex) {
-			var defaultThreshold = this.getThreshold();
+			var defaultThreshold = this.threshold;
 			var currentCP = allCP[currentCuePointIndex];
 			var prevCP = this.getPrevCPWithCorrectType(allCP,currentCuePointIndex);
 			if(prevCP !== false && currentCP){
@@ -435,7 +436,7 @@
 			var prevCP = false;
 			var previousIndex = currentCuePointIndex - 1;
 			var currentCP = allCP[currentCuePointIndex];
-			var thresholdTime = this.getThreshold();
+			var thresholdTime = this.threshold;
 			for(var i = previousIndex; i>=0;i--){
 				var startTimeDelta = Math.abs(currentCP.startTime - allCP[i].startTime);
 				//if delta of createdAt and startTime is more than thresholdTime - we do not have same CP
@@ -453,17 +454,12 @@
 		 * Returns time in seconds
 		 */
 		getThreshold:function () {
-			if(!this.threshold){
-				var defaultThreshold =  3;
-				var playerConfig = this.embedPlayer.playerConfig;
-				if(playerConfig && playerConfig.plugins && playerConfig.plugins.dualScreen && playerConfig.plugins.dualScreen.thresholdForDuplicateCP){
-					defaultThreshold = playerConfig.plugins.dualScreen.thresholdForDuplicateCP;
-				}
-				this.threshold = defaultThreshold;
-				return defaultThreshold;
-			}else {
-				return this.threshold;
+			var defaultThreshold =  3;
+			var playerConfig = this.embedPlayer.playerConfig;
+			if(playerConfig && playerConfig.plugins && playerConfig.plugins.dualScreen && playerConfig.plugins.dualScreen.thresholdForDuplicateCP){
+				defaultThreshold = playerConfig.plugins.dualScreen.thresholdForDuplicateCP;
 			}
+			return defaultThreshold;
 		},
 		/**
 		 * Returns the next cuePoint object for requested time
