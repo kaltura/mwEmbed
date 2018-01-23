@@ -726,19 +726,19 @@
         displayQuizEndMarker:function(){
             var  _this = this;
             var scrubber = this.embedPlayer.getInterface().find(".scrubber");
-
-            scrubber.parent().prepend('<div class="quizDone-cont"></div>');
+            var quizDone = $('<div/>').addClass('quizDone-cont');
+            scrubber.parent().prepend(quizDone);
 
             $(document).off( 'click', '.quizDone-cont' )
                 .on('click', '.quizDone-cont', function () {
                     _this.KIVQModule.quizEndScenario();
                 });
-            $('.quizDone-cont').attr('tabindex', 5).attr('role', 'button')
+            quizDone.attr('tabindex', 5).attr('role', 'button')
                     .attr('title', 'click to end quiz now').on('keydown', _this.keyDownHandler).attr('id', 'quiz-done-continue-button').focus();
             // verify focus in IE
             document.getElementById('quiz-done-continue-button').focus();
             setTimeout(function () {
-                $(_this.embedPlayer.getInterface()).find('.quizDone-cont').first().addClass('small');
+                quizDone.addClass('small');
             },3000);
         }
     }));
