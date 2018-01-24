@@ -50,6 +50,7 @@
 		_p100Once: false,
 		hasSeeked: false,
 		dvr: false,
+        monitorViewEvents:true,
 
 		smartSetInterval:function(callback,time,monitorObj) {
 			var _this = this;
@@ -334,6 +335,9 @@
 			if (this.viewEventInterval){
 				this.stopViewTracking();
 			}
+			if ( !this.monitorViewEvents ){
+				return;
+			}
 			var _this = this;
 			var playerEvent = this.PlayerEvent;
 			_this.startTime = null;
@@ -347,6 +351,9 @@
 				if ( !_this._p100Once ){ // since we report 100% at 99%, we don't want any "VIEW" reports after that (FEC-5269)
 					_this.sendAnalytics(playerEvent.VIEW);
 					_this.bufferTime = 0;
+				}
+				if ( !_this.monitorViewEvents ){
+					_this.stopViewTracking();
 				}
 			},_this.reportingInterval,_this.monitorIntervalObj);
 
@@ -447,10 +454,14 @@
 			this.log("Trigger analyticsEvent type = "+statsEvent.eventType);
 			this.kClient.doRequest( eventRequest, function(data){
 				try {
-					if (!_this.startTime ) {
-						_this.startTime = data;
-					}
-				}catch(e){
+                    var parsedData = data;
+                    if (parsedData.time && !_this.startTime) {
+                        _this.startTime = parsedData.time;
+                    }
+                    if (!(!!parsedData.viewEventsEnabled)) {
+                        _this.monitorViewEvents = false;
+                    }
+                }catch(e){
 					mw.log("Failed sync time from server");
 				}
 			}, true );
