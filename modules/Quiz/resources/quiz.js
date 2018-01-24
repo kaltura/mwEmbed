@@ -685,7 +685,24 @@
             if(ev.which === 13 || ev.which === 32)
             {
                 $(ev.target).click();
+            }else if(ev.which === 9){
+                var _this = this;
+                setTimeout(function () {
+                    var currentFocusedElement = $(':focus');//when timeout will done - new element will be in focus
+                    if(!currentFocusedElement.parents('.quiz').length){
+                        if($(_this).parents(".quiz").find(".hint-why-box").length){
+                            //find hint
+                            $(_this).parents(".quiz").find(".hint-why-box").focus();
+                        }else{
+                            $(_this).parents(".quiz").find(".display-question").focus();
+                            // if hint isnt there - focus on the name
+                        }
+                        return;
+                    }
+                }, 0);
             }
+
+
         },
         displayBubbles:function(){
             var  _this = this,displayClass,embedPlayer = this.getPlayer(),handleBubbleclick;
