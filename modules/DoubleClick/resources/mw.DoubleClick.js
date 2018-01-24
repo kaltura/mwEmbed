@@ -649,7 +649,13 @@
             $( this.embedPlayer ).trigger( "onPlayerStateChange", [ "pause", this.embedPlayer.currentState ] );
             if ( isLinear && !this.isNativeSDK ) {
                 this.clearSkipTimeout();
-                this.embedPlayer.enablePlayControls( [ "scrubber", "share", "infoScreen", "related", "playlistAPI", "nextPrevBtn", "sourceSelector", "qualitySettings", "morePlugins" ] );
+                if ( _this.isVPAID === true ) {
+                    _this.embedPlayer.enablePlayControls( [ "share", "infoScreen", "related", "playlistAPI", "nextPrevBtn", "sourceSelector", "qualitySettings", "morePlugins" ] );
+                    _this.embedPlayer.pause();
+                }
+                else {
+                    _this.embedPlayer.enablePlayControls( [ "scrubber", "share", "infoScreen", "related", "playlistAPI", "nextPrevBtn", "sourceSelector", "qualitySettings", "morePlugins" ] );
+                }
             } else {
                 _this.embedPlayer.pause();
             }
@@ -1168,6 +1174,11 @@
                 if ( adData ) {
                     _this.isLinear = adData.linear;
                 }
+                var ad = adEvent.getAd();
+                if( ad.getContentType() === "application/javascript" ) {
+                    _this.isVPAID = true;
+                    _this.hideControlsOnVPAID();
+                }
                 var currentAdSlotType = _this.isLinear ? _this.currentAdSlotType : "overlay";
                 $( "#" + _this.getAdContainerId() ).show();
                 // dispatch adOpen event
@@ -1207,9 +1218,6 @@
                 var ad = adEvent.getAd();
                 _this.isLinear = ad.isLinear();
                 var currentAdSlotType = _this.isLinear ? _this.currentAdSlotType : "overlay";
-                if( ad.getContentType() === "application/javascript" ) {
-                    _this.isVPAID = true;
-                }
                 if ( mw.isIpad() && _this.embedPlayer.getPlayerElement().paused ) {
                     _this.embedPlayer.getPlayerElement().play();
                 }
@@ -1328,6 +1336,7 @@
                 mw.log( "DoubleClick:: adSkipped" );
                 if(_this.isVPAID === true) {
                     _this.isVPAID = false;
+                    _this.showControlsAfterVPAID();
                 }
                 $( _this.embedPlayer ).trigger( 'onAdSkip' );
             } );
@@ -1346,6 +1355,7 @@
                 if (_this.nonFatalError) return;
                 if(_this.isVPAID === true) {
                     _this.isVPAID = false;
+                    _this.showControlsAfterVPAID();
                 }
                 $( _this.embedPlayer ).trigger( 'onContentResumeRequested' );
                 _this.playingLinearAd = false;
@@ -1567,6 +1577,16 @@
                 'width': this.embedPlayer.getVideoHolder().width(),
                 'height': this.embedPlayer.getVideoHolder().height()
             };
+        },
+        hideControlsOnVPAID: function(){
+            var hideControls = "-40px";
+            document.querySelector(".controlBarContainer").style.bottom = hideControls;
+            document.querySelector(".topBarContainer").style.top = hideControls;
+        },
+        showControlsAfterVPAID: function(){
+            var showControls = "";
+            document.querySelector(".controlBarContainer").style.bottom = showControls;
+            document.querySelector(".topBarContainer").style.top = showControls;
         },
         hideContent: function () {
             mw.log( "DoubleClick:: hide Content / show Ads" );
