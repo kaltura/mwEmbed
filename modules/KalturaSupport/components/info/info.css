@@ -1,5 +1,6 @@
 .screen.infoScreen{
     font-family: 'Lato', Helvetica, Arial;
+    z-index: 4000;
 }
 .infoScreen .title{
     font-size: 2.1em;
