@@ -286,6 +286,7 @@ mw.KWidgetSupport.prototype = {
 		this.handleUiConf( embedPlayer, callback );
 	},
 	updatePlayerContextData: function(embedPlayer, playerData){
+        debugger;
 		if( playerData.contextData ){
 			if ( playerData.contextData.msDuration) {
 				embedPlayer.kalturaPlayerMetaData.duration = Math.floor(playerData.contextData.msDuration / 1000);
@@ -316,6 +317,11 @@ mw.KWidgetSupport.prototype = {
 							if (match) {
 								serviceUrl = serviceUrl.replace(regExp, action.replacement);
 								mw.config.set(key, serviceUrl);
+								// TODO: Eitan product
+								if(mw.config.get( 'EmbedPlayer.IsFriendlyIframe') && mw.getConfig("forceContextUrls") ){
+                                    window.parent.preMwEmbedConfig[key] = serviceUrl;
+                                    console.log(">>>>> setting ",serviceUrl, "to",key);
+                                }
 							}
 
 						});

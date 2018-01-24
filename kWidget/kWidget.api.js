@@ -86,7 +86,16 @@ kWidget.api.prototype = {
 		if( this.disableCache === true ) {
 			param['nocache'] = 'true';
 		}
-		
+
+        if( window.parent &&
+            window.parent.preMwEmbedConfig &&
+            window.parent.preMwEmbedConfig["Kaltura.ServiceUrl"] &&
+            window.parent.preMwEmbedConfig["Kaltura.ServiceUrl"] != this.serviceUrl ){
+		    //get service URL
+            //debugger
+            //this.serviceUrl = window.parent.preMwEmbedConfig["Kaltura.ServiceUrl"];
+        }
+
 		// Add in the base parameters:
 		for( var i in this.baseParam ){
 			if( typeof param[i] == 'undefined' ){

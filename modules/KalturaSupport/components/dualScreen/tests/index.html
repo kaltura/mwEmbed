@@ -17,13 +17,17 @@
 <h1>Dual Screen Test</h1>
 <br />
 <div id="kaltura_player" style="width: 960px; height: 640px;float: left;"></div>
+<div id="qnaListHolder"></div>
 <br style="clear: both;" /><br />
 <script>
+
+    var qna = {"plugin":"true","moduleWidth":"200","containerPosition":"right","qnaPollingInterval":"10000","onPage":"true","userId":"eitan.avgil@kaltura.com","userRole":"unmoderatedAdminRole","qnaTargetId":"qnaListHolder"}
+
     kWidget.featureConfig({
         'targetId': 'kaltura_player',
         'wid': '_27017',
-        'uiconf_id' : '35826631',
-        'entry_id': "1_1nbhfvej", //2 videos
+        'uiconf_id' : '38392191',
+        'entry_id': "1_1eiu08o3", //2 videos
 //        'entry_id': "1_qsq3z7t1", //2 videos AND slides
         'flashvars': {
             // default streamertype = http (HTML5 video progressive download)/
@@ -43,9 +47,8 @@
             // "sideBarContainer": {
             //     "clickToClose": true
             // },
-            'quiz': {
-                'plugin': true
-            },
+
+            qna : qna,
 
             "dualScreen": {
                 plugin: true,
@@ -54,27 +57,11 @@
 	            mobileTag: 'mobile'
             },
 
-            //"streamSelector": {
-            //    plugin: true
-            //},
-
-            // "sourceSelector": {
-            //     plugin: true
-            // },
 
             "closedCaptions": {
                 plugin: true
             }
 
-            // "infoScreen": {
-            //     plugin: true,
-            //     parent: "controlsContainer",
-            //     order: 3,
-            //     align: "right",
-            //     minWidth: 400,
-            //     minWidthClass: 'infoScreenSmall',
-            //     template: ""
-            // }
         }
     });
 </script>

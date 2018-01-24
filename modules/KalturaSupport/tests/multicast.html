@@ -2,69 +2,71 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>multicast test</title>
+    <title>multicast test dynamic</title>
     <script   src="http://code.jquery.com/jquery-3.2.1.min.js"   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="   crossorigin="anonymous"></script>
 </head>
 <body>
 <script src="../../../mwEmbedLoader.php"></script>
-<div id="kaltura_player_1497898898" style="width: 700px; height: 600px;float:left;"></div>
-<div id="qnaListHolder" style="width: 300px; height: 330px; float:left;"></div>
+<H1> DYNAMIC </H1>
+<div id="kaltura_player_1497898898" style="width: 800px; height: 500px;float:left;"></div>
 <script>
     mw.setConfig('forceMobileHTML5', true);
     var player;
     var _this = this;
     kWidget.addReadyCallback( function( playerId ){
-	    var player = document.getElementById( playerId );
-	    // using kBind we will register to player's play event
-	    player.kBind( "logMe", function(a){
+        var player = document.getElementById( playerId );
+        // using kBind we will register to player's play event
+        player.kBind( "logMe", function(a){
             _this.span1Value(a)
-	    });
+        });
     });
 
     var qna= {
-	    'plugin': true,
-	    'qnaTargetId': 'qnaListHolder',
-	    'qnaPollingInterval': 5000,
-	    'onPage': true,
-	    'containerPosition': 'right',
-	    'moduleWidth' : '200',
-	    'userId': "Shimi",
-	    'userRole':"userRole", //anonymousRole
-	    'allowNewQuestionWhenNotLive': true
+        'plugin': true,
+        'qnaTargetId': 'qnaListHolder',
+        'qnaPollingInterval': 10000,
+        'onPage': false,
+        'containerPosition': 'right',
+        'moduleWidth' : '200',
+        'userId': "Guest",
+        'userRole':"anonymousRole" //anonymousRole
     };
 
     kWidget.embed({
         "targetId": "kaltura_player_1497898898",
-        "wid": "_27017",
-        "uiconf_id": 39703751,
+        "wid": "_1722461",
+        "uiconf_id": 41049352,
         "flashvars": {
-            "debugInfo": {
-                "custom": true,
-                "plugin": true,
-                "isVisible": true
+            "streamerType" : 'auto',
+            // "debugInfo": {
+            //     "custom": true,
+            //     "plugin": true,
+            //     "isVisible": true
+            // },
+            'webcastPolls': {
+                plugin: true
             },
-	        'webcastPolls': {
-		        plugin: true
-	        },
-	        'qna': qna,
+            'qna': qna,
+            forceContextUrls: true,
+            "playbackContext":"",
             "dualScreen.plugin" : true,
+            "EmbedPlayer.EnableIpadNativeFullscreen" : true,
             "chapters.plugin" : true,
             "LeadWithHLSOnJs" : true,
             "EmbedPlayer.LiveCuepoints" : true,
-            "ks" : "djJ8MjcwMTd8kn6UFJNePhhHt3kAPbus2IFYH3tfbrMd72GRzMaDLr5dwnS3QlBpfN5E25sQhU6B8q2qMyhpXPhqZnmHzRuaTN6OhR_46pNfDD2JEblL_jn2wZUWwnd1I0O6gqeX0cREaV1P2T4muOUAlE1muEV3M53nJR3g8K5zEn_d4Jkbko3paz1-Yq-d8a4Tno1y9rxeGViEYXzVsVK15e72IcXfXkRMdOdqaWUf_zBTNH9bww-TvjazyFTCgemUOtsNkKPebR8lnS95cJY_gqWREsZCxH0LIPZlpI4ugPu0kgUGLjZmx9DP9ItKzQijhKY7_RzcH-z9F0hCNJNInsbVRhi4P8DlkQZ5CrIqWn2jpt1nqcg=",
+            "ks" : "djJ8MTcyMjQ2MXwuC2pSzRDJGBsfyxDiXXao7vHylxEmsl0tYkSUVP46ATW8hpLQmPmgo-k88sSnpENGFhdzZxEJq4VgBk3OgCcmXNpWjA4Nvbf5Rnlp0AILlUVcKMJvswl2Kt4z_xOgQL90PQ-Oue6dVb-O-3c23qcIeG8B219FG9bAA_Izf7uKj_biIpjRi3O9vtbYNPKNlC4oekXnhlppheSbbzltWBWWHQ5hSUyvfXOaXlZHreCIhvpf-0R02AAMWUl01iPVxJCb0rn4T3BdwtfYZjYCssa2",
             "multicastStartTimeout" : 60000,
             "multicastKESKtimeout" : 60000
 
         },
         "cache_st": 1497898898,
-        "entry_id": "1_3c2krqbw"
+        "entry_id": "1_h8d99g6t"
     });
     var span1Value = function  (a){
         $("#span1").text(a)
     };
     setTimeout(span1Value,2000);
-    </script>
+</script>
 <span id="span1"></span>
-ddddd
 </body>
 </html>
