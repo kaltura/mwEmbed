@@ -454,12 +454,18 @@
 			this.log("Trigger analyticsEvent type = "+statsEvent.eventType);
 			this.kClient.doRequest( eventRequest, function(data){
 				try {
-                    var parsedData = data;
-                    if (parsedData.time && !_this.startTime) {
-                        _this.startTime = parsedData.time;
-                    }
-                    if (!(!!parsedData.viewEventsEnabled)) {
-                        _this.monitorViewEvents = false;
+					if (typeof data == "object") {
+                        var parsedData = data;
+                        if (parsedData.time && !_this.startTime) {
+                            _this.startTime = parsedData.time;
+                        }
+                        if (parsedData.viewEventsEnabled != undefined && !parsedData.viewEventsEnabled) {
+                            _this.monitorViewEvents = false;
+                        }
+                    } else {
+                        if (!_this.startTime) {
+                            _this.startTime = data;
+                        }
                     }
                 }catch(e){
 					mw.log("Failed sync time from server");
