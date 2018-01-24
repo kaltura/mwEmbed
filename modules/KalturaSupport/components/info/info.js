@@ -72,7 +72,7 @@ mw.PluginManager.add( 'infoScreen', mw.KBaseScreen.extend({
 			if(e.keyCode === 9){// keyCode = 9 - tab button
 				setTimeout(function () {
 					var currentFocusedElement = $(':focus');//when timeout will done - new element will be in focus
-					if(!currentFocusedElement.parents('.videoHolder').hasClass('videoHolder')){
+					if(!currentFocusedElement.parents('.infoScreen').length){
 						_this.getPlayer().getInterface().find(".infoScreen .icon-close").focus();
 						return;
 					}
