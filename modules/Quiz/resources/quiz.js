@@ -690,7 +690,13 @@
                 setTimeout(function () {
                     var currentFocusedElement = $(':focus');//when timeout will done - new element will be in focus
                     if(!currentFocusedElement.parents('.quiz').length){
-                        if($(_this).parents(".quiz").find(".hint-why-box").length){
+                        if($(_this).parents(".quiz").find(".pdf-download-img").length){
+                            $(_this).parents(".quiz").find(".pdf-download-img").focus();
+                        }
+                        else if($(_this).parents(".quiz").find(".confirm-box").length){
+                            $(_this).parents(".quiz").find(".confirm-box").focus();
+                        }
+                        else if($(_this).parents(".quiz").find(".hint-why-box").length){
                             //find hint
                             $(_this).parents(".quiz").find(".hint-why-box").focus();
                         }else{
