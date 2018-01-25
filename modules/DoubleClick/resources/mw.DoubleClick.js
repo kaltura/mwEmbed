@@ -89,6 +89,8 @@
 
         //flag for checking if ad type is vpaid
         isVPAID: false,
+        //flag for disabling the removal of the player controls during VPAID ad
+        disableHideControlsOnVPAID: false,
 
         //override cuepoint url with the preroll url
         overrideCuePointWithPreRoll: false,
@@ -1177,7 +1179,9 @@
                 var ad = adEvent.getAd();
                 if( ad.getContentType() === "application/javascript" ) {
                     _this.isVPAID = true;
-                    _this.hideControlsOnVPAID();
+                    if( !_this.getConfig("disableHideControlsOnVPAID") && !mw.isIphone() ) {
+                        _this.hideControlsOnVPAID();
+                    }
                 }
                 var currentAdSlotType = _this.isLinear ? _this.currentAdSlotType : "overlay";
                 $( "#" + _this.getAdContainerId() ).show();
@@ -1336,7 +1340,9 @@
                 mw.log( "DoubleClick:: adSkipped" );
                 if(_this.isVPAID === true) {
                     _this.isVPAID = false;
-                    _this.showControlsAfterVPAID();
+                    if( !_this.getConfig("disableHideControlsOnVPAID") && !mw.isIphone() ) {
+                        _this.showControlsAfterVPAID();
+                    }
                 }
                 $( _this.embedPlayer ).trigger( 'onAdSkip' );
             } );
@@ -1355,7 +1361,9 @@
                 if (_this.nonFatalError) return;
                 if(_this.isVPAID === true) {
                     _this.isVPAID = false;
-                    _this.showControlsAfterVPAID();
+                    if( !_this.getConfig("disableHideControlsOnVPAID") && !mw.isIphone() ) {
+                        _this.showControlsAfterVPAID();
+                    }
                 }
                 $( _this.embedPlayer ).trigger( 'onContentResumeRequested' );
                 _this.playingLinearAd = false;
@@ -1578,6 +1586,7 @@
                 'height': this.embedPlayer.getVideoHolder().height()
             };
         },
+        //TODO: Move functions to controlBarContainer and topBarContainer
         hideControlsOnVPAID: function(){
             var hideControls = "-40px";
             document.querySelector(".controlBarContainer").style.bottom = hideControls;
