@@ -207,15 +207,15 @@
                 _this.prePlayActionTriggered = true;
             } );
 
-            var getVpaidMode = function () {
-                switch (_this.getConfig('VpaidMode')) {
-                    case 'disabled':
-                        return google.ima.ImaSdkSettings.VpaidMode.DISABLED;
-                    case 'insecure':
-    		            return google.ima.ImaSdkSettings.VpaidMode.INSECURE;
-                    default:
-                        return google.ima.ImaSdkSettings.VpaidMode.ENABLED;
-                }
+            var setVpaidMode = function () {
+	            var VpaidMode = {
+		            disabled: google.ima.ImaSdkSettings.VpaidMode.DISABLED,
+		            insecure: google.ima.ImaSdkSettings.VpaidMode.INSECURE,
+		            enabled: google.ima.ImaSdkSettings.VpaidMode.ENABLED
+	            };
+	            var vpaidModeConfig = _this.getConfig('VpaidMode');
+	            var vpaidMode = VpaidMode[vpaidModeConfig] !== undefined ? VpaidMode[vpaidModeConfig] : google.ima.ImaSdkSettings.VpaidMode.ENABLED;
+	            google.ima.settings.setVpaidMode(vpaidMode);
             };
 
             var onImaLoadSuccess = function () {
@@ -229,7 +229,7 @@
                 google.ima.settings.setPlayerType( "kaltura/mwEmbed" );
                 google.ima.settings.setPlayerVersion( mw.getConfig( "version" ) );
                 google.ima.settings.setVpaidAllowed( _this.getConfig('VpaidAllowed') || true);
-                google.ima.settings.setVpaidMode( getVpaidMode()) ;
+                setVpaidMode();
 
                 // Set num of redirects for VAST wrapper ads, higher means bigger latency!
                 var numRedirects = _this.getConfig( "numRedirects" );
