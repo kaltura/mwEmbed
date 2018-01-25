@@ -117,10 +117,10 @@
 	mw.isChrome = function () {
 		return ( userAgent.indexOf('Chrome') != -1 && !mw.isEdge() );
 	};
-    mw.isChrome64AndUp = function () {
+    mw.isChromeVersionGreaterThen = function (version) {
         var chromeVersion = mw.getChromeVersion();
         var chromeMajorVersion = chromeVersion[0];
-		return ( mw.isChrome() && chromeMajorVersion >= 64 );
+		return ( mw.isChrome() && chromeMajorVersion >= version );
     };
 	mw.isAndroidNativeBrowser = function () {
 		return (mw.isAndroid() && !mw.isFirefox() && !mw.isChrome());
