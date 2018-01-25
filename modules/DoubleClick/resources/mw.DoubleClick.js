@@ -207,6 +207,17 @@
                 _this.prePlayActionTriggered = true;
             } );
 
+            var getVpaidMode = function () {
+                switch (_this.getConfig('VpaidMode')) {
+                    case 'disable':
+                        return google.ima.ImaSdkSettings.VpaidMode.DISABLED;
+                    case 'insecure':
+    		            return google.ima.ImaSdkSettings.VpaidMode.INSECURE;
+                    default:
+                        return google.ima.ImaSdkSettings.VpaidMode.ENABLED;
+                }
+            };
+
             var onImaLoadSuccess = function () {
                 _this.imaLoaded = true;
                 _this.embedPlayer.unbindHelper( 'prePlayAction' + _this.bindPostfix );
@@ -217,7 +228,8 @@
                 // set player type and version
                 google.ima.settings.setPlayerType( "kaltura/mwEmbed" );
                 google.ima.settings.setPlayerVersion( mw.getConfig( "version" ) );
-                google.ima.settings.setVpaidMode( google.ima.ImaSdkSettings.VpaidMode.ENABLED );
+                google.ima.settings.setVpaidAllowed( _this.getConfig('VpaidAllowed') || true);
+                google.ima.settings.setVpaidMode( getVpaidMode()) ;
 
                 // Set num of redirects for VAST wrapper ads, higher means bigger latency!
                 var numRedirects = _this.getConfig( "numRedirects" );
