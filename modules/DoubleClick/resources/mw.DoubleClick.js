@@ -1179,8 +1179,8 @@
                 var ad = adEvent.getAd();
                 if( ad.getContentType() === "application/javascript" ) {
                     _this.isVPAID = true;
-                    if( !_this.getConfig("disableHideControlsOnVPAID") && !mw.isIphone() ) {
-                        _this.hideControlsOnVPAID();
+                    if( !_this.getConfig("disableHideControlsOnVPAID") && _this.embedPlayer.useNativePlayerControls() === false ) {
+                        _this.embedPlayer.layoutBuilder.forceHidePlayerControls();
                     }
                 }
                 var currentAdSlotType = _this.isLinear ? _this.currentAdSlotType : "overlay";
@@ -1340,8 +1340,8 @@
                 mw.log( "DoubleClick:: adSkipped" );
                 if(_this.isVPAID === true) {
                     _this.isVPAID = false;
-                    if( !_this.getConfig("disableHideControlsOnVPAID") && !mw.isIphone() ) {
-                        _this.showControlsAfterVPAID();
+                    if( !_this.getConfig("disableHideControlsOnVPAID") && _this.embedPlayer.useNativePlayerControls() === true ) {
+                        _this.embedPlayer.layoutBuilder.forceShowPlayerControls();
                     }
                 }
                 $( _this.embedPlayer ).trigger( 'onAdSkip' );
@@ -1361,8 +1361,8 @@
                 if (_this.nonFatalError) return;
                 if(_this.isVPAID === true) {
                     _this.isVPAID = false;
-                    if( !_this.getConfig("disableHideControlsOnVPAID") && !mw.isIphone() ) {
-                        _this.showControlsAfterVPAID();
+                    if( !_this.getConfig("disableHideControlsOnVPAID") && _this.embedPlayer.useNativePlayerControls() === true ) {
+                        _this.embedPlayer.layoutBuilder.forceShowPlayerControls();
                     }
                 }
                 $( _this.embedPlayer ).trigger( 'onContentResumeRequested' );
@@ -1585,17 +1585,6 @@
                 'width': this.embedPlayer.getVideoHolder().width(),
                 'height': this.embedPlayer.getVideoHolder().height()
             };
-        },
-        //TODO: Move functions to controlBarContainer and topBarContainer
-        hideControlsOnVPAID: function(){
-            var hideControls = "-40px";
-            document.querySelector(".controlBarContainer").style.bottom = hideControls;
-            document.querySelector(".topBarContainer").style.top = hideControls;
-        },
-        showControlsAfterVPAID: function(){
-            var showControls = "";
-            document.querySelector(".controlBarContainer").style.bottom = showControls;
-            document.querySelector(".topBarContainer").style.top = showControls;
         },
         hideContent: function () {
             mw.log( "DoubleClick:: hide Content / show Ads" );
