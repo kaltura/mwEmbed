@@ -20,7 +20,7 @@
             isSafeEnviornment: function () {
                 var isThumbEmbed = !!mw.getConfig('thumbEmbedOrigin');
                 var isMobileAutoPlay = (mw.isMobileDevice() || mw.isIpad()) && mw.getConfig('mobileAutoPlay') && !isThumbEmbed;
-                var isFallbackToMutedAutoPlay = (!isThumbEmbed && mw.isDesktopSafari11() && (mw.getConfig('autoPlay') || this.getPlayer().getRawKalturaConfig('playlistAPI', 'autoPlay')));
+                var isFallbackToMutedAutoPlay = (!isThumbEmbed && (mw.isDesktopSafari11() || mw.isChrome64AndUp()) && (mw.getConfig('autoPlay') || this.getPlayer().getRawKalturaConfig('playlistAPI', 'autoPlay')));
                 return !!(isMobileAutoPlay || isFallbackToMutedAutoPlay);
             },
 
