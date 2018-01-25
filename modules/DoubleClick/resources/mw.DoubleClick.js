@@ -209,7 +209,7 @@
 
             var getVpaidMode = function () {
                 switch (_this.getConfig('VpaidMode')) {
-                    case 'disable':
+                    case 'disabled':
                         return google.ima.ImaSdkSettings.VpaidMode.DISABLED;
                     case 'insecure':
     		            return google.ima.ImaSdkSettings.VpaidMode.INSECURE;
