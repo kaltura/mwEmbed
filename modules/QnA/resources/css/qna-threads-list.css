@@ -321,10 +321,6 @@
 .qnaInterface .qnaAnnouncement{
     background-color: #76c044;
 }
-.qnaInterface .qnaAnnouncement a,
-.qnaInterface .qnaAnnouncementRead a{
-    color: black;
-}
 
 .qnaInterface .qnaAnnouncementRead{
     background-color: rgba(118, 192, 68, 0.3);
