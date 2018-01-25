@@ -106,7 +106,7 @@
 			 * Register the playback events and attach the playback engine to the video element
 			 */
 			initHls: function () {
-				if (this.LoadHLS && !this.loaded) {
+				if (this.LoadHLS && !this.loaded && !this.embedPlayer.casting) {
 					this.log("Init");
 					//Set streamerType to hls
 					this.embedPlayer.streamerType = 'hls';
