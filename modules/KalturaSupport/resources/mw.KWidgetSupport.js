@@ -314,17 +314,17 @@ mw.KWidgetSupport.prototype = {
 							var match = serviceUrl.match( regExp );
 
 							if (match) {
-								serviceUrl = serviceUrl.replace(regExp, action.replacement);
-								mw.config.set(key, serviceUrl);
-								// Pass the override URLs configurations to the parent mw object so that it's client
-								// URLs would be updated too.
-								if(mw.config.get( 'EmbedPlayer.IsFriendlyIframe') ){
-								    try{
+                                serviceUrl = serviceUrl.replace(regExp, action.replacement);
+                                mw.config.set(key, serviceUrl);
+                                // Pass the override URLs configurations to the parent mw object so that it's client
+                                // URLs would be updated too.
+                                if(mw.config.get( 'EmbedPlayer.IsFriendlyIframe') ){
+                                    try{
                                         window.parent.mw.setConfig(key, serviceUrl);
                                     }catch(e){
                                         mw.log("Failed to access window.parent from updatePlayerContextData replace URLs ");
                                     }
-                               }
+                                }
 							}
 						});
 					}
