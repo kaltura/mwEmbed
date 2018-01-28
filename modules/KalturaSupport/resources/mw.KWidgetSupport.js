@@ -316,8 +316,16 @@ mw.KWidgetSupport.prototype = {
 							if (match) {
 								serviceUrl = serviceUrl.replace(regExp, action.replacement);
 								mw.config.set(key, serviceUrl);
+                                // Pass the override URLs configurations to the parent mw objext so that its client URLs
+                                // would be updated too.
+								if(mw.config.get( 'EmbedPlayer.IsFriendlyIframe') ){
+								    try{
+                                        window.parent.mw.setConfig(key, serviceUrl);
+                                    }catch(e){
+                                        mw.log("Failed to access window.parent from updatePlayerContextData replace URLs ");
+                                    }
+                               }
 							}
-
 						});
 					}
 				}
