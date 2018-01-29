@@ -117,6 +117,7 @@
 			this.bind("playing", function () {
 				$(this.video).hide();
 				$(this.getPlayer()).css("z-index", "-1");
+				this.log('Obtaining video size for 360 canvas');
 				var setCanvasSize = function () {
 					var canvasSize = this.getCanvasSize();
 					this.renderer.setSize(canvasSize.width, canvasSize.height);
@@ -133,7 +134,8 @@
 						} else if (getCanvasSizeIntervalCounter++ === 600) {
 							// can't get the video.videoWidth in a minute
 							clearInterval(this.getCanvasSizeInterval);
-							this.getPlayer().triggerHelper('embedPlayerError',{message: 'Cannot getting the video dimensions'});
+							this.log('Unable to obtain video size for 360 canvas');
+							this.getPlayer().triggerHelper('embedPlayerError',{message: 'Unable to obtain video size for 360 canvas'});
 						}
 					}.bind(this), 100);
 				}
