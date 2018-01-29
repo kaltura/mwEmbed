@@ -35,6 +35,7 @@
 			"right": "68",  // 'D'
 			"down": "83"   // 'S'
 		},
+		getCanvasSizeInterval: null,
 
 		isSafeEnviornment: function () {
 			return !( mw.isIE8() || mw.isIE9() || mw.isIE10Comp() || // old IEs
@@ -116,9 +117,15 @@
 			this.bind("playing", function () {
 				$(this.video).hide();
 				$(this.getPlayer()).css("z-index", "-1");
-				var canvasSize = this.getCanvasSize();
-				this.renderer.setSize(canvasSize.width, canvasSize.height);
-				this.render();
+				clearInterval(this.getCanvasSizeInterval);
+				this.getCanvasSizeInterval = setInterval(function () {
+					if (this.video.videoWidth) {
+						clearInterval(this.getCanvasSizeInterval);
+						var canvasSize = this.getCanvasSize();
+						this.renderer.setSize(canvasSize.width, canvasSize.height);
+						this.render();
+					}
+				}.bind(this), 100);
 			}.bind(this));
 
 			this.bind("doStop", function () {
@@ -345,6 +352,8 @@
 
 		clean: function () {
 			cancelAnimationFrame(this.requestId);
+			clearInterval(this.getCanvasSizeInterval);
+			this.getCanvasSizeInterval = null;
 			$(this.canvas).remove();
 			$(this.getPlayer()).css('z-index', 0);
 			this.removeBindings();
