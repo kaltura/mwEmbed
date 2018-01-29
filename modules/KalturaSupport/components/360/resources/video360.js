@@ -117,15 +117,26 @@
 			this.bind("playing", function () {
 				$(this.video).hide();
 				$(this.getPlayer()).css("z-index", "-1");
-				clearInterval(this.getCanvasSizeInterval);
-				this.getCanvasSizeInterval = setInterval(function () {
-					if (this.video.videoWidth) {
-						clearInterval(this.getCanvasSizeInterval);
-						var canvasSize = this.getCanvasSize();
-						this.renderer.setSize(canvasSize.width, canvasSize.height);
-						this.render();
-					}
-				}.bind(this), 100);
+				var setCanvasSize = function () {
+					var canvasSize = this.getCanvasSize();
+					this.renderer.setSize(canvasSize.width, canvasSize.height);
+					this.render();
+				}.bind(this);
+				if (this.video.videoWidth) {
+					setCanvasSize();
+				} else {
+					var getCanvasSizeIntervalCounter = 0;
+					this.getCanvasSizeInterval = setInterval(function () {
+						if (this.video.videoWidth) {
+							clearInterval(this.getCanvasSizeInterval);
+							setCanvasSize();
+						} else if (getCanvasSizeIntervalCounter++ === 600) {
+							// can't get the video.videoWidth in a minute
+							clearInterval(this.getCanvasSizeInterval);
+							this.log('Cannot getting the video dimensions');
+						}
+					}.bind(this), 100);
+				}
 			}.bind(this));
 
 			this.bind("doStop", function () {
