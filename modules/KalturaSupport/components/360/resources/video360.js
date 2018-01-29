@@ -133,7 +133,7 @@
 						} else if (getCanvasSizeIntervalCounter++ === 600) {
 							// can't get the video.videoWidth in a minute
 							clearInterval(this.getCanvasSizeInterval);
-							this.log('Cannot getting the video dimensions');
+							this.getPlayer().triggerHelper('embedPlayerError',{message: 'Cannot getting the video dimensions'});
 						}
 					}.bind(this), 100);
 				}
