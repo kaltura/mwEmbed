@@ -1178,10 +1178,7 @@
                 }
                 var ad = adEvent.getAd();
                 if( ad.getContentType() === "application/javascript" ) {
-                    _this.isVPAID = true;
-                    if( !_this.getConfig("disableHideControlsOnVPAID") && _this.embedPlayer.useNativePlayerControls() === false ) {
-                        _this.embedPlayer.layoutBuilder.forceHidePlayerControls();
-                    }
+                    _this.forceHidePlayerControlsOnVPAID();
                 }
                 var currentAdSlotType = _this.isLinear ? _this.currentAdSlotType : "overlay";
                 $( "#" + _this.getAdContainerId() ).show();
@@ -1339,10 +1336,7 @@
             adsListener( 'SKIPPED', function () {
                 mw.log( "DoubleClick:: adSkipped" );
                 if(_this.isVPAID === true) {
-                    _this.isVPAID = false;
-                    if( !_this.getConfig("disableHideControlsOnVPAID") && _this.embedPlayer.useNativePlayerControls() === true ) {
-                        _this.embedPlayer.layoutBuilder.forceShowPlayerControls();
-                    }
+                    _this.forceShowPlayerControlsOnVPAID();
                 }
                 $( _this.embedPlayer ).trigger( 'onAdSkip' );
             } );
@@ -1360,10 +1354,7 @@
             adsListener( 'CONTENT_RESUME_REQUESTED', function () {
                 if (_this.nonFatalError) return;
                 if(_this.isVPAID === true) {
-                    _this.isVPAID = false;
-                    if( !_this.getConfig("disableHideControlsOnVPAID") && _this.embedPlayer.useNativePlayerControls() === true ) {
-                        _this.embedPlayer.layoutBuilder.forceShowPlayerControls();
-                    }
+                    _this.forceShowPlayerControlsOnVPAID();
                 }
                 $( _this.embedPlayer ).trigger( 'onContentResumeRequested' );
                 _this.playingLinearAd = false;
@@ -1579,7 +1570,20 @@
                 }, 'adsLoadError', true );
             }
         },
-
+        forceShowPlayerControlsOnVPAID: function () {
+            var _this = this;
+            _this.isVPAID = false;
+            if( ! ( _this.getConfig("disableHideControlsOnVPAID") || _this.embedPlayer.useNativePlayerControls() ) ) {
+                _this.embedPlayer.layoutBuilder.forceShowPlayerControls();
+            }
+        },
+        forceHidePlayerControlsOnVPAID: function () {
+            var _this = this;
+            _this.isVPAID = true;
+            if( !_this.getConfig("disableHideControlsOnVPAID") && _this.embedPlayer.useNativePlayerControls() === false ) {
+                _this.embedPlayer.layoutBuilder.forceHidePlayerControls();
+            }
+        },
         getPlayerSize: function () {
             return {
                 'width': this.embedPlayer.getVideoHolder().width(),
