@@ -1196,6 +1196,8 @@
 			this.embedPlayer.triggerHelper("selectClosedCaptions", "Off");
 			this.embedPlayer.triggerHelper('changedClosedCaptions', {language: ""});
 			this.setConfig('displayCaptions', false);
+			//Set the index of 'off' to lastActiveCaption
+            this.lastActiveCaption = this.getMenu().$el.find('.active').index();
 			// also update the cookie to "None"
 			this.getPlayer().setCookie( this.cookieName, 'None' );
 		},
