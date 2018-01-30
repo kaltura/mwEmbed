@@ -613,8 +613,32 @@
             _this.selectedAnswer = null;
             setTimeout(function(){_this.KIVQModule.checkIfDone(questionNr)},1800);
         },
+
+        showPortraitWarning:function(){
+            var _this = this;
+            this.embedPlayer.getInterface().append(
+                $('<div class="ivq-orientation-message">' +
+                    '<div class="ivq-orientation-message__text">' +
+                    'This video contains features that requires a larger screen.<br/>' +
+                    'Please try to <span class="ivq-orientation-message__link">launch the video in full screen</span> to view it.' +
+                    '</div>' +
+                 '</div>')
+                    .click(function () {
+                        _this.embedPlayer.sendNotification("openFullScreen");
+                        _this.embedPlayer.getInterface().find(".ivq-orientation-message").remove();
+                    })
+            );
+        },
+
         ivqShowScreen:function(){
             var _this = this,embedPlayer = this.getPlayer();
+            // add warning message when in portrait + mobile + not-fullscreen
+            if(embedPlayer.getInterface().hasClass("mobile")
+                && !embedPlayer.getInterface().hasClass("fullscreen")
+                && window.matchMedia("(orientation: portrait)").matches){
+                this.showPortraitWarning();
+            }
+
             _this.showScreen();
             mw.log("hiding flash player");
             $('#kplayer_pid_kplayer').css('visibility', 'hidden');
