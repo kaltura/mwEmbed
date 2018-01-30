@@ -605,7 +605,7 @@
 
         getProxyData: function () {
             mw.log( "EmbedPlayerChromecast:: getProxyData" );
-            var proxyData = this.getConfig( "proxyData" );
+            var proxyData = this.getKalturaConfig("chromecast", "proxyData" );
             if ( proxyData ) {
                 var _this = this;
                 var recursiveIteration = function ( object ) {
