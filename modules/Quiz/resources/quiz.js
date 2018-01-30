@@ -535,7 +535,7 @@
                             $(this).addClass('single-answer-box-txt-wide ')
                                 .after($('<div></div>') // adding continue/applied div as button
                                     .addClass("single-answer-box-apply qApplied disable").attr('aria-disabled', true).attr('role', 'button')
-                                    .text(gM('mwe-quiz-applied'))
+                                    .text(gM('mwe-quiz-selected'))
                             );
                         });
                 }
@@ -586,7 +586,7 @@
                             $(this).addClass('single-answer-box-txt-wide')
                                 .after($('<div ></div>') // adding continue/applied div as button so no need to set it with a role and tabindex
                                     .addClass("single-answer-box-apply qContinue")
-                                    .text(gM('mwe-quiz-continue')).attr('tabindex', 5).attr('aria-label', 'Continue quiz  with the selected answer: '+currentAnswerText).removeAttr('aria-disabled')
+                                    .text(gM('mwe-quiz-select')).attr('tabindex', 5).attr('aria-label', 'Continue quiz  with the selected answer: '+currentAnswerText).removeAttr('aria-disabled')
                                     .on('keydown', _this.keyDownHandler).attr('id', 'continue-button-answer-'+currentAnswerNumber).attr('role', 'button')
                             );
                             // verify focus in IE
@@ -606,7 +606,7 @@
             $('.single-answer-box-apply').fadeOut(100,function(){
                 $(this).addClass('disable')
                     .removeClass('qContinue')
-                    .text(gM('mwe-quiz-applied'))
+                    .text(gM('mwe-quiz-selected'))
                     .addClass('qApplied').fadeIn(100).attr('aria-disabled', true);
             });
             _this.KIVQModule.submitAnswer(questionNr,_this.selectedAnswer);
@@ -761,6 +761,9 @@
                     .attr('title', 'click to end quiz now').on('keydown', _this.keyDownHandler).attr('id', 'quiz-done-continue-button').focus();
             // verify focus in IE
             document.getElementById('quiz-done-continue-button').focus();
+            setTimeout(function () {
+                $(_this.embedPlayer.getInterface()).find('.quizDone-cont').first().addClass('small');
+            },3000);
         }
     }));
 })(window.mw, window.jQuery);

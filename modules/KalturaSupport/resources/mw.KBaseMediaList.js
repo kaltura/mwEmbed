@@ -240,7 +240,6 @@
 				this.getComponent().height(this.getConfig("mediaItemHeight") + this.getConfig('horizontalHeaderHeight'));
 			}
 			if (this.getConfig('onPage') && this.getLayout() === "vertical" && !this.getConfig("clipListTargetId")){
-				var iframeParent = window['parent'].document.getElementById( this.embedPlayer.id );
 				$( this.$mediaListContainer ).height(this.getConfig("MinClips") * this.getConfig( "mediaItemHeight" ) + this.getConfig('verticalHeaderHeight'));
 			}
 		},
