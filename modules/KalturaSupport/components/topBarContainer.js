@@ -33,6 +33,12 @@
 					_this.destroy();
 				}
 			});
+            this.bind('forceShowPlayerControls', function () {
+                _this.forceTopBarShowControls();
+            });
+            this.bind('forceHidePlayerControls', function () {
+                _this.forceTopBarHideControls();
+            });
 
 			// Bind hover events
 			if( this.getConfig('hover') ){
@@ -103,6 +109,12 @@
 			// Allow interface items to update:
 			this.getPlayer().triggerHelper('onHideTopBar', {'top' : 15} );
 		},
+        forceTopBarShowControls: function(){
+            this.getComponent().css("top", "");
+        },
+        forceTopBarHideControls: function(){
+            this.getComponent().css("top", "-40px");
+        },
 		getComponent: function(){
 			if( !this.$el ) {
 				// Add control bar 				
