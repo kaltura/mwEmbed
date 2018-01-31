@@ -305,7 +305,7 @@ mw.KWidgetSupport.prototype = {
 						var regExp=new RegExp(action.pattern, "i");
 						var urlsToModify = ['Kaltura.ServiceUrl','Kaltura.StatsServiceUrl','Kaltura.ServiceBase','Kaltura.LiveStatsServiceUrl','Kaltura.AnalyticsUrl'];
 						var self = this;
-                        var flashvars = embedPlayer.getFlashvars();
+						var flashvars = embedPlayer.getFlashvars();
 
 						urlsToModify.forEach(function (key) {
 
