@@ -38,6 +38,7 @@
 			this.bind('showScreen', function (event, screenName) {
 				if ( screenName === "moderation" ){
 					this.getInterface().find(".overlay-win .icon-close").focus();
+					this.getInterface().find(".overlay").css("z-index","1100"); // force moderation screen to be higher
 
 					embedPlayer.getInterface().find(".overlay").keydown(function(e){
 						if(e.keyCode === 9){// keyCode = 9 - tab button
