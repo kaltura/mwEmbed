@@ -265,6 +265,7 @@
             // Setup load request
             var loadRequest = new chrome.cast.media.LoadRequest( mediaInfo );
             loadRequest.autoplay = this.autoPlay;
+            // On live start from the live edge, on VOD start from the current player time 
             loadRequest.currentTime = this.isLive() ? 0 : this.getCurrentTime();
             mw.log( "EmbedPlayerChromecast:: loadMedia:: Load request sent", loadRequest );
             // Call load media
