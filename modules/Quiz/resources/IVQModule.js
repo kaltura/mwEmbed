@@ -163,7 +163,9 @@
                 for (var i = 0; i < (data[0].objects.length); i++) {
                     var arr = [];
                     $.each(data[0].objects[i].optionalAnswers, function (key, value) {
-                        arr.push(value.text.toString());
+                        if(value.text){
+                            arr.push(value.text.toString());
+                        }
                     });
                     var ansP = {
                         isAnswerd: false,
@@ -199,7 +201,8 @@
                         startTime: data[0].objects[i].startTime,
                         cpId: data[0].objects[i].id,
                         cpEntryId: data[0].objects[i].entryId,
-                        answerCpId: ansP.answerCpId
+                        answerCpId: ansP.answerCpId,
+                        partnerData: data[0].objects[i].partnerData,
                     });
                 }
                 $.cpObject.cpArray = cpArray;

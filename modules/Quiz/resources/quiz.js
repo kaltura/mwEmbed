@@ -353,7 +353,8 @@
             if ($.cpObject.cpArray[questionNr].hintText){
                 _this.ssDisplayHint(questionNr)
             }
-
+            var className = this.getClassByCPType(cPo.partnerData);
+            $(".ivqContainer").addClass(className);
             if (cPo.question.length < 68){
                 $(".display-question").addClass("padding7");
             }
@@ -382,6 +383,26 @@
                 _this._selectAnswerConroller(cPo, questionNr);
             }
             this.addFooter(questionNr);
+        },
+
+        getClassByCPType: function(cpTypeId){
+            switch (cpTypeId) {
+                case '2':
+                    return 'true-false-question';
+                case '3':
+                    return 'reflection-point';
+                case '4':
+                    return 'multiple-answer-question';
+                case '5':
+                    return 'fill-in-blank';
+                case '6':
+                    return 'hot-spot';
+                case '7':
+                    return 'go-to';
+                case '1':
+                default:
+                    return 'MULTIPLE_CHOICE_ANSWER';
+            }
         },
         ssAllCompleted: function () {
             var _this = this;
