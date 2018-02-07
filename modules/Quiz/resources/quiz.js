@@ -353,7 +353,7 @@
             if ($.cpObject.cpArray[questionNr].hintText){
                 _this.ssDisplayHint(questionNr)
             }
-            var className = this.getClassByCPType(cPo.partnerData);
+            var className = this.getClassByCPType(cPo.questionType);
             $(".ivqContainer").addClass(className);
             if (cPo.question.length < 68){
                 $(".display-question").addClass("padding7");
@@ -387,21 +387,21 @@
 
         getClassByCPType: function(cpTypeId){
             switch (cpTypeId) {
-                case '2':
+                case 2:
                     return 'true-false-question';
-                case '3':
-                    return 'reflection-point';
-                case '4':
+                case 3:
+                    return 'reflection-point-question';
+                case 4:
                     return 'multiple-answer-question';
-                case '5':
-                    return 'fill-in-blank';
-                case '6':
-                    return 'hot-spot';
-                case '7':
-                    return 'go-to';
-                case '1':
+                case 5:
+                    return 'fill-in-blank-question';
+                case 6:
+                    return 'hot-spot-question';
+                case 7:
+                    return 'go-to-question';
+                case 1:
                 default:
-                    return 'MULTIPLE_CHOICE_ANSWER';
+                    return 'multiple-choice-answer-question';
             }
         },
         ssAllCompleted: function () {

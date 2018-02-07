@@ -202,7 +202,7 @@
                         cpId: data[0].objects[i].id,
                         cpEntryId: data[0].objects[i].entryId,
                         answerCpId: ansP.answerCpId,
-                        partnerData: data[0].objects[i].partnerData,
+                        questionType: data[0].objects[i].questionType,
                     });
                 }
                 $.cpObject.cpArray = cpArray;
