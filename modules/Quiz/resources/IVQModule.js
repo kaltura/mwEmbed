@@ -263,9 +263,6 @@
             },
             cuePointReachedHandler: function (e, cuePointObj) {
                 var _this = this;
-                if (!$.quizParams.showCorrectAfterSubmission && _this.quizSubmitted) {
-                    return
-                }
                 $.each($.cpObject.cpArray, function (key, val) {
                     if ($.cpObject.cpArray[key].startTime === cuePointObj.cuePoint.startTime) {
                         _this.quizPlugin.ssSetCurrentQuestion(key,false);
