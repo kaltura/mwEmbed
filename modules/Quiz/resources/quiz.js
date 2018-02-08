@@ -452,19 +452,19 @@
 
                     _this.KIVQModule.displayHex(_this.KIVQModule.setHexContainerPos("current"),cpArray);
 
-                    $(document).off('click','.q-box')
-                        .on('click', '.q-box', function () {
+                    $(document).off('click','.q-box:not(.reflection-point-question)')
+                        .on('click', '.q-box:not(.reflection-point-question)', function () {
                             _this.KIVQScreenTemplate.tmplReviewAnswer();
                             _this.ssReviewAnswer(parseInt($(this).attr('id')));
                         }).attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer');
-                    $(document).off('click','.q-box-false')
-                        .on('click', '.q-box-false', function () {
+                    $(document).off('click','.q-box-false:not(.reflection-point-question)')
+                        .on('click', '.q-box-false:not(.reflection-point-question)', function () {
                             _this.KIVQScreenTemplate.tmplReviewAnswer();
                             _this.ssReviewAnswer(parseInt($(this).attr('id')));
                         }).attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer');
                 }
-                $('.q-box').attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer').on('keydown', _this.keyDownHandler);
-                $('.q-box-false').attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer').on('keydown', _this.keyDownHandler);
+                $('.q-box:not(.reflection-point-question)').attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer').on('keydown', _this.keyDownHandler);
+                $('.q-box-false:not(.reflection-point-question)').attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer').on('keydown', _this.keyDownHandler);
             }else{
                 $(".title-text").addClass("padding23");
                 $(".sub-text").html(gM('mwe-quiz-completedQuiz'));
@@ -691,9 +691,20 @@
                     }else{
                         skipTxt = gM('mwe-quiz-skipForNow');
                     }
-                    $(".ftr-right").html(skipTxt).on('click', function () {
-                        _this.KIVQModule.checkIfDone(questionNr)
-                    }).on('keydown', _this.keyDownHandler).attr('tabindex', 5).attr('role', 'button');
+                    if(
+                        $.cpObject.cpArray[questionNr].questionType &&
+                        $.cpObject.cpArray[questionNr].questionType === _this.KIVQModule.QUESTIONS_TYPE.REFLECTION_POINT &&
+                        !$.cpObject.cpArray[questionNr].isAnswerd
+                    ){
+                        $(".ftr-right").html(gM('mwe-quiz-next')).attr({'tabindex': 6.3, "role" : "button"}).on('click',function () {
+                            _this.KIVQModule.submitAnswer(questionNr,0);
+                            setTimeout(function(){_this.KIVQModule.checkIfDone(questionNr)},1800);
+                        }).on('keydown', _this.keyDownHandler);
+                    }else {
+                        $(".ftr-right").html(skipTxt).on('click', function () {
+                            _this.KIVQModule.checkIfDone(questionNr)
+                        }).on('keydown', _this.keyDownHandler).attr('tabindex', 5).attr('role', 'button');
+                    }
                 }else if(!_this.KIVQModule.canSkip && $.cpObject.cpArray[questionNr].isAnswerd ){
                     $(".ftr-right").html(gM('mwe-quiz-next')).on('click', function () {
                         _this.KIVQModule.checkIfDone(questionNr)
