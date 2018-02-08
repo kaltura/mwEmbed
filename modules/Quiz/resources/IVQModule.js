@@ -23,6 +23,15 @@
             reviewMode:false,
             isKPlaylist:false,
             kQuizEntryId: "",
+            QUESTIONS_TYPE: {
+                MULTIPLE_CHOICE_ANSWER: 1,
+                TRUE_FALSE: 2,
+                REFLECTION_POINT: 3,
+                MULTIPLE_ANSWER_QUESTION: 4,
+                FILL_IN_BLANK: 5,
+                HOT_SPOT: 6,
+                GO_TO: 7,
+            },
 
             init: function (embedPlayer,quizPlugin) {
                 var _this = this;

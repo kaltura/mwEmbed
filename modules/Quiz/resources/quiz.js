@@ -387,19 +387,19 @@
 
         getClassByCPType: function(cpTypeId){
             switch (cpTypeId) {
-                case 2:
+                case this.KIVQModule.QUESTIONS_TYPE.TRUE_FALSE:
                     return 'true-false-question';
-                case 3:
+                case this.KIVQModule.QUESTIONS_TYPE.REFLECTION_POINT:
                     return 'reflection-point-question';
-                case 4:
+                case this.KIVQModule.QUESTIONS_TYPE.MULTIPLE_ANSWER_QUESTION:
                     return 'multiple-answer-question';
-                case 5:
+                case this.KIVQModule.QUESTIONS_TYPE.FILL_IN_BLANK:
                     return 'fill-in-blank-question';
-                case 6:
+                case this.KIVQModule.QUESTIONS_TYPE.HOT_SPOT:
                     return 'hot-spot-question';
-                case 7:
+                case this.KIVQModule.QUESTIONS_TYPE.GO_TO:
                     return 'go-to-question';
-                case 1:
+                case this.KIVQModule.QUESTIONS_TYPE.MULTIPLE_CHOICE_ANSWER:
                 default:
                     return 'multiple-choice-answer-question';
             }
