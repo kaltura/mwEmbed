@@ -400,6 +400,10 @@
                     track.trackContentType = info.mimeType;
                     track.language = info.language;
                     track.name = info.name || info.language || 'None';
+                    //audio dash - need to take the language and not the name - which is int
+                    if (this.getSource().getMIMEType() == "application/dash+xml" && trackType == top.cast.receiver.media.TrackType.AUDIO) {
+                        track.name =  info.language || 'None';
+                    }
                     track.customData = { bitrates: info.bitrates, codecs: info.codecs };
                     tracks.push( track );
                 }
