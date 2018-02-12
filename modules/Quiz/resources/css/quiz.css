@@ -467,11 +467,9 @@ button.qContinue, button.qApplied {
 .q-box,:hover{
     cursor: pointer;
 }
-/* TODO::MaxKorniiov. Fix background to img. */
 .q-box-false.reflection-point-question,
 .q-box.reflection-point-question{
-    background: #6d6d6d;
-    border-radius: 10vh;
+    opacity: 0.4;
 }
 .q-box-false.reflection-point-question:hover,
 .q-box.reflection-point-question:hover{
