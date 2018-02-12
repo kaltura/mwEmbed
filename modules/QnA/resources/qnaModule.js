@@ -49,6 +49,12 @@
                         _this.qnaService.markAsRead(item);
                     }
                 };
+                this.openLinkInNewTab = function (item, event) {
+                    var href = $(event.target).attr('href');
+                    if(href){
+                        window.open(href, '_blank');
+                    }
+                };
 
                 this.inThreadReply = function(replyText, qnaThread) {
                     if (replyText() === gM("qna-reply-here")){

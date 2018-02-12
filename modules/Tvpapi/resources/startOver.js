@@ -14,10 +14,12 @@
             "languageCode3": "",
             //There's an issue with startOver and open ended LIVE manifest - so use this flag to force
             //close ended manifest, where the end time returning from TVPAPI will be in the future.
-            "forceCloseEndedManifest": false
+            "forceCloseEndedManifest": false,
+            "startFromBeginning": false // should playback start from live edge(false) or from beginning of DVR window(true)
         },
 
         isDisabled: false,
+        seekOnPlaying: true,
         lastSelectedSource: "",
 
         setup: function ( ) {
@@ -33,6 +35,21 @@
                     _this.getMediaLicenseLink( event, source );
                 }
             });
+            if (this.getConfig("startFromBeginning")) {
+                //If start from beginning is set then on initial playing event seek to 0
+                //we keep a flag and reset it on change media so this will get trigger for next time as well
+                this.bind("playing", function () {
+                    setTimeout(function(){
+                        if (_this.seekOnPlaying) {
+                            _this.seekOnPlaying = false;
+                            _this.getPlayer().seek(0, false);
+                        }
+                    }, 0);
+                });
+                this.bind("onChangeMedia", function () {
+                    _this.seekOnPlaying = true;
+                });
+            }
         },
 
         getMediaLicenseLink: function(event, source){
@@ -59,7 +76,7 @@
 
                 var _this = this;
 
-                this.doRequest(url, data).then(
+                this.doRequest(url, data, {async: false}).then(
                     function (res) {
                         var mediaLink = getResponseLink(res);
                         if (mediaLink) {

@@ -11,8 +11,8 @@
 			showTooltip: true,
 			order: 70,
 			// 360 default config
-			moveMultiplier: 0.3,
-			mobileVibrationValue: (mw.isIOS() ? 0.0365 : 1),
+			moveMultiplier: 0.5,
+			mobileVibrationValue: (mw.isIOS() ? 0.0365 : 2.5),
 			cameraOptions: {
 				fov: 75,
 				aspect: window.innerWidth / window.innerHeight,
@@ -35,6 +35,7 @@
 			"right": "68",  // 'D'
 			"down": "83"   // 'S'
 		},
+		getCanvasSizeInterval: null,
 
 		isSafeEnviornment: function () {
 			return !( mw.isIE8() || mw.isIE9() || mw.isIE10Comp() || // old IEs
@@ -90,7 +91,7 @@
 			this.cameraOptions = $.extend({}, this.defaultConfig.cameraOptions, userCameraOptions);
 
 			//Get user vr mode configuration
-			this.vrMode = this.getConfig('vrMode') || false;
+			this.vrMode = this.getConfig('autoLoadAsVr') || false;
 		},
 
 		addBindings: function () {
@@ -98,7 +99,7 @@
 				this.attachMotionListeners();
 				$(this.canvas).css("z-index", "2");
 				this.add360logo();
-				this.getPlayer().is360() && this.getConfig('vr') !== false ? this.show() : this.hide();
+				this.getPlayer().is360() && this.getConfig('enableVr') !== false ? this.show() : this.hide();
 			}.bind(this));
 
 			this.bind("onAdPlay", function () {
@@ -116,9 +117,28 @@
 			this.bind("playing", function () {
 				$(this.video).hide();
 				$(this.getPlayer()).css("z-index", "-1");
-				var canvasSize = this.getCanvasSize();
-				this.renderer.setSize(canvasSize.width, canvasSize.height);
-				this.render();
+				this.log('Obtaining video size for 360 canvas');
+				var setCanvasSize = function () {
+					var canvasSize = this.getCanvasSize();
+					this.renderer.setSize(canvasSize.width, canvasSize.height);
+					this.render();
+				}.bind(this);
+				if (this.video.videoWidth) {
+					setCanvasSize();
+				} else {
+					var getCanvasSizeIntervalCounter = 0;
+					this.getCanvasSizeInterval = setInterval(function () {
+						if (this.video.videoWidth) {
+							clearInterval(this.getCanvasSizeInterval);
+							setCanvasSize();
+						} else if (getCanvasSizeIntervalCounter++ === 600) {
+							// can't get the video.videoWidth in a minute
+							clearInterval(this.getCanvasSizeInterval);
+							this.log('Unable to obtain video size for 360 canvas');
+							this.getPlayer().triggerHelper('embedPlayerError',{message: 'Unable to obtain video size for 360 canvas'});
+						}
+					}.bind(this), 100);
+				}
 			}.bind(this));
 
 			this.bind("doStop", function () {
@@ -345,13 +365,15 @@
 
 		clean: function () {
 			cancelAnimationFrame(this.requestId);
+			clearInterval(this.getCanvasSizeInterval);
+			this.getCanvasSizeInterval = null;
 			$(this.canvas).remove();
 			$(this.getPlayer()).css('z-index', 0);
 			this.removeBindings();
 			this.detachMotionListeners();
 			this.remove360logo();
 			this.is360 = false;
-			this.vrMode = this.getConfig('vrMode') || false;
+			this.vrMode = this.getConfig('autoLoadAsVr') || false;
 			this.initCameraTarget();
 		},
 
@@ -388,13 +410,15 @@
 	}));
 
 	// set EmbedPlayer.WebKitPlaysInline true for iPhone inline playback
-	var playerConfig = mw.getConfig('KalturaSupport.PlayerConfig');
-	if (playerConfig) {
-		if (!playerConfig.vars) {
-			playerConfig.vars = {};
+	if (mw.getConfig('Kaltura.AddWebKitPlaysInline')){
+		var playerConfig = mw.getConfig('KalturaSupport.PlayerConfig');
+		if (playerConfig) {
+			if (!playerConfig.vars) {
+				playerConfig.vars = {};
+			}
+			playerConfig.vars["EmbedPlayer.WebKitPlaysInline"] = true;
+			mw.setConfig('KalturaSupport.PlayerConfig', playerConfig);
 		}
-		playerConfig.vars["EmbedPlayer.WebKitPlaysInline"] = true;
-		mw.setConfig('KalturaSupport.PlayerConfig', playerConfig);
 	}
 
 })(window.mw, window.jQuery, window.THREE);

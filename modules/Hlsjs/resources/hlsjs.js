@@ -106,7 +106,7 @@
 			 * Register the playback events and attach the playback engine to the video element
 			 */
 			initHls: function () {
-				if (this.LoadHLS && !this.loaded) {
+				if (this.LoadHLS && !this.loaded && !this.embedPlayer.casting) {
 					this.log("Init");
 					//Set streamerType to hls
 					this.embedPlayer.streamerType = 'hls';
@@ -141,6 +141,7 @@
 			getHlsConfig: function(){
 				var defaultConfig = {
 					//debug:true
+                    maxMaxBufferLength: 60,
 					liveSyncDurationCount: 3,
 					liveMaxLatencyDurationCount: 6
 				};
@@ -165,6 +166,8 @@
 				this.hls.on(Hls.Events.MEDIA_ATTACHED, this.onMediaAttachedHandler);
 				this.onManifestParsedHandler = this.onManifestParsed.bind(this);
 				this.hls.on(Hls.Events.MANIFEST_PARSED, this.onManifestParsedHandler);
+				this.onManifestLoadedHandler = this.onManifestLoaded.bind(this);
+				this.hls.on(Hls.Events.MANIFEST_LOADED, this.onManifestLoadedHandler);
 				this.onAudioTracksUpdatedHandler = this.onAudioTracksUpdated.bind(this);
 				this.hls.on(Hls.Events.AUDIO_TRACKS_UPDATED, this.onAudioTracksUpdatedHandler);
 				this.onAudioTrackSwitchingHandler = this.onAudioTrackSwitching.bind(this);
@@ -200,7 +203,9 @@
 				this.onMediaAttachedHandler = null;
 				this.hls.off(Hls.Events.MANIFEST_PARSED, this.onManifestParsedHandler);
 				this.onManifestParsedHandler = null;
-				this.hls.off(Hls.Events.FRAG_LOADING, this.onFragLoadingHandler);
+                this.hls.off(Hls.Events.MANIFEST_PARSED, this.onManifestLoadedHandler);
+                this.onManifestLoadedHandler = null;
+                this.hls.off(Hls.Events.FRAG_LOADING, this.onFragLoadingHandler);
 				this.onFragLoadingHandler = null;
 				this.hls.off(Hls.Events.FRAG_LOADED, this.onFragLoadedHandler);
 				this.onFragLoadedHandler = null;
@@ -236,7 +241,10 @@
 							this.hls.loadSource(source);
 						}.bind(this),
 						function () { //error
-							this.hls.loadSource(selectedSource);
+							if (selectedSource === this.getPlayer().getSrc()) {
+								// the media has not been changed meanwhile
+								this.hls.loadSource(selectedSource);
+							}
 						}.bind(this)
 					);
 				}
@@ -308,6 +316,21 @@
 					this.configFailoverSettings();
 				}
 			},
+            /**
+             * manifest loaded handler.
+             */
+            onManifestLoaded: function () {
+                //HLS.JS by default sets showing to text track for default HLS manifest text track
+				//we want to handle it on ourselves so always set it to hidden after hls.js makes its decision
+            	this.log("manifest loaded");
+            	if (!this.embedPlayer.getKalturaConfig('closedCaptions', 'showEmbeddedCaptions')) {
+		            var vid = this.getPlayer().getPlayerElement();
+		            var textTracks = vid.textTracks;
+		            for (var i=0; i < textTracks.length; i++){
+			            textTracks[i].mode = "hidden";
+		            }
+	            }
+            },
 			/**
 			 * Extract available audio tracks metadata from parsed manifest data
 			 * @param event
@@ -516,12 +539,26 @@
 					this.log("Try flash fallback");
 					this.fallbackToFlash();
 				} else {
-					var errorObj = {
-						message : JSON.stringify(data),
-						// hls fatal error code could be either Network Error (1000) or Media Errors (3000)
-						code : data.type === "networkError" ? "1000" : "3000"
-					};
-					this.getPlayer().triggerHelper('embedPlayerError', errorObj);
+					try {
+						var dataObj = {
+							type: data.type,
+							details: data.details,
+							fatal: data.fatal,
+							response: data.response,
+							networkDetails: data.networkDetails
+						};
+						var errorObj = {
+							message: JSON.stringify(dataObj),
+							// hls fatal error code could be either Network Error (1000) or Media Errors (3000)
+							code: data.type === "networkError" ? "1000" : "3000"
+						};
+						this.getPlayer().triggerHelper('embedPlayerError', errorObj);
+					}
+					catch (e) {
+						this.getPlayer().triggerHelper('embedPlayerError', {
+							message: "hlsjs error"
+						});
+					}
 				}
 			},
 			fallbackToFlash: function () {
@@ -547,7 +584,7 @@
 			 * @param levels
 			 */
 			addAbrFlavors: function (levels) {
-				if (levels && levels.length > 1) {
+				if (levels && levels.length > 0) {
 					var flavors = levels.map(function (level, index) {
 						var sourceAspect = Math.round(( level.width / level.height ) * 100) / 100;
 						// Setup a source object:
@@ -663,23 +700,27 @@
 			 * Override player method for source switch
 			 * @param source
 			 */
-			switchSrc: function (source) {
-				if (source !== -1) {
-					var sourceIndex = this.getPlayer().getSourceIndex(source);
-					if ( sourceIndex !== null ) {
-                        this.levelIndex = sourceIndex;
-                        if ( !(this.hls.autoLevelEnabled || this.isLevelSwitching) && (this.hls.currentLevel === sourceIndex) ) {
-                            this.onLevelSwitch( Hls.Events.LEVEL_SWITCH, { level: sourceIndex } );
-                            this.onFragChanged( Hls.Events.LEVEL_LOADED, { frag: { level: sourceIndex } } );
-                            this.getPlayer().currentBitrate = source.getBitrate();
+            switchSrc: function (source) {
+                if (source !== -1) {
+                    var sourceIndex = this.getPlayer().getSourceIndex(source);
+                    if ( sourceIndex !== null) {
+                        if (this.hls.levels && (sourceIndex < this.hls.levels.length)){
+                            this.levelIndex = sourceIndex;
+                            if (!(this.hls.autoLevelEnabled || this.isLevelSwitching) && (this.hls.currentLevel === sourceIndex)) {
+                                this.onLevelSwitch(Hls.Events.LEVEL_SWITCH, {level: sourceIndex});
+                                this.onFragChanged(Hls.Events.LEVEL_LOADED, {frag: {level: sourceIndex}});
+                                this.getPlayer().currentBitrate = source.getBitrate();
+                            } else {
+                                this.hls.nextLevel = sourceIndex;
+                                this.isLevelSwitching = true;
+                            }
                         } else {
-                            this.hls.nextLevel = sourceIndex;
-                            this.isLevelSwitching = true;
+                            this.log("unable to switch level!");
                         }
                     }
-				} else {
-					this.hls.nextLevel = -1;
-				}
+                } else {
+                    this.hls.nextLevel = -1;
+                }
 			},
 			/**
 			 * Override player method for loading the video element

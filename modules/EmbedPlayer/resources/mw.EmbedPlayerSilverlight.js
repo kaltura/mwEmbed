@@ -183,9 +183,7 @@
 				this.multiastServerUrl=null;
 				mw.log('selectNextKES no available multicast manifests ');
 				this.isError = true;
-				var errorObj = {message: gM('ks-LIVE-STREAM-NOT-AVAILABLE'), title: gM('ks-ERROR')};
-				this.showErrorMsg(errorObj);
-                this.fallbackToUnicast();
+				this.fallbackToUnicast();
             } else {
 				index = (index + 1) % this._availableMulticastManifests.length;
 				this.multiastServerUrl = this._availableMulticastManifests[index];
@@ -275,6 +273,8 @@
 				}
 			};
 
+			var firstKESConnectTry=true;
+
 			var startConnectToKESTimer = function () {
 
 				//in case of fallback to unicast we don't want to restart by accident
@@ -282,13 +282,15 @@
 					return;
 				}
 
-				var retryTime= _this.getKalturaConfig( null , 'multicastKESStartInterval' ) || _this.defaultMulticastKESStartInterval;
+
+				var retryTime= firstKESConnectTry? 0 : (_this.getKalturaConfig( null , 'multicastKESStartInterval' ) || _this.defaultMulticastKESStartInterval);
 
 				if (_this.isOnline && _this.multicastSessionId)
 					retryTime=_this.getKalturaConfig( null , 'multicastKeepAliveInterval' ) || _this.defaultMulticastKeepAliveInterval;
 
 				_this.keepAliveMCTimeout = setTimeout( function () {
 					try {
+						firstKESConnectTry=false;
 						if(_this.isOnline)
 						{
 							_this.connectToKES(_this.multiastServerUrl)	.then(onKESResponse, onKESErrorResponce)

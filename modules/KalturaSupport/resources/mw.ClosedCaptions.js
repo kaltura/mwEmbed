@@ -52,9 +52,12 @@
 				this.setConfig('displayCaptions', false );
 			}
 
-			if(_this.getConfig("enableOptionsMenu")){
-				this.optionsMenu = new mw.closedCaptions.cvaa(this.getPlayer(), function () {
-				}, "cvaa");
+            if(_this.getConfig("enableOptionsMenu")){
+                this.optionsMenu = new mw.closedCaptions.cvaa(this.getPlayer(), function () {
+                    if ( _this.getConfig('layout') === 'below') {
+                        this.setBelowConfig();
+                    }
+                }, "cvaa");
 
 				if(!this.optionsMenu.isSafeEnviornment()){
 					this.setConfig('enableOptionsMenu', false );
@@ -74,6 +77,10 @@
 					}
 				}
 			});
+
+			if ( this.isNativeIOSPlayback() ) {
+				this.setConfig('showEmbeddedCaptions', true);
+			}
 
 			if ( this.getConfig('showEmbeddedCaptions') === true ) {
 
@@ -111,12 +118,18 @@
 					}
 				} );
 			} else {
+				this.bind( 'playing', function () {
+					// hide native text tracks since 'showEmbeddedCaptions' is false
+					setTimeout(function () {
+						_this.embedPlayer.hideTextTrack();
+					}, 500);
+				});
 				if (!this.getConfig("useExternalClosedCaptions")) {
 					this.bind( 'playerReady', function () {
-						_this.destory();
-						_this.setupTextSources( function () {
-							_this.buildMenu( _this.textSources );
-						} );
+                        _this.destory();
+                        _this.setupTextSources( function () {
+                            _this.buildMenu( _this.textSources );
+                        } );
 					} );
 					outOfBandCaptionEventHandlers.call(this);
 				}
@@ -211,11 +224,11 @@
 				}
 			});
 
-			if( this.getConfig('layout') == 'below'){
-				this.updateBelowVideoCaptionContainer();
+			if( this.getConfig('layout') === 'below'){
+                this.updateBelowVideoCaptionContainer();
 			}
 
-			if ( this.getConfig('layout') == 'ontop' ) {
+			if ( this.getConfig('layout') === 'ontop' ) {
 				this.bind('onHideControlBar onShowControlBar', function (event, layout) {
 					if (!_this.ended && _this.getPlayer().isOverlayControls()) {
 						_this.defaultBottom = layout.bottom;
@@ -250,8 +263,36 @@
 			});
 			this.bind( 'onChangeMedia', function (e, stylesObj){
 				//Reset UI state on change media
+                _this.destory();
 				_this.getBtn().show();
 			});
+			this.bind( 'onOpenFullScreen', function (){
+				if ( mw.isIOS() && _this.isNativeFullScreenEnabled() && _this.selectedSource ) {
+					_this.embedPlayer.selectDefaultCaption(_this.selectedSource.srclang);
+				}
+			});
+			this.bind( 'onCloseFullScreen', function (){
+				if ( mw.isIOS() && _this.isNativeFullScreenEnabled() ) {
+					var nativeSource = _this.embedPlayer.getActiveSubtitle();
+					_this.embedPlayer.hideTextTrack();
+					if (nativeSource) {
+						_this.getMenu().$el.find('li.active').removeClass('active');
+						if (nativeSource.label === 'off') {
+							_this.selectOff();
+						} else {
+							var source = _this.selectSourceByLangKey(nativeSource.language);
+							_this.getMenu().$el.find('li a:contains(' + source.label +')').parent().addClass('active');
+							_this.selectSource(source);
+						}
+					}
+				}
+			});
+		},
+		isNativeIOSPlayback: function() {
+			return mw.isIOS() && !mw.isIpad() && !mw.getConfig('EmbedPlayer.WebKitPlaysInline');
+		},
+		isNativeFullScreenEnabled: function () {
+			return ( mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen') && this.embedPlayer.getPlayerElement().webkitSupportsFullscreen );
 		},
 		addTextSource: function(captionData){
 			// Try to insert the track source:
@@ -347,7 +388,7 @@
 		getCaptionURL: function( captionId ){
 			if( this.captionURLs && this.captionURLs[ captionId ] ){
 				return this.captionURLs[ captionId ];
-			} 
+			}
 			return null;
 		},
 		updateTimeOffset: function(){
@@ -455,7 +496,7 @@
 				captionIds = [];
 			// Generate multi-request for captions URLs
 			$.each( captions, function( inx, caption ) {
-				multiRequest.push({ 
+				multiRequest.push({
 					'service' : 'caption_captionasset',
 					'action' : 'getUrl',
 					'id' : caption.id
@@ -513,7 +554,7 @@
 			var captionsSrc;
 			if( mw.isIphone() && !mw.getConfig('disableTrackElement') && !this.getConfig('forceLoadLanguage') || this.getConfig("forceWebVTT") ) {
 				// getting generated vtt file from dfxp/srt
-				var ks = _this.getFlashvars('ks');
+				var ks = _this.embedPlayer.getFlashvars('ks');
 				captionsSrc = mw.getConfig('Kaltura.ServiceUrl') +
 							"/api_v3/index.php/service/caption_captionasset/action/serveWebVTT/captionAssetId/" +
 							dbTextSource.id +
@@ -578,7 +619,7 @@
 				if( defaultLangKey == 'None' ){
 					return ;
 				}
-				if ( mw.isIOS() && !mw.isIpad()) {
+				if ( this.isNativeIOSPlayback() ) {
 					this.selectDefaultIosTrack(defaultLangKey);
 					return ;
 				}
@@ -593,10 +634,10 @@
             // Get source by "default" property
             if ( !this.selectedSource ) {
                 source = this.selectDefaultSource();
-                if ( source && mw.isIOS() && !mw.isIpad() ) {
-					this.selectDefaultIosTrack(source.srclang);
-					return ;
-                }
+	            if ( source && this.isNativeIOSPlayback() ) {
+		            this.selectDefaultIosTrack(source.srclang);
+		            return ;
+	            }
                 if( source ){
                     this.log('autoSelectSource: select by default caption');
                     this.selectedSource = source;
@@ -622,7 +663,10 @@
 		selectDefaultIosTrack: function (defaultLangKey) {
 			var _this = this;
 			this.once( 'playing', function (){
-				_this.embedPlayer.selectDefaultCaption(defaultLangKey);
+				setTimeout(function () {
+					_this.log('selectDefaultIosTrack: ' + defaultLangKey);
+					_this.embedPlayer.selectDefaultCaption(defaultLangKey);
+				}, 500);
 			});
 		},
 		selectSourceByLangKey: function( langKey ){
@@ -867,7 +911,7 @@
 			this.updateLayoutEventFired = true;
 			 _this.embedPlayer.doUpdateLayout();
 			this.updateLayoutEventFired = false;
-		},		
+        },
 		/**
 		 * Gets a text size percent relative to about 30 columns of text for 400
 		 * pixel wide player, at 100% text size.
@@ -1123,14 +1167,17 @@
                         _this.selectedSource = null;
                         _this.setConfig('displayCaptions', false);
                     } else {
-                        _this.setTextSource(src);
-                        _this.embedPlayer.triggerHelper( "selectClosedCaptions", [ src.label, src.srclang ] );
-                        _this.getActiveCaption();
+                    	_this.selectSource(src);
                     }
                 },
                 'active': ( _this.selectedSource === src && _this.getConfig("displayCaptions")  )
             });
         },
+		selectSource: function (src) {
+			this.setTextSource(src);
+			this.embedPlayer.triggerHelper( "selectClosedCaptions", [ src.label, src.srclang ] );
+			this.getActiveCaption();
+		},
 		addOffButton: function() {
 			var _this = this;
 			this.getMenu().addItem({
@@ -1139,15 +1186,20 @@
 					'class': "offBtn"
 				},
 				'callback': function(){
-					_this.selectedSource = null;
-					_this.embedPlayer.triggerHelper("selectClosedCaptions", "Off");
-					_this.embedPlayer.triggerHelper('changedClosedCaptions', {language: ""});
-					_this.setConfig('displayCaptions', false);
-					// also update the cookie to "None"
-					_this.getPlayer().setCookie( _this.cookieName, 'None' );
+					_this.selectOff();
 				},
-				'active': ! _this.getConfig( "displayCaptions" ) 
+				'active': ! _this.getConfig( "displayCaptions" )
 			});
+		},
+		selectOff: function () {
+			this.selectedSource = null;
+			this.embedPlayer.triggerHelper("selectClosedCaptions", "Off");
+			this.embedPlayer.triggerHelper('changedClosedCaptions', {language: ""});
+			this.setConfig('displayCaptions', false);
+			//Set the index of 'off' to lastActiveCaption
+            		this.lastActiveCaption = this.getMenu().$el.find('.active').index();
+            		// also update the cookie to "None"
+			this.getPlayer().setCookie( this.cookieName, 'None' );
 		},
 		addOptionsButton: function(btnOptions) {
 			var _this = this;
@@ -1211,7 +1263,11 @@
 				var $menu = $( '<ul />' ).addClass( 'dropdown-menu' );
 				var $button = $( '<button />' )
 								.addClass( 'btn icon-cc' )
-								.attr('title', _this.getConfig('title') )
+								.attr({
+									'title' : _this.getConfig('title'),
+									'aria-label' : _this.getConfig('title'),
+									'aria-haspopup':'true'
+								})
 								.click( function(e){
 									if ( _this.getMenu().numOfChildren() > 0 ) {
 										_this.getMenu().toggle();
@@ -1230,10 +1286,11 @@
 		getMenu: function(){
 			if( !this.menu ) {
 				this.menu = new mw.KMenu(this.getComponent().find('ul'), {
-					tabIndex: this.getBtn().attr('tabindex')
+					tabIndex: this.getBtn().attr('tabindex'),
+					menuName: this.getConfig("title")
 				});
 			}
-			return this.menu;			
+			return this.menu;
 		},
 		getBtn: function(){
 			return this.getComponent().find('button');

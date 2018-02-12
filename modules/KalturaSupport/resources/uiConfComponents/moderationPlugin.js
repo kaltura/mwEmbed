@@ -27,11 +27,29 @@
 		},
 
 		addBindings: function () {
+			var embedPlayer = this.getPlayer();
+
 			this.bind('onChangeMedia', $.proxy(function () {
 				this.getPlayer().triggerHelper( 'onEnableKeyboardBinding' );
 				$(this.getPlayer().getPlayerElement()).removeClass( "blur" );
 				this.getPlayer().getPlayerPoster().removeClass( "blur" );
 			}, this));
+
+			this.bind('showScreen', function (event, screenName) {
+				if ( screenName === "moderation" ){
+					this.getInterface().find(".overlay-win .icon-close").focus();
+
+					embedPlayer.getInterface().find(".overlay").keydown(function(e){
+						if(e.keyCode === 9){// keyCode = 9 - tab button
+							setTimeout(function () {
+								if(!$(':focus').parents('.overlay').hasClass('overlay')){
+									embedPlayer.getInterface().find(".overlay-win .icon-close").focus();
+								}
+							}, 0);
+						}
+					});
+				}
+			});
 		},
 		getScreen: function(){
 			return $.Deferred().resolve(this.screen);
@@ -47,8 +65,8 @@
 
 			// Disable space key binding to enable entering "space" inside the textarea
 		 	this.getPlayer().triggerHelper( 'onDisableKeyboardBinding' );
-		 	var $header = $( '<h2 />' ).text(this.getConfig( 'header' ));
-			var $moderationMessage = $( '<div />' ).append(
+		 	var $header = $( '<h2 id="dialogTitle" />' ).text(this.getConfig( 'header' ));
+			var $moderationMessage = $( '<div id="moderationText" />' ).append(
 				$( '<span />' ).text(this.getConfig( 'text' )),
 				$('<div></div>').append(
 						$('<i></i>')
@@ -101,8 +119,12 @@
 			};
 			this.screen = $moderationScreen;
 			this.showScreen();
-
 			this.showModal($moderationScreen, closeCallback);
+
+			$moderationScreen.parent().parent().attr({
+				"role" : "dialog",
+				"aria-labelledby" : "dialogTitle"
+			})
 		},
 		showModal: function(screen, closeCallback){
 			this.getPlayer().disablePlayControls();
@@ -168,7 +190,7 @@
 								.click( function(){
 									_this.drawModal();
 								});
-				this.setAccessibility(this.$el, tooltipLabel);
+				this.setAccessibility(this.$el, tooltipLabel + gM('mwe-embedplayer-open_dialog'));
 			}
 			return this.$el;
 		}

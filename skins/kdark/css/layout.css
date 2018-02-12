@@ -233,11 +233,11 @@ body {
 	bottom: 0;
 	width: 100%;
 
-	-webkit-transition: bottom 0.3s ease-in, visibility 0.3s ease-in;
-	-moz-transition: bottom 0.3s ease-in, visibility 0.3s ease-in;
-	-o-transition: bottom 0.3s ease-in, visibility 0.3s ease-in;
-	-ms-transition: bottom 0.3s ease-in, visibility 0.3s ease-in;
-	transition: bottom 0.3s ease-in, visibility 0.3s ease-in;
+	-webkit-transition: bottom 0.3s ease-in, visibility 0.3s ease-in, opacity 0.3s ease-in;
+	-moz-transition: bottom 0.3s ease-in, visibility 0.3s ease-in, opacity 0.3s ease-in;
+	-o-transition: bottom 0.3s ease-in, visibility 0.3s ease-in, opacity 0.3s ease-in;
+	-ms-transition: bottom 0.3s ease-in, visibility 0.3s ease-in, opacity 0.3s ease-in;
+	transition: bottom 0.3s ease-in, visibility 0.3s ease-in, opacity 0.3s ease-in;
 }
 
 
@@ -246,13 +246,11 @@ body {
 }
 
 .controlBarContainer.hover {
-	bottom: -4.2em;
+	opacity: 0;
 	z-index: 100;
-	visibility: hidden;
 }
 .controlBarContainer.open {
-	bottom: 0;
-	visibility: visible;
+	opacity: 1;
 }
 .mobileSkin.start-state .controlBarContainer{
 	display: none;
@@ -343,6 +341,7 @@ body {
 	float: left;
 }
 .mobileSkin .videoHolder .smartContainer{
+	z-index: -1;
     width: 100%;
     height: 100%;
     text-align: center;
@@ -589,6 +588,9 @@ body {
 .player-out .hover .playHead {
 	display: none;
 }
+.player-out .hover.open .playHead {
+	display: block;
+}
 .accessibilityButtons {
 	display: inline-block;
 	height: 1px;
@@ -635,7 +637,7 @@ body {
 .volumeControl .ui-slider-horizontal.slider {
 	display: inline-block;
 	width: 0;
-	background: #7c7c7c;
+	background: #606060;
 	height: 0.5em;
 	top: -2px;
 
@@ -645,6 +647,10 @@ body {
 	-ms-transition: width 0.3s ease-in-out;
 	transition: width 0.3s ease-in-out;
 	cursor: pointer;
+}
+.volumeControl .ui-slider-horizontal.slider:focus {
+	width: 5em;
+	margin-right: 10px;
 }
 .volumeControl.noTransition .ui-slider-horizontal.slider{
 	-moz-transition: none ;
@@ -1846,7 +1852,9 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 .previewPlayer .expandPlayerBtn {
 	display: inline-block;
 }
-
+.screen .tmpl a{
+	color: #C4C3FF
+}
 .share .screen-content, .airPlay .screen-content {
 	padding: 10px;
 	position: relative;
@@ -2055,7 +2063,45 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
     -o-transition: top 0.3s ease-in-out;
     transition: top 0.3s ease-in-out;
 }
+
+/*Mobile devices*/
+@media only screen and (max-width: 500px) {
+
+	#dialogTitle {
+		font-size: small;
+		margin-top: 0px;
+		margin-bottom: 2px;
+	}
+
+	#moderationText {
+		font-size: smaller;
+	}
+
+	#flagComments {
+		height: 20px !important;
+	}
+
+	.overlay-win {
+		margin: 0px 10px 10px 0px !important;
+	}
+
+	.overlay-content {
+		padding-top: 10px;
+	}
+
+	.reportButton{
+		width: 80px;
+		padding-top: 6px;
+		height: 20px;
+	}
+	.reportButton.right{
+		right: 10%;
+		margin-right: -1px;
+	}
+
+}
+
 /* used to detect when the css file finished loading */
 .cssChecker{
-    display: none !important;
+	display: none !important;
 }

@@ -637,6 +637,7 @@
 			}
 			// autoPlay media after thumbnail interaction
 			settings.flashvars.autoPlay = true;
+            settings.flashvars.thumbEmbedOrigin = true;
 			// inject the centered css rule ( if not already )
 			this.addThumbCssRules();
 
@@ -1144,7 +1145,7 @@
 			}
 
 			// Check if we need to capture a play event ( iOS sync embed call )
-			if (settings.captureClickEventForiOS && (this.isIOS() || this.isAndroid())) {
+			if (settings.captureClickEventForiOS && (this.isSafari() || this.isAndroid())) {
 				this.captureClickWrapedIframeUpdate(targetId, requestSettings, iframe);
 			} else {
 				// get the callback name:
@@ -1264,7 +1265,9 @@
 			var newDoc = iframeElm.contentDocument;
 			newDoc.open();
 			// grab a black source
-			var vidSrc = location.protocol + '//www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_6wf0o9n7/format/url/protocol/http/a.mp4';
+            var vidSrc;
+            var protocol = ((location.protocol && location.protocol.slice(0, -1) || "https"));
+            vidSrc = protocol + "://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_6wf0o9n7/format/url/protocol/"+ protocol +"/a.mp4";
 
 			// Add the iframe skeleton with video element to the iframe
 			newDoc.write('<html>' +
@@ -1830,6 +1833,9 @@
 		isAndroid: function () {
 			return (navigator.userAgent.indexOf('Android ') !== -1 && navigator.userAgent.indexOf('Windows') === -1);
 		},
+		isSafari: function () {
+            return (/safari/).test(navigator.userAgent.toLowerCase());
+        },
 		isWindowsDevice: function () {
 			var appVer = navigator.appVersion;
 			return  ((appVer.indexOf("Win") != -1 &&

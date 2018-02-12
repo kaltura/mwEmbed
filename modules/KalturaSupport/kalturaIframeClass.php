@@ -544,6 +544,7 @@ class kalturaIframeClass {
 		global $coreLanguageNames;
 		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
 		if( isset( $playerConfig['vars']['localizationCode'] ) ){
+			$playerConfig['vars']['localizationCode'] = $this->prepareRegionCode($playerConfig['vars']['localizationCode']);
 			// get the list of language names
 			require_once( dirname( __FILE__ ) . '/../../includes/languages/Names.php' );
 			// validate localization code.
@@ -553,6 +554,13 @@ class kalturaIframeClass {
 		}
 		// if no language code is specified default to english: 
 		return 'en';
+	}
+	/**
+	 * Region code in i18n files consist of 2 letters.
+	 * If we get more than 2 - take only 2 first letters
+	 * */
+	private function prepareRegionCode($lang){
+		return strlen($lang) > 2 ? substr($lang, 0, 2) :  $lang;
 	}
 	/**
 	 * Get the location of the mwEmbed library
@@ -1330,7 +1338,7 @@ HTML;
     var customCSS = <?php echo $customCss ?>;
     if ( window['kWidget'] && window["kalturaIframePackageData"] && window["kalturaIframePackageData"].playerConfig && window["kalturaIframePackageData"].playerConfig.layout  && window["kalturaIframePackageData"].playerConfig.vars ) {
            var skin = window["kalturaIframePackageData"].playerConfig.layout ? window["kalturaIframePackageData"].playerConfig.layout.skin : "kdark";
-           var mobileSkin = window['kWidget'].isChromeCast() || ( window["kalturaIframePackageData"].playerConfig.vars["EmbedPlayer.EnableMobileSkin"] === true && skin === "kdark" && window['kWidget'].isMobileDevice() && !window['kWidget'].isWindowsPhone() );
+           var mobileSkin = window['kWidget'].isChromeCast() || ( window["kalturaIframePackageData"].playerConfig.vars["EmbedPlayer.EnableMobileSkin"] === true && skin === "kdark" && window['kWidget'].isMobileDevice() );
     }
     if (  customCSS && mobileSkin === false ) {
         var head = document.head || document.getElementsByTagName('head')[0];

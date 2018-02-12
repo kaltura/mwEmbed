@@ -107,6 +107,23 @@
                     break;
             }
 
+            if (top.ReceiverUtils && top.ReceiverUtils.getQueryVariable('useCookies')) {
+                this.mediaHost.updateManifestRequestInfo = function (requestInfo) {
+                    if (!requestInfo.url) {
+                        requestInfo.url = this.getSrc();
+                    }
+                    requestInfo.withCredentials = true;
+                }.bind(this);
+
+                this.mediaHost.updateLicenseRequestInfo = function (requestInfo) {
+                    requestInfo.withCredentials = true;
+                };
+
+                this.mediaHost.updateSegmentRequestInfo = function (requestInfo) {
+                    requestInfo.withCredentials = true;
+                };
+            }
+
             this.mediaHost.getQualityLevel = function ( streamIndex, qualityLevel ) {
                 if ( streamIndex === this.videoStreamIndex && this.videoQualityIndex !== -1 ) {
                     return this.videoQualityIndex;
@@ -383,6 +400,10 @@
                     track.trackContentType = info.mimeType;
                     track.language = info.language;
                     track.name = info.name || info.language || 'None';
+                    //audio dash - need to take the language and not the name - which is int
+                    if (this.getSource().getMIMEType() == "application/dash+xml" && trackType == top.cast.receiver.media.TrackType.AUDIO) {
+                        track.name =  info.language || 'None';
+                    }
                     track.customData = { bitrates: info.bitrates, codecs: info.codecs };
                     tracks.push( track );
                 }
@@ -449,7 +470,13 @@
 
         changeMediaCallback: function ( callback ) {
             mw.log( "EmbedPlayerChromecastReceiver::changeMediaCallback()" );
+            //Reset all state flags
             this.changeMediaStarted = false;
+            this.videoQualityIndex = -1;
+            this.videoStreamIndex = -1;
+            this.audioQualityIndex = -1;
+            this.audioStreamIndex = -1;
+            this.textStreamIndex = -1;
             this.preloadMediaSourceExtension();
             if ( callback ) {
                 callback();

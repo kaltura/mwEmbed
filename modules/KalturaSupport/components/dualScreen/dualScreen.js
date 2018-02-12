@@ -7,6 +7,8 @@
 				"order": 1,
 				"showTooltip": false,
 				"displayImportance": "high",
+				"allowAdminCuePoints": true,
+				"showFirstSlideOnLoad": true,
 				"cuePointType": [{
 					"main": mw.KCuePoints.TYPE.THUMB,
 					"sub": [mw.KCuePoints.THUMB_SUB_TYPE.SLIDE]
@@ -42,8 +44,8 @@
 				"minDisplayHeight": 0,
 				"enableKeyboardShortcuts": true,
 				"keyboardShortcutsMap": {
-					"nextState": 81,   // Add q Sign for next state
-					"switchView": 87   // Add w Sigh for switch views
+					"nextState": 90,   // Add z Sign for next state
+					"switchView": 88   // Add x Sigh for switch views
 				}
 			},
 			display: {},
@@ -875,10 +877,10 @@
                 // check if entry has cue-points (PPT presentation has been recorded)
                 var hasCuePoints = this.hasSlides();
                 var passthroughConfig = {
-                    prefetch: this.getConfig('prefetch'),
-                    cuePointType: this.getConfig('cuePointType')
+	                showFirstSlideOnLoad: this.getConfig('showFirstSlideOnLoad'),
+	                prefetch: this.getConfig('prefetch'),
+	                cuePointType: this.getConfig('cuePointType')
                 };
-
                 var imagePlayer = hasCuePoints && new mw.dualScreen.imagePlayer(this.getPlayer(), function () {
                     this.setConfig(passthroughConfig);
                 }, "imagePlayer");

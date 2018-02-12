@@ -745,6 +745,13 @@
             }
         },
 
+        forceShowPlayerControls: function(){
+            this.embedPlayer.triggerHelper('forceShowPlayerControls');
+        },
+        forceHidePlayerControls: function(){
+            this.embedPlayer.triggerHelper('forceHidePlayerControls');
+        },
+
         addControlsVisibilityBindings: function () {
             var embedPlayer = this.embedPlayer;
             var _this = this;

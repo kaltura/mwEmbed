@@ -43,6 +43,12 @@
 	mw.isSafari = function () {
 		return (/safari/).test(userAgent.toLowerCase()) && !mw.isChrome() && !mw.isEdge();
 	};
+	mw.isSafari11 = function () {
+		return mw.isSafari() && (/version\/11/).test(userAgent.toLowerCase());
+	};
+	mw.isDesktopSafari11 = function () {
+		return mw.isDesktopSafari() && mw.isSafari11();
+    };
 	mw.isIE9Comp = function () {
 		return (/msie 7/.test(userAgent.toLowerCase()) && /trident\/5/.test(userAgent.toLowerCase()));
 	};
@@ -111,6 +117,11 @@
 	mw.isChrome = function () {
 		return ( userAgent.indexOf('Chrome') != -1 && !mw.isEdge() );
 	};
+    mw.isChromeVersionGreaterThan = function (version) {
+        var chromeVersion = mw.getChromeVersion();
+        var chromeMajorVersion = chromeVersion[0];
+		return ( mw.isChrome() && chromeMajorVersion >= version );
+    };
 	mw.isAndroidNativeBrowser = function () {
 		return (mw.isAndroid() && !mw.isFirefox() && !mw.isChrome());
 	};
@@ -172,6 +183,10 @@
 		return ( /OS 10_/.test(userAgent) || /Version\/10/.test(userAgent) ) && mw.isIOS();
 	};
 
+    mw.isIOS11 = function () {
+        return ( /OS 11_/.test(userAgent) || /Version\/11/.test(userAgent) ) && mw.isIOS();
+    };
+
 	mw.isIOSBelow9 = function () {
 		// mw.isIOSV() methods check mw.isIOS(), but because of the OR operator it will be checked multiple times. 
 		// Short-circuit to save many calls.
@@ -183,7 +198,7 @@
 	};
 
 	mw.isIOSAbove7 = function () {
-		return mw.isIOS8() || mw.isIOS9() || mw.isIOS10();
+		return mw.isIOS8() || mw.isIOS9() || mw.isIOS10() || mw.isIOS11();
 	};
 
 	mw.isSilk = function () {
@@ -368,6 +383,19 @@
 		} catch (e) {
 		}
 		return '0,0,0';
+	};
+
+    /**
+	 * get chrome version parts
+     * @returns {Array}
+     */
+	mw.getChromeVersion = function(){
+        var chromeVersionParts = [0, 0, 0, 0];
+		var chromeVersion = userAgent.match(/.*Chrome\/([0-9\.]+)/);
+        if (chromeVersion && chromeVersion[1]){
+            chromeVersionParts = chromeVersion[1].split(".");
+		}
+		return chromeVersionParts;
 	};
 
 })(window.mediaWiki);

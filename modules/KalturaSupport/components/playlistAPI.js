@@ -352,15 +352,14 @@
 		mediaClicked: function (index) {
 			if (this.getConfig('onPage')) {
 				try {
-					var doc = window['parent'].document;
-					$(doc).find(".chapterBox").removeClass('active');
+					this.getComponent().find(".chapterBox").removeClass('active');
 				} catch (e) {
 				}
 				;
 			} else {
 				$(".chapterBox").removeClass('active');
 			}
-			$(".chapterBox").find("[data-mediaBox-index='" + index + "']").addClass('active');
+			this.getComponent().find(".chapterBox").find("[data-mediaBox-index='" + index + "']").addClass('active');
 			if ( mw.isMobileDevice() ){
 				this.embedPlayer.mobilePlayed = true; // since the user clicked the screen, we can set mobilePlayed to true to enable canAutoPlay
 			}
@@ -486,8 +485,7 @@
 				embedPlayer.triggerHelper(eventToTrigger);
 				_this.loadingEntry = false; // Update the loadingEntry flag//
 
-				// play clip that was selected when autoPlay=false. if autoPlay=true, the embedPlayer will do that for us.
-				if ( (!_this.getConfig("autoPlay") && mobileAutoPlay && embedPlayer.canAutoPlay() && !embedPlayer.isInSequence()) || embedPlayer.casting) {
+				if ( ( mobileAutoPlay && embedPlayer.canAutoPlay() && !embedPlayer.isInSequence()) || embedPlayer.casting) {
 					setTimeout(function(){
 						embedPlayer.play();
 					},500); // timeout is required when loading live entries
@@ -499,6 +497,8 @@
 				}
 			});
 			mw.log("PlaylistAPI::playClip::changeMedia entryId: " + id);
+			//Need to enable the controls if the previous entry was an offline live stream, liveCore.js handles the controls logic for live stream entries.
+			this.getPlayer().enablePlayControls();
 
 			if (!this.firstPlay && this.getConfig('hideClipPoster') === true && !mw.isIphone()) {
 				mw.setConfig('EmbedPlayer.HidePosterOnStart', true);

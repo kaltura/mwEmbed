@@ -10,21 +10,21 @@
 	"mw.RaptMediaDurationLabel": {
 		"scripts": "resources/mw.RaptMediaDurationLabel.js",
 		"dependencies": [
-			"mw.KBaseComponent"
+			"durationLabel"
 		],
 		"kalturaPluginName": "raptMediaDurationLabel"
 	},
 	"mw.RaptMediaScrubber": {
 		"scripts": "resources/mw.RaptMediaScrubber.js",
 		"dependencies": [
-			"mw.KBaseComponent"
+			"scrubber"
 		],
 		"kalturaPluginName": "raptMediaScrubber"
 	},
 	"mw.RaptMediaPlayPauseBtn": {
 		"scripts": "resources/mw.RaptMediaPlayPauseBtn.js",
 		"dependencies": [
-			"mw.KBaseComponent"
+			"playPauseBtn"
 		],
 		"kalturaPluginName": "raptMediaPlayPauseBtn"
 	}
