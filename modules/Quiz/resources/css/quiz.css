@@ -756,8 +756,113 @@ ol.second-row{
 .track {
     bottom:9vh!important;
 }
+.true-false-question .header-container {
+    position: relative;
+    height: 36vh;
+}
+.true-false-question .display-question{
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+}
+.true-false-question .answers-container{
+    top: 41vh;
+    left: 1%;
+}
+.true-false-question .single-answer-box-bk{
+    width: 41vw;
+    float: left;
+    margin: 0 22px;
+    position: relative;
+    overflow-y: visible;
+    overflow-x: inherit;
+    border-radius: 8px;
+    background: #224462;
+}
+.true-false-question .answers-container :last-child.single-answer-box-bk:before {
+    content: '';
+    display: block;
+    width: 34px;
+    height: 34px;
+    background: #224461;
+    position: absolute;
+    top: 14px;
+    right: -14px;
+    border-radius: 7px 2px 7px 2px;
+    transform: rotate(43deg) skew(15deg,18deg);
+
+}
+.true-false-question .single-answer-box-bk:hover:not(.wide) {
+    background: #162d40;
+}
+.true-false-question .single-answer-box-bk:hover:not(.wide):before {
+    background: #152c40;
+}
+.true-false-question .single-answer-box-txt {
+    position: relative;
+    width: 100%;
+}
+.true-false-question .single-answer-box-bk.wide {
+    width: 41vw;
+    position: relative;
+    overflow: inherit;
+    margin: 0 22px;
+    background: white;
+}
+.true-false-question .single-answer-box-txt-wide p{
+    width: 100%;
+}
+.true-false-question .answers-container :last-child .single-answer-box-txt-wide{
+    width: 100%;
+    position: relative;
+    margin-left: 0;
+}
 
 
+.true-false-question .answers-container :last-child.single-answer-box-bk.wide:before{
+    background: white;
+}
+
+.true-false-question .answers-container :last-child .single-answer-box-apply {
+    position: absolute;
+    top: 0;
+    right: -15px;
+    height: 100%;
+    line-height: 12vh;
+}
+
+.true-false-question .answers-container :first-child .single-answer-box-txt-wide{
+    width: 100%;
+    position: relative;
+    margin-left: 0;
+}
+
+.true-false-question .answers-container :first-child .single-answer-box-apply {
+    position: absolute;
+    top: 0;
+    left: -15px;
+    height: 100%;
+    line-height: 12vh;
+}
+
+.true-false-question .answers-container :first-child.single-answer-box-bk:before{
+    content: '';
+    display: block;
+    width: 34px;
+    height: 34px;
+    background: #224461;
+    position: absolute;
+    top: 14px;
+    left: -14px;
+    border-radius: 7px 2px 7px 2px;
+    transform: rotate(43deg) skew(15deg,18deg);
+}
+.true-false-question .answers-container :first-child.single-answer-box-bk:hover:before{
+    background: #152c40;
+}
+.true-false-question .answers-container :first-child.single-answer-box-bk.wide:before{
+    background: white;
+}
 @media (min-width: 940px) and (max-height: 500px) {
     .playlistInterface .welcome {
         font-size: 7vw;
