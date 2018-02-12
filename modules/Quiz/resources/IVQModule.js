@@ -458,6 +458,9 @@
                             return 'q-box-false';
                         }
                     })();
+                    if(data.questionType === _this.QUESTIONS_TYPE.REFLECTION_POINT){
+                        questionHexType += ' reflection-point-question';
+                    }
                     $(el).addClass(questionHexType).attr("id", data.key).append(_this.i2q(data.key));
                     switch(rowNumber){
                         case 0:$(ol).addClass('first-row');break;
