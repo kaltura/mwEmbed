@@ -43,7 +43,8 @@
 		viewEventInterval: null,
 		savedPosition: null,
 		monitorIntervalObj:{},
-
+        playTimeSum: 0,
+		previousCurrentTime: 0,
 		_p25Once: false,
 		_p50Once: false,
 		_p75Once: false,
@@ -135,7 +136,7 @@
 			});
 
 			this.embedPlayer.bindHelper( 'seeked' , function (e, seekTarget) {
-				_this.hasSeeked = true;
+                _this.hasSeeked = true;
 				if ( _this.embedPlayer.isDVR() ) {
 					_this.dvr = true;
 				}
@@ -146,7 +147,8 @@
 			} );
 
 			this.embedPlayer.bindHelper( 'seeking onpause', function() {
-				if ( _this.embedPlayer.isDVR() ) {
+                _this.previousCurrentTime = _this.embedPlayer.currentTime;
+                if ( _this.embedPlayer.isDVR() ) {
 					_this.dvr = true;
 				}
 			});
@@ -281,6 +283,7 @@
 			this._p75Once = false;
 			this._p100Once = false;
 			this.hasSeeked = false;
+            this.previousCurrentTime = 0;
 			this.savedPosition = null;
 		},
 
@@ -288,7 +291,7 @@
 			var _this = this;
 			var percent = this.embedPlayer.currentTime / this.embedPlayer.duration;
 			var playerEvent = this.PlayerEvent;
-
+            this.calculatePlayTimeSum();
 			// Send updates based on logic present in StatisticsMediator.as
 			if ( !this.embedPlayer.isLive() ){
 				if( !_this._p25Once && percent >= .25 ) {
@@ -306,6 +309,11 @@
 				}
 			}
 		},
+
+        calculatePlayTimeSum: function () {
+            this.playTimeSum += (this.embedPlayer.currentTime - this.previousCurrentTime);
+            this.previousCurrentTime = this.embedPlayer.currentTime;
+        },
 
 		calculateBuffer : function ( closeSession ){
 			var _this = this;
@@ -344,12 +352,16 @@
 			_this.kClient = mw.kApiGetPartnerClient( _this.embedPlayer.kwidgetid );
 			_this.monitorIntervalObj.cancel = false;
 			if ( _this.firstPlay ){
-				_this.sendAnalytics(playerEvent.VIEW);
+				_this.sendAnalytics(playerEvent.VIEW, {
+					playTimeSum: _this.playTimeSum
+				});
 				_this.firstPlay = false;
 			}
 			_this.smartSetInterval(function(){
 				if ( !_this._p100Once ){ // since we report 100% at 99%, we don't want any "VIEW" reports after that (FEC-5269)
-					_this.sendAnalytics(playerEvent.VIEW);
+					_this.sendAnalytics(playerEvent.VIEW, {
+                        playTimeSum: _this.playTimeSum
+                    });
 					_this.bufferTime = 0;
 				}
 				if ( !_this.monitorViewEvents ){
@@ -367,7 +379,8 @@
 				return;
 			}
 			var _this = this;
-			this.calculateBuffer(true);
+            this.calculatePlayTimeSum();
+            this.calculateBuffer(true);
 			this.kClient = mw.kApiGetPartnerClient( this.embedPlayer.kwidgetid );
 			if ( this.embedPlayer.isMulticast && $.isFunction( this.embedPlayer.getMulticastBitrate ) ) {
 				this.currentBitRate = this.embedPlayer.getMulticastBitrate();
