@@ -1592,15 +1592,13 @@
 			var _this = this;
 			metadataTrack.addEventListener("cuechange", function (evt) {
 				try {
-
-                    if(!evt.currentTarget.activeCues.length){
-                        return;
+					if(!evt.currentTarget.activeCues.length){
+                    	return;
                     }
-
                     var activeCueData = evt.currentTarget.activeCues[evt.currentTarget.activeCues.length-1].value.data;
                     var id3Tag = JSON.parse(activeCueData);
-					_this.triggerHelper('onId3Tag', id3Tag);
-				}
+                    _this.triggerHelper('onId3Tag', id3Tag);
+                }
 				catch (e) {
 					mw.log("Native player :: id3Tag :: ERROR :: "+e);
 				}
