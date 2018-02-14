@@ -79,11 +79,9 @@
             this.mediaHost = new cast.player.api.Host( {
                 'mediaElement': this.getPlayerElement(),
                 'url': this.getSrc()
-                //'url': "https://cdnapisec.kaltura.com/p/2267831/sp/226783100/playManifest/entryId/0_1i5jbcmf/flavorIds/0_v11iepb3,0_uly953yo,0_jxzmg0ka/format/applehttp/protocol/https/a.m3u8"
             } );
 
             var initStart = this.startTime || 0;
-            //var mimeType = "application/vnd.apple.mpegurl";
             var mimeType = this.getSource().getMIMEType();
             var licenseUrl = this.buildUdrmLicenseUri( mimeType );
 
