@@ -126,10 +126,10 @@
 				});
 				if (!this.getConfig("useExternalClosedCaptions")) {
 					this.bind( 'playerReady', function () {
-						_this.destory();
-						_this.setupTextSources( function () {
-							_this.buildMenu( _this.textSources );
-						} );
+                        _this.destory();
+                        _this.setupTextSources( function () {
+                            _this.buildMenu( _this.textSources );
+                        } );
 					} );
 					outOfBandCaptionEventHandlers.call(this);
 				}
@@ -263,6 +263,7 @@
 			});
 			this.bind( 'onChangeMedia', function (e, stylesObj){
 				//Reset UI state on change media
+                _this.destory();
 				_this.getBtn().show();
 			});
 			this.bind( 'onOpenFullScreen', function (){
@@ -1195,7 +1196,9 @@
 			this.embedPlayer.triggerHelper("selectClosedCaptions", "Off");
 			this.embedPlayer.triggerHelper('changedClosedCaptions', {language: ""});
 			this.setConfig('displayCaptions', false);
-			// also update the cookie to "None"
+			//Set the index of 'off' to lastActiveCaption
+            		this.lastActiveCaption = this.getMenu().$el.find('.active').index();
+            		// also update the cookie to "None"
 			this.getPlayer().setCookie( this.cookieName, 'None' );
 		},
 		addOptionsButton: function(btnOptions) {

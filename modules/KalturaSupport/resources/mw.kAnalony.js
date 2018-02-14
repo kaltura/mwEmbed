@@ -393,7 +393,7 @@
 				'bufferTime'        : this.bufferTime,
 				'actualBitrate'     : this.currentBitRate,
 				'flavorId'          : this.currentflavorId,
-				'referrer'          : mw.getConfig('EmbedPlayer.IframeParentUrl'),
+				'referrer'          : mw.getConfig('EmbedPlayer.IsFriendlyIframe') ? mw.getConfig('EmbedPlayer.IframeParentUrl') : document.referrer,
 				'deliveryType'      : this.embedPlayer.streamerType,
 				'sessionStartTime'  : this.startTime,
 				'uiConfId'          : this.embedPlayer.kuiconfid,

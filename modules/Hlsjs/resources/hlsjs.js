@@ -141,6 +141,7 @@
 			getHlsConfig: function(){
 				var defaultConfig = {
 					//debug:true
+                    maxMaxBufferLength: 60,
 					liveSyncDurationCount: 3,
 					liveMaxLatencyDurationCount: 6
 				};

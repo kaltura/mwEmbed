@@ -215,24 +215,26 @@ StateManager.prototype = {
             }
         };
 
-        if ( !isNaN( curTime ) && !isNaN( totalTime ) ) {
-            var pct = (curTime / totalTime);
-            var pix = pct * 780;
-            this.curTimeDiv.text( formatDuration( curTime ) + ' ' );
-            if ( totalTime !== Infinity ) {
-                var totalTime_formatted = formatDuration( totalTime );
-                if ( (totalTime_formatted.split( ":" ).length - 1) === 1 ) {
-                    this.totalTimeDiv.css( 'left', 1005 );
-                    this.curTimeDiv.css( 'left', 942 );
-                } else if ( (totalTime_formatted.split( ":" ).length - 1) === 2 ) {
-                    this.totalTimeDiv.css( 'left', 970 );
-                    this.curTimeDiv.css( 'left', 860 );
+        if (!kdp.evaluate('{mediaProxy.isLive}')) {
+            if (!isNaN(curTime) && !isNaN(totalTime)) {
+                var pct = (curTime / totalTime);
+                var pix = pct * 780;
+                this.curTimeDiv.text(formatDuration(curTime) + ' ');
+                if (totalTime !== Infinity) {
+                    var totalTime_formatted = formatDuration(totalTime);
+                    if ((totalTime_formatted.split(":").length - 1) === 1) {
+                        this.totalTimeDiv.css('left', 1005);
+                        this.curTimeDiv.css('left', 942);
+                    } else if ((totalTime_formatted.split(":").length - 1) === 2) {
+                        this.totalTimeDiv.css('left', 970);
+                        this.curTimeDiv.css('left', 860);
+                    }
+                    this.totalTimeDiv.text('/ ' + totalTime_formatted);
+                } else {
+                    this.curTimeDiv.css('left', 990);
                 }
-                this.totalTimeDiv.text( '/ ' + totalTime_formatted );
-            } else {
-                this.curTimeDiv.css( 'left', 990 );
+                this.progressFill.css('width', pix + 'px');
             }
-            this.progressFill.css( 'width', pix + 'px' );
         }
     },
 
