@@ -357,7 +357,7 @@
             if (cPo.question.length < 68){
                 $(".display-question").addClass("padding7");
             }
-            $(".display-question").text(cPo.question).attr('tabindex', 5).focus();
+            $(".display-question").text(cPo.question).attr({'tabindex': 5,"aria-lable":cPo.question}).focus();
             //$(".display-question").attr('title', "Question number "+questionNr);
             $.each(cPo.answeres, function (key, value) {
                 var div= $("<div class ='single-answer-box-bk'>"
@@ -396,14 +396,14 @@
                 .on('click', function () {
                     _this.embedPlayer.seek(0,true);
                     _this.KIVQModule.continuePlay();
-                });
+                }).on('keydown', _this.keyDownHandler);
 
             $(".submit-button").html(gM('mwe-quiz-submit'))
                 .on('click', function () {
                     $(this).off('click');
                     $(this).html(gM('mwe-quiz-plsWait'));
                     _this.KIVQModule.setSubmitQuiz();
-                });
+                }).on('keydown', _this.keyDownHandler);
         },
         ssSubmitted: function (score) {
             var _this = this,cpArray = $.cpObject.cpArray;
@@ -640,7 +640,7 @@
             if (_this.KIVQModule.quizSubmitted) {
                 $(".ftr-right").html(gM('mwe-quiz-next')).on('click', function () {
                     _this.KIVQModule.continuePlay();
-                }).attr({'tabindex': 6.3, "role" : "button"});
+                }).on('keydown', _this.keyDownHandler).attr({'tabindex': 6.3, "role" : "button"});
                 return;
             }
             if (_this.KIVQModule.reviewMode) {

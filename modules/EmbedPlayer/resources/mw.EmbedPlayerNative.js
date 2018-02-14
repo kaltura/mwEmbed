@@ -168,9 +168,6 @@
                 });
             }
 
-            this.bindHelper('firstPlay' + this.bindPostfix, function () {
-                _this.parseTracks();
-            });
             this.bindHelper('switchAudioTrack' + this.bindPostfix, function (e, data) {
                 _this.switchAudioTrack(data.index);
             });
@@ -1323,6 +1320,14 @@
 		 */
 		_onloadedmetadata: function () {
 			this.getPlayerElement();
+			var _this = this;
+			if (this.firstPlay) {
+				this.bindOnceHelper('firstPlay' + this.bindPostfix, function () {
+					_this.parseTracks();
+				});
+			} else {
+				this.parseTracks();
+			}
 			// only update duration if we don't have one: ( some browsers give bad duration )
 			// like Android 4 default browser
 			if (!this.duration
@@ -1535,6 +1540,7 @@
 		},
 		parseTracks: function(){
 			var vid = this.getPlayerElement();
+            this.id3TrackAdded = false;
 			this.parseAudioTracks(vid, 0); //0 is for a setTimer counter. Try to catch audioTracks, give up after 5 seconds
 			this.parseTextTracks(vid, 0); //0 is for a setTimer counter. Try to catch textTracks, give up after 10 seconds
 		},
@@ -1545,7 +1551,8 @@
 					var textTracksData = {languages: []};
 					for (var i = 0; i < vid.textTracks.length; i++) {
 						var textTrack = vid.textTracks[i];
-						if (textTrack.kind === 'metadata') {
+						if (textTrack.kind === 'metadata' && !_this.id3TrackAdded) {
+                            _this.id3TrackAdded = true;
 							//add id3 tags support
 							_this.id3Tag(textTrack);
 						} else if (textTrack.kind === 'subtitles' || textTrack.kind === 'captions') {
@@ -1565,6 +1572,12 @@
 					if (textTracksData.languages.length) {
 						mw.log('EmbedPlayerNative:: ' + textTracksData.languages.length + ' subtitles were found: ', textTracksData.languages);
 						_this.triggerHelper('textTracksReceived', textTracksData);
+					} else {
+						//if no caption or subtitle text track were added keep on looking
+						//In live we keep on looking till we found 608/708 caption without a counter to limit
+                        if( (_this.isLive()) || (!_this.isLive() && (counter < 10)) ){
+                            _this.parseTextTracks(vid, ++counter);
+                        }
 					}
 				}else{
 					//try to catch textTracks.kind === "metadata, give up after 10 seconds
