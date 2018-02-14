@@ -370,9 +370,26 @@
 			},_this.reportingInterval,_this.monitorIntervalObj);
 
 		},
+
 		getEntrySessionId: function(){
 			return this.embedPlayer.evaluate('{configProxy.sessionId}') + "-" + this.entryPlayCounter;
 		},
+
+        getPosition: function () {
+            if (this.embedPlayer.isLive()) {
+            	if (this.embedPlayer.getLiveEdgeOffset() < 1){
+                    return 0;
+				}
+                return -(this.embedPlayer.getLiveEdgeOffset());
+            } else {
+                var position = this.embedPlayer.currentTime ? this.embedPlayer.currentTime : 0;
+                if (this.savedPosition) {
+                    position = this.savedPosition;
+                }
+                return position;
+            }
+        },
+
 		sendAnalytics : function(eventType, additionalData){
 			//Don't send analytics if entry or partner id are missing
 			if (!(this.embedPlayer.kentryid && this.embedPlayer.kpartnerid)){
@@ -392,10 +409,7 @@
 				playbackType = this.dvr ? "dvr" : "live";
 			}
 
-			var position = this.embedPlayer.currentTime ? this.embedPlayer.currentTime : 0;
-			if ( this.savedPosition ){
-				position = this.savedPosition;
-			}
+			var position = this.getPosition();
 
 			var statsEvent = {
 				'entryId'           : this.embedPlayer.kentryid,
