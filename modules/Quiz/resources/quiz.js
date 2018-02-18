@@ -359,9 +359,9 @@
                 $(".display-question").addClass("padding7");
             }
             var displayQuestion = $(".display-question");
-            //at first - add question - like text. after this - get all data of display-question div - like html, and wrap link like a tag. safe way to not allow another tags
+            //Search for links and links patterns ( [text|http://exampl.com] ) and add a real link to a new tab
             displayQuestion.text(cPo.question).attr({'tabindex': 5,"aria-lable":cPo.question}).focus();
-            var questionText = this.wrapSingleLinksAndWithTitle(displayQuestion.html());
+            var questionText = this.wrapLinksWithTags(displayQuestion.html());
             displayQuestion.html(questionText);
             //$(".display-question").attr('title', "Question number "+questionNr);
             $.each(cPo.answeres, function (key, value) {
@@ -778,7 +778,8 @@
                 $(_this.embedPlayer.getInterface()).find('.quizDone-cont').first().addClass('small');
             },3000);
         },
-        wrapSingleLinksAndWithTitle: function(text) {
+        // Wrap links with <a href... tag so they will be clickable.
+        wrapLinksWithTags: function(text) {
             var wrapLinksWithTitle = text.replace(/\[(\s+)?([^\|\]]*)(\|)(\s+)?((https?|ftps?):\/\/[^\s\]]+)(\s+)?(\])/gi, function(url) {
                 var updatedUrl = url.slice(1,-1).split('|');
                 var title = updatedUrl[0].trim();
