@@ -97,7 +97,7 @@
 
             switch ( mimeType ) {
                 case "application/vnd.apple.mpegurl":
-                    this.mediaProtocol = cast.player.api.CreateHlsStreamingProtocol( this.mediaHost );
+                    this.mediaProtocol = cast.player.api.CreateHlsStreamingProtocol( this.mediaHost, cast.player.api.HlsSegmentFormat.MPEG2_TS );
                     break;
                 case "application/dash+xml":
                     this.mediaProtocol = cast.player.api.CreateDashStreamingProtocol( this.mediaHost );
@@ -384,12 +384,12 @@
                     if ( isActive ) {
                         this.textStreamIndex = trackId;
                     }
-                } else if ( info.mimeType.indexOf( 'video' ) === 0 ) {
+                } else if ( info.mimeType.indexOf( 'video' ) === 0  && !info.codecs.startsWith("mp4a") && !info.language) { // in HLS (MPEG_TS) audio tracks mimeType comes as video/mp2t so we do not treat it as video track
                     trackType = top.cast.receiver.media.TrackType.VIDEO;
                     if ( isActive ) {
                         this.videoStreamIndex = trackId;
                     }
-                } else if ( info.mimeType.indexOf( 'audio' ) === 0 ) {
+                } else if ( info.mimeType.indexOf( 'audio' ) === 0  || (info.mimeType == "video/mp2t" && info.codecs.startsWith("mp4a"))) { // in HLS (MPEG_TS) audio tracks need to include video/mp2t &&  mp4a.*
                     trackType = top.cast.receiver.media.TrackType.AUDIO;
                     if ( isActive ) {
                         this.audioStreamIndex = trackId;
@@ -404,6 +404,14 @@
                     if (this.getSource().getMIMEType() == "application/dash+xml" && trackType == top.cast.receiver.media.TrackType.AUDIO) {
                         track.name =  info.language || 'None';
                     }
+
+                    //Replace lang code with default display language
+                    if (this.getSource().getMIMEType() == "application/dash+xml" && trackType != top.cast.receiver.media.TrackType.VIDEO) {
+                        if (track.name  != "None") {
+                            track.name = this.getDisplayLanguage(track.name);
+                        }
+                    }
+
                     track.customData = { bitrates: info.bitrates, codecs: info.codecs };
                     tracks.push( track );
                 }
@@ -412,6 +420,562 @@
             tracksInfo.tracks = tracks;
             tracksInfo.activeTrackIds = activeTrackIds;
             return tracksInfo;
+        },
+
+        languageCodes : {
+            "ab": {
+                "name": "Abkhaz"
+            },
+            "aa": {
+                "name": "Afar"
+            },
+            "af": {
+                "name": "Afrikaans"
+            },
+            "ak": {
+                "name": "Akan"
+            },
+            "sq": {
+                "name": "Albanian"
+            },
+            "am": {
+                "name": "Amharic"
+            },
+            "ar": {
+                "name": "Arabic"
+            },
+            "an": {
+                "name": "Aragonese"
+            },
+            "hy": {
+                "name": "Armenian"
+            },
+            "as": {
+                "name": "Assamese"
+            },
+            "av": {
+                "name": "Avaric"
+            },
+            "ae": {
+                "name": "Avestan"
+            },
+            "ay": {
+                "name": "Aymara"
+            },
+            "az": {
+                "name": "Azerbaijani"
+            },
+            "bm": {
+                "name": "Bambara"
+            },
+            "ba": {
+                "name": "Bashkir"
+            },
+            "eu": {
+                "name": "Basque"
+            },
+            "be": {
+                "name": "Belarusian"
+            },
+            "bn": {
+                "name": "Bengali"
+            },
+            "bh": {
+                "name": "Bihari"
+            },
+            "bi": {
+                "name": "Bislama"
+            },
+            "bs": {
+                "name": "Bosnian"
+            },
+            "br": {
+                "name": "Breton"
+            },
+            "bg": {
+                "name": "Bulgarian"
+            },
+            "my": {
+                "name": "Burmese"
+            },
+            "ca": {
+                "name": "Catalan"
+            },
+            "ch": {
+                "name": "Chamorro"
+            },
+            "ce": {
+                "name": "Chechen"
+            },
+            "ny": {
+                "name": "Nyanja"
+            },
+            "zh": {
+                "name": "Chinese"
+            },
+            "cv": {
+                "name": "Chuvash"
+            },
+            "kw": {
+                "name": "Cornish"
+            },
+            "co": {
+                "name": "Corsican"
+            },
+            "cr": {
+                "name": "Cree"
+            },
+            "hr": {
+                "name": "Croatian"
+            },
+            "cs": {
+                "name": "Czech"
+            },
+            "da": {
+                "name": "Danish"
+            },
+            "dv": {
+                "name": "Divehi"
+            },
+            "nl": {
+                "name": "Dutch"
+            },
+            "en": {
+                "name": "English"
+            },
+            "eo": {
+                "name": "Esperanto"
+            },
+            "et": {
+                "name": "Estonian"
+            },
+            "ee": {
+                "name": "Ewe"
+            },
+            "fo": {
+                "name": "Faroese"
+            },
+            "fj": {
+                "name": "Fijian"
+            },
+            "fi": {
+                "name": "Finnish"
+            },
+            "fr": {
+                "name": "French"
+            },
+            "ff": {
+                "name": "Fula"
+            },
+            "gl": {
+                "name": "Galician"
+            },
+            "ka": {
+                "name": "Georgian"
+            },
+            "de": {
+                "name": "German"
+            },
+            "el": {
+                "name": "Greek"
+            },
+            "gn": {
+                "name": "Guaraní"
+            },
+            "gu": {
+                "name": "Gujarati"
+
+            },
+            "ht": {
+                "name": "Haitian"
+            },
+            "ha": {
+                "name": "Hausa"
+            },
+            "he": {
+                "name": "Hebrew (modern)"
+            },
+            "hz": {
+                "name": "Herero"
+            },
+            "hi": {
+                "name": "Hindi"
+            },
+            "ho": {
+                "name": "Hiri Motu"
+            },
+            "hu": {
+                "name": "Hungarian"
+            },
+            "ia": {
+                "name": "Interlingua"
+            },
+            "id": {
+                "name": "Indonesian"
+            },
+            "ie": {
+                "name": "Interlingue"
+            },
+            "ga": {
+                "name": "Irish"
+            },
+            "ig": {
+                "name": "Igbo"
+            },
+            "ik": {
+                "name": "Inupiaq"
+            },
+            "io": {
+                "name": "Ido"
+            },
+            "is": {
+                "name": "Icelandic"
+            },
+            "it": {
+                "name": "Italian"
+            },
+            "iu": {
+                "name": "Inuktitut"
+            },
+            "ja": {
+                "name": "Japanese"
+            },
+            "jv": {
+                "name": "Javanese"
+            },
+            "kl": {
+                "name": "Kalaallisut"
+            },
+            "kn": {
+                "name": "Kannada"
+            },
+            "kr": {
+                "name": "Kanuri"
+            },
+            "ks": {
+                "name": "Kashmiri"
+
+            },
+            "kk": {
+                "name": "Kazakh"
+            },
+            "km": {
+                "name": "Khmer"
+            },
+            "ki": {
+                "name": "Kikuyu"
+            },
+            "rw": {
+                "name": "Kinyarwanda"
+            },
+            "ky": {
+                "name": "Kirghiz"
+            },
+            "kv": {
+                "name": "Komi"
+            },
+            "kg": {
+                "name": "Kongo"
+            },
+            "ko": {
+                "name": "Korean"
+            },
+            "ku": {
+                "name": "Kurdish"
+            },
+            "kj": {
+                "name": "Kwanyama"
+            },
+            "la": {
+                "name": "Latin"
+            },
+            "lb": {
+                "name": "Luxembourgish"
+            },
+            "lg": {
+                "name": "Luganda"
+            },
+            "li": {
+                "name": "Limburgis"
+            },
+            "ln": {
+                "name": "Lingala"
+            },
+            "lo": {
+                "name": "Lao"
+            },
+            "lt": {
+                "name": "Lithuanian"
+            },
+            "lu": {
+                "name": "Luba-Katanga"
+            },
+            "lv": {
+                "name": "Latvian"
+            },
+            "gv": {
+                "name": "Manx"
+            },
+            "mk": {
+                "name": "Macedonian"
+            },
+            "mg": {
+                "name": "Malagasy"
+            },
+            "ms": {
+                "name": "Malay"
+            },
+            "ml": {
+                "name": "Malayalam"
+            },
+            "mt": {
+                "name": "Maltese"
+            },
+            "mi": {
+                "name": "Māori"
+            },
+            "mr": {
+                "name": "Marathi"
+            },
+            "mh": {
+                "name": "Marshallese"
+            },
+            "mn": {
+                "name": "Mongolian"
+            },
+            "na": {
+                "name": "Nauru"
+            },
+            "nv": {
+                "name": "Navajo"
+            },
+            "nb": {
+                "name": "Norwegian Bokmål"
+            },
+            "nd": {
+                "name": "North Ndebele"
+            },
+            "ne": {
+                "name": "Nepali"
+            },
+            "ng": {
+                "name": "Ndonga"
+            },
+            "nn": {
+                "name": "Norwegian Nynorsk"
+            },
+            "no": {
+                "name": "Norwegian"
+            },
+            "ii": {
+                "name": "Nuosu"
+            },
+            "nr": {
+                "name": "South Ndebele"
+            },
+            "oc": {
+                "name": "Occitan"
+            },
+            "oj": {
+                "name": "Ojibwe"
+            },
+            "cu": {
+                "name": "Church Slavic"
+            },
+            "om": {
+                "name": "Oromo"
+            },
+            "or": {
+                "name": "Oriya"
+            },
+            "os": {
+                "name": "Ossetian"
+            },
+            "pa": {
+                "name": "Panjabi"
+            },
+            "pi": {
+                "name": "Pāli"
+            },
+            "fa": {
+                "name": "Persian"
+            },
+            "pl": {
+                "name": "Polish"
+            },
+            "ps": {
+                "name": "Pashto"
+            },
+            "pt": {
+                "name": "Portuguese"
+            },
+            "qu": {
+                "name": "Quechua"
+            },
+            "rm": {
+                "name": "Romansh"
+            },
+            "rn": {
+                "name": "Kirundi"
+            },
+            "ro": {
+                "name": "Romanian"
+            },
+            "ru": {
+                "name": "Russian"
+            },
+            "sa": {
+                "name": "Sanskrit"
+            },
+            "sc": {
+                "name": "Sardinian"
+            },
+            "sd": {
+                "name": "Sindhi"
+            },
+            "se": {
+                "name": "Northern Sami"
+            },
+            "sm": {
+                "name": "Samoan"
+            },
+            "sg": {
+                "name": "Sango"
+            },
+            "sr": {
+                "name": "Serbian"
+            },
+            "gd": {
+                "name": "Scottish Gaelic"
+            },
+            "sn": {
+                "name": "Shona"
+            },
+            "si": {
+                "name": "Sinhala, Sinhalese"
+            },
+            "sk": {
+                "name": "Slovak"
+            },
+            "sl": {
+                "name": "Slovene"
+            },
+            "so": {
+                "name": "Somali"
+            },
+            "st": {
+                "name": "Southern Sotho"
+            },
+            "es": {
+                "name": "Spanish"
+            },
+            "su": {
+                "name": "Sundanese"
+            },
+            "sw": {
+                "name": "Swahili"
+            },
+            "ss": {
+                "name": "Swati"
+            },
+            "sv": {
+                "name": "Swedish"
+            },
+            "ta": {
+                "name": "Tamil"
+            },
+            "te": {
+                "name": "Telugu"
+            },
+            "tg": {
+                "name": "Tajik"
+            },
+            "th": {
+                "name": "Thai"
+            },
+            "ti": {
+                "name": "Tigrinya"
+            },
+            "bo": {
+                "name": "Tibetan"
+            },
+            "tk": {
+                "name": "Turkmen"
+            },
+            "tl": {
+                "name": "Tagalog"
+            },
+            "tn": {
+                "name": "Tswana"
+            },
+            "to": {
+                "name": "Tonga"
+            },
+            "tr": {
+                "name": "Turkish"
+            },
+            "ts": {
+                "name": "Tsonga"
+            },
+            "tt": {
+                "name": "Tatar"
+            },
+            "tw": {
+                "name": "Twi"
+            },
+            "ty": {
+                "name": "Tahitian"
+            },
+            "ug": {
+                "name": "Uighur, Uyghur"
+            },
+            "uk": {
+                "name": "Ukrainian"
+            },
+            "ur": {
+                "name": "Urdu"
+            },
+            "uz": {
+                "name": "Uzbek"
+            },
+            "ve": {
+                "name": "Venda"
+            },
+            "vi": {
+                "name": "Vietnamese"
+            },
+            "vo": {
+                "name": "Volapük"
+            },
+            "wa": {
+                "name": "Walloon"
+            },
+            "cy": {
+                "name": "Welsh"
+            },
+            "wo": {
+                "name": "Wolof"
+            },
+            "fy": {
+                "name": "Western Frisian"
+            },
+            "xh": {
+                "name": "Xhosa"
+            },
+            "yi": {
+                "name": "Yiddish"
+            },
+            "yo": {
+                "name": "Yoruba"
+            },
+            "za": {
+                "name": "Zhuang"
+            }
+        },
+
+        getDisplayLanguage: function (langCode) {
+            var lang = this.languageCodes[langCode.slice(0, 2)];
+            return lang ? lang.name : langCode;
         },
 
         /**
