@@ -358,7 +358,11 @@
             if (cPo.question.length < 68){
                 $(".display-question").addClass("padding7");
             }
-            $(".display-question").text(cPo.question).attr({'tabindex': 5,"aria-lable":cPo.question}).focus();
+            var displayQuestion = $(".display-question");
+            //Search for links and links patterns ( [text|http://exampl.com] ) and add a real link to a new tab
+            displayQuestion.text(cPo.question).attr({'tabindex': 5,"aria-lable":cPo.question}).focus();
+            var questionText = this.wrapLinksWithTags(displayQuestion.html());
+            displayQuestion.html(questionText);
             //$(".display-question").attr('title', "Question number "+questionNr);
             $.each(cPo.answeres, function (key, value) {
                 var div= $("<div class ='single-answer-box-bk'>"
@@ -504,7 +508,7 @@
             }
             $(".reviewAnswerNr").append(_this.KIVQModule.i2q(selectedQuestion));
             //$(".theQuestion").html(gM('mwe-quiz-q') + "  " + $.cpObject.cpArray[selectedQuestion].question);
-            $(".theQuestion").html($.cpObject.cpArray[selectedQuestion].question);
+            $(".theQuestion").html(this.wrapSingleLinksAndWithTitle($.cpObject.cpArray[selectedQuestion].question));
             $(".yourAnswerText").html(gM('mwe-quiz-yourAnswer'));
             $(".yourAnswer").html($.cpObject.cpArray[selectedQuestion].answeres[$.cpObject.cpArray[selectedQuestion].selectedAnswer]);
             if (!$.cpObject.cpArray[selectedQuestion].isCorrect) {
@@ -773,6 +777,18 @@
             setTimeout(function () {
                 $(_this.embedPlayer.getInterface()).find('.quizDone-cont').first().addClass('small');
             },3000);
+        },
+        // Wrap links with <a href... tag so they will be clickable.
+        wrapLinksWithTags: function(text) {
+            var wrapLinksWithTitle = text.replace(/\[(\s+)?([^\|\]]*)(\|)(\s+)?((https?|ftps?):\/\/[^\s\]]+)(\s+)?(\])/gi, function(url) {
+                var updatedUrl = url.slice(1,-1).split('|');
+                var title = updatedUrl[0].trim();
+                var href = updatedUrl[1].trim();
+                return '<a target="_blank" href="' + href + '">' + title + '</a>';
+            });
+            return wrapLinksWithTitle.replace(/((https?|ftps?):\/\/[^"<\s]+)(?![^<>]*>|[^"]*?<\/a)/gi, function(url) {
+                return '<a target="_blank" href="' + url + '">' + url + '</a>';
+            });
         }
     }));
 })(window.mw, window.jQuery);
