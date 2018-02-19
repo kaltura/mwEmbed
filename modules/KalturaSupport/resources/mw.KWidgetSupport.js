@@ -2100,6 +2100,13 @@ mw.KWidgetSupport.prototype = {
 			} else {
 				thumbUrl += '/width/' + thumb.width + '/height/' + thumb.height;
 			}
+            if (thumb.vid_sec) {
+                thumbUrl += '/vid_sec/' + thumb.vid_sec;
+            }
+            if (thumb.vid_slices) {
+                thumbUrl += '/vid_slices/' + thumb.vid_slices;
+            }
+
 		}
 		return thumbUrl;
 	},
