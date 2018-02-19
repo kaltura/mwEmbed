@@ -639,13 +639,14 @@
             var _this = this;
             var allPoints = $.cpObject.cpArray;
             var currentPoint = allPoints[questionNr];
-            var nextBtn = '';
-            var prevBtn = '';
+            var nextBtn = $('<a/>').addClass('cp-navigation-btn next-cp disabled');
+            var prevBtn = $('<a/>').addClass('cp-navigation-btn prev-cp disabled');
+            var separator = $("<div/>").addClass('separator-block').append($('<span/>').addClass('separator'));
             
             if(currentPoint.key > allPoints[0].key){
                 var prevQuePoint = allPoints[currentPoint.key-1];
                 if( (prevQuePoint && _this.KIVQModule.canSkip) || (!_this.KIVQModule.canSkip && prevQuePoint && prevQuePoint.isAnswerd)){
-                    prevBtn = $('<a/>').attr({'href':'#','tabindex': 7}).addClass('que-navigation-btn prev-que').text('previous question')
+                    prevBtn.attr({'href':'#','tabindex': 7}).removeClass('disabled')
                         .on('keydown', _this.keyDownHandler)
                         .on('click',function (e) {
                             e.preventDefault();
@@ -660,7 +661,7 @@
             if(currentPoint.key < allPoints[allPoints.length-1].key){
                 var nextQuePoint = allPoints[currentPoint.key+1];
                 if( (nextQuePoint && _this.KIVQModule.canSkip) || (!_this.KIVQModule.canSkip && nextQuePoint && nextQuePoint.isAnswerd)){
-                    nextBtn = $('<a/>').attr({'href':'#','tabindex': 8}).addClass('que-navigation-btn next-que').text('next question')
+                    nextBtn.attr({'href':'#','tabindex': 8}).removeClass('disabled')
                         .on('keydown', _this.keyDownHandler)
                         .on('click',function (e) {
                             e.preventDefault();
@@ -672,7 +673,8 @@
                         });
                 }
             }
-            $('.ftr-container').append( prevBtn, nextBtn );
+            var navigation  = $("<div/>").addClass('cp-navigation').append(prevBtn, separator, nextBtn );
+            $('.ftr-container').prepend( navigation);
         },
         addFooter: function (questionNr) {
             var _this = this;
