@@ -49,7 +49,7 @@ mw.MediaElement.prototype = {
 		if( videoElement ){
 			var src = $( videoElement ).attr( "src" );
 			var found = false;
-            var protocol = (location.protocol && location.protocol.slice(0, -1));
+            var protocol = location.protocol.slice(0, -1);
             if (src){
 				$.each( mw.getConfig( 'Kaltura.BlackVideoSources' ), function(inx, sourceAttr ) {
                     sourceAttr.src = sourceAttr.src.replace("http", protocol);
