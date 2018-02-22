@@ -66,7 +66,7 @@
                         $.grep($.quizParams.uiAttributes, function (e) {
                             if (e.key == "canSkip") {
                                 _this.canSkip = (e.value.toLowerCase() === 'true');
-                            }else if (e.key == "showWelcomePage") {
+                            } else if (e.key == "showWelcomePage") {
                                 _this.showWelcomePage = (e.value.toLowerCase() === 'true');
                             }
                         });
