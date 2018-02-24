@@ -141,7 +141,7 @@
             if (!mw.getConfig('autoMute')) {
                 if (mw.isMobileDevice() || mw.isIpad()) {
                     return mw.getConfig('mobileAutoPlay');
-                } else if (mw.isDesktopSafari11() && mw.getConfig('autoPlay')) {
+                } else if ((mw.isDesktopSafari11() || mw.isChromeVersionGreaterThan(66)) && mw.getConfig('autoPlay')) {
                     if (typeof mw.getConfig('autoPlayFallbackToMute') !== 'boolean') {
                         mw.setConfig('autoPlayFallbackToMute', true);
                     }
@@ -168,9 +168,6 @@
                 });
             }
 
-            this.bindHelper('firstPlay' + this.bindPostfix, function () {
-                _this.parseTracks();
-            });
             this.bindHelper('switchAudioTrack' + this.bindPostfix, function (e, data) {
                 _this.switchAudioTrack(data.index);
             });
@@ -673,7 +670,7 @@
 			});
 
 			for (var i = 0; i < textTracks.length; i++) {
-				if (textTracks[i].language === defaultLangKey) {
+				if (textTracks[i].language === defaultLangKey || textTracks[i].label === defaultLangKey) {
 					textTracks[i].mode = "showing";
 					// select the first match
 					return;
@@ -987,7 +984,8 @@
                             if (playPromise !== undefined) {
                                 playPromise.then(function() {
                                     mw.log("play promise resolved");
-                                }).catch(function(error) {
+                                });
+                                playPromise["catch"](function(error) {
                                     mw.log("play promise rejected");
                                     //If play is rejected then return UI state to pause so user can take action
                                     _this.pause();
@@ -1323,6 +1321,14 @@
 		 */
 		_onloadedmetadata: function () {
 			this.getPlayerElement();
+			var _this = this;
+			if (this.firstPlay) {
+				this.bindOnceHelper('firstPlay' + this.bindPostfix, function () {
+					_this.parseTracks();
+				});
+			} else {
+				this.parseTracks();
+			}
 			// only update duration if we don't have one: ( some browsers give bad duration )
 			// like Android 4 default browser
 			if (!this.duration
@@ -1535,6 +1541,7 @@
 		},
 		parseTracks: function(){
 			var vid = this.getPlayerElement();
+            this.id3TrackAdded = false;
 			this.parseAudioTracks(vid, 0); //0 is for a setTimer counter. Try to catch audioTracks, give up after 5 seconds
 			this.parseTextTracks(vid, 0); //0 is for a setTimer counter. Try to catch textTracks, give up after 10 seconds
 		},
@@ -1545,10 +1552,11 @@
 					var textTracksData = {languages: []};
 					for (var i = 0; i < vid.textTracks.length; i++) {
 						var textTrack = vid.textTracks[i];
-						if (textTrack.kind === 'metadata') {
+						if (textTrack.kind === 'metadata' && !_this.id3TrackAdded) {
+                            _this.id3TrackAdded = true;
 							//add id3 tags support
 							_this.id3Tag(textTrack);
-						} else if (textTrack.kind === 'subtitles' || textTrack.kind === 'caption') {
+						} else if (textTrack.kind === 'subtitles' || textTrack.kind === 'captions') {
 							textTracksData.languages.push({
 								'kind': 'subtitle',
 								'language': textTrack.label,
@@ -1556,6 +1564,7 @@
 								'label': textTrack.label,
 								'title': textTrack.label,
 								'id': textTrack.id,
+								'default': textTrack.mode === 'showing',
 								'index': i
 							});
 						}
@@ -1564,6 +1573,12 @@
 					if (textTracksData.languages.length) {
 						mw.log('EmbedPlayerNative:: ' + textTracksData.languages.length + ' subtitles were found: ', textTracksData.languages);
 						_this.triggerHelper('textTracksReceived', textTracksData);
+					} else {
+						//if no caption or subtitle text track were added keep on looking
+						//In live we keep on looking till we found 608/708 caption without a counter to limit
+                        if( (_this.isLive()) || (!_this.isLive() && (counter < 10)) ){
+                            _this.parseTextTracks(vid, ++counter);
+                        }
 					}
 				}else{
 					//try to catch textTracks.kind === "metadata, give up after 10 seconds
@@ -1684,7 +1699,7 @@
 			if (textTracks) {
 				for (var i = 0; i < textTracks.length; i++) {
 					var textTrack = textTracks[i];
-					if (textTrack.mode === 'showing' && (textTrack.kind === 'subtitles' || textTrack.kind === 'caption')) {
+					if (textTrack.mode === 'showing' && (textTrack.kind === 'subtitles' || textTrack.kind === 'captions')) {
 						return textTrack;
 					}
 				}

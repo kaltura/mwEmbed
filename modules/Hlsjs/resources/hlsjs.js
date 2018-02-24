@@ -106,7 +106,7 @@
 			 * Register the playback events and attach the playback engine to the video element
 			 */
 			initHls: function () {
-				if (this.LoadHLS && !this.loaded) {
+				if (this.LoadHLS && !this.loaded && !this.embedPlayer.casting) {
 					this.log("Init");
 					//Set streamerType to hls
 					this.embedPlayer.streamerType = 'hls';
@@ -141,6 +141,7 @@
 			getHlsConfig: function(){
 				var defaultConfig = {
 					//debug:true
+                    maxMaxBufferLength: 60,
 					liveSyncDurationCount: 3,
 					liveMaxLatencyDurationCount: 6
 				};
@@ -322,11 +323,13 @@
                 //HLS.JS by default sets showing to text track for default HLS manifest text track
 				//we want to handle it on ourselves so always set it to hidden after hls.js makes its decision
             	this.log("manifest loaded");
-                var vid = this.getPlayer().getPlayerElement();
-                var textTracks = vid.textTracks;
-                for (var i=0; i < textTracks.length; i++){
-                	textTracks[i].mode = "hidden";
-                }
+            	if (!this.embedPlayer.getKalturaConfig('closedCaptions', 'showEmbeddedCaptions')) {
+		            var vid = this.getPlayer().getPlayerElement();
+		            var textTracks = vid.textTracks;
+		            for (var i=0; i < textTracks.length; i++){
+			            textTracks[i].mode = "hidden";
+		            }
+	            }
             },
 			/**
 			 * Extract available audio tracks metadata from parsed manifest data

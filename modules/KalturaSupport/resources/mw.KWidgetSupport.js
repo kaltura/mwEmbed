@@ -935,7 +935,7 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.autoplay = true;
 		}
 		var inline = getAttr( 'EmbedPlayer.WebKitPlaysInline' );
-		if (inline) {
+		if (inline && mw.isIphone()) {
 			embedPlayer.inline = true;
 		}
 

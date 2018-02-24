@@ -27,6 +27,7 @@
         casting: false,
         remotePlayer: null,
         remotePlayerController: null,
+        sessionStateChangedCallback: null,
         CAST_SENDER_V3_URL: '//www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1',
 
         /**
@@ -85,10 +86,11 @@
             options.autoJoinPolicy = chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED;
             cast.framework.CastContext.getInstance().setOptions( options );
 
+            this.sessionStateChangedCallback = this.onSessionStateChanged.bind(this);
+            this.toggleSessionStateChangedListener(true);
+
             this.remotePlayer = new cast.framework.RemotePlayer();
             this.remotePlayerController = new cast.framework.RemotePlayerController( this.remotePlayer );
-
-            setTimeout( this.checkIfAlreadyConnected.bind( this ), 100 );
         },
 
         isSafeEnviornment: function () {
@@ -96,19 +98,11 @@
         },
 
         /**
-         * Handles the use case of refreshing the page while casting.
-         */
-        checkIfAlreadyConnected: function () {
-            if ( this.remotePlayer.isConnected ) {
-                this.switchToRemotePlayer();
-            }
-        },
-
-        /**
          * Responsible for the logic which happens when we clicking the cast button.
          * @returns {boolean}
          */
         toggleCast: function () {
+            this.toggleSessionStateChangedListener(false);
             this.log( "toggleCast: isDisabled=" + this.isDisabled + ", isCasting=" + this.casting );
             if ( this.isDisabled ) {
                 return false;
@@ -124,6 +118,40 @@
                     this.switchToRemotePlayer.bind( this ),
                     this.launchError.bind( this )
                 );
+            }
+        },
+
+        onSessionStateChanged: function (event) {
+            var sessionState = event.sessionState;
+            switch (sessionState) {
+                case cast.framework.SessionState.SESSION_RESUMED: {
+                    this.switchToRemotePlayer();
+                    break;
+                }
+                case cast.framework.SessionState.SESSION_STARTED: {
+                    if (!this.casting) {
+                        this.showConnectingMessage();
+                        this.embedPlayer.disablePlayControls(["chromecast"]);
+                        this.switchToRemotePlayer();
+                    }
+                    break;
+                }
+                case cast.framework.SessionState.SESSION_ENDED: {
+                    if (this.casting) {
+                        this.switchToLocalPlayer();
+                    }
+                    break;
+                }
+                default:
+                    break;
+            }
+        },
+
+        toggleSessionStateChangedListener: function (enable) {
+            if (enable) {
+                cast.framework.CastContext.getInstance().addEventListener(cast.framework.CastContextEventType.SESSION_STATE_CHANGED, this.sessionStateChangedCallback);
+            } else {
+                cast.framework.CastContext.getInstance().removeEventListener(cast.framework.CastContextEventType.SESSION_STATE_CHANGED, this.sessionStateChangedCallback);
             }
         },
 
@@ -159,6 +187,7 @@
                 _this.updateTooltip( _this.stopCastTitle );
                 _this.showLoadingMessage();
                 _this.embedPlayer.setupRemotePlayer( _this.remotePlayer, _this.remotePlayerController, playbackParams );
+                _this.toggleSessionStateChangedListener(true);
             } );
         },
 
@@ -167,13 +196,17 @@
          * @returns {{currentTime: *, duration: *, volume: (*|Float)}}
          */
         getEmbedPlayerPlaybackParams: function () {
-            return {
+            var playbackParams= {
                 currentTime: this.embedPlayer.getPlayerElementTime(),
                 duration: this.embedPlayer.getDuration(),
                 volume: this.embedPlayer.getPlayerElementVolume(),
                 state: this.embedPlayer.currentState,
-                captions: this.embedPlayer.getInterface().find( '.track' )
+                captions: null
+            };
+            if (this.embedPlayer.plugins && this.embedPlayer.plugins.closedCaptions){
+                playbackParams.captions = this.embedPlayer.plugins.closedCaptions.selectedSource;
             }
+            return playbackParams;
         },
 
         /**
@@ -195,6 +228,7 @@
             this.embedPlayer.updatePlaybackInterface( function () {
                 _this.embedPlayer.addPlayerSpinner();
                 _this.embedPlayer.seek( seekTo, stopAfterSeek );
+                _this.toggleSessionStateChangedListener(true);
             } );
         },
 
@@ -206,6 +240,7 @@
             this.log( "launchError: " + this.getErrorMessage( errorCode ) );
             this.embedPlayer.layoutBuilder.closeAlert();
             this.embedPlayer.enablePlayControls();
+            this.toggleSessionStateChangedListener(true);
         },
 
         /**

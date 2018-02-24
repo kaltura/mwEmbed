@@ -1124,6 +1124,7 @@
 			var stopSeek = {value: false};
 			this.triggerHelper('preSeek', [seekTime, stopAfterSeek, stopSeek]);
 			if (stopSeek.value) {
+				this.seeking = false;
 				return false;
 			}
 
@@ -3428,6 +3429,18 @@
 			if ($.isFunction(callback)) {
 				callback();
 			}
+		},
+
+		showTextTrack: function () {
+
+		},
+
+		hideTextTrack: function () {
+
+		},
+
+		getActiveSubtitle: function () {
+			return null;
 		},
 
 		getCurrentBufferLength: function(){

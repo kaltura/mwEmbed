@@ -357,7 +357,7 @@
             if (cPo.question.length < 68){
                 $(".display-question").addClass("padding7");
             }
-            $(".display-question").text(cPo.question).attr('tabindex', 5).focus();
+            $(".display-question").text(cPo.question).attr({'tabindex': 5,"aria-lable":cPo.question}).focus();
             //$(".display-question").attr('title', "Question number "+questionNr);
             $.each(cPo.answeres, function (key, value) {
                 var div= $("<div class ='single-answer-box-bk'>"
@@ -396,14 +396,14 @@
                 .on('click', function () {
                     _this.embedPlayer.seek(0,true);
                     _this.KIVQModule.continuePlay();
-                });
+                }).on('keydown', _this.keyDownHandler);
 
             $(".submit-button").html(gM('mwe-quiz-submit'))
                 .on('click', function () {
                     $(this).off('click');
                     $(this).html(gM('mwe-quiz-plsWait'));
                     _this.KIVQModule.setSubmitQuiz();
-                });
+                }).on('keydown', _this.keyDownHandler);
         },
         ssSubmitted: function (score) {
             var _this = this,cpArray = $.cpObject.cpArray;
@@ -535,7 +535,7 @@
                             $(this).addClass('single-answer-box-txt-wide ')
                                 .after($('<div></div>') // adding continue/applied div as button
                                     .addClass("single-answer-box-apply qApplied disable").attr('aria-disabled', true).attr('role', 'button')
-                                    .text(gM('mwe-quiz-applied'))
+                                    .text(gM('mwe-quiz-selected'))
                             );
                         });
                 }
@@ -586,7 +586,7 @@
                             $(this).addClass('single-answer-box-txt-wide')
                                 .after($('<div ></div>') // adding continue/applied div as button so no need to set it with a role and tabindex
                                     .addClass("single-answer-box-apply qContinue")
-                                    .text(gM('mwe-quiz-continue')).attr('tabindex', 5).attr('aria-label', 'Continue quiz  with the selected answer: '+currentAnswerText).removeAttr('aria-disabled')
+                                    .text(gM('mwe-quiz-select')).attr('tabindex', 5).attr('aria-label', 'Continue quiz  with the selected answer: '+currentAnswerText).removeAttr('aria-disabled')
                                     .on('keydown', _this.keyDownHandler).attr('id', 'continue-button-answer-'+currentAnswerNumber).attr('role', 'button')
                             );
                             // verify focus in IE
@@ -606,7 +606,7 @@
             $('.single-answer-box-apply').fadeOut(100,function(){
                 $(this).addClass('disable')
                     .removeClass('qContinue')
-                    .text(gM('mwe-quiz-applied'))
+                    .text(gM('mwe-quiz-selected'))
                     .addClass('qApplied').fadeIn(100).attr('aria-disabled', true);
             });
             _this.KIVQModule.submitAnswer(questionNr,_this.selectedAnswer);
@@ -640,7 +640,7 @@
             if (_this.KIVQModule.quizSubmitted) {
                 $(".ftr-right").html(gM('mwe-quiz-next')).on('click', function () {
                     _this.KIVQModule.continuePlay();
-                }).attr({'tabindex': 6.3, "role" : "button"});
+                }).on('keydown', _this.keyDownHandler).attr({'tabindex': 6.3, "role" : "button"});
                 return;
             }
             if (_this.KIVQModule.reviewMode) {
@@ -738,6 +738,9 @@
                     .attr('title', 'click to end quiz now').on('keydown', _this.keyDownHandler).attr('id', 'quiz-done-continue-button').focus();
             // verify focus in IE
             document.getElementById('quiz-done-continue-button').focus();
+            setTimeout(function () {
+                $(_this.embedPlayer.getInterface()).find('.quizDone-cont').first().addClass('small');
+            },3000);
         }
     }));
 })(window.mw, window.jQuery);
