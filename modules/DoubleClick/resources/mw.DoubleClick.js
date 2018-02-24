@@ -1278,9 +1278,9 @@
                 _this.adActive = true;
                 _this.adSkippable = ad.isSkippable();
                 if ( _this.isLinear ) {
+                    _this.addCountdownNotice();
                     if ( !_this.adSkippable ) {
                         _this.showSkipBtn();
-                        _this.addCountdownNotice();
                     }
                     _this.playingLinearAd = true;
                     // hide spinner:
