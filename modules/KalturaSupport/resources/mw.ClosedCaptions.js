@@ -52,9 +52,12 @@
 				this.setConfig('displayCaptions', false );
 			}
 
-			if(_this.getConfig("enableOptionsMenu")){
-				this.optionsMenu = new mw.closedCaptions.cvaa(this.getPlayer(), function () {
-				}, "cvaa");
+            if(_this.getConfig("enableOptionsMenu")){
+                this.optionsMenu = new mw.closedCaptions.cvaa(this.getPlayer(), function () {
+                    if ( _this.getConfig('layout') === 'below') {
+                        this.setBelowConfig();
+                    }
+                }, "cvaa");
 
 				if(!this.optionsMenu.isSafeEnviornment()){
 					this.setConfig('enableOptionsMenu', false );
@@ -74,6 +77,10 @@
 					}
 				}
 			});
+
+			if ( this.isNativeIOSPlayback() ) {
+				this.setConfig('showEmbeddedCaptions', true);
+			}
 
 			if ( this.getConfig('showEmbeddedCaptions') === true ) {
 
@@ -119,10 +126,10 @@
 				});
 				if (!this.getConfig("useExternalClosedCaptions")) {
 					this.bind( 'playerReady', function () {
-						_this.destory();
-						_this.setupTextSources( function () {
-							_this.buildMenu( _this.textSources );
-						} );
+                        _this.destory();
+                        _this.setupTextSources( function () {
+                            _this.buildMenu( _this.textSources );
+                        } );
 					} );
 					outOfBandCaptionEventHandlers.call(this);
 				}
@@ -217,11 +224,11 @@
 				}
 			});
 
-			if( this.getConfig('layout') == 'below'){
-				this.updateBelowVideoCaptionContainer();
+			if( this.getConfig('layout') === 'below'){
+                this.updateBelowVideoCaptionContainer();
 			}
 
-			if ( this.getConfig('layout') == 'ontop' ) {
+			if ( this.getConfig('layout') === 'ontop' ) {
 				this.bind('onHideControlBar onShowControlBar', function (event, layout) {
 					if (!_this.ended && _this.getPlayer().isOverlayControls()) {
 						_this.defaultBottom = layout.bottom;
@@ -256,15 +263,16 @@
 			});
 			this.bind( 'onChangeMedia', function (e, stylesObj){
 				//Reset UI state on change media
+                _this.destory();
 				_this.getBtn().show();
 			});
 			this.bind( 'onOpenFullScreen', function (){
-				if ( mw.isIOS() && !mw.isIpad() && _this.isNativeFullScreenEnabled() && _this.selectedSource ) {
+				if ( mw.isIOS() && _this.isNativeFullScreenEnabled() && _this.selectedSource ) {
 					_this.embedPlayer.selectDefaultCaption(_this.selectedSource.srclang);
 				}
 			});
 			this.bind( 'onCloseFullScreen', function (){
-				if ( mw.isIOS() && !mw.isIpad() && _this.isNativeFullScreenEnabled() ) {
+				if ( mw.isIOS() && _this.isNativeFullScreenEnabled() ) {
 					var nativeSource = _this.embedPlayer.getActiveSubtitle();
 					_this.embedPlayer.hideTextTrack();
 					if (nativeSource) {
@@ -279,6 +287,9 @@
 					}
 				}
 			});
+		},
+		isNativeIOSPlayback: function() {
+			return mw.isIOS() && !mw.isIpad() && !mw.getConfig('EmbedPlayer.WebKitPlaysInline');
 		},
 		isNativeFullScreenEnabled: function () {
 			return ( mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen') && this.embedPlayer.getPlayerElement().webkitSupportsFullscreen );
@@ -608,7 +619,7 @@
 				if( defaultLangKey == 'None' ){
 					return ;
 				}
-				if ( mw.isIOS() && !mw.isIpad() && !mw.getConfig('EmbedPlayer.WebKitPlaysInline') ) {
+				if ( this.isNativeIOSPlayback() ) {
 					this.selectDefaultIosTrack(defaultLangKey);
 					return ;
 				}
@@ -623,7 +634,7 @@
             // Get source by "default" property
             if ( !this.selectedSource ) {
                 source = this.selectDefaultSource();
-	            if ( source && mw.isIOS() && !mw.isIpad() && !mw.getConfig('EmbedPlayer.WebKitPlaysInline') ) {
+	            if ( source && this.isNativeIOSPlayback() ) {
 		            this.selectDefaultIosTrack(source.srclang);
 		            return ;
 	            }
@@ -900,7 +911,7 @@
 			this.updateLayoutEventFired = true;
 			 _this.embedPlayer.doUpdateLayout();
 			this.updateLayoutEventFired = false;
-		},
+        },
 		/**
 		 * Gets a text size percent relative to about 30 columns of text for 400
 		 * pixel wide player, at 100% text size.
@@ -1185,7 +1196,9 @@
 			this.embedPlayer.triggerHelper("selectClosedCaptions", "Off");
 			this.embedPlayer.triggerHelper('changedClosedCaptions', {language: ""});
 			this.setConfig('displayCaptions', false);
-			// also update the cookie to "None"
+			//Set the index of 'off' to lastActiveCaption
+            		this.lastActiveCaption = this.getMenu().$el.find('.active').index();
+            		// also update the cookie to "None"
 			this.getPlayer().setCookie( this.cookieName, 'None' );
 		},
 		addOptionsButton: function(btnOptions) {
