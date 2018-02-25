@@ -265,7 +265,8 @@
             // Setup load request
             var loadRequest = new chrome.cast.media.LoadRequest( mediaInfo );
             loadRequest.autoplay = this.autoPlay;
-            loadRequest.currentTime = this.getCurrentTime();
+            // On live start from the live edge, on VOD start from the player current time 
+            loadRequest.currentTime = this.isLive() ? 0 : this.getCurrentTime();
             mw.log( "EmbedPlayerChromecast:: loadMedia:: Load request sent", loadRequest );
             // Call load media
             var mediaLoadedHandler = (this.isLive() ? this.onLiveMediaLoaded : this.onMediaLoaded);
@@ -551,7 +552,7 @@
         getEmbedConfig: function () {
             var embedConfig = {
                 'publisherID': this.kwidgetid.substr( 1 ),
-                'uiconfID': this.kuiconfid,
+                'uiconfID': this.getKalturaConfig('chromecast').uiconf_id || this.kuiconfid,
                 'entryID': this.kentryid,
                 'flashVars': this.getFlashVars()
             };
@@ -561,7 +562,7 @@
 
         getReceiverConfig: function () {
             var receiverConfig = this.getKalturaConfig('chromecast').receiverConfig || {};
-            receiverConfig.defaultLanguageKey = this.beforeCastParams.captions.length === 1 ? this.beforeCastParams.captions[0].lang : null;
+            receiverConfig.defaultLanguageKey = this.beforeCastParams.captions ? this.beforeCastParams.captions.language : null;
             return receiverConfig;
         },
 
@@ -605,7 +606,7 @@
 
         getProxyData: function () {
             mw.log( "EmbedPlayerChromecast:: getProxyData" );
-            var proxyData = mw.getConfig( "proxyData" );
+            var proxyData = this.getKalturaConfig("chromecast", "proxyData" );
             if ( proxyData ) {
                 var _this = this;
                 var recursiveIteration = function ( object ) {

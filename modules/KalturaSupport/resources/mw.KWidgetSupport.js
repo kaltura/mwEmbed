@@ -20,6 +20,7 @@ mw.KWidgetSupport.prototype = {
 	kClient : null,
 	kSessionId: null, // Used for Analytics events
 	originalStreamerType: null,
+	originalServiceUrl: {},
 
 	// Constructor check settings etc
 	init: function( options ){
@@ -157,6 +158,9 @@ mw.KWidgetSupport.prototype = {
 		embedPlayer.bindHelper( 'AddEmptyBlackSources', function( event, vid ){
 			$(vid).empty();
 			$.each( mw.getConfig( 'Kaltura.BlackVideoSources' ), function(inx, sourceAttr ){
+				if (location.protocol === "https:") {
+                    sourceAttr.src = sourceAttr.src.replace('http', 'https');
+				}
 				$(vid).append(
 					$( '<source />' ).attr( sourceAttr )
 				);
@@ -300,8 +304,13 @@ mw.KWidgetSupport.prototype = {
 					if (action.pattern && action.replacement) {
 						var regExp=new RegExp(action.pattern, "i");
 						var urlsToModify = ['Kaltura.ServiceUrl','Kaltura.StatsServiceUrl','Kaltura.ServiceBase','Kaltura.LiveStatsServiceUrl','Kaltura.AnalyticsUrl'];
+						var self = this;
 						urlsToModify.forEach(function (key) {
-							var serviceUrl = mw.config.get(key);
+
+							if (!self.originalServiceUrl[key]) {
+                                self.originalServiceUrl[key] = mw.config.get(key);
+							}
+							var serviceUrl = self.originalServiceUrl[key];
 							var match = serviceUrl.match( regExp );
 
 							if (match) {
@@ -926,7 +935,7 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.autoplay = true;
 		}
 		var inline = getAttr( 'EmbedPlayer.WebKitPlaysInline' );
-		if (inline) {
+		if (inline && mw.isIphone()) {
 			embedPlayer.inline = true;
 		}
 
@@ -1823,12 +1832,12 @@ mw.KWidgetSupport.prototype = {
 			deviceSources = this.removeAdaptiveFlavors( deviceSources );
 		}
 
-		// Prefer H264 flavor over HLS on Android browser,
+		// Prefer HLS on Android browser over H264 flavor,
 		// on SDK prefer HLS with h264 baseline flavors
 		if( !this.removedAdaptiveFlavors &&
 				(mw.isAndroid() && !mw.isNativeApp()) &&
 				hasH264Flavor &&
-				!mw.getConfig( 'Kaltura.LeadHLSOnAndroid' ) ) {
+				mw.getConfig( 'Kaltura.LeadHLSOnAndroid' ) == false ) {
 			deviceSources = this.removeHlsFlavor( deviceSources );
 		}
 

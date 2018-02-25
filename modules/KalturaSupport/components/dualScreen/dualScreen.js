@@ -7,6 +7,7 @@
 				"order": 1,
 				"showTooltip": false,
 				"displayImportance": "high",
+				"allowAdminCuePoints": true,
 				"showFirstSlideOnLoad": true,
 				"cuePointType": [{
 					"main": mw.KCuePoints.TYPE.THUMB,

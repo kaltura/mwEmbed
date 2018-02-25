@@ -48,215 +48,182 @@
 			this.playerReady = $.Deferred();
 		},
 
-		onPlayerStateChange : function (event){
-			//delegate to window function
-			window['onPlayerStateChange'](event);
-		},
-
-		registerGlobalCallbacks: function(){
+        loadYTPlayer: function(){
 			var _this = this;
-			window['onPlayerStateChange'] = function( event ){
-				var _this = $('#' + window['mwePlayerId'])[0];
-				// clean up
-				if( event.data || event.data == 0 || event.data ){
-					event = event.data;
-				}
-				var stateName;
-
-				// enable controls (if disabled on mobile devices)
-				if (mw.isMobileDevice()){
-					_this._playContorls = true;
-					_this.triggerHelper( 'onEnableInterfaceComponents', []);
-				}
-
-				// move to other method
-				switch( event ){
-					case YT.PlayerState.UNSTARTED:
-						stateName = "unstarted";
-						break;
-					case YT.PlayerState.ENDED:
-						stateName = "ended";
-						_this.hasEnded = true;
-						break;
-					case YT.PlayerState.PLAYING:
-						//hide the poster
-						$(".playerPoster").hide();
-						$('.blackBoxHide').hide();
-						if (_this.hasEnded){
-							_this.hasEnded = false;
-							return;
-						}
-						if ( mw.isMobileDevice() && !_this.ytMobilePlayed){
-							_this.play();
-							$(".largePlayBtn").css("opacity",1);
-						}
-						_this.ytMobilePlayed = true;
-						_this.triggerHelper("onPlayerStateChange",["play"]);
-						// hide the player container so that youtube click through work
-						$(_this).width("100%");
-						$(_this).hide();
-						stateName = "playing";
-						// update duraiton
-						_this.setDuration();
-						// trigger the seeked event only if this is seek and not in play
-						if(_this.seeking){
-							_this.seeking = false;
-							_this.triggerHelper( 'seeked' );
-							// update the playhead status
-							_this.updatePlayheadStatus();
-						}
-						break;
-					case YT.PlayerState.PAUSED:
-						stateName = "paused";
-						_this.triggerHelper("onPlayerStateChange",["pause"]);
-						_this.parent_pause();
-						break;
-					case YT.PlayerState.BUFFERING:
-						stateName = "buffering";
-						break;
-					case 4:
-						stateName = "unbuffering";
-						break;
-					case YT.PlayerState.CUED:
-						stateName = "video cued";
-						break;
-				}
-				//$( _this ).trigger( 'onPlayerStateChange', [ stateName ] );
-
+			//move to the other scope
+			$('.ui-icon-image').hide();
+			$('.timed-text').hide();
+			$('.ui-icon-arrowthickstop-1-s').hide();
+			$('.ui-icon-flag').hide();
+			this.isPlaylist = this.playlist;
+			var playerVars;
+			//basic configuration
+			playerVars = {
+				controls: 0,
+				iv_load_policy: 3,
+                rel: 0,
+				fs: 0,
+				wmode: 'opaque',
+				showinfo: 0,
+				start: this.startTime || undefined,
+				end: this.pauseTime || undefined
 			};
-			window['hidePlayer'] = function( event ){
 
-			};
-			window['onError'] = function( event ){
-				mw.log("Error! YouTubePlayer" ,2);
-				//$('#loadingSpinner_kaltura_player').append('<br/>Error!');
-				var errorMessage;
-				if (event.data)
-					event = event.data;
-				switch( event ){
-					case 2:
-						errorMessage = "The request contains an invalid parameter value.";
-						break;
-					case 0:
-					case 100:
-						errorMessage = "The video requested was not found";
-						break;
-					case 101:
-					case 150:
-						errorMessage = "The owner of the requested video does not allow it to be played in embedded players";
-						break;
-				}
-				//$('#loadingSpinner_kaltura_player').append('<br/>'+errorMessage);
-				$(".playerPoster").hide();
-				//$(".loadingSpinner_kaltura_player").hide();
-				if( !window['iframePlayer'] )
-					$('.mwEmbedPlayer').append('<br/><br/>'+errorMessage);
-				$("#loadingSpinner_kaltura_player").hide();
-				mw.log(errorMessage ,2);
-			};
-			//YOUTUBE IFRAME PLAYER READY (Not the Iframe - the player itself)
-			window['onIframePlayerReady'] = function( event ){
-				window['iframePlayer'] = event.target;
-				_this.setDuration();
-				_this._playContorls = true;
-				_this.playerReady.resolve();
-				_this.triggerHelper('playerReady');
-				//autoMute
-				if(mw.getConfig('autoMute')){
-					_this.setVolume(0);
-				}
-				//autoplay
-				if(mw.getConfig('autoPlay') && _this.canAutoPlay()){
-					_this.play();
-				}else{
-					window['hidePlayer']();
+			if(window['KeyValueParams']) {
+				var kevarsArray = window['KeyValueParams'].split("&");
+				for(var i=0;i<kevarsArray.length;i++){
+					var kv = kevarsArray[i].split("=");
+					playerVars[kv[0]] = kv[1];
 				}
 
-				if (mw.isMobileDevice()){
-					$(".largePlayBtn").hide();
-					$(".mwEmbedPlayer").hide();
-					_this.hideSpinner();
-					setTimeout(function(){ // issue another hideSpinner call after 250 ms for slow devices (FEC-1898)
-						_this.hideSpinner();
-					},250);
+			}
+			this.playerElement = new YT.Player(this.pid, {
+				height: "100%",
+				width: "100%",
+				videoId: this.youtubeEntryId,
+				playerVars: playerVars,
+				events: {
+					"onReady": function(event){_this.onIframePlayerReady(event);},
+					"onError": function(event){_this.onError(event);},
+					"onStateChange": function(event){_this.onPlayerStateChange(event);}
 				}
-				mw.log("EmbedPlayerYouTube:: Trigger: playerReady for HTML5 player");
-			};
-			// YOUTUBE FLASH PLAYER READY
-			window['onYouTubePlayerReady'] = function( playerIdStr ){
-				$('.ui-icon-image').hide();
-				$('.timed-text').hide();
-				$('.ui-icon-arrowthickstop-1-s').hide();
-				$('.ui-icon-flag').hide();
-				var flashPlayer = $( '#' + playerIdStr )[0];
-				flashPlayer.addEventListener("onStateChange", "onPlayerStateChange");
-				flashPlayer.addEventListener("onError", "onError");
-				_this._playContorls = true;
-				//autoMute
-				if(mw.getConfig('autoMute')){
-					_this.setVolume(0);
-				}
-				//autoplay
-				if(mw.getConfig('autoPlay')){
-					_this.play();
-				}else{
-					window['hidePlayer']();
-				}
-				mw.log("EmbedPlayerYouTube:: Trigger: playerReady for Flash player");
-				_this.triggerHelper('playerReady');
-			};
-			// YOUTUBE IFRAME READY
-			window['onYouTubeIframeAPIReady'] = function( playerIdStr ){
-				//move to the other scope
-				$('.ui-icon-image').hide();
-				$('.timed-text').hide();
-				$('.ui-icon-arrowthickstop-1-s').hide();
-				$('.ui-icon-flag').hide();
-				var embedPlayer = $('#' + window["pid"].replace( 'pid_', '' ) )[0];
-				_this.isPlaylist = embedPlayer.playlist;
-				var playerVars;
-				//basic configuration
-				playerVars = {
-					controls: 0,
-					iv_load_policy:3,
-					rel: 0,
-					fs: 0,
-					wmode: 'opaque',
-					showinfo:0,
-					start: embedPlayer.startTime || undefined,
-					end: embedPlayer.pauseTime || undefined
-				};
-
-				if(window['KeyValueParams'])
-				{
-					var kevarsArray = window['KeyValueParams'].split("&");
-					for(var i=0;i<kevarsArray.length;i++){
-						var kv = kevarsArray[i].split("=");
-						playerVars[kv[0]] = kv[1];
-					}
-
-				}
-				embedPlayer.playerElement = new YT.Player(pid,
-					{
-						height: '100%',
-						width: '100%',
-						videoId: window["youtubeEntryId"],
-						playerVars: playerVars,
-						events: {
-							'onReady': onIframePlayerReady,
-							'onError': onError,
-							'onStateChange': onPlayerStateChange
-						}
-					});
-			};
+			});
 		},
+        onIframePlayerReady: function( event ){
+            window['iframePlayer'] = event.target;
+            this.setDuration();
+            this._playContorls = true;
+            this.playerReady.resolve();
+            this.triggerHelper('playerReady');
+            //autoMute
+            if(mw.getConfig('autoMute')){
+                this.setVolume(0);
+            }
+            //autoplay
+            if(mw.getConfig('autoPlay') && this.canAutoPlay()){
+                this.unbindHelper("preSeek");
+                this.play();
+            }else{
+                window['hidePlayer']();
+            }
+
+            if (mw.isMobileDevice()){
+                $(".largePlayBtn").hide();
+                $(".mwEmbedPlayer").hide();
+                this.hideSpinner();
+                var _this = this;
+                setTimeout(function(){ // issue another hideSpinner call after 250 ms for slow devices (FEC-1898)
+                    _this.hideSpinner();
+                },250);
+            }
+            mw.log("EmbedPlayerYouTube:: Trigger: playerReady for HTML5 player");
+        },
+		onError: function( event ){
+            mw.log("Error! YouTubePlayer" ,2);
+            //$('#loadingSpinner_kaltura_player').append('<br/>Error!');
+            var errorMessage;
+            if (event.data) {
+                event = event.data;
+            }
+            switch( event ){
+                case 2:
+                    errorMessage = "The request contains an invalid parameter value.";
+                    break;
+                case 0:
+                case 100:
+                    errorMessage = "The video requested was not found";
+                    break;
+                case 101:
+                case 150:
+                    errorMessage = "The owner of the requested video does not allow it to be played in embedded players";
+                    break;
+            }
+            //$('#loadingSpinner_kaltura_player').append('<br/>'+errorMessage);
+            $(".playerPoster").hide();
+            //$(".loadingSpinner_kaltura_player").hide();
+            if( !window['iframePlayer'] )
+                $('.mwEmbedPlayer').append('<br/><br/>'+errorMessage);
+            $("#loadingSpinner_kaltura_player").hide();
+            mw.log(errorMessage ,2);
+        },
+        onPlayerStateChange: function( event ){
+            // var _this = $('#' + window['mwePlayerId'])[0];
+            // clean up
+            if( event.data || event.data == 0 || event.data ){
+                event = event.data;
+            }
+            var stateName;
+
+            // enable controls (if disabled on mobile devices)
+            if (mw.isMobileDevice()){
+                this._playContorls = true;
+                this.triggerHelper( 'onEnableInterfaceComponents', []);
+            }
+
+            // move to other method
+            switch( event ){
+                case YT.PlayerState.UNSTARTED:
+                    stateName = "unstarted";
+                    break;
+                case YT.PlayerState.ENDED:
+                    stateName = "ended";
+                    this.hasEnded = true;
+                    break;
+                case YT.PlayerState.PLAYING:
+                    //hide the poster
+                    $(".playerPoster").hide();
+                    $('.blackBoxHide').hide();
+                    if (this.hasEnded){
+                        this.hasEnded = false;
+                        return;
+                    }
+                    if ( mw.isMobileDevice() && !this.ytMobilePlayed){
+                        this.play();
+                        $(".largePlayBtn").css("opacity",1);
+                    }
+                    this.ytMobilePlayed = true;
+                    this.triggerHelper("onPlayerStateChange",["play"]);
+                    // hide the player container so that youtube click through work
+                    $(this).width("100%");
+                    $(this).hide();
+                    stateName = "playing";
+                    // update duraiton
+                    this.setDuration();
+                    // trigger the seeked event only if this is seek and not in play
+                    if(this.seeking){
+                        this.seeking = false;
+                        this.triggerHelper( 'seeked' );
+                        // update the playhead status
+                        this.updatePlayheadStatus();
+                    }
+                    break;
+                case YT.PlayerState.PAUSED:
+                    stateName = "paused";
+                    this.triggerHelper("onPlayerStateChange",["pause"]);
+                    this.parent_pause();
+                    break;
+                case YT.PlayerState.BUFFERING:
+                    stateName = "buffering";
+                    break;
+                case 4:
+                    stateName = "unbuffering";
+                    break;
+                case YT.PlayerState.CUED:
+                    stateName = "video cued";
+                    break;
+            }
+            //$( _this ).trigger( 'onPlayerStateChange', [ stateName ] );
+
+        },
 
 		/*
 		 * Write the Embed html to the target
 		 */
 		embedPlayerHTML : function(){
 			try {
-				this.registerGlobalCallbacks();
+                var _this = this;
+                // YOUTUBE IFRAME READY
+                window['onYouTubePlayerAPIReady'] = function(){_this.loadYTPlayer();};
 				if ( this.playerEmbedFlag ) {
 					return;
 				}
@@ -292,14 +259,10 @@
 			if(metadata.KeyValueParams){
 				window['KeyValueParams'] = metadata.KeyValueParams;
 			}
-			window['pid'] = this.pid;
 
-			if(mw.getConfig("forceYoutubeEntry"))
-			{
+			if(mw.getConfig("forceYoutubeEntry")) {
 				this.youtubeEntryId=mw.getConfig("forceYoutubeEntry");
 			}
-			window["youtubeEntryId"] = this.youtubeEntryId;
-
 
 			this.playerEmbedFlag = true;
 			this.youtubeProtocol = location.protocol;
@@ -335,18 +298,22 @@
 
 				$('.persistentNativePlayer').replaceWith(embedStr);
 			} else {
-				// embed iframe ( native skin in iOS )
-				$('.videoHolder').append('<div id="'+this.pid+'"></div>');
-				var tag = document.createElement('script');
-				tag.src = "https://www.youtube.com/iframe_api";
-				tag.id = "youTubeLib";
-				var firstScriptTag = document.getElementsByTagName('script')[0];
-				firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+                this.loadYTApi();
 			}
+
+		},
+		loadYTApi: function(){
+            // embed iframe ( native skin in iOS )
+			$('.videoHolder').append('<div id="' + this.pid + '"></div>');
+			var tag = document.createElement('script');
+			tag.src = "https://www.youtube.com/iframe_api";
+			tag.id = "youTubeLib";
+			var firstScriptTag = document.getElementsByTagName('script')[0];
+			firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 		},
 		setDuration: function(){
 			//set duration only if current duration is 0 or different from the video duration. on Android native browser sometimes we get duration=1 so working around that here...
-			var dur = this.getPlayerElement().getDuration();
+			var dur = (this.getPlayerElement().getDuration && this.getPlayerElement().getDuration()) || this.getDuration();
 			if (dur && dur != 1 && (this.duration == 0 || (this.duration > 0 && this.duration != dur)) ){
 				this.duration = this.getPlayerElement().getDuration();
 				this.triggerHelper('durationChange',[this.duration]);
@@ -529,7 +496,9 @@
 				}
 				if (this.parent_play()) {
 					if (_this.getPlayerElement()) {
-						_this.getPlayerElement().playVideo();
+						_this.playerReady.promise().then(function(){
+							_this.getPlayerElement().playVideo();
+						});
 					}
 				}
 				this.monitor();
@@ -589,18 +558,20 @@
 			var _this = this;
 			this.stopSeekWatchDog();
 			var currentTime = this.getPlayerElementTime();
-			var yt = this.getPlayerElement();
-			yt.seekTo( seekTime, true );
-			// Since Youtube don't have a seeked event , we must turn off the seeking flag and restore pause state if needed
-			if ( !this.isPlaying() ){
-				setTimeout(function(){
-					_this.currentTime = seekTime;
-					_this.triggerHelper( 'seeked' );
-					_this.pause();
-				},500);
-			} else {
-				this.startSeekWatchDog(currentTime);
-			}
+			this.playerReady.promise().then(function(){
+				var yt = _this.getPlayerElement();
+				yt.seekTo( seekTime, true );
+				// Since Youtube don't have a seeked event , we must turn off the seeking flag and restore pause state if needed
+				if ( !_this.isPlaying() ){
+					setTimeout(function(){
+						_this.currentTime = seekTime;
+						_this.triggerHelper( 'seeked' );
+						_this.pause();
+					},500);
+				} else {
+					_this.startSeekWatchDog(currentTime);
+				}
+			});
 		},
 		startSeekWatchDog: function(refTime){
 			this.log("startSeekWatchDog");
