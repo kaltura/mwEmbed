@@ -111,7 +111,7 @@ $YB.plugins.KalturaV2.prototype.registerListeners = function () {
 
   this.player.bind('playerError', function (e, errorObj) {
     var errorMsg = errorObj ? errorObj.message : context.player.getPlayer().getErrorMessage();
-    var errorCode = errorObj && errorObj.key ? errorObj.key : context.player.getPlayer().getErrorCode();
+    var errorCode = errorObj && errorObj.key ? errorObj.key : context.player.getPlayer().getErrorCode(errorObj);
     context.setMetadata();
     context.errorHandler(errorCode, errorMsg);
   });

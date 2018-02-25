@@ -18,8 +18,9 @@
             },
 
             isSafeEnviornment: function () {
-                var isMobileAutoPlay = (mw.isMobileDevice() || mw.isIpad()) && mw.getConfig('mobileAutoPlay');
-                var isFallbackToMutedAutoPlay = (mw.isDesktopSafari11() && (mw.getConfig('autoPlay') || this.getPlayer().getRawKalturaConfig('playlistAPI', 'autoPlay')));
+                var isThumbEmbed = !!mw.getConfig('thumbEmbedOrigin');
+                var isMobileAutoPlay = (mw.isMobileDevice() || mw.isIpad()) && mw.getConfig('mobileAutoPlay') && !isThumbEmbed;
+                var isFallbackToMutedAutoPlay = (!isThumbEmbed && (mw.isDesktopSafari11() || mw.isChromeVersionGreaterThan(66)) && (mw.getConfig('autoPlay') || this.getPlayer().getRawKalturaConfig('playlistAPI', 'autoPlay')));
                 return !!(isMobileAutoPlay || isFallbackToMutedAutoPlay);
             },
 
@@ -31,7 +32,7 @@
                 }.bind(this));
 
                 this.bind('volumeChanged', function () {
-                    if (this.getPlayer().getPlayerElementVolume() > 0) {
+                    if ((this.getPlayer().getPlayerElementVolume() > 0) && !this.getPlayer().isMuted()) {
                         this.destroy();
                     }
                 }.bind(this));
@@ -58,7 +59,7 @@
                         .addClass('icon-volume-mute ' + this.getCssClass())
                         .html('<span>' + gM("mwe-embedplayer-unmute-label") + '</span>')
                         .click(function () {
-                            this.getPlayer().setVolume(this.playerVolume);
+                            this.getPlayer().setVolume(this.playerVolume, null, mw.isIOS());
                         }.bind(this))
                         .hide()
                 }

@@ -5,6 +5,8 @@
     "mwe-quiz-almostDone": "Almost Done",
     "mwe-quiz-applied": "Applied",
     "mwe-quiz-apply": "Apply",
+    "mwe-quiz-selected": "Selected",
+    "mwe-quiz-select": "Select",
     "mwe-quiz-completed": "Completed",
     "mwe-quiz-completedQuiz": "You completed the quiz",
     "mwe-quiz-completedScore": "You completed the quiz and your score is ",
@@ -37,7 +39,8 @@
     "mwe-quiz-welcome": "Welcome",
     "mwe-quiz-why": "WHY",
     "mwe-quiz-yourAnswer": "Your Answer:",
-    "mwe-quiz-yourAnswers": "your answers"
+    "mwe-quiz-yourAnswers": "your answers",
+    "mwe-quiz-sub-text": "Take a moment to<strong> review </strong>your answers</br><strong> or </strong>go ahead and<strong> submit </strong>"
   },
   "de": {
     "mwe-quiz-Submitted": "Abgesendet",

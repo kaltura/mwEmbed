@@ -509,6 +509,13 @@
             }
         },
 
+        setBelowConfig: function () {
+            var currentPreset = this.getConfig("cvaaOptions"),
+                newCurrentPreset = $.extend(currentPreset, {size: currentPreset.size.slice(0, 2)});
+            //Change Medium text to large
+            newCurrentPreset.size[1].text = "Large";
+        },
+
         getTemplateData: function () {
             return {
                 'cvaa': this,

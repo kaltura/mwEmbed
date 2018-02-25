@@ -1,8 +1,9 @@
 var ReceiverAdsManager = null;
 
 $( window ).bind( 'onReceiverKDPReady', function ( event ) {
-    ReceiverLogger.log( "ReceiverAdsManager", "event-->onReceiverKDPReady", { 'adsEnabled?': kdp.evaluate( '{doubleClick.plugin}' ) } );
-    if ( kdp.evaluate( '{doubleClick.plugin}' ) ) {
+    var doubleClick = kdp.evaluate('{doubleClick}');
+    ReceiverLogger.log("ReceiverAdsManager", "event-->onReceiverKDPReady", {'adsEnabled?': !!(doubleClick && doubleClick.adTagUrl)});
+    if (doubleClick && doubleClick.adTagUrl) {
         ReceiverAdsManager = new AdsManager();
     }
 } );
@@ -60,6 +61,7 @@ AdsManager.prototype = {
         kdp.kUnbind( "postSequenceStart" );
         kdp.kUnbind( "postSequenceComplete" );
         kdp.kUnbind( "onAllAdsCompleted" );
+        kdp.kUnbind( "onEndedDone" );
 
         ReceiverAdsManager = null;
     },
@@ -140,6 +142,7 @@ AdsManager.prototype = {
         kdp.kBind( "postSequenceStart", this._onPostSequenceStart.bind( this ) );
         kdp.kBind( "postSequenceComplete", this._onPostSequenceComplete.bind( this ) );
         kdp.kBind( "onAllAdsCompleted", this._onAllAdsCompleted.bind( this ) );
+        kdp.kBind( "onEndedDone", this._onEndedDone.bind( this ) );
     },
 
     /**
@@ -257,6 +260,7 @@ AdsManager.prototype = {
      */
     _onAdErrorEvent: function () {
         ReceiverLogger.error( this.CLASS_NAME, "_onAdErrorEvent" );
+        this.destroy();
     },
 
     /**
@@ -314,5 +318,15 @@ AdsManager.prototype = {
         if ( this.postSequenceStart ) {
             this._onEnded();
         }
+    },
+
+    /**
+     * Kills the media session.
+     * @private
+     */
+    _onEndedDone: function () {
+        ReceiverLogger.log(this.CLASS_NAME, "_onEndedDone");
+        this.destroy();
+        mediaManager.onEnded();
     }
 };
