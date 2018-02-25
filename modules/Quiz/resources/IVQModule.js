@@ -13,6 +13,7 @@
             quizPlugin: null,
             showGradeAfterSubmission: false,
             canSkip: false,
+            showWelcomePage: true,
             hexPosContainerPos: 0,
             sliceArray: [],
             isErr: false,
@@ -65,6 +66,8 @@
                         $.grep($.quizParams.uiAttributes, function (e) {
                             if (e.key == "canSkip") {
                                 _this.canSkip = (e.value.toLowerCase() === 'true');
+                            } else if (e.key == "showWelcomePage") {
+                                _this.showWelcomePage = (e.value.toLowerCase() === 'true');
                             }
                         });
                         if (data[0].totalCount > 0) {

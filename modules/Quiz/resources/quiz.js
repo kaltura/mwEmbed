@@ -129,7 +129,7 @@
                 this.bind('prePlayAction'+_this.KIVQModule.bindPostfix, function (e, data) {
                     mw.log("Quiz: Bind PrePlay");
                     if(!_this.KIVQModule.isKPlaylist){
-                        if(_this.getPlayer().firstPlay) {
+                        if(_this.getPlayer().firstPlay && _this.KIVQModule.showWelcomePage) {
                             mw.log("Quiz: Welcome");
                             data.allowPlayback = false;
                             _this.enablePlayDuringScreen = false;
