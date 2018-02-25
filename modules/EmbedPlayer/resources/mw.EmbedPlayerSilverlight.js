@@ -169,7 +169,7 @@
 						selectedFlavor.uri.query["bitrate"] = selectedFlavor.bitrate;
 					}
 
-					mw.log('>>>>>> Adding another MulticastManifests: '+selectedFlavor.uri.toString());
+					mw.log('Adding another MulticastManifests: '+selectedFlavor.uri.toString());
 					this._availableMulticastManifests.push(selectedFlavor.uri.toString());
 				}
 			}
@@ -181,7 +181,7 @@
 
 			if (this._availableMulticastManifests.length==0) {
 				this.multiastServerUrl=null;
-				mw.log('>>>>>> selectNextKES no available multicast manifests ');
+				mw.log('selectNextKES no available multicast manifests ');
 				this.isError = true;
 				this.fallbackToUnicast();
             } else {
@@ -193,7 +193,7 @@
 					this.multiastServerUrl.indexOf("http://")===0) {
 					this.multiastServerUrl=this.multiastServerUrl.replace("http://","https://");
 				}
-				mw.log('>>>>>> selectNextKES selected ' + this.multiastServerUrl);
+				mw.log('selectNextKES selected ' + this.multiastServerUrl);
 			}
 
 		} ,
@@ -222,14 +222,14 @@
 
 				if(_this.isOnline){
 
-					mw.log('>>>>>> EmbedPlayerSPlayer got multicast details from KES: ' + JSON.stringify(response));
+					mw.log('EmbedPlayerSPlayer got multicast details from KES: ' + JSON.stringify(response));
 
 
 					//verify we got a valid response from KES
 					if (response && response.multicastAddress && response.multicastPort && response.hls) {
 
 						var multicastAddress = response.multicastAddress + ":" + response.multicastPort;
-						mw.log('>>>>>> multicastAddress: ' + multicastAddress + ' KES: ' + response.multicastSourceAddress);
+						mw.log('multicastAddress: ' + multicastAddress + ' KES: ' + response.multicastSourceAddress);
 
 						//first time
 						if (!_this.multicastAddress ||
@@ -253,9 +253,9 @@
 						//if we got a response from KES that it's still loading, don't do anything
 						if (response && response.state === "Loading") {
 
-							mw.log('>>>>>> KES still loading, retrying later');
+							mw.log('KES still loading, retrying later');
 						} else {
-							mw.log('>>>>>> Got error from KES, switch to another one and keep trying');
+							mw.log('Got error from KES, switch to another one and keep trying');
 							_this.selectNextKES();
 						}
 					}
@@ -266,7 +266,7 @@
 
 			var onKESErrorResponce = function (){
 				if(_this.isOnline){
-					mw.log('>>>>>> no response from KES... switch KES and retry');
+					mw.log('no response from KES... switch KES and retry');
 					_this.selectNextKES();
 				} else {
 					mw.log( 'EmbedPlayerSPlayer got error from KES while offline' );
@@ -358,7 +358,7 @@
 						},
 						function() { //play manifest retunred error
 							if (_this.isMulticast) {
-								mw.log(">>>>>> got error from resolveSrcURL doing fallbackToUnicast");
+								mw.log("got error from resolveSrcURL doing fallbackToUnicast");
 								_this.fallbackToUnicast();
 							}
 						});
@@ -471,14 +471,14 @@
 
                     _this.bindHelper("liveOffline", function () {
                         //if stream became offline
-                        mw.log('>>>>>> PlayerSilverlight. went offline');
+                        mw.log('PlayerSilverlight. went offline');
                         if (_this.playerObject) {
                             _this.playerObject.stop();
                         }
                         _this.isOnline = false;
                     });
                     _this.bindHelper("liveOnline", function () {
-                        mw.log('>>>>>> PlayerSilverlight. went online');
+                        mw.log('PlayerSilverlight. went online');
                         _this.isOnline = true;
                     });
 
@@ -490,7 +490,7 @@
                     flashvars.multicastPolicyOverMulticastEnabled = _this.multicastPolicyOverMulticastEnabled;
                     var slLogLevel=_this.getFlashvars('slLogLevel');
                     if (slLogLevel) {
-                    	mw.log(">>>>>> PlayerSilverlight setting logLevel = "+slLogLevel);
+                    	mw.log("PlayerSilverlight setting logLevel = "+slLogLevel);
 						flashvars.logLevel = slLogLevel;
 					}
 					_this.isError = false;
@@ -560,10 +560,10 @@
 
                         if (isMimeType("video/multicast")) {
                             var timeout = _this.getKalturaConfig(null, 'multicastStartTimeout') || _this.defaultMulticastStartTimeout;
-                            mw.log('>>>>>> Starting timeout for fallbackToUnicast');
+                            mw.log('Starting timeout for fallbackToUnicast');
                             setTimeout(function () {
                                 if (!_this.gotFirstMulticastFrame) {
-                                    mw.log('>>>>>> timeout waiting for frame!!!!');
+                                    mw.log('timeout waiting for frame!!!!');
                                     _this.fallbackToUnicast();
                                 }
                             }, timeout);
@@ -1033,7 +1033,7 @@
 				var trackIndex = -1;
 				if ( source !== -1 ) {
 					trackIndex = this.getSourceIndex( source );
-					mw.log(">>>>>> EmbedPlayerSPlayer:: switch to track index: " + trackIndex);
+					mw.log("EmbedPlayerSPlayer:: switch to track index: " + trackIndex);
 					var bitrate = source.getBitrate();
 					$(this).trigger('sourceSwitchingStarted', [
 						{currentBitrate: bitrate}
