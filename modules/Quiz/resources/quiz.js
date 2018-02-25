@@ -508,7 +508,7 @@
             }
             $(".reviewAnswerNr").append(_this.KIVQModule.i2q(selectedQuestion));
             //$(".theQuestion").html(gM('mwe-quiz-q') + "  " + $.cpObject.cpArray[selectedQuestion].question);
-            $(".theQuestion").html(this.wrapSingleLinksAndWithTitle($.cpObject.cpArray[selectedQuestion].question));
+            $(".theQuestion").html(this.wrapLinksWithTags($.cpObject.cpArray[selectedQuestion].question));
             $(".yourAnswerText").html(gM('mwe-quiz-yourAnswer'));
             $(".yourAnswer").html($.cpObject.cpArray[selectedQuestion].answeres[$.cpObject.cpArray[selectedQuestion].selectedAnswer]);
             if (!$.cpObject.cpArray[selectedQuestion].isCorrect) {
