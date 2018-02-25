@@ -659,8 +659,55 @@
             $('#kplayer_pid_kplayer').css('display', 'block');
             $('#kplayer_pid_kplayer').attr('aria-hidden', 'false');
         },
+
+        addQuePointsNavigationButtons:function (questionNr) {
+            var _this = this;
+            var allPoints = $.cpObject.cpArray;
+            var currentPoint = allPoints[questionNr];
+            if(currentPoint){
+                var nextBtn = $('<a/>').addClass('cp-navigation-btn next-cp disabled');
+                var prevBtn = $('<a/>').addClass('cp-navigation-btn prev-cp disabled');
+                var separator = $("<div/>").addClass('separator-block').append($('<span/>').addClass('separator'));
+                
+                var prevQuePoint = allPoints[currentPoint.key-1];
+                if(currentPoint.key > allPoints[0].key && prevQuePoint){
+                    //allow go to prev CP: 1 - if canSkip is true; 2 - if canSkip is false but current CP and prev CP is already answered
+                    if( (_this.KIVQModule.canSkip) || (!_this.KIVQModule.canSkip && currentPoint.isAnswerd && prevQuePoint.isAnswerd) ){
+                        prevBtn.attr({'href':'#','tabindex': 7}).removeClass('disabled')
+                            .on('keydown', _this.keyDownHandler)
+                            .on('click',function (e) {
+                                e.preventDefault();
+                                _this.KIVQModule.continuePlay();
+                                _this.seekToQuestionTime = prevQuePoint.startTime;
+                                _this.KIVQModule.gotoScrubberPos(prevQuePoint.key);
+                                _this.isSeekingIVQ = true;
+                                mw.log("Quiz: gotoScrubberPos : " + prevQuePoint.key);
+                            });
+                    }
+                }
+                var nextQuePoint = allPoints[currentPoint.key+1];
+                if(currentPoint.key < allPoints[allPoints.length-1].key && nextQuePoint){
+                    //allow go to next CP: 1 - if canSkip is true; 2 - if canSkip is false but current CP and next CP is already answered
+                    if( (_this.KIVQModule.canSkip) || (!_this.KIVQModule.canSkip && nextQuePoint.isAnswerd)){
+                        nextBtn.attr({'href':'#','tabindex': 8}).removeClass('disabled')
+                            .on('keydown', _this.keyDownHandler)
+                            .on('click',function (e) {
+                                e.preventDefault();
+                                _this.KIVQModule.continuePlay();
+                                _this.seekToQuestionTime = nextQuePoint.startTime;
+                                _this.KIVQModule.gotoScrubberPos(nextQuePoint.key);
+                                _this.isSeekingIVQ = true;
+                                mw.log("Quiz: gotoScrubberPos : " + nextQuePoint.key);
+                            });
+                    }
+                }
+                var navigation  = $("<div/>").addClass('cp-navigation').append(prevBtn, separator, nextBtn );
+                $('.ftr-container').prepend( navigation);
+            }
+        },
         addFooter: function (questionNr) {
             var _this = this;
+            _this.addQuePointsNavigationButtons(questionNr);
 
             if (_this.KIVQModule.quizSubmitted) {
                 $(".ftr-right").html(gM('mwe-quiz-next')).on('click', function () {
