@@ -53,18 +53,16 @@
                     }
                     else {
                         $.quizParams = data[1];
-                        var banSeekTrigger = false;
                         var dataForBanSeek = {
-                            status:false,
-                            alertText:''
+                            status: false,
+                            alertText: ''
                         };
                         $.grep($.quizParams.uiAttributes, function (e) {
                             
                             if (e.key == "banSeek" && e.value) {
-                                banSeekTrigger = true;
-                                dataForBanSeek.status = true;
+                                dataForBanSeek.status = e.value.toLowerCase() === 'true';
                             }
-                            if (e.key == "alertText") {
+                            if (e.key == "noSeekAlertText") {
                                 dataForBanSeek.alertText =  e.value;
                             }
                             if (e.key == "canSkip") {
@@ -72,7 +70,7 @@
                             }
                         });
                         //send notification to banSeekManager with params from Editor
-                        if(banSeekTrigger && !_this.canSkip){
+                        if(dataForBanSeek.status && !_this.canSkip){
                             _this.embedPlayer.sendNotification('activateBanSeek',dataForBanSeek);
                         }
                         if (data[0].totalCount > 0) {
