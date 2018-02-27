@@ -63,13 +63,28 @@
                     }
                     else {
                         $.quizParams = data[1];
+                        var dataForBanSeek = {
+                            status: false,
+                            alertText: ''
+                        };
                         $.grep($.quizParams.uiAttributes, function (e) {
+                            
+                            if (e.key == "banSeek" && e.value) {
+                                dataForBanSeek.status = e.value.toLowerCase() === 'true';
+                            }
+                            if (e.key == "noSeekAlertText") {
+                                dataForBanSeek.alertText =  e.value;
+                            }
                             if (e.key == "canSkip") {
                                 _this.canSkip = (e.value.toLowerCase() === 'true');
                             } else if (e.key == "showWelcomePage") {
                                 _this.showWelcomePage = (e.value.toLowerCase() === 'true');
                             }
                         });
+                        //send notification to banSeekManager with params from Editor
+                        if(dataForBanSeek.status && !_this.canSkip){
+                            _this.embedPlayer.sendNotification('activateBanSeek',dataForBanSeek);
+                        }
                         if (data[0].totalCount > 0) {
                             switch (String(data[0].objects[0].status)) {
                                 case 'quiz.3':
