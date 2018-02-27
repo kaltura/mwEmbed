@@ -466,8 +466,13 @@
 			var clearSameCP = items.filter(function( item,index,allInArray ) {
 				return _this.getPlayer().kCuePoints.removeDuplicatedCuePoints(allInArray,index);
 			});
-			//Map items to mediaList items
-			var mediaItems = $.map(clearSameCP, function (item) {
+			
+			var previewCuePointTag = _this.getPlayer().kCuePoints.getPreviewCuePointTag();
+			var filterItems = clearSameCP.filter(function( item ) {
+				return _this.getPlayer().kCuePoints.validateCuePointTags(item, previewCuePointTag);
+			});
+      //Map items to mediaList items
+			var mediaItems = $.map(filterItems, function (item) {
 				var mediaItem;
 				var customData = item.partnerData ? JSON.parse(item.partnerData) : {};
 				var title = item.title || customData.title;

@@ -100,11 +100,9 @@
                 this.setVolume(0);
             }
             //autoplay
-            if(mw.getConfig('autoPlay') && _this.canAutoPlay()){
+            if(mw.getConfig('autoPlay') && this.canAutoPlay()){
                 this.unbindHelper("preSeek");
                 this.play();
-            }else{
-                window['hidePlayer']();
             }
 
             if (mw.isMobileDevice()){

@@ -410,6 +410,13 @@
     "scripts": "resources/uiConfComponents/shareSnippet.js",
     "kalturaPluginName": "shareSnippet"
   },
+  "qualitywatcher": {
+    "scripts": "resources/mw.QualityWatcher.js",
+    "kalturaPluginName": "qualitywatcher",
+    "dependencies": [
+      "mw.KBasePlugin"
+    ]
+  },
   "moderationPlugin": {
     "scripts": "resources/uiConfComponents/moderationPlugin.js",
     "dependencies": [
