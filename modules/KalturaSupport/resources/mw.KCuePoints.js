@@ -26,7 +26,7 @@
 		midCuePointsArray: [],
 		codeCuePointsArray : [],
 		liveCuePointsIntervalId: null,
-		threshold: null,
+		threshold: 3,
 		supportedCuePoints: [
 			mw.KCuePoints.TYPE.CODE,
 			mw.KCuePoints.TYPE.THUMB,
@@ -40,8 +40,12 @@
 			this.destroy();
 			// Setup player ref:
 			this.embedPlayer = embedPlayer;
-			this.threshold = this.getThreshold();
-
+			// grab duplicate-check threshold from player config if exists
+			var playerConfig = this.embedPlayer.playerConfig;
+			if( playerConfig.plugins.dualScreen
+				&& playerConfig.plugins.dualScreen.thresholdForDuplicateCP  ){
+				this.threshold = playerConfig.plugins.dualScreen.thresholdForDuplicateCP;
+			}
 			// Process cue points
 			embedPlayer.bindHelper('KalturaSupport_CuePointsReady' + this.bindPostfix, function () {
 				_this.initSupportedCuepointTypes();
@@ -471,7 +475,7 @@
 			var thresholdTime = this.threshold;
 			for(var i = previousIndex; i>=0;i--){
 				var startTimeDelta = Math.abs(currentCP.startTime - allCP[i].startTime);
-				//if delta of createdAt and startTime is more than thresholdTime - we do not have same CP
+				//if delta of createdAt and startTime is more than thresholdTime - it's not a duplicated cuepoint
 				if(startTimeDelta > thresholdTime*1000){
 					break;
 				}
@@ -481,17 +485,6 @@
 				}
 			}
 			return prevCP;
-		},
-		/**
-		 * Returns time in seconds
-		 */
-		getThreshold:function () {
-			var defaultThreshold =  3;
-			var playerConfig = this.embedPlayer.playerConfig;
-			if(playerConfig && playerConfig.plugins && playerConfig.plugins.dualScreen && playerConfig.plugins.dualScreen.thresholdForDuplicateCP){
-				defaultThreshold = playerConfig.plugins.dualScreen.thresholdForDuplicateCP;
-			}
-			return defaultThreshold;
 		},
 		/**
 		 * Returns the next cuePoint object for requested time
