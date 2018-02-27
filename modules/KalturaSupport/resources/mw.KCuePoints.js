@@ -40,11 +40,11 @@
 			this.destroy();
 			// Setup player ref:
 			this.embedPlayer = embedPlayer;
-            // grab duplicate-check threshold from player config if exists
+			// grab duplicate-check threshold from player config if exists
 			var playerConfig = this.embedPlayer.playerConfig;
 			if( playerConfig.plugins.dualScreen
-                && playerConfig.plugins.dualScreen.thresholdForDuplicateCP  ){
-                this.threshold = playerConfig.plugins.dualScreen.thresholdForDuplicateCP;
+				&& playerConfig.plugins.dualScreen.thresholdForDuplicateCP  ){
+				this.threshold = playerConfig.plugins.dualScreen.thresholdForDuplicateCP;
 			}
 			// Process cue points
 			embedPlayer.bindHelper('KalturaSupport_CuePointsReady' + this.bindPostfix, function () {
