@@ -459,14 +459,17 @@
 		},
 		createMediaItems: function (items) {
 			var _this = this;
-
 			//Get current item number
 			var orderId = this.mediaList.length;
-			//Map items to mediaList items
+			var clearDuplicatedCP = items.filter(function( item,index,allInArray ) {
+				return _this.getPlayer().kCuePoints.removeDuplicatedCuePoints(allInArray,index);
+			});
+			
 			var previewCuePointTag = _this.getPlayer().kCuePoints.getPreviewCuePointTag();
-			var filterItems = items.filter(function( item ) {
+			var filterItems = clearDuplicatedCP.filter(function( item ) {
 				return _this.getPlayer().kCuePoints.validateCuePointTags(item, previewCuePointTag);
 			});
+            //Map items to mediaList items
 			var mediaItems = $.map(filterItems, function (item) {
 				var mediaItem;
 				var customData = item.partnerData ? JSON.parse(item.partnerData) : {};
