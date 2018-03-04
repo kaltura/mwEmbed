@@ -55,6 +55,9 @@
 	mw.isIE10Comp = function () {
 		return (/msie 7/.test(userAgent.toLowerCase()) && /trident\/6/.test(userAgent.toLowerCase()));
 	};
+    mw.isKaiOSDevice = function () {
+        return (navigator.userAgent.match(/KAIOS/i));
+    };
 	// Uses hack described at:
 	// http://www.bdoran.co.uk/2010/07/19/detecting-the-iphone4-and-resolution-with-javascript-or-php/
 	mw.isIphone4 = function () {

@@ -322,6 +322,9 @@
 		 * returns true if device can auto play
 		 */
 		canAutoPlay: function () {
+            if (mw.isKaiOSDevice()){ //for JIO phone on KAIOS
+                return true;
+            }
 			if ( mw.isMobileDevice() ) {
 				var playsinline = true;
 				if ( mw.isIphone() ) {
