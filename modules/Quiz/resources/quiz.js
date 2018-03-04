@@ -384,6 +384,9 @@
                 _this.showAnswered(cPo, questionNr);
             }
             else {
+                if (_this.isReflectionPoint(cPo)) {
+                    _this.KIVQModule.submitAnswer(questionNr,0);
+                }
                 _this._selectAnswerConroller(cPo, questionNr);
             }
             this.addFooter(questionNr);
@@ -736,27 +739,15 @@
                         .css("float", "right")
                         .css("cursor","default"));
                 if (_this.KIVQModule.canSkip) {
-                    var skipTxt;
-                    if ($.cpObject.cpArray[questionNr].isAnswerd){
+                    var skipTxt = gM('mwe-quiz-skipForNow');
+                    if ($.cpObject.cpArray[questionNr].isAnswerd || _this.isReflectionPoint($.cpObject.cpArray[questionNr]) ){
                         skipTxt = gM('mwe-quiz-next');
-                    }else{
-                        skipTxt = gM('mwe-quiz-skipForNow');
                     }
-                    if(
-                        $.cpObject.cpArray[questionNr].questionType &&
-                        $.cpObject.cpArray[questionNr].questionType === _this.KIVQModule.QUESTIONS_TYPE.REFLECTION_POINT &&
-                        !$.cpObject.cpArray[questionNr].isAnswerd
-                    ){
-                        $(".ftr-right").html(gM('mwe-quiz-next')).attr({'tabindex': 6.3, "role" : "button"}).on('click',function () {
-                            _this.KIVQModule.submitAnswer(questionNr,0);
-                            setTimeout(function(){_this.KIVQModule.checkIfDone(questionNr)},1800);
-                        }).on('keydown', _this.keyDownHandler);
-                    }else {
-                        $(".ftr-right").html(skipTxt).on('click', function () {
-                            _this.KIVQModule.checkIfDone(questionNr)
-                        }).on('keydown', _this.keyDownHandler).attr('tabindex', 5).attr('role', 'button');
-                    }
-                }else if(!_this.KIVQModule.canSkip && $.cpObject.cpArray[questionNr].isAnswerd ){
+
+                    $(".ftr-right").html(skipTxt).on('click', function () {
+                        _this.KIVQModule.checkIfDone(questionNr)
+                    }).on('keydown', _this.keyDownHandler).attr('tabindex', 5).attr('role', 'button');
+                }else if(!_this.KIVQModule.canSkip &&  ( $.cpObject.cpArray[questionNr].isAnswerd || _this.isReflectionPoint($.cpObject.cpArray[questionNr])) ){
                     $(".ftr-right").html(gM('mwe-quiz-next')).on('click', function () {
                         _this.KIVQModule.checkIfDone(questionNr)
                     });
@@ -836,6 +827,9 @@
             return wrapLinksWithTitle.replace(/((https?|ftps?):\/\/[^"<\s]+)(?![^<>]*>|[^"]*?<\/a)/gi, function(url) {
                 return '<a target="_blank" href="' + url + '">' + url + '</a>';
             });
+        },
+        isReflectionPoint: function(cPo){
+            return cPo.questionType && cPo.questionType === this.KIVQModule.QUESTIONS_TYPE.REFLECTION_POINT;
         }
     }));
 })(window.mw, window.jQuery);
