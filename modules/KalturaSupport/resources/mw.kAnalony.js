@@ -117,7 +117,7 @@
 			});
 
 			this.embedPlayer.bindHelper( 'onplay' , function () {
-				if ( !this.isInSequence() ){
+				if ( !this.isInSequence() && _this.embedPlayer.currentState !== "play" ){
 					if ( _this.firstPlay ){
 						_this.sendAnalytics(playerEvent.PLAY);
 					}else{

@@ -375,6 +375,9 @@
                             var checkCuePointsTag = _this.getPlayer().kCuePoints.validateCuePointTags(cuePoint, previewCuePointTag);
                             return (isValidTag || isValidType) && passedCustomFilter && checkCuePointsTag;
                         });
+                        result = result.filter(function( item,index,allInArray ) {
+                            return _this.getPlayer().kCuePoints.removeDuplicatedCuePoints(allInArray,index);
+                        });
 
                         result.sort(function (a, b) {
                             return args.sortDesc ? (b.startTime - a.startTime) : (a.startTime - b.startTime);
