@@ -776,7 +776,7 @@
 			},
 
 			onLiveOnline: function () {
-				if (this.embedPlayer.isDVR()) {
+				// if (this.embedPlayer.isDVR()) {
 					this.log(' onLiveOnline:: renew hls instance');
 					this.hls.destroy();
 					var hlsConfig = this.getHlsConfig();
@@ -784,7 +784,7 @@
 					this.registerHlsEvents();
 					this.mediaAttached = false;
 					this.hls.attachMedia(this.embedPlayer.getPlayerElement());
-				}
+				// }
 			},
 
 			handleMediaError: function () {
