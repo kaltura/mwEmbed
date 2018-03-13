@@ -802,6 +802,14 @@ ol.second-row{
     border: solid 1px #ebebeb80;
 }
 
+.reflection-point-question .header-container {
+    height: 80%;
+    display: table;
+}
+.reflection-point-question .display-question {
+    display: table-cell;
+    vertical-align: middle;
+}
 .true-false-question .header-container {
     position: relative;
     height: 36vh;
