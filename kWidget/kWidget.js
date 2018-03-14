@@ -981,6 +981,7 @@
 			iframe.setAttribute('allowfullscreen', true);
 			iframe.setAttribute('webkitallowfullscreen', true);
 			iframe.setAttribute('mozallowfullscreen', true);
+            iframe.setAttribute('allow', 'autoplay; fullscreen; encrypted-media');
 
 			// copy the target element css to the iframe proxy style:
 			iframe.style.cssText = iframeCssText;
