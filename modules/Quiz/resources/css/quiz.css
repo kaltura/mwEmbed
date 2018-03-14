@@ -803,6 +803,7 @@ ol.second-row{
 }
 
 .reflection-point-question .header-container {
+    width: 100%;
     height: 80%;
     display: table;
 }
