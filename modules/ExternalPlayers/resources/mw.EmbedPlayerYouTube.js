@@ -103,8 +103,6 @@
             if(mw.getConfig('autoPlay') && this.canAutoPlay()){
                 this.unbindHelper("preSeek");
                 this.play();
-            }else{
-                window['hidePlayer']();
             }
 
             if (mw.isMobileDevice()){

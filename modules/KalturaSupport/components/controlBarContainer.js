@@ -42,6 +42,12 @@
 					_this.show();
 				}
 			});
+            this.bind('forceShowPlayerControls', function () {
+                _this.forceControlBarShowControls();
+            });
+            this.bind('forceHidePlayerControls', function () {
+                _this.forceControlBarHideControls();
+            });
 
 			// Bind hover events
 			if( this.getConfig('hover') ){
@@ -142,6 +148,12 @@
 			this.getPlayer().triggerHelper('onHideControlBar', {'bottom' : 15} );
 
 		},
+        forceControlBarShowControls: function(){
+            this.getComponent().css("bottom", "");
+        },
+        forceControlBarHideControls: function(){
+           this.getComponent().css("bottom", "-40px");
+        },
 		getComponent: function(){
 			if( !this.$el ) {
 				var _this = this;

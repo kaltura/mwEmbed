@@ -305,6 +305,8 @@ mw.KWidgetSupport.prototype = {
 						var regExp=new RegExp(action.pattern, "i");
 						var urlsToModify = ['Kaltura.ServiceUrl','Kaltura.StatsServiceUrl','Kaltura.ServiceBase','Kaltura.LiveStatsServiceUrl','Kaltura.AnalyticsUrl'];
 						var self = this;
+						var flashvars = embedPlayer.getFlashvars();
+
 						urlsToModify.forEach(function (key) {
 
 							if (!self.originalServiceUrl[key]) {
@@ -312,12 +314,19 @@ mw.KWidgetSupport.prototype = {
 							}
 							var serviceUrl = self.originalServiceUrl[key];
 							var match = serviceUrl.match( regExp );
-
 							if (match) {
 								serviceUrl = serviceUrl.replace(regExp, action.replacement);
 								mw.config.set(key, serviceUrl);
+								// Pass the override URLs configurations to the parent mw object so that it's client
+								// URLs would be updated too.
+								if(mw.config.get( 'EmbedPlayer.IsFriendlyIframe') && flashvars.tunnelAPI){
+								    try{
+								        window.parent.mw.setConfig(key, serviceUrl);
+								    }catch(e){
+								        mw.log("Failed to access window.parent from updatePlayerContextData replace URLs ");
+								    }
+								}
 							}
-
 						});
 					}
 				}
@@ -2100,6 +2109,13 @@ mw.KWidgetSupport.prototype = {
 			} else {
 				thumbUrl += '/width/' + thumb.width + '/height/' + thumb.height;
 			}
+            if (thumb.vid_sec) {
+                thumbUrl += '/vid_sec/' + thumb.vid_sec;
+            }
+            if (thumb.vid_slices) {
+                thumbUrl += '/vid_slices/' + thumb.vid_slices;
+            }
+
 		}
 		return thumbUrl;
 	},

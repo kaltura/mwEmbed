@@ -1592,17 +1592,11 @@
 			var _this = this;
 			metadataTrack.addEventListener("cuechange", function (evt) {
 				try {
-					var id3Tag;
-					if ( mw.isEdge() ){
-						//Get the data from the event + Unicode transform
-						var id3TagData = String.fromCharCode.apply(null, new Uint8Array(evt.currentTarget.cues[evt.currentTarget.cues.length - 1].data));
-						//Get the JSON substring
-						var id3TagString = id3TagData.substring(id3TagData.indexOf("{"), id3TagData.lastIndexOf("}")+1);
-						//Parse JSON
-						id3Tag = JSON.parse(id3TagString);
-					} else {
-						id3Tag = JSON.parse(this.activeCues[0].value.data);
+					if(!evt.currentTarget.activeCues.length){
+						return;
 					}
+					var activeCueData = evt.currentTarget.activeCues[evt.currentTarget.activeCues.length-1].value.data;
+					var id3Tag = JSON.parse(activeCueData);
 					_this.triggerHelper('onId3Tag', id3Tag);
 				}
 				catch (e) {
