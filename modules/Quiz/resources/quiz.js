@@ -29,6 +29,7 @@
         multiStreamWelcomeSkip:false,
         relatedStreamChanging:false,
         IVQVer:'IVQ-2.41.rc2',
+        ivqShowScreenMode: false,
 
         setup: function () {
             var _this = this;
@@ -216,6 +217,13 @@
                         mw.log("Quiz: Continue Play Hide Screen");
                         embedPlayer.play();
                     };
+                }
+            });
+            $( window ).on( "orientationchange", function() {
+                if(_this.ivqShowScreenMode && _this.canShowPortraitWarning() ) {
+                    _this.showPortraitWarning();
+                }else {
+                    _this.hidePortraitWarning();
                 }
             });
           },
@@ -615,39 +623,43 @@
         },
 
         showPortraitWarning:function(){
-            var _this = this;
             this.embedPlayer.getInterface().append(
-                $('<div class="ivq-orientation-message">' +
-                    '<div class="ivq-orientation-message__text">' +
-                    'This video contains features that requires a larger screen.<br/>' +
-                    'Please try to <span class="ivq-orientation-message__link">launch the video in full screen</span> to view it.' +
-                    '</div>' +
-                 '</div>')
-                    .click(function () {
-                        _this.embedPlayer.sendNotification("openFullScreen");
-                        _this.embedPlayer.getInterface().find(".ivq-orientation-message").remove();
-                    })
+                $('<div/>').addClass('ivq-orientation-message').append(
+                    $('<div/>').addClass('ivq-orientation-message__text')
+                        .html('This video contains features that works best on landscape mode.<br/>Please flip your screen to continue')
+                )
             );
+        },
+        hidePortraitWarning:function () {
+            this.embedPlayer.getInterface().find(".ivq-orientation-message").remove();
         },
 
         ivqShowScreen:function(){
-            var _this = this,embedPlayer = this.getPlayer();
-            // add warning message when in portrait + mobile + not-fullscreen
-            if(embedPlayer.getInterface().hasClass("mobile")
-                && !embedPlayer.getInterface().hasClass("fullscreen")
-                && window.matchMedia("(orientation: portrait)").matches){
-                this.showPortraitWarning();
+            var _this = this;
+            _this.ivqShowScreenMode = true;
+            // add warning message when in portrait + mobile
+            if ( _this.canShowPortraitWarning() ) {
+                _this.showPortraitWarning();
             }
-
             _this.showScreen();
             mw.log("hiding flash player");
             $('#kplayer_pid_kplayer').css('visibility', 'hidden');
             $('#kplayer_pid_kplayer').css('display', 'none');
             $('#kplayer_pid_kplayer').attr('aria-hidden', 'true');
         },
+        canShowPortraitWarning: function () {
+            if (
+                this.getPlayer().getInterface().hasClass("mobile")
+                && (screen.orientation.angle === 0 || screen.orientation.angle === 180)
+            ) {
+               return true;
+            }
+            return false;
+        },
         ivqHideScreen:function(){
             var _this = this,embedPlayer = this.getPlayer();
             embedPlayer.getInterface().find('.ivqContainer').empty().remove();
+            _this.ivqShowScreenMode = false;
             _this.hideScreen();
             _this.embedPlayer.enablePlayControls();
             _this.embedPlayer.triggerHelper( 'onEnableKeyboardBinding' );
