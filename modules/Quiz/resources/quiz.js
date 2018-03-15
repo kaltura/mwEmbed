@@ -219,13 +219,16 @@
                     };
                 }
             });
-            $( window ).on( "orientationchange", function() {
-                if(_this.ivqShowScreenMode && _this.canShowPortraitWarning() ) {
-                    _this.showPortraitWarning();
-                }else {
-                    _this.hidePortraitWarning();
-                }
-            });
+            if (_this.getPlayer().getInterface().hasClass("mobile")){
+                $( window ).on( "orientationchange", function() {
+                    if(_this.ivqShowScreenMode && _this.isPortrait() ) {
+                        _this.showPortraitWarning();
+                    }else {
+                        _this.hidePortraitWarning();
+                    }
+                });
+            }
+            
           },
         getKClient: function () {
             if (!this.kClient) {
@@ -638,7 +641,7 @@
             var _this = this;
             _this.ivqShowScreenMode = true;
             // add warning message when in portrait + mobile
-            if ( _this.canShowPortraitWarning() ) {
+            if ( _this.isPortrait() ) {
                 _this.showPortraitWarning();
             }
             _this.showScreen();
@@ -647,7 +650,7 @@
             $('#kplayer_pid_kplayer').css('display', 'none');
             $('#kplayer_pid_kplayer').attr('aria-hidden', 'true');
         },
-        canShowPortraitWarning: function () {
+        isPortrait: function () {
             if (
                 this.getPlayer().getInterface().hasClass("mobile")
                 && (screen.orientation.angle === 0 || screen.orientation.angle === 180)
