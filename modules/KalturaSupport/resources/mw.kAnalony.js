@@ -117,7 +117,7 @@
 			});
 
 			this.embedPlayer.bindHelper( 'onplay' , function () {
-				if ( !this.isInSequence() ){
+				if ( !this.isInSequence() && _this.embedPlayer.currentState !== "play" ){
 					if ( _this.firstPlay ){
 						_this.sendAnalytics(playerEvent.PLAY);
 					}else{
@@ -386,7 +386,7 @@
 				'bufferTime'        : this.bufferTime,
 				'actualBitrate'     : this.currentBitRate,
 				'flavorId'          : this.currentflavorId,
-				'referrer'          : mw.getConfig('EmbedPlayer.IframeParentUrl'),
+				'referrer'          : mw.getConfig('EmbedPlayer.IsFriendlyIframe') ? mw.getConfig('EmbedPlayer.IframeParentUrl') : document.referrer,
 				'deliveryType'      : this.embedPlayer.streamerType,
 				'sessionStartTime'  : this.startTime,
 				'uiConfId'          : this.embedPlayer.kuiconfid,

@@ -13,6 +13,7 @@
             quizPlugin: null,
             showGradeAfterSubmission: false,
             canSkip: false,
+            showWelcomePage: true,
             hexPosContainerPos: 0,
             sliceArray: [],
             isErr: false,
@@ -23,6 +24,15 @@
             reviewMode:false,
             isKPlaylist:false,
             kQuizEntryId: "",
+            QUESTIONS_TYPE: {
+                MULTIPLE_CHOICE_ANSWER: 1,
+                TRUE_FALSE: 2,
+                REFLECTION_POINT: 3,
+                MULTIPLE_ANSWER_QUESTION: 4,
+                FILL_IN_BLANK: 5,
+                HOT_SPOT: 6,
+                GO_TO: 7,
+            },
 
             init: function (embedPlayer,quizPlugin) {
                 var _this = this;
@@ -53,11 +63,28 @@
                     }
                     else {
                         $.quizParams = data[1];
+                        var dataForBanSeek = {
+                            status: false,
+                            alertText: ''
+                        };
                         $.grep($.quizParams.uiAttributes, function (e) {
+                            
+                            if (e.key == "banSeek" && e.value) {
+                                dataForBanSeek.status = e.value.toLowerCase() === 'true';
+                            }
+                            if (e.key == "noSeekAlertText") {
+                                dataForBanSeek.alertText =  e.value;
+                            }
                             if (e.key == "canSkip") {
                                 _this.canSkip = (e.value.toLowerCase() === 'true');
+                            } else if (e.key == "showWelcomePage") {
+                                _this.showWelcomePage = (e.value.toLowerCase() === 'true');
                             }
                         });
+                        //send notification to banSeekManager with params from Editor
+                        if(dataForBanSeek.status && !_this.canSkip){
+                            _this.embedPlayer.sendNotification('activateBanSeek',dataForBanSeek);
+                        }
                         if (data[0].totalCount > 0) {
                             switch (String(data[0].objects[0].status)) {
                                 case 'quiz.3':
@@ -163,7 +190,9 @@
                 for (var i = 0; i < (data[0].objects.length); i++) {
                     var arr = [];
                     $.each(data[0].objects[i].optionalAnswers, function (key, value) {
-                        arr.push(value.text.toString());
+                        if(value.text){
+                            arr.push(value.text.toString());
+                        }
                     });
                     var ansP = {
                         isAnswerd: false,
@@ -199,7 +228,8 @@
                         startTime: data[0].objects[i].startTime,
                         cpId: data[0].objects[i].id,
                         cpEntryId: data[0].objects[i].entryId,
-                        answerCpId: ansP.answerCpId
+                        answerCpId: ansP.answerCpId,
+                        questionType: data[0].objects[i].questionType,
                     });
                 }
                 $.cpObject.cpArray = cpArray;
@@ -251,9 +281,6 @@
             },
             cuePointReachedHandler: function (e, cuePointObj) {
                 var _this = this;
-                if (!$.quizParams.showCorrectAfterSubmission && _this.quizSubmitted) {
-                    return
-                }
                 $.each($.cpObject.cpArray, function (key, val) {
                     if ($.cpObject.cpArray[key].startTime === cuePointObj.cuePoint.startTime) {
                         _this.quizPlugin.ssSetCurrentQuestion(key,false);
@@ -449,6 +476,9 @@
                             return 'q-box-false';
                         }
                     })();
+                    if(data.questionType === _this.QUESTIONS_TYPE.REFLECTION_POINT){
+                        questionHexType += ' reflection-point-question';
+                    }
                     $(el).addClass(questionHexType).attr("id", data.key).append(_this.i2q(data.key));
                     switch(rowNumber){
                         case 0:$(ol).addClass('first-row');break;

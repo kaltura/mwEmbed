@@ -408,8 +408,9 @@
 		},
 		getThumbUrl: function(item) {
 			var time = item.thumbOffset || item.startTime;
-			var thumbUrl = kWidget.getKalturaThumbUrl(
+			var thumbUrl = kWidgetSupport.getKalturaThumbnailUrl(
 				$.extend( {}, this.baseThumbSettings, {
+                    'url': this.embedPlayer.evaluate('{mediaProxy.entry.thumbnailUrl}'),
 					'vid_sec': parseInt( time / 1000 )
 				} )
 			);
@@ -423,8 +424,9 @@
 		},
 		getThumRotatorUrl: function(){
 			var _this = this;
-			var imageSlicesUrl = kWidget.getKalturaThumbUrl(
+			var imageSlicesUrl = kWidgetSupport.getKalturaThumbnailUrl(
 				$.extend( {}, this.baseThumbSettings, {
+                    'url': this.embedPlayer.evaluate('{mediaProxy.entry.thumbnailUrl}'),
 					'vid_slices': _this.getSliceCount()
 				})
 			);
