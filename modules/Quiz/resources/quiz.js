@@ -29,6 +29,7 @@
         multiStreamWelcomeSkip:false,
         relatedStreamChanging:false,
         IVQVer:'IVQ-2.41.rc2',
+        ivqShowScreenMode: false,
 
         setup: function () {
             var _this = this;
@@ -218,6 +219,16 @@
                     };
                 }
             });
+            if (_this.getPlayer().getInterface().hasClass("mobile")){
+                $( window ).on( "orientationchange", function() {
+                    if(_this.ivqShowScreenMode && _this.isPortrait() ) {
+                        _this.showPortraitWarning();
+                    }else {
+                        _this.hidePortraitWarning();
+                    }
+                });
+            }
+            
           },
         getKClient: function () {
             if (!this.kClient) {
@@ -641,17 +652,45 @@
             _this.selectedAnswer = null;
             setTimeout(function(){_this.KIVQModule.checkIfDone(questionNr)},1800);
         },
+
+        showPortraitWarning:function(){
+            this.embedPlayer.getInterface().append(
+                $('<div/>').addClass('ivq-orientation-message').append(
+                    $('<div/>').addClass('ivq-orientation-message__text')
+                        .html('This video contains features that works best on landscape mode.<br/>Please flip your screen to continue')
+                )
+            );
+        },
+        hidePortraitWarning:function () {
+            this.embedPlayer.getInterface().find(".ivq-orientation-message").remove();
+        },
+
         ivqShowScreen:function(){
-            var _this = this,embedPlayer = this.getPlayer();
+            var _this = this;
+            _this.ivqShowScreenMode = true;
+            // add warning message when in portrait + mobile
+            if ( _this.isPortrait() ) {
+                _this.showPortraitWarning();
+            }
             _this.showScreen();
             mw.log("hiding flash player");
             $('#kplayer_pid_kplayer').css('visibility', 'hidden');
             $('#kplayer_pid_kplayer').css('display', 'none');
             $('#kplayer_pid_kplayer').attr('aria-hidden', 'true');
         },
+        isPortrait: function () {
+            if (
+                this.getPlayer().getInterface().hasClass("mobile")
+                && (screen.orientation.angle === 0 || screen.orientation.angle === 180)
+            ) {
+               return true;
+            }
+            return false;
+        },
         ivqHideScreen:function(){
             var _this = this,embedPlayer = this.getPlayer();
             embedPlayer.getInterface().find('.ivqContainer').empty().remove();
+            _this.ivqShowScreenMode = false;
             _this.hideScreen();
             _this.embedPlayer.enablePlayControls();
             _this.embedPlayer.triggerHelper( 'onEnableKeyboardBinding' );

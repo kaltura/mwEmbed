@@ -8,14 +8,14 @@
     <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
     <script>mw.setConfig('forceMobileHTML5', true);</script>
 </head>
-<body>
+<body style="padding-left: 5px">
 <h1>Quiz Demo</h1>
 <!--<script src="http://dev-backend8.dev.kaltura.com:80/p/102/sp/10200/embedIframeJs/uiconf_id/23448178/partner_id/102"></script>-->
 <select id="selectLang">
     <option>Choose a language</option>
 </select>
 <br>
-<div id="kaltura_player_1434365991" style=" width: 585px; height: 330px;float: left;"></div>
+<div id="kaltura_player_1434365991" style=" width: 285px; height: 330px;float: left;"></div>
 
 <br style="clear: both;"/><br/>
 <script>
@@ -42,13 +42,11 @@
 		select.appendChild(el);
 	}
 
-
-
 	var reload = function (){
 		var l = $("#selectLang").val();
         kWidget.destroy('kaltura_player_1434365991');
 		kWidget.embed({
-			'width': '870',
+			'width': '380',
 			'height': '519',
 			'targetId': 'kaltura_player_1434365991',
 			'wid': '_27017',
