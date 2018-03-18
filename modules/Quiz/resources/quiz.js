@@ -431,14 +431,22 @@
             $(".title-text").html(gM('mwe-quiz-completed'));
             $(".sub-text").html(gM('mwe-quiz-sub-text'));
 
-            $(".review-button").html(gM('mwe-quiz-review'))
-                .on('click', function () {
+            $(".review-button").append(
+                $('<div/>').addClass('button-block').append(
+                    $('<span/>').addClass('button-icon review-icon'),
+                    $('<span/>').addClass('button-text').text(gM('mwe-quiz-review'))
+                )
+            ).on('click', function () {
                     _this.embedPlayer.seek(0,true);
                     _this.KIVQModule.continuePlay();
                 }).on('keydown', _this.keyDownHandler);
 
-            $(".submit-button").html(gM('mwe-quiz-submit'))
-                .on('click', function () {
+            $(".submit-button").append(
+                $('<div/>').addClass('button-block').append(
+                    $('<span/>').addClass('button-icon submit-icon'),
+                    $('<span/>').addClass('button-text').text( gM('mwe-quiz-submit') )
+                )
+            ).on('click', function () {
                     $(this).off('click');
                     $(this).html(gM('mwe-quiz-plsWait'));
                     _this.KIVQModule.setSubmitQuiz();
