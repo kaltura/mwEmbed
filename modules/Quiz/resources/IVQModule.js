@@ -470,16 +470,17 @@
                     el = document.createElement('li');
                     var questionHexType = (function () {
                         if (data.isCorrect===null || data.isCorrect){
-                            return 'q-box';
+                            return 'q-box ';
                         }
                         else {
-                            return 'q-box-false';
+                            return 'q-box q-box-false';
                         }
                     })();
                     if(data.questionType === _this.QUESTIONS_TYPE.REFLECTION_POINT){
                         questionHexType += ' reflection-point-question';
                     }
                     $(el).addClass(questionHexType).attr("id", data.key).append(_this.i2q(data.key));
+                    $(el).append('<div class="mask" />')
                     switch(rowNumber){
                         case 0:$(ol).addClass('first-row');break;
                         case 1:$(ol).addClass('second-row');break;
