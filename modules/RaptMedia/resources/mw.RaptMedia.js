@@ -157,8 +157,12 @@
 		},
 
 		readRaptProjectId: function() {
-			var partnerData = this.getPlayer().evaluate('{mediaProxy.entry.partnerData}');
-			var segments = (partnerData || "").split(';');
+			var partnerData = this.getPlayer().evaluate('{mediaProxy.entry.partnerData}') || '';
+			if (partnerData.toLowerCase() === 'raptmedia!') {
+				return '!' + this.getPlayer().kentryid;
+			}
+
+			var segments = partnerData.split(';');
 			return partnerData != null && segments.length >= 2 && segments[0] === 'raptmedia' && segments.slice(1).join(';');
 		},
 
@@ -176,16 +180,17 @@
 			mw.setConfig('EmbedPlayer.KeepPoster', true);
 
 			$.when(
+				this.resolveProject(raptProjectId),
 				this.loadEngine(),
 				this.loadSegments(raptProjectId)
-			).then(function() {
+			).then(function(project) {
 				if (raptProjectId !== _this.getConfig('projectId')) {
 					return _this.reject(new AbortError);
 				}
 
 				_this.log('Loading rapt project');
 
-				return _this.loadProject(raptProjectId);
+				return _this.loadProject(project);
 			}).then(function() {
 				if (raptProjectId !== _this.getConfig('projectId')) {
 					return _this.reject(new AbortError);
@@ -340,6 +345,46 @@
 		},
 
 		// Initialization Support
+
+		resolveProject: function(projectId) {
+			var _this = this;
+
+			return this.promise(function(resolve, reject) {
+				if (projectId[0] !== '!') {
+					return resolve(projectId);
+				}
+
+				_this.getKalturaClient().doRequest({
+					service: 'fileAsset',
+					action: 'list',
+					filter: {
+						fileAssetObjectTypeEqual: 3,
+						objectIdEqual: projectId.replace(/^\!/, ''),
+					}
+				}, function(data) {
+					if (data.code) {
+						return reject(Error('Unable to load graph data: ' + data.message + ' (' + data.code + ')'));
+					}
+
+					var asset;
+					for(var i in data.objects) {
+						if (data.objects[i].systemName === 'GRAPH_DATA') {
+							asset = data.objects[i];
+						}
+					}
+
+					if (!asset) {
+						return reject(Error('Unable to load graph data, missing file asset'));
+					}
+
+					_this.getKalturaClient().doRequest({
+						service: 'fileAsset',
+						action: 'serve',
+						id: asset.id,
+					}, resolve);
+				});
+			});
+		},
 
 		loadEngine: function() {
 			var _this = this;
