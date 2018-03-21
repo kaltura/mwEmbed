@@ -1252,6 +1252,9 @@
 					.off('focus').on('focus', function(e){
 				//Calculate if TAB forward or TAB backward(SHIFT+TAB)
 				var prev = $(e.relatedTarget ).data("mediaboxIndex");
+				if(!$(e.relatedTarget ).hasClass('mediaBox')){
+					prev = $(e.relatedTarget ).parents('.mediaBox').data('mediaboxIndex');
+				}
 				var cur = $(this).data("mediaboxIndex");
 				var direction = (cur-prev) === 1 ? 1 : 0;
 				//Get the associated chapter of the slide
@@ -1277,10 +1280,10 @@
 
 			this.getComponent().find(".slideBoxToggle")
 					.off("click").on("click", function(e){
-				e.stopPropagation();
-				var chapter = $( this ).parent();
-				_this.toggleChapter(chapter);
-			});
+						e.stopPropagation();
+						var chapter = $( this ).parent();
+						_this.toggleChapter(chapter);
+					}).off("keydown").on('keydown', _this.keyDownHandler);
 
 			this.getMedialistFooterComponent()
 					.find(".toggleAll" )
@@ -1304,6 +1307,12 @@
 					.off("click").on("click", function(){
 				_this.scrollToActiveItem();
 			});
+		},
+		keyDownHandler: function(ev){
+			if(ev.which === 13 || ev.which === 32)
+			{
+				$(ev.target).click();
+			}
 		},
 		collapseAll: function(){
 			if (this.chapterToggleEnabled) {
