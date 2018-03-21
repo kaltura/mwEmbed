@@ -93,6 +93,26 @@
 					}
 				]
 			},
+			"VpaidMode": {
+				"label": "VPAID Mode",
+				"doc": "Select The VPAID mode. Available choices: ENABLED (default) - VPAID ads are enabled using a cross domain iframe. The VPAID ad cannot access the site. VPAID ads that depend on friendly iframe access may error. DISABLED - VPAID ads will not play and an error will be returned. INSECURE - VPAID ads are enabled using a friendly iframe. This allows the ad access to the site via JavaScript.",
+				"type": "enum",
+				"initvalue": "enabled",
+				"options": [
+					{
+						"label": "Enabled",
+						"value": "enabled"
+					},
+					{
+						"label": "Disabled",
+						"value": "disabled"
+					},
+					{
+						"label": "Insecure",
+						"value": "insecure"
+					}
+				]
+			},
             "adsManagerLoadedTimeout": {
                 "doc": "Timer for timed checking if adsManager was loaded(in milliseconds)",
                 "initvalue": 5000,

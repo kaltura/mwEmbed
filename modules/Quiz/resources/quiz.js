@@ -535,7 +535,7 @@
                             $(this).addClass('single-answer-box-txt-wide ')
                                 .after($('<div></div>') // adding continue/applied div as button
                                     .addClass("single-answer-box-apply qApplied disable").attr('aria-disabled', true).attr('role', 'button')
-                                    .text(gM('mwe-quiz-applied'))
+                                    .text(gM('mwe-quiz-selected'))
                             );
                         });
                 }
@@ -586,7 +586,7 @@
                             $(this).addClass('single-answer-box-txt-wide')
                                 .after($('<div ></div>') // adding continue/applied div as button so no need to set it with a role and tabindex
                                     .addClass("single-answer-box-apply qContinue")
-                                    .text(gM('mwe-quiz-continue')).attr('tabindex', 5).attr('aria-label', 'Continue quiz  with the selected answer: '+currentAnswerText).removeAttr('aria-disabled')
+                                    .text(gM('mwe-quiz-select')).attr('tabindex', 5).attr('aria-label', 'Continue quiz  with the selected answer: '+currentAnswerText).removeAttr('aria-disabled')
                                     .on('keydown', _this.keyDownHandler).attr('id', 'continue-button-answer-'+currentAnswerNumber).attr('role', 'button')
                             );
                             // verify focus in IE
@@ -606,7 +606,7 @@
             $('.single-answer-box-apply').fadeOut(100,function(){
                 $(this).addClass('disable')
                     .removeClass('qContinue')
-                    .text(gM('mwe-quiz-applied'))
+                    .text(gM('mwe-quiz-selected'))
                     .addClass('qApplied').fadeIn(100).attr('aria-disabled', true);
             });
             _this.KIVQModule.submitAnswer(questionNr,_this.selectedAnswer);
@@ -685,7 +685,30 @@
             if(ev.which === 13 || ev.which === 32)
             {
                 $(ev.target).click();
+            }else if(ev.which === 9){
+                var _this = this;
+                setTimeout(function () {
+                    var currentFocusedElement = $(':focus');//when timeout will done - new element will be in focus
+                    if(!currentFocusedElement.parents('.quiz').length){
+                        if($(_this).parents(".quiz").find(".pdf-download-img").length){
+                            $(_this).parents(".quiz").find(".pdf-download-img").focus();
+                        }
+                        else if($(_this).parents(".quiz").find(".confirm-box").length){
+                            $(_this).parents(".quiz").find(".confirm-box").focus();
+                        }
+                        else if($(_this).parents(".quiz").find(".hint-why-box").length){
+                            //find hint
+                            $(_this).parents(".quiz").find(".hint-why-box").focus();
+                        }else{
+                            $(_this).parents(".quiz").find(".display-question").focus();
+                            // if hint isnt there - focus on the name
+                        }
+                        return;
+                    }
+                }, 0);
             }
+
+
         },
         displayBubbles:function(){
             var  _this = this,displayClass,embedPlayer = this.getPlayer(),handleBubbleclick;
@@ -705,7 +728,7 @@
                 var pos = (Math.round(((val.startTime/embedPlayer.kalturaPlayerMetaData.msDuration)*100) * 10)/10)-1;
                 $('.bubble-cont').append($('<div id ="' + key + '" style="margin-left:' + pos + '%">' +
                     _this.KIVQModule.i2q(key) + ' </div>')
-                        .addClass(displayClass).attr('role', 'button').attr('tabindex', 5).on('keydown', _this.keyDownHandler)
+                        .addClass(displayClass).attr('role', 'button').attr('tabindex', 20).on('keydown', _this.keyDownHandler)
                 );
             });
 
@@ -738,6 +761,9 @@
                     .attr('title', 'click to end quiz now').on('keydown', _this.keyDownHandler).attr('id', 'quiz-done-continue-button').focus();
             // verify focus in IE
             document.getElementById('quiz-done-continue-button').focus();
+            setTimeout(function () {
+                $(_this.embedPlayer.getInterface()).find('.quizDone-cont').first().addClass('small');
+            },3000);
         }
     }));
 })(window.mw, window.jQuery);

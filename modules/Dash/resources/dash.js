@@ -80,7 +80,7 @@
 			 * Register the playback events and attach the playback engine to the video element
 			 */
 			initShaka: function () {
-				if (this.LoadShaka && !this.loaded) {
+				if (this.LoadShaka && !this.loaded && !this.embedPlayer.casting) {
 					this.log("Init shaka version " + shaka.Player.version);
 
 					//Set streamerType to dash

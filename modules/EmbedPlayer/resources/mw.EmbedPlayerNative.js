@@ -141,7 +141,7 @@
             if (!mw.getConfig('autoMute')) {
                 if (mw.isMobileDevice() || mw.isIpad()) {
                     return mw.getConfig('mobileAutoPlay');
-                } else if ((mw.isDesktopSafari11() || mw.isChrome64AndUp()) && mw.getConfig('autoPlay')) {
+                } else if ((mw.isDesktopSafari11() || mw.isChromeVersionGreaterThan(66)) && mw.getConfig('autoPlay')) {
                     if (typeof mw.getConfig('autoPlayFallbackToMute') !== 'boolean') {
                         mw.setConfig('autoPlayFallbackToMute', true);
                     }
@@ -984,7 +984,8 @@
                             if (playPromise !== undefined) {
                                 playPromise.then(function() {
                                     mw.log("play promise resolved");
-                                }).catch(function(error) {
+                                });
+                                playPromise["catch"](function(error) {
                                     mw.log("play promise rejected");
                                     //If play is rejected then return UI state to pause so user can take action
                                     _this.pause();

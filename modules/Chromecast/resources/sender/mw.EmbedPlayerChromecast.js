@@ -551,7 +551,7 @@
         getEmbedConfig: function () {
             var embedConfig = {
                 'publisherID': this.kwidgetid.substr( 1 ),
-                'uiconfID': this.kuiconfid,
+                'uiconfID': this.getKalturaConfig('chromecast').uiconf_id || this.kuiconfid,
                 'entryID': this.kentryid,
                 'flashVars': this.getFlashVars()
             };
@@ -561,7 +561,7 @@
 
         getReceiverConfig: function () {
             var receiverConfig = this.getKalturaConfig('chromecast').receiverConfig || {};
-            receiverConfig.defaultLanguageKey = this.beforeCastParams.captions.length === 1 ? this.beforeCastParams.captions[0].lang : null;
+            receiverConfig.defaultLanguageKey = this.beforeCastParams.captions ? this.beforeCastParams.captions.language : null;
             return receiverConfig;
         },
 
@@ -605,7 +605,7 @@
 
         getProxyData: function () {
             mw.log( "EmbedPlayerChromecast:: getProxyData" );
-            var proxyData = mw.getConfig( "proxyData" );
+            var proxyData = this.getKalturaConfig("chromecast", "proxyData" );
             if ( proxyData ) {
                 var _this = this;
                 var recursiveIteration = function ( object ) {

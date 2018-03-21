@@ -40,6 +40,7 @@
     <div class="boxShadow"></div>
     <div class="boxOutline"></div>
     <% if (mediaItem.hasChildren){%>
-    <div class="slideBoxToggle icon-toggle" title="<%=meta.titles.chapterToggle%>" data-show-tooltip="true" tabindex="<%=mediaItem.tabIndex%>.1"></div>
+    <button class="slideBoxToggle icon-toggle" aria-label="<%=meta.titles.chapterToggle%>"
+         data-show-tooltip="true" tabindex="<%=mediaItem.tabIndex%>"></button>
     <%}%>
 </li>
