@@ -29,7 +29,6 @@
 	mw.PluginManager.add( 'raptMedia', mw.KBaseComponent.extend( {
 
 		defaultConfig: {
-			raptMediaScriptUrl: 'https://cdn1.raptmedia.com/system/player/v1/engine.min.js',
 			parent: 'videoHolder'
 		},
 
@@ -181,7 +180,6 @@
 
 			$.when(
 				this.resolveProject(raptProjectId),
-				this.loadEngine(),
 				this.loadSegments(raptProjectId)
 			).then(function(project) {
 				if (raptProjectId !== _this.getConfig('projectId')) {
@@ -384,27 +382,6 @@
 					}, resolve);
 				});
 			});
-		},
-
-		loadEngine: function() {
-			var _this = this;
-			if (this.enginePromise) { return this.enginePromise; }
-
-			var raptMediaScriptUrl = this.getConfig( 'raptMediaScriptUrl' );
-			this.log('Loading rapt media engine: ' + raptMediaScriptUrl);
-
-			this.enginePromise = $.ajax({ dataType: 'script', url: raptMediaScriptUrl, cache: true })
-				.then(function() {
-					_this.log('Loaded rapt media engine successfuly: ' + raptMediaScriptUrl);
-				}, function( jqxhr, settings, exception ) {
-					_this.log('Failed to load script: ' + raptMediaScriptUrl + ', ' + exception);
-					_this.fatal(
-						'Error loading RAPT Media engine',
-						'Error loading the Rapt Media engine.'
-					);
-				});
-
-			return this.enginePromise;
 		},
 
 		getPlayerUncertainty: function(discontinuityIndex) {
