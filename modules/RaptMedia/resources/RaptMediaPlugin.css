@@ -5,7 +5,6 @@
 	left: 0;
 }
 
-.rapt-media-running .liveStatus,
-.rapt-media-running .largePlayBtn {
+.raptMediaRunning .largePlayBtn {
 	display: none !important;
 }
