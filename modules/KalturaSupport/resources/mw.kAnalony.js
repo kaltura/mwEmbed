@@ -115,6 +115,8 @@
 			this.embedPlayer.bindHelper( 'onChangeMedia' , function () {
 				_this.timer.destroy();
 				_this.rateHandler.destroy();
+                _this.eventIndex = 1;
+                _this.playTimeSum = 0;
 				_this.bufferTimeSum = 0;
 				_this.firstPlay = true;
                 _this.entryPlayCounter++;
