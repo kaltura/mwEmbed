@@ -36,7 +36,9 @@
 
         addBinding: function () {
 			var _this = this;
-
+			// in case player fallback to another player (E.G. Multicast fallback to Unicast) we want to prevent
+            // duplicate events handling
+            this.removeBindings();
             this.bind('monitorEvent' + _this.bindPostfix, function() {
                 if( _this.updatedTime > 0 && !_this.getPlayer().buffering){
                     _this.updateTime();
