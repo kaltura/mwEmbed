@@ -169,6 +169,8 @@
 			this.setConfig('status', 'loading', true);
 			this.setConfig('projectId', raptProjectId, true);
 
+			this.getPlayer().getInterface().removeClass('rapt-media-running');
+
 			// Attempt to prevent the last segment from incorrectly triggering ended / replay behavior
 			this.getPlayer().onDoneInterfaceFlag = false;
 
@@ -529,6 +531,7 @@
 							break;
 						case 'project:start':
 							mw.setConfig('EmbedPlayer.KeepPoster', false);
+							_this.getPlayer().getInterface().addClass('rapt-media-running'); // class to control styling during rapt playback
 							_this.getPlayer().removePoster();
 							break;
 					}

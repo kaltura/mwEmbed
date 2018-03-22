@@ -4,3 +4,8 @@
 	top: 0;
 	left: 0;
 }
+
+.rapt-media-running .liveStatus,
+.rapt-media-running .largePlayBtn {
+	display: none !important;
+}
