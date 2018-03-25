@@ -114,10 +114,9 @@
 
 			this.embedPlayer.bindHelper( 'onChangeMedia' , function () {
 				_this.timer.destroy();
+                _this.resetSession();
 				_this.rateHandler.destroy();
-                _this.eventIndex = 1;
-                _this.playTimeSum = 0;
-				_this.bufferTimeSum = 0;
+				_this.bufferTime = 0;
 				_this.firstPlay = true;
                 _this.entryPlayCounter++;
 			});
@@ -553,6 +552,7 @@
             this.log("Resets session");
             this.rateHandler.reset();
             this.eventIndex = 1;
+            this.playTimeSum = 0;
             this.bufferTimeSum = 0;
             this.startTime = null;
         }
