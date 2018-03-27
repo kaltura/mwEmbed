@@ -506,6 +506,9 @@
 				statsEvent["playbackContext"] = mw.getConfig("playbackContext");
 			}
 
+            //Get optional playlistAPI
+			this.maybeAddPlaylistId(statsEvent);
+
 			var eventRequest = {'service' : 'analytics', 'action' : 'trackEvent'};
 			$.each(statsEvent , function (event , value) {
 				eventRequest[event] = value;
@@ -533,6 +536,17 @@
 				}
 			}, true );
 		},
+
+        maybeAddPlaylistId: function (statsEvent) {
+            var plugins = this.embedPlayer.plugins;
+            if (plugins && plugins.playlistAPI && (plugins.playlistAPI.currentPlaylistIndex > -1)){
+                var currentPlaylist = plugins.playlistAPI.playlistSet[plugins.playlistAPI.currentPlaylistIndex];
+                var playlistId = currentPlaylist.id;
+                if (playlistId) {
+                    statsEvent["playlistId"] = playlistId;
+                }
+            }
+        },
 
         timerTick: function () {
             this.log("Count current bitrate");
