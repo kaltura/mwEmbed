@@ -1,6 +1,9 @@
 {
 	"mw.RaptMedia": {
-		"scripts": "resources/mw.RaptMedia.js",
+		"scripts": [
+			"resources/engine.min.js",
+			"resources/mw.RaptMedia.js"
+		],
 		"styles": "resources/RaptMediaPlugin.css",
 		"dependencies": [
 			"mw.KBaseComponent"
