@@ -865,7 +865,7 @@ ol.second-row{
 .true-false-question .single-answer-box-bk{
     width: 41vw;
     float: left;
-    margin: 0 22px;
+    margin: 0 3vw;
     position: relative;
     overflow-y: visible;
     overflow-x: inherit;
