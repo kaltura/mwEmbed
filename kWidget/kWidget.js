@@ -714,12 +714,12 @@
 				}
 			}
 			this.destroyedWidgets[ destoryId ] = true;
+			target.destroy();
 			var newNode = document.createElement("div");
 			newNode.style.cssText = targetCss;
 			newNode.id = targetId;
 			newNode.className = targetClass;
 			// remove the embed objects:
-			target.parentNode.replaceChild(newNode, target);
 		},
 
 		/**

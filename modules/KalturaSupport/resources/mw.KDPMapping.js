@@ -24,7 +24,7 @@
 
 			// player api:
 			var kdpApiMethods = [ 'addJsListener', 'removeJsListener', 'sendNotification',
-								  'setKDPAttribute', 'evaluate' ];
+								  'setKDPAttribute', 'evaluate', 'destroy' ];
 
 			var parentProxyDiv = null;
 			if(  mw.getConfig('EmbedPlayer.IsFriendlyIframe') ){
@@ -138,6 +138,17 @@
 			}
 			// Give kdp plugins a chance to take attribute actions
 			$( embedPlayer ).trigger( 'Kaltura_SetKDPAttribute', [ componentName, property, value ] );
+		},
+		destroy: function(embedPlayer){
+            //destroy all embedPlayer plugins
+			if (embedPlayer.plugins) {
+                $.each(embedPlayer.plugins, function (name, plugin) {
+                    plugin.destroy();
+                });
+            }
+            //Clear all embedPlayer events
+            $._data( embedPlayer, "events" );
+            embedPlayer = null;
 		},
 		updateKS: function ( embedPlayer, ks){
 			var client = mw.kApiGetPartnerClient( embedPlayer.kwidgetid );
