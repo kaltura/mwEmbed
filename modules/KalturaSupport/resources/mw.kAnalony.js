@@ -114,8 +114,9 @@
 
 			this.embedPlayer.bindHelper( 'onChangeMedia' , function () {
 				_this.timer.destroy();
+                _this.resetSession();
 				_this.rateHandler.destroy();
-				_this.bufferTimeSum = 0;
+				_this.bufferTime = 0;
 				_this.firstPlay = true;
                 _this.entryPlayCounter++;
 			});
@@ -505,6 +506,9 @@
 				statsEvent["playbackContext"] = mw.getConfig("playbackContext");
 			}
 
+            //Get optional playlistAPI
+			this.maybeAddPlaylistId(statsEvent);
+
 			var eventRequest = {'service' : 'analytics', 'action' : 'trackEvent'};
 			$.each(statsEvent , function (event , value) {
 				eventRequest[event] = value;
@@ -533,6 +537,17 @@
 			}, true );
 		},
 
+        maybeAddPlaylistId: function (statsEvent) {
+            var plugins = this.embedPlayer.plugins;
+            if (plugins && plugins.playlistAPI && (plugins.playlistAPI.currentPlaylistIndex > -1)){
+                var currentPlaylist = plugins.playlistAPI.playlistSet[plugins.playlistAPI.currentPlaylistIndex];
+                var playlistId = currentPlaylist.id;
+                if (playlistId) {
+                    statsEvent["playlistId"] = playlistId;
+                }
+            }
+        },
+
         timerTick: function () {
             this.log("Count current bitrate");
             this.rateHandler.countCurrent();
@@ -551,6 +566,7 @@
             this.log("Resets session");
             this.rateHandler.reset();
             this.eventIndex = 1;
+            this.playTimeSum = 0;
             this.bufferTimeSum = 0;
             this.startTime = null;
         }
