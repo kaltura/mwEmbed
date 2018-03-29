@@ -44,6 +44,11 @@
 				}
 			}
 			return paramObj;
+		},
+
+		destroy: function(){
+			this._super();
+            this.youbora.endedHandler();
 		}
 	});
 

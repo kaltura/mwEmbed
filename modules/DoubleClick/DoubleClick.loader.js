@@ -19,7 +19,10 @@
 	 		// support both case types:
 	 		var pluginName = ( embedPlayer.isPluginEnabled( 'doubleClick' ) )? 'doubleClick' : 'doubleclick';
 			mw.load( 'mw.DoubleClick', function(){
-				new mw.DoubleClick( embedPlayer, callback, pluginName );
+				mw.doubleClick = new mw.DoubleClick( embedPlayer, callback, pluginName );
+                embedPlayer.bindHelper("playerDestroy", function(){
+                    mw.doubleClick.destroy();
+                });
 			});
 		} else {
 			callback();

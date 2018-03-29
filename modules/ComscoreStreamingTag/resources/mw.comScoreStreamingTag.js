@@ -10,6 +10,7 @@
         },
 
         destroy: function () {
+            this._super();
             this.kalturaComScoreSTAPlugin.destroy();
         }
     }));

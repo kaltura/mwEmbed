@@ -87,6 +87,9 @@
 
     mw.addAdTimeline = function (embedPlayer) {
         embedPlayer.adTimeline = new mw.AdTimeline(embedPlayer);
+        embedPlayer.bindHelper("playerDestroy", function(){
+            embedPlayer.adTimeline.destroy();
+        });
     };
     mw.AdTimeline = function (embedPlayer) {
         return this.init(embedPlayer);
