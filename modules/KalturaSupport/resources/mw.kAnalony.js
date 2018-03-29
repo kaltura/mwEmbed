@@ -101,6 +101,12 @@
             this.addBindings();
 	    },
 
+		destroy: function(){
+			this._super();
+            this.timer.destroy();
+            this.rateHandler.destroy();
+		},
+
 		addBindings : function() {
 			var _this = this;
 			var playerEvent = this.PlayerEvent;
