@@ -146,6 +146,10 @@
                     plugin.destroy();
                 });
             }
+            //Emit playerDestroy to notify subscribers
+			//In general player should manage all plugins and internal components, but due to legacy code some
+			//components are unmanaged(they aren't stored in main registry point) so we use event to notify them
+            embedPlayer.triggerHelper("playerDestroy");
             //Clear all embedPlayer events
             $._data( embedPlayer, "events" );
             embedPlayer = null;
