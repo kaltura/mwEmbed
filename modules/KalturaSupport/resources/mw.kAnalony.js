@@ -126,7 +126,7 @@
 			});
 
 			this.embedPlayer.bindHelper( 'onplay' , function () {
-				if ( !this.isInSequence() && _this.embedPlayer.currentState !== "play" ){
+				if ( !this.isInSequence() && (_this.firstPlay || _this.embedPlayer.currentState !== "play") ){
 					if ( _this.firstPlay ){
 						_this.timer.start();
 						_this.sendAnalytics(playerEvent.PLAY, {
@@ -320,7 +320,9 @@
 			var _this = this;
 			var percent = this.embedPlayer.currentTime / this.embedPlayer.duration;
 			var playerEvent = this.PlayerEvent;
-            this.calculatePlayTimeSum();
+			if (!this.embedPlayer.isLive()){
+				this.calculatePlayTimeSum();
+			}
 			// Send updates based on logic present in StatisticsMediator.as
 			if ( !this.embedPlayer.isLive() ){
 				if( !_this._p25Once && percent >= .25 ) {
@@ -342,7 +344,12 @@
         calculatePlayTimeSum: function () {
             this.playTimeSum += (this.embedPlayer.currentTime - this.previousCurrentTime);
             this.previousCurrentTime = this.embedPlayer.currentTime;
-        },
+		},
+		
+		calaulatePlayTimeSumBasedOnTag: function (){
+			this.playTimeSum += (this.embedPlayer.getPlayerElement().currentTime - this.previousCurrentTime);
+            this.previousCurrentTime = this.embedPlayer.getPlayerElement().currentTime;
+		},
 
 		calculateBuffer : function ( closeSession ){
 			var _this = this;
@@ -430,8 +437,12 @@
 				return;
 			}
 			var _this = this;
-            this.calculatePlayTimeSum();
-            this.calculateBuffer(true);
+			if (this.embedPlayer.isLive()){
+				this.calaulatePlayTimeSumBasedOnTag();
+			} else {
+				this.calculatePlayTimeSum();
+			}    
+			this.calculateBuffer(true);
 			this.kClient = mw.kApiGetPartnerClient( this.embedPlayer.kwidgetid );
 			if ( this.embedPlayer.isMulticast && $.isFunction( this.embedPlayer.getMulticastBitrate ) ) {
 				this.currentBitRate = this.embedPlayer.getMulticastBitrate();
