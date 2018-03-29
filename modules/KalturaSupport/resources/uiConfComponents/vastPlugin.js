@@ -7,6 +7,9 @@ mw.addKalturaPlugin( [ "mw.AdTimeline", "mw.KAds" ], "vast", function( embedPlay
 		// ( We don't want to display the player until ads are ready )
 		callback();
 	});
+	embedPlayer.bindHelper("playerDestroy", function(){
+        embedPlayer.kAds.destroy();
+	});
 });
 
 })( window.mw, jQuery );

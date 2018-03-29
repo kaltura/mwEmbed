@@ -669,6 +669,9 @@ mw.KWidgetSupport.prototype = {
 			( embedPlayer.isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) ) {
 			embedPlayer.rawCuePoints = playerData.entryCuePoints || [];
 			embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
+			embedPlayer.bindHelper("playerDestroy", function(){
+                embedPlayer.kCuePoints.destroy();
+			});
 		}
 	},
 

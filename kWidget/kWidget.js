@@ -720,6 +720,7 @@
 			newNode.id = targetId;
 			newNode.className = targetClass;
 			// remove the embed objects:
+			target.parentNode.replaceChild(newNode, target);
 		},
 
 		/**
