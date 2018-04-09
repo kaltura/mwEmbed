@@ -1832,7 +1832,7 @@ mw.KWidgetSupport.prototype = {
 		this.removedAdaptiveFlavors = false;
 		// Apple adaptive streaming is broken for short videos
 		// remove adaptive sources if duration is less then 10 seconds,
-		if( playerData.meta.duration < 10 ) {
+		if( playerData.meta.duration < 10 && mw.getConfig("Kaltura.force10secProgressive") ) {
 			deviceSources = this.removeAdaptiveFlavors( deviceSources );
 		}
 
