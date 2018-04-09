@@ -133,7 +133,7 @@
                             bufferTimeSum: _this.bufferTimeSum
 						});
 					}else{
-                        _this.timer.continue();
+                        _this.timer.resume();
 						_this.sendAnalytics(playerEvent.RESUME, {
                             bufferTimeSum: _this.bufferTimeSum
 						});

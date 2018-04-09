@@ -24,7 +24,7 @@
             this._intervalId = setInterval(this._monitor.bind(this), SECOND);
         },
 
-        continue: function () {
+        resume: function () {
             this._stopped = false;
             this._resetCounter = 0;
         },
