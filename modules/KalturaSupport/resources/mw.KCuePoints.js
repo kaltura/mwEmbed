@@ -457,12 +457,13 @@
 			var defaultThreshold = this.threshold;
 			var currentCP = allCP[currentCuePointIndex];
 			var prevCP = this.getPrevCPWithCorrectType(allCP,currentCuePointIndex);
-			if(prevCP !== false && currentCP){
-				var createdAtDelta = Math.abs(currentCP.createdAt - prevCP.createdAt);
+			if(prevCP !== false && currentCP && currentCP.partnerData){
 				var startTimeDelta = Math.abs(currentCP.startTime - prevCP.startTime);
 				var isTheSamePartnerData = currentCP.partnerData === prevCP.partnerData;
+				var isSameTitle = currentCP.title === prevCP.title;
+				var isSameDescription = currentCP.description === prevCP.description;
 				var isTheSameTags = currentCP.tags === prevCP.tags;
-				if(isTheSamePartnerData && isTheSameTags && (createdAtDelta <= defaultThreshold*1000 || startTimeDelta <= defaultThreshold*1000)){
+				if(isTheSamePartnerData && isTheSameTags && isSameTitle && isSameDescription && startTimeDelta <= defaultThreshold*1000){
 					return false;
 				}
 			}
