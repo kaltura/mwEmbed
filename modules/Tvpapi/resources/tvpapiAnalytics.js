@@ -104,7 +104,8 @@
 
 		sendMediaHit: function() {
 			// Do not send media hit in the following conditions: concurrent limit, current time not updated (might be error)
-			if(this.concurrentFlag || this.getPlayer().getPlayerElementTime() === 0 ){
+			// If isLive but not DVR then continue
+			if(this.concurrentFlag || (!(this.getPlayer().isLive()&&!this.getPlayer().isDVR())&&this.getPlayer().getPlayerElementTime() === 0)){
 				return;
 			}
 			this.report('MediaHit', this.getBaseParams());
@@ -126,7 +127,7 @@
 				"mediaType": 0,
 				"iMediaID": this.getProxyConfig('MediaID'),
 				"iFileID": this.fileId,
-				"iLocation": this.getCurrentTime()
+				"iLocation": (this.getPlayer().isLive()&&!this.getPlayer().isDVR())?0:this.getCurrentTime()
 			};
 		},
 
