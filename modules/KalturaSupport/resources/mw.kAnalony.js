@@ -550,19 +550,11 @@
 
         maybeAddPlaylistId: function (statsEvent) {
             var plugins = this.embedPlayer.plugins;
-            // need to make many checks here due to vast options
-			//first make sure playlist plugin even exist and that it already has playlist sets, as they might be loaded
-			//dynamically later on, and then make sure a playlist in the set is even selected
-            if (plugins && plugins.playlistAPI && plugins.playlistAPI.playlistSet &&
-                $.isArray(plugins.playlistAPI.playlistSet) && plugins.playlistAPI.playlistSet.length &&
-				(plugins.playlistAPI.currentPlaylistIndex > -1)
-			){
+            if (plugins && plugins.playlistAPI && (plugins.playlistAPI.currentPlaylistIndex > -1)){
                 var currentPlaylist = plugins.playlistAPI.playlistSet[plugins.playlistAPI.currentPlaylistIndex];
-                if (currentPlaylist) {
-                    var playlistId = currentPlaylist.id;
-                    if (playlistId) {
-                        statsEvent["playlistId"] = playlistId;
-                    }
+                var playlistId = currentPlaylist.id;
+                if (playlistId) {
+                    statsEvent["playlistId"] = playlistId;
                 }
             }
         },
