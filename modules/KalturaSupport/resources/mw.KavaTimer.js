@@ -21,24 +21,7 @@
             this._stopped = false;
             this._resetCounter = 0;
             this._eventCounter = 0;
-            var _this = this;
-            this._intervalId = setInterval(function () {
-                if (_this._stopped) {
-                    if (_this._resetCounter === RESET_COUNTER) {
-                        _this._kava.timerReset();
-                        _this._resetCounter = 0;
-                        _this._eventCounter = 0;
-                    }
-                    _this._resetCounter++;
-                } else {
-                    _this._kava.timerTick();
-                    if (_this._eventCounter === EVENT_COUNTER) {
-                        _this._kava.timerReport();
-                        _this._eventCounter = 0;
-                    }
-                    _this._eventCounter++;
-                }
-            }, SECOND);
+            this._intervalId = setInterval(this._monitor.bind(this), SECOND);
         },
 
         resume: function () {
@@ -62,6 +45,24 @@
             if (this._intervalId) {
                 clearInterval(this._intervalId);
                 this._intervalId = null;
+            }
+        },
+
+        _monitor: function () {
+            if (this._stopped) {
+                if (this._resetCounter === RESET_COUNTER) {
+                    this._kava.timerReset();
+                    this._resetCounter = 0;
+                    this._eventCounter = 0;
+                }
+                this._resetCounter++;
+            } else {
+                this._kava.timerTick();
+                if (this._eventCounter === EVENT_COUNTER) {
+                    this._kava.timerReport();
+                    this._eventCounter = 0;
+                }
+                this._eventCounter++;
             }
         }
     };
