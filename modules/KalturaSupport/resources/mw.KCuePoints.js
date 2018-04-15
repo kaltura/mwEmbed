@@ -228,7 +228,9 @@
 			var lastCreationTime = _this.getLastCreationTime() + 1;
 			// Only add lastUpdatedAt filter if any cue points already received
 			if (lastCreationTime > 0) {
-				request['filter:createdAtGreaterThanOrEqual'] = lastCreationTime;
+                var cpThreshold  = mw.getConfig("cuePointsThreshold") ? parseInt(mw.getConfig("cuePointsThreshold")) : 60;
+				mw.log("mw.KCuePoints:: Loading cue points with threshold of " + cpThreshold + " seconds ago: "+ (lastCreationTime - cpThreshold) +" "+lastCreationTime );
+				request['filter:createdAtGreaterThanOrEqual'] = lastCreationTime - cpThreshold;
 			}
 			this.getKalturaClient().doRequest( request,
 				function (data) {
