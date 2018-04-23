@@ -579,7 +579,7 @@ mw.MediaElement.prototype = {
 					if ( !mw.isIE8() ) {
 						var $vid = $( '#pid_' + this.parentEmbedId );
 						if( $vid.length ) {
-							if( mw.isIphone() ) {
+							if( mw.isIphone() || mw.getConfig('Kaltura.addCrossoriginToIframe') === true ) {
 								$vid.attr('crossorigin', 'anonymous');
 							}
 							$vid.append(element);
