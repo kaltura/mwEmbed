@@ -1,0 +1,17 @@
+{
+    "Transcript": {
+        "label": "Transcript Widget",
+        "description": "Adds Transcript next/below the player",
+        "attributes": {
+            "parent": {
+                "doc": "Position",
+                "type": "enum",
+                "enum": [
+                    "Right",
+                    "Left",
+                    "Below"
+                ]
+            }
+        }
+    }
+}

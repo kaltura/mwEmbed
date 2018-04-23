@@ -1,0 +1,17 @@
+{
+    "Transcript": {
+        "scripts": [
+            "resources/transcript.js"
+        ],
+        "dependencies": [
+        	"mw.KBaseScreen",
+        	"nanoScroller"
+        ],
+        "kalturaPluginName": "transcript",
+        "styles": [
+        	"resources/transcript.css"
+        ],
+        "templates": "../Transcript/resources/transcript.tmpl.html",
+        "messageFile": "Transcript.i18n.json"
+    }
+}

@@ -1,0 +1,105 @@
+/**
+    TODO this is a dump from an existing CSS of QNA
+    We need to clean this up and see if we really need these classes or not
+ */
+
+
+
+#transcriptHolder{
+    background-color: #0e90d2;
+}
+
+
+.transcriptInterface{
+    background-color: #0a678e;
+    height: 100%;
+}
+.transcriptInterface .transcriptModuleBackground{
+    width: 100%;
+    height: 100%;
+    background-color: #fFfF40;
+    display: none;
+}
+
+.transcriptInterface .transcriptModuleBackgroundHider{
+    width: 100%;
+    height: 100%;
+    background-color: #f0f0f0;
+    display: none;
+    position: relative;
+}
+
+.transcript-badge {
+    display: block;
+    position: absolute;
+    top: -12px;
+    right: 8px;
+    line-height: 20px;
+    height: 20px;
+    min-width: 10px;
+    padding: 0 5px;
+    font-family: 'Lato', Helvetica, Arial;
+    font-weight: 600;
+    color: #ffffff;
+    text-shadow: 0 1px rgba(0, 0, 0, 0.35);
+    border: 1px solid;
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 1px rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.08);
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.08);
+    text-indent: 0px;
+    background: #76c044;
+    border-color: #76c044;
+    background-image: -webkit-linear-gradient(top, #76c044, #76c044);
+    background-image: -moz-linear-gradient(top, #76c044, #76c044);
+    background-image: -o-linear-gradient(top, #76c044, #76c044);
+    background-image: linear-gradient(to bottom, #76c044, #76c044);
+}
+
+.transcript-on-video-btn {
+    z-index: 99999;
+    background-color: #efefef;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 38px;
+    height: 76px;
+    text-align: center;
+    -moz-border-radius: 38px 0 0 38px;
+    -webkit-border-radius: 38px 0 0 38px;
+    border-radius: 38px 0 0 38px;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 76px;
+
+    box-shadow: 0px 3px 50px 0px rgba(29, 222, 196, 0.35);
+    -moz-box-shadow: 0px 3px 50px 0px rgba(29, 222, 196, 0.35);
+    -webkit-box-shadow: 0px 3px 50px 0px rgba(29, 222, 196, 0.35);
+    -o-box-shadow: 0px 3px 50px 0px rgba(29, 222, 196, 0.35);
+
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    display: none;
+}
+
+.transcript-on-video-btn:hover {
+
+    text-shadow: 1px 1px 1px  rgba(0, 0, 0, 0.65);
+}
+
+.transcript-on-video-btn:before {
+    color: #414442;
+    font-size: 20px;
+}
+
+.transcriptInterface > input:focus, button:focus, textarea:focus {
+    outline: 0 !important;
+}
+
+.transcriptInterface > button:hover {
+    opacity: 0.7;
+    color: #002a80;
+}
