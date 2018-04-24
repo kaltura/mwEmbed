@@ -52,6 +52,7 @@
 		hasSeeked: false,
 		dvr: false,
         monitorViewEvents:true,
+        playSentOnStart: false,
 
 		smartSetInterval:function(callback,time,monitorObj) {
 			var _this = this;
@@ -119,6 +120,7 @@
 				_this.bufferTime = 0;
 				_this.firstPlay = true;
                 _this.entryPlayCounter++;
+                _this.playSentOnStart = false;
 			});
 
 			this.embedPlayer.bindHelper( 'userInitiatedPlay' , function () {
@@ -126,8 +128,13 @@
 			});
 
 			this.embedPlayer.bindHelper( 'onplay' , function () {
+                if (_this.embedPlayer.currentState === "start" && _this.playSentOnStart) {
+                    return;
+                }
+
 				if ( !this.isInSequence() && (_this.firstPlay || _this.embedPlayer.currentState !== "play") ){
 					if ( _this.firstPlay ){
+                        _this.playSentOnStart = true;
 						_this.timer.start();
 						_this.sendAnalytics(playerEvent.PLAY, {
                             bufferTimeSum: _this.bufferTimeSum
