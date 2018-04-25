@@ -220,7 +220,7 @@
                 }
             });
             if (_this.getPlayer().getInterface().hasClass("mobile")){
-                $( window ).on( "orientationchange", function() {
+                $( window ).on( "orientationchange resize", function() {
                     if(_this.ivqShowScreenMode && _this.isPortrait() ) {
                         _this.showPortraitWarning();
                     }else {
@@ -689,7 +689,7 @@
         isPortrait: function () {
             if (
                 this.getPlayer().getInterface().hasClass("mobile")
-                && (screen.orientation.angle === 0 || screen.orientation.angle === 180)
+                && parent.document.body.parentNode.clientWidth < parent.document.body.parentNode.clientHeight
             ) {
                return true;
             }
