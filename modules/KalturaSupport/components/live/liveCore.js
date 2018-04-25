@@ -95,6 +95,11 @@
 					vid.removeEventListener('progress', _this.onProgress);
 					_this.onProgress = null;
 				}
+                if (_this.offAirTimeout){
+                    clearTimeout(_this.offAirTimeout);
+                    _this.offAirTimeout = null;
+                }
+                clearInterval( _this.liveStreamStatusMonitor );
 			} );
 
 			this.bind('firstPlay', function () {
