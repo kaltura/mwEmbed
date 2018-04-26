@@ -687,10 +687,12 @@
             $('#kplayer_pid_kplayer').attr('aria-hidden', 'true');
         },
         isPortrait: function () {
-            if (
-                this.getPlayer().getInterface().hasClass("mobile")
-                && parent.document.body.parentNode.clientWidth < parent.document.body.parentNode.clientHeight
-            ) {
+            if ( this.getPlayer().getInterface().hasClass("mobile")
+                && parent
+                && parent.document
+                && parent.document.body
+                && parent.document.body.parentNode
+                && parent.document.body.parentNode.clientWidth < parent.document.body.parentNode.clientHeight ) {
                return true;
             }
             return false;
