@@ -10,11 +10,13 @@
 		bindPostfix: '.sPlayer' ,
 		playerPrefix: 'EmbedPlayerSilverlight' ,
 		//default playback start time to wait before falling back to unicast in millisecods
-		defaultMulticastStartTimeout: 20000 ,
+		defaultMulticastStartTimeout: 10000 ,
+        defaultMulticastStartTries: 4,
 		defaultMulticastKeepAliveInterval: 10000 ,
 		defaultMulticastKESKtimeout: 10000 ,
 		defaultMulticastKESStartInterval: 2000 ,
 		defaultMaxAllowedMulticastBitrate: 90000 ,
+        requestNewMCaddress:false,
 		multicastAddress: null ,
 		defaultDisableMulticastFallback: false ,
 		containerId: null ,
@@ -99,10 +101,13 @@
 			return diagObj;
 		} ,
 		connectToKES: function ( resolvedSrc ) {
-			mw.log( 'connectToKES ' + resolvedSrc );
+            var url = resolvedSrc + "&confirmWorking=" + (this.gotFirstMulticastFrame ? 'true' : 'false');
+            url += "&requestNewAddress="+ (this.requestNewMCaddress ? 'true' : 'false');
+            mw.log( 'connectToKES ' + url );
+            this.requestNewMCaddress=false;
 			var deferred = $.Deferred();
 			$.ajax( {
-				url: resolvedSrc ,
+				url: url ,
 				timeout: this.getKalturaConfig( null , 'multicastKESKtimeout' ) || this.defaultMulticastKESKtimeout ,
 				dataType: 'jsonp' ,
 				success: function ( response ) {
@@ -285,7 +290,7 @@
 
 				var retryTime= firstKESConnectTry? 0 : (_this.getKalturaConfig( null , 'multicastKESStartInterval' ) || _this.defaultMulticastKESStartInterval);
 
-				if (_this.isOnline && _this.multicastSessionId)
+				if (_this.isOnline && _this.multicastSessionId && _this.gotFirstMulticastFrame)
 					retryTime=_this.getKalturaConfig( null , 'multicastKeepAliveInterval' ) || _this.defaultMulticastKeepAliveInterval;
 
 				_this.keepAliveMCTimeout = setTimeout( function () {
@@ -554,17 +559,46 @@
                         _this.play();
                     }
 
+
+                    function checkPacketRate() {
+                        var packetRate=0;
+                        try {
+                            var diag = _this.getMulticastDiagnostics();
+                            if (diag) {
+                                packetRate = parseInt(diag.PacketRate);
+                            }
+                            console.log("checkPacketRate: ",packetRate);
+                        }
+                        finally {
+                            if (packetRate > 0) {
+                                _this.gotFirstMulticastFrame = true;
+                            } else {
+                                setTimeout(function () {
+                                    checkPacketRate();
+                                }, 1000)
+                            };
+                        }
+                    }
+
                     setTimeout( function() {
 
                         readyCallback();
 
                         if (isMimeType("video/multicast")) {
+
+                            checkPacketRate();
+
                             var timeout = _this.getKalturaConfig(null, 'multicastStartTimeout') || _this.defaultMulticastStartTimeout;
                             mw.log('Starting timeout for fallbackToUnicast');
                             setTimeout(function () {
                                 if (!_this.gotFirstMulticastFrame) {
                                     mw.log('timeout waiting for frame!!!!');
-                                    _this.fallbackToUnicast();
+                                    _this.defaultMulticastStartTries--;
+                                    if (_this.defaultMulticastStartTries<0) {
+                                        _this.fallbackToUnicast();
+                                    } else {
+                                        _this.requestNewMCaddress=true;
+									}
                                 }
                             }, timeout);
                         }
