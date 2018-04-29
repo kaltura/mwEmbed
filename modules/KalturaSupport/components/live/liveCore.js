@@ -374,7 +374,7 @@
 
 		removeOffAirTimeout: function () {
 			if (this.offAirTimeout){
-				clearTimeout(_this.offAirTimeout);
+				clearTimeout(this.offAirTimeout);
 				this.offAirTimeout = null;
 			}
 		},
