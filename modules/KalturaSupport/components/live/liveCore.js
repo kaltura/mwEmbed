@@ -95,11 +95,8 @@
 					vid.removeEventListener('progress', _this.onProgress);
 					_this.onProgress = null;
 				}
-                if (_this.offAirTimeout){
-                    clearTimeout(_this.offAirTimeout);
-                    _this.offAirTimeout = null;
-                }
-                clearInterval( _this.liveStreamStatusMonitor );
+				_this.removeOffAirTimeout();
+				_this.removeLiveStreamStatusMonitor();
 			} );
 
 			this.bind('firstPlay', function () {
@@ -141,10 +138,7 @@
                     var firstOfflineAlertOffest = _this.calculateOfflineAlertOffest();
                     _this.setOffAir(firstOfflineAlertOffest);
 				}  else if ( !_this.onAirStatus && onAirObj.onAirStatus ) {
-                    if (_this.offAirTimeout){
-                        clearTimeout(_this.offAirTimeout);
-                        _this.offAirTimeout = null;
-                    }
+					_this.removeOffAirTimeout();
 					if ( _this.getPlayer().removePosterFlag && !_this.playWhenOnline && !embedPlayer.isPlaying() ) {
 						_this.addPoster();
 					}
@@ -240,10 +234,7 @@
             var _this = this;
             var embedPlayer = this.getPlayer();
 
-            if (_this.offAirTimeout){
-                clearTimeout(_this.offAirTimeout);
-                _this.offAirTimeout = null;
-            }
+			_this.removeOffAirTimeout();
 
             _this.offAirTimeout = setTimeout( function() {
                 if ( !_this.onAirStatus ) {
@@ -379,6 +370,14 @@
 		removeLiveStreamStatusMonitor: function() {
 			this.log( "removeLiveStreamStatusMonitor" );
 			this.liveStreamStatusMonitor = clearInterval( this.liveStreamStatusMonitor );
+		},
+
+		removeOffAirTimeout: function () {
+			var _this = this;
+			if (_this.offAirTimeout){
+				clearTimeout(_this.offAirTimeout);
+				_this.offAirTimeout = null;
+			}
 		},
 
 		/**
