@@ -373,10 +373,9 @@
 		},
 
 		removeOffAirTimeout: function () {
-			var _this = this;
-			if (_this.offAirTimeout){
+			if (this.offAirTimeout){
 				clearTimeout(_this.offAirTimeout);
-				_this.offAirTimeout = null;
+				this.offAirTimeout = null;
 			}
 		},
 
