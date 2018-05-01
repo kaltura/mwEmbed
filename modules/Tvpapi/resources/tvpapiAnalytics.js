@@ -124,12 +124,14 @@
 		},
 
 		getBaseParams: function() {
+		    var isLive = this.getPlayer().isLive();
+            var isDvr = this.getPlayer().isDVR();
 			return {
 				"initObj": this.getInitObj(),
 				"mediaType": 0,
 				"iMediaID": this.getProxyConfig('MediaID'),
 				"iFileID": this.fileId,
-				"iLocation": (this.getPlayer().isLive() && !this.getPlayer().isDVR())?0:this.getCurrentTime()
+				"iLocation": (isLive && !isDvr) ? 0 : this.getCurrentTime()
 			};
 		},
 
