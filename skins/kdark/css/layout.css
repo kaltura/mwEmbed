@@ -81,6 +81,10 @@ body {
 #sideBarContainerReminderContainer{
 	font-size: 32px;
 	color: rgb(255, 255, 255);
+	display: none;
+}
+#sideBarContainerReminderContainer:focus{
+	display: block;
 }
 @media all and  (max-width: 640px) {
 	#sideBarContainerReminderContainer{
@@ -102,15 +106,19 @@ body {
 	text-shadow: 0px 0px 10px #fff;
 }
 .sideBarContainerReminder.left{
-	left: -30%;
+	left: 0px;
 	-webkit-transition: left 0.3s ease-in;
 	-moz-transition: left 0.3s ease-in;
 	-o-transition: left 0.3s ease-in;
 	-ms-transition: left 0.3s ease-in;
 	transition: left 0.3s ease-in;
 }
-.sideBarContainerReminder.left.open{
-	left: 0px;
+.sideBarContainerReminder.left:focus{
+	z-index: 1000;
+}
+.sideBarContainerReminder.left:focus #sideBarContainerReminderContainer,
+.sideBarContainerReminder.left.open #sideBarContainerReminderContainer{
+	display: block;
 }
 .sideBarContainerReminder.left.shifted{
 	left: 30%;
