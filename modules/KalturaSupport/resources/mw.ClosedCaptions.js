@@ -664,12 +664,20 @@
 		},
 		selectDefaultIosTrack: function (defaultLangKey) {
 			var _this = this;
-			this.once( 'playing', function (){
-				setTimeout(function () {
-					_this.log('selectDefaultIosTrack: ' + defaultLangKey);
-					_this.embedPlayer.selectDefaultCaption(defaultLangKey);
-				}, 500);
-			});
+			if (_this.embedPlayer.isPlaying()){
+				_this.selectTextTrack(defaultLangKey);
+			} else {
+				_this.once( 'playing', function (){
+					_this.selectTextTrack(defaultLangKey);
+				});
+			}
+		},
+		selectTextTrack: function(defaultLangKey) {
+			var _this = this;
+			setTimeout(function () {
+				_this.log('selectDefaultIosTrack: ' + defaultLangKey);
+				_this.embedPlayer.selectDefaultCaption(defaultLangKey);
+			}, 500);
 		},
 		selectSourceByLangKey: function( langKey ){
 			var _this = this;
