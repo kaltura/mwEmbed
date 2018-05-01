@@ -20,10 +20,10 @@
                 $(".icon-close").css("display", "none");
                 $(_this.emptyScreen()).hide().append(
                     '<div class="ivqContainer">' +
-                    '<div class="welcome"></div>' +
+                    '<div class="welcome" tabindex="5"></div>' +
                     '<div class="pdf-download"></div>' +
-                    '<div class="welcomeMessage"></div>' +
-                    '<div class="InvideoTipMessage"></div>' +
+                    '<div class="welcomeMessage" tabindex="5"></div>' +
+                    '<div class="InvideoTipMessage" tabindex="5"></div>' +
                     '<div class="bottomContainer padding10">' +
                         '<div class="confirm-box" role="button" title="to take the quiz"></div>' +
                     '</div>' +
