@@ -107,7 +107,7 @@
 		    var isDvr = this.getPlayer().isDVR();
 
 			// Do not send media hit in the following conditions: concurrent limit, current time not updated (might be error) when media is not (live and not dvr)
-			if(this.concurrentFlag || !(isLive && !isDvr) && this.getPlayer().getPlayerElementTime() === 0) ){
+			if(this.concurrentFlag || (!(isLive && !isDvr) && this.getPlayer().getPlayerElementTime() === 0) ){
 			    return;
 			}
 			this.report('MediaHit', this.getBaseParams());
