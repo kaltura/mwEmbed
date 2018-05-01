@@ -103,10 +103,12 @@
 		},
 
 		sendMediaHit: function() {
-			// Do not send media hit in the following conditions: concurrent limit, current time not updated (might be error)
-			// If isLive but not DVR then continue
-			if(this.concurrentFlag || (!(this.getPlayer().isLive()&&!this.getPlayer().isDVR())&&this.getPlayer().getPlayerElementTime() === 0)){
-				return;
+		    var isLive = this.getPlayer().isLive();
+		    var isDvr = this.getPlayer().isDVR();
+
+			// Do not send media hit in the following conditions: concurrent limit, current time not updated (might be error) when media is not (live and not dvr)
+			if(this.concurrentFlag || (!isLive && isDvr && this.getPlayer().getPlayerElementTime() === 0) ){
+			    return;
 			}
 			this.report('MediaHit', this.getBaseParams());
 		},
@@ -127,7 +129,7 @@
 				"mediaType": 0,
 				"iMediaID": this.getProxyConfig('MediaID'),
 				"iFileID": this.fileId,
-				"iLocation": (this.getPlayer().isLive()&&!this.getPlayer().isDVR())?0:this.getCurrentTime()
+				"iLocation": (this.getPlayer().isLive() && !this.getPlayer().isDVR())?0:this.getCurrentTime()
 			};
 		},
 
