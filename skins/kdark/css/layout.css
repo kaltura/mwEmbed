@@ -2027,7 +2027,7 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
     right : 2px;
     width: 50px !important;
     height: 50px !important;
-
+    z-index: 2;
 }
 .closePluginsScreen:active{
     outline: 0;

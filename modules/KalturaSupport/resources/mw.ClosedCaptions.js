@@ -83,6 +83,8 @@
 			}
 
 			if ( this.getConfig('showEmbeddedCaptions') === true ) {
+				//Set CC layout to ontop with embedded captions as it dose not use the allocated space for below CC
+                this.setConfig('layout', "ontop" );
 
 				if ( this.getConfig('showEmbeddedCaptionsStyle') === true ) {
 					this.bind( 'textTrackIndexChanged', function( e, captionData ) {
@@ -886,7 +888,7 @@
 		},
 		updateBelowVideoCaptionContainer: function(){
 			var _this = this;
-			mw.log( "TimedText:: updateBelowVideoCaptionContainer" );
+			mw.log( "ClosedCaptions:: updateBelowVideoCaptionContainer" );
 			if (this.getConfig('displayCaptions') === false){
 				return;
 			}
@@ -1196,7 +1198,9 @@
 			this.embedPlayer.triggerHelper("selectClosedCaptions", "Off");
 			this.embedPlayer.triggerHelper('changedClosedCaptions', {language: ""});
 			this.setConfig('displayCaptions', false);
-			// also update the cookie to "None"
+			//Set the index of 'off' to lastActiveCaption
+            		this.lastActiveCaption = this.getMenu().$el.find('.active').index();
+            		// also update the cookie to "None"
 			this.getPlayer().setCookie( this.cookieName, 'None' );
 		},
 		addOptionsButton: function(btnOptions) {
