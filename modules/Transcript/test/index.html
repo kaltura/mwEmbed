@@ -10,7 +10,9 @@
 <body>
 <h1>Q and A Demo</h1>
 <div id="kaltura_player" style="width: 685px; height: 330px;float: left;"></div>
-<div id="transcriptHolder" style="width: 300px; height: 330px; float:left; float: left"></div>
+<div style="width: 100%;float: left">
+    <div id="transcriptHolder" style="width: 685px; height: 330px; float:left; float: left"></div>
+</div>
 <br style="clear: both;" /><br />
 <script>
     //    mw.setConfig( 'Kaltura.ServiceUrl' , 'http://lbd.kaltura.com' );
@@ -22,9 +24,9 @@
         'flashvars': {
             "transcript" : {
                 "plugin" : true,
-                'qnaTargetId': 'transcriptHolder',
-                'onPage': false,
-                'containerPosition': 'right'
+                'transcriptTargetId': 'transcriptHolder',
+                'onPage': true,
+                'containerPosition': 'left'
             },
             'closedCaptions': {
                 'hideWhenEmpty': true,

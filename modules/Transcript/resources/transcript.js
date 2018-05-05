@@ -12,7 +12,8 @@
             onPage: false
         },
 
-
+        tmplHeaderHeight: 30,
+        
         getBaseConfig: function() {
             var parentConfig = this._super();
             return $.extend({}, parentConfig, {
@@ -48,6 +49,11 @@
             var embedPlayer = this.getPlayer();
             var transcriptObject=null;
             var onVideoTogglePluginButton=null;
+            var accordionWrapper=null;
+            var searchInput=null;
+            var transcriptBody=null;
+            var printWrapper=null;
+            var originalTMPLlHeight=null;
 
             this.bind('updateLayout ended', function () {
                 _this.positionTranscriptButtonOnVideoContainer();
@@ -71,9 +77,44 @@
                 embedPlayer.getVideoHolder().append('<div class="transcript-on-video-btn transcript-icon-close"><div class="transcript-badge"></div></div>');
                 _this.getTranscriptContainer();
                 transcriptObject = _this.getTranscriptContainer().find(".transcriptModuleBackground");
-
+                accordionWrapper = _this.getTranscriptContainer().find(".accordionWrapper");
+                transcriptBody = _this.getTranscriptContainer().find(".transcript-body");
+                searchInput = _this.getTranscriptContainer().find(".searchInput");
+                printWrapper = _this.getTranscriptContainer().find(".printWrapper");
+                originalTMPLlHeight = _this.getTranscriptContainer().parent().height();
+                transcriptBody.height(originalTMPLlHeight - _this.tmplHeaderHeight+'px');//30px height of menu
+                
+                if (_this.getConfig( 'onPage' )){
+                    accordionWrapper.on('click',function (e) {
+                        if ($(this).hasClass('open')) {
+                            $(this).removeClass('open').addClass('close');
+                            transcriptBody.hide();
+                        } else {
+                            $(this).removeClass('close').addClass('open');
+                            transcriptBody.show();
+                        }
+                    });
+                }else {
+                    accordionWrapper.hide();
+                }
+                
+                searchInput.on('keyup', function (e) {
+                    var value = e.target.value;
+                    var regex = new RegExp(value, "gi");
+                    transcriptBody.html(transcriptBody.text().replace(regex, function(find) {
+                        return '<span class="highlight">'+find+'</span>';
+                    }));
+                });
+                printWrapper.on("click", function(){
+                    var myWindow = window.open('', '', 'width=400,height=600');
+                    myWindow.document.write(transcriptBody.html());
+    
+                    myWindow.document.close();
+                    myWindow.focus();
+                    myWindow.print();
+                    myWindow.close();
+                });
                 // onVideoTogglePluginButton = $('.transcript-on-video-btn');
-                debugger;
 
                 // register to on click to change the icon of the toggle button
                 onVideoTogglePluginButton.on("click", function(){

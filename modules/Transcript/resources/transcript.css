@@ -103,3 +103,62 @@
     opacity: 0.7;
     color: #002a80;
 }
+
+.transcript-menu{
+    width: 100%;
+    background-color: #eaeaea;
+    height: 30px;
+    padding: 5px 10px;
+    box-sizing: border-box;
+}
+.transcript-menu .left-menu{
+    float: left;
+}
+.transcript-menu .right-menu{
+    float: right;
+}
+.transcript-menu  .searchWrapper{
+    width: 185px;
+}
+.transcript-menu  .searchWrapper .searchInput{
+    width: 100%;
+    border-radius: 12px;
+    border: none;
+    height: 20px;
+    box-sizing: border-box;
+    padding: 0 15px;
+    margin: 0;
+}
+.transcript-menu-right-item{
+    float: left;
+    width: 14px;
+    height: 14px;
+    padding: 3px 7px;
+}
+.transcript-menu-right-item img{
+    width: 100%;
+    cursor: pointer;
+}
+.accordionWrapper .transcript-body-open,
+.accordionWrapper .transcript-body-close {
+    display: none;
+}
+.accordionWrapper.open .transcript-body-close{
+    display: block;
+}
+
+.accordionWrapper.close .transcript-body-open{
+    display: block;
+}
+
+.transcript-body{
+    color: black;
+    padding: 15px 20px;
+    background-color: white;
+    overflow: scroll;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+.transcript-body .highlight{
+    background: yellow;
+}
