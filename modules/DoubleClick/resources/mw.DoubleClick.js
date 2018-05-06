@@ -623,7 +623,7 @@
             }
 
             // due to IMA removal of custom playback on Android devices, we must get a user gesture for each new entry in order to show prerolls. Preventing auto play after change media in such cases.
-            if ( !_this.isNativeSDK && _this.embedPlayer.playlist && mw.isMobileDevice() && mw.isAndroid() ) {
+            if ( !_this.isNativeSDK && _this.embedPlayer.playlist && mw.isMobileDevice() && mw.isAndroid() && !mw.getConfig('mobileAutoPlay')) {
                 _this.embedPlayer.setKalturaConfig( 'playlistAPI', 'autoPlay', false );
                 _this.embedPlayer.autoplay = false;
 
