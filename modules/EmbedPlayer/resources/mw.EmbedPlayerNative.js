@@ -158,8 +158,8 @@
                 unMuteEventTriggers.forEach(function (eventName) {
                     _this.bindHelper(eventName + _this.bindPostfix, function () {
                         if (_this.mobileAutoPlay) {
-                            _this.mobileAutoPlay = false;
                             _this.setVolume(1, null, mw.isIOS());
+                            _this.mobileAutoPlay = false;
                         }
                         unMuteEventTriggers.forEach(function (eventName) {
                             _this.unbindHelper(eventName + _this.bindPostfix);
@@ -556,7 +556,7 @@
 				this.log("setCurrentTime seekTime:" + time);
 				// Try to update the playerElement time:
 				try {
-					var vid = this.getPlayerElement();
+                    var vid = this.getPlayerElement();
 					vid.currentTime = this.currentSeekTargetTime;
 				} catch (e) {
 					this.log("Error: Could not set video tag seekTime");
