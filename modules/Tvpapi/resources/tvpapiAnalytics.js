@@ -5,7 +5,8 @@
 
 		defaultConfig: {
 			mediaHitInterval: 30,
-			startTime:null
+			startTime:null,
+			useNonDvrLinearMediaHits
 		},
 
 		isPlaying: false,
@@ -13,6 +14,7 @@
 		fileId: null,
 		didFirstPlay: false,
 		mediaHitInterval: null,
+		useNonDvrLinearMediaHits: false,
 
 		setup: function() {
 			if (this.getConfig("startTime")){
@@ -106,8 +108,8 @@
 		    var isLive = this.getPlayer().isLive();
 		    var isDvr = this.getPlayer().isDVR();
 
-			// Do not send media hit in the following conditions: concurrent limit, current time not updated (might be error) when media is not (live and not dvr)
-			if(this.concurrentFlag || (!(isLive && !isDvr) && this.getPlayer().getPlayerElementTime() === 0) ){
+			// Do not send media hit in the following conditions: concurrent limit, current time not updated (might be error) when media is not (live and not dvr and flag is set)
+			if(this.concurrentFlag || (!(isLive && !isDvr && this.useNonDvrLinearMediaHits) && this.getPlayer().getPlayerElementTime() === 0) ){
 			    return;
 			}
 			this.report('MediaHit', this.getBaseParams());
@@ -131,7 +133,7 @@
 				"mediaType": 0,
 				"iMediaID": this.getProxyConfig('MediaID'),
 				"iFileID": this.fileId,
-				"iLocation": (isLive && !isDvr) ? 0 : this.getCurrentTime()
+				"iLocation": (isLive && !isDvr && this.useNonDvrLinearMediaHits) ? 0 : this.getCurrentTime()
 			};
 		},
 
