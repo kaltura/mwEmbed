@@ -6,7 +6,7 @@
 		defaultConfig: {
 			mediaHitInterval: 30,
 			startTime:null,
-			useNonDvrLinearMediaHits
+			useNonDvrLinearMediaHits:false
 		},
 
 		isPlaying: false,
