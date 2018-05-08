@@ -49,7 +49,7 @@
             var embedPlayer = this.getPlayer();
             var transcriptObject=null;
             var onVideoTogglePluginButton=null;
-            var accordionWrapper=null;
+            var toggleTranscriptBodyWrapper=null;
             var searchInput=null;
             var transcriptBody=null;
             var printWrapper=null;
@@ -77,7 +77,7 @@
                 embedPlayer.getVideoHolder().append('<div class="transcript-on-video-btn transcript-icon-close"><div class="transcript-badge"></div></div>');
                 _this.getTranscriptContainer();
                 transcriptObject = _this.getTranscriptContainer().find(".transcriptModuleBackground");
-                accordionWrapper = _this.getTranscriptContainer().find(".accordionWrapper");
+                toggleTranscriptBodyWrapper = _this.getTranscriptContainer().find(".toggleTranscriptBodyWrapper");
                 transcriptBody = _this.getTranscriptContainer().find(".transcript-body");
                 searchInput = _this.getTranscriptContainer().find(".searchInput");
                 printWrapper = _this.getTranscriptContainer().find(".printWrapper");
@@ -85,7 +85,8 @@
                 transcriptBody.height(originalTMPLlHeight - _this.tmplHeaderHeight+'px');//30px height of menu
                 
                 if (_this.getConfig( 'onPage' )){
-                    accordionWrapper.on('click',function (e) {
+                    toggleTranscriptBodyWrapper.on('click',function (e) {
+                        e.preventDefault();
                         if ($(this).hasClass('open')) {
                             $(this).removeClass('open').addClass('close');
                             transcriptBody.hide();
@@ -95,7 +96,7 @@
                         }
                     });
                 }else {
-                    accordionWrapper.hide();
+                    toggleTranscriptBodyWrapper.hide();
                 }
                 
                 searchInput.on('keyup', function (e) {
@@ -105,7 +106,8 @@
                         return '<span class="highlight">'+find+'</span>';
                     }));
                 });
-                printWrapper.on("click", function(){
+                printWrapper.on("click", function(e){
+                    e.preventDefault();
                     var myWindow = window.open('', '', 'width=400,height=600');
                     myWindow.document.write(transcriptBody.html());
     
