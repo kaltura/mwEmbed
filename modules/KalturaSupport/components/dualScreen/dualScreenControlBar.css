@@ -160,6 +160,10 @@
     #displayControlBar{
         /*width:250px;*/
     }
+    .controlBar {
+        top: 0 !important;
+        padding: 14px 14px 0 0;
+    }
     .controlBarBtn{
         font-size:26px;
     }

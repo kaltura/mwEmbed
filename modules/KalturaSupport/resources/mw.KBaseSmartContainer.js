@@ -130,7 +130,7 @@
 			this.pluginsScreenOpened = true;
 
 			var $sc = this.embedPlayer.getVideoHolder().find(".smartContainer");
-			$sc.css("z-index", "1");
+			$sc.css("z-index", "3");
 			$sc.children().hide();
 
 			this.embedPlayer.getInterface().addClass( "pluginsScreenOpened" );
