@@ -27,12 +27,16 @@
 		},
 
 		bindLogs: function () {
-			$YB.error = this.log.bind(this);
-			$YB.notice = this.log.bind(this);
-			$YB.noticeRequest = this.log.bind(this);
-			$YB.warn = this.log.bind(this);
-			$YB.debug = this.log.bind(this);
-			$YB.verbose = function () { };
+			var _this = this;
+            var bindedLog = function (msg) {
+                _this.log(msg)
+            };
+			$YB.error = bindedLog;
+			$YB.notice = bindedLog;
+			$YB.noticeRequest = bindedLog;
+			$YB.warn = bindedLog;
+			$YB.debug = bindedLog;
+			$YB.verbose = bindedLog;
 		},
 
 		getCustomParams: function () {

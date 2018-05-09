@@ -928,7 +928,7 @@
             this.embedPlayer.setKDPAttribute( this.pluginName, 'requestedAdTagUrl', adTagUrl );
 
             // Create ad request object.
-            var adsRequest = {};
+            var adsRequest = new google.ima.AdsRequest();
             if ( this.isChromeless ) {
                 //If chromeless then send adTagUrl escaped and cust_params separately so it will be parsed correctly
                 // on the flash plugin

@@ -32,9 +32,9 @@
 			});
 		},
 		updateUI: function( duration ){
-			var formatTime = mw.seconds2npt( parseFloat( duration ) )
-			var duration = this.getConfig('prefix') !== undefined ? this.getConfig('prefix') + formatTime : formatTime;
-			this.getComponent().text( duration );
+			var formatTime = mw.seconds2npt( parseFloat( duration ) );
+			var playerDurationLabel = this.getConfig('prefix') !== undefined ? this.getConfig('prefix') + formatTime : formatTime;
+			this.getComponent().text( playerDurationLabel );
 		},
 		getComponent: function() {
 			if( !this.$el ) {
