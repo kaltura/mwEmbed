@@ -1,44 +1,49 @@
 <div id="displayControlBar" class="displayControlBar">
     <div class="displayControlGroup">
-        <span
+        <a href="#"
             id="switchView"
             class="controlBarBtn dualScreen-switchView tooltipBelow"
             data-type="switch"
+            tabindex="11"
             title="<%=buttons.switchView.title%>"
-        ></span>
+        ></a>
     </div>
 
     <div class="displayControlGroup ds-collapsible">
         <!-- placeholder -->
-        <span class="controlBarBtn dualScreen-pip subMenuHidden"></span>
-        <span
+        <a href="#" class="controlBarBtn dualScreen-pip subMenuHidden" title="Select layout type"></a>
+        <a href="#"
             id="pip"
             class="controlBarBtn dualScreen-pip stateSelected tooltipBelow ds-collapsible-handle"
             data-type="state"
+            tabindex="12"
             title="<%=buttons.pip.title%>"
-        ></span>
-        <span
+        ></a>
+        <a href="#"
             id="sideBySide"
             class="controlBarBtn dualScreen-sidebyside tooltipBelow ds-collapsible-content"
             data-type="state"
+            tabindex="13"
             title="<%=buttons.sideBySide.title%>"
-        ></span>
-        <span
+        ></a>
+        <a href="#"
             id="singleView"
             class="controlBarBtn dualScreen-singleView tooltipBelow ds-collapsible-content"
             data-type="state"
+            tabindex="13"
             title="<%=buttons.singleView.title%>"
-        ></span>
+        ></a>
     </div>
 
     <div class="displayControlGroup displayControlGroup-contentSelection ds-collapsible">
-        <span
+        <a href="#"
             id="chooseStream"
             class="controlBarBtn dualScreen-contentSelection tooltipBelow ds-collapsible-handle"
             data-type="contentSelection"
+            tabindex="14"
             title="<%=buttons.contentSelection.title%>"
-        ></span>
+        ></a>
 
-        <div class="ds-streams ds-collapsible-content"></div>
+        <div class="ds-streams ds-collapsible-content" tabindex="14" aria-label="Streams Container" role="presentation"  ></div>
     </div>
 </div>

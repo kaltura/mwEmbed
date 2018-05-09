@@ -38,6 +38,7 @@
 			this.bind('showScreen', function (event, screenName) {
 				if ( screenName === "moderation" ){
 					this.getInterface().find(".overlay-win .icon-close").focus();
+					this.getInterface().find(".overlay").css("z-index","1100"); // force moderation screen to be higher
 
 					embedPlayer.getInterface().find(".overlay").keydown(function(e){
 						if(e.keyCode === 9){// keyCode = 9 - tab button
@@ -67,17 +68,19 @@
 		 	this.getPlayer().triggerHelper( 'onDisableKeyboardBinding' );
 		 	var $header = $( '<h2 id="dialogTitle" />' ).text(this.getConfig( 'header' ));
 			var $moderationMessage = $( '<div id="moderationText" />' ).append(
-				$( '<span />' ).text(this.getConfig( 'text' )),
+				$( '<span />' )
+					.text(this.getConfig( 'text' ))
+					.attr({'title':this.getConfig( 'text' ), 'tabindex':1}),
 				$('<div></div>').append(
 						$('<i></i>')
 							.addClass("icon-toggle")).append(
 				$( '<select />' )
-					.attr( 'id','flagType' )
+					.attr( {'id':'flagType', 'aria-label': 'Choose your reason', 'role':'listbox'} )
 					.append(
-						$( '<option />' ).attr( 'value', 1 ).text( _this.getConfig( 'reasonSex' ) ),
-						$( '<option />' ).attr( 'value', 2 ).text( _this.getConfig( 'reasonViolence' ) ),
-						$( '<option />' ).attr( 'value', 3 ).text( _this.getConfig( 'reasonHarmful' ) ),
-						$( '<option />' ).attr( 'value', 4 ).text( _this.getConfig( 'reasonSpam' ) )
+						$( '<option />' ).attr( {'value': 1, 'role':'option', 'aria-label':_this.getConfig( 'reasonSex' )} ).text( _this.getConfig( 'reasonSex' ) ),
+						$( '<option />' ).attr( {'value': 2, 'role':'option', 'aria-label':_this.getConfig( 'reasonViolence' )} ).text( _this.getConfig( 'reasonViolence' ) ),
+						$( '<option />' ).attr( {'value': 3, 'role':'option', 'aria-label':_this.getConfig( 'reasonHarmful' )} ).text( _this.getConfig( 'reasonHarmful' ) ),
+						$( '<option />' ).attr( {'value': 4, 'role':'option', 'aria-label':_this.getConfig( 'reasonSpam' )} ).text( _this.getConfig( 'reasonSpam' ) )
 					)
 					.css({'width': '100%', 'height': '26px', 'margin': '10px 0 10px 0'})),
 				$( '<label for="flagComments">'+ gM("ks-MODERATION-PLACEHOLDER" ) +'</label>' ),
