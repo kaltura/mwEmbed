@@ -113,3 +113,6 @@
 .transcript-body .highlight{
     background: yellow;
 }
+.transcription-time-part .active{
+    background-color: #9ed0ee;
+}

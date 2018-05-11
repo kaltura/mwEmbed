@@ -11,8 +11,6 @@
             moduleWidth: '400',
             onPage: false
         },
-
-        tmplHeaderHeight: 30,
         
         getBaseConfig: function() {
             var parentConfig = this._super();
@@ -43,6 +41,29 @@
                 onVideoTogglePluginButton.addClass('transcript-icon-close');
             }
         },
+        highlight: function(node, value) {
+            value = value.toLowerCase();
+            if (node.nodeType === 3) {
+                var data = node.data.toLowerCase();
+                var match = data.match(value);
+                if (match) {
+                    var highlight = document.createElement('span');
+                    highlight.className = 'highlight';
+                    var capturePosition = data.indexOf( match[0] , match.index );
+                    var wordNode = node.splitText(capturePosition);
+                    wordNode.splitText(match[0].length);
+                    var wordClone = wordNode.cloneNode(true);
+                    highlight.appendChild(wordClone);
+                    wordNode.parentNode.replaceChild(highlight, wordNode);
+                    return 1;
+                }
+            } else if ((node.nodeType === 1 && node.childNodes)) {
+                for (var i = 0; i < node.childNodes.length; i++) {
+                    i += this.highlight(node.childNodes[i], value);
+                }
+            }
+            return 0;
+        },
 
         addBindings: function () {
             var _this = this;
@@ -52,6 +73,7 @@
             var toggleTranscriptBodyWrapper=null;
             var searchInput=null;
             var transcriptBody=null;
+            var transcriptMenuHeight=null;
             var printWrapper=null;
             var originalTMPLlHeight=null;
 
@@ -79,10 +101,11 @@
                 transcriptObject = _this.getTranscriptContainer().find(".transcriptModuleBackground");
                 toggleTranscriptBodyWrapper = _this.getTranscriptContainer().find(".toggleTranscriptBodyWrapper");
                 transcriptBody = _this.getTranscriptContainer().find(".transcript-body");
+                transcriptMenuHeight = _this.getTranscriptContainer().find(".transcript-menu").height();
                 searchInput = _this.getTranscriptContainer().find(".searchInput");
                 printWrapper = _this.getTranscriptContainer().find(".printWrapper");
                 originalTMPLlHeight = _this.getTranscriptContainer().parent().height();
-                transcriptBody.height(originalTMPLlHeight - _this.tmplHeaderHeight+'px');//30px height of menu
+                transcriptBody.height(originalTMPLlHeight - transcriptMenuHeight+'px');
                 
                 if (_this.getConfig( 'onPage' )){
                     toggleTranscriptBodyWrapper.on('click',function (e) {
@@ -100,11 +123,15 @@
                 }
                 
                 searchInput.on('keyup', function (e) {
+                    transcriptBody.find('span.highlight').each(function () {
+                        var parent = this.parentNode;
+                        parent.replaceChild(this.firstChild, this);
+                        parent.normalize();
+                    });
                     var value = e.target.value;
-                    var regex = new RegExp(value, "gi");
-                    transcriptBody.html(transcriptBody.text().replace(regex, function(find) {
-                        return '<span class="highlight">'+find+'</span>';
-                    }));
+                    if(value !== ''){
+                        _this.highlight(transcriptBody[0],value);
+                    }
                 });
                 printWrapper.on("click", function(e){
                     e.preventDefault();
@@ -150,6 +177,29 @@
                 _this.changeVideoToggleIcon();
                 if (!_this.getConfig( 'onPage' )){
                     $(".videoHolder, .mwPlayerContainer").css("width", _this.originalPlayerWidth + "px");
+                }
+            });
+            this.bind('newClosedCaptionsData', function (e, captureData) {
+                var captures = captureData.captions;
+                if (captures) {
+                    transcriptBody.empty();
+                    for (var key in captures) {
+                        var startTime = captures[key].start ? captures[key].start : 0;
+                        var endTime = captures[key].end ? captures[key].end : 0;
+                        var content = captures[key].content ? captures[key].content : 0;
+                        transcriptBody.append(
+                            ' ',
+                            $('<span/>')
+                                .addClass('transcription-time-part')
+                                .attr('data-time-start',startTime)
+                                .attr('data-time-end',endTime)
+                                .text(content)
+                                .on('click', function(e) {
+                                    var seekTo = $(e.target).attr('data-time-start');
+                                    _this.getPlayer().sendNotification("doSeek", seekTo);
+                                })
+                        );
+                    }
                 }
             });
         },
