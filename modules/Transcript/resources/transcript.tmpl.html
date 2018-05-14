@@ -1,15 +1,17 @@
-<div class="transcriptModuleBackgroundHider">
-    <div class="transcriptListHiderTextHolder">
-        <div class="transcriptListHiderIcon qna-icon-Ask"></div>
-        <div class="transcriptListHiderText" data-bind="text: qnaListHiderText()"></div>
+<div class="transcript-menu">
+    <div class="transcript-menu-item searchWrapper">
+        <span class="search"></span>
+        <input type="text" placeholder="Search" name="search" class="searchInput">
+    </div>
+    <div class="transcript-menu-item downloadWrapper">
+        <a class="active-elements download" href="#"></a>
+    </div>
+    <div class="transcript-menu-item printWrapper">
+        <a class="active-elements print" href="#"></a>
+    </div>
+    <div class="transcript-menu-item toggleTranscriptBodyWrapper open">
+        <a href="#" class="transcript-body-close">Hide transcript</a>
+        <a href="#" class="transcript-body-open">Show transcript</a>
     </div>
 </div>
-<div class="transcriptModuleBackground" style="display: none">
-    Hello World 1!
-    <div class="listHolder nano">
-            Hello World 2!
-        <div class="nano-content">
-            Hello World 3!
-        </div>
-    </div>
-</div>
+<div class="transcript-body"></div>

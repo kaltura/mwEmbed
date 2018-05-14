@@ -10,21 +10,23 @@
 <body>
 <h1>Q and A Demo</h1>
 <div id="kaltura_player" style="width: 685px; height: 330px;float: left;"></div>
-<div id="transcriptHolder" style="width: 300px; height: 330px; float:left; float: left"></div>
+<div style="width: 100%;float: left">
+    <div id="transcriptHolder" style="width: 685px; height: 330px; float:left; float: left"></div>
+</div>
 <br style="clear: both;" /><br />
 <script>
     //    mw.setConfig( 'Kaltura.ServiceUrl' , 'http://lbd.kaltura.com' );
     kWidget.featureConfig({
 
         'targetId': 'kaltura_player',
-        'wid': '_27017',
-        'uiconf_id' : '39677781',
+        'wid': '_243342',
+        'uiconf_id': '20540612',
         'flashvars': {
             "transcript" : {
                 "plugin" : true,
-                'qnaTargetId': 'transcriptHolder',
-                'onPage': false,
-                'containerPosition': 'right'
+                'transcriptTargetId': 'transcriptHolder',
+                'onPage': true,
+                'containerPosition': 'left'
             },
             'closedCaptions': {
                 'hideWhenEmpty': true,
@@ -38,10 +40,11 @@
                 'fontColor' : '0xFFFFFF',
                 'useGlow' : 'false',
                 'glowBlur': 4,
-                'glowColor': '0x133693'
+                'glowColor': '0x133693',
+                'forceLoadLanguage': 'en'
             }
         },
-        'entry_id': "1_k2jnagcf" // vod : 1_bzr97hax | live : 1_afjmm4ie
+	    'entry_id': '0_uka1msg4',
 
     });
 

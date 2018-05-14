@@ -1,105 +1,118 @@
-/**
-    TODO this is a dump from an existing CSS of QNA
-    We need to clean this up and see if we really need these classes or not
- */
-
-
-
 #transcriptHolder{
     background-color: #0e90d2;
 }
 
-
-.transcriptInterface{
-    background-color: #0a678e;
-    height: 100%;
-}
-.transcriptInterface .transcriptModuleBackground{
+.transcript-menu{
     width: 100%;
-    height: 100%;
-    background-color: #fFfF40;
-    display: none;
+    background-color: #eaeaea;
+    height: 68px;
+    padding: 16px;
+    box-sizing: border-box;
 }
 
-.transcriptInterface .transcriptModuleBackgroundHider{
-    width: 100%;
-    height: 100%;
-    background-color: #f0f0f0;
-    display: none;
+.transcript-menu .searchWrapper{
+    width: 50%;
+    margin-right: 12px;
     position: relative;
 }
-
-.transcript-badge {
-    display: block;
+.transcript-menu .searchWrapper .searchInput{
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    border: none;
+    box-sizing: border-box;
+    padding: 0 15px;
+    margin: 0;
+    padding-left: 70px;
+}
+.transcript-menu .searchWrapper .search{
     position: absolute;
-    top: -12px;
-    right: 8px;
-    line-height: 20px;
-    height: 20px;
-    min-width: 10px;
-    padding: 0 5px;
-    font-family: 'Lato', Helvetica, Arial;
-    font-weight: 600;
-    color: #ffffff;
-    text-shadow: 0 1px rgba(0, 0, 0, 0.35);
-    border: 1px solid;
-    border-radius: 10px;
-    -webkit-box-shadow: inset 0 1px rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.08);
-    box-shadow: inset 0 1px rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.08);
-    text-indent: 0px;
-    background: #76c044;
-    border-color: #76c044;
-    background-image: -webkit-linear-gradient(top, #76c044, #76c044);
-    background-image: -moz-linear-gradient(top, #76c044, #76c044);
-    background-image: -o-linear-gradient(top, #76c044, #76c044);
-    background-image: linear-gradient(to bottom, #76c044, #76c044);
+    display: block;
+    width: 32px;
+    height: 16px;
+    top: 10px;
+    left: 16px;
+    border-right: 2px solid #00B4D1;
+    background-repeat: no-repeat;
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAFo9M/3AAAAAXNSR0IArs4c6QAAAVVJREFUOBGVk61OA0EUhXcJhgQCuKYPAJqiUFX0BQiuNTxFHwFLQoJo0CSgsASDQgCWoCoqG1IQCDCF79yZu8xsNySc5My995wz+zPbFsXf+AaWoJ6ooU5cmMgVTMgWxLkE6qMZjTGJ4AHuemqFYS414s0MXyR679W1pSi8I4SbItDPKNXsm7JKqONXyYzGgeSp0gkGVRCxG41lifStOK9ZiGEKh9WOELpHG0nTW3zADQ0J1umnNpNsQ2FLAvVAg5m+MPckJpjR6yyK0kP1GgPhNqmJ0YXXUA//BcfwDLbT3EJPID2rJ+Yh7MNj+AodvabNuqOgjXae9RD6NtQTCUeZj+BGPzNqA7kr7QYXmYWgdxT0qK3MjAO6Hb9CoPE1BsGz9ZNVX/sSPpvyu+gThX8CF1/4TJj6DR3CPbgKx/CuLMsbvA79LdyE+tfsw/+DC+3AF3j+A0Q2lNxalNGhAAAAAElFTkSuQmCC');
+    /*TODO: change img*/
 }
 
-.transcript-on-video-btn {
-    z-index: 99999;
-    background-color: #efefef;
+.transcript-menu-item{
+    float: left;
+    height: 36px;
+    line-height: 36px;
+}
+.transcript-menu-item .active-elements{
+    height: 16px;
+    margin: 12px;
+    width: 16px;
+    display: block;
+}
+.transcript-menu-item .active-elements.download{
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAFo9M/3AAAAAXNSR0IArs4c6QAAAUtJREFUOBG1UjtOw0AQ9RqoXFJToqQD5AuQAi4QiggpEpXtigvQ5gRUdoeUFi5AJD69C6gAcQboLBewNu9ZHms2iaFipWRm3nvz27Xn4URRVPt0/jjUUWLEcfQAFwI01YwxOw6AYBeqU4Lra4g8juPX5SZGkV91XW9K7Pv+SZqmNwZZ9yAOSQRBsF2W5QjxBX4HxLoMBkVRfND2HvbXO1G4ckt6x7WC5fLNFkmSjKuquhYSVb6zLNtivMG/PM9fwjB8hzsGWYHshtc394TdZxDcWWs/mQj/oVMi3tdtKOD9rGxBQg4rdFctoFi+CyoMGEP4hrmGwmn7awct7POdCdD1Fl2P+sTEMc0C0xyLxpmABAQTkFYEylpyOpmcM4ESe3i8Kaa5akTGnOHTm2tefP1OgjUW3Z7hnLfgJYrtOYI20O/o8G3CowP+R/AD1jh6sUSbgsQAAAAASUVORK5CYII=');
+}
+.transcript-menu-item .active-elements.print{
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAFo9M/3AAAAAXNSR0IArs4c6QAAANxJREFUOBGVkdERgyAQRAVTBg3FSR0IVUS7cOxDG4ptKOEYlzkBY+RD9o63y3BW1b6E1tqhCHveoTZhMmMPRl6AzMNwglDuippDwlr7XNd1HsdRRMKLHVryOzjldXTx2J2ZfOor4U9K7iZtjOmASgjsQoh527Z3rL3j4wtVekVd183lK7IrEI39AVG6gs7CHNq2nZxzDWDaYYiDomYJpD4tKWU/DEMXCvY5BNCMkMwY/LfQOgsKh3zgPIDrlKExhjlz6IZeaMzqhiFF1eV/Sh0/6/R9JfgfpuQ77X0B+BhgLPZU3s0AAAAASUVORK5CYII=');
+}
+
+
+.transcript-menu-item.toggleTranscriptBodyWrapper.close{
+    opacity: 1;
+}
+.transcript-menu-item.toggleTranscriptBodyWrapper{
+    float: right;
+}
+.transcript-menu-item.toggleTranscriptBodyWrapper a{
+    color: #00B4D1;
+    position: relative;
+    opacity: 1;
+    font-size: 14px;
+    text-shadow: none;
+    font-weight: normal;
+}
+.transcript-menu-item.toggleTranscriptBodyWrapper .transcript-body-close:before,
+.transcript-menu-item.toggleTranscriptBodyWrapper .transcript-body-open:before{
+    content: '';
+    display: block;
+    width: 16px;
+    height: 16px;
     position: absolute;
-    right: 0;
-    top: 50%;
-    width: 38px;
-    height: 76px;
-    text-align: center;
-    -moz-border-radius: 38px 0 0 38px;
-    -webkit-border-radius: 38px 0 0 38px;
-    border-radius: 38px 0 0 38px;
-    text-align: center;
-    vertical-align: middle;
-    line-height: 76px;
+    left: -28px;
+    top: 10px;
+}
 
-    box-shadow: 0px 3px 50px 0px rgba(29, 222, 196, 0.35);
-    -moz-box-shadow: 0px 3px 50px 0px rgba(29, 222, 196, 0.35);
-    -webkit-box-shadow: 0px 3px 50px 0px rgba(29, 222, 196, 0.35);
-    -o-box-shadow: 0px 3px 50px 0px rgba(29, 222, 196, 0.35);
-
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+/*TODO: change img*/
+.transcript-menu-item.toggleTranscriptBodyWrapper .transcript-body-close:before{
+    transform: rotate(180deg);
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAFo9M/3AAAAAXNSR0IArs4c6QAAAHdJREFUOBFjYEAD8Wh8KnGZoeb8A9ICQLyTMnP/I2nPAbIbkPhwJiOQNQvOG2SMBqB7QC6HAWQfwcQY+oEsUISAQg0nAHkR5NVhDUDppQiPD0FyKGmKCU2xO5AvBsSgoExFkgOxQWIgOZAaosBUoKq/UAxiD1cAALttEh4gi5AEAAAAAElFTkSuQmCC');
+}
+.transcript-menu-item.toggleTranscriptBodyWrapper .transcript-body-open:before{
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAFo9M/3AAAAAXNSR0IArs4c6QAAAHdJREFUOBFjYEAD8Wh8KnGZoeb8A9ICQLyTMnP/I2nPAbIbkPhwJiOQNQvOG2SMBqB7QC6HAWQfwcQY+oEsUISAQg0nAHkR5NVhDUDppQiPD0FyKGmKCU2xO5AvBsSgoExFkgOxQWIgOZAaosBUoKq/UAxiD1cAALttEh4gi5AEAAAAAElFTkSuQmCC');
+}
+.toggleTranscriptBodyWrapper .transcript-body-open,
+.toggleTranscriptBodyWrapper .transcript-body-close {
     display: none;
 }
-
-.transcript-on-video-btn:hover {
-
-    text-shadow: 1px 1px 1px  rgba(0, 0, 0, 0.65);
+.toggleTranscriptBodyWrapper.open .transcript-body-close{
+    display: block;
 }
 
-.transcript-on-video-btn:before {
-    color: #414442;
-    font-size: 20px;
+.toggleTranscriptBodyWrapper.close .transcript-body-open{
+    display: block;
 }
 
-.transcriptInterface > input:focus, button:focus, textarea:focus {
-    outline: 0 !important;
+.transcript-body{
+    color: black;
+    padding: 15px 20px;
+    background-color: white;
+    overflow: scroll;
+    overflow-x: hidden;
+    box-sizing: border-box;
 }
-
-.transcriptInterface > button:hover {
-    opacity: 0.7;
-    color: #002a80;
+.transcript-body .highlight{
+    background: yellow;
+}
+.transcription-time-part .active{
+    background-color: #9ed0ee;
 }
