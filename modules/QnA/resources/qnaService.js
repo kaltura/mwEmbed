@@ -175,7 +175,11 @@
         };
 
         this.getOwner = function(){
-            return this.cuePoint().userId;
+            if (this.cuePoint().overrideModeratorName !== false) {
+                return this.cuePoint().overrideModeratorName;
+            }else {
+                return this.cuePoint().userId;
+            }
         };
 
         this.getThreadID = function(){
@@ -192,11 +196,8 @@
             else if (this.getType() === "AnswerOnAir"){
                 return gM('qna-answer-on-air');
             }
-            else if (this.cuePoint().overrideModeratorName !== false){
-                return this.cuePoint().overrideModeratorName;
-            }
             else{
-                return this.cuePoint().userId;
+                return this.getOwner();
             }
         };
 
@@ -246,7 +247,7 @@
             // Setup player ref:
             this.embedPlayer = embedPlayer;
             this.qnaPlugin = qnaPlugin;
-            this.overrideModeratorName =  (qnaPlugin.getConfig('overrideModeratorName')) ? qnaPlugin.getConfig('overrideModeratorName') : false;
+            this.overrideModeratorName =  qnaPlugin.getConfig('overrideModeratorName') ? qnaPlugin.getConfig('overrideModeratorName') : false;
 
             this.kPushServerNotification= mw.KPushServerNotification.getInstance(embedPlayer)
             if (embedPlayer.isLive()) {
