@@ -355,8 +355,8 @@
 				_this.getKalturaClient().doRequest({
 					service: 'fileAsset',
 					action: 'list',
-                    'filter:fileAssetObjectTypeEqual' : 3,
-                    'filter:objectIdEqual' :   projectId.replace(/^\!/, '')
+					'filter:fileAssetObjectTypeEqual' : 3,
+					'filter:objectIdEqual' :   projectId.replace(/^\!/, '')
 				}, function(data) {
 					if (data.code) {
 						return reject(Error('Unable to load graph data: ' + data.message + ' (' + data.code + ')'));
