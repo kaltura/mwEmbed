@@ -565,6 +565,13 @@
 
 			// Restore list visibility
 			list.show();
+			//update footer buttons tabindex
+			var slideBoxes =  list.find('.slideBox');
+			var lastTabIndex = $(slideBoxes[slideBoxes.length-1]).attr('tabindex');
+			var medialistFooterComponent = this.getMedialistFooterComponent();
+			medialistFooterComponent.find('.slideLocator').attr('tabindex',parseInt(lastTabIndex)+1);
+			medialistFooterComponent.find('.toggleAll').attr('tabindex',parseInt(lastTabIndex)+2);
+			
 		},
 		disableChapterToggle: function(){
 			this.chapterToggleEnabled = false;
@@ -1011,8 +1018,8 @@
 		renderBottomBar: function(){
 			this.getMedialistFooterComponent().empty();
 			var bottomBar = $("<div/>", {"class": "footerWrapper"} )
-					.append($("<span/>", {"class": "slideLocator icon-locator", "title": gM("ks-chapters-locate-active-media")}))
-					.append($("<span/>", {"class": "toggleAll icon-toggleAll", "title": gM("ks-chapters-toggle-all-chapter")}));
+				.append($("<span/>", {"class": "slideLocator icon-locator", "title": gM("ks-chapters-locate-active-media")}).attr({'aria-label':gM("ks-chapters-slider-locator")}))
+				.append($("<span/>", {"class": "toggleAll icon-toggleAll", "title": gM("ks-chapters-toggle-all-chapter")}).attr({'aria-label':gM("ks-chapters-toggle-all-chapter")}));
 			this.getMedialistFooterComponent().append(bottomBar);
 		},
 		isValidResult: function (data) {
