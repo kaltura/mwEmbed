@@ -715,15 +715,15 @@
             var allPoints = $.cpObject.cpArray;
             var currentPoint = allPoints[questionNr];
             if(currentPoint){
-                var nextBtn = $('<a/>').addClass('cp-navigation-btn next-cp disabled');
-                var prevBtn = $('<a/>').addClass('cp-navigation-btn prev-cp disabled');
+                var nextBtn = $('<a/>').addClass('cp-navigation-btn next-cp disabled').attr({'href':'#','tabindex': 8,'aria-label':gM('mwe-quiz-next-question-disabled')});
+                var prevBtn = $('<a/>').addClass('cp-navigation-btn prev-cp disabled').attr({'href':'#','tabindex': 7,'aria-label':gM('mwe-quiz-previous-question-disabled')});
                 var separator = $("<div/>").addClass('separator-block').append($('<span/>').addClass('separator'));
                 
                 var prevQuePoint = allPoints[currentPoint.key-1];
                 if(currentPoint.key > allPoints[0].key && prevQuePoint){
                     //allow go to prev CP: 1 - if canSkip is true; 2 - if canSkip is false but current CP and prev CP is already answered
                     if( (_this.KIVQModule.canSkip) || (!_this.KIVQModule.canSkip && currentPoint.isAnswerd && prevQuePoint.isAnswerd) ){
-                        prevBtn.attr({'href':'#','tabindex': 7}).removeClass('disabled')
+                        prevBtn.attr('aria-label',gM('mwe-quiz-previous-question')).removeClass('disabled')
                             .on('keydown', _this.keyDownHandler)
                             .on('click',function (e) {
                                 e.preventDefault();
@@ -739,7 +739,7 @@
                 if(currentPoint.key < allPoints[allPoints.length-1].key && nextQuePoint){
                     //allow go to next CP: 1 - if canSkip is true; 2 - if canSkip is false but current CP and next CP is already answered
                     if( (_this.KIVQModule.canSkip) || (!_this.KIVQModule.canSkip && nextQuePoint.isAnswerd)){
-                        nextBtn.attr({'href':'#','tabindex': 8}).removeClass('disabled')
+                        nextBtn.attr('aria-label',gM('mwe-quiz-next-question')).removeClass('disabled')
                             .on('keydown', _this.keyDownHandler)
                             .on('click',function (e) {
                                 e.preventDefault();
