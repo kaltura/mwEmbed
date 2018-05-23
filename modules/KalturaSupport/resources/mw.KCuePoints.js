@@ -57,6 +57,9 @@
 					_this.setLiveCuepointsWatchDog();
 				}
 			});
+
+            this.baseThumbAssetUrl=null;
+            this.optimizeThumbnailAssertUrlFetching=true;
 		},
 		destroy: function () {
 			if (this.liveCuePointsIntervalId) {
@@ -117,48 +120,93 @@
 			});
 			var loadThumbnailWithReferrer = this.embedPlayer.getFlashvars( 'loadThumbnailWithReferrer' );
 			var referrer = window.kWidgetSupport.getHostPageUrl();
-			//Create request data only for cuepoints that have assetId
-			$.each(thumbCuePoint, function (index, item) {
-				// for some thumb cue points, assetId may be undefined from the API.
-				if (typeof item.assetId !== 'undefined') {
-					requestArray.push(
-						{
-							'service': 'thumbAsset',
-							'action': 'getUrl',
-							'id': item.assetId
-						}
-					);
-					responseArray.push(item);
-				}
 
-			});
+            function processAllCuePoints() {
+            	var urls=[];
+                $.each(thumbCuePoint, function (index, item) {
+                    // for some thumb cue points, assetId may be undefined from the API.
+                    if (typeof item.assetId !== 'undefined') {
+                        urls.push(_this.baseThumbAssetUrl.replace(/thumbAssetId\/([^\/]+)/,"/thumbAssetId/"+item.assetId));
+                    }
 
-			if (requestArray.length) {
-				// do the api request
-				this.getKalturaClient().doRequest(requestArray, function (data) {
-					// Validate result
-					if (requestArray.length === 1){
-						data = [data];
+                });
+                processThumbnailUrls(urls);
+            }
+            function processThumbnailUrls(data) {
+
+                $.each(data, function (index, thumbnailUrl) {
+                    if (_this.isValidResult(thumbnailUrl)) {
+                        var resItem = responseArray[index];
+                        if (resItem) {
+                            resItem.thumbnailUrl = thumbnailUrl;
+                            if (loadThumbnailWithReferrer) {
+                                resItem.thumbnailUrl += '?options:referrer=' + referrer;
+                            }
+                        }
+                    }
+                });
+                // Since the thumb assets request is async the callback needs to be async as well
+                if (callback) {
+                    setTimeout(function () {
+                        callback();
+                    }, 0);
+                }
+			}
+            function getUrl(index) {
+
+                // do the api request
+                _this.getKalturaClient().doRequest({
+                    'service': 'thumbAsset',
+                    'action': 'getUrl',
+                    'id': requestArray[index].id
+                }, function (thumbnailUrl) {
+
+                    if (_this.isValidResult(thumbnailUrl)) {
+                        _this.baseThumbAssetUrl = thumbnailUrl;
+                        processAllCuePoints();
+                    } else {
+                        getUrl(index+1)
+                    }
+                });
+            }
+            //Create request data only for cuepoints that have assetId
+            $.each(thumbCuePoint, function (index, item) {
+                // for some thumb cue points, assetId may be undefined from the API.
+                if (typeof item.assetId !== 'undefined') {
+                    requestArray.push(
+                        {
+                            'service': 'thumbAsset',
+                            'action': 'getUrl',
+                            'id': item.assetId
+                        }
+                    );
+                    responseArray.push(item);
+                }
+
+            });
+            if (requestArray.length) {
+
+				if (_this.optimizeThumbnailAssertUrlFetching) {
+					if (_this.baseThumbAssetUrl) {
+						processAllCuePoints();
+					} else {
+                        getUrl(0);
 					}
-					$.each(data, function (index, thumbnailUrl) {
-						if (_this.isValidResult(thumbnailUrl)) {
-							var resItem = responseArray[index];
-							if (resItem){
-								resItem.thumbnailUrl = thumbnailUrl;
-								if (loadThumbnailWithReferrer){
-									resItem.thumbnailUrl += '?options:referrer=' + referrer;
-								}
-							}
-						}
-					});
-				// Since the thumb assets request is async the callback needs to be async as well
-					if (callback) {
-						setTimeout(function () { callback(); }, 0);
-					}
-				});
+				} else {
+                    // do the api request
+                    this.getKalturaClient().doRequest(requestArray, function (data) {
+                        // Validate result
+                        if (requestArray.length === 1) {
+                            data = [data];
+                        }
+                        processThumbnailUrls(data);
+                    });
+                }
 			} else {
 				if (callback) {
-					setTimeout(function () { callback(); }, 0);
+					setTimeout(function () {
+						callback();
+					}, 0);
 				}
 			}
 		},
