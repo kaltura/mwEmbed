@@ -59,13 +59,14 @@
 			});
 
             this.baseThumbAssetUrl=null;
-            this.optimizeThumbnailAssertUrlFetching=true;
+            this.disableThumbnailAssetUrlFetching=mw.getConfig("EmbedPlayer.disableThumbnailAssetUrlFetching");
 		},
 		destroy: function () {
 			if (this.liveCuePointsIntervalId) {
 				clearInterval(this.liveCuePointsIntervalId);
 				this.liveCuePointsIntervalId = null;
 			}
+            this.baseThumbAssetUrl = null;
 			$(this.embedPlayer).unbind(this.bindPostfix);
 		},
 		/*
@@ -153,7 +154,9 @@
                 }
 			}
             function getUrl(index) {
-
+				if (index>=requestArray.length) {
+					return;
+				}
                 // do the api request
                 _this.getKalturaClient().doRequest({
                     'service': 'thumbAsset',
@@ -186,7 +189,7 @@
             });
             if (requestArray.length) {
 
-				if (_this.optimizeThumbnailAssertUrlFetching) {
+				if (!_this.disableThumbnailAssetUrlFetching) {
 					if (_this.baseThumbAssetUrl) {
 						processAllCuePoints();
 					} else {
