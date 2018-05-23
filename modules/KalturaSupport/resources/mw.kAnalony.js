@@ -43,13 +43,16 @@
 		viewEventInterval: null,
 		savedPosition: null,
 		monitorIntervalObj:{},
-
+        playTimeSum: 0,
+		previousCurrentTime: 0,
 		_p25Once: false,
 		_p50Once: false,
 		_p75Once: false,
 		_p100Once: false,
 		hasSeeked: false,
 		dvr: false,
+        monitorViewEvents:true,
+        playSentOnStart: false,
 
 		smartSetInterval:function(callback,time,monitorObj) {
 			var _this = this;
@@ -89,8 +92,11 @@
 		},
 
 		setup: function( ) {
+            this.rateHandler = new mw.KavaRateHandler();
+            this.timer = new mw.KavaTimer(this);
 			this.eventIndex = 1;
-			this.bufferTime = 0;
+            this.bufferTime = 0;
+            this.bufferTimeSum = 0;
 			this.currentBitRate = -1;
             this.entryPlayCounter = 1;
             this.addBindings();
@@ -100,7 +106,7 @@
 			var _this = this;
 			var playerEvent = this.PlayerEvent;
 			this.embedPlayer.bindHelper( 'playerReady' , function () {
-				_this.resetPlayerflags();
+                _this.resetPlayerflags();
 				if ( _this.kalturaContextData && _this.kalturaContextData.flavorAssets && _this.kalturaContextData.flavorAssets.length === 1 ){
 			        _this.currentBitRate = _this.kalturaContextData.flavorAssets[0].bitrate;
 		        }
@@ -108,8 +114,13 @@
 			});
 
 			this.embedPlayer.bindHelper( 'onChangeMedia' , function () {
+				_this.timer.destroy();
+                _this.resetSession();
+				_this.rateHandler.destroy();
+				_this.bufferTime = 0;
 				_this.firstPlay = true;
                 _this.entryPlayCounter++;
+                _this.playSentOnStart = false;
 			});
 
 			this.embedPlayer.bindHelper( 'userInitiatedPlay' , function () {
@@ -117,15 +128,27 @@
 			});
 
 			this.embedPlayer.bindHelper( 'onplay' , function () {
-				if ( !this.isInSequence() ){
+                if (_this.embedPlayer.currentState === "start" && _this.playSentOnStart) {
+                    return;
+                }
+
+				if ( !this.isInSequence() && (_this.firstPlay || _this.embedPlayer.currentState !== "play") ){
 					if ( _this.firstPlay ){
-						_this.sendAnalytics(playerEvent.PLAY);
+                        _this.playSentOnStart = true;
+						_this.timer.start();
+						_this.sendAnalytics(playerEvent.PLAY, {
+                            bufferTimeSum: _this.bufferTimeSum
+						});
 					}else{
-						_this.sendAnalytics(playerEvent.RESUME);
+                        _this.timer.resume();
+						_this.sendAnalytics(playerEvent.RESUME, {
+                            bufferTimeSum: _this.bufferTimeSum
+						});
 					}
 				}
 			});
 			this.embedPlayer.bindHelper( 'userInitiatedPause' , function () {
+				_this.timer.stop();
 				_this.sendAnalytics(playerEvent.PAUSE);
 			});
 
@@ -134,7 +157,7 @@
 			});
 
 			this.embedPlayer.bindHelper( 'seeked' , function (e, seekTarget) {
-				_this.hasSeeked = true;
+                _this.hasSeeked = true;
 				if ( _this.embedPlayer.isDVR() ) {
 					_this.dvr = true;
 				}
@@ -145,7 +168,8 @@
 			} );
 
 			this.embedPlayer.bindHelper( 'seeking onpause', function() {
-				if ( _this.embedPlayer.isDVR() ) {
+                _this.previousCurrentTime = _this.embedPlayer.currentTime;
+                if ( _this.embedPlayer.isDVR() ) {
 					_this.dvr = true;
 				}
 			});
@@ -180,6 +204,7 @@
 
 			this.embedPlayer.bindHelper( 'replayEvent' , function () {
 				_this.resetPlayerflags();
+				_this.timer.start();
 				_this.sendAnalytics(playerEvent.REPLAY);
 			});
 
@@ -206,6 +231,7 @@
 			});
 
 			this.embedPlayer.bindHelper( 'newSourceSelected' , function (e, flavorId) {
+				_this.rateHandler.setCurrent(0);
 				_this.sendAnalytics(playerEvent.SOURCE_SELECTED, { "flavorId": flavorId});
 			});
 
@@ -228,9 +254,22 @@
 
 			this.embedPlayer.bindHelper( 'bitrateChange' ,function( event, newBitrate){
 				_this.currentBitRate = newBitrate;
+				_this.rateHandler.setCurrent(newBitrate);
 			} );
 
-			this.embedPlayer.bindHelper('onPlayerStateChange', function(e, newState, oldState) {
+            this.embedPlayer.bindHelper('sourcesReplaced', function () {
+                if (!_this.rateHandler.hasRates()) {
+                    var rates = [];
+                    var sources = _this.embedPlayer.getSources();
+                    for (var i = 0; i < sources.length; i++) {
+                        var rate = sources[i].getBitrate();
+                        rates.push(Math.round(rate));
+                    }
+                    _this.rateHandler.setRates(rates);
+                }
+            });
+
+            this.embedPlayer.bindHelper('onPlayerStateChange', function(e, newState, oldState) {
 				if (!this.isInSequence()) {
                     if (newState === "pause") {
                         _this.stopViewTracking();
@@ -260,9 +299,9 @@
 
 			// events for capturing the bitrate of the currently playing source
 			this.embedPlayer.bindHelper( 'SourceSelected' , function (e, source) {
-				if (source.getBitrate()){
+                if (source.getBitrate()){
 					_this.currentBitRate = source.getBitrate();
-				}
+                }
 				if (source.getAssetId()){
 					_this.currentflavorId = source.getAssetId();
 				}
@@ -280,6 +319,7 @@
 			this._p75Once = false;
 			this._p100Once = false;
 			this.hasSeeked = false;
+            this.previousCurrentTime = 0;
 			this.savedPosition = null;
 		},
 
@@ -287,7 +327,9 @@
 			var _this = this;
 			var percent = this.embedPlayer.currentTime / this.embedPlayer.duration;
 			var playerEvent = this.PlayerEvent;
-
+			if (!this.embedPlayer.isLive()){
+				this.calculatePlayTimeSum();
+			}
 			// Send updates based on logic present in StatisticsMediator.as
 			if ( !this.embedPlayer.isLive() ){
 				if( !_this._p25Once && percent >= .25 ) {
@@ -306,6 +348,16 @@
 			}
 		},
 
+        calculatePlayTimeSum: function () {
+            this.playTimeSum += (this.embedPlayer.currentTime - this.previousCurrentTime);
+            this.previousCurrentTime = this.embedPlayer.currentTime;
+		},
+		
+		calaulatePlayTimeSumBasedOnTag: function (){
+			this.playTimeSum += (this.embedPlayer.getPlayerElement().currentTime - this.previousCurrentTime);
+            this.previousCurrentTime = this.embedPlayer.getPlayerElement().currentTime;
+		},
+
 		calculateBuffer : function ( closeSession ){
 			var _this = this;
 			//if we want to calculate the buffer till now - first check we have started buffer
@@ -318,6 +370,7 @@
 			if (this.bufferTime > 10){
 				this.bufferTime = 10;
 			}
+			this.bufferTimeSum += this.bufferTime;
 			//set the buffer start time to now - in order to continue and counting the current buffer session
 			if ( closeSession ){
 				_this.bufferStartTime = new Date();
@@ -334,32 +387,68 @@
 			if (this.viewEventInterval){
 				this.stopViewTracking();
 			}
+			if ( !this.monitorViewEvents ){
+				return;
+			}
 			var _this = this;
 			var playerEvent = this.PlayerEvent;
 			_this.startTime = null;
 			_this.kClient = mw.kApiGetPartnerClient( _this.embedPlayer.kwidgetid );
 			_this.monitorIntervalObj.cancel = false;
 			if ( _this.firstPlay ){
-				_this.sendAnalytics(playerEvent.VIEW);
+				_this.sendAnalytics(playerEvent.VIEW, {
+					playTimeSum: _this.playTimeSum,
+                    averageBitrate: _this.rateHandler.getAverage(),
+					bufferTimeSum: _this.bufferTimeSum
+                });
 				_this.firstPlay = false;
 			}
 			_this.smartSetInterval(function(){
 				if ( !_this._p100Once ){ // since we report 100% at 99%, we don't want any "VIEW" reports after that (FEC-5269)
-					_this.sendAnalytics(playerEvent.VIEW);
+					_this.sendAnalytics(playerEvent.VIEW, {
+                        playTimeSum: _this.playTimeSum,
+                        averageBitrate: _this.rateHandler.getAverage(),
+                        bufferTimeSum: _this.bufferTimeSum
+                    });
 					_this.bufferTime = 0;
+				}
+				if ( !_this.monitorViewEvents ){
+					_this.stopViewTracking();
 				}
 			},_this.reportingInterval,_this.monitorIntervalObj);
 
 		},
+
 		getEntrySessionId: function(){
 			return this.embedPlayer.evaluate('{configProxy.sessionId}') + "-" + this.entryPlayCounter;
 		},
+
+        getPosition: function () {
+            if (this.embedPlayer.isLive()) {
+            	if (this.embedPlayer.getLiveEdgeOffset() < 1){
+                    return 0;
+				}
+                return -(this.embedPlayer.getLiveEdgeOffset());
+            } else {
+                var position = this.embedPlayer.currentTime ? this.embedPlayer.currentTime : 0;
+                if (this.savedPosition) {
+                    position = this.savedPosition;
+                }
+                return position;
+            }
+        },
+
 		sendAnalytics : function(eventType, additionalData){
 			//Don't send analytics if entry or partner id are missing
 			if (!(this.embedPlayer.kentryid && this.embedPlayer.kpartnerid)){
 				return;
 			}
 			var _this = this;
+			if (this.embedPlayer.isLive()){
+				this.calaulatePlayTimeSumBasedOnTag();
+			} else {
+				this.calculatePlayTimeSum();
+			}    
 			this.calculateBuffer(true);
 			this.kClient = mw.kApiGetPartnerClient( this.embedPlayer.kwidgetid );
 			if ( this.embedPlayer.isMulticast && $.isFunction( this.embedPlayer.getMulticastBitrate ) ) {
@@ -372,10 +461,7 @@
 				playbackType = this.dvr ? "dvr" : "live";
 			}
 
-			var position = this.embedPlayer.currentTime ? this.embedPlayer.currentTime : 0;
-			if ( this.savedPosition ){
-				position = this.savedPosition;
-			}
+			var position = this.getPosition();
 
 			var statsEvent = {
 				'entryId'           : this.embedPlayer.kentryid,
@@ -438,6 +524,9 @@
 				statsEvent["playbackContext"] = mw.getConfig("playbackContext");
 			}
 
+            //Get optional playlistAPI
+			this.maybeAddPlaylistId(statsEvent);
+
 			var eventRequest = {'service' : 'analytics', 'action' : 'trackEvent'};
 			$.each(statsEvent , function (event , value) {
 				eventRequest[event] = value;
@@ -447,13 +536,65 @@
 			this.log("Trigger analyticsEvent type = "+statsEvent.eventType);
 			this.kClient.doRequest( eventRequest, function(data){
 				try {
-					if (!_this.startTime ) {
-						_this.startTime = data;
-					}
-				}catch(e){
+					if (typeof data == "object") {
+                        var parsedData = data;
+                        if (parsedData.time && !_this.startTime) {
+                            _this.startTime = parsedData.time;
+                        }
+                        if (parsedData.viewEventsEnabled != undefined && !parsedData.viewEventsEnabled) {
+                            _this.monitorViewEvents = false;
+                        }
+                    } else {
+                        if (!_this.startTime) {
+                            _this.startTime = data;
+                        }
+                    }
+                }catch(e){
 					mw.log("Failed sync time from server");
 				}
 			}, true );
-		}
+		},
+
+        maybeAddPlaylistId: function (statsEvent) {
+            var plugins = this.embedPlayer.plugins;
+            // need to make many checks here due to vast options
+			//first make sure playlist plugin even exist and that it already has playlist sets, as they might be loaded
+			//dynamically later on, and then make sure a playlist in the set is even selected
+            if (plugins && plugins.playlistAPI && plugins.playlistAPI.playlistSet &&
+                $.isArray(plugins.playlistAPI.playlistSet) && plugins.playlistAPI.playlistSet.length &&
+				(plugins.playlistAPI.currentPlaylistIndex > -1)
+			){
+                var currentPlaylist = plugins.playlistAPI.playlistSet[plugins.playlistAPI.currentPlaylistIndex];
+                if (currentPlaylist) {
+                    var playlistId = currentPlaylist.id;
+                    if (playlistId) {
+                        statsEvent["playlistId"] = playlistId;
+                    }
+                }
+            }
+        },
+
+        timerTick: function () {
+            this.log("Count current bitrate");
+            this.rateHandler.countCurrent();
+        },
+
+        timerReport: function () {
+			// Other timeout reporting VIEW event every 10 sec
+        },
+
+        timerReset: function () {
+            this.log("30 seconds passed");
+            this.resetSession();
+        },
+
+        resetSession: function () {
+            this.log("Resets session");
+            this.rateHandler.reset();
+            this.eventIndex = 1;
+            this.playTimeSum = 0;
+            this.bufferTimeSum = 0;
+            this.startTime = null;
+        }
 	}));
 } )( window.mw, window.jQuery );

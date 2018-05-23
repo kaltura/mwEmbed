@@ -26,6 +26,7 @@
 		midCuePointsArray: [],
 		codeCuePointsArray : [],
 		liveCuePointsIntervalId: null,
+		threshold: 3,
 		supportedCuePoints: [
 			mw.KCuePoints.TYPE.CODE,
 			mw.KCuePoints.TYPE.THUMB,
@@ -39,7 +40,12 @@
 			this.destroy();
 			// Setup player ref:
 			this.embedPlayer = embedPlayer;
-
+			// grab duplicate-check threshold from player config if exists
+			var playerConfig = this.embedPlayer.playerConfig;
+			if( playerConfig.plugins.dualScreen
+				&& playerConfig.plugins.dualScreen.thresholdForDuplicateCP  ){
+				this.threshold = playerConfig.plugins.dualScreen.thresholdForDuplicateCP;
+			}
 			// Process cue points
 			embedPlayer.bindHelper('KalturaSupport_CuePointsReady' + this.bindPostfix, function () {
 				_this.initSupportedCuepointTypes();
@@ -222,7 +228,9 @@
 			var lastCreationTime = _this.getLastCreationTime() + 1;
 			// Only add lastUpdatedAt filter if any cue points already received
 			if (lastCreationTime > 0) {
-				request['filter:createdAtGreaterThanOrEqual'] = lastCreationTime;
+				var cpThreshold  = mw.getConfig("cuePointsThreshold") ? parseInt(mw.getConfig("cuePointsThreshold")) : 60;
+				mw.log("mw.KCuePoints:: Loading cue points with threshold of " + cpThreshold + " seconds : "+ (lastCreationTime - cpThreshold) );
+				request['filter:createdAtGreaterThanOrEqual'] = lastCreationTime - cpThreshold;
 			}
 			this.getKalturaClient().doRequest( request,
 				function (data) {
@@ -387,6 +395,10 @@
 					var checkCuePointsTag = _this.validateCuePointTags(cuePoint, _this.getPreviewCuePointTag());
 					return foundCuePointType && foundCuePointSubType && checkCuePointsTag;
 				} );
+				// filter same CP
+				filteredCuePoints = filteredCuePoints.filter(function( item,index,allInArray ) {
+					return _this.removeDuplicatedCuePoints(allInArray,index);
+				});
 			}
 			return filteredCuePoints;
 		},
@@ -436,6 +448,46 @@
 				foundAttr = true;
 			}
 			return foundAttr;
+		},
+		/**
+		 * if have same CP earlier - hide current CuePoint
+		 * @param  allCP - array of CP where try to find same CP
+		 * @param  currentCuePointIndex - position from current CP
+		 *
+		 */
+		removeDuplicatedCuePoints:function (allCP, currentCuePointIndex) {
+			var defaultThreshold = this.threshold;
+			var currentCP = allCP[currentCuePointIndex];
+			var prevCP = this.getPrevCPWithCorrectType(allCP,currentCuePointIndex);
+			if(prevCP !== false && currentCP && currentCP.partnerData){
+				var startTimeDelta = Math.abs(currentCP.startTime - prevCP.startTime);
+				var isTheSamePartnerData = currentCP.partnerData === prevCP.partnerData;
+				var isSameTitle = currentCP.title === prevCP.title;
+				var isSameDescription = currentCP.description === prevCP.description;
+				var isTheSameTags = currentCP.tags === prevCP.tags;
+				if(isTheSamePartnerData && isTheSameTags && isSameTitle && isSameDescription && startTimeDelta <= defaultThreshold*1000){
+					return false;
+				}
+			}
+			return true;
+		},
+		getPrevCPWithCorrectType: function (allCP,currentCuePointIndex) {
+			var prevCP = false;
+			var previousIndex = currentCuePointIndex - 1;
+			var currentCP = allCP[currentCuePointIndex];
+			var thresholdTime = this.threshold;
+			for(var i = previousIndex; i>=0;i--){
+				var startTimeDelta = Math.abs(currentCP.startTime - allCP[i].startTime);
+				//if delta of createdAt and startTime is more than thresholdTime - it's not a duplicated cuepoint
+				if(startTimeDelta > thresholdTime*1000){
+					break;
+				}
+				if(allCP[i].cuePointType === currentCP.cuePointType){
+					prevCP = allCP[i];
+					break;
+				}
+			}
+			return prevCP;
 		},
 		/**
 		 * Returns the next cuePoint object for requested time

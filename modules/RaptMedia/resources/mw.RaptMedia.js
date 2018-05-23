@@ -29,7 +29,6 @@
 	mw.PluginManager.add( 'raptMedia', mw.KBaseComponent.extend( {
 
 		defaultConfig: {
-			raptMediaScriptUrl: 'https://cdn1.raptmedia.com/system/player/v1/engine.min.js',
 			parent: 'videoHolder'
 		},
 
@@ -157,8 +156,12 @@
 		},
 
 		readRaptProjectId: function() {
-			var partnerData = this.getPlayer().evaluate('{mediaProxy.entry.partnerData}');
-			var segments = (partnerData || "").split(';');
+			var partnerData = this.getPlayer().evaluate('{mediaProxy.entry.partnerData}') || '';
+			if (partnerData.toLowerCase() === 'raptmedia!') {
+				return '!' + this.getPlayer().kentryid;
+			}
+
+			var segments = partnerData.split(';');
 			return partnerData != null && segments.length >= 2 && segments[0] === 'raptmedia' && segments.slice(1).join(';');
 		},
 
@@ -176,16 +179,16 @@
 			mw.setConfig('EmbedPlayer.KeepPoster', true);
 
 			$.when(
-				this.loadEngine(),
+				this.resolveProject(raptProjectId),
 				this.loadSegments(raptProjectId)
-			).then(function() {
+			).then(function(project) {
 				if (raptProjectId !== _this.getConfig('projectId')) {
 					return _this.reject(new AbortError);
 				}
 
 				_this.log('Loading rapt project');
 
-				return _this.loadProject(raptProjectId);
+				return _this.loadProject(project);
 			}).then(function() {
 				if (raptProjectId !== _this.getConfig('projectId')) {
 					return _this.reject(new AbortError);
@@ -341,25 +344,42 @@
 
 		// Initialization Support
 
-		loadEngine: function() {
+		resolveProject: function(projectId) {
 			var _this = this;
-			if (this.enginePromise) { return this.enginePromise; }
 
-			var raptMediaScriptUrl = this.getConfig( 'raptMediaScriptUrl' );
-			this.log('Loading rapt media engine: ' + raptMediaScriptUrl);
+			return this.promise(function(resolve, reject) {
+				if (projectId[0] !== '!') {
+					return resolve(projectId);
+				}
 
-			this.enginePromise = $.ajax({ dataType: 'script', url: raptMediaScriptUrl, cache: true })
-				.then(function() {
-					_this.log('Loaded rapt media engine successfuly: ' + raptMediaScriptUrl);
-				}, function( jqxhr, settings, exception ) {
-					_this.log('Failed to load script: ' + raptMediaScriptUrl + ', ' + exception);
-					_this.fatal(
-						'Error loading RAPT Media engine',
-						'Error loading the Rapt Media engine.'
-					);
+				_this.getKalturaClient().doRequest({
+					service: 'fileAsset',
+					action: 'list',
+					'filter:fileAssetObjectTypeEqual' : 3,
+					'filter:objectIdEqual' :   projectId.replace(/^\!/, '')
+				}, function(data) {
+					if (data.code) {
+						return reject(Error('Unable to load graph data: ' + data.message + ' (' + data.code + ')'));
+					}
+
+					var asset;
+					for(var i in data.objects) {
+						if (data.objects[i].systemName === 'GRAPH_DATA') {
+							asset = data.objects[i];
+						}
+					}
+
+					if (!asset) {
+						return reject(Error('Unable to load graph data, missing file asset'));
+					}
+
+					_this.getKalturaClient().doRequest({
+						service: 'fileAsset',
+						action: 'serve',
+						id: asset.id,
+					}, resolve);
 				});
-
-			return this.enginePromise;
+			});
 		},
 
 		getPlayerUncertainty: function(discontinuityIndex) {
