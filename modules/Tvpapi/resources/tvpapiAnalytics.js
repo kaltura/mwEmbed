@@ -14,7 +14,6 @@
 		fileId: null,
 		didFirstPlay: false,
 		mediaHitInterval: null,
-		useNonDvrLinearMediaHits: false,
 
 		setup: function() {
 			if (this.getConfig("startTime")){
