@@ -36,6 +36,7 @@
 
 		init: function (embedPlayer) {
 			var _this = this;
+            this.kPushServerNotification= mw.KPushServerNotification.getInstance(embedPlayer);
 			// Remove any old bindings:
 			this.destroy();
 			// Setup player ref:
@@ -235,6 +236,25 @@
 			$.each(cuePoints, function (index, cuePoint) {
 				_this.associativeCuePoints[cuePoint.id] = cuePoint;
 			});
+
+            // TODO - connect to a configuration flag later
+            if(true){
+                var cuepointsNotifications =  this.kPushServerNotification.createNotificationRequest(
+                    "THUMB_CUE_POINT_READY_NOTIFICATION_1",
+                    {
+                        "entryId": _this.embedPlayer.kentryid
+                    },
+                    function(cuepoints) {
+                        console.log(">>>>> onCuePointsLoaded",cuepoints);
+                        _this.fixLiveCuePointArray(cuepoints);
+                        _this.updateCuePoints(cuepoints);
+                        _this.embedPlayer.triggerHelper("KalturaSupport_CuePointsUpdated", [
+                            cuepoints.length
+                        ]);
+                    });
+                this.kPushServerNotification.registerNotifications([cuepointsNotifications]);
+                return;
+            }
 
 			var liveCuepointsRequestInterval = mw.getConfig("EmbedPlayer.LiveCuepointsRequestInterval", 10000);
 

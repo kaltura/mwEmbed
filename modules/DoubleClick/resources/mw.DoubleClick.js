@@ -927,6 +927,12 @@
             // Update the local lastRequestedAdTagUrl for debug and audits
             this.embedPlayer.setKDPAttribute( this.pluginName, 'requestedAdTagUrl', adTagUrl );
 
+            if ( this.isNativeSDK ) {
+                this.embedPlayer.getPlayerElement().attr( 'doubleClickRequestAds', adTagUrl );
+                mw.log( "DoubleClick::requestAds: Native SDK player request ad " );
+                return;
+            }
+
             // Create ad request object.
             var adsRequest = new google.ima.AdsRequest();
             if ( this.isChromeless ) {
@@ -965,12 +971,6 @@
                     _this.restorePlayer( true );
                     _this.embedPlayer.play();
                 }, timeout );
-                return;
-            }
-
-            if ( this.isNativeSDK ) {
-                this.embedPlayer.getPlayerElement().attr( 'doubleClickRequestAds', adTagUrl );
-                mw.log( "DoubleClick::requestAds: Native SDK player request ad " );
                 return;
             }
 
