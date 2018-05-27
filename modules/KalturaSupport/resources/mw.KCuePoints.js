@@ -171,44 +171,48 @@
 				return a.createdAt - b.createdAt;
 			});
 		},
+		handlePushCuepoints: function(cuepoints){
+        	this.fixLiveCuePointArray(cuepoints);
+        	this.updateCuePoints(cuepoints);
+        	this.embedPlayer.triggerHelper("KalturaSupport_CuePointsUpdated", [
+            cuepoints.length
+       	 ]);
+		},
 		setLiveCuepointsWatchDog: function () {
 			var _this = this;
-
 			// Create associative cuepoint array to enable comparing new cuepoints vs existing ones
 			var cuePoints = this.getCuePoints();
-
 			this.fixLiveCuePointArray(this.midCuePointsArray);
 			this.fixLiveCuePointArray(this.codeCuePointsArray);
 			this.fixLiveCuePointArray(cuePoints);
-
 			this.associativeCuePoints = {};
 			$.each(cuePoints, function (index, cuePoint) {
 				_this.associativeCuePoints[cuePoint.id] = cuePoint;
 			});
-
-            // TODO - connect to a configuration flag later
-            if(true){
-                var cuepointsNotifications =  this.kPushServerNotification.createNotificationRequest(
-                    "THUMB_CUE_POINT_READY_NOTIFICATION_1",
+			// if this is set - load the cue-points from push server mechanism and don't use polling
+            if(mw.getConfig("usePushForSlides")){
+                var thumbsPushNotification =  this.kPushServerNotification.createNotificationRequest(
+                    "THUMB_CUE_POINT_READY_NOTIFICATION",
                     {
                         "entryId": _this.embedPlayer.kentryid
                     },
                     function(cuepoints) {
-                        console.log(">>>>> onCuePointsLoaded",cuepoints);
-                        _this.fixLiveCuePointArray(cuepoints);
-                        _this.updateCuePoints(cuepoints);
-                        _this.embedPlayer.triggerHelper("KalturaSupport_CuePointsUpdated", [
-                            cuepoints.length
-                        ]);
+                        _this.handlePushCuepoints(cuepoints);
                     });
-                this.kPushServerNotification.registerNotifications([cuepointsNotifications]);
+                var layoutPushNotification =  this.kPushServerNotification.createNotificationRequest(
+                    "SLIDE_VIEW_CHANGE_CODE_CUE_POINT",
+                    {
+                        "entryId": _this.embedPlayer.kentryid
+                    },
+                    function(cuepoints) {
+                        _this.handlePushCuepoints(cuepoints);
+                    });
+                this.kPushServerNotification.registerNotifications([layoutPushNotification,thumbsPushNotification]);
+                // don't setup the list interval
                 return;
             }
-
 			var liveCuepointsRequestInterval = mw.getConfig("EmbedPlayer.LiveCuepointsRequestInterval", 10000);
-
 			mw.log("mw.KCuePoints::start live cue points watchdog, polling rate: " + liveCuepointsRequestInterval + "ms");
-
 			//Start live cuepoint pulling
 			this.liveCuePointsIntervalId = setInterval(function(){
 				_this.requestLiveCuepoints();
