@@ -77,7 +77,7 @@ mw.VastAdParser = {
 			$ad.find( 'Impression' ).each( function(na, node){
 				// Check if there is lots of impressions or just one:
 				if( $(node).find('URL').length ){
-					$ad.find('URL').each( function( na, urlNode ){
+					$(node).find('URL').each( function( na, urlNode ){
 						currentAd.impressions.push({
 							'beaconUrl' : _this.getURLFromNode( urlNode ),
 							'idtype' : $( urlNode ).attr('id')
