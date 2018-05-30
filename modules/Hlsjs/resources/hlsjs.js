@@ -587,6 +587,7 @@
 			 */
 			overridePlayerMethods: function () {
 				this.orig_backToLive = this.getPlayer().backToLive;
+				this.orig_getStartTimeOfDvrWindow = this.getPlayer().getStartTimeOfDvrWindow;
 				this.orig_switchSrc = this.getPlayer().switchSrc;
 				this.orig_playerSwitchSource = this.getPlayer().playerSwitchSource;
 				this.orig_switchAudioTrack = this.getPlayer().switchAudioTrack;
@@ -600,6 +601,7 @@
 					this.orig_onseeked = this.getPlayer()._onseeked.bind(this.getPlayer());
 				}
 				this.getPlayer().backToLive = this.backToLive.bind(this);
+				this.getPlayer().getStartTimeOfDvrWindow = this.getStartTimeOfDvrWindow.bind(this);
 				this.getPlayer().switchSrc = this.switchSrc.bind(this);
 				this.getPlayer().playerSwitchSource = this.playerSwitchSource.bind(this);
 				this.getPlayer().switchAudioTrack = this.switchAudioTrack.bind(this);
@@ -614,6 +616,7 @@
 			 */
 			restorePlayerMethods: function () {
 				this.getPlayer().backToLive = this.orig_backToLive;
+				this.getPlayer().getStartTimeOfDvrWindow = this.orig_getStartTimeOfDvrWindow;
 				this.getPlayer().switchSrc = this.orig_switchSrc;
 				this.getPlayer().playerSwitchSource = this.orig_playerSwitchSource;
 				this.getPlayer().switchAudioTrack = this.orig_switchAudioTrack;
@@ -784,6 +787,24 @@
 					this.registerHlsEvents();
 					this.mediaAttached = false;
 					this.hls.attachMedia(this.embedPlayer.getPlayerElement());
+				}
+			},
+
+			getStartTimeOfDvrWindow: function () {
+				if (this.embedPlayer.isLive() && this.embedPlayer.isDVR()) {
+					try {
+						var nextLoadLevel = this.hls.levels[this.hls.nextLoadLevel],
+							details = nextLoadLevel.details,
+							fragments = details.fragments,
+							start = fragments[0].start + fragments[0].duration;
+						return start - this.hls.config.maxFragLookUpTolerance;
+					}
+					catch (e) {
+						this.log('Unable obtain the start of DVR window');
+						return 0;
+					}
+				} else {
+					return 0;
 				}
 			},
 
