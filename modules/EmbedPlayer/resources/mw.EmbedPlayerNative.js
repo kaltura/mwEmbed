@@ -1713,6 +1713,14 @@
 			this.removeBindings();
 			clearTimeout(this.parseAudioTracksTimeout);
 			clearTimeout(this.parseTextTracksTimeout);
+		},
+
+		getStartTimeOfDvrWindow: function(){
+			if( this.isLive() && this.isDVR() ){
+				return this.getPlayerElement().seekable.start(0);
+			} else {
+				return 0;
+			}
 		}
 	};
 })(mediaWiki, jQuery);

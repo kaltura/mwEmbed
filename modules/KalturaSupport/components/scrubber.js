@@ -45,7 +45,7 @@
 		addBindings: function () {
 			var _this = this;
 			this.bind('durationChange', function (event, duration) {
-                _this.duration = duration;
+                _this.duration = duration - _this.embedPlayer.getStartTimeOfDvrWindow();
 			});
             this.bind('seeked', function () {
                 _this.justSeeked = true;
@@ -412,7 +412,7 @@
 				},
 				change: function (event, ui) {
 					alreadyChanged = true;
-					var seekTime = (ui.value / 1000) * embedPlayer.getDuration();
+					var seekTime = (ui.value / 1000) * _this.duration + _this.embedPlayer.getStartTimeOfDvrWindow();
 					// always update the title
 					_this.updateAttr(ui);
 					// Only run the onChange event if done by a user slide
