@@ -38,6 +38,7 @@
 		lastActiveCaption: null,
 		updateLayoutEventFired: false,
 		ended: false,
+        selectTextTrackTimeoutId: null,
 
 		setup: function(){
 			var _this = this;
@@ -674,7 +675,7 @@
 		},
 		selectTextTrack: function(defaultLangKey) {
 			var _this = this;
-			setTimeout(function () {
+			this.selectTextTrackTimeoutId = setTimeout(function () {
 				_this.log('selectDefaultIosTrack: ' + defaultLangKey);
 				_this.embedPlayer.selectDefaultCaption(defaultLangKey);
 			}, 500);
@@ -1306,6 +1307,10 @@
 			return this.getComponent().find('button');
 		},
 		destory: function(){
+			if (this.selectTextTrackTimeoutId) {
+                clearTimeout(this.selectTextTrackTimeoutId);
+                this.selectTextTrackTimeoutId = null;
+            }
 			this.playbackStarted = false;
 			// Empty existing text sources
 			this.textSources = [];
