@@ -1644,7 +1644,11 @@
                     mw.log( "DoubleClick::volumeChanged:" + percent );
                     _this.adsManager.setVolume( percent );
                 } else {
-                    _this.savedVolume = percent;
+                    if (_this.embedPlayer.mobileAutoPlay) {
+                        _this.adsManager.setVolume(percent);
+                    } else {
+                        _this.savedVolume = percent;
+                    }
                 }
             } );
 
