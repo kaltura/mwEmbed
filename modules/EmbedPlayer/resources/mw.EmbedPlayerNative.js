@@ -1104,6 +1104,9 @@
 			} else {
 				// Should not happen offten
 				this.playerElement.load();
+                if (this.currentTime > 0) {
+                    this.seek(this.currentTime);
+                }
 				if (callback) {
 					callback();
 				}
