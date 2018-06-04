@@ -688,11 +688,7 @@
         },
         isPortrait: function () {
             if ( this.getPlayer().getInterface().hasClass("mobile") && mw.getConfig('EmbedPlayer.IsFriendlyIframe') ) {
-                if ( parent
-                    && parent.document
-                    && parent.document.body
-                    && parent.document.body.parentNode
-                    && parent.document.body.parentNode.clientWidth < parent.document.body.parentNode.clientHeight) {
+                if (parent.document.body.parentNode.clientWidth < parent.document.body.parentNode.clientHeight) {
                     return true;
                 }
             }
