@@ -26,7 +26,7 @@
 
             addBindings: function () {
                 this.bind('playerReady', function () {
-                    if (!this.isDisabled) {
+                    if (!this.isDisabled || this.getPlayer().isLive()) {
                         this.show();
                     }
                 }.bind(this));
