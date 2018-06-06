@@ -486,10 +486,10 @@
 
 					}
 					if(_this.getConfig("filterByDisplayOnPlayer")){
-                        data.objects = $.grep(data.objects , function (item) {
+						data.objects = $.grep(data.objects , function (item) {
 							// also handle legacy captions items that do not have the field displayOnPlayer
-                        	if(item.hasOwnProperty("displayOnPlayer") && !item.displayOnPlayer){
-                        		return false;
+							if(item.hasOwnProperty("displayOnPlayer") && !item.displayOnPlayer){
+								return false;
 							}
 							return true;
 						});
