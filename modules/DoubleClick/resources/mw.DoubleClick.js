@@ -87,6 +87,11 @@
 
         trackCuePoints: false,
 
+        //flag for checking if ad type is vpaid
+        isVPAID: false,
+        //flag for disabling the removal of the player controls during VPAID ad
+        disableHideControlsOnVPAID: false,
+
         //override cuepoint url with the preroll url
         overrideCuePointWithPreRoll: false,
 
@@ -207,6 +212,17 @@
                 _this.prePlayActionTriggered = true;
             } );
 
+            var setVpaidMode = function () {
+	            var VpaidMode = {
+		            disabled: google.ima.ImaSdkSettings.VpaidMode.DISABLED,
+		            insecure: google.ima.ImaSdkSettings.VpaidMode.INSECURE,
+		            enabled: google.ima.ImaSdkSettings.VpaidMode.ENABLED
+	            };
+	            var vpaidModeConfig = _this.getConfig('VpaidMode');
+	            var vpaidMode = VpaidMode[vpaidModeConfig] !== undefined ? VpaidMode[vpaidModeConfig] : google.ima.ImaSdkSettings.VpaidMode.ENABLED;
+	            google.ima.settings.setVpaidMode(vpaidMode);
+            };
+
             var onImaLoadSuccess = function () {
                 _this.imaLoaded = true;
                 _this.embedPlayer.unbindHelper( 'prePlayAction' + _this.bindPostfix );
@@ -217,7 +233,8 @@
                 // set player type and version
                 google.ima.settings.setPlayerType( "kaltura/mwEmbed" );
                 google.ima.settings.setPlayerVersion( mw.getConfig( "version" ) );
-                google.ima.settings.setVpaidMode( google.ima.ImaSdkSettings.VpaidMode.ENABLED );
+                google.ima.settings.setVpaidAllowed( _this.getConfig('VpaidAllowed') || true);
+                setVpaidMode();
 
                 // Set num of redirects for VAST wrapper ads, higher means bigger latency!
                 var numRedirects = _this.getConfig( "numRedirects" );
@@ -639,14 +656,20 @@
             if ( this.isChromeless ) {
                 $( ".videoDisplay" ).prepend( adCover );
             } else {
-                if ( !mw.isIphone() ) {
+                if ( !mw.isIphone() && !_this.isVPAID) {
                     $( this.getAdContainer() ).append( adCover );
                 }
             }
             $( this.embedPlayer ).trigger( "onPlayerStateChange", [ "pause", this.embedPlayer.currentState ] );
             if ( isLinear && !this.isNativeSDK ) {
                 this.clearSkipTimeout();
-                this.embedPlayer.enablePlayControls( [ "scrubber", "share", "infoScreen", "related", "playlistAPI", "nextPrevBtn", "sourceSelector", "qualitySettings", "morePlugins" ] );
+                if ( _this.isVPAID === true ) {
+                    _this.embedPlayer.enablePlayControls( [ "share", "infoScreen", "related", "playlistAPI", "nextPrevBtn", "sourceSelector", "qualitySettings", "morePlugins" ] );
+                    _this.embedPlayer.pause();
+                }
+                else {
+                    _this.embedPlayer.enablePlayControls( [ "scrubber", "share", "infoScreen", "related", "playlistAPI", "nextPrevBtn", "sourceSelector", "qualitySettings", "morePlugins" ] );
+                }
             } else {
                 _this.embedPlayer.pause();
             }
@@ -905,7 +928,7 @@
             this.embedPlayer.setKDPAttribute( this.pluginName, 'requestedAdTagUrl', adTagUrl );
 
             // Create ad request object.
-            var adsRequest = {};
+            var adsRequest = new google.ima.AdsRequest();
             if ( this.isChromeless ) {
                 //If chromeless then send adTagUrl escaped and cust_params separately so it will be parsed correctly
                 // on the flash plugin
@@ -997,7 +1020,9 @@
             mw.log( 'DoubleClick:: onAdsManagerLoaded' );
 
             var adsRenderingSettings = new google.ima.AdsRenderingSettings();
-            adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
+            if ( !this.adTagUrl ) {
+                adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true; // for manual VAST, get the SDK to restore the player
+            }
             if ( this.getConfig( 'enableCountDown' ) === true ) {
                 adsRenderingSettings[ "uiElements" ] = [];
             }
@@ -1157,10 +1182,15 @@
                 }
             } );
             adsListener( 'LOADED', function ( adEvent ) {
+                _this.nonFatalError = false;
                 _this.showAdContainer();
                 var adData = adEvent.getAdData();
                 if ( adData ) {
                     _this.isLinear = adData.linear;
+                }
+                var ad = adEvent.getAd();
+                if( ad.getContentType() === "application/javascript" ) {
+                    _this.forceHidePlayerControlsOnVPAID();
                 }
                 var currentAdSlotType = _this.isLinear ? _this.currentAdSlotType : "overlay";
                 $( "#" + _this.getAdContainerId() ).show();
@@ -1248,9 +1278,9 @@
                 _this.adActive = true;
                 _this.adSkippable = ad.isSkippable();
                 if ( _this.isLinear ) {
+                    _this.addCountdownNotice();
                     if ( !_this.adSkippable ) {
                         _this.showSkipBtn();
-                        _this.addCountdownNotice();
                     }
                     _this.playingLinearAd = true;
                     // hide spinner:
@@ -1317,10 +1347,27 @@
             // Resume content:
             adsListener( 'SKIPPED', function () {
                 mw.log( "DoubleClick:: adSkipped" );
+                if(_this.isVPAID === true) {
+                    _this.forceShowPlayerControlsOnVPAID();
+                }
                 $( _this.embedPlayer ).trigger( 'onAdSkip' );
             } );
+
+            adsListener('LOG', function (event) {
+                if (_this.nonFatalError) return;
+                var adData = event.getAdData();
+                if (adData['adError']) {
+                    console.log('Non-fatal error occurred: ' + adData['adError'].getMessage());
+                    this.handleNonFatalError(event);
+                }
+            });
+
             // Resume content:
             adsListener( 'CONTENT_RESUME_REQUESTED', function () {
+                if (_this.nonFatalError) return;
+                if(_this.isVPAID === true) {
+                    _this.forceShowPlayerControlsOnVPAID();
+                }
                 $( _this.embedPlayer ).trigger( 'onContentResumeRequested' );
                 _this.playingLinearAd = false;
                 // Update slot type, if a preroll switch to midroll
@@ -1535,7 +1582,20 @@
                 }, 'adsLoadError', true );
             }
         },
-
+        forceShowPlayerControlsOnVPAID: function () {
+            var _this = this;
+            _this.isVPAID = false;
+            if( ! ( _this.getConfig("disableHideControlsOnVPAID") || _this.embedPlayer.useNativePlayerControls() ) ) {
+                _this.embedPlayer.layoutBuilder.forceShowPlayerControls();
+            }
+        },
+        forceHidePlayerControlsOnVPAID: function () {
+            var _this = this;
+            _this.isVPAID = true;
+            if( !_this.getConfig("disableHideControlsOnVPAID") && _this.embedPlayer.useNativePlayerControls() === false ) {
+                _this.embedPlayer.layoutBuilder.forceHidePlayerControls();
+            }
+        },
         getPlayerSize: function () {
             return {
                 'width': this.embedPlayer.getVideoHolder().width(),
@@ -1691,6 +1751,16 @@
                 var offsetRemaining = Math.max(Math.ceil(parseFloat(this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' )) - remainTime), 0);
                 this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining', offsetRemaining );
                 this.embedPlayer.getInterface().find(".ad-skip-label").text(this.embedPlayer.evaluate( this.embedPlayer.getRawKalturaConfig('skipNotice','text')) );
+            }
+        },
+        handleNonFatalError: function (event) {
+            this.nonFatalError = true;
+            var ad = event.getAd();
+            var podInfo = ad && ad.getAdPodInfo();
+            var totalPodAds = podInfo && podInfo.getTotalAds();
+            if (!ad || totalPodAds === 1) {
+                this.restorePlayer(this.contentDoneFlag);
+                this.embedPlayer.play();
             }
         },
         // Handler for various ad errors.

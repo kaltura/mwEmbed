@@ -4,6 +4,7 @@
     "Kaltura.ServiceBase": "/api_v3/index.php?service=",
     "Kaltura.CdnUrl": "http://cdnakmi.kaltura.com",
     "Kaltura.NoApiCache": false,
+    "Kaltura.force10secProgressive": true,
     "Kaltura.UseFlavorIdsUrls": true,
     "Kaltura.MissingFlavorSources": [
         {

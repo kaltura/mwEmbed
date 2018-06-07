@@ -31,7 +31,7 @@
 			},
             contentSelection: {
                 id: 'contentSelection',
-                title: 'Content Selection',
+                title: 'Content Selection  - select a stream to view',
                 event: "contentSelection"
             }
 		},

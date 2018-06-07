@@ -49,8 +49,10 @@ mw.MediaElement.prototype = {
 		if( videoElement ){
 			var src = $( videoElement ).attr( "src" );
 			var found = false;
-			if (src){
+            var protocol = location.protocol.slice(0, -1);
+            if (src){
 				$.each( mw.getConfig( 'Kaltura.BlackVideoSources' ), function(inx, sourceAttr ) {
+                    sourceAttr.src = sourceAttr.src.replace("http", protocol);
 					if (src.indexOf(sourceAttr.src) !== -1){
 						found = true;
 						return false;
@@ -577,7 +579,7 @@ mw.MediaElement.prototype = {
 					if ( !mw.isIE8() ) {
 						var $vid = $( '#pid_' + this.parentEmbedId );
 						if( $vid.length ) {
-							if( mw.isIphone() ) {
+							if( mw.isIphone() || mw.getConfig('Kaltura.addCrossoriginToIframe') === true ) {
 								$vid.attr('crossorigin', 'anonymous');
 							}
 							$vid.append(element);

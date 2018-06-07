@@ -20,6 +20,7 @@ mw.KWidgetSupport.prototype = {
 	kClient : null,
 	kSessionId: null, // Used for Analytics events
 	originalStreamerType: null,
+	originalServiceUrl: {},
 
 	// Constructor check settings etc
 	init: function( options ){
@@ -303,15 +304,29 @@ mw.KWidgetSupport.prototype = {
 					if (action.pattern && action.replacement) {
 						var regExp=new RegExp(action.pattern, "i");
 						var urlsToModify = ['Kaltura.ServiceUrl','Kaltura.StatsServiceUrl','Kaltura.ServiceBase','Kaltura.LiveStatsServiceUrl','Kaltura.AnalyticsUrl'];
-						urlsToModify.forEach(function (key) {
-							var serviceUrl = mw.config.get(key);
-							var match = serviceUrl.match( regExp );
+						var self = this;
+						var flashvars = embedPlayer.getFlashvars();
 
+						urlsToModify.forEach(function (key) {
+
+							if (!self.originalServiceUrl[key]) {
+                                self.originalServiceUrl[key] = mw.config.get(key);
+							}
+							var serviceUrl = self.originalServiceUrl[key];
+							var match = serviceUrl.match( regExp );
 							if (match) {
 								serviceUrl = serviceUrl.replace(regExp, action.replacement);
 								mw.config.set(key, serviceUrl);
+								// Pass the override URLs configurations to the parent mw object so that it's client
+								// URLs would be updated too.
+								if(mw.config.get( 'EmbedPlayer.IsFriendlyIframe') && flashvars.tunnelAPI){
+								    try{
+								        window.parent.mw.setConfig(key, serviceUrl);
+								    }catch(e){
+								        mw.log("Failed to access window.parent from updatePlayerContextData replace URLs ");
+								    }
+								}
 							}
-
 						});
 					}
 				}
@@ -929,7 +944,7 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.autoplay = true;
 		}
 		var inline = getAttr( 'EmbedPlayer.WebKitPlaysInline' );
-		if (inline) {
+		if (inline && mw.isIphone()) {
 			embedPlayer.inline = true;
 		}
 
@@ -1817,7 +1832,7 @@ mw.KWidgetSupport.prototype = {
 		this.removedAdaptiveFlavors = false;
 		// Apple adaptive streaming is broken for short videos
 		// remove adaptive sources if duration is less then 10 seconds,
-		if( playerData.meta.duration < 10 ) {
+		if( playerData.meta.duration < 10 && mw.getConfig("Kaltura.force10secProgressive") ) {
 			deviceSources = this.removeAdaptiveFlavors( deviceSources );
 		}
 
@@ -2094,6 +2109,13 @@ mw.KWidgetSupport.prototype = {
 			} else {
 				thumbUrl += '/width/' + thumb.width + '/height/' + thumb.height;
 			}
+            if (thumb.vid_sec) {
+                thumbUrl += '/vid_sec/' + thumb.vid_sec;
+            }
+            if (thumb.vid_slices) {
+                thumbUrl += '/vid_slices/' + thumb.vid_slices;
+            }
+
 		}
 		return thumbUrl;
 	},

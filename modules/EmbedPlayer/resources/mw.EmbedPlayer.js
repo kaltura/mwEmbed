@@ -1124,6 +1124,7 @@
 			var stopSeek = {value: false};
 			this.triggerHelper('preSeek', [seekTime, stopAfterSeek, stopSeek]);
 			if (stopSeek.value) {
+				this.seeking = false;
 				return false;
 			}
 
@@ -2119,6 +2120,7 @@
 			embedCode += 'width=&quot;' + this.getPlayerWidth() + '&quot; ';
 			embedCode += 'height=&quot;' + this.getPlayerHeight() + '&quot; ';
 			embedCode += 'allowfullscreen webkitallowfullscreen mozAllowFullScreen ';
+			embedCode += "allow='autoplay *; fullscreen *; encrypted-media *' ";
 			embedCode += 'frameborder=&quot;0&quot; ';
 
 			// Close up the embedCode tag:
@@ -3428,6 +3430,18 @@
 			if ($.isFunction(callback)) {
 				callback();
 			}
+		},
+
+		showTextTrack: function () {
+
+		},
+
+		hideTextTrack: function () {
+
+		},
+
+		getActiveSubtitle: function () {
+			return null;
 		},
 
 		getCurrentBufferLength: function(){

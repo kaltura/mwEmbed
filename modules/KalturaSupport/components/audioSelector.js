@@ -233,7 +233,7 @@
 		getComponent: function () {
 			var _this = this;
 			if (!this.$el) {
-				var $menu = $('<ul />');
+				var $menu = $('<ul />').addClass('dropdown-menu');
 				//TODO: need icon from Shlomit!
 				var $button = $('<button />')
 					.addClass('btn icon-audio')

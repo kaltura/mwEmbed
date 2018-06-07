@@ -410,6 +410,13 @@
     "scripts": "resources/uiConfComponents/shareSnippet.js",
     "kalturaPluginName": "shareSnippet"
   },
+  "qualitywatcher": {
+    "scripts": "resources/mw.QualityWatcher.js",
+    "kalturaPluginName": "qualitywatcher",
+    "dependencies": [
+      "mw.KBasePlugin"
+    ]
+  },
   "moderationPlugin": {
     "scripts": "resources/uiConfComponents/moderationPlugin.js",
     "dependencies": [
@@ -456,7 +463,11 @@
     "kalturaPluginName": "liveAnalytics"
   },
   "kAnalony": {
-    "scripts": "resources/mw.kAnalony.js",
+    "scripts": [
+      "resources/mw.KavaTimer.js",
+      "resources/mw.KavaRateHandler.js",
+      "resources/mw.kAnalony.js"
+    ],
     "dependencies": [
       "mw.KBasePlugin"
     ],

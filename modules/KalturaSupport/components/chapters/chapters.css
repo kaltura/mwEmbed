@@ -187,7 +187,7 @@
     rgba(0, 0, 0, 0.65) 60%, rgba(0, 0, 0, 0.30196) 100%);
     background: rgb(0, 0, 0);
     -ms-filter: progid:DXImageTransform.Microsoft.Alpha(opacity=60);
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0,0,0,1);
 }
 
 .chapters > .k-chapters-container .chapterRibbon{
@@ -253,6 +253,9 @@
     bottom: 0;
     right: 0;
     z-index: 2;
+    color: white;
+    border: none;
+    background: transparent;
     margin: 0 20px 12px 0;
     font-size: 30px;
     -webkit-transition: -webkit-transform 0.5s ease-out;

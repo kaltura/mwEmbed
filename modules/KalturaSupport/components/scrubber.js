@@ -290,9 +290,7 @@
 				return this.getConfig('thumbSlicesUrl');
 			}
 			var thumbReq = {
-				'partner_id': this.embedPlayer.kpartnerid,
-				'uiconf_id': this.embedPlayer.kuiconfid,
-				'entry_id': this.embedPlayer.kentryid,
+				'url': this.embedPlayer.evaluate('{mediaProxy.entry.thumbnailUrl}'),
 				'width': this.getConfig("thumbWidth"),
 				'vid_slices': this.getSliceCount(this.duration)
 			}
@@ -300,7 +298,7 @@
 				thumbReq[ 'ks' ] = this.getPlayer().getFlashvars('ks');
 			}
 			// else get thumb slices from helper:
-			return kWidget.getKalturaThumbUrl( thumbReq );
+			return kWidgetSupport.getKalturaThumbnailUrl( thumbReq );
 		},
 		showThumbnailPreview: function (data) {
 			var showOnlyTime = this.getConfig("showOnlyTime");
