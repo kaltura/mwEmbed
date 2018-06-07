@@ -307,7 +307,7 @@
 
             $(".title-text").html(gM('mwe-quiz-almostDone'));
             $(".sub-text").html(gM('mwe-quiz-remainUnAnswered') + '</br>' + gM('mwe-quiz-pressRelevatToAnswer'))
-            $(".confirm-box").html(gM('mwe-quiz-okGotIt'));
+            $(".confirm-box").html(gM('mwe-quiz-okGotIt')).attr("tabindex", 5).attr("title", gM('mwe-quiz-okGotIt')).on('keydown', _this.keyDownHandler);
 
             $(document).off('click','.confirm-box')
                 .on('click', '.confirm-box', function () {
@@ -870,16 +870,22 @@
         },
         displayQuizEndMarker:function(){
             var  _this = this;
-            var scrubber = this.embedPlayer.getInterface().find(".scrubber");
-
-            scrubber.parent().prepend('<div class="quizDone-cont"></div>');
+            var controlBar = this.embedPlayer.getControlBarContainer();
+            controlBar.find('.bubble-cont').append('<div class="quizDone-cont"></div>');
 
             $(document).off( 'click', '.quizDone-cont' )
                 .on('click', '.quizDone-cont', function () {
                     _this.KIVQModule.quizEndScenario();
                 });
-            $('.quizDone-cont').attr('tabindex', 5).attr('role', 'button')
-                    .attr('title', 'click to end quiz now').on('keydown', _this.keyDownHandler).attr('id', 'quiz-done-continue-button').focus();
+            $('.quizDone-cont')
+                .attr({
+                    'tabindex': 5,
+                    'role':'button',
+                    'title':'click to end quiz now',
+                    'aria-label':gM('mwe-quiz-submit-button'),
+                    'id':'quiz-done-continue-button'
+                })
+                .on('keydown', _this.keyDownHandler).focus();
             // verify focus in IE
             document.getElementById('quiz-done-continue-button').focus();
             setTimeout(function () {
