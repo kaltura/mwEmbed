@@ -12,7 +12,8 @@
 			qnaFontsCssFileName: 'modules/QnA/resources/css/qna-fonts.css',
 			qnaNanoCssFileName: 'modules/QnA/resources/css/qna-nano.css',
 			qnaThreadsListCssFileName: 'modules/QnA/resources/css/qna-threads-list.css',
-			onPage: true
+			onPage: true,
+			overrideModeratorName: false
 		},
 
 		moduleStatus: ko.observable(undefined),
