@@ -877,10 +877,8 @@
                 .on('click', '.quizDone-cont', function () {
                     _this.KIVQModule.quizEndScenario();
                 });
-           var lastBubblesIndex =  controlBar.find('.bubble-cont .bubble').last().attr('tabindex');
-           var tabindex = lastBubblesIndex ? lastBubblesIndex.attr('tabindex') : '5';
             $('.quizDone-cont').attr({
-                'tabindex': tabindex,
+                'tabindex': 20,
                 'role':'button',
                 'title':'click to end quiz now',
                 'aria-label':gM('mwe-quiz-submit-button'),
