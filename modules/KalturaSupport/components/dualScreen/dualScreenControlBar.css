@@ -63,6 +63,7 @@
     cursor: pointer;
     transition: transform 0.5s ease-out, filter 0.5s ease-out;
     padding: 10px;
+    text-decoration: none;
 }
 .controlBarBtn:only-child {
     margin-left: 0;

@@ -47,7 +47,7 @@
 					disableClosingTimeout();
 					_this.toggleSideBar();
 					return false;
-				});
+				}).on('keydown', _this.keyDownHandler);
 				if (!_this.getConfig('clickToClose')) {
 					_this.getComponent()
 						.on( 'mouseleave', function () {
@@ -171,6 +171,12 @@
 				_this.close();
 			});
 		},
+		keyDownHandler: function(ev){
+			if(ev.which === 13 || ev.which === 32)
+			{
+				$(ev.target).click();
+			}
+		},
 		showReminder: function(){
 			if (this.enabled && this.render) {
 				this.getComponentReminder().addClass( 'open' );
@@ -257,7 +263,7 @@
 				this.$elHelper = $('<div>' )
 					.addClass( 'sideBarContainerReminder tooltipBelow ' + _this.getConfig('position') )
 					.prop("title", title)
-					.attr("data-show-tooltip", true)
+					.attr({"data-show-tooltip":true,"tabindex": 19})
 					.append($('<div id="sideBarContainerReminderContainer">' )
 						.addClass( 'icon-chapterMenu' )
 					);
