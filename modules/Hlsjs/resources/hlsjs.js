@@ -706,10 +706,11 @@
 			 * Override player method for loading the video element
 			 */
 			load: function () {
-				if(!this.getPlayer().isInSequence()){
-					this.hls.startLoad();
-				}
-			},
+                if (this.getPlayer().currentTime > 0) {
+                    this.getPlayer().getPlayerElement().currentTime = this.getPlayer().currentTime;
+                }
+                this.hls.startLoad();
+            },
 			/**
 			 * Override player callback after changing media
 			 */
@@ -774,7 +775,7 @@
 				if(this.LoadHLS){
 					this.unbind("firstPlay");
 					this.unbind("seeking");
-					this.hls.attachMedia(this.getPlayer().getPlayerElement());
+                    this.hls.attachMedia(this.getPlayer().getPlayerElement());
 				}
 			},
 
