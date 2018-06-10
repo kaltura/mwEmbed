@@ -7,5 +7,6 @@ var qna= {
         'moduleWidth' : '200',
         'userId': "Shimi",
         'userRole':"userRole", //anonymousRole
-        'allowNewQuestionWhenNotLive': true
+        'allowNewQuestionWhenNotLive': true,
+        'overrideModeratorName': 'Some Moderator'
     };
