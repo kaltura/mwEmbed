@@ -38,6 +38,7 @@
 		lastActiveCaption: null,
 		updateLayoutEventFired: false,
 		ended: false,
+        selectTextTrackTimeoutId: null,
 
 		setup: function(){
 			var _this = this;
@@ -664,12 +665,20 @@
 		},
 		selectDefaultIosTrack: function (defaultLangKey) {
 			var _this = this;
-			this.once( 'playing', function (){
-				setTimeout(function () {
-					_this.log('selectDefaultIosTrack: ' + defaultLangKey);
-					_this.embedPlayer.selectDefaultCaption(defaultLangKey);
-				}, 500);
-			});
+			if (_this.embedPlayer.isPlaying()){
+				_this.selectTextTrack(defaultLangKey);
+			} else {
+				_this.once( 'playing', function (){
+					_this.selectTextTrack(defaultLangKey);
+				});
+			}
+		},
+		selectTextTrack: function(defaultLangKey) {
+			var _this = this;
+			this.selectTextTrackTimeoutId = setTimeout(function () {
+				_this.log('selectDefaultIosTrack: ' + defaultLangKey);
+				_this.embedPlayer.selectDefaultCaption(defaultLangKey);
+			}, 500);
 		},
 		selectSourceByLangKey: function( langKey ){
 			var _this = this;
@@ -1298,6 +1307,10 @@
 			return this.getComponent().find('button');
 		},
 		destory: function(){
+			if (this.selectTextTrackTimeoutId) {
+                clearTimeout(this.selectTextTrackTimeoutId);
+                this.selectTextTrackTimeoutId = null;
+            }
 			this.playbackStarted = false;
 			// Empty existing text sources
 			this.textSources = [];

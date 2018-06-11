@@ -220,7 +220,7 @@
                 }
             });
             if (_this.getPlayer().getInterface().hasClass("mobile")){
-                $( window ).on( "orientationchange", function() {
+                $( window ).on( "orientationchange resize", function() {
                     if(_this.ivqShowScreenMode && _this.isPortrait() ) {
                         _this.showPortraitWarning();
                     }else {
@@ -687,11 +687,10 @@
             $('#kplayer_pid_kplayer').attr('aria-hidden', 'true');
         },
         isPortrait: function () {
-            if (
-                this.getPlayer().getInterface().hasClass("mobile")
-                && (screen.orientation.angle === 0 || screen.orientation.angle === 180)
-            ) {
-               return true;
+            if ( this.getPlayer().getInterface().hasClass("mobile") && mw.getConfig('EmbedPlayer.IsFriendlyIframe') ) {
+                if (parent.document.body.parentNode.clientWidth < parent.document.body.parentNode.clientHeight) {
+                    return true;
+                }
             }
             return false;
         },

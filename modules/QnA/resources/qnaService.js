@@ -177,7 +177,7 @@
         this.getOwner = function(){
             if (this.cuePoint().overrideModeratorName !== false) {
                 return this.cuePoint().overrideModeratorName;
-            } else {
+            }else {
                 return this.cuePoint().userId;
             }
         };
