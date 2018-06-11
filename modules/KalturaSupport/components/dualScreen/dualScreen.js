@@ -105,7 +105,11 @@
                             }, 500);
                         }
                     }
-				} );
+                    if( _this.getPlayer().isMobileSkin() ) {
+                    	$(".controlBar").css("top", "60px")
+                    }
+
+                } );
 
 				//Handle layout changes due to layout update(resize and orientation change)
 				this.bind( 'updateLayout', function(e){
