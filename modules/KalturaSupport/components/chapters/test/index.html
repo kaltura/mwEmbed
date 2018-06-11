@@ -22,6 +22,25 @@
             }
         }
     });
+    var swPlayer;
+    function showSlides(){
+        try{$(".kWidgetIframeContainer")[0].sendNotification("openSideBarContainer")}catch(e){}
+        try{$("#kaltura_player")[0].sendNotification("openSideBarContainer")}catch(e){}
+    }
+
+    function renderUI(){
+        $("#kaltura_player").parent().prepend('<div class="seekers-wrapper"></div>');
+        $(".seekers-wrapper")
+            .append('<button class="seekers-hack" onclick="showSlides()"> Chapters </button>');
+    }
+    var embedPlayer;
+    var loadScriptInterval = setInterval(function(){
+        swPlayer = $("#kaltura_player")[0];
+        if(swPlayer && swPlayer.evaluate){
+            clearInterval(loadScriptInterval);
+            renderUI();
+        }
+    },200);
 </script>
 </body>
 </html>
