@@ -107,6 +107,7 @@ body {
 }
 .sideBarContainerReminder.left{
 	left: 0px;
+	text-decoration: none;
 	-webkit-transition: left 0.3s ease-in;
 	-moz-transition: left 0.3s ease-in;
 	-o-transition: left 0.3s ease-in;
