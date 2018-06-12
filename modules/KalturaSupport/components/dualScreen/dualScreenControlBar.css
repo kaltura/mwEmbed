@@ -63,6 +63,7 @@
     cursor: pointer;
     transition: transform 0.5s ease-out, filter 0.5s ease-out;
     padding: 10px;
+    text-decoration: none;
 }
 .controlBarBtn:only-child {
     margin-left: 0;
@@ -158,6 +159,10 @@
 @media all and  (max-width: 500px), screen and (max-height: 300px) {
     #displayControlBar{
         /*width:250px;*/
+    }
+    .controlBar {
+        top: 0 !important;
+        padding: 14px 14px 0 0;
     }
     .controlBarBtn{
         font-size:26px;

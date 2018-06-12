@@ -623,7 +623,7 @@
             }
 
             // due to IMA removal of custom playback on Android devices, we must get a user gesture for each new entry in order to show prerolls. Preventing auto play after change media in such cases.
-            if ( !_this.isNativeSDK && _this.embedPlayer.playlist && mw.isMobileDevice() && mw.isAndroid() ) {
+            if ( !_this.isNativeSDK && _this.embedPlayer.playlist && mw.isMobileDevice() && mw.isAndroid() && !mw.getConfig('mobileAutoPlay')) {
                 _this.embedPlayer.setKalturaConfig( 'playlistAPI', 'autoPlay', false );
                 _this.embedPlayer.autoplay = false;
 
@@ -927,8 +927,14 @@
             // Update the local lastRequestedAdTagUrl for debug and audits
             this.embedPlayer.setKDPAttribute( this.pluginName, 'requestedAdTagUrl', adTagUrl );
 
+            if ( this.isNativeSDK ) {
+                this.embedPlayer.getPlayerElement().attr( 'doubleClickRequestAds', adTagUrl );
+                mw.log( "DoubleClick::requestAds: Native SDK player request ad " );
+                return;
+            }
+
             // Create ad request object.
-            var adsRequest = {};
+            var adsRequest = new google.ima.AdsRequest();
             if ( this.isChromeless ) {
                 //If chromeless then send adTagUrl escaped and cust_params separately so it will be parsed correctly
                 // on the flash plugin
@@ -965,12 +971,6 @@
                     _this.restorePlayer( true );
                     _this.embedPlayer.play();
                 }, timeout );
-                return;
-            }
-
-            if ( this.isNativeSDK ) {
-                this.embedPlayer.getPlayerElement().attr( 'doubleClickRequestAds', adTagUrl );
-                mw.log( "DoubleClick::requestAds: Native SDK player request ad " );
                 return;
             }
 
@@ -1644,7 +1644,11 @@
                     mw.log( "DoubleClick::volumeChanged:" + percent );
                     _this.adsManager.setVolume( percent );
                 } else {
-                    _this.savedVolume = percent;
+                    if (_this.embedPlayer.mobileAutoPlay) {
+                        _this.adsManager.setVolume(percent);
+                    } else {
+                        _this.savedVolume = percent;
+                    }
                 }
             } );
 

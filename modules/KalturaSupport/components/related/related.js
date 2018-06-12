@@ -97,6 +97,22 @@
 					_this.embedPlayer.disablePlayControls(['playPauseBtn']);
 				}
 			});
+			this.bind('showScreen', function (event, screenName) {
+				if ( screenName === "related" ){
+					_this.embedPlayer.getInterface().find(".related .icon-close").attr({'tabindex':20}).focus();
+					_this.embedPlayer.getInterface().find(".related").keydown(function(e){
+						if(e.keyCode === 9){// keyCode = 9 - tab button
+							setTimeout(function () {
+								if(!$(':focus').parents('.related').hasClass('related')){
+									_this.embedPlayer.getInterface().find(".screen.related .icon-close").focus();
+								}
+							}, 0);
+						}
+					});
+				}
+				
+				
+			});
 			this.bind('preHideScreen', function (event, screenName) {
 				if ( screenName === "related" ){
 					_this.embedPlayer.enablePlayControls();
