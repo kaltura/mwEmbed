@@ -249,7 +249,7 @@
             this.qnaPlugin = qnaPlugin;
             this.overrideModeratorName =  qnaPlugin.getConfig('overrideModeratorName') ? qnaPlugin.getConfig('overrideModeratorName') : false;
 
-            this.kPushServerNotification= mw.KPushServerNotification.getInstance(embedPlayer)
+            this.kPushServerNotification= mw.KPushServerNotification.getInstance(embedPlayer);
             if (embedPlayer.isLive()) {
                 //we first register to all notification before continue to get the existing cuepoints, so we don't get races and lost cue points
                 this.getMetaDataProfile().then(function() {
