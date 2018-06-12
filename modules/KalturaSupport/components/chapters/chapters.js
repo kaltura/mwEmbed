@@ -483,7 +483,6 @@
 				var description = item.description || customData.desc;
 				var thumbnailUrl = item.thumbnailUrl || customData.thumbUrl || _this.getThumbUrl(item);
 				var thumbnailRotatorUrl = _this.getConfig('thumbnailRotator') ? _this.getThumRotatorUrl() : '';
-
 				mediaItem = {
 					order: orderId++,
 					tabIndex: 100 + orderId + 1,
@@ -1288,11 +1287,19 @@
 					}
 				}
 			});
-
+			this.onItemKey = function (e,d) {
+                if(e.keyCode == 13){
+                    var seekto = $(e.target).attr("data-starttime");
+                    if(seekto){
+                    	this.embedPlayer.sendNotification("doSeek",seekto);
+					}
+                }
+            };
 			var mediaBoxes = this.getMediaListDomElements();
 			mediaBoxes.on('mousedown mouseup mouseout', function(){
 				this.blur();
-			});
+			})
+			.on('keyup', $.proxy(this.onItemKey , this));
 
 			this.getComponent().find(".slideBoxToggle")
 					.off("click").on("click", function(e){
