@@ -1358,7 +1358,7 @@
                 var adData = event.getAdData();
                 if (adData['adError']) {
                     console.log('Non-fatal error occurred: ' + adData['adError'].getMessage());
-                    this.handleNonFatalError(event);
+                    _this.handleNonFatalError(event);
                 }
             });
 
