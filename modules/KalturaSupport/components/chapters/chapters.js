@@ -835,8 +835,15 @@
 							_this.showSearchResults( results );
 							typeahead.typeahead( "close" );
 						}
+                        if(e.type === "keyup" && e.keyCode === 27 ){
+						    // close menu and focus the sidebar
+                            _this.getPlayer().triggerHelper("closeSideBarContainer");
+                            _this.getPlayer().triggerHelper( "onEnableKeyboardBinding" );
+                            _this.embedPlayer.getInterface().find(".sideBarContainerReminder").focus();
+                        }
 					} )
 					.on( "focus", function () {
+                        _this.getPlayer().triggerHelper("openSideBarContainer");
 						_this.getPlayer().triggerHelper( "onDisableKeyboardBinding" );
 						//On each focus render width of dropdown menu
 						searchBoxWrapper.find(".tt-dropdown-menu" ).width(searchFormWrapper.width());
@@ -1287,11 +1294,15 @@
 					}
 				}
 			});
-			this.onItemKey = function (e,d) {
+			this.onItemKey = function (e) {
+				var _this = this;
                 if(e.keyCode == 13){
                     var seekto = $(e.target).attr("data-starttime");
                     if(seekto){
                     	this.embedPlayer.sendNotification("doSeek",seekto);
+                        _this.getPlayer().triggerHelper("closeSideBarContainer");
+                        _this.getPlayer().triggerHelper( "onEnableKeyboardBinding" );
+                        _this.embedPlayer.getInterface().find(".sideBarContainerReminder").focus();
 					}
                 }
             };
