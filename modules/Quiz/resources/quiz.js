@@ -307,7 +307,7 @@
 
             $(".title-text").html(gM('mwe-quiz-almostDone'));
             $(".sub-text").html(gM('mwe-quiz-remainUnAnswered') + '</br>' + gM('mwe-quiz-pressRelevatToAnswer'))
-            $(".confirm-box").html(gM('mwe-quiz-okGotIt'));
+            $(".confirm-box").html(gM('mwe-quiz-okGotIt')).attr("tabindex", 5).attr("title", gM('mwe-quiz-okGotIt')).on('keydown', _this.keyDownHandler);
 
             $(document).off('click','.confirm-box')
                 .on('click', '.confirm-box', function () {
@@ -714,15 +714,16 @@
             var allPoints = $.cpObject.cpArray;
             var currentPoint = allPoints[questionNr];
             if(currentPoint){
-                var nextBtn = $('<a/>').addClass('cp-navigation-btn next-cp disabled');
-                var prevBtn = $('<a/>').addClass('cp-navigation-btn prev-cp disabled');
+                var nextBtn = $('<a/>').addClass('cp-navigation-btn next-cp disabled').attr({'href':'#','tabindex': -1,'aria-label':gM('mwe-quiz-next-question-disabled' )});
+                var prevBtn = $('<a/>').addClass('cp-navigation-btn prev-cp disabled').attr({'href':'#','tabindex': -1,'aria-label':gM('mwe-quiz-previous-question-disabled')});
                 var separator = $("<div/>").addClass('separator-block').append($('<span/>').addClass('separator'));
                 
                 var prevQuePoint = allPoints[currentPoint.key-1];
                 if(currentPoint.key > allPoints[0].key && prevQuePoint){
                     //allow go to prev CP: 1 - if canSkip is true; 2 - if canSkip is false but current CP and prev CP is already answered
                     if( (_this.KIVQModule.canSkip) || (!_this.KIVQModule.canSkip && currentPoint.isAnswerd && prevQuePoint.isAnswerd) ){
-                        prevBtn.attr({'href':'#','tabindex': 7}).removeClass('disabled')
+                        prevBtn.attr({'aria-label':gM('mwe-quiz-previous-question'),'tabindex': 5})
+                            .removeClass('disabled')
                             .on('keydown', _this.keyDownHandler)
                             .on('click',function (e) {
                                 e.preventDefault();
@@ -738,7 +739,8 @@
                 if(currentPoint.key < allPoints[allPoints.length-1].key && nextQuePoint){
                     //allow go to next CP: 1 - if canSkip is true; 2 - if canSkip is false but current CP and next CP is already answered
                     if( (_this.KIVQModule.canSkip) || (!_this.KIVQModule.canSkip && nextQuePoint.isAnswerd)){
-                        nextBtn.attr({'href':'#','tabindex': 8}).removeClass('disabled')
+                        nextBtn.attr({'aria-label':gM('mwe-quiz-next-question') ,'tabindex': 5 })
+                            .removeClass('disabled')
                             .on('keydown', _this.keyDownHandler)
                             .on('click',function (e) {
                                 e.preventDefault();
@@ -805,7 +807,30 @@
             if(ev.which === 13 || ev.which === 32)
             {
                 $(ev.target).click();
+            }else if(ev.which === 9){
+                var _this = this;
+                setTimeout(function () {
+                    var currentFocusedElement = $(':focus');//when timeout will done - new element will be in focus
+                    if(!currentFocusedElement.parents('.quiz').length){
+                        if($(_this).parents(".quiz").find(".pdf-download-img").length){
+                            $(_this).parents(".quiz").find(".pdf-download-img").focus();
+                        }
+                        else if($(_this).parents(".quiz").find(".confirm-box").length){
+                            $(_this).parents(".quiz").find(".confirm-box").focus();
+                        }
+                        else if($(_this).parents(".quiz").find(".hint-why-box").length){
+                            //find hint
+                            $(_this).parents(".quiz").find(".hint-why-box").focus();
+                        }else{
+                            $(_this).parents(".quiz").find(".display-question").focus();
+                            // if hint isnt there - focus on the name
+                        }
+                        return;
+                    }
+                }, 0);
             }
+
+
         },
         displayBubbles:function(){
             var  _this = this,displayClass,embedPlayer = this.getPlayer(),handleBubbleclick;
@@ -825,7 +850,7 @@
                 var pos = (Math.round(((val.startTime/embedPlayer.kalturaPlayerMetaData.msDuration)*100) * 10)/10)-1;
                 $('.bubble-cont').append($('<div id ="' + key + '" style="margin-left:' + pos + '%">' +
                     _this.KIVQModule.i2q(key) + ' </div>')
-                        .addClass(displayClass).attr('role', 'button').attr('tabindex', 5).on('keydown', _this.keyDownHandler)
+                        .addClass(displayClass).attr('role', 'button').attr('tabindex', 20).on('keydown', _this.keyDownHandler)
                 );
             });
 
@@ -846,16 +871,20 @@
         },
         displayQuizEndMarker:function(){
             var  _this = this;
-            var scrubber = this.embedPlayer.getInterface().find(".scrubber");
-
-            scrubber.parent().prepend('<div class="quizDone-cont"></div>');
+            var controlBar = this.embedPlayer.getControlBarContainer();
+            controlBar.find('.bubble-cont').append('<div class="quizDone-cont"></div>');
 
             $(document).off( 'click', '.quizDone-cont' )
                 .on('click', '.quizDone-cont', function () {
                     _this.KIVQModule.quizEndScenario();
                 });
-            $('.quizDone-cont').attr('tabindex', 5).attr('role', 'button')
-                    .attr('title', 'click to end quiz now').on('keydown', _this.keyDownHandler).attr('id', 'quiz-done-continue-button').focus();
+            $('.quizDone-cont').attr({
+                'tabindex': 20,
+                'role':'button',
+                'title':'click to end quiz now',
+                'aria-label':gM('mwe-quiz-submit-button'),
+                'id':'quiz-done-continue-button'
+            }).on('keydown', _this.keyDownHandler).focus();
             // verify focus in IE
             document.getElementById('quiz-done-continue-button').focus();
             setTimeout(function () {
