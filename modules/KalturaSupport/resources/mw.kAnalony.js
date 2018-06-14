@@ -552,8 +552,14 @@
                 }catch(e){
 					mw.log("Failed sync time from server");
 				}
-			}, true );
-		},
+            }, true , null , null, null, function ( param ) {
+                if ( statsEvent['referrer'].length > 500 ) {
+                    var parser = document.createElement('a');
+                    parser.href = mw.getConfig('EmbedPlayer.IframeParentUrl');
+                    param = parser.hostname;
+                }
+            });
+        },
 
         maybeAddPlaylistId: function (statsEvent) {
             var plugins = this.embedPlayer.plugins;
