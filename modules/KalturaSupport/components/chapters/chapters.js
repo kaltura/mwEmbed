@@ -1296,15 +1296,18 @@
 			});
 			this.onItemKey = function (e) {
 				var _this = this;
-                if(e.keyCode == 13){
+                if(e.keyCode === 13){
                     var seekto = $(e.target).attr("data-starttime");
                     if(seekto){
                     	this.embedPlayer.sendNotification("doSeek",seekto);
-                        _this.getPlayer().triggerHelper("closeSideBarContainer");
-                        _this.getPlayer().triggerHelper( "onEnableKeyboardBinding" );
-                        _this.embedPlayer.getInterface().find(".sideBarContainerReminder").focus();
 					}
                 }
+                if(e.keyCode === 27 || e.keyCode === 13){
+                    // close menu and focus the sidebar
+                    _this.getPlayer().triggerHelper("closeSideBarContainer");
+                    _this.getPlayer().triggerHelper( "onEnableKeyboardBinding" );
+                    _this.embedPlayer.getInterface().find(".sideBarContainerReminder").focus();
+                };
             };
 
 			var mediaBoxes = this.getMediaListDomElements();
