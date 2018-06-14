@@ -1307,7 +1307,7 @@
                     _this.getPlayer().triggerHelper("closeSideBarContainer");
                     _this.getPlayer().triggerHelper( "onEnableKeyboardBinding" );
                     _this.embedPlayer.getInterface().find(".sideBarContainerReminder").focus();
-                };
+                }
             };
 
 			var mediaBoxes = this.getMediaListDomElements();
