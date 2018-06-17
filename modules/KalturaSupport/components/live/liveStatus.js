@@ -23,7 +23,7 @@
 		bindPostfix: '.LiveStatus',
 
 		setup: function() {
-			this.prevIconClass = this.onAirIconClass;
+			this.setLiveStatusButtonDefaultState();
             var _this = this;
             this.bind( 'playerReady', function() {
                 if(!_this.stringsReady){
@@ -36,7 +36,8 @@
             });
 			this.bind( 'onChangeMedia', function() {
                 _this.removeBindings();
-				//Reset UI state on change media
+				//Reset UI state on change media and liveStatus button
+				_this.setLiveStatusButtonDefaultState();
 				_this.getBtn().show();
             });
 		},
@@ -61,7 +62,7 @@
 				}
 			} );
 			this.bind( 'liveOnline' + _this.bindPostfix, function() {
-				_this.prevIconClass = this.onAirIconClass;
+				_this.setLiveStatusButtonDefaultState();
 			} );
 			this.once('playing' + _this.bindPostfix,function() {
 				_this.bind( 'seeked' + _this.bindPostfix + ' seeking' + _this.bindPostfix + ' onpause' + _this.bindPostfix + ' onLiveOffSynchChanged' + _this.bindPostfix , function ( e , param ) {
@@ -124,6 +125,10 @@
 				this.getPlayer().removePoster();
 				this.getPlayer().backToLive();
 			}
+		},
+
+		setLiveStatusButtonDefaultState: function () {
+			this.prevIconClass = this.onAirIconClass;
 		},
 
 		setOffSyncUI: function() {

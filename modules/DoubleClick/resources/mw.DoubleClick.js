@@ -623,7 +623,7 @@
             }
 
             // due to IMA removal of custom playback on Android devices, we must get a user gesture for each new entry in order to show prerolls. Preventing auto play after change media in such cases.
-            if ( !_this.isNativeSDK && _this.embedPlayer.playlist && mw.isMobileDevice() && mw.isAndroid() ) {
+            if ( !_this.isNativeSDK && _this.embedPlayer.playlist && mw.isMobileDevice() && mw.isAndroid() && !mw.getConfig('mobileAutoPlay')) {
                 _this.embedPlayer.setKalturaConfig( 'playlistAPI', 'autoPlay', false );
                 _this.embedPlayer.autoplay = false;
 
@@ -1161,7 +1161,7 @@
                             _this.embedPlayer.onLoadedCallback = function () {
                                 //Restore original onLoadedCallback
                                 _this.embedPlayer.onLoadedCallback = orgOnLoadedCallback;
-                                if ( _this.getConfig( "adTagUrl" ) ) {
+                                if ( _this.getConfig( "adTagUrl" ) || _this.adTagUrl) {
                                     _this.embedPlayer.seek( _this.timeToReturn );
                                     _this.timeToReturn = null;
                                 }
@@ -1358,7 +1358,7 @@
                 var adData = event.getAdData();
                 if (adData['adError']) {
                     console.log('Non-fatal error occurred: ' + adData['adError'].getMessage());
-                    this.handleNonFatalError(event);
+                    _this.handleNonFatalError(event);
                 }
             });
 
@@ -1644,7 +1644,11 @@
                     mw.log( "DoubleClick::volumeChanged:" + percent );
                     _this.adsManager.setVolume( percent );
                 } else {
-                    _this.savedVolume = percent;
+                    if (_this.embedPlayer.mobileAutoPlay) {
+                        _this.adsManager.setVolume(percent);
+                    } else {
+                        _this.savedVolume = percent;
+                    }
                 }
             } );
 
