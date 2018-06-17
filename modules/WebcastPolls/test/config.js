@@ -1,8 +1,8 @@
 var user1="Eitan";
 var user2="Guest";
-var user1Ks="djJ8MjcwMTd8vVztTTPGTvjtm_ofZ3zHccz4Xbzkt8prdSjnXKORpvkn4_uRrbNOKSWbWh5Rr0wFZcup_17JBEDbPJZ-XIiK-efqKo2Lb8NBHxu1PTgLC7cmSER5s3t-f1cvzVmbi-BC6cUG8Vb-Eh858VWikdQrs-Qo8TYcqVU5bMNB-QUSS8BzJqFlmWP8zkakRsIfINh6PEwpbSIqsngDwWh7OGINxRXNhvI4guDMH5PgC9Kc_Gy1onUqyS2gq6CCrwjQFTEQiOSGiGcv1X9rxd6Is2b8QoShTRhw4IVgAdCMg8KZ4PswlvhPS9pZpSgSgao1z03en2wLiNSmXUy3bH9O6OH8-yldYbFWrA9KJiRqCzYGnTo=";
-var user2Ks="djJ8MjcwMTd8BZmaCAUSwUROCrDC2rUZy0FXBqJp0ALaTINY3IpGwbIP_Qw7WtNFk0QU6Xwy4ewNzNd7muLsSkBbYZ8U8XMz1Kt3sPMw0j14Eo-fjvxTPaJ5-t1s1CsddBU8T4NwJ1X5Myh5UUFEJYJ8Lq01RYbsd_QWgLNrL0Yq-SCps_sbGs1MF9N-iP_bgYndHosDAHr33XDLvVFtnerxXud-LcB9cf-eLn8MlPwCZHBIpUodVQnNmwZ1Unl2nIUSJcuZb2fx-0e7oMR8X9SX3c8iSdzpeA==";
-var entry="1_3bx9yzhz";
+var user1Ks="djJ8MjcwMTd8EyIl3_L6Ark51uIS3N6PdMSDTODjlNm5OA5ZRJGhFwNghvrqKbdOKF-s-a9_-sWzrf_M9vLHyLJC_iTlbV2aUi1nFhy1Z0sd3t3XFlLudxu6awf2XuxzJlBwtu59MhUdviL4swjiPCqiK3s2TChLn4GPwPZZLeYo242VgvokxGqBk6aSUOjCuuKdZ3qZLxbInwwsSWCoXtRthxhQF8ZlXcTvotuFawU6PKnruMxBjq6dBkHJrt9TUeYFOU1LhnSeAgKimX3KFnYwwth-bM_we0UufUFYua6hh3QbVH5gQMCjKBCb_JBnYSPfafZcwLaLYQ_ASsipxheHJvMlck3FFvlKYODXX7uR3aoM7kkC0CY=";
+var user2Ks=user1Ks;
+var entry="1_8eoa4vir";
 
 
 
@@ -46,7 +46,7 @@ function toggleMenu(){
 	}
 }
 var qna = {
-	'plugin': true,
+	'plugin': false,
 	'qnaTargetId': 'qnaListHolder',
 	'qnaPollingInterval': 5000,
 	'onPage': true,
