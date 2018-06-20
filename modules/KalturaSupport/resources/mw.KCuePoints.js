@@ -258,7 +258,8 @@
                     function(cuepoints) {
                         _this.handlePushCuepoints(cuepoints);
                     });
-                this.kPushServerNotification.registerNotifications([layoutPushNotification,thumbsPushNotification]);
+                this.kPushServerNotification.registerNotifications([thumbsPushNotification]);
+                this.kPushServerNotification.registerNotifications([layoutPushNotification]);
                 // don't setup the list interval
                 return;
             }
