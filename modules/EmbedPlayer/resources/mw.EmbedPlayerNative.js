@@ -558,6 +558,7 @@
 				try {
                     var vid = this.getPlayerElement();
 					vid.currentTime = this.currentSeekTargetTime;
+                    this.currentTime = this.currentSeekTargetTime;
 				} catch (e) {
 					this.log("Error: Could not set video tag seekTime");
 					this.triggerHelper("seeked");
