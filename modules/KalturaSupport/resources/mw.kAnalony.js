@@ -528,20 +528,20 @@
 			this.maybeAddPlaylistId(statsEvent);
 
             //Shorten the refferer param
-            var uri = window.location.toString();
-            if (uri.indexOf("?") > 0) {
-                var clean_uri = uri.substring(0, uri.indexOf("?"));
-                statsEvent['referrer'] = encodeURIComponent(clean_uri);
-            }
-            else {
-                statsEvent['referrer']= encodeURIComponent( pageReferrer );
+            var pageReferrer =  statsEvent[ 'referrer' ];
+            var queryPos = pageReferrer.indexOf("?");
+            if (queryPos > 0) {
+                pageReferrer = pageReferrer.substring(0, queryPos);
             }
 
-            if ( statsEvent['referrer'].length > 500) {
+            var encodedReferrer = encodeURIComponent(pageReferrer);
+            if (encodedReferrer.length > 500) {
                 var parser = document.createElement('a');
                 parser.href = pageReferrer;
-                statsEvent['referrer'] = encodeURIComponent(parser.origin);
+                encodedReferrer = encodeURIComponent(parser.origin);
             }
+
+            statsEvent[ 'referrer' ] = encodedReferrer;
 
 			var eventRequest = {'service' : 'analytics', 'action' : 'trackEvent'};
 			$.each(statsEvent , function (event , value) {

@@ -203,23 +203,20 @@ mw.KAnalytics.prototype = {
 
 		// Add referrer parameter
         var pageReferrer =  mw.getConfig('EmbedPlayer.IsFriendlyIframe') ? mw.getConfig('EmbedPlayer.IframeParentUrl') : document.referrer;
-        var uri = window.location.toString();
-        if (uri.indexOf("?") > 0) {
-            var clean_uri = uri.substring(0, uri.indexOf("?"));
-            pageReferrer = clean_uri;
-            pageReferrer = encodeURIComponent( pageReferrer );
-            eventSet[ 'referrer' ] = pageReferrer;
+        var queryPos = pageReferrer.indexOf("?");
+        if (queryPos > 0) {
+            pageReferrer = pageReferrer.substring(0, queryPos);
         }
 
-        else {
-            eventSet[ 'referrer' ] = encodeURIComponent( pageReferrer );
-        }
-
-        if ( pageReferrer.length > 500) {
+        var encodedReferrer = encodeURIComponent(pageReferrer);
+        if (encodedReferrer.length > 500) {
             var parser = document.createElement('a');
             parser.href = pageReferrer;
-            eventSet[ 'referrer' ] = encodeURIComponent(parser.origin);
+            encodedReferrer = encodeURIComponent(parser.origin);
         }
+
+        eventSet[ 'referrer' ] = encodedReferrer;
+
 		// Add in base service and action calls:
 		var eventRequest = {'service' : 'stats', 'action' : 'collect'};
 		// Add event parameters
