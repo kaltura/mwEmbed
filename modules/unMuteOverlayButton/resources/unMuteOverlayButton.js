@@ -21,6 +21,9 @@
                 var isThumbEmbed = !!mw.getConfig('thumbEmbedOrigin');
                 var isMobileAutoPlay = (mw.isMobileDevice() || mw.isIpad()) && mw.getConfig('mobileAutoPlay') && !isThumbEmbed;
                 var isFallbackToMutedAutoPlay = (!isThumbEmbed && (mw.isDesktopSafari11() || mw.isChromeVersionGreaterThan(66)) && (mw.getConfig('autoPlay') || this.getPlayer().getRawKalturaConfig('playlistAPI', 'autoPlay')));
+                if ( !!(mw.isMobileDevice() || mw.isIpad()) && !isMobileAutoPlay ) {
+                    isFallbackToMutedAutoPlay = false;
+                }
                 return !!(isMobileAutoPlay || isFallbackToMutedAutoPlay);
             },
 
