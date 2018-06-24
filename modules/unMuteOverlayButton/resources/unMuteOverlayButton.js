@@ -19,8 +19,8 @@
 
             isSafeEnviornment: function () {
                 var isThumbEmbed = !!mw.getConfig('thumbEmbedOrigin');
-                var isMobileAutoPlay = (mw.isMobileDevice() || mw.isIpad()) && mw.getConfig('mobileAutoPlay') && !isThumbEmbed;
-                var isFallbackToMutedAutoPlay = (!isThumbEmbed && (mw.isDesktopSafari11() || mw.isChromeVersionGreaterThan(66)) && (mw.getConfig('autoPlay') || this.getPlayer().getRawKalturaConfig('playlistAPI', 'autoPlay')));
+                var isMobileAutoPlay = (mw.isMobileDevice() || mw.isIpad()) && mw.getConfig('mobileAutoPlay') && !mw.getConfig('autoMute') && !isThumbEmbed;
+                var isFallbackToMutedAutoPlay = (!isThumbEmbed && !mw.getConfig('autoMute') && (mw.isDesktopSafari11() || mw.isChromeVersionGreaterThan(66)) && (mw.getConfig('autoPlay') || this.getPlayer().getRawKalturaConfig('playlistAPI', 'autoPlay')));
                 return !!(isMobileAutoPlay || isFallbackToMutedAutoPlay);
             },
 
