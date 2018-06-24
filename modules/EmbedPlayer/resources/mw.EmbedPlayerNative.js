@@ -105,7 +105,12 @@
 			}
 			$(this.getPlayerElement()).css('position', 'absolute');
 
-			if (this.inline) {
+            //Inspect if the entry is playing over in Edge, if so it will remove the position
+            if (mw.isEdge()) {
+                $(this.getPlayerElement()).css('position', '');
+            }
+
+            if (this.inline) {
 				$(this.getPlayerElement()).attr('playsinline', '');
 			}
 
