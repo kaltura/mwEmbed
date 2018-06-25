@@ -164,7 +164,9 @@
 			});
 
 			this.bind('onOpenFullScreen', function() {
-                qnaObject.hide();
+				if(qnaObject){
+					qnaObject.hide();
+				}
 				_this.changeVideoToggleIcon();
 				if (!_this.getConfig( 'onPage' )) {
 					$( ".videoHolder, .mwPlayerContainer" ).css( "width", "100%" );	}
@@ -257,15 +259,15 @@
 					}catch(e){
 						mw.log("failed to access window['parent'] for creating $qnaListContainer");
 					}
+				} else {
+					this.$qnaListContainer = $( ".qnaInterface");
 				}
-                if ( this.getPlayer().isLive() ) {
+				if ( this.getPlayer().isLive() ) {
 					// wrap the .mwPlayerContainer element with our qnaInterface div
 					var floatDirection = this.getConfig( 'containerPosition' ) ? this.getConfig( 'containerPosition' ) : "right";
 					var qnaInterfaceElementText = "<div class='qnaInterface' style='position: relative; width: " + this.getConfig( 'moduleWidth' ) + "px; height: 100%; float:" + floatDirection + "'>";
 
 					$('.mwPlayerContainer').after(qnaInterfaceElementText);
-
-					this.$qnaListContainer = $( ".qnaInterface");
 
 					// resize the video to make place for the playlist according to its position (left, top, right, bottom)
 					if ( this.getConfig( 'containerPosition' ) === 'right' || this.getConfig( 'containerPosition' ) === 'left' ) {
