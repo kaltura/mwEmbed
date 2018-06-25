@@ -179,6 +179,10 @@
 			if( this.src && this.src.substr(this.src.length - 3) == 'srt' ){
 				return this.getCaptionsFromSrt( data );
 			}
+
+			if( mw.isIphone() && this.src.indexOf('captions.vtt') !== -1) {
+				return this.getCaptionsFromVTT( data );
+			}
 			// caption mime not found return empty set:
 			return [];
 		},
