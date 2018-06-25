@@ -164,9 +164,9 @@
 			});
 
 			this.bind('onOpenFullScreen', function() {
-			    if(qnaObject){
-                    qnaObject.hide();
-                }
+				if(qnaObject){
+					qnaObject.hide();
+				}
 				_this.changeVideoToggleIcon();
 				if (!_this.getConfig( 'onPage' )) {
 					$( ".videoHolder, .mwPlayerContainer" ).css( "width", "100%" );	}
@@ -260,8 +260,8 @@
 						mw.log("failed to access window['parent'] for creating $qnaListContainer");
 					}
 				} else {
-                    this.$qnaListContainer = $( ".qnaInterface");
-                }
+					this.$qnaListContainer = $( ".qnaInterface");
+				}
                 if ( this.getPlayer().isLive() ) {
 					// wrap the .mwPlayerContainer element with our qnaInterface div
 					var floatDirection = this.getConfig( 'containerPosition' ) ? this.getConfig( 'containerPosition' ) : "right";
