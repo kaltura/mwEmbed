@@ -257,8 +257,7 @@
 					}catch(e){
 						mw.log("failed to access window['parent'] for creating $qnaListContainer");
 					}
-				}
-                if ( this.getPlayer().isLive() ) {
+				} else {
 					// wrap the .mwPlayerContainer element with our qnaInterface div
 					var floatDirection = this.getConfig( 'containerPosition' ) ? this.getConfig( 'containerPosition' ) : "right";
 					var qnaInterfaceElementText = "<div class='qnaInterface' style='position: relative; width: " + this.getConfig( 'moduleWidth' ) + "px; height: 100%; float:" + floatDirection + "'>";
