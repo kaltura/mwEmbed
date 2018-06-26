@@ -331,11 +331,18 @@
                     $(".header-container").addClass('close-button')
                         .on('click', function () {
                             _this.ssSetCurrentQuestion(questionNr,true);
-                        }).on('keydown', _this.keyDownHandler).attr('role', 'button').attr('tabindex', 5)
-                          .attr('title', 'Hint - '+$.cpObject.cpArray[questionNr].hintText+'. Click to close hint').focus().attr('id', 'hint-close-button').css('outline', 'none');
-                    // verify focus in IE
-                    document.getElementById('hint-close-button').focus();
-                    $(".hint-container").append($.cpObject.cpArray[questionNr].hintText);
+                        })
+                        .on('keydown', _this.keyDownHandler)
+                        .attr({'role': 'button','tabindex': 5,'title':'Close hint','id': 'hint-close-button'})
+                        .focus()
+                    $(".hint-container").append($.cpObject.cpArray[questionNr].hintText)
+                        .attr({'tabindex': 5})
+                        .on('keydown',function(e){
+                            e.preventDefault();
+                            if(e.keyCode === 9 ){
+                                $('#hint-close-button')[0].focus();
+                            }
+                            });
                 }).on('keydown', _this.keyDownHandler).attr('role', 'button').attr('tabindex', 5);
         },
         
