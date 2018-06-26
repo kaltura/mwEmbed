@@ -660,6 +660,7 @@ body {
 .volumeControl .ui-slider-horizontal.slider:focus {
 	width: 5em;
 	margin-right: 10px;
+	outline: #65cdff solid 2px;
 }
 .volumeControl.noTransition .ui-slider-horizontal.slider{
 	-moz-transition: none ;
