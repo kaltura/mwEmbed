@@ -1719,7 +1719,7 @@
 		},
 
 		getStartTimeOfDvrWindow: function(){
-			if( this.isLive() && this.isDVR() ){
+            if( this.isLive() && this.isDVR() && this.getPlayerElement().seekable.length > 0 ) {
 				return this.getPlayerElement().seekable.start(0);
 			} else {
 				return 0;
