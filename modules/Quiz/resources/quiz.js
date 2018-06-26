@@ -850,7 +850,7 @@
                 var pos = (Math.round(((val.startTime/embedPlayer.kalturaPlayerMetaData.msDuration)*100) * 10)/10)-1;
                 $('.bubble-cont').append($('<div id ="' + key + '" style="margin-left:' + pos + '%">' +
                     _this.KIVQModule.i2q(key) + ' </div>')
-                        .addClass(displayClass).attr('role', 'button').attr('tabindex', 20).on('keydown', _this.keyDownHandler)
+                        .addClass(displayClass).attr('role', 'button').attr({'tabindex': 20 , "aria-label" : "Jump to Question "+ (key+1) }).on('keydown', _this.keyDownHandler)
                 );
             });
 
