@@ -138,7 +138,7 @@
     height: 100%;
 }
 .screen.quiz *:focus{
-    outline-color: white;
+    outline: white solid 2px;
 }
 .screen.quiz {
     background: #039bc1;
