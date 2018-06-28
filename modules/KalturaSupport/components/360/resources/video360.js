@@ -41,8 +41,7 @@
 			return !( mw.isIE8() || mw.isIE9() || mw.isIE10Comp() || // old IEs
 				(mw.isIE11() && (mw.getUserOS() === 'Windows 7' || mw.getUserOS() === 'Windows 8')) || // ie11 on win7/8
 				(mw.isIphone() && mw.isIOSBelow10()) || // iPhone and IOS < 10 - doesn't support inline playback
-				mw.isIOSBelow9() ||  // IOS < 9 doesn't support webgl
-				(!mw.getConfig("forceSameDomainOnIOS") && ( mw.isIOS() || mw.isDesktopSafari()) )); //if we're in iOS and we didnt forceSameDomain - turn off the plugin
+				mw.isIOSBelow9() );  // IOS < 9 doesn't support webgl
 		},
 
 		getComponent: function() {
