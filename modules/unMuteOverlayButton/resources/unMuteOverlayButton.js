@@ -18,13 +18,14 @@
             },
 
             isSafeEnviornment: function () {
-                var isThumbEmbed = !!mw.getConfig('thumbEmbedOrigin');
-                var isMobileAutoPlay = (mw.isMobileDevice() || mw.isIpad()) && mw.getConfig('mobileAutoPlay') && !mw.getConfig('autoMute') && !isThumbEmbed;
-                var isFallbackToMutedAutoPlay = (!isThumbEmbed && !mw.getConfig('autoMute') && (mw.isDesktopSafari11() || mw.isChromeVersionGreaterThan(66)) && (mw.getConfig('autoPlay') || this.getPlayer().getRawKalturaConfig('playlistAPI', 'autoPlay')));
-                if ( !!(mw.isMobileDevice() || mw.isIpad()) && !isMobileAutoPlay ) {
-                    isFallbackToMutedAutoPlay = false;
+                if (mw.getConfig('thumbEmbedOrigin') || mw.getConfig('autoMute')) {
+                    return false;
                 }
-                return !!(isMobileAutoPlay || isFallbackToMutedAutoPlay);
+                if (mw.isMobileDevice()) {
+                    return !!mw.getConfig('mobileAutoPlay');
+                } else {
+                    return !!(mw.isDesktopSafari11() || mw.isChromeVersionGreaterThan(66)) && (mw.getConfig('autoPlay') || this.getPlayer().getRawKalturaConfig('playlistAPI', 'autoPlay'));
+                }
             },
 
             addBindings: function () {
