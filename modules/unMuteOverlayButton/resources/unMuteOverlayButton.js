@@ -30,9 +30,8 @@
 
             addBindings: function () {
                 this.bind('playerReady', function () {
-                    if (!this.isDisabled) {
                         this.show();
-                    }
+
                 }.bind(this));
 
                 this.bind('volumeChanged', function () {
@@ -51,7 +50,6 @@
             },
 
             destroy: function () {
-                this.isDisabled = true;
                 this.hide();
                 this.unbind('playerReady');
                 this.unbind('volumeChanged');
