@@ -807,7 +807,7 @@
                         _this.KIVQModule.checkIfDone(questionNr)
                     });
                 }
-                $(".ftr-right").attr('tabindex', 5).attr('role', 'button').attr('title', 'move to next question').on('keydown', _this.keyDownHandler);
+                $(".ftr-right").attr('tabindex', 5).attr('role', 'button').attr('title', gM('mwe-quiz-skipForNow')).on('keydown', _this.keyDownHandler);
             }
         },
         keyDownHandler: function(ev){
