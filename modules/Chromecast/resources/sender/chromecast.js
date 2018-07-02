@@ -43,8 +43,8 @@
                     kWidget.appendScriptUrl( this.CAST_SENDER_V3_URL );
                 }
             } else {
-                window[ '__onGCastApiAvailable' ] = this.toggleCastButton.bind( this );
-                kWidget.appendScriptUrl( this.CAST_SENDER_V3_URL );
+                window.top[ '__onGCastApiAvailable' ] = this.toggleCastButton.bind( this );
+                kWidget.appendScriptUrl( this.CAST_SENDER_V3_URL, null, top.document );
             }
         },
 
