@@ -219,6 +219,9 @@
     top: 0;
     left: 0;
 }
+.mwPlayerContainer.mobile.mobileSkin .controlBar.dualScreen{
+    top: 60px;
+}
 /*Fonts*/
 @font-face {
     font-family: 'dualScreen';

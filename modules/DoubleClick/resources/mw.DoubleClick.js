@@ -1161,7 +1161,7 @@
                             _this.embedPlayer.onLoadedCallback = function () {
                                 //Restore original onLoadedCallback
                                 _this.embedPlayer.onLoadedCallback = orgOnLoadedCallback;
-                                if ( _this.getConfig( "adTagUrl" ) ) {
+                                if ( _this.getConfig( "adTagUrl" ) || _this.adTagUrl) {
                                     _this.embedPlayer.seek( _this.timeToReturn );
                                     _this.timeToReturn = null;
                                 }
@@ -1358,7 +1358,7 @@
                 var adData = event.getAdData();
                 if (adData['adError']) {
                     console.log('Non-fatal error occurred: ' + adData['adError'].getMessage());
-                    this.handleNonFatalError(event);
+                    _this.handleNonFatalError(event);
                 }
             });
 
