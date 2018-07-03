@@ -12,7 +12,7 @@
 			order: 70,
 			// 360 default config
 			moveMultiplier: 0.5,
-			mobileVibrationValue: (mw.isIOS() ? 0.0365 : 2.5),
+            mobileVibrationValue: (mw.isAndroidNativeBrowser() ? 1 : 0.02),
 			cameraOptions: {
 				fov: 75,
 				aspect: window.innerWidth / window.innerHeight,
