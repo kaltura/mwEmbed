@@ -196,6 +196,13 @@
 						if (btn && btn.event){
 							_this.embedPlayer.triggerHelper("dualScreenStateChange", {action : btn.event, invoker : 'dualScreenControlBar'});
 						}
+					}else{
+						// handle accessibilty
+						if(wasOpen) {
+                            $(this).attr("aria-expanded", "false");
+                        }else{
+                            $(this).attr("aria-expanded", "true");
+						}
 					}
 
 					return false;
@@ -203,7 +210,8 @@
 				.on( 'click' + this.postFix + ' touchstart' + this.postFix, '.ds-streams > .ds-stream', function () {
 					_this.embedPlayer.triggerHelper('dualScreenChangeMainDisplayStream', [$(this).data('stream')]);
 					return false;
-				} ).on('keydown' + this.postFix + ' touchstart' + this.postFix, '.ds-streams > .ds-stream', _this.keyDownHandler);;
+				} )
+				.on('keydown' + this.postFix + ' touchstart' + this.postFix, '.ds-streams > .ds-stream', _this.keyDownHandler);;
 
 			if (mw.isNativeApp()){
 				switchBtn.addClass("disabled" ).attr("title", _this.nativeAppTooltip );
@@ -260,7 +268,7 @@
 		 * This affect they layout only and doesn't change the player state.
 		 * @param activeButtonId
          */
-		changeButtonsStyles : function(activeButtonId, clicked)
+		changeButtonsStyles : function(activeButtonId)
 		{
 			var _this = this;
 			var buttons = _this.getComponent().find(".controlBarBtn");
@@ -271,8 +279,19 @@
 
             //Change state button disabled state
             if (obj.data("type") === "state") {
+            	// reset accessibility attributes
+                stateButtons.each(function (i,item) {
+					$(item).removeAttr("aria-expanded aria-controls aria-label");
+                });
                 //show state buttons if selected state was clicked
                 stateButtons.removeClass('stateSelected ds-collapsible-handle').addClass('ds-collapsible-content');
+                if(obj[0]){
+                    obj.attr({
+                        "aria-expanded" : "false",
+                        "aria-controls":"dualScreen-states",
+                        "aria-label": gM("ks-CURRENT-VIEW") + " "+ obj.attr("title") + ". " +gM("ks-SHOW-OTHER-OPTIONS")
+					});
+				}
                 obj.addClass('stateSelected ds-collapsible-handle').removeClass('ds-collapsible-content');
             }
 

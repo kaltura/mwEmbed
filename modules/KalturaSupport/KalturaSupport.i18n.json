@@ -1,5 +1,7 @@
 {
     "en": {
+        "ks-CURRENT-VIEW": "Current view:",
+        "ks-SHOW-OTHER-OPTIONS": "Activate to show other view options",
         "ks-CLIP_NOT_FOUND": "An error was experienced when playing the video. Please check your Internet connection and try again.",
         "ks-CLIP_NOT_FOUND_TITLE": "Sorry, clip not found",
         "ks-ENTRY_CONVERTING": "Media is currently being converted, please try again in a few minutes.",
