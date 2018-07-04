@@ -172,9 +172,11 @@
 			});
 		},
 		keyDownHandler: function(ev){
-			if(ev.which === 13 || ev.which === 32)
+			if(ev.which === 13)
 			{
-				$(ev.target).click();
+				if(!$(ev.target).hasClass("open")){
+					$(ev.target).click();
+				}
 			}
 		},
 		showReminder: function(){
@@ -263,7 +265,7 @@
 				this.$elHelper = $('<a>' )
 					.addClass( 'sideBarContainerReminder tooltipBelow ' + _this.getConfig('position') )
 					.prop("title", title)
-					.attr({"data-show-tooltip":true, "tabindex":52,"href":"#","aria-label":"show slides"})
+					.attr({"data-show-tooltip":true, "tabindex":52,"href":"#","aria-label":gM("ks-sidebar-toggleBtn")})
 					.append($('<div id="sideBarContainerReminderContainer">' )
 						.addClass( 'icon-chapterMenu' )
 					);
