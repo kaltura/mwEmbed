@@ -7,15 +7,23 @@
     width: 100%;
     height: 100%;
 }
+
+.searchFormWrapper ::-webkit-input-placeholder {
+    color:  #595959;
+}
+.searchFormWrapper ::-moz-placeholder {
+    color:  #595959;
+}
+.searchFormWrapper :-ms-input-placeholder {
+    color:  #595959;
+}
+.searchFormWrapper :-moz-placeholder {
+    color: #595959;
+}
 .chapters .unselectable {
     -moz-user-select: -moz-none;
     -khtml-user-select: none;
     -webkit-user-select: none;
-
-    /*
-      Introduced in IE 10.
-      See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
-    */
     -ms-user-select: none;
     user-select: none;
 }
