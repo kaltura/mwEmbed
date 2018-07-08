@@ -237,22 +237,29 @@ class RequestHelper {
 		$headerIPs = trim( $headerIPs, ',' );
 		$headerIPs = explode(',', $headerIPs);
 		foreach( $headerIPs as $ip ) {
-			// ignore any string after the ip address
-			preg_match('/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/', trim($ip), $matches); 
+			$ip = trim($ip);
+			$ipv6 = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
+			if ($ipv6 !== false)
+			{
+				$remote_addr = $ipv6;
+				break;
+			}
+
+			preg_match('/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/', $ip, $matches); // ignore any string after the ip address
 			if (!isset($matches[0]))
 				continue;
 
- 			$tempAddr = trim($matches[0]);
- 			if ($this->isIpPrivate($tempAddr))	// verify that ip is not from a private range
- 				continue;
+			$tempAddr = trim($matches[0]);
+			if ($this->isIpPrivate($tempAddr))      // verify that ip is not from a private range
+				continue;
 
- 			$remote_addr = $tempAddr;
- 			break;
+			$remote_addr = $tempAddr;
+			break;
 		}
 		return $remote_addr;
 	}
 
-	public function getRemoteAddrHeader(){
+ 	public function getRemoteAddrHeader(){
 		global $wgKalturaRemoteAddressSalt, $wgKalturaForceIP;
 		if( $wgKalturaRemoteAddressSalt === false ){
 			return '';
