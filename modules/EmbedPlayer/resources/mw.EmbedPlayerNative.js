@@ -158,8 +158,8 @@
                 unMuteEventTriggers.forEach(function (eventName) {
                     _this.bindHelper(eventName + _this.bindPostfix, function () {
                         if (_this.mobileAutoPlay) {
-                            _this.mobileAutoPlay = false;
                             _this.setVolume(1, null, mw.isIOS());
+                            _this.mobileAutoPlay = false;
                         }
                         unMuteEventTriggers.forEach(function (eventName) {
                             _this.unbindHelper(eventName + _this.bindPostfix);
@@ -556,7 +556,7 @@
 				this.log("setCurrentTime seekTime:" + time);
 				// Try to update the playerElement time:
 				try {
-					var vid = this.getPlayerElement();
+                    var vid = this.getPlayerElement();
 					vid.currentTime = this.currentSeekTargetTime;
 				} catch (e) {
 					this.log("Error: Could not set video tag seekTime");
@@ -1104,6 +1104,9 @@
 			} else {
 				// Should not happen offten
 				this.playerElement.load();
+                if (this.currentTime > 0) {
+                    this.seek(this.currentTime);
+                }
 				if (callback) {
 					callback();
 				}
@@ -1713,6 +1716,14 @@
 			this.removeBindings();
 			clearTimeout(this.parseAudioTracksTimeout);
 			clearTimeout(this.parseTextTracksTimeout);
+		},
+
+		getStartTimeOfDvrWindow: function(){
+            if( this.isLive() && this.isDVR() && this.getPlayerElement().seekable.length > 0 ) {
+				return this.getPlayerElement().seekable.start(0);
+			} else {
+				return 0;
+			}
 		}
 	};
 })(mediaWiki, jQuery);

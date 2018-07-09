@@ -12,7 +12,8 @@
 			qnaFontsCssFileName: 'modules/QnA/resources/css/qna-fonts.css',
 			qnaNanoCssFileName: 'modules/QnA/resources/css/qna-nano.css',
 			qnaThreadsListCssFileName: 'modules/QnA/resources/css/qna-threads-list.css',
-			onPage: true
+			onPage: true,
+			overrideModeratorName: false
 		},
 
 		moduleStatus: ko.observable(undefined),
@@ -256,8 +257,7 @@
 					}catch(e){
 						mw.log("failed to access window['parent'] for creating $qnaListContainer");
 					}
-				}
-				else{
+				} else {
 					// wrap the .mwPlayerContainer element with our qnaInterface div
 					var floatDirection = this.getConfig( 'containerPosition' ) ? this.getConfig( 'containerPosition' ) : "right";
 					var qnaInterfaceElementText = "<div class='qnaInterface' style='position: relative; width: " + this.getConfig( 'moduleWidth' ) + "px; height: 100%; float:" + floatDirection + "'>";

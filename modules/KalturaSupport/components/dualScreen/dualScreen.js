@@ -105,7 +105,7 @@
                             }, 500);
                         }
                     }
-				} );
+                });
 
 				//Handle layout changes due to layout update(resize and orientation change)
 				this.bind( 'updateLayout', function(e){

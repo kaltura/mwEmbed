@@ -19,16 +19,15 @@
 
             isSafeEnviornment: function () {
                 var isThumbEmbed = !!mw.getConfig('thumbEmbedOrigin');
-                var isMobileAutoPlay = (mw.isMobileDevice() || mw.isIpad()) && mw.getConfig('mobileAutoPlay') && !isThumbEmbed;
-                var isFallbackToMutedAutoPlay = (!isThumbEmbed && (mw.isDesktopSafari11() || mw.isChromeVersionGreaterThan(66)) && (mw.getConfig('autoPlay') || this.getPlayer().getRawKalturaConfig('playlistAPI', 'autoPlay')));
+                var isMobileAutoPlay = (mw.isMobileDevice() || mw.isIpad()) && mw.getConfig('mobileAutoPlay') && !mw.getConfig('autoMute') && !isThumbEmbed;
+                var isFallbackToMutedAutoPlay = (!isThumbEmbed && !mw.getConfig('autoMute') && (mw.isDesktopSafari11() || mw.isChromeVersionGreaterThan(66)) && (mw.getConfig('autoPlay') || this.getPlayer().getRawKalturaConfig('playlistAPI', 'autoPlay')));
                 return !!(isMobileAutoPlay || isFallbackToMutedAutoPlay);
             },
 
             addBindings: function () {
                 this.bind('playerReady', function () {
-                    if (!this.isDisabled) {
                         this.show();
-                    }
+
                 }.bind(this));
 
                 this.bind('volumeChanged', function () {
@@ -47,7 +46,6 @@
             },
 
             destroy: function () {
-                this.isDisabled = true;
                 this.hide();
                 this.unbind('playerReady');
                 this.unbind('volumeChanged');

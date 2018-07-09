@@ -24,6 +24,11 @@
 
 		var tm = mw.seconds2Measurements( sec );
 
+		//Add another zero to minutes when video is over 24h
+		if( tm.days >= 1 ) {
+			mm_format = true;
+		}
+
 		// Round the number of seconds to the required number of significant
 		// digits
 		if ( show_ms ) {

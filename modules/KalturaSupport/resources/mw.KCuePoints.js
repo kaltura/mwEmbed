@@ -228,7 +228,9 @@
 			var lastCreationTime = _this.getLastCreationTime() + 1;
 			// Only add lastUpdatedAt filter if any cue points already received
 			if (lastCreationTime > 0) {
-				request['filter:createdAtGreaterThanOrEqual'] = lastCreationTime;
+				var cpThreshold  = mw.getConfig("cuePointsThreshold") ? parseInt(mw.getConfig("cuePointsThreshold")) : 60;
+				mw.log("mw.KCuePoints:: Loading cue points with threshold of " + cpThreshold + " seconds : "+ (lastCreationTime - cpThreshold) );
+				request['filter:createdAtGreaterThanOrEqual'] = lastCreationTime - cpThreshold;
 			}
 			this.getKalturaClient().doRequest( request,
 				function (data) {
@@ -457,12 +459,13 @@
 			var defaultThreshold = this.threshold;
 			var currentCP = allCP[currentCuePointIndex];
 			var prevCP = this.getPrevCPWithCorrectType(allCP,currentCuePointIndex);
-			if(prevCP !== false && currentCP){
-				var createdAtDelta = Math.abs(currentCP.createdAt - prevCP.createdAt);
+			if(prevCP !== false && currentCP && currentCP.partnerData){
 				var startTimeDelta = Math.abs(currentCP.startTime - prevCP.startTime);
 				var isTheSamePartnerData = currentCP.partnerData === prevCP.partnerData;
+				var isSameTitle = currentCP.title === prevCP.title;
+				var isSameDescription = currentCP.description === prevCP.description;
 				var isTheSameTags = currentCP.tags === prevCP.tags;
-				if(isTheSamePartnerData && isTheSameTags && (createdAtDelta <= defaultThreshold*1000 || startTimeDelta <= defaultThreshold*1000)){
+				if(isTheSamePartnerData && isTheSameTags && isSameTitle && isSameDescription && startTimeDelta <= defaultThreshold*1000){
 					return false;
 				}
 			}
