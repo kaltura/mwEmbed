@@ -52,6 +52,7 @@
 		hasSeeked: false,
 		dvr: false,
         monitorViewEvents:true,
+        playSentOnStart: false,
 
 		smartSetInterval:function(callback,time,monitorObj) {
 			var _this = this;
@@ -119,6 +120,7 @@
 				_this.bufferTime = 0;
 				_this.firstPlay = true;
                 _this.entryPlayCounter++;
+                _this.playSentOnStart = false;
 			});
 
 			this.embedPlayer.bindHelper( 'userInitiatedPlay' , function () {
@@ -126,8 +128,13 @@
 			});
 
 			this.embedPlayer.bindHelper( 'onplay' , function () {
+                if (_this.embedPlayer.currentState === "start" && _this.playSentOnStart) {
+                    return;
+                }
+
 				if ( !this.isInSequence() && (_this.firstPlay || _this.embedPlayer.currentState !== "play") ){
 					if ( _this.firstPlay ){
+                        _this.playSentOnStart = true;
 						_this.timer.start();
 						_this.sendAnalytics(playerEvent.PLAY, {
                             bufferTimeSum: _this.bufferTimeSum
@@ -520,6 +527,22 @@
             //Get optional playlistAPI
 			this.maybeAddPlaylistId(statsEvent);
 
+            //Shorten the refferer param
+            var pageReferrer =  statsEvent[ 'referrer' ];
+            var queryPos = pageReferrer.indexOf("?");
+            if (queryPos > 0) {
+                pageReferrer = pageReferrer.substring(0, queryPos);
+            }
+
+            var encodedReferrer = encodeURIComponent(pageReferrer);
+            if (encodedReferrer.length > 500) {
+                var parser = document.createElement('a');
+                parser.href = pageReferrer;
+                encodedReferrer = encodeURIComponent(parser.origin);
+            }
+
+            statsEvent[ 'referrer' ] = encodedReferrer;
+
 			var eventRequest = {'service' : 'analytics', 'action' : 'trackEvent'};
 			$.each(statsEvent , function (event , value) {
 				eventRequest[event] = value;
@@ -545,16 +568,24 @@
                 }catch(e){
 					mw.log("Failed sync time from server");
 				}
-			}, true );
-		},
+            }, true);
+        },
 
         maybeAddPlaylistId: function (statsEvent) {
             var plugins = this.embedPlayer.plugins;
-            if (plugins && plugins.playlistAPI && (plugins.playlistAPI.currentPlaylistIndex > -1)){
+            // need to make many checks here due to vast options
+			//first make sure playlist plugin even exist and that it already has playlist sets, as they might be loaded
+			//dynamically later on, and then make sure a playlist in the set is even selected
+            if (plugins && plugins.playlistAPI && plugins.playlistAPI.playlistSet &&
+                $.isArray(plugins.playlistAPI.playlistSet) && plugins.playlistAPI.playlistSet.length &&
+				(plugins.playlistAPI.currentPlaylistIndex > -1)
+			){
                 var currentPlaylist = plugins.playlistAPI.playlistSet[plugins.playlistAPI.currentPlaylistIndex];
-                var playlistId = currentPlaylist.id;
-                if (playlistId) {
-                    statsEvent["playlistId"] = playlistId;
+                if (currentPlaylist) {
+                    var playlistId = currentPlaylist.id;
+                    if (playlistId) {
+                        statsEvent["playlistId"] = playlistId;
+                    }
                 }
             }
         },
