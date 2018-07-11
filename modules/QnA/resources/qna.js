@@ -230,7 +230,7 @@
 		getQnaContainer: function(){
 			var _this = this;
             var embedPlayer = this.getPlayer();
-			if (!this.$qnaListContainer) {
+			if (!this.$qnaListContainer && this.getPlayer().isLive()) {
 
 				// for unfriendly iFrames, where we can't access window['parent'] we set on page to false
 				if ( this.getConfig( 'onPage' ) ) {
@@ -295,14 +295,17 @@
 						_this.KQnaModule.applyLayout();
 					});
 				}else{ // for in player plugin don't wait for css to load
-					_this.KQnaService = new mw.KQnaService(embedPlayer, _this);
-					_this.KQnaModule = new mw.KQnaModule(embedPlayer, _this, _this.KQnaService);
-					ko.applyBindings(_this.KQnaModule, _this.$qnaListContainer[0]);
-					_this.KQnaModule.applyLayout();
-				}
-
+                    _this.KQnaService = new mw.KQnaService(embedPlayer, _this);
+                    _this.KQnaModule = new mw.KQnaModule(embedPlayer, _this, _this.KQnaService);
+                    ko.applyBindings(_this.KQnaModule, _this.$qnaListContainer[0]);
+                    _this.KQnaModule.applyLayout();
+                }
 			}
-			return this.$qnaListContainer;
+            else if ( !this.getPlayer().isLive() ) {
+                this.$qnaListContainer = $( ".qnaInterface");
+            }
+
+            return this.$qnaListContainer;
 		},
 
 		positionQAButtonOnVideoContainer : function(){
