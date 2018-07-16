@@ -7,6 +7,11 @@
     cursor: pointer;
 }
 
+.controlBar :focus {
+    outline: 1px solid #66CCFF !important;
+}
+
+
 .displayControlBar:after {
     content: '';
     clear: both;

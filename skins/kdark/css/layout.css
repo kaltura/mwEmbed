@@ -78,6 +78,9 @@ body {
 	cursor: pointer;
 	text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.6);
 }
+.sideBarContainerReminder:focus{
+	outline: 1px solid #66CCFF;
+}
 #sideBarContainerReminderContainer{
 	font-size: 32px;
 	color: rgb(255, 255, 255);
