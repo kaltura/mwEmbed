@@ -666,7 +666,7 @@
 		 */
 		showDefaultTextTrack: function (textTracks, defaultLangKey) {
 			$.each( textTracks, function( inx, caption) {
-				caption.mode = "hidden";
+				caption.mode = "disabled";
 			});
 
 			for (var i = 0; i < textTracks.length; i++) {
@@ -1571,7 +1571,7 @@
 								'index': i
 							});
 						}
-						textTrack.mode = 'hidden';
+						textTrack.mode = 'disabled';
 					}
 					if (textTracksData.languages.length) {
 						mw.log('EmbedPlayerNative:: ' + textTracksData.languages.length + ' subtitles were found: ', textTracksData.languages);
@@ -1675,7 +1675,7 @@
 		hideTextTrack: function(){
             var activeSubtitle = this.getActiveSubtitle();
             if (activeSubtitle && activeSubtitle.mode) {
-                activeSubtitle.mode = 'hidden';
+                activeSubtitle.mode = 'disabled';
                 this.log('onSwitchTextTrack disable subtitles');
             }
 		},
