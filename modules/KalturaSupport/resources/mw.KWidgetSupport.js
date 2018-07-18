@@ -1846,7 +1846,7 @@ mw.KWidgetSupport.prototype = {
 		if( !this.removedAdaptiveFlavors &&
 				(mw.isAndroid() && !mw.isNativeApp()) &&
 				hasH264Flavor &&
-				mw.getConfig( 'KalturaLeadHLSOnAndroid' ) == false || mw.getConfig( 'KalturaLeadHLSOnAndroid' ) == null ) {
+				mw.getConfig( 'Kaltura.LeadHLSOnAndroid' ) == false ) {
 			deviceSources = this.removeHlsFlavor( deviceSources );
 		}
 
