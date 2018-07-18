@@ -29,6 +29,7 @@
         remotePlayerController: null,
         sessionStateChangedCallback: null,
         CAST_SENDER_V3_URL: '//www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1',
+        isInIframeApi: false,
 
         /**
          * Setup the Chromecast plugin - loads Google Cast Chrome sender SDK and bind his handler.
@@ -38,15 +39,19 @@
                 try {
                     top[ '__onGCastApiAvailable' ] = this.toggleCastButton.bind( this );
                     kWidget.appendScriptUrl( this.CAST_SENDER_V3_URL, null, top.document );
+                    this.isInIframeApi = false;
                 } catch ( e ) {
                     window[ '__onGCastApiAvailable' ] = this.toggleCastButton.bind( this );
                     kWidget.appendScriptUrl( this.CAST_SENDER_V3_URL );
+                    this.isInIframeApi = true;
                 }
             } else {
-                window.top[ '__onGCastApiAvailable' ] = this.toggleCastButton.bind( this );
-                kWidget.appendScriptUrl( this.CAST_SENDER_V3_URL, null, top.document );
+                window[ '__onGCastApiAvailable' ] = this.toggleCastButton.bind( this );
+                kWidget.appendScriptUrl( this.CAST_SENDER_V3_URL );
+                this.isInIframeApi = true;
             }
         },
+
 
         /**
          * Setup the Chromecast plugin bindings.
@@ -77,9 +82,13 @@
          * 2) Check if a session is already opened.
          */
         initializeCastApi: function () {
-            this.log( "initializeCastApi" );
-            window.chrome = top.chrome || window.chrome;
-            window.cast = top.cast || window.cast;
+            try {
+                window.chrome = this.isInIframeApi ? window.chrome : top.chrome;
+                window.cast = this.isInIframeApi ? window.cast : top.cast;
+            } catch (e) {
+                this.log( "Error: unable to initialize cast API");
+                return;
+            }
 
             var options = {};
             options.receiverApplicationId = this.getConfig( "applicationID" ).toString();
