@@ -965,7 +965,6 @@ var mw = ( function ( $, undefined ) {
 				request = sortQuery( request );
 				// Asynchronously append a script tag to the end of the body
 				// Append &* to avoid triggering the IE6 extension check
-				sourceLoadScript += '?' + $.param( request ) + '&*' + '&protocol=' + getProtocol();
 				sourceLoadScript += '?' + $.param( request ) + '&*' + '&protocol=' + getProtocol() + "&partnerId=" + getPid();
 				addScript(sourceLoadScript , null, async );
 			}
