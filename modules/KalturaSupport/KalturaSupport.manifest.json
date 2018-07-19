@@ -1778,6 +1778,57 @@
                     }
                 ]
             },
+            "secondaryScreenRatio": {
+                "label" : "2nd Screen Ratio",
+                "doc": "The width/height ratio of the secondary screen",
+                "type": "enum",
+                "enum": [
+                    0.75,
+                    0.5625
+                ],
+                "options": [
+                    {
+                        "label": "16:9",
+                        "value": 0.5625
+                    },
+                    {
+                        "label": "4:3",
+                        "value": 0.75
+                    }
+                ],
+                "initvalue": 0.5625
+            },
+            "secondaryScreenStartLocation": {
+                "label": "2nd Screen",
+                "doc": "Start location of secondary screen",
+                "type": "enum",
+                "enum": [
+                    "topLeft",
+                    "bottomRight",
+                    "bottomLeft"
+                ],
+                "initvalue": "right bottom",
+                "options": [
+                    {
+                        "label": "Top Left",
+                        "value": "left top"
+                    },
+                    {
+                        "label": "Bottom Right",
+                        "value": "right bottom"
+                    },
+                    {
+                        "label": "Bottom Left",
+                        "value": "left bottom"
+                    }
+                ]
+            },
+            "secondaryScreenSizeRatio": {
+                "label": "2nd screen size",
+                "doc": "Second screen size in percentages",
+                "initvalue": 25,
+                "type": "number"
+            },
             "showFirstSlideOnLoad": {
                 "label": "Show first slide",
                 "doc": "Display first slide when player loads",
