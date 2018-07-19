@@ -941,6 +941,14 @@ var mw = ( function ( $, undefined ) {
                 }
             }
 
+            function getPid() {
+                if (kalturaIframePackageData && kalturaIframePackageData.playerConfig && kalturaIframePackageData.playerConfig.widgetId) {
+                	var wid = kalturaIframePackageData.playerConfig.widgetId;
+                	return wid.slice(1, wid.length);
+				}
+				return null;
+			}
+
 			/**
 			 * Asynchronously append a script tag to the end of the body
 			 * that invokes load.php
@@ -958,6 +966,7 @@ var mw = ( function ( $, undefined ) {
 				// Asynchronously append a script tag to the end of the body
 				// Append &* to avoid triggering the IE6 extension check
 				sourceLoadScript += '?' + $.param( request ) + '&*' + '&protocol=' + getProtocol();
+				sourceLoadScript += '?' + $.param( request ) + '&*' + '&protocol=' + getProtocol() + "&partnerId=" + getPid();
 				addScript(sourceLoadScript , null, async );
 			}
 
