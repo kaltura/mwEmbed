@@ -1799,8 +1799,8 @@
                 "initvalue": 0.5625
             },
             "secondaryScreenStartLocation": {
-                "label": "2nd Screen",
-                "doc": "Start location of secondary screen",
+                "label": "2nd Screen pos",
+                "doc": "Initial position of secondary screen",
                 "type": "enum",
                 "enum": [
                     "topLeft",
@@ -1824,7 +1824,7 @@
                 ]
             },
             "secondaryScreenSizeRatio": {
-                "label": "2nd screen size",
+                "label": "2nd screen size (percentages)",
                 "doc": "Second screen size in percentages",
                 "initvalue": 25,
                 "type": "number"
