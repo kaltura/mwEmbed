@@ -813,7 +813,7 @@
 
 							//Calculate screen resize max width
 							var maxWidth = ( ( playerWidth * _this.getConfig('resizable').maxWidthPercentage ) / 100 );
-							var minWidth = ( ( playerWidth * _this.getConfig('secondaryScreenRatio') ) / 100 );
+							var minWidth = ( ( playerWidth * _this.getConfig('secondaryScreenSizeRatio') ) / 100 );
 
 							secondScreen.setResizeLimits({
 								maxWidth: maxWidth,
