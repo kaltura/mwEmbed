@@ -53,6 +53,7 @@
 		dvr: false,
         monitorViewEvents:true,
         playSentOnStart: false,
+		absolutePosition: null,
 
 		smartSetInterval:function(callback,time,monitorObj) {
 			var _this = this;
@@ -312,6 +313,10 @@
 					_this.currentBitRate = newSource.newBitrate;
 				}
 			});
+
+			this.embedPlayer.bindHelper( 'onId3Tag' , function (e, id3Tag) {
+				_this.absolutePosition = id3Tag.timestamp;
+			});
 		},
 		resetPlayerflags:function(){
 			this._p25Once = false;
@@ -321,6 +326,7 @@
 			this.hasSeeked = false;
             this.previousCurrentTime = 0;
 			this.savedPosition = null;
+			this.absolutePosition = null;
 		},
 
 		updateTimeStats: function() {
@@ -491,6 +497,10 @@
                 if( this.embedPlayer.getKalturaConfig( '', fvKey ) ){
                     statsEvent[ flashVarEvents[ fvKey ] ] = this.embedPlayer.getKalturaConfig('', fvKey );
                 }
+            }
+
+            if (this.absolutePosition) {
+	            statsEvent["absolutePosition"] = this.absolutePosition;
             }
 
 			// add ks if available
