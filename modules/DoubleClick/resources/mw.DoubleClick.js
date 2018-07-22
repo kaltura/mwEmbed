@@ -499,7 +499,7 @@
                         // Set the content element to player element:
                         var playerElement = _this.embedPlayer.getPlayerElement();
                         //Load the video tag to enable setting the source by doubleClick library
-                        if ((mw.isDesktopSafari() || mw.isMobileDevice()) && !_this.playerElementLoaded) {
+                        if (_this.adsManager.isCustomPlaybackUsed() && !_this.playerElementLoaded) {
                             _this.playerElementLoaded = true;
                             playerElement.load();
                         }
