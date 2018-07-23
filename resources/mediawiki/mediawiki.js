@@ -943,8 +943,7 @@ var mw = ( function ( $, undefined ) {
 
             function getPid() {
                 if (kalturaIframePackageData && kalturaIframePackageData.playerConfig && kalturaIframePackageData.playerConfig.widgetId) {
-                	var wid = kalturaIframePackageData.playerConfig.widgetId;
-                	return wid.slice(1, wid.length);
+                	return kalturaIframePackageData.playerConfig.widgetId;
 				}
 				return null;
 			}
@@ -965,7 +964,7 @@ var mw = ( function ( $, undefined ) {
 				request = sortQuery( request );
 				// Asynchronously append a script tag to the end of the body
 				// Append &* to avoid triggering the IE6 extension check
-				sourceLoadScript += '?' + $.param( request ) + '&*' + '&protocol=' + getProtocol() + "&partnerId=" + getPid();
+				sourceLoadScript += '?' + $.param( request ) + '&*' + '&protocol=' + getProtocol() + "&wid=" + getPid();
 				addScript(sourceLoadScript , null, async );
 			}
 
