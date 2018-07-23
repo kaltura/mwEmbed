@@ -5,6 +5,11 @@
 	"use strict";
 
 	mw.PluginManager.add( 'kAnalony' , mw.KBasePlugin.extend( {
+
+		defaultConfig: {
+			id3TagMaxDelay: 20000
+		},
+
 		PlayerEvent:{
 			"IMPRESSION": 1,
 			"PLAY_REQUEST": 2,
@@ -502,10 +507,6 @@
                 }
             }
 
-            if (this.absolutePosition && Date.now() - this.id3TagEventTime < 20000) {
-	            statsEvent["absolutePosition"] = this.absolutePosition;
-            }
-
 			// add ks if available
 			var ks = this.kClient.getKs();
 			if (ks){
@@ -531,6 +532,11 @@
 					$.extend(statsEvent, customVarObj);
 				}
 			}
+
+			if (this.absolutePosition && Date.now() - this.id3TagEventTime < config.id3TagMaxDelay) {
+				statsEvent["absolutePosition"] = this.absolutePosition;
+			}
+
 
 			// add playbackContext
 			if (mw.getConfig("playbackContext")){
