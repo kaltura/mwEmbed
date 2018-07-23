@@ -128,6 +128,10 @@
 				_this.firstPlay = true;
                 _this.entryPlayCounter++;
                 _this.playSentOnStart = false;
+                _this._p25Once = false;
+                _this._p50Once = false;
+                _this._p75Once = false;
+                _this._p100Once = false;
 			});
 
 			this.embedPlayer.bindHelper( 'userInitiatedPlay' , function () {
@@ -326,10 +330,6 @@
 			});
 		},
 		resetPlayerflags:function(){
-			this._p25Once = false;
-			this._p50Once = false;
-			this._p75Once = false;
-			this._p100Once = false;
 			this.hasSeeked = false;
             this.previousCurrentTime = 0;
 			this.savedPosition = null;
