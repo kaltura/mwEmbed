@@ -18,13 +18,20 @@
             },
 
             isSafeEnviornment: function () {
+                var _this = this;
+                var browserSupportMutedAutoplay = function() {
+                    return !!(mw.isDesktopSafari11() || mw.isChromeVersionGreaterThan(66));
+                };
+                var isAutoplayConfigured = function() {
+                    return !!(mw.getConfig('autoPlay') || _this.getPlayer().getRawKalturaConfig('playlistAPI', 'autoPlay'));
+                };
                 if (mw.getConfig('thumbEmbedOrigin') || mw.getConfig('autoMute')) {
                     return false;
                 }
                 if (mw.isMobileDevice()) {
                     return !!mw.getConfig('mobileAutoPlay');
                 } else {
-                    return !!(mw.isDesktopSafari11() || mw.isChromeVersionGreaterThan(66)) && (mw.getConfig('autoPlay') || this.getPlayer().getRawKalturaConfig('playlistAPI', 'autoPlay'));
+                    return browserSupportMutedAutoplay() && isAutoplayConfigured();
                 }
             },
 
