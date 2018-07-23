@@ -54,6 +54,7 @@
         monitorViewEvents:true,
         playSentOnStart: false,
 		absolutePosition: null,
+		id3TagEventTime: null,
 
 		smartSetInterval:function(callback,time,monitorObj) {
 			var _this = this;
@@ -315,6 +316,7 @@
 			});
 
 			this.embedPlayer.bindHelper( 'onId3Tag' , function (e, id3Tag) {
+				_this.id3TagEventTime = Date.now();
 				_this.absolutePosition = id3Tag.timestamp;
 			});
 		},
@@ -327,6 +329,7 @@
             this.previousCurrentTime = 0;
 			this.savedPosition = null;
 			this.absolutePosition = null;
+			this.id3TagEventTime = null;
 		},
 
 		updateTimeStats: function() {
@@ -499,7 +502,7 @@
                 }
             }
 
-            if (this.absolutePosition) {
+            if (this.absolutePosition && Date.now() - this.id3TagEventTime < 20000) {
 	            statsEvent["absolutePosition"] = this.absolutePosition;
             }
 
