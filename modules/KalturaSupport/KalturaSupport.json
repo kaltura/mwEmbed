@@ -61,7 +61,11 @@
     ]
   },
   "mw.KCuePoints": {
-    "scripts": "resources/mw.KCuePoints.js"
+    "scripts": "resources/mw.KCuePoints.js",
+    "dependencies": [
+      "mw.KPushServerNotification"
+    ]
+
   },
   "mw.KPushServerNotification": {
     "scripts": "resources/mw.KPushServerNotification.js",
