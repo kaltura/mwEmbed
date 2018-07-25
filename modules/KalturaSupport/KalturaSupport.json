@@ -155,6 +155,7 @@
     },
     "dependencies": [
       "mw.KBaseMediaList",
+      "mw.KCuePoints",
       "typeahead",
       "dotdotdot"
     ],
