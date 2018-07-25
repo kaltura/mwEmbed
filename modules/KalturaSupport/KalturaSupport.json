@@ -122,6 +122,7 @@
     },
     "dependencies": [
       "mw.KBaseComponent",
+      "mw.KCuePoints",
       "jquery.ui.draggable",
       "jquery.ui.resizable",
       "jquery.ui.droppable"
