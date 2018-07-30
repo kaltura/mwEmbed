@@ -632,4 +632,5 @@
             this.startTime = null;
         }
 	}));
+	
 } )( window.mw, window.jQuery );
