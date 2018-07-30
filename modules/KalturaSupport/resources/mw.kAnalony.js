@@ -126,12 +126,12 @@
 				_this.rateHandler.destroy();
 				_this.bufferTime = 0;
 				_this.firstPlay = true;
-                _this.entryPlayCounter++;
-                _this.playSentOnStart = false;
-                _this._p25Once = false;
-                _this._p50Once = false;
-                _this._p75Once = false;
-                _this._p100Once = false;
+				_this.entryPlayCounter++;
+				_this.playSentOnStart = false;
+				_this._p25Once = false;
+				_this._p50Once = false;
+				_this._p75Once = false;
+				_this._p100Once = false;
 			});
 
 			this.embedPlayer.bindHelper( 'userInitiatedPlay' , function () {
