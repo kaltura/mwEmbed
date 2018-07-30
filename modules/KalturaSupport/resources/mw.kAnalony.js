@@ -553,6 +553,7 @@
               pageReferrer = pageReferrer.substring(0, queryPos);
             }
 
+            pageReferrer = encodeURIComponent(pageReferrer);
             if (pageReferrer.length > 500) {
                 var parser = document.createElement('a');
                 parser.href = pageReferrer;
