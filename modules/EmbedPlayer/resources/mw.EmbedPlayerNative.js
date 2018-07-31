@@ -1565,6 +1565,8 @@
                             _this.id3TrackAdded = true;
 							//add id3 tags support
 							_this.id3Tag(textTrack);
+							//keep metadata tracks in hidden mode so their cues will still get updated
+							textTrack.mode = 'hidden';
 						} else if (textTrack.kind === 'subtitles' || textTrack.kind === 'captions') {
 							textTracksData.languages.push({
 								'kind': 'subtitle',
@@ -1576,8 +1578,8 @@
 								'default': textTrack.mode === 'showing',
 								'index': i
 							});
+							textTrack.mode = 'disabled';
 						}
-						textTrack.mode = 'disabled';
 					}
 					if (textTracksData.languages.length) {
 						mw.log('EmbedPlayerNative:: ' + textTracksData.languages.length + ' subtitles were found: ', textTracksData.languages);
