@@ -546,18 +546,19 @@
             //Get optional playlistAPI
 			this.maybeAddPlaylistId(statsEvent);
 
-            //Shorten the refferer param
+            //Shorten the referrer param
             var pageReferrer =  statsEvent[ 'referrer' ];
             var queryPos = pageReferrer.indexOf("?");
             if (queryPos > 0) {
               pageReferrer = pageReferrer.substring(0, queryPos);
             }
 
-            pageReferrer = encodeURIComponent(pageReferrer);
-            if (pageReferrer.length > 500) {
+            var encodedReferrer = encodeURIComponent(pageReferrer);
+            if (encodedReferrer.length > 500) {
                 var parser = document.createElement('a');
                 parser.href = pageReferrer;
                 pageReferrer =  parser.origin;
+
             }
 
             statsEvent[ 'referrer' ] = pageReferrer;
