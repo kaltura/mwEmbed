@@ -71,6 +71,8 @@
 			isNeeded: function () {
 				if (this.getPlayer().mediaElement.selectedSource.mimeType === "application/dash+xml") {
 					this.LoadShaka = true;
+					this.embedPlayer.streamerType = 'mpegdash';
+					
 				} else {
 					this.LoadShaka = false;
 				}

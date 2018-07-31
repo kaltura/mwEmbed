@@ -5,6 +5,11 @@
 	"use strict";
 
 	mw.PluginManager.add( 'kAnalony' , mw.KBasePlugin.extend( {
+
+		defaultConfig: {
+			id3TagMaxDelay: 20000
+		},
+
 		PlayerEvent:{
 			"IMPRESSION": 1,
 			"PLAY_REQUEST": 2,
@@ -53,6 +58,8 @@
 		dvr: false,
         monitorViewEvents:true,
         playSentOnStart: false,
+		absolutePosition: null,
+		id3TagEventTime: null,
 
 		smartSetInterval:function(callback,time,monitorObj) {
 			var _this = this;
@@ -312,6 +319,11 @@
 					_this.currentBitRate = newSource.newBitrate;
 				}
 			});
+
+			this.embedPlayer.bindHelper( 'onId3Tag' , function (e, id3Tag) {
+				_this.id3TagEventTime = Date.now();
+				_this.absolutePosition = id3Tag.timestamp;
+			});
 		},
 		resetPlayerflags:function(){
 			this._p25Once = false;
@@ -321,6 +333,8 @@
 			this.hasSeeked = false;
             this.previousCurrentTime = 0;
 			this.savedPosition = null;
+			this.absolutePosition = null;
+			this.id3TagEventTime = null;
 		},
 
 		updateTimeStats: function() {
@@ -518,6 +532,11 @@
 					$.extend(statsEvent, customVarObj);
 				}
 			}
+
+			if (this.absolutePosition && Date.now() - this.id3TagEventTime < config.id3TagMaxDelay) {
+				statsEvent["absolutePosition"] = this.absolutePosition;
+			}
+
 
 			// add playbackContext
 			if (mw.getConfig("playbackContext")){

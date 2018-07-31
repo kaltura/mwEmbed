@@ -6,6 +6,7 @@
 			"parent": "controlsContainer",
 			"order": 62,
 			"displayImportance": "high",
+			"filterByDisplayOnPlayer": true,
 			"iconClass": "icon-cc",
 			"align": "right",
 			"showTooltip": true,
@@ -484,6 +485,15 @@
 							_this.getBtn().hide();
 						}
 
+					}
+					if(_this.getConfig("filterByDisplayOnPlayer")){
+						data.objects = $.grep(data.objects , function (item) {
+							// also handle legacy captions items that do not have the field displayOnPlayer
+							if(item.hasOwnProperty("displayOnPlayer") && !item.displayOnPlayer){
+								return false;
+							}
+							return true;
+						});
 					}
 					_this.loadCaptionsURLsFromApi( data.objects, callback );
 

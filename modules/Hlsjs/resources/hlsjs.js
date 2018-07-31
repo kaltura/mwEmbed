@@ -78,6 +78,7 @@
 			isNeeded: function () {
 				if (this.getPlayer().mediaElement.selectedSource.mimeType === "application/vnd.apple.mpegurl") {
 					this.LoadHLS = true;
+					this.embedPlayer.streamerType = 'hls';
 				} else {
 					this.LoadHLS = false;
 				}

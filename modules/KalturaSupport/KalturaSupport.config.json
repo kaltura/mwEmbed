@@ -6,6 +6,7 @@
     "Kaltura.NoApiCache": false,
     "Kaltura.force10secProgressive": true,
     "Kaltura.UseFlavorIdsUrls": true,
+    "Kaltura.LeadHLSOnAndroid": true,
     "Kaltura.MissingFlavorSources": [
         {
             "src": "//www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_ktavj42z/format/url/protocol/http/a.mp4",
