@@ -1,7 +1,7 @@
-<?php
+<?php 
 /**
  * This file stores default settings for Kaltura html5 client library "mwEmbed"
- *
+ * 
  * DO NOT MODIFY THIS FILE. Instead modify LocalSettings.php in the parent mwEmbd directory.
  *
  */
@@ -20,13 +20,13 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '2.70';
+$wgMwEmbedVersion = '2.68';
 
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {
-    $wgHTTPProtocol = ($_GET['protocol'] == 'https') ? 'https' : 'http';
+	$wgHTTPProtocol = ($_GET['protocol'] == 'https') ? 'https' : 'http';
 } else {
-    $wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
+	$wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
 }
 // By default set timezone to UTC:
 date_default_timezone_set('UTC');
@@ -58,9 +58,9 @@ $wgMwEmbedEnabledModules = array( 'EmbedPlayer', 'KalturaSupport' );
 // for local configuration to override the set of enabled modules
 $d = dir( realpath( dirname( __FILE__ ) )  . '/../modules' );
 while (false !== ($entry = $d->read())) {
-    if( substr( $entry, 0, 1 ) != '.' && !in_array( $entry , $wgMwEmbedEnabledModules ) ){
-        $wgMwEmbedEnabledModules[] = $entry;
-    }
+	if( substr( $entry, 0, 1 ) != '.' && !in_array( $entry , $wgMwEmbedEnabledModules ) ){
+		$wgMwEmbedEnabledModules[] = $entry;
+	}
 }
 
 // Default debug mode
@@ -101,67 +101,67 @@ $wgMwEmbedProxyUrl =  $wgServer . $wgScriptPath . 'simplePhpXMLProxy.php';
  * Maximum time in seconds to cache resources served by the resource loader
  */
 $wgResourceLoaderMaxage = array(
-    'versioned' => array(
-        // Squid/Varnish but also any other public proxy cache between the client and MediaWiki
-        'server' => 30 * 24 * 60 * 60, // 30 days
-        // On the client side (e.g. in the browser cache).
-        'client' => 30 * 24 * 60 * 60, // 30 days
-    ),
-    'unversioned' => array(
-        'server' => 60 * 60, // 1 hour
-        'client' => 60 * 60, // 1 hour
-    ),
+	'versioned' => array(
+		// Squid/Varnish but also any other public proxy cache between the client and MediaWiki
+		'server' => 30 * 24 * 60 * 60, // 30 days
+		// On the client side (e.g. in the browser cache).
+		'client' => 30 * 24 * 60 * 60, // 30 days
+	),
+	'unversioned' => array(
+		'server' => 60 * 60, // 1 hour
+		'client' => 60 * 60, // 1 hour
+	),
 );
 /***
- * External module config:
+ * External module config: 
  */
 $wgExternalPlayersSupportedTypes = array('YouTube');
 
 /*********************************************************
- * Default Kaltura Configuration:
- * TODO move kaltura configuration to KalturaSupport module ( part of New ResourceLoader update )
+ * Default Kaltura Configuration: 
+ * TODO move kaltura configuration to KalturaSupport module ( part of New ResourceLoader update ) 
  ********************************************************/
 
 //Embedded services
 //To enable service re routing for entryResult calls
 $wgEnableKalturaEmbedServicesRouting = true;
 
-// To include signed headers with user IPs for IP restriction lookups, input a salt string for
-// $wgKalturaRemoteAddressSalt configuration option.
+// To include signed headers with user IPs for IP restriction lookups, input a salt string for 
+// $wgKalturaRemoteAddressSalt configuration option. 
 $wgKalturaRemoteAddressSalt = false;
 
 // If we should check for onPage resources per the external resources plugin
 $wgKalturaEnableEmbedUiConfJs = false;
 
-// Enables the result cache while in debug mode
-// This enables fast player rendering while scripts remain unminifed.
+// Enables the result cache while in debug mode 
+// This enables fast player rendering while scripts remain unminifed. 
 // ( normally $wgEnableScriptDebug disables result cache )
 $wgKalturaForceResultCache = false;
 
 // For force ip testing geo restrictions
 $wgKalturaForceIP = false;
 
-// To test sites with referre restrictions:
+// To test sites with referre restrictions: 
 $wgKalturaForceReferer = false;
 
 // The default Kaltura service url:
 $wgKalturaServiceUrl = 'http://cdnapi.kaltura.com';
 // if https use cdnsecakmi
 if( $wgHTTPProtocol == 'https' ){
-    $wgKalturaServiceUrl =  'https://cdnapisec.kaltura.com';
+	$wgKalturaServiceUrl =  'https://cdnapisec.kaltura.com';
 }
 
-// Default Kaltura CDN url:
+// Default Kaltura CDN url: 
 $wgKalturaCDNUrl = 'http://cdnbakmi.kaltura.com';
 // if https use cdnsecakmi
 if( $wgHTTPProtocol == 'https' ){
-    $wgKalturaCDNUrl =  'https://cdnsecakmi.kaltura.com';
+	$wgKalturaCDNUrl =  'https://cdnsecakmi.kaltura.com';
 }
 
 // Default Kaltura Stats url
 $wgKalturaStatsServiceUrl = 'http://stats.kaltura.com';
 if( $wgHTTPProtocol == 'https' ){
-    $wgKalturaStatsServiceUrl = 'https://stats.kaltura.com';
+	$wgKalturaStatsServiceUrl = 'https://stats.kaltura.com';
 }
 
 // Default Kaltura service url:
@@ -173,14 +173,14 @@ $wgLogApiRequests = false;
 // Default CDN Asset Path
 $wgCDNAssetPath = $wgHTTPProtocol . '://' . $_SERVER['HTTP_HOST'];
 
-// Default api request timeout in seconds
+// Default api request timeout in seconds 
 $wgKalturaServiceTimeout = 20;
 
-// If the iframe will accept 3rd party domain remote service requests
-// should be left "off" in production.
+// If the iframe will accept 3rd party domain remote service requests 
+// should be left "off" in production. 
 $wgKalturaAllowIframeRemoteService = false;
 
-// Default expire time for ui conf api queries in seconds
+// Default expire time for ui conf api queries in seconds 
 $wgKalturaUiConfCacheTime = 60*10; // 10 min
 
 // Cache errors for 30 seconds to avoid overloading apaches in CDN setups
@@ -193,14 +193,14 @@ $wgEnableIpadHTMLControls = true;
 
 $wgKalturaUseManifestUrls = true;
 
-// The admin secret should be set to an integration admin secret key for testing
+// The admin secret should be set to an integration admin secret key for testing 
 // api actions that require admin rights, like granting a ks for preview / play:
 $wgKalturaAdminSecret = null;
 
-// By default do allow custom resource includes.
+// By default do allow custom resource includes. 
 $wgAllowCustomResourceIncludes = true;
 
-// An array of partner ids for which apple adaptive should be disabled.
+// An array of partner ids for which apple adaptive should be disabled. 
 $wgKalturaPartnerDisableAppleAdaptive = array();
 
 // By default use apple adaptive if we have the ability
@@ -217,7 +217,7 @@ $wgKalturaAuthDomains = array( 'www.kaltura.com', 'kmc.kaltura.com' );
 // If google anlytics should be enabled, set to the ua string
 $wgKalturaGoogleAnalyticsUA = false;
 
-// for additional script includes.
+// for additional script includes. 
 $wgAdditionalDocsScriptInclude = false;
 
 //Remote web inspector URL such as: weinre, fireBug
@@ -228,12 +228,12 @@ $wgKalturaApiFeatures = array();
 
 /*********************************************************
  * Override Domain:
- ********************************************************/
+********************************************************/
 $wgEnableKalturaOverrideDomain = true;
 
 /*********************************************************
  * A comma-delimited string of allowed flashavrs to be passed to server on dynamic embed call:
- ********************************************************/
+********************************************************/
 $wgAllowedVars = "inlineScript";
 $wgAllowedVarsKeyPartials = "onPageJs,onPageCss,IframeCustomPluginJs,IframeCustomPluginCss";
 $wgAllowedPluginVars = "plugin,templatePath,templates,iframeHTML5Js,iframeHTML5Css,loadInIframe";
@@ -245,15 +245,15 @@ $wgMaxCacheEntries = 1;
 
 /*********************************************************
  * Include local settings override:
- ********************************************************/
+********************************************************/
 $wgLocalSettingsFile = realpath( dirname( __FILE__ ) ) . '/../LocalSettings.php';
 
 if( is_file( $wgLocalSettingsFile ) ){
-    require_once( $wgLocalSettingsFile );
+	require_once( $wgLocalSettingsFile );
 }
 
 if( isset( $_GET['pskwidgetpath'] ) ){
-    $psRelativePath = htmlspecialchars( $_GET['pskwidgetpath'] );
+	$psRelativePath = htmlspecialchars( $_GET['pskwidgetpath'] );
 }
 // The html5-ps settings file path
 $wgKalturaPSHtml5SettingsPath =  realpath( dirname( __FILE__ ) ) . '/../' . $psRelativePath . '/includes/DefaultSettings.php';
@@ -303,3 +303,4 @@ include_once( realpath( dirname( __FILE__ ) )  . '/../studio/studioService.php')
  *   );
  */
 $wgResourceLoaderSources = array();
+
