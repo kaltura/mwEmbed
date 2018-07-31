@@ -20,13 +20,13 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '2.70.rc3_wc-push_rc4';
+$wgMwEmbedVersion = '2.70';
 
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {
-	$wgHTTPProtocol = ($_GET['protocol'] == 'https') ? 'https' : 'http';
+    $wgHTTPProtocol = ($_GET['protocol'] == 'https') ? 'https' : 'http';
 } else {
-	$wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
+    $wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
 }
 // By default set timezone to UTC:
 date_default_timezone_set('UTC');
@@ -58,9 +58,9 @@ $wgMwEmbedEnabledModules = array( 'EmbedPlayer', 'KalturaSupport' );
 // for local configuration to override the set of enabled modules
 $d = dir( realpath( dirname( __FILE__ ) )  . '/../modules' );
 while (false !== ($entry = $d->read())) {
-	if( substr( $entry, 0, 1 ) != '.' && !in_array( $entry , $wgMwEmbedEnabledModules ) ){
-		$wgMwEmbedEnabledModules[] = $entry;
-	}
+    if( substr( $entry, 0, 1 ) != '.' && !in_array( $entry , $wgMwEmbedEnabledModules ) ){
+        $wgMwEmbedEnabledModules[] = $entry;
+    }
 }
 
 // Default debug mode
@@ -101,16 +101,16 @@ $wgMwEmbedProxyUrl =  $wgServer . $wgScriptPath . 'simplePhpXMLProxy.php';
  * Maximum time in seconds to cache resources served by the resource loader
  */
 $wgResourceLoaderMaxage = array(
-	'versioned' => array(
-		// Squid/Varnish but also any other public proxy cache between the client and MediaWiki
-		'server' => 30 * 24 * 60 * 60, // 30 days
-		// On the client side (e.g. in the browser cache).
-		'client' => 30 * 24 * 60 * 60, // 30 days
-	),
-	'unversioned' => array(
-		'server' => 60 * 60, // 1 hour
-		'client' => 60 * 60, // 1 hour
-	),
+    'versioned' => array(
+        // Squid/Varnish but also any other public proxy cache between the client and MediaWiki
+        'server' => 30 * 24 * 60 * 60, // 30 days
+        // On the client side (e.g. in the browser cache).
+        'client' => 30 * 24 * 60 * 60, // 30 days
+    ),
+    'unversioned' => array(
+        'server' => 60 * 60, // 1 hour
+        'client' => 60 * 60, // 1 hour
+    ),
 );
 /***
  * External module config:
@@ -148,20 +148,20 @@ $wgKalturaForceReferer = false;
 $wgKalturaServiceUrl = 'http://cdnapi.kaltura.com';
 // if https use cdnsecakmi
 if( $wgHTTPProtocol == 'https' ){
-	$wgKalturaServiceUrl =  'https://cdnapisec.kaltura.com';
+    $wgKalturaServiceUrl =  'https://cdnapisec.kaltura.com';
 }
 
 // Default Kaltura CDN url:
 $wgKalturaCDNUrl = 'http://cdnbakmi.kaltura.com';
 // if https use cdnsecakmi
 if( $wgHTTPProtocol == 'https' ){
-	$wgKalturaCDNUrl =  'https://cdnsecakmi.kaltura.com';
+    $wgKalturaCDNUrl =  'https://cdnsecakmi.kaltura.com';
 }
 
 // Default Kaltura Stats url
 $wgKalturaStatsServiceUrl = 'http://stats.kaltura.com';
 if( $wgHTTPProtocol == 'https' ){
-	$wgKalturaStatsServiceUrl = 'https://stats.kaltura.com';
+    $wgKalturaStatsServiceUrl = 'https://stats.kaltura.com';
 }
 
 // Default Kaltura service url:
@@ -228,12 +228,12 @@ $wgKalturaApiFeatures = array();
 
 /*********************************************************
  * Override Domain:
-********************************************************/
+ ********************************************************/
 $wgEnableKalturaOverrideDomain = true;
 
 /*********************************************************
  * A comma-delimited string of allowed flashavrs to be passed to server on dynamic embed call:
-********************************************************/
+ ********************************************************/
 $wgAllowedVars = "inlineScript";
 $wgAllowedVarsKeyPartials = "onPageJs,onPageCss,IframeCustomPluginJs,IframeCustomPluginCss";
 $wgAllowedPluginVars = "plugin,templatePath,templates,iframeHTML5Js,iframeHTML5Css,loadInIframe";
@@ -245,15 +245,15 @@ $wgMaxCacheEntries = 1;
 
 /*********************************************************
  * Include local settings override:
-********************************************************/
+ ********************************************************/
 $wgLocalSettingsFile = realpath( dirname( __FILE__ ) ) . '/../LocalSettings.php';
 
 if( is_file( $wgLocalSettingsFile ) ){
-	require_once( $wgLocalSettingsFile );
+    require_once( $wgLocalSettingsFile );
 }
 
 if( isset( $_GET['pskwidgetpath'] ) ){
-	$psRelativePath = htmlspecialchars( $_GET['pskwidgetpath'] );
+    $psRelativePath = htmlspecialchars( $_GET['pskwidgetpath'] );
 }
 // The html5-ps settings file path
 $wgKalturaPSHtml5SettingsPath =  realpath( dirname( __FILE__ ) ) . '/../' . $psRelativePath . '/includes/DefaultSettings.php';
@@ -303,4 +303,3 @@ include_once( realpath( dirname( __FILE__ ) )  . '/../studio/studioService.php')
  *   );
  */
 $wgResourceLoaderSources = array();
-
