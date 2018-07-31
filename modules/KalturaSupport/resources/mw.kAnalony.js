@@ -546,21 +546,22 @@
             //Get optional playlistAPI
 			this.maybeAddPlaylistId(statsEvent);
 
-            //Shorten the refferer param
+            //Shorten the referrer param
             var pageReferrer =  statsEvent[ 'referrer' ];
             var queryPos = pageReferrer.indexOf("?");
             if (queryPos > 0) {
-                pageReferrer = pageReferrer.substring(0, queryPos);
+              pageReferrer = pageReferrer.substring(0, queryPos);
             }
 
             var encodedReferrer = encodeURIComponent(pageReferrer);
             if (encodedReferrer.length > 500) {
                 var parser = document.createElement('a');
                 parser.href = pageReferrer;
-                encodedReferrer = encodeURIComponent(parser.origin);
+                pageReferrer =  parser.origin;
+
             }
 
-            statsEvent[ 'referrer' ] = encodedReferrer;
+            statsEvent[ 'referrer' ] = pageReferrer;
 
 			var eventRequest = {'service' : 'analytics', 'action' : 'trackEvent'};
 			$.each(statsEvent , function (event , value) {
