@@ -43,6 +43,11 @@
 				"minDisplayWidth": 0,
 				"minDisplayHeight": 0,
 				"enableKeyboardShortcuts": true,
+
+                "secondaryScreenSizeRatio": "25", // expose to external API
+                "secondaryScreenStartLocation": "right bottom", // expose to external API
+                "secondaryScreenRatio": ( 9 / 16 ), // expose to external API
+
 				"keyboardShortcutsMap": {
 					"nextState": 90,   // Add z Sign for next state
 					"switchView": 88   // Add x Sigh for switch views
@@ -433,7 +438,7 @@
 				var maxWidthPercentage = this.getConfig( 'resizable' ).maxWidth;
 				var playerWidth = this.getPlayer().getWidth();
 				var maxWidth = ( ( playerWidth * maxWidthPercentage ) / 100 );
-				var minWidth = ( ( playerWidth * this.getConfig( 'secondScreen' ).sizeRatio ) / 100 );
+				var minWidth = ( ( playerWidth * this.getConfig( 'secondaryScreenSizeRatio' ) ) / 100 );
 				var resizable = $.extend(
 					{},
 					this.getConfig( 'resizable' ),
@@ -775,7 +780,7 @@
 
 							//Calculate and apply new screen properties
 							var screenWidth = secondScreenProps.width.replace('px', '');
-							var screenWidthHeightRatio = _this.getConfig('secondScreen').widthHeightRatio;
+							var screenWidthHeightRatio = _this.getConfig('secondaryScreenRatio');
 							var screenTop = secondScreenProps.top.replace('px', '');
 							var screenLeft = secondScreenProps.left.replace('px', '');
 							var newWidth = _this.roundPrecisionFloat((screenWidth * widthRatio), -2);
@@ -808,7 +813,7 @@
 
 							//Calculate screen resize max width
 							var maxWidth = ( ( playerWidth * _this.getConfig('resizable').maxWidthPercentage ) / 100 );
-							var minWidth = ( ( playerWidth * _this.getConfig('secondScreen').sizeRatio ) / 100 );
+							var minWidth = ( ( playerWidth * _this.getConfig('secondaryScreenSizeRatio') ) / 100 );
 
 							secondScreen.setResizeLimits({
 								maxWidth: maxWidth,
@@ -949,8 +954,8 @@
 			//Display
 			getComponent: function () {
 				if ( !this.$el ) {
-					var width = this.getPlayer().getWidth() * this.getConfig( 'secondScreen' ).sizeRatio / 100;
-					var height = width * this.getConfig('secondScreen').widthHeightRatio;
+					var width = this.getPlayer().getWidth() * this.getConfig( 'secondaryScreenSizeRatio' ) / 100;
+					var height = width * this.getConfig('secondaryScreenRatio');
 					this.$el = $( '<div />' )
 						.css( {height: height + 'px', width: width + 'px', "background": "black"} )
 						.addClass( this.getCssClass() )
@@ -959,7 +964,7 @@
 				return this.$el;
 			},
 			positionSecondDisplay: function(){
-				var location = this.getConfig( 'secondScreen' ).startLocation.toLowerCase().split(" ");
+				var location = this.getConfig( 'secondaryScreenStartLocation' ).toLowerCase().split(" ");
 				switch(location[0]){
 					case "right":
 						location[0] = location[0]+"-25 ";
@@ -977,7 +982,7 @@
 						break;
 				}
 				this.displays.getAuxDisplay().position({
-					my: this.getConfig( 'secondScreen' ).startLocation.toLowerCase(),
+					my: this.getConfig( 'secondaryScreenStartLocation' ).toLowerCase(),
 					at: location[0]+location[1],
 					of: $( this.getPlayer().getInterface() )
 				});

@@ -927,6 +927,27 @@ var mw = ( function ( $, undefined ) {
 				return arr.join( '|' );
 			}
 
+			function getProtocol() {
+                var protocolString = window.location.protocol.slice(0, -1);
+                if (protocolString.match('^http')) {
+                    return protocolString;
+                } else {
+                    try {
+                        return window.parent.location.protocol.slice(0, -1);
+                    } catch (e){
+                        mw.log( "unable to get protocol for load request, assuming https" );
+                        return "https";
+                    }
+                }
+            }
+
+            function getPid() {
+                if (kalturaIframePackageData && kalturaIframePackageData.playerConfig && kalturaIframePackageData.playerConfig.widgetId) {
+                	return kalturaIframePackageData.playerConfig.widgetId;
+				}
+				return null;
+			}
+
 			/**
 			 * Asynchronously append a script tag to the end of the body
 			 * that invokes load.php
@@ -943,7 +964,7 @@ var mw = ( function ( $, undefined ) {
 				request = sortQuery( request );
 				// Asynchronously append a script tag to the end of the body
 				// Append &* to avoid triggering the IE6 extension check
-				sourceLoadScript += '?' + $.param( request ) + '&*' + '&protocol=' + location.protocol.slice(0, -1);
+				sourceLoadScript += '?' + $.param( request ) + '&*' + '&protocol=' + getProtocol() + "&wid=" + getPid();
 				addScript(sourceLoadScript , null, async );
 			}
 
