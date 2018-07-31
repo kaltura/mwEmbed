@@ -141,6 +141,8 @@
 				qnaObject = _this.getQnaContainer().find(".qnaModuleBackground");
 				onVideoTogglePluginButton = $('.qna-on-video-btn');
 
+                if ( _this.getConfig( 'onPage' ) ) {
+
 				// register to on click to change the icon of the toggle button
                 onVideoTogglePluginButton.on("click", function(){
 
@@ -161,6 +163,11 @@
 				});
 
 				_this.updateUnreadBadge();
+
+                }
+                else {
+                    $('.qna-on-video-btn').remove()
+				}
 			});
 
 			this.bind('onOpenFullScreen', function() {
@@ -173,6 +180,7 @@
 				_this.changeVideoToggleIcon();
 				if (!_this.getConfig( 'onPage' )){
 					$(".videoHolder, .mwPlayerContainer").css("width", _this.originalPlayerWidth + "px");
+                    $(".qnaModuleBackground").css("display", "block");
 				}
 			});
 		},
