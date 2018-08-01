@@ -57,7 +57,10 @@
 					_this.setLiveCuepointsWatchDog();
 				}
 			});
+			// base-template container for the thumbnail URL
 			this.baseThumbAssetUrl=null;
+			// Default will be the optimize logic. To turn it off we will need to
+			// add a flashvar: EmbedPlayer.disableThumbnailAssetUrlFetching=true
 			this.disableThumbnailAssetUrlFetching=mw.getConfig("EmbedPlayer.disableThumbnailAssetUrlFetching");
 		},
 		destroy: function () {
@@ -121,6 +124,8 @@
 			var loadThumbnailWithReferrer = this.embedPlayer.getFlashvars( 'loadThumbnailWithReferrer' );
 			var referrer = window.kWidgetSupport.getHostPageUrl();
 
+			// iterate CP's, use the base-template and just replace the thumbAssetId
+			// If we got here - baseThumbAssetUrl is defined already
 			function processAllCuePoints() {
 				var urls=[];
 				$.each(thumbCuePoint, function (index, item) {
@@ -132,6 +137,7 @@
 				processThumbnailUrls(urls);
 			}
 
+			// set the thumbnailUrl to all CPs (add referrer if necessary) and trigger the callback with the URLs
 			function processThumbnailUrls(data) {
 				$.each(data, function (index, thumbnailUrl) {
 					if (_this.isValidResult(thumbnailUrl)) {
@@ -152,6 +158,7 @@
 				}
 			}
 
+			// get URL of a thumbAsset
 			function getUrl(index) {
 				if (index>=requestArray.length) {
 					return;
@@ -163,9 +170,11 @@
 					'id': requestArray[index].id
 				}, function (thumbnailUrl) {
 				if (_this.isValidResult(thumbnailUrl)) {
+					// set this to the base-template.
 					_this.baseThumbAssetUrl = thumbnailUrl;
-						processAllCuePoints();
+					processAllCuePoints();
 					} else {
+						// in case the results are not valid - try to get it from the next CP
 						getUrl(index+1);
 					}
 				});
@@ -186,9 +195,11 @@
 
 			if (requestArray.length) {
 				if (!_this.disableThumbnailAssetUrlFetching) {
+					// this handles CPs that were received after we already know baseThumbAssetUrl
 					if (_this.baseThumbAssetUrl) {
 						processAllCuePoints();
 					} else {
+						// we still don't have baseThumbAssetUrl. try to get it from 1st CP
 						getUrl(0);
 					}
 				} else {
