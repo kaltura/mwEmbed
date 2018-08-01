@@ -57,8 +57,8 @@
 					_this.setLiveCuepointsWatchDog();
 				}
 			});
-            this.baseThumbAssetUrl=null;
-            this.disableThumbnailAssetUrlFetching=mw.getConfig("EmbedPlayer.disableThumbnailAssetUrlFetching");
+			this.baseThumbAssetUrl=null;
+			this.disableThumbnailAssetUrlFetching=mw.getConfig("EmbedPlayer.disableThumbnailAssetUrlFetching");
 		},
 		destroy: function () {
 			if (this.liveCuePointsIntervalId) {
@@ -121,16 +121,16 @@
 			var loadThumbnailWithReferrer = this.embedPlayer.getFlashvars( 'loadThumbnailWithReferrer' );
 			var referrer = window.kWidgetSupport.getHostPageUrl();
 
-            function processAllCuePoints() {
-                var urls=[];
-                $.each(thumbCuePoint, function (index, item) {
-                    // for some thumb cue points, assetId may be undefined from the API.
-                    if (typeof item.assetId !== 'undefined') {
-                        urls.push(_this.baseThumbAssetUrl.replace(/thumbAssetId\/([^\/]+)/,"/thumbAssetId/"+item.assetId));
-                    }
-                });
-                processThumbnailUrls(urls);
-            }
+			function processAllCuePoints() {
+				var urls=[];
+				$.each(thumbCuePoint, function (index, item) {
+				// for some thumb cue points, assetId may be undefined from the API.
+					if (typeof item.assetId !== 'undefined') {
+						urls.push(_this.baseThumbAssetUrl.replace(/thumbAssetId\/([^\/]+)/,"/thumbAssetId/"+item.assetId));
+					}
+				});
+				processThumbnailUrls(urls);
+			}
 
             function processThumbnailUrls(data) {
                 $.each(data, function (index, thumbnailUrl) {
