@@ -57,12 +57,15 @@
 					_this.setLiveCuepointsWatchDog();
 				}
 			});
+			this.baseThumbAssetUrl=null;
+			this.disableThumbnailAssetUrlFetching=mw.getConfig("EmbedPlayer.disableThumbnailAssetUrlFetching");
 		},
 		destroy: function () {
 			if (this.liveCuePointsIntervalId) {
 				clearInterval(this.liveCuePointsIntervalId);
 				this.liveCuePointsIntervalId = null;
 			}
+			this.baseThumbAssetUrl = null;
 			$(this.embedPlayer).unbind(this.bindPostfix);
 		},
 		/*
@@ -117,51 +120,96 @@
 			});
 			var loadThumbnailWithReferrer = this.embedPlayer.getFlashvars( 'loadThumbnailWithReferrer' );
 			var referrer = window.kWidgetSupport.getHostPageUrl();
+
+			function processAllCuePoints() {
+				var urls=[];
+				$.each(thumbCuePoint, function (index, item) {
+				// for some thumb cue points, assetId may be undefined from the API.
+					if (typeof item.assetId !== 'undefined') {
+						urls.push(_this.baseThumbAssetUrl.replace(/thumbAssetId\/([^\/]+)/,"/thumbAssetId/"+item.assetId));
+					}
+				});
+				processThumbnailUrls(urls);
+			}
+
+			function processThumbnailUrls(data) {
+				$.each(data, function (index, thumbnailUrl) {
+					if (_this.isValidResult(thumbnailUrl)) {
+						var resItem = responseArray[index];
+							if (resItem) {
+								resItem.thumbnailUrl = thumbnailUrl;
+							if (loadThumbnailWithReferrer) {
+								resItem.thumbnailUrl += '?options:referrer=' + referrer;
+							}
+						}
+					}
+				});
+				// Since the thumb assets request is async the callback needs to be async as well
+				if (callback) {
+					setTimeout(function () {
+					callback();
+					}, 0);
+				}
+			}
+
+			function getUrl(index) {
+				if (index>=requestArray.length) {
+					return;
+				}
+				// do the api request
+				_this.getKalturaClient().doRequest({
+					'service': 'thumbAsset',
+					'action': 'getUrl',
+					'id': requestArray[index].id
+				}, function (thumbnailUrl) {
+				if (_this.isValidResult(thumbnailUrl)) {
+					_this.baseThumbAssetUrl = thumbnailUrl;
+						processAllCuePoints();
+					} else {
+						getUrl(index+1);
+					}
+				});
+			}
 			//Create request data only for cuepoints that have assetId
 			$.each(thumbCuePoint, function (index, item) {
 				// for some thumb cue points, assetId may be undefined from the API.
 				if (typeof item.assetId !== 'undefined') {
 					requestArray.push(
-						{
-							'service': 'thumbAsset',
-							'action': 'getUrl',
-							'id': item.assetId
-						}
-					);
+					{
+					'service': 'thumbAsset',
+					'action': 'getUrl',
+					'id': item.assetId
+					});
 					responseArray.push(item);
 				}
-
 			});
 
 			if (requestArray.length) {
-				// do the api request
-				this.getKalturaClient().doRequest(requestArray, function (data) {
+				if (!_this.disableThumbnailAssetUrlFetching) {
+					if (_this.baseThumbAssetUrl) {
+						processAllCuePoints();
+					} else {
+						getUrl(0);
+					}
+				} else {
+					// do the api request
+					this.getKalturaClient().doRequest(requestArray, function (data) {
 					// Validate result
-					if (requestArray.length === 1){
+					if (requestArray.length === 1) {
 						data = [data];
 					}
-					$.each(data, function (index, thumbnailUrl) {
-						if (_this.isValidResult(thumbnailUrl)) {
-							var resItem = responseArray[index];
-							if (resItem){
-								resItem.thumbnailUrl = thumbnailUrl;
-								if (loadThumbnailWithReferrer){
-									resItem.thumbnailUrl += '?options:referrer=' + referrer;
-								}
-							}
-						}
+						processThumbnailUrls(data);
 					});
-				// Since the thumb assets request is async the callback needs to be async as well
-					if (callback) {
-						setTimeout(function () { callback(); }, 0);
-					}
-				});
+				}
 			} else {
 				if (callback) {
-					setTimeout(function () { callback(); }, 0);
+					setTimeout(function () {
+						callback();
+					}, 0);
 				}
 			}
 		},
+
 		fixLiveCuePointArray:function(arr) {
 			$.each(arr, function (index,cuePoint) {
 				cuePoint.startTime = cuePoint.createdAt*1000; //start time is in ms and createdAt is in seconds
