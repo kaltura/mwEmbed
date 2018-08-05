@@ -120,6 +120,9 @@ var receiverFlashVars = {
     "largePlayBtn": {
         'plugin': false
     },
+    "unMuteOverlayButton": {
+        'plugin': false
+    },
     "mediaProxy": {
         "mediaPlayFrom": 0
     },
