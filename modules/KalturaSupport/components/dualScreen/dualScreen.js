@@ -44,9 +44,9 @@
 				"minDisplayHeight": 0,
 				"enableKeyboardShortcuts": true,
 
-				"secondaryScreenSizeRatio": "25", // expose to external API
-				"secondaryScreenStartLocation": "right bottom", // expose to external API
-				"secondaryScreenRatio": ( 9 / 16 ), // expose to external API
+				"secondaryScreenSizeRatio": "25",
+				"secondaryScreenStartLocation": "right bottom",
+				"secondaryScreenRatio": ( 9 / 16 ),
 
 				"keyboardShortcutsMap": {
 					"nextState": 90,   // Add z Sign for next state
