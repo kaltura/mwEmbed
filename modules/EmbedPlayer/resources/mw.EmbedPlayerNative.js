@@ -105,7 +105,13 @@
 			}
 			$(this.getPlayerElement()).css('position', 'absolute');
 
-			if (this.inline) {
+            /* Change the position to 'Static' only if the in-use Browser is Edge
+            and the the embedding method is ThumbnailEmbed. */
+            if (mw.isEdge() && mw.getConfig('thumbEmbedOrigin')) {
+            	$(this.getPlayerElement()).css('position', 'static');
+            }
+
+            if (this.inline) {
 				$(this.getPlayerElement()).attr('playsinline', '');
 			}
 
@@ -1719,7 +1725,7 @@
 		},
 
 		getStartTimeOfDvrWindow: function(){
-			if( this.isLive() && this.isDVR() ){
+            if( this.isLive() && this.isDVR() && this.getPlayerElement().seekable.length > 0 ) {
 				return this.getPlayerElement().seekable.start(0);
 			} else {
 				return 0;

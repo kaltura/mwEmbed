@@ -527,6 +527,22 @@
             //Get optional playlistAPI
 			this.maybeAddPlaylistId(statsEvent);
 
+            //Shorten the refferer param
+            var pageReferrer =  statsEvent[ 'referrer' ];
+            var queryPos = pageReferrer.indexOf("?");
+            if (queryPos > 0) {
+                pageReferrer = pageReferrer.substring(0, queryPos);
+            }
+
+            var encodedReferrer = encodeURIComponent(pageReferrer);
+            if (encodedReferrer.length > 500) {
+                var parser = document.createElement('a');
+                parser.href = pageReferrer;
+                encodedReferrer = encodeURIComponent(parser.origin);
+            }
+
+            statsEvent[ 'referrer' ] = encodedReferrer;
+
 			var eventRequest = {'service' : 'analytics', 'action' : 'trackEvent'};
 			$.each(statsEvent , function (event , value) {
 				eventRequest[event] = value;
@@ -552,8 +568,8 @@
                 }catch(e){
 					mw.log("Failed sync time from server");
 				}
-			}, true );
-		},
+            }, true);
+        },
 
         maybeAddPlaylistId: function (statsEvent) {
             var plugins = this.embedPlayer.plugins;
