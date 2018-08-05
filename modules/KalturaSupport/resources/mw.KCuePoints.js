@@ -240,29 +240,23 @@
 				_this.associativeCuePoints[cuePoint.id] = cuePoint;
 			});
 			// if this is set - load the cue-points from push server mechanism and don't use polling
-            if(mw.getConfig("usePushForSlides")){
+			if(mw.getConfig("usePushForSlides")){
 				this.kPushServerNotification= mw.KPushServerNotification.getInstance(this.embedPlayer);
-                var thumbsPushNotification =  this.kPushServerNotification.createNotificationRequest(
-                    "THUMB_CUE_POINT_READY_NOTIFICATION",
-                    {
-                        "entryId": _this.embedPlayer.kentryid
-                    },
-                    function(cuepoints) {
-                        _this.handlePushCuepoints(cuepoints);
-                    });
-                var layoutPushNotification =  this.kPushServerNotification.createNotificationRequest(
-                    "SLIDE_VIEW_CHANGE_CODE_CUE_POINT",
-                    {
-                        "entryId": _this.embedPlayer.kentryid
-                    },
-                    function(cuepoints) {
-                        _this.handlePushCuepoints(cuepoints);
-                    });
-                this.kPushServerNotification.registerNotifications([thumbsPushNotification]);
-                this.kPushServerNotification.registerNotifications([layoutPushNotification]);
-                // don't setup the list interval
-                return;
-            }
+				var thumbsPushNotification =  this.kPushServerNotification.createNotificationRequest(
+				"THUMB_CUE_POINT_READY_NOTIFICATION",
+				{"entryId": _this.embedPlayer.kentryid}, function(cuepoints) {
+					_this.handlePushCuepoints(cuepoints);
+				});
+				var layoutPushNotification =  this.kPushServerNotification.createNotificationRequest(
+				"SLIDE_VIEW_CHANGE_CODE_CUE_POINT",
+				{"entryId": _this.embedPlayer.kentryid}, function(cuepoints) {
+					_this.handlePushCuepoints(cuepoints);
+				});
+				this.kPushServerNotification.registerNotifications([thumbsPushNotification]);
+				this.kPushServerNotification.registerNotifications([layoutPushNotification]);
+				// don't setup the list interval
+				return;
+			}
 			var liveCuepointsRequestInterval = mw.getConfig("EmbedPlayer.LiveCuepointsRequestInterval", 10000);
 			mw.log("mw.KCuePoints::start live cue points watchdog, polling rate: " + liveCuepointsRequestInterval + "ms");
 			//Start live cuepoint pulling
