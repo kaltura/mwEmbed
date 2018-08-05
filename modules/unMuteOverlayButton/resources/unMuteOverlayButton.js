@@ -18,10 +18,21 @@
             },
 
             isSafeEnviornment: function () {
-                var isThumbEmbed = !!mw.getConfig('thumbEmbedOrigin');
-                var isMobileAutoPlay = (mw.isMobileDevice() || mw.isIpad()) && mw.getConfig('mobileAutoPlay') && !mw.getConfig('autoMute') && !isThumbEmbed;
-                var isFallbackToMutedAutoPlay = (!isThumbEmbed && !mw.getConfig('autoMute') && (mw.isDesktopSafari11() || mw.isChromeVersionGreaterThan(66)) && (mw.getConfig('autoPlay') || this.getPlayer().getRawKalturaConfig('playlistAPI', 'autoPlay')));
-                return !!(isMobileAutoPlay || isFallbackToMutedAutoPlay);
+                var _this = this;
+                var browserSupportMutedAutoplay = function() {
+                    return !!(mw.isDesktopSafari11() || mw.isChromeVersionGreaterThan(66));
+                };
+                var isAutoplayConfigured = function() {
+                    return !!(mw.getConfig('autoPlay') || _this.getPlayer().getRawKalturaConfig('playlistAPI', 'autoPlay'));
+                };
+                if (mw.getConfig('thumbEmbedOrigin') || mw.getConfig('autoMute')) {
+                    return false;
+                }
+                if (mw.isMobileDevice()) {
+                    return !!mw.getConfig('mobileAutoPlay');
+                } else {
+                    return browserSupportMutedAutoplay() && isAutoplayConfigured();
+                }
             },
 
             addBindings: function () {

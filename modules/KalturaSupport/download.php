@@ -87,6 +87,8 @@ class downloadEntry {
 
 			}else{
 				header( 'Content-Disposition: attachment; filename="'.$filename.'"' );
+				stream_wrapper_restore('http');
+				stream_wrapper_restore('https');
 				readfile( $flavorUrl );
 			}
 		}

@@ -43,11 +43,9 @@
 				"minDisplayWidth": 0,
 				"minDisplayHeight": 0,
 				"enableKeyboardShortcuts": true,
-
 				"secondaryScreenSizeRatio": "25",
 				"secondaryScreenStartLocation": "right bottom",
 				"secondaryScreenRatio": ( 9 / 16 ),
-
 				"keyboardShortcutsMap": {
 					"nextState": 90,   // Add z Sign for next state
 					"switchView": 88   // Add x Sigh for switch views
