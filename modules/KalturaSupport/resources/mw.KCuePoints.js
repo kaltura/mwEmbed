@@ -36,7 +36,6 @@
 
 		init: function (embedPlayer) {
 			var _this = this;
-            this.kPushServerNotification= mw.KPushServerNotification.getInstance(embedPlayer);
 			// Remove any old bindings:
 			this.destroy();
 			// Setup player ref:
@@ -242,6 +241,7 @@
 			});
 			// if this is set - load the cue-points from push server mechanism and don't use polling
             if(mw.getConfig("usePushForSlides")){
+				this.kPushServerNotification= mw.KPushServerNotification.getInstance(this.embedPlayer);
                 var thumbsPushNotification =  this.kPushServerNotification.createNotificationRequest(
                     "THUMB_CUE_POINT_READY_NOTIFICATION",
                     {
