@@ -7,6 +7,11 @@
     cursor: pointer;
 }
 
+.controlBar :focus {
+    outline: 1px solid #66CCFF !important;
+}
+
+
 .displayControlBar:after {
     content: '';
     clear: both;
@@ -63,6 +68,7 @@
     cursor: pointer;
     transition: transform 0.5s ease-out, filter 0.5s ease-out;
     padding: 10px;
+    text-decoration: none;
 }
 .controlBarBtn:only-child {
     margin-left: 0;

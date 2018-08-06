@@ -44,6 +44,16 @@ mw.PluginManager.add( 'infoScreen', mw.KBaseScreen.extend({
 					$(embedPlayer.getPlayerElement()).addClass("blur");
 					embedPlayer.getPlayerPoster().addClass("blur");
 					embedPlayer.getInterface().find(".infoScreen .icon-close").focus();
+					screen.keydown( $.proxy( _this.tabKeyBind, _this )  );
+					embedPlayer.getInterface().find(".infoScreen").keydown(function(e){
+						if(e.keyCode === 9){// keyCode = 9 - tab button
+							setTimeout(function () {
+								if(!$(':focus').parents('.infoScreen').hasClass('infoScreen')){
+									embedPlayer.getInterface().find(".infoScreen .icon-close").focus();
+								}
+							}, 0);
+						}
+					});
 				});
 			}
 		});
@@ -67,6 +77,17 @@ mw.PluginManager.add( 'infoScreen', mw.KBaseScreen.extend({
 		this.bind('onCloseFullScreen', function () {
 			embedPlayer.getVideoHolder().removeClass("fullscreen-video-size-small");
 		});
+		this.tabKeyBind = function(e){
+			if(e.keyCode === 9){// keyCode = 9 - tab button
+				setTimeout(function () {
+					var currentFocusedElement = $(':focus');//when timeout will done - new element will be in focus
+					if(!currentFocusedElement.parents('.infoScreen').length){
+						_this.getPlayer().getInterface().find(".infoScreen .icon-close").focus();
+						return;
+					}
+				}, 0);
+			}
+		};
 	},
 	addScreenBindings: function(){
 		if (mw.isNativeApp()) {
