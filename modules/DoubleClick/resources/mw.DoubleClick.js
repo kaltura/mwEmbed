@@ -1762,7 +1762,7 @@
             var ad = event.getAd();
             var podInfo = ad && ad.getAdPodInfo();
             var totalPodAds = podInfo && podInfo.getTotalAds();
-            if (!ad || totalPodAds === 1) {
+            if ((ad == false) || totalPodAds === 1) {
                 this.restorePlayer(this.contentDoneFlag);
                 this.embedPlayer.play();
             }
