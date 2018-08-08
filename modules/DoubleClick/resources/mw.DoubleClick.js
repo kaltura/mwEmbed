@@ -1378,9 +1378,11 @@
                         var position = videoElement.css('position');
                         videoElement.css('position', '');
                         _this.restorePlayer();
+	                    _this.embedPlayer.play();
                         videoElement.css('position', position);
                     } else {
                         _this.restorePlayer();
+                        _this.embedPlayer.play();
                     }
                 }
             } );
