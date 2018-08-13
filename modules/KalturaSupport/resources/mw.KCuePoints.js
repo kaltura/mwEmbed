@@ -240,7 +240,7 @@
 				_this.associativeCuePoints[cuePoint.id] = cuePoint;
 			});
 			// if this is set - load the cue-points from push server mechanism and don't use polling
-			if(mw.getConfig("usePushForSlides")){
+			if(!mw.getConfig("usePushForSlides")){
 				this.kPushServerNotification= mw.KPushServerNotification.getInstance(this.embedPlayer);
 				var thumbsPushNotification =  this.kPushServerNotification.createNotificationRequest(
 				"THUMB_CUE_POINT_READY_NOTIFICATION",
