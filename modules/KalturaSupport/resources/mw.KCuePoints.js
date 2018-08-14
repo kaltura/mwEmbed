@@ -239,8 +239,8 @@
 			$.each(cuePoints, function (index, cuePoint) {
 				_this.associativeCuePoints[cuePoint.id] = cuePoint;
 			});
-			// if this is set - load the cue-points from push server mechanism and don't use polling
-			if(mw.getConfig("usePushForSlides")){
+			// By default use push notification - unless explicitly usePollingForSlides is set to true
+			if(!mw.getConfig("usePollingForSlides")){
 				this.kPushServerNotification= mw.KPushServerNotification.getInstance(this.embedPlayer);
 				var thumbsPushNotification =  this.kPushServerNotification.createNotificationRequest(
 				"THUMB_CUE_POINT_READY_NOTIFICATION",
