@@ -119,6 +119,7 @@
 						_this.handleDefaultSource();
 						_this.buildMenu( newSources );
 						outOfBandCaptionEventHandlers.call(_this);
+                        maybeRegisterTextTrackChangeHandler.call(_this);
 					}
 				} );
 			} else {
@@ -157,6 +158,26 @@
 					_this.buildMenu( languages );
 				} );
 				outOfBandCaptionEventHandlers.call(this);
+			}
+
+            /**
+			 * support saving user selected text track language in iOS native player
+             */
+			function maybeRegisterTextTrackChangeHandler () {
+                if( this.isNativeIOSPlayback() && this.getConfig('useCookie') && !this._registeredNativeTrackChangeHandler){
+                    this._registeredNativeTrackChangeHandler = true;
+                    this.embedPlayer.getPlayerElement().textTracks.addEventListener("change", function(){
+                        var activeSubtitle = this.embedPlayer.getActiveSubtitle();
+                        var activeLanguage = null;
+                        if (activeSubtitle) {
+                            activeLanguage = activeLanguage.language;
+                        } else {
+                            activeLanguage = "None";
+                        }
+                        this.log("setting new cookie language " + activeLanguage);
+                        this.getPlayer().setCookie( this.cookieName, activeLanguage.toLowerCase() );
+                    });
+                }
 			}
 
 			function outOfBandCaptionEventHandlers(){
