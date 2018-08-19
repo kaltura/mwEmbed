@@ -119,6 +119,7 @@
 						_this.handleDefaultSource();
 						_this.buildMenu( newSources );
 						outOfBandCaptionEventHandlers.call(_this);
+                        _this.maybeRegisterTextTrackChangeHandler.call(_this);
 					}
 				} );
 			} else {
@@ -273,6 +274,7 @@
 			this.bind( 'onOpenFullScreen', function (){
 				if ( mw.isIOS() && _this.isNativeFullScreenEnabled() && _this.selectedSource ) {
 					_this.embedPlayer.selectDefaultCaption(_this.selectedSource.srclang);
+					_this.maybeRegisterTextTrackChangeHandler();
 				}
 			});
 			this.bind( 'onCloseFullScreen', function (){
@@ -292,6 +294,28 @@
 				}
 			});
 		},
+        /**
+         * support saving user selected text track language in iOS native player
+         */
+        maybeRegisterTextTrackChangeHandler: function () {
+            if (this.getConfig('useCookie') && !this._registeredNativeTrackChangeHandler) {
+                this._registeredNativeTrackChangeHandler = true;
+                var _this = this;
+                this.embedPlayer.getPlayerElement().textTracks.addEventListener("change", function () {
+                    if (_this.getPlayer().layoutBuilder.isInFullScreen() || _this.isNativeIOSPlayback()) {
+                        var activeSubtitle = _this.embedPlayer.getActiveSubtitle();
+                        var activeLanguage = null;
+                        if (activeSubtitle && activeSubtitle.language) {
+                            activeLanguage = activeSubtitle.language.toLowerCase();
+                        } else {
+                            activeLanguage = "None";
+                        }
+                        _this.log("setting new cookie language " + activeLanguage);
+                        _this.getPlayer().setCookie(_this.cookieName, activeLanguage);
+                    }
+                });
+            }
+        },
 		isNativeIOSPlayback: function() {
 			return mw.isIOS() && !mw.isIpad() && !mw.getConfig('EmbedPlayer.WebKitPlaysInline');
 		},

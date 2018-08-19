@@ -656,7 +656,7 @@
 		 */
 		isTextTrackSelected: function (textTracks, defaultLangKey) {
 			for (var i=0; textTracks.length > i; i++) {
-				if (textTracks[i].mode === "showing" && textTracks[i].language === defaultLangKey) {
+				if (textTracks[i].mode === "showing" && (textTracks[i].language === defaultLangKey || textTracks[i].label === defaultLangKey)) {
 					return true;
 				}
 			}
@@ -1570,8 +1570,8 @@
 						} else if (textTrack.kind === 'subtitles' || textTrack.kind === 'captions') {
 							textTracksData.languages.push({
 								'kind': 'subtitle',
-								'language': textTrack.label,
-								'srclang': textTrack.label,
+								'language': textTrack.language,
+								'srclang': textTrack.language,
 								'label': textTrack.label,
 								'title': textTrack.label,
 								'id': textTrack.id,
