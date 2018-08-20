@@ -1578,7 +1578,9 @@
 								'default': textTrack.mode === 'showing',
 								'index': i
 							});
-							textTrack.mode = 'disabled';
+							if (!_this.isNativeIOSPlayback()) {
+								textTrack.mode = 'disabled';
+							}
 						}
 					}
 					if (textTracksData.languages.length) {
@@ -1599,6 +1601,11 @@
 				}
 			}, 1000);
 		},
+
+		isNativeIOSPlayback: function() {
+			return mw.isIOS() && !mw.isIpad() && !mw.getConfig('EmbedPlayer.WebKitPlaysInline');
+		},
+
 		id3Tag: function(metadataTrack){
 			var _this = this;
 			metadataTrack.addEventListener("cuechange", function (evt) {
