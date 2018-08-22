@@ -441,12 +441,6 @@
 					this.setTextSource(this.selectedSource, false);
 				}
 			}
-			if (!this.selectedSource && this.isNativeIOSPlayback()) {
-				var source = this.selectDefaultSource();
-				if (source) {
-					this.selectDefaultIosTrack(source.srclang);
-				}
-			}
 		},
 		textSourcesInSources: function(sources, textSource){
 			for ( var  i = 0; i < sources.length; i++ ){
