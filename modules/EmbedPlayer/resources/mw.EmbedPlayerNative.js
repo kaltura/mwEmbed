@@ -996,11 +996,6 @@
                                     //If play is rejected then return UI state to pause so user can take action
                                     _this.pause();
                                 });
-                             		 // A workaround for the play promise on Android when changing streams.
-                               if ( _this.firstPlay && !!mw.dualScreen && mw.isAndroid()) {
-                                	_this.pause();
-
-                                	}
                             }
 						}
 

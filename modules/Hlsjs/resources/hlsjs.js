@@ -718,11 +718,7 @@
 			playerSwitchSource: function (src, switchCallback, doneCallback) {
 				if (!this.mediaAttached){
 					this.unbind("firstPlay");
-					if (!!mw.dualScreen && mw.isAndroid()) {
-					  this.bind("seeking");
-					  } else {
 					  this.unbind("seeking");
-					  }
 					this.bind("firstPlay", function() {
 						this.hls.attachMedia(this.getPlayer().getPlayerElement());
 					}.bind(this));
