@@ -718,7 +718,7 @@
 			playerSwitchSource: function (src, switchCallback, doneCallback) {
 				if (!this.mediaAttached){
 					this.unbind("firstPlay");
-					  this.unbind("seeking");
+					this.unbind("seeking");
 					this.bind("firstPlay", function() {
 						this.hls.attachMedia(this.getPlayer().getPlayerElement());
 					}.bind(this));
