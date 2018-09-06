@@ -99,7 +99,7 @@
 		return ( userAgent.indexOf('Android') != -1 && userAgent.indexOf('Windows') === -1);
 	};
 	mw.isAndroid4andUp = function () {
-		var androidUAStringRegEx = /Android ((\d+)(?:\.\d+){1,2})/;
+		var androidUAStringRegEx = /Android ((\d+)(?:\.\d+){0,2})/;
 		var res = androidUAStringRegEx.exec(userAgent);
 		if ( res == null ){
 			return false;
