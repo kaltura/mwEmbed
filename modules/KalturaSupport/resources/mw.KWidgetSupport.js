@@ -143,9 +143,6 @@ mw.KWidgetSupport.prototype = {
 				width: embedPlayer.getWidth(),
 				height: embedPlayer.getHeight()
 			});
-			if( embedPlayer.getFlashvars( 'loadThumbnailWithKs' ) === true ) {
-				thumbUrl += '/ks/' + embedPlayer.getFlashvars('ks');
-			}
 			if (mw.getConfig('thumbnailUrl')) {
 				thumbUrl = embedPlayer.evaluate(mw.getConfig('thumbnailUrl'));
 			}
@@ -2114,6 +2111,9 @@ mw.KWidgetSupport.prototype = {
             }
             if (thumb.vid_slices) {
                 thumbUrl += '/vid_slices/' + thumb.vid_slices;
+            }
+            if( mw.getConfig('loadThumbnailWithKs') === true ) {
+			          thumbUrl += '/ks/' + mw.getConfig('ks');
             }
 
 		}
