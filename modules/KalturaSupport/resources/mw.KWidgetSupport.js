@@ -2113,7 +2113,7 @@ mw.KWidgetSupport.prototype = {
                 thumbUrl += '/vid_slices/' + thumb.vid_slices;
             }
             if( mw.getConfig('loadThumbnailWithKs') === true ) {
-			          thumbUrl += '/ks/' + mw.getConfig('ks');
+		thumbUrl += '/ks/' + mw.getConfig('ks');
             }
 
 		}
