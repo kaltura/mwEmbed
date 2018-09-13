@@ -241,6 +241,11 @@
 			});
 			// By default use push notification - unless explicitly usePollingForSlides is set to true
 			if(!mw.getConfig("usePollingForSlides")){
+				// if the KPushServerNotification code is not loaded - stop here.
+				if(!mw.KPushServerNotification){
+					mw.log("mw.KCuePoints::Missing KPushServerNotification. Slides for live are not supposed to work");
+					return;
+				}
 				this.kPushServerNotification= mw.KPushServerNotification.getInstance(this.embedPlayer);
 				var thumbsPushNotification =  this.kPushServerNotification.createNotificationRequest(
 				"THUMB_CUE_POINT_READY_NOTIFICATION",
