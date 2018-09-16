@@ -6,6 +6,7 @@
 			"parent": "controlsContainer",
 			"order": 62,
 			"displayImportance": "high",
+			"filterByDisplayOnPlayer": true,
 			"iconClass": "icon-cc",
 			"align": "right",
 			"showTooltip": true,
@@ -440,6 +441,12 @@
 					this.setTextSource(this.selectedSource, false);
 				}
 			}
+			if (!this.selectedSource && this.isNativeIOSPlayback()) {
+				var source = this.selectDefaultSource();
+				if (source) {
+					this.selectDefaultIosTrack(source.srclang);
+				}
+			}
 		},
 		textSourcesInSources: function(sources, textSource){
 			for ( var  i = 0; i < sources.length; i++ ){
@@ -484,6 +491,15 @@
 							_this.getBtn().hide();
 						}
 
+					}
+					if(_this.getConfig("filterByDisplayOnPlayer")){
+						data.objects = $.grep(data.objects , function (item) {
+							// also handle legacy captions items that do not have the field displayOnPlayer
+							if(item.hasOwnProperty("displayOnPlayer") && !item.displayOnPlayer){
+								return false;
+							}
+							return true;
+						});
 					}
 					_this.loadCaptionsURLsFromApi( data.objects, callback );
 

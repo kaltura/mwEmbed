@@ -105,7 +105,13 @@
 			}
 			$(this.getPlayerElement()).css('position', 'absolute');
 
-			if (this.inline) {
+            /* Change the position to 'Static' only if the in-use Browser is Edge
+            and the the embedding method is ThumbnailEmbed. */
+            if (mw.isEdge() && mw.getConfig('thumbEmbedOrigin')) {
+            	$(this.getPlayerElement()).css('position', 'static');
+            }
+
+            if (this.inline) {
 				$(this.getPlayerElement()).attr('playsinline', '');
 			}
 
@@ -650,7 +656,7 @@
 		 */
 		isTextTrackSelected: function (textTracks, defaultLangKey) {
 			for (var i=0; textTracks.length > i; i++) {
-				if (textTracks[i].mode === "showing" && textTracks[i].language === defaultLangKey) {
+				if (textTracks[i].mode === "showing" && (textTracks[i].language === defaultLangKey || textTracks[i].label === defaultLangKey)) {
 					return true;
 				}
 			}
@@ -666,7 +672,7 @@
 		 */
 		showDefaultTextTrack: function (textTracks, defaultLangKey) {
 			$.each( textTracks, function( inx, caption) {
-				caption.mode = "hidden";
+				caption.mode = "disabled";
 			});
 
 			for (var i = 0; i < textTracks.length; i++) {
@@ -1559,19 +1565,21 @@
                             _this.id3TrackAdded = true;
 							//add id3 tags support
 							_this.id3Tag(textTrack);
+							//keep metadata tracks in hidden mode so their cues will still get updated
+							textTrack.mode = 'hidden';
 						} else if (textTrack.kind === 'subtitles' || textTrack.kind === 'captions') {
 							textTracksData.languages.push({
 								'kind': 'subtitle',
-								'language': textTrack.label,
-								'srclang': textTrack.label,
+								'language': textTrack.language,
+								'srclang': textTrack.language,
 								'label': textTrack.label,
 								'title': textTrack.label,
 								'id': textTrack.id,
 								'default': textTrack.mode === 'showing',
 								'index': i
 							});
+							textTrack.mode = 'disabled';
 						}
-						textTrack.mode = 'hidden';
 					}
 					if (textTracksData.languages.length) {
 						mw.log('EmbedPlayerNative:: ' + textTracksData.languages.length + ' subtitles were found: ', textTracksData.languages);
@@ -1675,7 +1683,7 @@
 		hideTextTrack: function(){
             var activeSubtitle = this.getActiveSubtitle();
             if (activeSubtitle && activeSubtitle.mode) {
-                activeSubtitle.mode = 'hidden';
+                activeSubtitle.mode = 'disabled';
                 this.log('onSwitchTextTrack disable subtitles');
             }
 		},

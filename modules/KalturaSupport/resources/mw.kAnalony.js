@@ -5,6 +5,11 @@
 	"use strict";
 
 	mw.PluginManager.add( 'kAnalony' , mw.KBasePlugin.extend( {
+
+		defaultConfig: {
+			id3TagMaxDelay: 20000
+		},
+
 		PlayerEvent:{
 			"IMPRESSION": 1,
 			"PLAY_REQUEST": 2,
@@ -53,6 +58,8 @@
 		dvr: false,
         monitorViewEvents:true,
         playSentOnStart: false,
+		absolutePosition: null,
+		id3TagEventTime: null,
 
 		smartSetInterval:function(callback,time,monitorObj) {
 			var _this = this;
@@ -119,8 +126,12 @@
 				_this.rateHandler.destroy();
 				_this.bufferTime = 0;
 				_this.firstPlay = true;
-                _this.entryPlayCounter++;
-                _this.playSentOnStart = false;
+				_this.entryPlayCounter++;
+				_this.playSentOnStart = false;
+				_this._p25Once = false;
+				_this._p50Once = false;
+				_this._p75Once = false;
+				_this._p100Once = false;
 			});
 
 			this.embedPlayer.bindHelper( 'userInitiatedPlay' , function () {
@@ -312,15 +323,18 @@
 					_this.currentBitRate = newSource.newBitrate;
 				}
 			});
+
+			this.embedPlayer.bindHelper( 'onId3Tag' , function (e, id3Tag) {
+				_this.id3TagEventTime = Date.now();
+				_this.absolutePosition = id3Tag.timestamp;
+			});
 		},
 		resetPlayerflags:function(){
-			this._p25Once = false;
-			this._p50Once = false;
-			this._p75Once = false;
-			this._p100Once = false;
 			this.hasSeeked = false;
             this.previousCurrentTime = 0;
 			this.savedPosition = null;
+			this.absolutePosition = null;
+			this.id3TagEventTime = null;
 		},
 
 		updateTimeStats: function() {
@@ -519,6 +533,11 @@
 				}
 			}
 
+			if (this.absolutePosition && Date.now() - this.id3TagEventTime < config.id3TagMaxDelay) {
+				statsEvent["absolutePosition"] = this.absolutePosition;
+			}
+
+
 			// add playbackContext
 			if (mw.getConfig("playbackContext")){
 				statsEvent["playbackContext"] = mw.getConfig("playbackContext");
@@ -527,21 +546,21 @@
             //Get optional playlistAPI
 			this.maybeAddPlaylistId(statsEvent);
 
-            //Shorten the refferer param
+            //Shorten the referrer param
             var pageReferrer =  statsEvent[ 'referrer' ];
             var queryPos = pageReferrer.indexOf("?");
             if (queryPos > 0) {
-                pageReferrer = pageReferrer.substring(0, queryPos);
+              pageReferrer = pageReferrer.substring(0, queryPos);
             }
 
             var encodedReferrer = encodeURIComponent(pageReferrer);
             if (encodedReferrer.length > 500) {
                 var parser = document.createElement('a');
                 parser.href = pageReferrer;
-                encodedReferrer = encodeURIComponent(parser.origin);
+                pageReferrer =  parser.origin;
             }
 
-            statsEvent[ 'referrer' ] = encodedReferrer;
+            statsEvent[ 'referrer' ] = pageReferrer;
 
 			var eventRequest = {'service' : 'analytics', 'action' : 'trackEvent'};
 			$.each(statsEvent , function (event , value) {
@@ -613,4 +632,5 @@
             this.startTime = null;
         }
 	}));
+	
 } )( window.mw, window.jQuery );

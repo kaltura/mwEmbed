@@ -1059,6 +1059,20 @@
 			};
 		},
 
+		getProtocol: function() {
+            var protocolString = window.location.protocol.slice(0, -1);
+            if (protocolString.match('^http')) {
+            	return protocolString;
+			} else {
+            	try {
+                    return window.parent.location.protocol.slice(0, -1);
+				} catch (e){
+                    this.log( "unable to get protocol for player request, assuming https" );
+            		return "https";
+				}
+			}
+		},
+
 		requestPlayer: function(iframeRequest, widgetElm, targetId, cbName, settings){
 			var _this = this;
 			if ( iframeRequest.length > 2083 ){
@@ -1073,9 +1087,9 @@
 					delete settings.flashvars.jsonConfig;
 					url += '?' + this.getIframeRequest(widgetElm, settings);
 					requestData = {"jsonConfig": jsonConfig};
-					url += "&protocol=" + location.protocol.slice(0, -1);
+					url += "&protocol=" + this.getProtocol();
 				} else {
-					url += "?protocol=" + location.protocol.slice(0, -1);
+					url += "?protocol=" + this.getProtocol();
 				}
 
 				$.ajax({
@@ -1093,7 +1107,7 @@
 				})
 			} else {
 				var iframeUrl = this.getIframeUrl() + '?' + iframeRequest;
-				iframeUrl += "&protocol=" + location.protocol.slice(0, -1);
+				iframeUrl += "&protocol=" + this.getProtocol();
 				// Store iframe urls
 				this.iframeUrls[ targetId ] = iframeUrl;
 				// do an iframe payload request:

@@ -499,7 +499,7 @@
                         // Set the content element to player element:
                         var playerElement = _this.embedPlayer.getPlayerElement();
                         //Load the video tag to enable setting the source by doubleClick library
-                        if ((mw.isDesktopSafari() || mw.isMobileDevice()) && !_this.playerElementLoaded) {
+                        if (mw.isIOS() && !_this.playerElementLoaded) {
                             _this.playerElementLoaded = true;
                             playerElement.load();
                         }
@@ -1182,7 +1182,6 @@
                 }
             } );
             adsListener( 'LOADED', function ( adEvent ) {
-                _this.nonFatalError = false;
                 _this.showAdContainer();
                 var adData = adEvent.getAdData();
                 if ( adData ) {
@@ -1354,17 +1353,14 @@
             } );
 
             adsListener('LOG', function (event) {
-                if (_this.nonFatalError) return;
                 var adData = event.getAdData();
                 if (adData['adError']) {
                     console.log('Non-fatal error occurred: ' + adData['adError'].getMessage());
-                    _this.handleNonFatalError(event);
                 }
             });
 
             // Resume content:
             adsListener( 'CONTENT_RESUME_REQUESTED', function () {
-                if (_this.nonFatalError) return;
                 if(_this.isVPAID === true) {
                     _this.forceShowPlayerControlsOnVPAID();
                 }
@@ -1382,9 +1378,11 @@
                         var position = videoElement.css('position');
                         videoElement.css('position', '');
                         _this.restorePlayer();
+                        _this.embedPlayer.play();
                         videoElement.css('position', position);
                     } else {
                         _this.restorePlayer();
+                        _this.embedPlayer.play();
                     }
                 }
             } );
@@ -1755,16 +1753,6 @@
                 var offsetRemaining = Math.max(Math.ceil(parseFloat(this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' )) - remainTime), 0);
                 this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining', offsetRemaining );
                 this.embedPlayer.getInterface().find(".ad-skip-label").text(this.embedPlayer.evaluate( this.embedPlayer.getRawKalturaConfig('skipNotice','text')) );
-            }
-        },
-        handleNonFatalError: function (event) {
-            this.nonFatalError = true;
-            var ad = event.getAd();
-            var podInfo = ad && ad.getAdPodInfo();
-            var totalPodAds = podInfo && podInfo.getTotalAds();
-            if (!ad || totalPodAds === 1) {
-                this.restorePlayer(this.contentDoneFlag);
-                this.embedPlayer.play();
             }
         },
         // Handler for various ad errors.
