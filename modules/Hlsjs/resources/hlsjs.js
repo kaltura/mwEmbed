@@ -183,7 +183,7 @@
 				this.onFragBufferedHandler = this.onFragBuffered.bind(this);
 				this.hls.on(Hls.Events.FRAG_BUFFERED, this.onFragBufferedHandler);
 				this.onLevelSwitchHandler = this.onLevelSwitch.bind(this);
-				this.hls.on(Hls.Events.LEVEL_SWITCH, this.onLevelSwitchHandler);
+				this.hls.on(Hls.Events.LEVEL_SWITCHED, this.onLevelSwitchHandler);
 				this.onFragChangedHandler = this.onFragChanged.bind(this);
 				this.hls.on(Hls.Events.FRAG_CHANGED, this.onFragChangedHandler);
 				this.onErrorHandler = this.onError.bind(this);
@@ -211,7 +211,7 @@
 				this.onPTSUpdatedHandler = null;
 				this.hls.off(Hls.Events.FRAG_BUFFERED, this.onFragBufferedHandler);
 				this.onFragBufferedHandler = null;
-				this.hls.off(Hls.Events.LEVEL_SWITCH, this.onLevelSwitchHandler);
+				this.hls.off(Hls.Events.LEVEL_SWITCHED, this.onLevelSwitchHandler);
 				this.onLevelSwitchHandler = null;
 				this.hls.off(Hls.Events.FRAG_CHANGED, this.onFragChangedHandler);
 				this.onFragChangedHandler = null;
@@ -689,7 +689,7 @@
                         if (this.hls.levels && (sourceIndex < this.hls.levels.length)){
                             this.levelIndex = sourceIndex;
                             if (!(this.hls.autoLevelEnabled || this.isLevelSwitching) && (this.hls.currentLevel === sourceIndex)) {
-                                this.onLevelSwitch(Hls.Events.LEVEL_SWITCH, {level: sourceIndex});
+                                this.onLevelSwitch(Hls.Events.LEVEL_SWITCHED, {level: sourceIndex});
                                 this.onFragChanged(Hls.Events.LEVEL_LOADED, {frag: {level: sourceIndex}});
                                 this.getPlayer().currentBitrate = source.getBitrate();
                             } else {
