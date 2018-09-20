@@ -153,13 +153,11 @@ function wfRunHooks($event, $args = array()) {
 		 */
 		$retval = null;
 		set_error_handler( 'hookErrorHandler' );
-		wfProfileIn( $func );
 		try {
 			$retval = call_user_func_array( $callback, $hook_args );
 		} catch ( MWHookException $e ) {
 			$badhookmsg = $e->getMessage();
 		}
-		wfProfileOut( $func );
 		restore_error_handler();
 
 		/* String return is an error; false return means stop processing. */

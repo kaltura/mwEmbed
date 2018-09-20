@@ -131,14 +131,12 @@ class ResourceLoader {
 	 */
 	protected function filter( $filter, $data ) {
 		global $wgResourceLoaderMinifierStatementsOnOwnLine, $wgResourceLoaderMinifierMaxLineLength;
-		wfProfileIn( __METHOD__ );
 
 		// For empty/whitespace-only data or for unknown filters, don't perform
 		// any caching or processing
 		if ( trim( $data ) === ''
 			|| !in_array( $filter, array( 'minify-js', 'minify-css' ) ) )
 		{
-			wfProfileOut( __METHOD__ );
 			return $data;
 		}
 
@@ -148,7 +146,6 @@ class ResourceLoader {
 		$cache = wfGetCache( CACHE_ANYTHING );
 		$cacheEntry = $cache->get( $key );
 		if ( is_string( $cacheEntry ) ) {
-			wfProfileOut( __METHOD__ );
 			return $cacheEntry;
 		}
 
@@ -176,9 +173,7 @@ class ResourceLoader {
 			// Return exception as a comment
 			$result = "/*\n{$exception->__toString()}\n*/\n";
 		}
-
-		wfProfileOut( __METHOD__ );
-
+		
 		return $result;
 	}
 
@@ -189,8 +184,6 @@ class ResourceLoader {
 	 */
 	public function __construct() {
 		global $IP, $wgResourceModules, $wgResourceLoaderSources, $wgLoadScript, $wgEnableJavaScriptTest;
-
-		wfProfileIn( __METHOD__ );
 
 		// Add 'local' source first
 		$this->addSource( 'local', array( 'loadScript' => $wgLoadScript, 'apiScript' => wfScript( 'api' ) ) );
@@ -207,9 +200,6 @@ class ResourceLoader {
 		if ( $wgEnableJavaScriptTest === true ) {
 			$this->registerTestModules();
 		}
-
-
-		wfProfileOut( __METHOD__ );
 	}
 
 	/**
@@ -226,7 +216,6 @@ class ResourceLoader {
 	 *     registered
 	 */
 	public function register( $name, $info = null ) {
-		wfProfileIn( __METHOD__ );
 
 		// Allow multiple modules to be registered in one call
 		$registrations = is_array( $name ) ? $name : array( $name => $info );
@@ -262,8 +251,6 @@ class ResourceLoader {
 				$this->moduleInfos[$name] = $info;
 			}
 		}
-
-		wfProfileOut( __METHOD__ );
 	}
 
 	/**
@@ -274,8 +261,6 @@ class ResourceLoader {
 		if ( $wgEnableJavaScriptTest !== true ) {
 			throw new MWException( 'Attempt to register JavaScript test modules but <tt>$wgEnableJavaScriptTest</tt> is false. Edit your <tt>LocalSettings.php</tt> to enable it.' );
 		}
-
-		wfProfileIn( __METHOD__ );
 
 		// Get core test suites
 		$testModules = array();
@@ -296,8 +281,6 @@ class ResourceLoader {
 			// Keep track of their names so that they can be loaded together
 			$this->testModuleNames[$id] = array_keys( $testModules[$id] );
 		}
-
-		wfProfileOut( __METHOD__ );
 	}
 
 	/**
@@ -431,7 +414,6 @@ class ResourceLoader {
 		// See http://bugs.php.net/bug.php?id=36514
 		ob_start();
 
-		wfProfileIn( __METHOD__ );
 		$exceptions = '';
 
 		// Split requested modules into two groups, modules and missing
@@ -452,8 +434,6 @@ class ResourceLoader {
 			// Add exception to the output as a comment
 			$exceptions .= "/*\n{$e->__toString()}\n*/\n";
 		}
-
-		wfProfileIn( __METHOD__.'-getModifiedTime' );
 
 		$private = false;
 		// To send Last-Modified and support If-Modified-Since, we need to detect
@@ -476,14 +456,11 @@ class ResourceLoader {
 			}
 		}
 
-		wfProfileOut( __METHOD__.'-getModifiedTime' );
-
 		// Send content type and cache related headers
 		$this->sendResponseHeaders( $context, $mtime, $private );
 
 		// If there's an If-Modified-Since header, respond with a 304 appropriately
 		if ( $this->tryRespondLastModified( $context, $mtime ) ) {
-			wfProfileOut( __METHOD__ );
 			return; // output handled (buffers cleared)
 		}
 		// Generate a response
@@ -514,8 +491,6 @@ class ResourceLoader {
 				}
 			}
 		}
-
-		wfProfileOut( __METHOD__ );
 	}
 
 	/**
@@ -668,8 +643,7 @@ class ResourceLoader {
 		if ( $modules === array() && $missing === array() ) {
 			return '/* No modules requested. Max made me put this here */';
 		}
-
-		wfProfileIn( __METHOD__ );
+		
 		// Pre-fetch blobs
 		if ( $context->shouldIncludeMessages() ) {
 			try {
@@ -688,7 +662,6 @@ class ResourceLoader {
 			 * @var $module ResourceLoaderModule
 			 */
 
-			wfProfileIn( __METHOD__ . '-' . $name );
 			try {
 				$scripts = '';
 				if ( $context->shouldIncludeScripts() ) {
@@ -761,7 +734,6 @@ class ResourceLoader {
 				$missing[] = $name;
 				unset( $modules[$name] );
 			}
-			wfProfileOut( __METHOD__ . '-' . $name );
 		}
 
 		// Update module states
@@ -786,8 +758,7 @@ class ResourceLoader {
 				$out = $this->filter( 'minify-js', $out );
 			}
 		}
-
-		wfProfileOut( __METHOD__ );
+		
 		return $exceptions . $out;
 	}
 

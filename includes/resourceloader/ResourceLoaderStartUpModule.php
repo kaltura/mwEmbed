@@ -111,7 +111,6 @@ class ResourceLoaderStartUpModule extends ResourceLoaderModule {
 	 */
 	public static function getModuleRegistrations( ResourceLoaderContext $context ) {
 		global $wgCacheEpoch;
-		wfProfileIn( __METHOD__ );
 
 		$out = '';
 		$registrations = array();
@@ -170,8 +169,7 @@ class ResourceLoaderStartUpModule extends ResourceLoaderModule {
         			$wgMwEmbedVersion . $_GET['skin'] . $_GET['lang'] . '.min.json';
 			@file_put_contents($cachePath, json_encode($registrations));
 		$out .= ResourceLoader::makeLoaderRegisterScript( $registrations );
-
-		wfProfileOut( __METHOD__ );
+		
 		return $out;
 	}
 
