@@ -42,7 +42,8 @@
 			this.bind( 'SourceChange', function(){
 				var selectedSrc = _this.getPlayer().mediaElement.selectedSource;
 				var selectedId = selectedSrc.getAssetId();
-
+				// disable the HLS lead, as the sourceSelector not compatible with hls.js
+				mw.setConfig("Kaltura.LeadHLSOnAndroid", false);
 				//if selected source is not part of the menu, show the source before it as the selected one
 				//workaround when auto switch with kplayer occurred and the selected source is not part of the menu data provider
 				if ( selectedSrc.skip ) {
