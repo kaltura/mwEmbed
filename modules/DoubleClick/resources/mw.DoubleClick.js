@@ -108,6 +108,7 @@
             if ( mw.getConfig( 'localizationCode' ) ) {
                 _this.localizationCode = mw.getConfig( 'localizationCode' );
             }
+            _this.saveTimeWhenSwitchMedia = mw.isMobileDevice();
             // copy flashVars to KDP to support Chromeless player plugin
             this.copyFlashvarsToKDP( embedPlayer, pluginName );
             this.embedPlayer = embedPlayer;
@@ -503,7 +504,6 @@
                             _this.playerElementLoaded = true;
                             playerElement.load();
                         }
-                        _this.saveTimeWhenSwitchMedia = mw.isMobileDevice();
                         if ( _this.adManagerLoaded ) {
                             _this.startAdsManager();
                         } else {
