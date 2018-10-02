@@ -121,7 +121,9 @@ body {
 	z-index: 1000;
 }
 .sideBarContainerReminder.left:focus #sideBarContainerReminderContainer,
-.sideBarContainerReminder.left.open #sideBarContainerReminderContainer{
+.sideBarContainerReminder.left.open #sideBarContainerReminderContainer,
+.sideBarContainerReminder.right:focus #sideBarContainerReminderContainer,
+.sideBarContainerReminder.right.open #sideBarContainerReminderContainer{
 	display: block;
 }
 .sideBarContainerReminder.left.shifted{
@@ -129,20 +131,15 @@ body {
 }
 .sideBarContainerReminder.right{
 	right: -30%;
+	text-decoration: none;
 	-webkit-transition: right 0.3s ease-in;
 	-moz-transition: right 0.3s ease-in;
 	-o-transition: right 0.3s ease-in;
 	-ms-transition: right 0.3s ease-in;
 	transition: right 0.3s ease-in;
 }
-.sideBarContainerReminder.right:focus #sideBarContainerReminderContainer,
-.sideBarContainerReminder.right.open #sideBarContainerReminderContainer{
-    	display: block;
-}
-
 .sideBarContainerReminder.right.open{
 	right: 0px;
-    	color: #fff;
 }
 .sideBarContainerReminder.right.shifted{
 	right: 30%;
