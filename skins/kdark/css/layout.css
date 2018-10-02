@@ -137,12 +137,12 @@ body {
 }
 .sideBarContainerReminder.right:focus #sideBarContainerReminderContainer,
 .sideBarContainerReminder.right.open #sideBarContainerReminderContainer{
-    display: block;
+    	display: block;
 }
 
 .sideBarContainerReminder.right.open{
 	right: 0px;
-    color: #fff;
+    	color: #fff;
 }
 .sideBarContainerReminder.right.shifted{
 	right: 30%;
