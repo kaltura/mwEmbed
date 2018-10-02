@@ -135,8 +135,14 @@ body {
 	-ms-transition: right 0.3s ease-in;
 	transition: right 0.3s ease-in;
 }
+.sideBarContainerReminder.right:focus #sideBarContainerReminderContainer,
+.sideBarContainerReminder.right.open #sideBarContainerReminderContainer{
+    display: block;
+}
+
 .sideBarContainerReminder.right.open{
 	right: 0px;
+    color: #fff;
 }
 .sideBarContainerReminder.right.shifted{
 	right: 30%;
