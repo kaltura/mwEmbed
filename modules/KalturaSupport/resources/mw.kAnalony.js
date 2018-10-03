@@ -60,7 +60,7 @@
         playSentOnStart: false,
 		absolutePosition: null,
 		id3TagEventTime: null,
-
+		onPlayStatus: false,
 		smartSetInterval:function(callback,time,monitorObj) {
 			var _this = this;
 			//create the timer speed, a counter and a starting timestamp
@@ -144,13 +144,14 @@
                 }
 
 				if ( !this.isInSequence() && (_this.firstPlay || _this.embedPlayer.currentState !== "play") ){
-					if ( _this.firstPlay ){
+					if ( _this.firstPlay && !_this.onPlayStatus ) {
+						_this.onPlayStatus = true;
                         _this.playSentOnStart = true;
 						_this.timer.start();
 						_this.sendAnalytics(playerEvent.PLAY, {
                             bufferTimeSum: _this.bufferTimeSum
 						});
-					}else{
+					}else if ( _this.embedPlayer.currentState !== "play" ){
                         _this.timer.resume();
 						_this.sendAnalytics(playerEvent.RESUME, {
                             bufferTimeSum: _this.bufferTimeSum
