@@ -434,7 +434,7 @@
 			onError: function (event, data) {
 				this.log("Error: " + data.type + ", " + data.details);
 				//TODO: Need to decide when we dispatch player bug to be shown to viewer
-				if (this.mediaErrorRecoveryCounter > this.getConfig("maxErrorRetryCount")){
+				if ((this.mediaErrorRecoveryCounter > this.getConfig("maxErrorRetryCount")) && data.fatal){
 					this.handleUnRecoverableError(data);
 					return;
 				}
