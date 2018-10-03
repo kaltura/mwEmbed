@@ -367,15 +367,21 @@
 							embedPlayer.triggerHelper('onChangeStreamDone', [_this.currentStream.id]);
 						});
 						//Add black screen before seek to avoid flashing of video
-						embedPlayer.addBlackScreen();
-						embedPlayer.seek(currentTime, false);
+						setTimeout(function () {
+							embedPlayer.addBlackScreen();
+							embedPlayer.play();
+							embedPlayer.seek(currentTime, false);
+					     	 },0);
 					} else {
-						//Return poster to allow display of poster on clip done
-						mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
-						embedPlayer.triggerHelper( "onPlayerStateChange", ["play"] );
-						embedPlayer.triggerHelper('onChangeStreamDone', [_this.currentStream.id]);
-					}
-				};
+					  	setTimeout(function () {
+						      //Return poster to allow display of poster on clip done
+							embedPlayer.play();
+							mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
+							embedPlayer.triggerHelper("onPlayerStateChange", ["play"]);
+							embedPlayer.triggerHelper('onChangeStreamDone', [_this.currentStream.id]);
+					    	 },0);
+					 	}
+				   	};
 				embedPlayer.changeMedia(changeMediaCallback, checkPlayerSourcesFunction, false);
 			} else {
 				this.log("selected stream is already the active stream");
