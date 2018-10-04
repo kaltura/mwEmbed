@@ -12,8 +12,7 @@ class MwEmbedResourceLoader extends ResourceLoader {
 	 */
 	public function __construct() {
 		global $IP, $wgScriptPath, $wgResourceModules, $wgResourceLoaderSources, $wgLoadScript, $wgEnableJavaScriptTest;
-
-		wfProfileIn( __METHOD__ );
+		
 		// Add 'local' source first
 		$this->addSource( 'local', array( 'loadScript' => $wgLoadScript, 'apiScript' => wfScript( 'api' ) ) );
 
@@ -36,8 +35,6 @@ class MwEmbedResourceLoader extends ResourceLoader {
 		if ( $wgEnableJavaScriptTest === true ) {
 			$this->registerTestModules();
 		}
-
-		wfProfileOut( __METHOD__ );
 	}
 	/**
 	 * Stubs out preLoadModuleInfo call in mwEmbed we always get info from 

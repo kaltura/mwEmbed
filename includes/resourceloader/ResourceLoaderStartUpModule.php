@@ -111,7 +111,6 @@ class ResourceLoaderStartUpModule extends ResourceLoaderModule {
 	 */
 	public static function getModuleRegistrations( ResourceLoaderContext $context ) {
 		global $wgCacheEpoch;
-		wfProfileIn( __METHOD__ );
 
 		$out = '';
 		$registrations = array();
@@ -142,7 +141,7 @@ class ResourceLoaderStartUpModule extends ResourceLoaderModule {
 				$mtime = $moduleMtime;
 				// Modules without dependencies, a group or a foreign source pass two arguments (name, timestamp) to
 				// mw.loader.register()
-				if ( !count( $module->getDependencies() && $module->getGroup() === null && $module->getSource() === 'local' ) ) {
+				if (!count($module->getDependencies()) && $module->getGroup() === null && $module->getSource() === 'local') {
 					$registrations[] = array( $name, $mtime );
 				}
 				// Modules with dependencies but no group or foreign source pass three arguments
@@ -170,8 +169,7 @@ class ResourceLoaderStartUpModule extends ResourceLoaderModule {
         			$wgMwEmbedVersion . $_GET['skin'] . $_GET['lang'] . '.min.json';
 			@file_put_contents($cachePath, json_encode($registrations));
 		$out .= ResourceLoader::makeLoaderRegisterScript( $registrations );
-
-		wfProfileOut( __METHOD__ );
+		
 		return $out;
 	}
 
