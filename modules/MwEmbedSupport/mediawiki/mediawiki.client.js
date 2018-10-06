@@ -40,6 +40,16 @@
 	mw.isDesktopSafari = function () {
 		return mw.isSafari() && !mw.isMobileDevice();
 	};
+    mw.isDesktopSafariVersionGreaterThan = function (version) {
+        var safariVersion = mw.getSafariVersion();
+        var safariMajorVersion = safariVersion[0];
+        return ( mw.isDesktopSafari() && safariMajorVersion >= version );
+    };
+    mw.isSafariVersionGreaterThan = function (version) {
+        var safariVersion = mw.getSafariVersion();
+        var safariMajorVersion = safariVersion[0];
+        return ( mw.isSafari() && safariMajorVersion >= version );
+    };
 	mw.isSafari = function () {
 		return (/safari/).test(userAgent.toLowerCase()) && !mw.isChrome() && !mw.isEdge();
 	};
@@ -385,6 +395,18 @@
 		return '0,0,0';
 	};
 
+    /**
+     * get safari version parts
+     * @returns {Array}
+     */
+    mw.getSafariVersion = function(){
+        var versionParts = [0, 0, 0];
+        var version = userAgent.toLowerCase().match(/.*version\/([0-9\.]+)/);
+        if (version && version[1]){
+            versionParts = version[1].split(".");
+        }
+        return versionParts;
+    };
     /**
 	 * get chrome version parts
      * @returns {Array}
