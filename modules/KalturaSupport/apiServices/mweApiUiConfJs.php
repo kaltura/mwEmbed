@@ -206,7 +206,7 @@ class mweApiUiConfJs {
 		$o = '';
 		// Do an xml query for the plugin
 		$userAgentPlayerRules = $this->getResultObject()->getPlayerConfig( 'userAgentPlayerRules' );
-		if($userAgentPlayerRules && count($userAgentPlayerRules)) {
+		if( count( $userAgentPlayerRules ) ) {
 			$rulesObject = array(
 				'rules' => array(),
 				'actions' => array()
