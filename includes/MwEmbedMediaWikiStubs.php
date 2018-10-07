@@ -15,17 +15,6 @@ define( 'PROTO_RELATIVE', '//' );
 /**
  * global functions
  */
-$wgSimpleProfile = array();
-function wfProfileIn($na){
-	global $wgSimpleProfile;
-	$wgSimpleProfile[$na] =  microtime();
-	return ;
-}
-function wfProfileOut($na){
-	global $wgSimpleProfile;
-	$wgSimpleProfile[$na] = microtime() -  $wgSimpleProfile[$na];
-	return ;
-}
 function wfDebug( $text, $logonly = false ) {
 	return ;
 }
@@ -69,8 +58,7 @@ class Xml {
 		} elseif ( is_int( $value ) ) {
 			$s = $value;
 		} elseif ( is_array( $value ) && // Make sure it's not associative.
-					array_keys($value) === range( 0, count($value) - 1 ) ||
-					count($value) == 0
+			(array_keys($value) === range( 0, count($value) - 1 ) || count($value) == 0)
 				) {
 			$s = '[';
 			foreach ( $value as $elt ) {
