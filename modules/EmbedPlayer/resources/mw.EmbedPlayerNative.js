@@ -147,7 +147,7 @@
             if (!mw.getConfig('autoMute')) {
                 if (mw.isMobileDevice() || mw.isIpad()) {
                     return mw.getConfig('mobileAutoPlay');
-                } else if ((mw.isDesktopSafari11() || mw.isChromeVersionGreaterThan(66)) && mw.getConfig('autoPlay')) {
+                } else if ((mw.isDesktopSafariVersionGreaterThan(11) || mw.isChromeVersionGreaterThan(66)) && mw.getConfig('autoPlay')) {
                     if (typeof mw.getConfig('autoPlayFallbackToMute') !== 'boolean') {
                         mw.setConfig('autoPlayFallbackToMute', true);
                     }
