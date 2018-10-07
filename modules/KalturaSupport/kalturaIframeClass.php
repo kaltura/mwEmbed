@@ -33,7 +33,7 @@ class kalturaIframeClass {
 
 
 		// No entry Id and Reference Id were found
-		if($this->getEntryResult()) {
+		if(!$this->getEntryResult()) {
 			$setError = true;
 			// Try to grab entry Id from the widget.
 			// Only if it's not the default widget ( does not start with underscode )

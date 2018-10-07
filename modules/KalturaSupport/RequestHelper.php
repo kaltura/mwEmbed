@@ -75,7 +75,10 @@ class RequestHelper {
 		// support CORS for IE9 and lower
 		global $HTTP_RAW_POST_DATA;
 		if ( !isset( $HTTP_RAW_POST_DATA ) )
+		{
 			$HTTP_RAW_POST_DATA = file_get_contents( 'php://input' );
+			$HTTP_RAW_POST_DATA = $HTTP_RAW_POST_DATA ? $HTTP_RAW_POST_DATA : array();
+		}
 		
 		if ( count($_POST) == 0 && count( $HTTP_RAW_POST_DATA) > 0 ){
 			parse_str($HTTP_RAW_POST_DATA, (
