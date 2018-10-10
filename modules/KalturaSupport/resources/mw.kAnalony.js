@@ -132,6 +132,7 @@
 				_this._p50Once = false;
 				_this._p75Once = false;
 				_this._p100Once = false;
+				_this.onPlayStatus = false;
 			});
 
 			this.embedPlayer.bindHelper( 'userInitiatedPlay' , function () {
