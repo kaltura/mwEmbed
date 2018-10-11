@@ -20,7 +20,7 @@
             isSafeEnviornment: function () {
                 var _this = this;
                 var browserSupportMutedAutoplay = function() {
-                    return !!(mw.isDesktopSafariVersionGreaterThan(11) || mw.isChromeVersionGreaterThan(66) || mw.isEdgeVersionGreaterThan(18));
+                    return !!(mw.isDesktopSafariVersionGreaterThan(11) || mw.isChromeVersionGreaterThan(66));
                 };
                 var isAutoplayConfigured = function() {
                     return !!(mw.getConfig('autoPlay') || _this.getPlayer().getRawKalturaConfig('playlistAPI', 'autoPlay'));

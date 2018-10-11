@@ -301,12 +301,10 @@
              * manifest loaded handler.
              */
             onManifestLoaded: function () {
-                this.log("manifest loaded");
-                if (!this.embedPlayer.isLive()){
-                    this.hls.startLoad(this.getPlayer().currentTime);
-                }
                 //HLS.JS by default sets showing to text track for default HLS manifest text track
-                //we want to handle it on ourselves so always set it to hidden after hls.js makes its decision
+				//we want to handle it on ourselves so always set it to hidden after hls.js makes its decision
+            	this.log("manifest loaded");
+                this.hls.startLoad(this.getPlayer().currentTime);
                 if (!this.embedPlayer.getKalturaConfig('closedCaptions', 'showEmbeddedCaptions')) {
 		            var vid = this.getPlayer().getPlayerElement();
 		            var textTracks = vid.textTracks;

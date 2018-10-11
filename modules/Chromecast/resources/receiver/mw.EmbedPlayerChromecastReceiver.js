@@ -183,12 +183,12 @@
                 this.mediaPlayer = new cast.player.api.Player( this.mediaHost );
                 if ( this.isLive() ) {
                     mw.log( "EmbedPlayerChromecastReceiver:: isLive()=true, load mediaPlayer" );
-                    this.mediaPlayer.preload( this.mediaProtocol, Infinity );
+                    this.mediaPlayer.load( this.mediaProtocol, Infinity );
                 } else {
                     mw.log( "EmbedPlayerChromecastReceiver:: preload mediaPlayer" );
                     this.mediaPlayer.preload( this.mediaProtocol, initStart );
+                    this.wasPreload = true;
                 }
-                this.wasPreload = true;
             }
         },
 
@@ -1026,7 +1026,6 @@
         },
 
         replay: function () {
-            debugger;
             mw.log( "EmbedPlayerChromecastReceiver::replay(), currentElementState::" + this.getPlayerElementCurrentState() );
             this.restoreEventPropagation();
             this.preloadMediaSourceExtension();
