@@ -37,6 +37,11 @@
 	mw.isEdge = function () {
         return (/edge/.test(userAgent.toLowerCase()));
     };
+    mw.isEdgeVersionGreaterThan = function (version) {
+        var edgeVersion = mw.getEdgeVersion();
+        var edgeVersionVersion = edgeVersion[0];
+        return ( mw.isEdge() && edgeVersionVersion >= version );
+    };
 	mw.isDesktopSafari = function () {
 		return mw.isSafari() && !mw.isMobileDevice();
 	};
@@ -394,6 +399,19 @@
 		}
 		return '0,0,0';
 	};
+
+    /**
+     * get edge version parts
+     * @returns {Array}
+     */
+    mw.getEdgeVersion = function(){
+        var versionParts = [0, 0];
+        var version = userAgent.toLowerCase().match(/.*edge\/([0-9\.]+)/);
+        if (version && version[1]){
+            versionParts = version[1].split(".");
+        }
+        return versionParts;
+    };
 
     /**
      * get safari version parts

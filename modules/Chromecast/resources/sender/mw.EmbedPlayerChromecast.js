@@ -270,6 +270,7 @@
             mw.log( "EmbedPlayerChromecast:: loadMedia:: Load request sent", loadRequest );
             // Call load media
             var mediaLoadedHandler = (this.isLive() ? this.onLiveMediaLoaded : this.onMediaLoaded);
+            console.trace("!!!!loadMedia: ", loadRequest)
             this.castSession.loadMedia( loadRequest ).then(
                 mediaLoadedHandler.bind( this, firstCast ),
                 this.launchError.bind( this )
@@ -290,6 +291,7 @@
                 this.triggerHelper( 'movingBackToLive' );
                 this.movingBackToLive = false;
             }
+            console.trace("!!!!!!onLiveMediaLoaded firstCast: " + firstCast + " this.beforeCastParams.state=" + this.beforeCastParams.state);
             if ( firstCast ) {
                 if ( this.beforeCastParams.state !== this.LOCAL_PLAYER_STATE.PLAY ) {
                     this.play();
@@ -369,14 +371,17 @@
         /**** Play ****/
 
         play: function () {
+            console.trace("!!!!!!!!!play - " + this.currentState + " " + this.remotePlayerState);
             mw.log( "EmbedPlayerChromecast:: play" );
             if ( this.currentState === this.LOCAL_PLAYER_STATE.START ||
                 this.currentState === this.LOCAL_PLAYER_STATE.END ) {
+                console.info("!!!!!!!!!play - do replay");
                 this.replay();
             } else {
                 this.remotePlayerState = this.REMOTE_PLAYER_STATE.PLAYING;
                 this.embedPlayerPlay();
                 this.remotePlayerPlay();
+                console.info("!!!!!!!!!play - do play");
             }
         },
 
@@ -388,6 +393,7 @@
 
         remotePlayerPlay: function () {
             if ( this.remotePlayer && this.remotePlayer.isPaused ) {
+                console.info("!!!!!!!remotePlayerPlay", this.remotePlayer.isPaused);
                 this.remotePlayerController.playOrPause();
             }
         },
@@ -404,6 +410,7 @@
         /**** Replay ****/
 
         replay: function () {
+            console.trace("!!!!!!!!!reaply")
             mw.log( 'EmbedPlayerChromecast:: replay' );
             this.embedPlayerPlay();
             this.loadMedia();
