@@ -28,7 +28,7 @@
                 if (mw.getConfig('thumbEmbedOrigin') || mw.getConfig('autoMute')) {
                     return false;
                 }
-                if (mw.isMobileDevice()) {
+                if (mw.isMobileDevice() && !this.isNativeIOSPlayback()) {
                     return !!mw.getConfig('mobileAutoPlay');
                 } else {
                     return browserSupportMutedAutoplay() && isAutoplayConfigured();
@@ -73,7 +73,12 @@
                         .hide()
                 }
                 return this.$el;
-            }
+            },
+
+            isNativeIOSPlayback: function() {
+                return mw.isIOS() && !mw.isIpad() && !mw.getConfig('EmbedPlayer.WebKitPlaysInline');
+            },
+
         })
     );
 
