@@ -208,7 +208,7 @@
 	};
 
 	mw.isIOSAbove7 = function () {
-		return mw.isIOS8() || mw.isIOS9() || mw.isIOS10() || mw.isIOS11();
+		return mw.isSafariVersionGreaterThan(8);
 	};
 
 	mw.isSilk = function () {
