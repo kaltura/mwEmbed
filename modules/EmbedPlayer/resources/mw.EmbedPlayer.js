@@ -278,7 +278,7 @@
 		// Widget loaded should only fire once
 		'widgetLoaded': false,
 
-		// Holds the current player state
+		// Holds the current player state 
 		currentState: null,
 
 		// If the player supports playbackRate ( currently available on some html5 browsers )
@@ -841,7 +841,7 @@
                 this.updatePlaybackInterface();
                 return;
             }
-
+            
 			// Auto select player based on default order
 			if (this.mediaElement.selectedSource) {
 
@@ -1434,8 +1434,8 @@
 				containerHeight + ', components: ' + this.layoutBuilder.getComponentsHeight() +
 				', videoHolder old height: ' + currentHeight + ', new height: ' + newHeight +
 				' hight delta: ' + deltaHeight);
-			// Update videoHolder height if more than 1 px delta
-			// ( somehow we are hitting the weird iOS resize bug issues again )
+			// Update videoHolder height if more than 1 px delta 
+			// ( somehow we are hitting the weird iOS resize bug issues again ) 
 			if (currentHeight !== newHeight && deltaHeight > 1) {
 				this.getVideoHolder().height(newHeight);
 			}
@@ -1462,15 +1462,10 @@
 
 				// add a binding for window resize if we are in an iframe
 				if (mw.getConfig('EmbedPlayer.IsIframeServer')) {
-                    var windowWidth = $(window).width();
-                    $(window).off("debouncedresize").on("debouncedresize", function () {
-                        if ($(window).width() !== windowWidth) {
-                        	// Update the window width for next time
-                            windowWidth = $(window).width();
-                            mw.log('debouncedresize:: call doUpdateLayout');
-                            _this.triggerHelper('resizeEvent');
-                            _this.doUpdateLayout();
-                        }
+					$(window).off("debouncedresize").on("debouncedresize", function () {
+						mw.log('debouncedresize:: call doUpdateLayout');
+						_this.triggerHelper('resizeEvent');
+						_this.doUpdateLayout();
 					});
 				}
 			}
@@ -2297,7 +2292,7 @@
 			mw.log("EmbedPlayer:: play: " + this._propagateEvents + ' isStopped: ' + _this.isStopped());
 			this.absoluteStartPlayTime = new Date().getTime();
 
-			// Ignore play request if player error is displayed:
+			// Ignore play request if player error is displayed: 
 			if (this.getError()) {
 				return false;
 			}
@@ -2515,7 +2510,7 @@
 		pauseInterfaceUpdate: function () {
 			var _this = this;
 			mw.log("EmbedPlayer::pauseInterfaceUpdate");
-			// don't display a loading spinner if paused:
+			// don't display a loading spinner if paused: 
 			this.hideSpinner();
 			// trigger on pause interface updates
 			this.disableComponentsHover();
@@ -3347,7 +3342,7 @@
 				this.bufferEndTime = new Date().getTime();
 				// update lastBufferDuration
 				this.lastBufferDuration = ( ( this.bufferEndTime - this.bufferStartTime ) / 1000 ).toFixed(3);
-				// trigger event:
+				// trigger event: 
 				$(this).trigger('bufferEndEvent', {'bufferDuration': this.lastBufferDuration});
 				if (!mw.getConfig('EmbedPlayer.DisableBufferingSpinner')) {
 					this.hideSpinner();
