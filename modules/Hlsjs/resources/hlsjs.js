@@ -308,7 +308,6 @@
                 //HLS.JS by default sets showing to text track for default HLS manifest text track
                 //we want to handle it on ourselves so always set it to hidden after hls.js makes its decision
                 this.log("manifest loaded");
-                this.hls.startLoad(this.getPlayer().currentTime);
                 //we want to handle it on ourselves so always set it to hidden after hls.js makes its decision
                 if (!this.embedPlayer.getKalturaConfig('closedCaptions', 'showEmbeddedCaptions')) {
 		            var vid = this.getPlayer().getPlayerElement();
