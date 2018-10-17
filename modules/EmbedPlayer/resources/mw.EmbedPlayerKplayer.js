@@ -979,7 +979,7 @@
 			if (source !== -1) {
 				sourceIndex = this.getSourceIndex(source);
 			}
-			this.playerObject.sendNotification('doSwitch', {flavorIndex: sourceIndex});
+			_this.playerObject.sendNotification('doSwitch', {flavorIndex: _this.getSourceIndex(source)});
 		},
 		canAutoPlay: function () {
 			return (!this.isLive() || (this.isLive() && !this.isOffline()));
