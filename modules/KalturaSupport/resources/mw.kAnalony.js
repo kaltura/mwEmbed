@@ -132,6 +132,10 @@
 				_this._p50Once = false;
 				_this._p75Once = false;
 				_this._p100Once = false;
+				_this.currentBitRate = -1;
+				_this.currentflavorId = -1;
+				_this.dvr = false;
+				_this.monitorViewEvents = true;
 			});
 
 			this.embedPlayer.bindHelper( 'userInitiatedPlay' , function () {
