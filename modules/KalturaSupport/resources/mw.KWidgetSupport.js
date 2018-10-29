@@ -20,7 +20,6 @@ mw.KWidgetSupport.prototype = {
 	kClient : null,
 	kSessionId: null, // Used for Analytics events
 	originalStreamerType: null,
-	originalServiceUrl: {},
 
 	// Constructor check settings etc
 	init: function( options ){
@@ -283,6 +282,10 @@ mw.KWidgetSupport.prototype = {
 		this.handleUiConf( embedPlayer, callback );
 	},
 	updatePlayerContextData: function(embedPlayer, playerData){
+
+        mw.setConfig('Kaltura.playManifestServiceUrl',mw.getConfig('Kaltura.ServiceUrl'));
+        mw.setConfig('Kaltura.thumbAssetServiceUrl',mw.getConfig('Kaltura.ServiceUrl'));
+
 		if( playerData.contextData ){
 			if ( playerData.contextData.msDuration) {
 				embedPlayer.kalturaPlayerMetaData.duration = Math.floor(playerData.contextData.msDuration / 1000);
@@ -300,31 +303,24 @@ mw.KWidgetSupport.prototype = {
 
 					if (action.pattern && action.replacement) {
 						var regExp=new RegExp(action.pattern, "i");
-						var urlsToModify = ['Kaltura.ServiceUrl','Kaltura.ServiceBase'];
-						var self = this;
 						var flashvars = embedPlayer.getFlashvars();
-
-						urlsToModify.forEach(function (key) {
-
-							if (!self.originalServiceUrl[key]) {
-                                self.originalServiceUrl[key] = mw.config.get(key);
-							}
-							var serviceUrl = self.originalServiceUrl[key];
-							var match = serviceUrl.match( regExp );
-							if (match) {
-								serviceUrl = serviceUrl.replace(regExp, action.replacement);
-								mw.config.set(key, serviceUrl);
-								// Pass the override URLs configurations to the parent mw object so that it's client
-								// URLs would be updated too.
-								if(mw.config.get( 'EmbedPlayer.IsFriendlyIframe') && flashvars.tunnelAPI){
-								    try{
-								        window.parent.mw.setConfig(key, serviceUrl);
-								    }catch(e){
-								        mw.log("Failed to access window.parent from updatePlayerContextData replace URLs ");
-								    }
-								}
-							}
-						});
+						var serviceUrl = mw.config.get('Kaltura.playManifestServiceUrl');
+						var match = serviceUrl.match( regExp );
+						if (match) {
+							serviceUrl = serviceUrl.replace(regExp, action.replacement);
+                            ['Kaltura.playManifestServiceUrl','Kaltura.thumbAssetServiceUrl'].forEach(function (key) {
+                                mw.config.set(key, serviceUrl)
+                                // Pass the override URLs configurations to the parent mw object so that it's client
+                                // URLs would be updated too.
+                                if (mw.config.get('EmbedPlayer.IsFriendlyIframe') && flashvars.tunnelAPI) {
+                                    try {
+                                        window.parent.mw.setConfig(key, serviceUrl);
+                                    } catch (e) {
+                                        mw.log("Failed to access window.parent from updatePlayerContextData replace URLs ");
+                                    }
+                                }
+                            });
+						}
 					}
 				}
 			}
@@ -1460,15 +1456,15 @@ mw.KWidgetSupport.prototype = {
 		hostUrl = hostUrl.substr( 0, hostUrl.indexOf( "/", 8 ) );
 		return hostUrl;
 	},
-	getBaseFlavorUrl: function(partnerId) {
-		if( mw.getConfig( 'Kaltura.UseManifestUrls' ) ){
-			return mw.getConfig('Kaltura.ServiceUrl') + '/p/' + partnerId +
-					'/sp/' +  partnerId + '00/playManifest';
-		} else {
-			return mw.getConfig('Kaltura.CdnUrl') + '/p/' + partnerId +
-					'/sp/' +  partnerId + '00/flvclipper';
-		}
-	},
+    getBaseFlavorUrl: function(partnerId) {
+        if( mw.getConfig( 'Kaltura.UseManifestUrls' ) ){
+            return  mw.getConfig('Kaltura.playManifestServiceUrl')+ '/p/' + partnerId +
+                '/sp/' +  partnerId + '00/playManifest';
+        } else {
+            return mw.getConfig('Kaltura.CdnUrl') + '/p/' + partnerId +
+                '/sp/' +  partnerId + '00/flvclipper';
+        }
+    },
 	/**
 	 * Get client entry id sources:
 	 * @param {string} partnerId Used to build asset urls

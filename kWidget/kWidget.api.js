@@ -78,7 +78,7 @@ kWidget.api.prototype = {
 	/**
 	 * Do an api request and get data in callback
 	 */
-	doRequest: function ( requestObject, callback,skipKS, errorCallback, withProxyData){
+	doRequest: function ( requestObject, callback,skipKS, errorCallback, withProxyData,serviceType){
 		var _this = this;
 		var param = {};
 		var globalCBName = null;
@@ -108,7 +108,10 @@ kWidget.api.prototype = {
 		param[ 'kalsig' ] = this.hashCode( kWidget.param( param ) );
 		
 		// Remove service tag ( hard coded into the api url )
-		var serviceType = param['service'];
+		if (!serviceType) {
+            serviceType = param['service'];
+        }
+
 		delete param['service'];
 
 		var timeoutError = setTimeout(function(){
@@ -302,7 +305,10 @@ kWidget.api.prototype = {
 		if( serviceType && serviceType == 'analytics' &&  mw.getConfig( 'Kaltura.AnalyticsUrl' ) ) {
 			serviceUrl = mw.getConfig( 'Kaltura.AnalyticsUrl' );
 		}
-		return serviceUrl + mw.getConfig( 'Kaltura.ServiceBase' ) + serviceType;
+        if( serviceType && serviceType == 'thumbAsset' &&  mw.getConfig( 'Kaltura.thumbAssetServiceUrl' ) ) {
+            serviceUrl = mw.getConfig( 'Kaltura.thumbAssetServiceUrl' );
+        }
+        return serviceUrl + mw.getConfig( 'Kaltura.ServiceBase' ) + serviceType;
 	},
 	hashCode: function( str ){
 		return md5(str);
