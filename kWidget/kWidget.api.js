@@ -78,7 +78,7 @@ kWidget.api.prototype = {
 	/**
 	 * Do an api request and get data in callback
 	 */
-	doRequest: function ( requestObject, callback,skipKS, errorCallback, withProxyData, apiHost){
+	doRequest: function ( requestObject, callback,skipKS, errorCallback, withProxyData, apiHost){ //apihost: we force the API request to use specific domain
 		var _this = this;
 		var param = {};
 		var globalCBName = null;
@@ -291,7 +291,7 @@ kWidget.api.prototype = {
 		}
 		return param;
 	},
-	getApiUrl : function( serviceType, apiHost ){
+	getApiUrl : function( serviceType, apiHost ) {
 		var serviceUrl = mw.getConfig( 'Kaltura.ServiceUrl' );
 		if( serviceType && serviceType == 'stats' &&  mw.getConfig( 'Kaltura.StatsServiceUrl' ) ) {
 			serviceUrl = mw.getConfig( 'Kaltura.StatsServiceUrl' );

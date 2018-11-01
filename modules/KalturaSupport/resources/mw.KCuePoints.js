@@ -170,7 +170,7 @@
                     } else {
                         getUrl(index+1)
                     }
-                },false,null,false,"Kaltura.thumbAssetServiceUrl");
+                },false,null,false,"Kaltura.thumbAssetServiceUrl"); //we force the API request to use specific domain
             }
             //Create request data only for cuepoints that have assetId
             $.each(thumbCuePoint, function (index, item) {
