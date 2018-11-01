@@ -313,11 +313,16 @@ mw.KWidgetSupport.prototype = {
 						var match = serviceUrl.match( regExp );
 						if (match) {
 							serviceUrl = serviceUrl.replace(regExp, action.replacement);
-                            ['Kaltura.playManifestServiceUrl','Kaltura.thumbAssetServiceUrl'].forEach(function (key) {
+                            ['Kaltura.playManifestServiceUrl','Kaltura.thumbAssetServiceUrl'].forEach(function (key,index) {
+
+                                if (index===1 && !flashvars.serveThumbAssetsViaECDN) {
+                                    return;
+                                }
+
                                 mw.config.set(key, serviceUrl)
                                 // Pass the override URLs configurations to the parent mw object so that it's client
                                 // URLs would be updated too.
-                                if (mw.config.get('EmbedPlayer.IsFriendlyIframe') && flashvars.tunnelAPI) {
+                                if (mw.config.get('EmbedPlayer.IsFriendlyIframe')) {
                                     try {
                                         window.parent.mw.setConfig(key, serviceUrl);
                                     } catch (e) {
