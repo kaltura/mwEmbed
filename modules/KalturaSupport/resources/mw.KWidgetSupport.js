@@ -283,8 +283,13 @@ mw.KWidgetSupport.prototype = {
 	},
 	updatePlayerContextData: function(embedPlayer, playerData){
 
-        mw.setConfig('Kaltura.playManifestServiceUrl',mw.getConfig('Kaltura.ServiceUrl'));
-        mw.setConfig('Kaltura.thumbAssetServiceUrl',mw.getConfig('Kaltura.ServiceUrl'));
+        var serviceUrl  = mw.getConfig('Kaltura.ServiceUrl');
+        ['Kaltura.playManifestServiceUrl','Kaltura.thumbAssetServiceUrl'].forEach(function(key) {
+            mw.setConfig(key,serviceUrl);
+            if (mw.config.get('EmbedPlayer.IsFriendlyIframe') ) {
+                window.parent.mw.setConfig(key, serviceUrl);
+            }
+        });
 
 		if( playerData.contextData ){
 			if ( playerData.contextData.msDuration) {

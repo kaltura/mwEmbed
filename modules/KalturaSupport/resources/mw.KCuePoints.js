@@ -170,7 +170,7 @@
                     } else {
                         getUrl(index+1)
                     }
-                },false,null,false,"thumbAsset");
+                },false,null,false,"Kaltura.thumbAssetServiceUrl");
             }
             //Create request data only for cuepoints that have assetId
             $.each(thumbCuePoint, function (index, item) {
@@ -203,7 +203,7 @@
                             data = [data];
                         }
                         processThumbnailUrls(data);
-                    },false,null,false,"thumbAsset");
+                    },false,null,false,"Kaltura.thumbAssetServiceUrl");
                 }
 			} else {
 				if (callback) {
