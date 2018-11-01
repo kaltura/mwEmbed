@@ -331,7 +331,7 @@
 			if ( mw.isMobileDevice() ) {
 				var playsinline = true;
 				if ( mw.isIphone() ) {
-					playsinline = this.inline;
+				    $(this.getPlayerElement()).attr('playsinline', '');
 				}
 				return (this.mobileAutoPlay && playsinline) || this.mobilePlayed;
 			}
