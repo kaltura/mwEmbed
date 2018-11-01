@@ -951,7 +951,7 @@ mw.KWidgetSupport.prototype = {
 		if( autoMute && !mw.isMobileDevice()){
 			setTimeout(function(){
 				embedPlayer.toggleMute( true );
-			},300);
+			},0);
 			// autoMute should only happen once per session:
 			embedPlayer.setKalturaConfig( '', 'autoMute', null );
 		}
