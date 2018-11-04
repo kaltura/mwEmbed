@@ -1,0 +1,18 @@
+{
+	"RaptMediaNg": {
+		"description": "The RaptMediaNg plugin integrates the RaptMedia Engine to the Kaltura Player. <br />RaptMedia adds clickable interactive layer that accompanies your video content and can do things like: <br />cue or launch different media plays, jump to specific timecode, trigger an event on your webpage and launch a new web page or an app. <br />This is an alternative implementation of the RaptMedia plugin which loads each entry in the playlist [AKA project individually] rather than use a stitched playlist to serve the content.",
+		"label": "RaptMedia Interactive Video Sequence",
+		"attributes": {
+			"raptMediaScriptUrl": {
+				"type": "string",
+                "doc": "The URL to the Rapt Media Engine. Leave empty to use default.",
+                "label": "RaptMedia Engine URL"
+			},
+			"behaviorOnEnd": {
+				"type": "string",
+                "doc": "Accepts pause or replay. If set to pause it will pause the player at the end of the sequence.",
+                "label": "Behavior On Sequence Complete"
+			}
+		}
+	}
+}

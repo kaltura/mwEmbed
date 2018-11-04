@@ -1,0 +1,11 @@
+#raptMediaOverlay {
+	position: absolute;
+	z-index: 1000;
+	top: 0;
+	left: 0;
+}
+
+.raptMedia_running .liveStatus,
+.raptMedia_running .largePlayBtn {
+	display: none !important;
+}

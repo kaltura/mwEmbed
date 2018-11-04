@@ -1,0 +1,34 @@
+{
+	"mw.RaptMediaNg": {
+		"scripts": [
+			"resources/engine.min.js",
+			"resources/mw.RaptMediaNg.js"
+		],
+		"styles": "resources/RaptMediaNgPlugin.css",
+		"dependencies": [
+			"mw.KBaseComponent"
+		],
+		"kalturaPluginName": "raptMediaNg"
+	},
+	"mw.RaptMediaNgDurationLabel": {
+		"scripts": "resources/mw.RaptMediaNgDurationLabel.js",
+		"dependencies": [
+			"durationLabel"
+		],
+		"kalturaPluginName": "raptMediaNgDurationLabel"
+	},
+	"mw.RaptMediaNgScrubber": {
+		"scripts": "resources/mw.RaptMediaNgScrubber.js",
+		"dependencies": [
+			"scrubber"
+		],
+		"kalturaPluginName": "raptMediaNgScrubber"
+	},
+	"mw.RaptMediaNgPlayPauseBtn": {
+		"scripts": "resources/mw.RaptMediaNgPlayPauseBtn.js",
+		"dependencies": [
+			"playPauseBtn"
+		],
+		"kalturaPluginName": "raptMediaNgPlayPauseBtn"
+	}
+}
