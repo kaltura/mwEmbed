@@ -125,6 +125,8 @@
                 this.bindOnceHelper('playerReady', function () {
                     _this.setVolume(0);
                 });
+            } else {
+                this.toggleMute( true );
             }
 
 			this.addBindings();
