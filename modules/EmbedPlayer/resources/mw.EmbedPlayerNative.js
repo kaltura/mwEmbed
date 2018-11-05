@@ -127,6 +127,9 @@
                 });
             } else {
                 this.toggleMute( true );
+                if (mw.isMobileDevice()) {
+                	this.mobileAutoPlay = true;
+              	}
             }
 
 			this.addBindings();
