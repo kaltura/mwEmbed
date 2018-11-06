@@ -335,7 +335,9 @@
 
 			embedPlayer.triggerHelper('onShowInterfaceComponents', [ showComponentsArr ] );
 			embedPlayer.triggerHelper('onHideInterfaceComponents', [ hideComponentsArr ] );
-			embedPlayer.doUpdateLayout();
+			if (!_this.isDVR()) {
+			  embedPlayer.doUpdateLayout();
+			}
 		},
 
 		isDVR: function(){
