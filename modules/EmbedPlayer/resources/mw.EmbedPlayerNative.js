@@ -334,11 +334,7 @@
 		 */
 		canAutoPlay: function () {
 			if ( mw.isMobileDevice() ) {
-				var playsinline = true;
-				if ( mw.isIphone() ) {
-					playsinline = this.inline;
-				}
-				return (this.mobileAutoPlay && playsinline) || this.mobilePlayed;
+				return (this.mobileAutoPlay) || this.mobilePlayed;
 			}
 			return true;
 		},
