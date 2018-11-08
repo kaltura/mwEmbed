@@ -63,6 +63,7 @@
         playSentOnStart: false,
 		absolutePosition: null,
 		id3TagEventTime: null,
+		onPlayStatus: false,
         firstPlayRequestTime: null,
 
 		smartSetInterval:function(callback,time,monitorObj) {
@@ -138,6 +139,7 @@
 				_this.currentflavorId = -1;
 				_this.dvr = false;
 				_this.monitorViewEvents = true;
+				_this.onPlayStatus = false;
 			});
 
 			this.embedPlayer.bindHelper( 'userInitiatedPlay' , function () {
@@ -153,14 +155,15 @@
                 }
 
 				if ( !this.isInSequence() && (_this.firstPlay || _this.embedPlayer.currentState !== "play") ){
-					if ( _this.firstPlay ){
+					if ( _this.firstPlay && !_this.onPlayStatus ) {
+						_this.onPlayStatus = true;
                         _this.playSentOnStart = true;
 						_this.timer.start();
 						_this.sendAnalytics(playerEvent.PLAY, {
                             bufferTimeSum: _this.bufferTimeSum,
                             joinTime: (Date.now() - _this.firstPlayRequestTime) / 1000.0
 						});
-					}else{
+					}else if ( _this.embedPlayer.currentState !== "play" ){
                         _this.timer.resume();
 						_this.sendAnalytics(playerEvent.RESUME, {
                             bufferTimeSum: _this.bufferTimeSum
