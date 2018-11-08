@@ -35,7 +35,10 @@
 			"SOURCE_SELECTED": 39,
 			"INFO": 40,
 			"SPEED": 41,
-			"VIEW": 99
+			"VIEW": 99,
+            "ERROR": 98,
+			"BUFFER_START": 45,
+			"BUFFER_END": 46
 		},
 		startTime: null,
 		reportingInterval : 10000,
@@ -60,6 +63,7 @@
         playSentOnStart: false,
 		absolutePosition: null,
 		id3TagEventTime: null,
+        firstPlayRequestTime: null,
 
 		smartSetInterval:function(callback,time,monitorObj) {
 			var _this = this;
@@ -137,6 +141,9 @@
 			});
 
 			this.embedPlayer.bindHelper( 'userInitiatedPlay' , function () {
+                if (_this.firstPlay) {
+                    _this.firstPlayRequestTime = Date.now();
+                }
 				_this.sendAnalytics(playerEvent.PLAY_REQUEST);
 			});
 
@@ -150,7 +157,8 @@
                         _this.playSentOnStart = true;
 						_this.timer.start();
 						_this.sendAnalytics(playerEvent.PLAY, {
-                            bufferTimeSum: _this.bufferTimeSum
+                            bufferTimeSum: _this.bufferTimeSum,
+                            joinTime: (Date.now() - _this.firstPlayRequestTime) / 1000.0
 						});
 					}else{
                         _this.timer.resume();
@@ -258,12 +266,14 @@
 
 			this.embedPlayer.bindHelper('bufferStartEvent', function(){
 				_this.bufferStartTime = new Date();
+				_this.sendAnalytics(playerEvent.BUFFER_START);
 			});
 
 			this.embedPlayer.bindHelper('bufferEndEvent', function(){
 				_this.calculateBuffer();
 				_this.bufferStartTime = null;
-			});
+                _this.sendAnalytics(playerEvent.BUFFER_END);
+            });
 
 			this.embedPlayer.bindHelper( 'bitrateChange' ,function( event, newBitrate){
 				_this.currentBitRate = newBitrate;
@@ -326,6 +336,11 @@
 				}
 			});
 
+			this.embedPlayer.bindHelper('playerError', function (e, errorObj) {
+                var errorCode = errorObj && errorObj.key;
+                _this.sendAnalytics(playerEvent.ERROR, {errorCode: errorCode});
+            });
+
 			this.embedPlayer.bindHelper( 'onId3Tag' , function (e, id3Tag) {
 				_this.id3TagEventTime = Date.now();
 				_this.absolutePosition = id3Tag.timestamp;
@@ -368,7 +383,7 @@
             this.playTimeSum += (this.embedPlayer.currentTime - this.previousCurrentTime);
             this.previousCurrentTime = this.embedPlayer.currentTime;
 		},
-		
+
 		calaulatePlayTimeSumBasedOnTag: function (){
 			this.playTimeSum += (this.embedPlayer.getPlayerElement().currentTime - this.previousCurrentTime);
             this.previousCurrentTime = this.embedPlayer.getPlayerElement().currentTime;
@@ -464,7 +479,7 @@
 				this.calaulatePlayTimeSumBasedOnTag();
 			} else {
 				this.calculatePlayTimeSum();
-			}    
+			}
 			this.calculateBuffer(true);
 			this.kClient = mw.kApiGetPartnerClient( this.embedPlayer.kwidgetid );
 			if ( this.embedPlayer.isMulticast && $.isFunction( this.embedPlayer.getMulticastBitrate ) ) {
@@ -635,5 +650,5 @@
             this.startTime = null;
         }
 	}));
-	
+
 } )( window.mw, window.jQuery );
