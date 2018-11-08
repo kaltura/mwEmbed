@@ -105,7 +105,6 @@
             this.bufferTime = 0;
             this.bufferTimeSum = 0;
 			this.currentBitRate = -1;
-            this.entryPlayCounter = 1;
             this.addBindings();
 	    },
 
@@ -126,7 +125,6 @@
 				_this.rateHandler.destroy();
 				_this.bufferTime = 0;
 				_this.firstPlay = true;
-				_this.entryPlayCounter++;
 				_this.playSentOnStart = false;
 				_this._p25Once = false;
 				_this._p50Once = false;
@@ -438,7 +436,7 @@
 		},
 
 		getEntrySessionId: function(){
-			return this.embedPlayer.evaluate('{configProxy.sessionId}') + "-" + this.entryPlayCounter;
+			return this.embedPlayer.evaluate('{configProxy.sessionId}')
 		},
 
         getPosition: function () {

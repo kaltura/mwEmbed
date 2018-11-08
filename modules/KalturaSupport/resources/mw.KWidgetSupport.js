@@ -2093,6 +2093,9 @@ mw.KWidgetSupport.prototype = {
 		}
 		return this.kSessionId;
 	},
+    resetGUID: function() {
+        this.kSessionId = null
+    },
 	getKalturaThumbnailUrl: function( thumb ) {
 		if( ! thumb.url ){
 			return mw.getConfig( 'EmbedPlayer.BlackPixel' );
