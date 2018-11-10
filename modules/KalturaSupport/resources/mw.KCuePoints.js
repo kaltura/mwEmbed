@@ -170,7 +170,7 @@
                     } else {
                         getUrl(index+1)
                     }
-                });
+                },false,null,false,"Kaltura.thumbAssetServiceUrl"); //we force the API request to use specific domain
             }
             //Create request data only for cuepoints that have assetId
             $.each(thumbCuePoint, function (index, item) {
@@ -196,14 +196,14 @@
                         getUrl(0);
 					}
 				} else {
-                    // do the api request
+                        // do the api request
                     this.getKalturaClient().doRequest(requestArray, function (data) {
                         // Validate result
                         if (requestArray.length === 1) {
                             data = [data];
                         }
                         processThumbnailUrls(data);
-                    });
+                    },false,null,false,"Kaltura.thumbAssetServiceUrl");
                 }
 			} else {
 				if (callback) {
