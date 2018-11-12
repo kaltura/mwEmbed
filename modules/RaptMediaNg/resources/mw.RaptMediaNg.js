@@ -286,10 +286,15 @@
 				_this.getKalturaClient().doRequest({
 					service: 'fileAsset',
 					action: 'list',
-					filter: {
+                        		'filter:objectType': 'KalturaFileAssetFilter',
+		                        'filter:entryIdEqual': _this.getPlayer().kentryid,
+		                        'filter:fileAssetObjectTypeEqual': 3,
+		                        'filter:objectIdEqual': projectId.replace(/^\!/, '')
+					/*filter: {
+						objectType: KalturaFileAssetFilter,
 						fileAssetObjectTypeEqual: 3,
 						objectIdEqual: projectId.replace(/^\!/, ''),
-					}
+					}*/
 				}, function(data) {
 					if (data.code) {
 						return reject(Error('Unable to load graph data: ' + data.message + ' (' + data.code + ')'));
