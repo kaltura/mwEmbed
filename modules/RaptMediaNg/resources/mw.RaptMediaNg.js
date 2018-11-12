@@ -2,10 +2,7 @@
  * The RaptMediaNg plugin integrates the RaptMedia Engine to the Kaltura Player.
  * RaptMedia adds clickable interactive layer that accompanies your video content and can do things like:
  * cue or launch different media plays, jump to specific timecode, trigger an event on your webpage and launch a new web page or an app.
- * This plugin also makes use of accompanying plugin RaptMediaNgScrubber plugin to override the default scrubber behavior to fit a Rapt Media experience.
- * With RaptMediaNgScrubber plugin the scrubber can interact within the context of a single RaptMedia clip instead of just the entire stitched playlist.
  * The RaptMediaNg plugin integrates the RaptMedia Engine to the Kaltura Player.
- * It also makes use of accompanying plugin RaptMediaNgDurationLabel used to override the default player DurationLabel to behave according to the RaptMedia Sequence rather than show the overall playlist duration.
  */
 (function ( mw, $ ) {
 	"use strict";
