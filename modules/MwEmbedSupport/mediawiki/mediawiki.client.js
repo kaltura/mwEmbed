@@ -197,10 +197,6 @@
         return ( /OS 11_/.test(userAgent) || /Version\/11/.test(userAgent) ) && mw.isIOS();
     };
 
-    mw.isIOS12 = function () {
-        return ( /OS 12_/.test(userAgent) || /Version\/12/.test(userAgent) ) && mw.isIOS();
-    };
-
 	mw.isIOSBelow9 = function () {
 		// mw.isIOSV() methods check mw.isIOS(), but because of the OR operator it will be checked multiple times. 
 		// Short-circuit to save many calls.
