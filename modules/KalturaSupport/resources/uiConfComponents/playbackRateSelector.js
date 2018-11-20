@@ -191,7 +191,7 @@
 			var previousSpeed = this.currentSpeed;
 			this.currentSpeed = newSpeed;
 			// check if we need to switch interfaces: 
-			if( (this.getPlayer().instanceOf != 'Native' && this.getPlayer().instanceOf != 'MultiDRM') || (mw.isMobileDevice() && this.getConfig("serverSpeedPlayback") && this.manifestSource)){
+			if( (this.getPlayer().instanceOf != 'Native' && this.getPlayer().instanceOf != 'MultiDRM') || (mw.isMobileDevice() && !this.getConfig("serverSpeedPlayback") && this.manifestSource)){
 				this.handlePlayerInstanceUpdate( newSpeed, previousSpeed );
 				return ;
 			}
