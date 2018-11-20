@@ -482,7 +482,7 @@
 			// some initial calls to prime the seek:
 			if ( ( vid.currentTime === 0 && callbackCount === 0 ) && vid.readyState === 0 ) { //load video again if not loaded yet (vid.readyState === 0)
 				// when seeking turn off preload none and issue a load call.
-				if(mw.isIpad()){
+				if(mw.isIpad()|| mw.isIOSAbove7()){
 					$(vid).attr('preload', 'auto')[0].load();
 				} else {
 					$(vid).attr('preload', 'auto');
