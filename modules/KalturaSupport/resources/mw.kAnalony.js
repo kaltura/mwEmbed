@@ -131,10 +131,6 @@
 				_this.bufferTime = 0;
 				_this.firstPlay = true;
 				_this.playSentOnStart = false;
-				_this._p25Once = false;
-				_this._p50Once = false;
-				_this._p75Once = false;
-				_this._p100Once = false;
 				_this.currentBitRate = -1;
 				_this.currentflavorId = -1;
 				_this.dvr = false;
@@ -350,7 +346,11 @@
 			});
 		},
 		resetPlayerflags:function(){
-			this.hasSeeked = false;
+            this._p25Once = false;
+            this._p50Once = false;
+            this._p75Once = false;
+            this._p100Once = false;
+            this.hasSeeked = false;
             this.previousCurrentTime = 0;
 			this.savedPosition = null;
 			this.absolutePosition = null;
@@ -365,7 +365,8 @@
 				this.calculatePlayTimeSum();
 			}
 			// Send updates based on logic present in StatisticsMediator.as
-			if ( !this.embedPlayer.isLive() ){
+			// Only reprot on first play of a media, don't report on media replay
+			if ( !this.embedPlayer.isLive() && (_this.embedPlayer.donePlayingCount === 0)){
 				if( !_this._p25Once && percent >= .25 ) {
 					_this._p25Once = true;
 					_this.sendAnalytics(playerEvent.PLAY_25PERCENT);
@@ -438,7 +439,7 @@
 				_this.firstPlay = false;
 			}
 			_this.smartSetInterval(function(){
-				if ( !_this._p100Once ){ // since we report 100% at 99%, we don't want any "VIEW" reports after that (FEC-5269)
+                if ( !_this._p100Once || (_this.embedPlayer.donePlayingCount > 0)){ // since we report 100% at 99%, we don't want any "VIEW" reports after that (FEC-5269)
 					_this.sendAnalytics(playerEvent.VIEW, {
                         playTimeSum: _this.playTimeSum,
                         averageBitrate: _this.rateHandler.getAverage(),
