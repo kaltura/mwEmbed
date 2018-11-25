@@ -313,7 +313,7 @@
 		            var vid = this.getPlayer().getPlayerElement();
 		            var textTracks = vid.textTracks;
 		            for (var i=0; i < textTracks.length; i++){
-			            textTracks[i].mode = "hidden";
+			            textTracks[i].mode = "disabled";
 		            }
 	            }
             },
