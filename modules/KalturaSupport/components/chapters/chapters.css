@@ -451,9 +451,6 @@
     padding: 2px;
     width: 11px;
 }
-.touch .nano-pane   {
-    display: none !important;
-}
 .nano > .nano-pane:hover, .nano-pane:active {
     cursor: pointer;
     width: 14px;
