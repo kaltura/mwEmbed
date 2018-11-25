@@ -192,6 +192,10 @@
                 if ( _this.embedPlayer.isDVR() ) {
 					_this.dvr = true;
 				}
+                if (!_this.timer.isStopped()){
+                    _this.timer.stop();
+                    _this.sendAnalytics(playerEvent.PAUSE);
+                }
 			});
 
 			this.embedPlayer.bindHelper( 'userInitiatedSeek' , function (e, seekTarget) {
