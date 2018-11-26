@@ -171,12 +171,20 @@
 			});
 
 			this.bind('onOpenFullScreen', function() {
+				if(!qnaObject.is(":hidden")){
+					// Entring fullscreen will turn a flag to close it later
+					this.hideOnFullscreen = true;
+				}
                 qnaObject.hide();
 				_this.changeVideoToggleIcon();
 				if (!_this.getConfig( 'onPage' )) {
 					$( ".videoHolder, .mwPlayerContainer" ).css( "width", "100%" );	}
 			});
 			this.bind('onCloseFullScreen', function() {
+				if(this.hideOnFullscreen){
+					qnaObject.show();
+				}
+				this.hideOnFullscreen = false;
 				_this.changeVideoToggleIcon();
 				if (!_this.getConfig( 'onPage' )){
 					$(".videoHolder, .mwPlayerContainer").css("width", _this.originalPlayerWidth + "px");
