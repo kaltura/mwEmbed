@@ -212,7 +212,7 @@
 	};
 
 	mw.isNativeIOSPlayback = function() {
-    return mw.isIOS() && !mw.isIpad() && !mw.getConfig('EmbedPlayer.WebKitPlaysInline');
+   		return mw.isIOS() && !mw.isIpad() && !mw.getConfig('EmbedPlayer.WebKitPlaysInline');
 	};
 
 	mw.isSilk = function () {
