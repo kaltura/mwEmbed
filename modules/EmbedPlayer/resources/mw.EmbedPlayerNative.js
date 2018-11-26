@@ -333,10 +333,11 @@
 		 * returns true if device can auto play
 		 */
 		canAutoPlay: function () {
-			if ( mw.isMobileDevice() ) {
-				return (this.mobileAutoPlay) || this.mobilePlayed;
-			}
-			return true;
+		  var playsinline = true;
+		  if ( mw.isIphone() ) {
+		    playsinline = this.inline;
+		  }
+		  return (this.mobileAutoPlay && playsinline) || this.mobilePlayed;
 		},
 
 		/**
