@@ -265,7 +265,7 @@
             // Setup load request
             var loadRequest = new chrome.cast.media.LoadRequest( mediaInfo );
             loadRequest.autoplay = this.autoPlay;
-            // On live start from the live edge, on VOD start from the player current time 
+            // On live start from the live edge, on VOD start from the player current time
             loadRequest.currentTime = this.isLive() ? 0 : this.getCurrentTime();
             mw.log( "EmbedPlayerChromecast:: loadMedia:: Load request sent", loadRequest );
             // Call load media
@@ -345,9 +345,11 @@
         updateAdsUi: function ( customData ) {
             if ( customData && customData.adsInfo ) {
                 if ( customData.adsInfo.isPlayingAd ) {
+                    this.isPlayingAd = true;
                     this.hideSpinner();
                     this.disablePlayControls( [ 'playPauseBtn', 'fullScreenBtn', 'volumeControl' ] );
                 } else {
+                    this.isPlayingAd = false;
                     this.enablePlayControls();
                 }
             }
@@ -395,7 +397,7 @@
         /**** Live ****/
 
         backToLive: function () {
-            if ( this.getCurrentTime() > 0 && !this.movingBackToLive ) {
+            if ( !this.isPlayingAd && this.getCurrentTime() > 0 && !this.movingBackToLive ) {
                 this.movingBackToLive = true;
                 this.loadMedia();
             }
