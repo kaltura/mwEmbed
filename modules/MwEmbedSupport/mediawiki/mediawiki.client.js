@@ -211,6 +211,10 @@
 		return mw.isIOS8() || mw.isIOS9() || mw.isIOS10() || mw.isIOS11();
 	};
 
+	mw.isNativeIOSPlayback = function() {
+    return mw.isIOS() && !mw.isIpad() && !mw.getConfig('EmbedPlayer.WebKitPlaysInline');
+	};
+
 	mw.isSilk = function () {
 		return /\bSilk\b/.test(userAgent);
 	};
