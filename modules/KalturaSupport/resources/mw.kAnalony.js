@@ -167,9 +167,12 @@
 					}
 				}
 			});
-			this.embedPlayer.bindHelper( 'userInitiatedPause' , function () {
+			this.embedPlayer.bindHelper( 'onpause' , function () {
 				_this.timer.stop();
 				_this.sendAnalytics(playerEvent.PAUSE);
+                if ( _this.embedPlayer.isDVR() ) {
+                    _this.dvr = true;
+                }
 			});
 
 			this.embedPlayer.bindHelper( 'monitorEvent' , function () {
@@ -187,7 +190,7 @@
 				_this.dvr = false;
 			} );
 
-			this.embedPlayer.bindHelper( 'seeking onpause', function() {
+			this.embedPlayer.bindHelper( 'seeking', function() {
                 _this.previousCurrentTime = _this.embedPlayer.currentTime;
                 if ( _this.embedPlayer.isDVR() ) {
 					_this.dvr = true;
