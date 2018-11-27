@@ -211,6 +211,10 @@
 		return mw.isSafariVersionGreaterThan(8);
 	};
 
+	mw.isNativeIOSPlayback = function() {
+   		return mw.isIOS() && !mw.isIpad() && !mw.getConfig('EmbedPlayer.WebKitPlaysInline');
+	};
+
 	mw.isSilk = function () {
 		return /\bSilk\b/.test(userAgent);
 	};

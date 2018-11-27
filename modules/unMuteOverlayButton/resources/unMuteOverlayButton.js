@@ -28,7 +28,7 @@
                 if (mw.getConfig('thumbEmbedOrigin') || mw.getConfig('autoMute')) {
                     return false;
                 }
-                if (mw.isMobileDevice()) {
+                if (mw.isMobileDevice() && !mw.isNativeIOSPlayback()) {
                     return !!mw.getConfig('mobileAutoPlay');
                 } else {
                     return browserSupportMutedAutoplay() && isAutoplayConfigured();
