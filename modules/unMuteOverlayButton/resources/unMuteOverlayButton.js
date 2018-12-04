@@ -56,12 +56,6 @@
                 this.getComponent().fadeOut('slow');
             },
 
-            destroy: function () {
-                this.hide();
-                this.unbind('playerReady');
-                this.unbind('volumeChanged');
-            },
-
             getComponent: function () {
                 if (!this.$el) {
                     this.$el = $('<button/>')
