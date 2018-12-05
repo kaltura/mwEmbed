@@ -299,9 +299,9 @@ kWidget.api.prototype = {
 		if( serviceType && serviceType == 'liveStats' &&  mw.getConfig( 'Kaltura.LiveStatsServiceUrl' ) ) {
 			serviceUrl = mw.getConfig( 'Kaltura.LiveStatsServiceUrl' );
 		}
-		if( serviceType && serviceType == 'analytics' &&  mw.getConfig( 'Kaltura.AnalyticsUrl' ) ) {
-			serviceUrl = mw.getConfig( 'Kaltura.AnalyticsUrl' );
-		}
+        if( serviceType && serviceType == 'analytics'  ) {
+            serviceUrl = window.location.protocol+"//analytics.kaltura.com";
+        }
         if (apiHost ) {
             serviceUrl = mw.getConfig( apiHost );
 
