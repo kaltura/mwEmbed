@@ -128,9 +128,6 @@
               
             } else if (mw.getConfig('autoMute') && mw.getConfig('autoPlay')) {
                 this.toggleMute( true );
-                if (mw.isMobileDevice()) {
-                	this.mobileAutoPlay = true;
-              	}
             }
 
 			this.addBindings();
@@ -335,10 +332,14 @@
 		 */
 		canAutoPlay: function () {
 			if ( mw.isMobileDevice() ) {
-				return (this.mobileAutoPlay) || this.mobilePlayed;
+				var playsinline = true;
+				if ( mw.isIphone() ) {
+					playsinline = this.inline;
+				}
+				return (this.mobileAutoPlay && playsinline) || this.mobilePlayed || this.isMuted();
 			}
 			return true;
-		},
+			},
 
 		/**
 		 * Post element javascript, binds event listeners and starts monitor
