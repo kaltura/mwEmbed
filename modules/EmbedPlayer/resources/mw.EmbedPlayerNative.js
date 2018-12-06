@@ -125,7 +125,7 @@
                 this.bindOnceHelper('playerReady', function () {
                     _this.setVolume(0);
                 });
-            } else {
+            } else if (mw.getConfig('autoMute') && mw.getConfig('autoPlay')) {
                 this.toggleMute( true );
                 if (mw.isMobileDevice()) {
                 	this.mobileAutoPlay = true;
