@@ -456,13 +456,6 @@
     ],
     "kalturaPluginName": "statistics"
   },
-  "liveAnalytics": {
-    "scripts": "resources/mw.KLiveAnalytics.js",
-    "dependencies": [
-      "mw.KBasePlugin"
-    ],
-    "kalturaPluginName": "liveAnalytics"
-  },
   "kAnalony": {
     "scripts": [
       "resources/mw.KavaTimer.js",

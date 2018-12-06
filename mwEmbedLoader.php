@@ -399,6 +399,8 @@ class mwEmbedLoader {
 			'Kaltura.UseManifestUrls' => $wgKalturaUseManifestUrls,
 			'Kaltura.Protocol'	=>	$wgHTTPProtocol,
 			'Kaltura.ServiceUrl' => $wgKalturaServiceUrl,
+			'Kaltura.thumbAssetServiceUrl' => $wgKalturaServiceUrl,
+			'Kaltura.playManifestServiceUrl' => $wgKalturaServiceUrl,
 			'Kaltura.ServiceBase' => $wgKalturaServiceBase,
 			'Kaltura.CdnUrl' => $wgKalturaCDNUrl,
 			'Kaltura.StatsServiceUrl' => $wgKalturaStatsServiceUrl,

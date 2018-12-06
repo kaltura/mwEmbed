@@ -125,6 +125,7 @@
                 this.bindOnceHelper('playerReady', function () {
                     _this.setVolume(0);
                 });
+              
             } else if (mw.getConfig('autoMute') && mw.getConfig('autoPlay')) {
                 this.toggleMute( true );
                 if (mw.isMobileDevice()) {
@@ -334,11 +335,7 @@
 		 */
 		canAutoPlay: function () {
 			if ( mw.isMobileDevice() ) {
-				var playsinline = true;
-				if ( mw.isIphone() ) {
-					playsinline = this.inline;
-				}
-				return (this.mobileAutoPlay && playsinline) || this.mobilePlayed;
+				return (this.mobileAutoPlay) || this.mobilePlayed;
 			}
 			return true;
 		},
@@ -486,7 +483,7 @@
 			// some initial calls to prime the seek:
 			if ( ( vid.currentTime === 0 && callbackCount === 0 ) && vid.readyState === 0 ) { //load video again if not loaded yet (vid.readyState === 0)
 				// when seeking turn off preload none and issue a load call.
-				if(mw.isIpad()){
+				if(mw.isIpad()|| mw.isIOSAbove7()){
 					$(vid).attr('preload', 'auto')[0].load();
 				} else {
 					$(vid).attr('preload', 'auto');

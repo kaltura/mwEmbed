@@ -1753,6 +1753,7 @@
 				this.postSequenceFlag = false;
 				this.shouldEndClip = true;
 				this.mediaLoadedFlag = false;
+                window.kWidgetSupport.resetGUID();
 			}
 
 			// Add a loader to the embed player:

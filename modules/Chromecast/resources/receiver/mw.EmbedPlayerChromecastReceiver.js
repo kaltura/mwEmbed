@@ -180,15 +180,10 @@
             if ( this.mediaProtocol === null ) {
                 // Call on original handler
             } else {
-                this.mediaPlayer = new cast.player.api.Player( this.mediaHost );
-                if ( this.isLive() ) {
-                    mw.log( "EmbedPlayerChromecastReceiver:: isLive()=true, load mediaPlayer" );
-                    this.mediaPlayer.load( this.mediaProtocol, Infinity );
-                } else {
-                    mw.log( "EmbedPlayerChromecastReceiver:: preload mediaPlayer" );
-                    this.mediaPlayer.preload( this.mediaProtocol, initStart );
-                    this.wasPreload = true;
-                }
+                this.mediaPlayer = new cast.player.api.Player(this.mediaHost);
+                mw.log("EmbedPlayerChromecastReceiver:: preload mediaPlayer");
+                this.mediaPlayer.preload(this.mediaProtocol, this.isLive() ? Infinity : initStart);
+                this.wasPreload = true;
             }
         },
 
