@@ -219,6 +219,7 @@ class UiConfResult {
 			'liveStatus' => array(),
 			'reportError' => array(),
 			"sideBarContainer" => array(),
+			"liveAnalytics"=>array(),
 			"kAnalony"=>array(),
 			"hlsjs"=>array(),
 			"unMuteOverlayButton"=>array(),
