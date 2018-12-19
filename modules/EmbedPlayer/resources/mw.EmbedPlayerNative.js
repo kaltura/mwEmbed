@@ -333,8 +333,9 @@
 		canAutoPlay: function () {
 			if ( mw.isMobileDevice() ) {
 				var playsinline = true;
-				if ( mw.isIphone() ) {
+				if (( mw.isIphone() && mw.getConfig("EmbedPlayer.WebKitPlaysInline") !== true )) {
 					playsinline = this.inline;
+					return (this.mobileAutoPlay && playsinline) || this.mobilePlayed;
 				}
 				return (this.mobileAutoPlay && playsinline) || this.mobilePlayed || this.isMuted();
 			}
