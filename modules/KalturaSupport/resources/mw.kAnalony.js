@@ -68,7 +68,7 @@
 
         stats: {
             chunksDownloaded: 0,
-            maxChunkDownloadTime:0
+            maxChunkDownloadTime:-1
         },
 
 		smartSetInterval:function(callback,time,monitorObj) {
@@ -299,6 +299,16 @@
                 }
             });
 
+
+            this.embedPlayer.bindHelper('hlsManifestLoadedWithStats', function(e,data){
+
+                //_this.stats.manifestsDownloaded++;
+                //_this.stats.maxManifestkDownloadTime=Math.max(data.stats.tload-data.stats.trequest,_this.stats.maxManifestkDownloadTime);
+
+                console.warn(e,data);
+                // _this.bufferStartTime = null;
+                // _this.sendAnalytics(playerEvent.BUFFER_END);
+            });
             this.embedPlayer.bindHelper('hlsFragLoadedWithStats', function(e,data){
 
                 _this.stats.chunksDownloaded++;
@@ -307,6 +317,9 @@
             	console.warn(e,data);
                // _this.bufferStartTime = null;
                // _this.sendAnalytics(playerEvent.BUFFER_END);
+            });
+            this.embedPlayer.bindHelper("debugInfoReceived", function( e, data ) {
+				console.warn(data);
             });
 
             this.embedPlayer.bindHelper('onPlayerStateChange', function(e, newState, oldState) {
@@ -472,7 +485,7 @@
 					_this.bufferTime = 0;
 				}
                 this.stats.chunksDownloaded=0;
-                this.stats.maxChunkDownloadTime=0;
+                this.stats.maxChunkDownloadTime=-1;
 				if ( !_this.monitorViewEvents ){
 					_this.stopViewTracking();
 				}
