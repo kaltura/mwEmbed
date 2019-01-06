@@ -66,6 +66,11 @@
 		onPlayStatus: false,
         firstPlayRequestTime: null,
 
+        stats: {
+            chunksDownloaded: 0,
+            maxChunkDownloadTime:0
+        },
+
 		smartSetInterval:function(callback,time,monitorObj) {
 			var _this = this;
 			//create the timer speed, a counter and a starting timestamp
@@ -294,6 +299,16 @@
                 }
             });
 
+            this.embedPlayer.bindHelper('hlsFragLoadedWithStats', function(e,data){
+
+                _this.stats.chunksDownloaded++;
+                _this.stats.maxChunkDownloadTime=Math.max(data.stats.tload-data.stats.trequest,_this.stats.maxChunkDownloadTime);
+
+            	console.warn(e,data);
+               // _this.bufferStartTime = null;
+               // _this.sendAnalytics(playerEvent.BUFFER_END);
+            });
+
             this.embedPlayer.bindHelper('onPlayerStateChange', function(e, newState, oldState) {
 				if (!this.isInSequence()) {
                     if (newState === "pause") {
@@ -433,11 +448,15 @@
 			_this.startTime = null;
 			_this.kClient = mw.kApiGetPartnerClient( _this.embedPlayer.kwidgetid );
 			_this.monitorIntervalObj.cancel = false;
+
+
 			if ( _this.firstPlay ){
 				_this.sendAnalytics(playerEvent.VIEW, {
 					playTimeSum: _this.playTimeSum,
                     averageBitrate: _this.rateHandler.getAverage(),
-					bufferTimeSum: _this.bufferTimeSum
+					bufferTimeSum: _this.bufferTimeSum,
+                    maxChunkDownloadTime: _this.stats.maxChunkDownloadTime
+                    chunksDownloaded: _this.stats.chunksDownloaded,
                 });
 				_this.firstPlay = false;
 			}
@@ -446,10 +465,14 @@
 					_this.sendAnalytics(playerEvent.VIEW, {
                         playTimeSum: _this.playTimeSum,
                         averageBitrate: _this.rateHandler.getAverage(),
-                        bufferTimeSum: _this.bufferTimeSum
+                        bufferTimeSum: _this.bufferTimeSum,
+                        maxChunkDownloadTime: _this.stats.maxChunkDownloadTime,
+						chunksDownloaded: _this.stats.chunksDownloaded,
                     });
 					_this.bufferTime = 0;
 				}
+                this.stats.chunksDownloaded=0;
+                this.stats.maxChunkDownloadTime=0;
 				if ( !_this.monitorViewEvents ){
 					_this.stopViewTracking();
 				}
@@ -518,6 +541,7 @@
 				'position'          : position,
 				'playbackType'      : playbackType
 			};
+
 
             var flashVarEvents = {
                 'playbackContext' : 'playbackContext',
