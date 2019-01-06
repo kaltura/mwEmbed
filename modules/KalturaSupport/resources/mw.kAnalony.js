@@ -68,7 +68,12 @@
 
         stats: {
             chunksDownloaded: 0,
-            maxChunkDownloadTime:-1
+			maxChunkDownloadTime:-1,
+			playbackEngine:-1,
+			manifestkDownloadTime: -1 , 
+			playbackEngine: undefined , 
+			droppedFrames: 0 , 
+			bufferLength: -1
         },
 
 		smartSetInterval:function(callback,time,monitorObj) {
@@ -109,6 +114,13 @@
 		},
 
 		setup: function( ) {
+			// grab user uuid from cookie or get one and save it to the cookies of this domain
+			this.savedUserId = this.getCookie("kavaUUID");
+			if(!this.savedUserId){
+				this.savedUserId = this.getEntrySessionId();
+				this.setCookie("kavaUUID" , this.savedUserId);
+			}
+
             this.rateHandler = new mw.KavaRateHandler();
             this.timer = new mw.KavaTimer(this);
 			this.eventIndex = 1;
@@ -282,6 +294,7 @@
                 _this.sendAnalytics(playerEvent.BUFFER_END);
             });
 
+
 			this.embedPlayer.bindHelper( 'bitrateChange' ,function( event, newBitrate){
 				_this.currentBitRate = newBitrate;
 				_this.rateHandler.setCurrent(newBitrate);
@@ -297,30 +310,49 @@
                     }
                     _this.rateHandler.setRates(rates);
                 }
-            });
+			});
 
+			this.bind( 'hlsDroppedFrames' ,function( e, data){
+				// this is for HLS - we also need to turn flashvar  
+				if(data){
+					_this.stats.droppedFrames = data;
+				}
+			})
+			this.bind( 'hlsDropFPS' ,function( e, data){
+				if(data.totalDropped){
+					_this.stats.droppedFrames = data.totalDropped;
+				}
+			});
 
             this.embedPlayer.bindHelper('hlsManifestLoadedWithStats', function(e,data){
+				console.log(">>>>",'444');
+                _this.stats.manifestkDownloadTime= (data.stats.tload-data.stats.trequest).toFixed(2);
+			});
 
-                //_this.stats.manifestsDownloaded++;
-                //_this.stats.maxManifestkDownloadTime=Math.max(data.stats.tload-data.stats.trequest,_this.stats.maxManifestkDownloadTime);
 
-                console.warn(e,data);
-                // _this.bufferStartTime = null;
-                // _this.sendAnalytics(playerEvent.BUFFER_END);
-            });
+			var hlsFunc = function(e, data){
+				// this is hls 
+				_this.stats.playbackEngine = "hlsjs";
+			}
+			this.bind('hlsFragChanged', hlsFunc)
+			
+
+			this.bind("debugInfoReceived", function(e, data){
+				// this is flash 
+				_this.stats.playbackEngine = "flash";
+				if( data.droppedFrames ){
+					_this.stats.droppedFrames = data.droppedFrames;
+				}
+				if( data.droppedFrames ){
+					_this.stats.droppedFrames = data.droppedFrames;
+				}
+			})
+			
             this.embedPlayer.bindHelper('hlsFragLoadedWithStats', function(e,data){
+				_this.stats.chunksDownloaded++;
+                _this.stats.maxChunkDownloadTime=Math.max(Math.round(data.stats.tload-data.stats.trequest,_this.stats.maxChunkDownloadTime));
+			});
 
-                _this.stats.chunksDownloaded++;
-                _this.stats.maxChunkDownloadTime=Math.max(data.stats.tload-data.stats.trequest,_this.stats.maxChunkDownloadTime);
-
-            	console.warn(e,data);
-               // _this.bufferStartTime = null;
-               // _this.sendAnalytics(playerEvent.BUFFER_END);
-            });
-            this.embedPlayer.bindHelper("debugInfoReceived", function( e, data ) {
-				console.warn(data);
-            });
 
             this.embedPlayer.bindHelper('onPlayerStateChange', function(e, newState, oldState) {
 				if (!this.isInSequence()) {
@@ -462,36 +494,68 @@
 			_this.kClient = mw.kApiGetPartnerClient( _this.embedPlayer.kwidgetid );
 			_this.monitorIntervalObj.cancel = false;
 
-
 			if ( _this.firstPlay ){
 				_this.sendAnalytics(playerEvent.VIEW, {
 					playTimeSum: _this.playTimeSum,
                     averageBitrate: _this.rateHandler.getAverage(),
 					bufferTimeSum: _this.bufferTimeSum,
-                    maxChunkDownloadTime: _this.stats.maxChunkDownloadTime
+                    maxChunkDownloadTime: _this.stats.maxChunkDownloadTime,
                     chunksDownloaded: _this.stats.chunksDownloaded,
                 });
 				_this.firstPlay = false;
 			}
 			_this.smartSetInterval(function(){
-                if ( !_this._p100Once || (_this.embedPlayer.donePlayingCount > 0)){ // since we report 100% at 99%, we don't want any "VIEW" reports after that (FEC-5269)
-					_this.sendAnalytics(playerEvent.VIEW, {
+				if ( !_this._p100Once || (_this.embedPlayer.donePlayingCount > 0)){ // since we report 100% at 99%, we don't want any "VIEW" reports after that (FEC-5269)
+				try{
+					_this.stats.bufferLength = _this.getPlayer().getCurrentBufferLength();
+					}catch(e){}
+					var dataObj = {
                         playTimeSum: _this.playTimeSum,
                         averageBitrate: _this.rateHandler.getAverage(),
                         bufferTimeSum: _this.bufferTimeSum,
                         maxChunkDownloadTime: _this.stats.maxChunkDownloadTime,
 						chunksDownloaded: _this.stats.chunksDownloaded,
-                    });
+					};
+					
+					if(_this.stats.bufferLength >= 0){
+						dataObj.bufferLength = _this.stats.bufferLength
+					}
+
+					_this.sendAnalytics(playerEvent.VIEW, dataObj);
 					_this.bufferTime = 0;
 				}
-                this.stats.chunksDownloaded=0;
-                this.stats.maxChunkDownloadTime=-1;
+				_this.stats.chunksDownloaded=0;
+				_this.stats.bufferLength = -1;
+				_this.stats.maxChunkDownloadTime=-1;
+
 				if ( !_this.monitorViewEvents ){
 					_this.stopViewTracking();
 				}
 			},_this.reportingInterval,_this.monitorIntervalObj);
 
 		},
+
+		setCookie:function(name,value,days) {
+			var expires = "";
+			if (days) {
+				var date = new Date();
+				date.setTime(date.getTime() + (days*24*60*60*1000));
+				expires = "; expires=" + date.toUTCString();
+			}
+			document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+		},
+
+		getCookie:function(name) {
+			var nameEQ = name + "=";
+			var ca = document.cookie.split(';');
+			for(var i=0;i < ca.length;i++) {
+				var c = ca[i];
+				while (c.charAt(0)==' ') c = c.substring(1,c.length);
+				if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+			}
+			return null;
+		},
+
 
 		getEntrySessionId: function(){
 			return this.embedPlayer.evaluate('{configProxy.sessionId}')
@@ -586,6 +650,7 @@
 
 			// add custom vars
 			var config = this.getConfig();
+			
 			for (var key in config){
 				if (key.indexOf("customVar") !== -1){
 					var customVarObj = {};
@@ -597,7 +662,17 @@
 			if (this.absolutePosition && Date.now() - this.id3TagEventTime < config.id3TagMaxDelay) {
 				statsEvent["absolutePosition"] = this.absolutePosition;
 			}
+			if(mw.getConfig("sendUUidToAnalytics")){
+				statsEvent["extendedUUID"] = this.savedUserId;
+			}
 
+			if(mw.getConfig("sendDroppedFrames") && this.stats.droppedFrames){
+				statsEvent["droppedFrames"] = this.stats.droppedFrames;
+			}
+
+			if(_this.stats.playbackEngine){
+				statsEvent["playbackEngine"] = _this.stats.playbackEngine;	
+			}
 
 			// add playbackContext
 			if (mw.getConfig("playbackContext")){

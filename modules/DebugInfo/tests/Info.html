@@ -72,10 +72,13 @@
     var hlsjs=true;
     kWidget.featureConfig({
         'targetId': 'kaltura_player',
-        'wid': '_931702',
-        'uiconf_id' : '21099702',
+        'wid': '_27017',
+        'uiconf_id' : '43306891',
         'flashvars': {
-
+            'autoPlay': true,
+            'sendUUidToAnalytics' : false,
+            'hlsLogs' : true,
+            'sendDroppedFrames' : true,
             'debugInfo': {
                 'plugin': true,
                 isVisible:true
@@ -83,16 +86,14 @@
             'disableHLSOnJs': !hlsjs,
             "LeadWithHLSOnJs": hlsjs,
             "LeadWithHLSOnFlash": !hlsjs,
-            "hlsjs": {
-                'plugin': hlsjs
-            }
-
+            "Kaltura.ForceFlashOnDesktop" : !hlsjs
         },
-        'entry_id': "1_oorxcge2"
+        'entry_id': "1_nfvc407t"
 
     });
 
 
 </script>
+xxxx
 </body>
 </html>
