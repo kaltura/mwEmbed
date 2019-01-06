@@ -325,7 +325,6 @@
 			});
 
             this.embedPlayer.bindHelper('hlsManifestLoadedWithStats', function(e,data){
-				console.log(">>>>",'444');
                 _this.stats.manifestkDownloadTime= (data.stats.tload-data.stats.trequest).toFixed(2);
 			});
 
