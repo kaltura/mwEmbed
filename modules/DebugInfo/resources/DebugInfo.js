@@ -96,7 +96,6 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
             if(this.userId){
                 $scope.userId=this.userId;
             }
-            $scope.currentBitrate=data.currentBitrate;
             $scope.hlsEngine="flash";
         });
 
@@ -132,6 +131,9 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
             $scope.hlsCurrentSegment=data.url;
             $scope.startPTS=data.startPTS;
             $scope.endPTS=data.endPTS;
+            if(this.userId){
+                $scope.userId=this.userId;
+            }
             $scope.hlsEngine="hls.js";
         });
     },
