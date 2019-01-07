@@ -114,12 +114,15 @@
 		},
 
 		setup: function( ) {
-            // grab user uuid from cookie or get one and save it to the cookies of this domain
-            this.savedUserId = this.getCookie("kavaUUID");
-            if(!this.savedUserId){
-                this.savedUserId = this.getEntrySessionId();
-                this.setCookie("kavaUUID" , this.savedUserId);
-            }
+			// grab user uuid from cookie or get one and save it to the cookies of this domain
+			if(mw.getConfig("forceUUID")){
+				this.savedUserId = this.getCookie("kavaUUID");
+				if(!this.savedUserId){
+					// first time - get uuid and 'cookie' it 
+					this.savedUserId = this.getEntrySessionId();
+					this.setCookie("kavaUUID" , this.savedUserId);
+				}
+			}
 
             this.rateHandler = new mw.KavaRateHandler();
             this.timer = new mw.KavaTimer(this);
@@ -333,7 +336,6 @@
 				_this.stats.playbackEngine = "hlsjs";
 			}
 			this.bind('hlsFragChanged', hlsFunc)
-			
 
 			this.bind("debugInfoReceived", function(e, data){
 				// this is flash 
@@ -502,8 +504,9 @@
 			_this.smartSetInterval(function(){
 				if ( !_this._p100Once || (_this.embedPlayer.donePlayingCount > 0)){ // since we report 100% at 99%, we don't want any "VIEW" reports after that (FEC-5269)
 				try{
-					_this.stats.bufferLength = _this.getPlayer().getCurrentBufferLength();
-					}catch(e){}
+						_this.stats.bufferLength = _this.getPlayer().getCurrentBufferLength();
+					}catch(e){
+					}
 					var dataObj = {
                         playTimeSum: _this.playTimeSum,
                         averageBitrate: _this.rateHandler.getAverage(),
@@ -657,7 +660,8 @@
 			if (this.absolutePosition && Date.now() - this.id3TagEventTime < config.id3TagMaxDelay) {
 				statsEvent["absolutePosition"] = this.absolutePosition;
 			}
-			if(mw.getConfig("sendUUidToAnalytics")){
+
+			if(mw.getConfig("forceUUID") && this.savedUserId){
 				statsEvent["userId"] = this.savedUserId; // consulted with Kava developers
 			}
 
