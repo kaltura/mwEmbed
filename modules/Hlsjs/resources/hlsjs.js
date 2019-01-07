@@ -254,10 +254,8 @@
 				//fired when a fragment loading is completed
 				//data: { frag : fragment object, payload : fragment payload, stats : { trequest, tfirst, tload, length}}
 				this.getPlayer().triggerHelper('hlsFragLoaded', data.frag.url);
-                this.getPlayer().triggerHelper('hlsFragLoadedWithStats',data);
-
-                //mw.log("hlsjs :: onFragLoaded | url = "+data.frag.url);
-
+				//mw.log("hlsjs :: onFragLoaded | url = "+data.frag.url);
+				this.getPlayer().triggerHelper('hlsFragLoadedWithStats',data);
 			},
 			onFragParsingData: function (e, data) {
 				//fired when moof/mdat have been extracted from fragment
