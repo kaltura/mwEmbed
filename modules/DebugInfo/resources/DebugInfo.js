@@ -93,6 +93,10 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
             if( data.currentBitrate ){
                 $scope.currentBitrate=data.currentBitrate;
             }
+            if(this.userId){
+                $scope.userId=this.userId;
+            }
+            $scope.currentBitrate=data.currentBitrate;
             $scope.hlsEngine="flash";
         });
 
@@ -115,6 +119,11 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
                     });
             }})(eventName);
         }
+        this.bind("analyticsEvent", function( e, data ){
+            if(data.userId){
+                this.userId = data.userId;
+            }
+        })
 
         this.bind("hlsFragChanged", function( e, data ){
             if (data.url) {
