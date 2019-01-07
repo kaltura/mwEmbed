@@ -67,7 +67,7 @@
         firstPlayRequestTime: null,
 
         stats: {
-            chunksDownloaded: 0,
+			chunksDownloaded: 0,
 			maxChunkDownloadTime:-1,
 			playbackEngine:-1,
 			manifestkDownloadTime: -1 , 
@@ -114,12 +114,12 @@
 		},
 
 		setup: function( ) {
-			// grab user uuid from cookie or get one and save it to the cookies of this domain
-			this.savedUserId = this.getCookie("kavaUUID");
-			if(!this.savedUserId){
-				this.savedUserId = this.getEntrySessionId();
-				this.setCookie("kavaUUID" , this.savedUserId);
-			}
+            // grab user uuid from cookie or get one and save it to the cookies of this domain
+            this.savedUserId = this.getCookie("kavaUUID");
+            if(!this.savedUserId){
+                this.savedUserId = this.getEntrySessionId();
+                this.setCookie("kavaUUID" , this.savedUserId);
+            }
 
             this.rateHandler = new mw.KavaRateHandler();
             this.timer = new mw.KavaTimer(this);
@@ -294,11 +294,10 @@
                 _this.sendAnalytics(playerEvent.BUFFER_END);
             });
 
-
 			this.embedPlayer.bindHelper( 'bitrateChange' ,function( event, newBitrate){
 				_this.currentBitRate = newBitrate;
 				_this.rateHandler.setCurrent(newBitrate);
-			} );
+			});
 
             this.embedPlayer.bindHelper('sourcesReplaced', function () {
                 if (!_this.rateHandler.hasRates()) {
@@ -324,8 +323,8 @@
 				}
 			});
 
-            this.embedPlayer.bindHelper('hlsManifestLoadedWithStats', function(e,data){
-                _this.stats.manifestkDownloadTime= (data.stats.tload-data.stats.trequest).toFixed(2);
+			this.embedPlayer.bindHelper('hlsManifestLoadedWithStats', function(e,data){
+			    _this.stats.manifestkDownloadTime= (data.stats.tload-data.stats.trequest).toFixed(2);
 			});
 
 
