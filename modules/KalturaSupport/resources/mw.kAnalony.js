@@ -341,9 +341,6 @@
 				if( data.droppedFrames ){
 					_this.stats.droppedFrames = data.droppedFrames;
 				}
-				if( data.droppedFrames ){
-					_this.stats.droppedFrames = data.droppedFrames;
-				}
 			})
 			
             this.embedPlayer.bindHelper('hlsFragLoadedWithStats', function(e,data){
@@ -661,7 +658,7 @@
 				statsEvent["absolutePosition"] = this.absolutePosition;
 			}
 			if(mw.getConfig("sendUUidToAnalytics")){
-				statsEvent["extendedUUID"] = this.savedUserId;
+				statsEvent["userId"] = this.savedUserId; // consulted with Kava developers
 			}
 
 			if(mw.getConfig("sendDroppedFrames") && this.stats.droppedFrames){
