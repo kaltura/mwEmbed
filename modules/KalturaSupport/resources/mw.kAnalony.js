@@ -344,9 +344,9 @@
 			})
 			
             this.embedPlayer.bindHelper('hlsFragLoadedWithStats', function(e,data){
-				_this.stats.chunksDownloaded++;
+                _this.stats.chunksDownloaded++;
                 _this.stats.maxChunkDownloadTime=Math.max(Math.round(data.stats.tload-data.stats.trequest,_this.stats.maxChunkDownloadTime));
-			});
+            });
 
 
             this.embedPlayer.bindHelper('onPlayerStateChange', function(e, newState, oldState) {
