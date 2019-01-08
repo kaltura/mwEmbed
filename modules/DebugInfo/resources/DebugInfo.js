@@ -219,9 +219,9 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
         var _this=this;
 
         Object.getOwnPropertyNames(this.$scope).forEach(function(val, idx, array) {
-
             obj[val]=_this.$scope[val];
         });
+        console.log(">>",obj)
         return obj;
 
     },
