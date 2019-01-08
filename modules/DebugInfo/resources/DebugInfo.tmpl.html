@@ -6,6 +6,7 @@
     <div>uiconf: {{kuiconf}}</div>
     <div>mimeType: {{mimeType}}</div>
     <div>currentState: {{currentState}}</div>
+    <div>userId: {{userId}}</div>
     <div ng-show="hls">
         <div class="mw-debug-info-separator">HLS Information ({{hlsEngine}})</div>
         <div ng-show="kesChain">KES: {{kesChain}}</div>
@@ -15,12 +16,12 @@
         <div>Buffer: {{bufferLength}}</div>
         <div>droppedFrames: {{droppedFrames}}</div>
         <div>currentBitrate: {{currentBitrate}}</div>
-        <div>userId: {{userId}}</div>
     </div>
     <div ng-show="multicast">
         <div class="mw-debug-info-separator">Multicast Information</div>
         <span>KES:</span><a class="mw-debug-info-a" href="{{multiastServerUrl}}">{{kesChain}}</a><br>
         <div>multicast Address: {{mcAddress}}</div>
+        <div>userId: {{userId}}</div>
         <div>session id: {{multicastSessionId}}</div>
         <div>bitrate: {{currentBitrate}}</div>
         <div>input   fps: {{mcInputFps}}</div>
@@ -28,7 +29,6 @@
         <div>dropped fps: {{mcRenderDroppedFps}}</div>
         <div>dropped packets / sec: {{mcPacketLoss}}</div>
         <div>packets / sec: {{mcPacketsPerSec}}</div>
-        <div>userId: {{userId}}</div>
     </div>
 </div>
 <div class="mw-debug-info-btn-group">

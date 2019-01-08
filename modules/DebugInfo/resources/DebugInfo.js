@@ -115,12 +115,15 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
                     });
             }})(eventName);
         }
-        this.bind("analyticsEvent", function( e, data ){
+        var analyticsFunc = function( e, data ){
             if(data.userId){
-                this.userId = data.userId;
+                _this.userId = data.userId;
                 $scope.userId=this.userId;
+                _this.unbind("analyticsEvent", analyticsFunc);
             }
-        })
+        };
+
+        this.bind("analyticsEvent", analyticsFunc)
 
         this.bind("hlsFragChanged", function( e, data ){
             if (data.url) {
