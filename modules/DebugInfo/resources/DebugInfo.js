@@ -117,8 +117,7 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
         }
         var analyticsFunc = function( e, data ){
             if(data.userId){
-                _this.userId = data.userId;
-                $scope.userId=this.userId;
+                _this.$scope.userId=data.userId;
                 _this.unbind("analyticsEvent", analyticsFunc);
             }
         };
@@ -215,9 +214,13 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
     getDiagnostics: function() {
         var obj={};
         var _this=this;
-
+        if(this.$scope.userId){
+            obj["userId"] = this.$scope.userId; 
+        }
         Object.getOwnPropertyNames(this.$scope).forEach(function(val, idx, array) {
-            obj[val]=_this.$scope[val];
+            if(val != "userId"){
+                obj[val]=_this.$scope[val];
+            }
         });
         return obj;
     },
