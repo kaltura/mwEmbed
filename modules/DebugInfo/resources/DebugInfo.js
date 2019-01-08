@@ -93,9 +93,6 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
             if( data.currentBitrate ){
                 $scope.currentBitrate=data.currentBitrate;
             }
-            if(this.userId){
-                $scope.userId=this.userId;
-            }
             $scope.hlsEngine="flash";
         });
 
@@ -121,6 +118,7 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
         this.bind("analyticsEvent", function( e, data ){
             if(data.userId){
                 this.userId = data.userId;
+                $scope.userId=this.userId;
             }
         })
 
@@ -131,9 +129,6 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
             $scope.hlsCurrentSegment=data.url;
             $scope.startPTS=data.startPTS;
             $scope.endPTS=data.endPTS;
-            if(this.userId){
-                $scope.userId=this.userId;
-            }
             $scope.hlsEngine="hls.js";
         });
     },
