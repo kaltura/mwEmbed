@@ -70,7 +70,7 @@
 			chunksDownloaded: 0,
 			maxChunkDownloadTime:-1,
 			playbackEngine:-1,
-			manifestkDownloadTime: -1 , 
+			manifestDownloadTime: -1 , 
 			playbackEngine: undefined , 
 			droppedFrames: 0 , 
 			bufferLength: -1
@@ -327,7 +327,7 @@
 			});
 
 			this.embedPlayer.bindHelper('hlsManifestLoadedWithStats', function(e,data){
-			    _this.stats.manifestkDownloadTime= (data.stats.tload-data.stats.trequest).toFixed(2);
+			    _this.stats.manifestDownloadTime= (data.stats.tload-data.stats.trequest).toFixed(2);
 			});
 
 
@@ -493,6 +493,7 @@
 			_this.monitorIntervalObj.cancel = false;
 
 			if ( _this.firstPlay ){
+				console.log(">>",_this.stats.manifestDownloadTime)
 				_this.sendAnalytics(playerEvent.VIEW, {
 					playTimeSum: _this.playTimeSum,
                     averageBitrate: _this.rateHandler.getAverage(),
@@ -504,10 +505,11 @@
 			}
 			_this.smartSetInterval(function(){
 				if ( !_this._p100Once || (_this.embedPlayer.donePlayingCount > 0)){ // since we report 100% at 99%, we don't want any "VIEW" reports after that (FEC-5269)
-				try{
+					try{
 						_this.stats.bufferLength = _this.getPlayer().getCurrentBufferLength();
 					}catch(e){
 					}
+
 					var dataObj = {
                         playTimeSum: _this.playTimeSum,
                         averageBitrate: _this.rateHandler.getAverage(),
@@ -515,6 +517,10 @@
                         maxChunkDownloadTime: _this.stats.maxChunkDownloadTime,
 						chunksDownloaded: _this.stats.chunksDownloaded,
 					};
+					
+					if(_this.stats.manifestDownloadTime !== -1){
+						dataObj.manifestDownloadTime = _this.stats.manifestDownloadTime;
+					}
 					
 					if(_this.stats.bufferLength >= 0){
 						dataObj.bufferLength = _this.stats.bufferLength
@@ -525,6 +531,7 @@
 				}
 				_this.stats.chunksDownloaded=0;
 				_this.stats.bufferLength = -1;
+				_this.stats.manifestDownloadTime = -1;
 				_this.stats.maxChunkDownloadTime=-1;
 
 				if ( !_this.monitorViewEvents ){
