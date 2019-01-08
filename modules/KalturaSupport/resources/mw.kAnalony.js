@@ -493,7 +493,6 @@
 			_this.monitorIntervalObj.cancel = false;
 
 			if ( _this.firstPlay ){
-				console.log(">>",_this.stats.manifestDownloadTime)
 				_this.sendAnalytics(playerEvent.VIEW, {
 					playTimeSum: _this.playTimeSum,
                     averageBitrate: _this.rateHandler.getAverage(),
@@ -517,7 +516,7 @@
                         maxChunkDownloadTime: _this.stats.maxChunkDownloadTime,
 						chunksDownloaded: _this.stats.chunksDownloaded,
 					};
-					
+
 					if(_this.stats.manifestDownloadTime !== -1){
 						dataObj.manifestDownloadTime = _this.stats.manifestDownloadTime;
 					}
