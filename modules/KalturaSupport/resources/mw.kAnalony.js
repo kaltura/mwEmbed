@@ -119,8 +119,8 @@
 				this.savedUserId = this.getCookie("kavaUUID");
 				if(!this.savedUserId){
 					// first time - get uuid and 'cookie' it 
-					this.savedUserId = this.getEntrySessionId();
-					this.setCookie("kavaUUID" , this.savedUserId , 356);
+					this.savedUserId = "anon_"+this.getEntrySessionId().substring(0,12);
+					this.setCookie("kavaUUID" ,this.savedUserId, 356);
 				}
 			}
 
@@ -518,7 +518,7 @@
 					};
 
 					if(_this.stats.manifestDownloadTime !== -1){
-						dataObj.manifestDownloadTime = _this.stats.manifestDownloadTime;
+						dataObj.manifestDownloadTime = Math.round(_this.stats.manifestDownloadTime);
 					}
 					
 					if(_this.stats.bufferLength >= 0){
