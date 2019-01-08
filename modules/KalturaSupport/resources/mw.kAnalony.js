@@ -334,8 +334,9 @@
 			var hlsFunc = function(e, data){
 				// this is hls 
 				_this.stats.playbackEngine = "hlsjs";
+				_this.unbind('hlsFragChanged', hlsFunc)
 			}
-			this.bind('hlsFragChanged', hlsFunc)
+			this.bind('hlsFragChanged', hlsFunc);
 
 			this.bind("debugInfoReceived", function(e, data){
 				// this is flash 
