@@ -120,7 +120,7 @@
 				if(!this.savedUserId){
 					// first time - get uuid and 'cookie' it 
 					this.savedUserId = this.getEntrySessionId();
-					this.setCookie("kavaUUID" , this.savedUserId);
+					this.setCookie("kavaUUID" , this.savedUserId , 356);
 				}
 			}
 
