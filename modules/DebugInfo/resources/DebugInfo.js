@@ -221,9 +221,7 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
         Object.getOwnPropertyNames(this.$scope).forEach(function(val, idx, array) {
             obj[val]=_this.$scope[val];
         });
-        console.log(">>",obj)
         return obj;
-
     },
 	isSafeEnviornment: function() {
 		return !mw.isIE8(); //we don't support IE8 for now
