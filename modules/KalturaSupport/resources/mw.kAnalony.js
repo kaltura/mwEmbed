@@ -69,7 +69,6 @@
         stats: {
 			chunksDownloaded: 0,
 			maxChunkDownloadTime:-1,
-			playbackEngine:-1,
 			manifestDownloadTime: -1 , 
 			playbackEngine: undefined , 
 			droppedFrames: 0 , 
