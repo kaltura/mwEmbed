@@ -30,18 +30,19 @@
 				downloadUrl += this.getPlayer().kwidgetid + '/uiconf_id/' + this.getPlayer().kuiconfid;
 				downloadUrl += '/entry_id/' + this.getPlayer().kentryid + '?forceDownload=true';
 				downloadUrl += '&downloadName=' + encodeURIComponent(this.getConfig('downloadName'));
-				if( this.getConfig('flavorParamsId') && !this.isSourceOnly()){
-					downloadUrl += '&flavorParamsId=' + encodeURIComponent( this.getConfig('flavorParamsId') );
+				if (this.isSourceOnly()) {
+					downloadUrl += '&flavorParamsId=0'
+				} else {
+					if (this.getConfig('flavorParamsId')) {
+						downloadUrl += '&flavorParamsId=' + encodeURIComponent(this.getConfig('flavorParamsId'));
+					}
+					if (this.getConfig('preferredBitrate') != '' && this.getConfig('preferredBitrate') != null) {
+						downloadUrl += '&preferredBitrate=' + encodeURIComponent(this.getConfig('preferredBitrate'));
+					}
+					if (this.getConfig('flavorID') != '' && this.getConfig('flavorID') != null) {
+						downloadUrl += '&flavorID=' + encodeURIComponent(this.getConfig('flavorID'));
+					}
 				}
-				if ( this.getConfig( 'preferredBitrate' ) != '' && this.getConfig( 'preferredBitrate' ) != null && !this.isSourceOnly()){
-					downloadUrl += '&preferredBitrate=' + encodeURIComponent( this.getConfig( 'preferredBitrate' ));
-				}
-			    if ( this.getConfig( 'flavorID' ) != '' && this.getConfig( 'flavorID' ) != null && !this.isSourceOnly()){
-					downloadUrl += '&flavorID=' + encodeURIComponent( this.getConfig( 'flavorID' ));
-				}
-			    if (this.isSourceOnly()) {
-			    	downloadUrl += '&flavorParamsId=0'
-			    }
 
 				if( ks ){
 					downloadUrl += '&ks=' + ks;
