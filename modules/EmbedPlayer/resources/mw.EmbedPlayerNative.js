@@ -336,7 +336,7 @@
 				if ( mw.isIphone()) {
 					playsinline = this.inline;
 				}
-				return (this.mobileAutoPlay || this.isMuted()) && playsinline || this.mobilePlayed;
+				return ((this.mobileAutoPlay || this.isMuted()) && playsinline) || this.mobilePlayed;
 			}
 			return true;
 			},
