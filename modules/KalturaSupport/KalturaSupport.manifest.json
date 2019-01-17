@@ -1986,5 +1986,10 @@
                 "type": "hiddenValue"
             }
         }
+    },
+    "hotspots": {
+        "label": "Hotspots",
+        "description": "Hotspots annotations on top of an entry",
+        "attributes": {}
     }
 }

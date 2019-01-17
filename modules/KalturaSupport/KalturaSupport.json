@@ -521,5 +521,13 @@
     "styles": "components/kgitGuard/kgitGuard.css",
     "dependencies": "mw.KBasePlugin",
     "kalturaPluginName": "kgitGuard"
+  },
+  "hotspots": {
+    "scripts": ["components/hotspots/hotspots.js"],
+    "styles": "components/hotspots/hotspots.css",
+    "dependencies": [
+      "mw.KBaseComponent"
+    ],
+    "kalturaPluginName": "hotspots"
   }
 }
