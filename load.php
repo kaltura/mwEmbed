@@ -31,11 +31,3 @@ require_once ( dirname( __FILE__ ) . '/includes/MwEmbedWebStartSetup.php' );
 // Respond to resource loading request
 $resourceLoader = new MwEmbedResourceLoader();
 $output = $resourceLoader->respond( new MwEmbedResourceLoaderContext( $resourceLoader, $wgRequest ) );
-
-/*
- * For profile info: 
-*/
-/*
-arsort( $wgSimpleProfile );
-print_r( $wgSimpleProfile );
-*/

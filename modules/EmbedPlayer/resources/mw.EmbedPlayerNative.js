@@ -125,6 +125,9 @@
                 this.bindOnceHelper('playerReady', function () {
                     _this.setVolume(0);
                 });
+              
+            } else if (mw.getConfig('autoMute') && mw.getConfig('autoPlay')) {
+                this.toggleMute( true );
             }
 
 			this.addBindings();
@@ -147,7 +150,7 @@
             if (!mw.getConfig('autoMute')) {
                 if (mw.isMobileDevice() || mw.isIpad()) {
                     return mw.getConfig('mobileAutoPlay');
-                } else if ((mw.isDesktopSafari11() || mw.isChromeVersionGreaterThan(66)) && mw.getConfig('autoPlay')) {
+                } else if ((mw.isDesktopSafariVersionGreaterThan(11) || mw.isChromeVersionGreaterThan(66)) && mw.getConfig('autoPlay')) {
                     if (typeof mw.getConfig('autoPlayFallbackToMute') !== 'boolean') {
                         mw.setConfig('autoPlayFallbackToMute', true);
                     }
@@ -333,10 +336,10 @@
 				if ( mw.isIphone() ) {
 					playsinline = this.inline;
 				}
-				return (this.mobileAutoPlay && playsinline) || this.mobilePlayed;
+				return (this.mobileAutoPlay && playsinline) || this.mobilePlayed || this.isMuted();
 			}
 			return true;
-		},
+			},
 
 		/**
 		 * Post element javascript, binds event listeners and starts monitor
@@ -481,7 +484,7 @@
 			// some initial calls to prime the seek:
 			if ( ( vid.currentTime === 0 && callbackCount === 0 ) && vid.readyState === 0 ) { //load video again if not loaded yet (vid.readyState === 0)
 				// when seeking turn off preload none and issue a load call.
-				if(mw.isIpad()){
+				if(mw.isIpad()|| mw.isIOSAbove7()){
 					$(vid).attr('preload', 'auto')[0].load();
 				} else {
 					$(vid).attr('preload', 'auto');

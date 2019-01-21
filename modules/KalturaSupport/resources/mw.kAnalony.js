@@ -35,7 +35,10 @@
 			"SOURCE_SELECTED": 39,
 			"INFO": 40,
 			"SPEED": 41,
-			"VIEW": 99
+			"VIEW": 99,
+            "ERROR": 98,
+			"BUFFER_START": 45,
+			"BUFFER_END": 46
 		},
 		startTime: null,
 		reportingInterval : 10000,
@@ -60,6 +63,8 @@
         playSentOnStart: false,
 		absolutePosition: null,
 		id3TagEventTime: null,
+		onPlayStatus: false,
+        firstPlayRequestTime: null,
 
 		smartSetInterval:function(callback,time,monitorObj) {
 			var _this = this;
@@ -105,7 +110,6 @@
             this.bufferTime = 0;
             this.bufferTimeSum = 0;
 			this.currentBitRate = -1;
-            this.entryPlayCounter = 1;
             this.addBindings();
 	    },
 
@@ -126,15 +130,18 @@
 				_this.rateHandler.destroy();
 				_this.bufferTime = 0;
 				_this.firstPlay = true;
-				_this.entryPlayCounter++;
 				_this.playSentOnStart = false;
-				_this._p25Once = false;
-				_this._p50Once = false;
-				_this._p75Once = false;
-				_this._p100Once = false;
+				_this.currentBitRate = -1;
+				_this.currentflavorId = -1;
+				_this.dvr = false;
+				_this.monitorViewEvents = true;
+				_this.onPlayStatus = false;
 			});
 
 			this.embedPlayer.bindHelper( 'userInitiatedPlay' , function () {
+                if (_this.firstPlay) {
+                    _this.firstPlayRequestTime = Date.now();
+                }
 				_this.sendAnalytics(playerEvent.PLAY_REQUEST);
 			});
 
@@ -144,13 +151,15 @@
                 }
 
 				if ( !this.isInSequence() && (_this.firstPlay || _this.embedPlayer.currentState !== "play") ){
-					if ( _this.firstPlay ){
+					if ( _this.firstPlay && !_this.onPlayStatus ) {
+						_this.onPlayStatus = true;
                         _this.playSentOnStart = true;
 						_this.timer.start();
 						_this.sendAnalytics(playerEvent.PLAY, {
-                            bufferTimeSum: _this.bufferTimeSum
+                            bufferTimeSum: _this.bufferTimeSum,
+                            joinTime: (Date.now() - _this.firstPlayRequestTime) / 1000.0
 						});
-					}else{
+					}else if ( _this.embedPlayer.currentState !== "play" ){
                         _this.timer.resume();
 						_this.sendAnalytics(playerEvent.RESUME, {
                             bufferTimeSum: _this.bufferTimeSum
@@ -158,9 +167,12 @@
 					}
 				}
 			});
-			this.embedPlayer.bindHelper( 'userInitiatedPause' , function () {
+			this.embedPlayer.bindHelper( 'onpause' , function () {
 				_this.timer.stop();
 				_this.sendAnalytics(playerEvent.PAUSE);
+                if ( _this.embedPlayer.isDVR() ) {
+                    _this.dvr = true;
+                }
 			});
 
 			this.embedPlayer.bindHelper( 'monitorEvent' , function () {
@@ -178,7 +190,7 @@
 				_this.dvr = false;
 			} );
 
-			this.embedPlayer.bindHelper( 'seeking onpause', function() {
+			this.embedPlayer.bindHelper( 'seeking', function() {
                 _this.previousCurrentTime = _this.embedPlayer.currentTime;
                 if ( _this.embedPlayer.isDVR() ) {
 					_this.dvr = true;
@@ -256,12 +268,14 @@
 
 			this.embedPlayer.bindHelper('bufferStartEvent', function(){
 				_this.bufferStartTime = new Date();
+				_this.sendAnalytics(playerEvent.BUFFER_START);
 			});
 
 			this.embedPlayer.bindHelper('bufferEndEvent', function(){
 				_this.calculateBuffer();
 				_this.bufferStartTime = null;
-			});
+                _this.sendAnalytics(playerEvent.BUFFER_END);
+            });
 
 			this.embedPlayer.bindHelper( 'bitrateChange' ,function( event, newBitrate){
 				_this.currentBitRate = newBitrate;
@@ -324,13 +338,22 @@
 				}
 			});
 
+			this.embedPlayer.bindHelper('playerError', function (e, errorObj) {
+                var errorCode = errorObj && errorObj.key;
+                _this.sendAnalytics(playerEvent.ERROR, {errorCode: errorCode});
+            });
+
 			this.embedPlayer.bindHelper( 'onId3Tag' , function (e, id3Tag) {
 				_this.id3TagEventTime = Date.now();
 				_this.absolutePosition = id3Tag.timestamp;
 			});
 		},
 		resetPlayerflags:function(){
-			this.hasSeeked = false;
+            this._p25Once = false;
+            this._p50Once = false;
+            this._p75Once = false;
+            this._p100Once = false;
+            this.hasSeeked = false;
             this.previousCurrentTime = 0;
 			this.savedPosition = null;
 			this.absolutePosition = null;
@@ -345,7 +368,8 @@
 				this.calculatePlayTimeSum();
 			}
 			// Send updates based on logic present in StatisticsMediator.as
-			if ( !this.embedPlayer.isLive() ){
+			// Only reprot on first play of a media, don't report on media replay
+			if ( !this.embedPlayer.isLive() && (_this.embedPlayer.donePlayingCount === 0)){
 				if( !_this._p25Once && percent >= .25 ) {
 					_this._p25Once = true;
 					_this.sendAnalytics(playerEvent.PLAY_25PERCENT);
@@ -366,7 +390,7 @@
             this.playTimeSum += (this.embedPlayer.currentTime - this.previousCurrentTime);
             this.previousCurrentTime = this.embedPlayer.currentTime;
 		},
-		
+
 		calaulatePlayTimeSumBasedOnTag: function (){
 			this.playTimeSum += (this.embedPlayer.getPlayerElement().currentTime - this.previousCurrentTime);
             this.previousCurrentTime = this.embedPlayer.getPlayerElement().currentTime;
@@ -418,7 +442,7 @@
 				_this.firstPlay = false;
 			}
 			_this.smartSetInterval(function(){
-				if ( !_this._p100Once ){ // since we report 100% at 99%, we don't want any "VIEW" reports after that (FEC-5269)
+                if ( !_this._p100Once || (_this.embedPlayer.donePlayingCount > 0)){ // since we report 100% at 99%, we don't want any "VIEW" reports after that (FEC-5269)
 					_this.sendAnalytics(playerEvent.VIEW, {
                         playTimeSum: _this.playTimeSum,
                         averageBitrate: _this.rateHandler.getAverage(),
@@ -434,7 +458,7 @@
 		},
 
 		getEntrySessionId: function(){
-			return this.embedPlayer.evaluate('{configProxy.sessionId}') + "-" + this.entryPlayCounter;
+			return this.embedPlayer.evaluate('{configProxy.sessionId}')
 		},
 
         getPosition: function () {
@@ -462,7 +486,7 @@
 				this.calaulatePlayTimeSumBasedOnTag();
 			} else {
 				this.calculatePlayTimeSum();
-			}    
+			}
 			this.calculateBuffer(true);
 			this.kClient = mw.kApiGetPartnerClient( this.embedPlayer.kwidgetid );
 			if ( this.embedPlayer.isMulticast && $.isFunction( this.embedPlayer.getMulticastBitrate ) ) {
@@ -632,5 +656,5 @@
             this.startTime = null;
         }
 	}));
-	
+
 } )( window.mw, window.jQuery );

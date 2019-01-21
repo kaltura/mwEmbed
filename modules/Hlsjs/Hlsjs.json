@@ -4,7 +4,10 @@
             "resources/hls.min.js" ,
           "resources/hlsjs.js"
         ],
-        "dependencies": "mw.KBasePlugin",
+        "dependencies": ["mw.KBasePlugin", "Polyfill_Set"],
         "kalturaPluginName": "hlsjs"
+    },
+    "Polyfill_Set": {
+        "scripts": "resources/Polyfill_Set.js"
     }
 }

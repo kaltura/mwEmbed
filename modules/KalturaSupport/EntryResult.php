@@ -169,11 +169,16 @@ class EntryResult
                 $filter->idEqual = $this->request->getEntryId();
             }
 
+            $responseProfile = array(
+                "type" => 2,
+                "fields" => "userId,creatorId"
+            );
+
             if ($this->request->isEmbedServicesEnabled() && $this->request->isEmbedServicesRequest()) {
                 $filter->freeText = urlencode(json_encode($this->request->getEmbedServicesRequest()));
             }
 
-            $baseEntryIdx = $namedMultiRequest->addNamedRequest('meta', 'baseEntry', 'list', array('filter' => $filter));
+            $baseEntryIdx = $namedMultiRequest->addNamedRequest('meta', 'baseEntry', 'list', array('filter' => $filter, 'responseProfile' => $responseProfile));
             // Get entryId from the baseEntry request response
             $entryId = '{' . $baseEntryIdx . ':result:objects:0:id}';
 

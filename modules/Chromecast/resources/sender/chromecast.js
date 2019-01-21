@@ -42,7 +42,9 @@
                     this.isInIframeApi = false;
                 } catch ( e ) {
                     window[ '__onGCastApiAvailable' ] = this.toggleCastButton.bind( this );
-                    kWidget.appendScriptUrl( this.CAST_SENDER_V3_URL );
+                    // PSVAMB-4560
+                    // For some reason, Chrome appends script to a player's iframe parent document unless specified explicitly
+                    kWidget.appendScriptUrl( this.CAST_SENDER_V3_URL, null, window.document );
                     this.isInIframeApi = true;
                 }
             } else {

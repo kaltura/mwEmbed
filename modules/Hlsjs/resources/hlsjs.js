@@ -183,7 +183,7 @@
 				this.onFragBufferedHandler = this.onFragBuffered.bind(this);
 				this.hls.on(Hls.Events.FRAG_BUFFERED, this.onFragBufferedHandler);
 				this.onLevelSwitchHandler = this.onLevelSwitch.bind(this);
-				this.hls.on(Hls.Events.LEVEL_SWITCH, this.onLevelSwitchHandler);
+				this.hls.on(Hls.Events.LEVEL_SWITCHED, this.onLevelSwitchHandler);
 				this.onFragChangedHandler = this.onFragChanged.bind(this);
 				this.hls.on(Hls.Events.FRAG_CHANGED, this.onFragChangedHandler);
 				this.onErrorHandler = this.onError.bind(this);
@@ -211,7 +211,7 @@
 				this.onPTSUpdatedHandler = null;
 				this.hls.off(Hls.Events.FRAG_BUFFERED, this.onFragBufferedHandler);
 				this.onFragBufferedHandler = null;
-				this.hls.off(Hls.Events.LEVEL_SWITCH, this.onLevelSwitchHandler);
+				this.hls.off(Hls.Events.LEVEL_SWITCHED, this.onLevelSwitchHandler);
 				this.onLevelSwitchHandler = null;
 				this.hls.off(Hls.Events.FRAG_CHANGED, this.onFragChangedHandler);
 				this.onFragChangedHandler = null;
@@ -301,15 +301,19 @@
              * manifest loaded handler.
              */
             onManifestLoaded: function () {
+                this.log("manifest loaded");
+                if (!this.embedPlayer.isLive()){
+                    this.hls.startLoad(this.getPlayer().currentTime);
+                }
                 //HLS.JS by default sets showing to text track for default HLS manifest text track
-				//we want to handle it on ourselves so always set it to hidden after hls.js makes its decision
-            	this.log("manifest loaded");
-                this.hls.startLoad(this.getPlayer().currentTime);
+                //we want to handle it on ourselves so always set it to hidden after hls.js makes its decision
+                this.log("manifest loaded");
+                //we want to handle it on ourselves so always set it to hidden after hls.js makes its decision
                 if (!this.embedPlayer.getKalturaConfig('closedCaptions', 'showEmbeddedCaptions')) {
 		            var vid = this.getPlayer().getPlayerElement();
 		            var textTracks = vid.textTracks;
 		            for (var i=0; i < textTracks.length; i++){
-			            textTracks[i].mode = "hidden";
+			            textTracks[i].mode = "disabled";
 		            }
 	            }
             },
@@ -434,7 +438,7 @@
 			onError: function (event, data) {
 				this.log("Error: " + data.type + ", " + data.details);
 				//TODO: Need to decide when we dispatch player bug to be shown to viewer
-				if (this.mediaErrorRecoveryCounter > this.getConfig("maxErrorRetryCount")){
+				if ((this.mediaErrorRecoveryCounter > this.getConfig("maxErrorRetryCount")) && data.fatal){
 					this.handleUnRecoverableError(data);
 					return;
 				}
@@ -689,7 +693,7 @@
                         if (this.hls.levels && (sourceIndex < this.hls.levels.length)){
                             this.levelIndex = sourceIndex;
                             if (!(this.hls.autoLevelEnabled || this.isLevelSwitching) && (this.hls.currentLevel === sourceIndex)) {
-                                this.onLevelSwitch(Hls.Events.LEVEL_SWITCH, {level: sourceIndex});
+                                this.onLevelSwitch(Hls.Events.LEVEL_SWITCHED, {level: sourceIndex});
                                 this.onFragChanged(Hls.Events.LEVEL_LOADED, {frag: {level: sourceIndex}});
                                 this.getPlayer().currentBitrate = source.getBitrate();
                             } else {

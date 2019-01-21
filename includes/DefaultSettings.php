@@ -20,7 +20,7 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '2.71.5';
+$wgMwEmbedVersion = '2.73.3';
 
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {
@@ -303,4 +303,3 @@ include_once( realpath( dirname( __FILE__ ) )  . '/../studio/studioService.php')
  *   );
  */
 $wgResourceLoaderSources = array();
-
