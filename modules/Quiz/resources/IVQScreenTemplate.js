@@ -38,6 +38,19 @@
                     '       <div class="display-question"></div>' +
                     '   </div>' +
                     '   <div class="answers-container"></div>' +
+                    '   <div class="open-answer-container">'+
+                    '       <div class="open-answer-inner">'+
+                    '   <div class="open-answer-header">' +
+                    '       HKJKJDHKJDHKJDHKJ bn zbmn zbm xbm§' +
+                    '   </div>' +
+                    '           <textarea class="open-question"></textarea>'+ 
+                    '   <div class="open-answer-footer">' +
+                    '   <div class="open-question-chars">0/500</div>' +
+                    '   <button id="open-question-clear">Clear</button>' +
+                    '   <button id="open-question-save">Save</button>' +
+                    '   </div>' +                   
+                    '       </div>' +
+                    '   </div>' +
                     '   <div class = "ftr-container">' +
                     '       <div class="ftr-left"></div>' +
                     '       <div class="ftr-right"></div>' +

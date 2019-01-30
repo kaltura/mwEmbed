@@ -335,7 +335,86 @@ button.qContinue, button.qApplied {
 .single-answer-box-apply:hover {
     cursor: pointer;
 }
+.ivqContainer .open-answer-container{
+    bottom: auto;
+    background: #074356;
+    top: 19vh;
+    height: 200px;
+    margin-left: 6%;
+    margin-right: 6%;
+    width: 86%;
+    border-radius: 5px;
+    padding: 10px;
+    
+}
+#open-question-clear , #open-question-save{
+    position: absolute;
+    font-size: 14px;
+    height: 34px;
+    width: 87px;
+    border-radius: 3px;
+    background-color: #848B92;
+    box-shadow: 0 0 2px 0 rgba(0,0,0,0.24);
+    top: 6px;
+}
+#open-question-clear{
+    display: inline-block;
+    right: 120px;
+    background-color: transparent;
+    border: none;
+    color: #848B92
+}
+#open-question-save{
+    right: 20px;
 
+}
+.open-question-chars{
+    color:#47525C;
+    position: absolute;
+    left: 28px;
+    top: 15px;
+}
+.open-answer-footer{
+    height: 45px;
+    border-top: solid 1px #CCD1D3;
+    position: relative;
+    bottom: -98px;
+}
+.open-answer-header{
+    width: 100%;
+    text-align: center; 
+    margin-top: 20px;
+    margin-bottom: 20px;
+    color: #CCD1D3;
+}
+.open-answer-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 2px;
+    background:#041A23;
+    border: solid 1px #3C535B; 
+
+}
+.open-question{
+    resize: none;
+    background: transparent;
+    border: solid 1px rgba(90,90,90,0.5);
+    width: 90%;
+    left: 5%;
+    position: absolute;
+    height: 40%;
+}
+
+
+
+.fill-in-blank-question .open-answer-container{
+    display: block;
+}
+
+.open-answer-container{
+    display: none;
+}
+.open-answer-container,
 .ftr-container {
     width: 100%;
     position: absolute;
