@@ -407,7 +407,7 @@ button.qContinue, button.qApplied {
     background:#041A23;
     border: solid 1px #3C535B; 
 }
-.open-question{
+.open-question-textarea{
     resize: none;
     background: transparent;
     width: 95.7%;
@@ -421,7 +421,7 @@ button.qContinue, button.qApplied {
 
 
 
-.fill-in-blank-question .open-answer-container{
+.open-question .open-answer-container{
     display: block;
 }
 

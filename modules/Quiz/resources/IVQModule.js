@@ -32,6 +32,7 @@
                 FILL_IN_BLANK: 5,
                 HOT_SPOT: 6,
                 GO_TO: 7,
+                OPEN_QUESTION: 8,
             },
 
             init: function (embedPlayer,quizPlugin) {

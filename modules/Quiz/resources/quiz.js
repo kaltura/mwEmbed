@@ -364,7 +364,7 @@
         submitOpenQuestion: function(a){
             // we have the cuepoint and the value 
             console.log(">>>>",a);
-            console.log(">>>>",this.embedPlayer.getInterface().find(".open-question").val())
+            console.log(">>>>",this.embedPlayer.getInterface().find(".open-question-textarea").val())
 
         },
 
@@ -404,11 +404,11 @@
                 // add answer to the list of all answers on this question
                 div.appendTo('.answers-containe r');
             });
-
-            if(cPo.questionType == 5){
+            console.log(">>>>",cPo.questionType);
+            if(cPo.questionType == this.KIVQModule.QUESTIONS_TYPE.OPEN_QUESTION){
                 this.embedPlayer.getInterface().find("#open-question-clear")
                 .click( $.proxy( function(){
-                    this.embedPlayer.getInterface().find(".open-question").val("").focus();
+                    this.embedPlayer.getInterface().find(".open-question-textarea").val("").focus();
                     this.embedPlayer.getInterface().find(".open-answer-inner").removeClass("has-chars");
                     this.embedPlayer.getInterface().find(".open-question-chars .chars").text("0");
                     _this.embedPlayer.getInterface().find("#open-question-clear,#open-question-save").attr("disabled", "disabled");
@@ -418,14 +418,14 @@
                 
                 this.embedPlayer.getInterface().find("#open-question-save")
                 .click( $.proxy( function(a){
-                    if(this.embedPlayer.getInterface().find(".open-question").val() == ""){
+                    if(this.embedPlayer.getInterface().find(".open-question-textarea").val() == ""){
                         // dont send empty answer
                         return;
                     }
                      this.submitOpenQuestion(a)
                 }, _this , cPo ))
 
-                this.embedPlayer.getInterface().find(".open-question")
+                this.embedPlayer.getInterface().find(".open-question-textarea")
                 .attr("placeholder",gM('mwe-quiz-open-question-add-answer-here'))
                 .bind('change keyup paste', function() {
                     var charsLength = $(this).val().length;
@@ -458,6 +458,8 @@
             switch (cpTypeId) {
                 case this.KIVQModule.QUESTIONS_TYPE.TRUE_FALSE:
                     return 'true-false-question';
+                case this.KIVQModule.QUESTIONS_TYPE.OPEN_QUESTION:
+                    return 'open-question';
                 case this.KIVQModule.QUESTIONS_TYPE.REFLECTION_POINT:
                     return 'reflection-point-question';
                 case this.KIVQModule.QUESTIONS_TYPE.MULTIPLE_ANSWER_QUESTION:
