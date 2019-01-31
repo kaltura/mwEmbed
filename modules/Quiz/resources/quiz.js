@@ -408,9 +408,11 @@
             if(cPo.questionType == 5){
                 this.embedPlayer.getInterface().find("#open-question-clear")
                 .click( $.proxy( function(){
-                    this.embedPlayer.getInterface().find(".open-question").val("");
+                    this.embedPlayer.getInterface().find(".open-question").val("").focus();
                     this.embedPlayer.getInterface().find(".open-answer-inner").removeClass("has-chars");
                     this.embedPlayer.getInterface().find(".open-question-chars .chars").text("0");
+                    _this.embedPlayer.getInterface().find("#open-question-clear,#open-question-save").attr("disabled", "disabled");
+
 
                 }, _this ))
                 
@@ -427,14 +429,14 @@
                 .attr("placeholder",gM('mwe-quiz-open-question-add-answer-here'))
                 .bind('change keyup paste', function() {
                     var charsLength = $(this).val().length;
-                    // if(charsLength>270){
-                    //     $(this).val($(this).val().slice(0,269));
-                    // }
                     _this.embedPlayer.getInterface().find(".open-question-chars .chars").text(charsLength);
                     if(charsLength==0){
                         _this.embedPlayer.getInterface().find(".open-answer-inner").removeClass("has-chars");
+                        _this.embedPlayer.getInterface().find("#open-question-clear,#open-question-save").attr("disabled", "disabled");
+                        
                     }else{
                         _this.embedPlayer.getInterface().find(".open-answer-inner").addClass("has-chars");
+                        _this.embedPlayer.getInterface().find("#open-question-clear,#open-question-save").removeAttr("disabled");
                     }
                 });
                 this.embedPlayer.getInterface().find("#open-question-clear").text(gM('mwe-quiz-open-question-clear'));

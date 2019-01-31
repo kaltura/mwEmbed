@@ -410,10 +410,10 @@ button.qContinue, button.qApplied {
 .open-question{
     resize: none;
     background: transparent;
-    width: 90%;
-    left: 5%;
+    width: 95.7%;
+    left: 10px;
     position: absolute;
-    height: 130px;
+    height: 149px;
     color: #CCD1D3;
     font-size: 14px;
     text-align: center;

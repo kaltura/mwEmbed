@@ -40,11 +40,11 @@
                     '   <div class="answers-container"></div>' +
                     '   <div class="open-answer-container">'+
                     '       <div class="open-answer-inner">'+
-                    '            <textarea class="open-question" maxlength="270"></textarea>'+ 
+                    '            <textarea class="open-question" maxlength="270" tabindex="5"></textarea>'+ 
                     '            <div class="open-answer-footer">' +
                     '                <div class="open-question-chars"><span class="chars">0</span>/270</div>' +
-                    '                   <button id="open-question-clear"></button>' +
-                    '                <button id="open-question-save"></button>' +
+                    '                <button id="open-question-clear" tabindex="5" disabled="disabled"></button>' +
+                    '                <button id="open-question-save" tabindex="5" disabled="disabled"></button>' +
                     '            </div>' +                   
                     '       </div>' +
                     '   </div>' +
