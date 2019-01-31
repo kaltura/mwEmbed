@@ -361,6 +361,13 @@
                 })
         },
         
+        submitOpenQuestion: function(a){
+            // we have the cuepoint and the value 
+            console.log(">>>>",a);
+            console.log(">>>>",this.embedPlayer.getInterface().find(".open-question").val())
+
+        },
+
         // This function is rendering a question screen
         ssSetCurrentQuestion: function (questionNr,replaceContentNoReload) {
             var _this = this,cPo = $.cpObject.cpArray[questionNr];
@@ -395,9 +402,44 @@
                 // make answer an accessible element
                 div.attr('tabindex', 5).attr('role', 'button').attr('title', 'Answer number '+(key+1)).attr('aria-labelledby', answerId);
                 // add answer to the list of all answers on this question
-                div.appendTo('.answers-container');
+                div.appendTo('.answers-containe r');
             });
 
+            if(cPo.questionType == 5){
+                this.embedPlayer.getInterface().find("#open-question-clear")
+                .click( $.proxy( function(){
+                    this.embedPlayer.getInterface().find(".open-question").val("");
+                    this.embedPlayer.getInterface().find(".open-answer-inner").removeClass("has-chars");
+                    this.embedPlayer.getInterface().find(".open-question-chars .chars").text("0");
+
+                }, _this ))
+                
+                this.embedPlayer.getInterface().find("#open-question-save")
+                .click( $.proxy( function(a){
+                    if(this.embedPlayer.getInterface().find(".open-question").val() == ""){
+                        // dont send empty answer
+                        return;
+                    }
+                     this.submitOpenQuestion(a)
+                }, _this , cPo ))
+
+                this.embedPlayer.getInterface().find(".open-question")
+                .attr("placeholder",gM('mwe-quiz-open-question-add-answer-here'))
+                .bind('change keyup paste', function() {
+                    var charsLength = $(this).val().length;
+                    // if(charsLength>270){
+                    //     $(this).val($(this).val().slice(0,269));
+                    // }
+                    _this.embedPlayer.getInterface().find(".open-question-chars .chars").text(charsLength);
+                    if(charsLength==0){
+                        _this.embedPlayer.getInterface().find(".open-answer-inner").removeClass("has-chars");
+                    }else{
+                        _this.embedPlayer.getInterface().find(".open-answer-inner").addClass("has-chars");
+                    }
+                });
+                this.embedPlayer.getInterface().find("#open-question-clear").text(gM('mwe-quiz-open-question-clear'));
+                this.embedPlayer.getInterface().find("#open-question-save").text(gM('mwe-quiz-open-question-save'));
+            }
             if (cPo.isAnswerd){
                 _this.showAnswered(cPo, questionNr);
             }
@@ -663,6 +705,8 @@
                     .text(gM('mwe-quiz-selected'))
                     .addClass('qApplied').fadeIn(100).attr('aria-disabled', true);
             });
+            console.log(">>>> continueClickHandler",this),_this;
+            return;
             _this.KIVQModule.submitAnswer(questionNr,_this.selectedAnswer);
             _this.selectedAnswer = null;
             setTimeout(function(){_this.KIVQModule.checkIfDone(questionNr)},1800);

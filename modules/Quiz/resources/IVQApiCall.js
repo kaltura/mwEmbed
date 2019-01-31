@@ -78,7 +78,7 @@
                     var quizSetAnswer = {
                         'service': 'cuepoint_cuepoint',
                         'cuePoint:objectType': "KalturaAnswerCuePoint",
-                        'cuePoint:answerKey': selectedAnswer,
+                        'cuePoint:  ': selectedAnswer,
                         'cuePoint:quizUserEntryId': kQuizUserEntryId
                     };
 

@@ -356,18 +356,30 @@ button.qContinue, button.qApplied {
     background-color: #848B92;
     box-shadow: 0 0 2px 0 rgba(0,0,0,0.24);
     top: 6px;
+    border-color: transparent;
+    cursor: default;
 }
 #open-question-clear{
     display: inline-block;
     right: 120px;
     background-color: transparent;
     border: none;
-    color: #848B92
+    color: #848B92;
+    cursor: default;
 }
 #open-question-save{
     right: 20px;
-
+    
 }
+.has-chars #open-question-clear{
+    color: white;
+    cursor: pointer;
+}
+.has-chars #open-question-save{
+    background-color:white;
+    cursor: pointer;
+}
+
 .open-question-chars{
     color:#47525C;
     position: absolute;
@@ -378,8 +390,9 @@ button.qContinue, button.qApplied {
     height: 45px;
     border-top: solid 1px #CCD1D3;
     position: relative;
-    bottom: -98px;
+    bottom: -154px;
 }
+
 .open-answer-header{
     width: 100%;
     text-align: center; 
@@ -393,16 +406,17 @@ button.qContinue, button.qApplied {
     border-radius: 2px;
     background:#041A23;
     border: solid 1px #3C535B; 
-
 }
 .open-question{
     resize: none;
     background: transparent;
-    border: solid 1px rgba(90,90,90,0.5);
     width: 90%;
     left: 5%;
     position: absolute;
-    height: 40%;
+    height: 130px;
+    color: #CCD1D3;
+    font-size: 14px;
+    text-align: center;
 }
 
 

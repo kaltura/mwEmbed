@@ -40,15 +40,12 @@
                     '   <div class="answers-container"></div>' +
                     '   <div class="open-answer-container">'+
                     '       <div class="open-answer-inner">'+
-                    '   <div class="open-answer-header">' +
-                    '       HKJKJDHKJDHKJDHKJ bn zbmn zbm xbm§' +
-                    '   </div>' +
-                    '           <textarea class="open-question"></textarea>'+ 
-                    '   <div class="open-answer-footer">' +
-                    '   <div class="open-question-chars">0/500</div>' +
-                    '   <button id="open-question-clear">Clear</button>' +
-                    '   <button id="open-question-save">Save</button>' +
-                    '   </div>' +                   
+                    '            <textarea class="open-question" maxlength="270"></textarea>'+ 
+                    '            <div class="open-answer-footer">' +
+                    '                <div class="open-question-chars"><span class="chars">0</span>/270</div>' +
+                    '                   <button id="open-question-clear"></button>' +
+                    '                <button id="open-question-save"></button>' +
+                    '            </div>' +                   
                     '       </div>' +
                     '   </div>' +
                     '   <div class = "ftr-container">' +
