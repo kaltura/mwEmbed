@@ -353,7 +353,7 @@ button.qContinue, button.qApplied {
     height: 34px;
     width: 87px;
     border-radius: 3px;
-    background-color: #848B92;
+    
     box-shadow: 0 0 2px 0 rgba(0,0,0,0.24);
     top: 6px;
     border-color: transparent;
@@ -364,20 +364,22 @@ button.qContinue, button.qApplied {
     right: 120px;
     background-color: transparent;
     border: none;
-    color: #848B92;
-    cursor: default;
-}
-#open-question-save{
-    right: 20px;
-    
-}
-.has-chars #open-question-clear{
     color: white;
     cursor: pointer;
 }
-.has-chars #open-question-save{
+#open-question-save{
+    right: 20px;
     background-color:white;
     cursor: pointer;
+    
+}
+#open-question-clear:disabled{
+    color: #848B92;
+    cursor: default;
+}
+#open-question-save:disabled{
+    background-color: #848B92;
+    cursor: default;
 }
 
 .open-question-chars{

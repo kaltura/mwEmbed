@@ -363,9 +363,7 @@
         
         submitOpenQuestion: function(a){
             // we have the cuepoint and the value 
-            console.log(">>>>",a);
-            console.log(">>>>",this.embedPlayer.getInterface().find(".open-question-textarea").val())
-
+            this.KIVQModule.submitAnswer(a.key,0,this.embedPlayer.getInterface().find(".open-question-textarea").val());
         },
 
         // This function is rendering a question screen
@@ -402,14 +400,12 @@
                 // make answer an accessible element
                 div.attr('tabindex', 5).attr('role', 'button').attr('title', 'Answer number '+(key+1)).attr('aria-labelledby', answerId);
                 // add answer to the list of all answers on this question
-                div.appendTo('.answers-containe r');
+                div.appendTo('.answers-container');
             });
-            console.log(">>>>",cPo.questionType);
             if(cPo.questionType == this.KIVQModule.QUESTIONS_TYPE.OPEN_QUESTION){
                 this.embedPlayer.getInterface().find("#open-question-clear")
                 .click( $.proxy( function(){
                     this.embedPlayer.getInterface().find(".open-question-textarea").val("").focus();
-                    this.embedPlayer.getInterface().find(".open-answer-inner").removeClass("has-chars");
                     this.embedPlayer.getInterface().find(".open-question-chars .chars").text("0");
                     _this.embedPlayer.getInterface().find("#open-question-clear,#open-question-save").attr("disabled", "disabled");
 
@@ -431,11 +427,9 @@
                     var charsLength = $(this).val().length;
                     _this.embedPlayer.getInterface().find(".open-question-chars .chars").text(charsLength);
                     if(charsLength==0){
-                        _this.embedPlayer.getInterface().find(".open-answer-inner").removeClass("has-chars");
                         _this.embedPlayer.getInterface().find("#open-question-clear,#open-question-save").attr("disabled", "disabled");
                         
                     }else{
-                        _this.embedPlayer.getInterface().find(".open-answer-inner").addClass("has-chars");
                         _this.embedPlayer.getInterface().find("#open-question-clear,#open-question-save").removeAttr("disabled");
                     }
                 });
@@ -443,7 +437,15 @@
                 this.embedPlayer.getInterface().find("#open-question-save").text(gM('mwe-quiz-open-question-save'));
             }
             if (cPo.isAnswerd){
-                _this.showAnswered(cPo, questionNr);
+                if(cPo.questionType == this.KIVQModule.QUESTIONS_TYPE.OPEN_QUESTION){
+                    // this is an open question - we need to fill the value from the coresponding answer CP
+                    if(cPo.openAnswer){
+                        this.embedPlayer.getInterface().find(".open-question-textarea").val(cPo.openAnswer);
+                        this.embedPlayer.getInterface().find("#open-question-clear,#open-question-save").removeAttr("disabled");
+                    }                   
+                }else{
+                    _this.showAnswered(cPo, questionNr);
+                }
             }
             else {
                 if (_this.isReflectionPoint(cPo)) {
@@ -709,8 +711,6 @@
                     .text(gM('mwe-quiz-selected'))
                     .addClass('qApplied').fadeIn(100).attr('aria-disabled', true);
             });
-            console.log(">>>> continueClickHandler",this),_this;
-            return;
             _this.KIVQModule.submitAnswer(questionNr,_this.selectedAnswer);
             _this.selectedAnswer = null;
             setTimeout(function(){_this.KIVQModule.checkIfDone(questionNr)},1800);
