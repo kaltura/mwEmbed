@@ -418,6 +418,7 @@ button.qContinue, button.qApplied {
     border: solid 1px #3C535B; 
 }
 .open-question-textarea{
+    border: none;
     resize: none;
     background: transparent;
     width: 95.7%;
