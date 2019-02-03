@@ -21,7 +21,7 @@
             autoContinue: true,
             previewPlayerEnabled: false
         },
-
+        postAnswerTimer : 1800,
         isSeekingIVQ:false,
         inFullScreen:false,
         selectedAnswer:null,
@@ -364,6 +364,9 @@
         submitOpenQuestion: function(a){
             // we have the cuepoint and the value 
             this.KIVQModule.submitAnswer(a.key,0,this.embedPlayer.getInterface().find(".open-question-textarea").val());
+            this.selectedAnswer = null;
+            var _this = this;
+            setTimeout(function(){_this.KIVQModule.checkIfDone(a.key)},_this.postAnswerTimer);
         },
 
         // This function is rendering a question screen
@@ -713,7 +716,7 @@
             });
             _this.KIVQModule.submitAnswer(questionNr,_this.selectedAnswer);
             _this.selectedAnswer = null;
-            setTimeout(function(){_this.KIVQModule.checkIfDone(questionNr)},1800);
+            setTimeout(function(){_this.KIVQModule.checkIfDone(questionNr)},_this.postAnswerTimer);
         },
 
         showPortraitWarning:function(){
