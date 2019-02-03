@@ -53,7 +53,6 @@
                     }];
 
                     _this.getKClient().doRequest(getCp, function (data) {
-                        debugger
                         callback(data);
                     });
                 };

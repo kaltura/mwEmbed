@@ -442,10 +442,22 @@
             if (cPo.isAnswerd){
                 if(cPo.questionType == this.KIVQModule.QUESTIONS_TYPE.OPEN_QUESTION){
                     // this is an open question - we need to fill the value from the coresponding answer CP
+                    // and ,anipulate the UI to support changes. 
                     if(cPo.openAnswer){
                         this.embedPlayer.getInterface().find(".open-question-textarea").val(cPo.openAnswer);
-                        this.embedPlayer.getInterface().find("#open-question-clear,#open-question-save").removeAttr("disabled");
-                    }                   
+                        this.embedPlayer.getInterface().find("#open-question-clear,#open-question-save")
+                        .attr("disabled", "disabled");
+                        this.embedPlayer.getInterface().find("#open-question-save")
+                        .text(gM('mwe-quiz-open-question-change-answer'));
+                        this.embedPlayer.getInterface().find(".open-answer-container").addClass("allow-change");
+                    } else {
+                        // reset UI elements to save in case a previous open question was already answered 
+                        this.embedPlayer.getInterface().find("#open-question-save")
+                        .text(gM('mwe-quiz-open-question-save'));
+                        this.embedPlayer.getInterface().find("#open-question-clear,#open-question-save")
+                        .removeAttr("disabled");
+
+                    }                  
                 }else{
                     _this.showAnswered(cPo, questionNr);
                 }

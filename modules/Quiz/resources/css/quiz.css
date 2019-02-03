@@ -335,6 +335,14 @@ button.qContinue, button.qApplied {
 .single-answer-box-apply:hover {
     cursor: pointer;
 }
+
+.allow-change #open-question-save {
+    width: 126px;
+}
+.allow-change #open-question-clear {
+    right: 154px;
+}
+
 .ivqContainer .open-answer-container{
     bottom: auto;
     background: #074356;
