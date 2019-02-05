@@ -598,6 +598,7 @@
             if ($.cpObject.cpArray[selectedQuestion].explanation ){
                 _this.ssDisplayWhy(selectedQuestion)
             }
+            $(".reviewAnswerPrefix").append(gM('mwe-quiz-question-number'));
             $(".reviewAnswerNr").append(_this.KIVQModule.i2q(selectedQuestion));
             //$(".theQuestion").html(gM('mwe-quiz-q') + "  " + $.cpObject.cpArray[selectedQuestion].question);
             $(".theQuestion").html(this.wrapLinksWithTags($.cpObject.cpArray[selectedQuestion].question));
@@ -607,20 +608,27 @@
                 $(".yourAnswer").addClass("wrongAnswer")
             }
             $(".correctAnswerText").html(gM('mwe-quiz-correctAnswer'));
-
+            
             $(".correctAnswer").html(function () {
                 if (!$.isEmptyObject($.cpObject.cpArray[selectedQuestion].correctAnswerKeys)) {
-
+                    
                     return $.cpObject.cpArray[selectedQuestion]
-                        .answeres[
+                    .answeres[
                         _this.KIVQModule.q2i($.cpObject.cpArray[selectedQuestion].correctAnswerKeys[0].value)
-                        ];
+                    ];
                 }
                 else {return " "}
             });
             $('.gotItBox').html(gM('mwe-quiz-gotIt')).bind('click', function () {
                 _this.ssSubmitted(_this.KIVQModule.score);
             }).attr('role', 'button').attr('tabindex', '5').focus().on('keydown', _this.keyDownHandler);
+            
+            // handle open quesition 
+            if($.cpObject.cpArray[selectedQuestion].questionType === this.KIVQModule.QUESTIONS_TYPE.OPEN_QUESTION 
+                && $.cpObject.cpArray[selectedQuestion].openAnswer){
+                $(".yourAnswer").html($.cpObject.cpArray[selectedQuestion].openAnswer);
+                $(".correctAnswerText").html("");
+            }
         },
         showSelectedQuestion:function(questionNr){
             var _this = this;

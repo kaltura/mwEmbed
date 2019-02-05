@@ -483,6 +483,9 @@
                     if(data.questionType === _this.QUESTIONS_TYPE.REFLECTION_POINT){
                         questionHexType += ' reflection-point-question';
                     }
+                    if(data.questionType === _this.QUESTIONS_TYPE.OPEN_QUESTION){
+                        questionHexType += ' open-question';
+                    }
                     $(el).addClass(questionHexType).attr("id", data.key).append(_this.i2q(data.key));
                     $(el).append('<div class="mask" />')
                     switch(rowNumber){
