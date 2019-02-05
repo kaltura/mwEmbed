@@ -124,6 +124,13 @@
 	mw.isFirefox = function () {
 		return ( userAgent.indexOf('Firefox') != -1 );
 	};
+
+	mw.isFirefoxVersionGreaterThan = function (version) {
+		var fireFoxVersion = mw.getFireFoxVersion();
+		var fireFoxMajorVersion = fireFoxVersion[0];
+		return ( mw.isFirefox() && fireFoxMajorVersion >= version );
+	};
+
 	mw.isChrome = function () {
 		return ( userAgent.indexOf('Chrome') != -1 && !mw.isEdge() );
 	};
@@ -422,6 +429,15 @@
             chromeVersionParts = chromeVersion[1].split(".");
 		}
 		return chromeVersionParts;
+	};
+
+	mw.getFireFoxVersion = function(){
+		var fireFoxVersionParts = [0, 0, 0, 0];
+		var fireFoxVersion = userAgent.match(/.*Firefox\/([0-9\.]+)/);
+		if (fireFoxVersion && fireFoxVersion[1]){
+			fireFoxVersionParts = fireFoxVersion[1].split(".");
+		}
+		return fireFoxVersionParts;
 	};
 
 })(window.mediaWiki);
