@@ -208,7 +208,7 @@
 }
 .answers-container{
     position: absolute;
-    top: 15vh;
+    top: 17vh;
     margin-left: -0.3vw;
     cursor: default !important;
 }
@@ -218,18 +218,23 @@
 .question-container{
     padding-top: 1vw;
 }
+.display-question.padding7{
+    padding-top: 4px !important;
+}
+ 
 .display-question{
-    font-family: "Helvetica" , "Arial";
-    font-family: "Lato";
+    position: absolute;
+    width: 100%;
+    top: -4px;
+    height: 52px;
+    font-family: "Lato", "Helvetica" , "Arial";
     margin-left: auto;
     margin-right: auto;
     color: #ffffff;
     font-size: 2.1vw;
     font-weight: 700;
     text-align: center;
-    width: 80%;
     word-wrap: break-word;
-    padding-top: 2vh;
     cursor: default !important;
 }
 .single-answer-box-bk.wide{
@@ -346,7 +351,7 @@ button.qContinue, button.qApplied {
 .ivqContainer .open-answer-container{
     bottom: auto;
     background: #074356;
-    top: 19vh;
+    top: 16vh;
     height: 200px;
     margin-left: 6%;
     margin-right: 6%;
@@ -702,7 +707,7 @@ button.qContinue, button.qApplied {
     cursor:default !important;
 }
 .correctAnswerText{
-    font-size: 3vw;
+    font-size: 16px;
     color: white;
     margin-top: 2vw;
     cursor:default !important;
@@ -734,7 +739,6 @@ button.qContinue, button.qApplied {
     padding-top: 20px;
     font-family: Lato;
     font-size: 16px;
-    font-weight: bold;
     font-style: normal;
     font-stretch: normal;
     line-height: 1.31;
@@ -976,8 +980,11 @@ ol.second-row{
 }
 .reflection-point-question .display-question {
     display: table-cell;
+    height: 80%;
     vertical-align: middle;
+
 }
+
 .true-false-question .header-container {
     position: relative;
     height: 36vh;
@@ -985,7 +992,7 @@ ol.second-row{
 .true-false-question .display-question{
     position: absolute;
     bottom: 0;
-    left: 10%;
+    height: 100px;
 }
 .true-false-question .answers-container{
     top: 41vh;

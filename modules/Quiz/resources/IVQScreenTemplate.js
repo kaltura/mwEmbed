@@ -62,10 +62,10 @@
                     '   <div class="header-container"></div>'+
                     '   <div class ="reviewAnswerPlace" >'+
                     '       <div class="theQuestion"></div>'+
-                    '       <div class="yourAnswerText"></div>'+
-                    '       <div class="yourAnswer"></div>'+
                     '       <div class="correctAnswerText"></div>'+
                     '       <div class="correctAnswer"></div>'+
+                    '       <div class="yourAnswerText"></div>'+
+                    '       <div class="yourAnswer"></div>'+
                     '   </div>'+
                     '   <div class ="reviewAnswerFooter" >'+
                     '       <span class = "reviewAnswerPrefix"></span>'+
