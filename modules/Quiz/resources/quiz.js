@@ -405,56 +405,61 @@
                 // add answer to the list of all answers on this question
                 div.appendTo('.answers-container');
             });
+            // OPEN QUESTION
             if(cPo.questionType == this.KIVQModule.QUESTIONS_TYPE.OPEN_QUESTION){
-                this.embedPlayer.getInterface().find("#open-question-clear")
+                var interfaceElement = this.embedPlayer.getInterface();
+                interfaceElement.find("#open-question-clear")
                 .click( $.proxy( function(){
-                    this.embedPlayer.getInterface().find(".open-question-textarea").val("").focus();
-                    this.embedPlayer.getInterface().find(".open-question-chars .chars").text("0");
-                    _this.embedPlayer.getInterface().find("#open-question-clear,#open-question-save").attr("disabled", "disabled");
+                    interfaceElement.find(".open-question-textarea").val("").focus();
+                    interfaceElement.find(".open-question-chars .chars").text("0");
+                    interfaceElement.find("#open-question-clear,#open-question-save").attr("disabled", "disabled");
 
 
                 }, _this ))
-                
-                this.embedPlayer.getInterface().find("#open-question-save")
+                interfaceElement.find("#open-question-change-answer")
+                .text(gM('mwe-quiz-open-question-change-answer'));
+                interfaceElement.find("#open-question-save")
                 .click( $.proxy( function(a){
-                    if(this.embedPlayer.getInterface().find(".open-question-textarea").val() == ""){
+                    if(interfaceElement.find(".open-question-textarea").val() == ""){
                         // dont send empty answer
                         return;
                     }
                      this.submitOpenQuestion(a)
                 }, _this , cPo ))
 
-                this.embedPlayer.getInterface().find(".open-question-textarea")
+                interfaceElement.find(".open-question-textarea")
                 .attr("placeholder",gM('mwe-quiz-open-question-add-answer-here'))
                 .bind('change keyup paste', function() {
                     var charsLength = $(this).val().length;
-                    _this.embedPlayer.getInterface().find(".open-question-chars .chars").text(charsLength);
+                    interfaceElement.find(".open-question-chars .chars").text(charsLength);
                     if(charsLength==0){
-                        _this.embedPlayer.getInterface().find("#open-question-clear,#open-question-save").attr("disabled", "disabled");
+                        interfaceElement.find("#open-question-clear,#open-question-save").attr("disabled", "disabled");
                         
                     }else{
-                        _this.embedPlayer.getInterface().find("#open-question-clear,#open-question-save").removeAttr("disabled");
+                        interfaceElement.find("#open-question-clear,#open-question-save").removeAttr("disabled");
                     }
                 });
-                this.embedPlayer.getInterface().find("#open-question-clear").text(gM('mwe-quiz-open-question-clear'));
-                this.embedPlayer.getInterface().find("#open-question-save").text(gM('mwe-quiz-open-question-save'));
+                interfaceElement.find("#open-question-clear").text(gM('mwe-quiz-open-question-clear'));
+                interfaceElement.find("#open-question-save").text(gM('mwe-quiz-open-question-save'));
             }
             if (cPo.isAnswerd){
+
                 if(cPo.questionType == this.KIVQModule.QUESTIONS_TYPE.OPEN_QUESTION){
                     // this is an open question - we need to fill the value from the coresponding answer CP
                     // and ,anipulate the UI to support changes. 
                     if(cPo.openAnswer){
-                        this.embedPlayer.getInterface().find(".open-question-textarea").val(cPo.openAnswer);
-                        this.embedPlayer.getInterface().find("#open-question-clear,#open-question-save")
+                        interfaceElement.find(".ivqContainer").addClass("answered");
+                        interfaceElement.find(".open-question-textarea").val(cPo.openAnswer);
+                        interfaceElement.find("#open-question-clear,#open-question-save")
                         .attr("disabled", "disabled");
-                        this.embedPlayer.getInterface().find("#open-question-save")
+                        interfaceElement.find("#open-question-save")
                         .text(gM('mwe-quiz-open-question-change-answer'));
-                        this.embedPlayer.getInterface().find(".open-answer-container").addClass("allow-change");
+                        interfaceElement.find(".open-answer-container").addClass("allow-change");
                     } else {
                         // reset UI elements to save in case a previous open question was already answered 
-                        this.embedPlayer.getInterface().find("#open-question-save")
+                        interfaceElement.find("#open-question-save")
                         .text(gM('mwe-quiz-open-question-save'));
-                        this.embedPlayer.getInterface().find("#open-question-clear,#open-question-save")
+                        interfaceElement.find("#open-question-clear,#open-question-save")
                         .removeAttr("disabled");
 
                     }                  
