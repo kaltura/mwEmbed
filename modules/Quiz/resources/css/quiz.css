@@ -465,6 +465,7 @@ button.qContinue, button.qApplied {
     text-decoration: underline;
     display: none;
     right: 20px;
+    cursor: pointer;
 }
 
 .answered #open-question-change-answer{
