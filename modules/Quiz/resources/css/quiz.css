@@ -199,9 +199,6 @@
     color: #333333;
     cursor:pointer;
 }
-.confirm-box:focus { 
-    /*border: thin solid black;*/
-}
 
 .header-container{
     cursor: default !important;
@@ -811,9 +808,6 @@ button.qContinue, button.qApplied {
     margin-top: 3vh;
 }
 
-.hex-column{
-}
-
 .vertical-center {
     position:relative;
     top:50%;
@@ -841,10 +835,6 @@ ol.second-row{
 }
 .bk-gradient{
     background-color: rgb(0, 190, 238);
-}
-
-.display-content{
-
 }
 .bubble{
     position: absolute;
