@@ -30,14 +30,18 @@
 				downloadUrl += this.getPlayer().kwidgetid + '/uiconf_id/' + this.getPlayer().kuiconfid;
 				downloadUrl += '/entry_id/' + this.getPlayer().kentryid + '?forceDownload=true';
 				downloadUrl += '&downloadName=' + encodeURIComponent(this.getConfig('downloadName'));
-				if( this.getConfig('flavorParamsId') ){
-					downloadUrl += '&flavorParamsId=' + encodeURIComponent( this.getConfig('flavorParamsId') );
-				}
-				if ( this.getConfig( 'preferredBitrate' ) != '' && this.getConfig( 'preferredBitrate' ) != null ){
-					downloadUrl += '&preferredBitrate=' + encodeURIComponent( this.getConfig( 'preferredBitrate' ));
-				}
-			    if ( this.getConfig( 'flavorID' ) != '' && this.getConfig( 'flavorID' ) != null ){
-					downloadUrl += '&flavorID=' + encodeURIComponent( this.getConfig( 'flavorID' ));
+				if (this.isSourceOnly()) {
+					downloadUrl += '&flavorParamsId=0'
+				} else {
+					if (this.getConfig('flavorParamsId')) {
+						downloadUrl += '&flavorParamsId=' + encodeURIComponent(this.getConfig('flavorParamsId'));
+					}
+					if (this.getConfig('preferredBitrate') != '' && this.getConfig('preferredBitrate') != null) {
+						downloadUrl += '&preferredBitrate=' + encodeURIComponent(this.getConfig('preferredBitrate'));
+					}
+					if (this.getConfig('flavorID') != '' && this.getConfig('flavorID') != null) {
+						downloadUrl += '&flavorID=' + encodeURIComponent(this.getConfig('flavorID'));
+					}
 				}
 
 				if( ks ){
@@ -58,6 +62,12 @@
 							});
 			}
 			return this.$el;
+		},
+		isSourceOnly: function()	{
+			//Entries with only a source have only one flavor
+	 		if (this.getPlayer().kalturaFlavors.length === 1) {
+				return true;
+			}
 		}
 	}));
 
