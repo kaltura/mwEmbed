@@ -303,4 +303,3 @@ include_once( realpath( dirname( __FILE__ ) )  . '/../studio/studioService.php')
  *   );
  */
 $wgResourceLoaderSources = array();
-
