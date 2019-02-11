@@ -254,12 +254,23 @@
             $(".screen.quiz").attr('aria-live', 'polite');
         },
 
+        retakeSuccess : function(){
+            debugger;
+        },
+
+        retake : function(){
+            var _this = this;
+            this.KIVQModule.retake(function(){
+                // retake successful 
+                _this.retakeSuccess();
+            });
+        },
+
         // render the welcome screen content, look for 'tmplWelcome' in 
         ssWelcome: function () {
             var _this = this;
             _this.ivqShowScreen();
             _this.KIVQScreenTemplate.tmplWelcome();
-
             $(".welcome").html(gM('mwe-quiz-welcome'));
                 if ($.quizParams.allowDownload ) {
                     $(".pdf-download").prepend('<div class="pdf-download-img">' +
@@ -287,7 +298,6 @@
              
             // add title to ivq welcome container for accessibility
             $(".ivqContainer").attr("title", "Kaltura Video Quiz "+_this.embedPlayer.evaluate( '{mediaProxy.entry.name}' ));
-            
             // make welcome "continue" button accessible
             $(".confirm-box").html(gM('mwe-quiz-continue')).show().attr("tabindex", 5).attr("title", "Click to start the quiz").on('keydown', _this.keyDownHandler)
                 .on('click', function () {
@@ -295,6 +305,14 @@
                 }).focus().attr('id', 'welcome-continue-button');
             // verify focus in IE
             document.getElementById('welcome-continue-button').focus();
+
+            if (true || $.quizParams.retakes ){
+                var localedText = gM('mwe-quiz-available-tries');
+                // todo - retreive available retake # 
+                var retakes = 3;
+                localedText = localedText.split("|X|").join(retakes);
+                $(".retake-box").text(localedText);
+            }
 
         },
 
@@ -308,7 +326,7 @@
             $(".title-text").html(gM('mwe-quiz-almostDone'));
             $(".sub-text").html(gM('mwe-quiz-remainUnAnswered') + '</br>' + gM('mwe-quiz-pressRelevatToAnswer'))
             $(".confirm-box").html(gM('mwe-quiz-okGotIt')).attr("tabindex", 5).attr("title", gM('mwe-quiz-okGotIt')).on('keydown', _this.keyDownHandler);
-
+            
             $(document).off('click','.confirm-box')
                 .on('click', '.confirm-box', function () {
                     _this.embedPlayer.stopPlayAfterSeek = false;
@@ -503,6 +521,21 @@
                 $(".sub-text").html(gM('mwe-quiz-completedQuiz'));
                 $(".bottomContainer").addClass("paddingB20");
             }
+            
+
+            // TODO - replace with real values once BE sends them to me 
+            var retakesTotal = 5;
+            var retakes = 2;
+            debugger
+            var localedText = gM('mwe-quiz-retake-btn');
+            localedText = localedText.split("|X|").join(retakes);
+            localedText = localedText.split("|Y|").join(retakesTotal);
+            $(".retake-btn").text(localedText).attr({"tabindex": 5,"title": localedText})
+            .on('click',  $.proxy(this.retake,this))
+            .on('keydown', _this.keyDownHandler)
+
+
+
             $(document).off('click','.confirm-box')
             $(".confirm-box").html(gM('mwe-quiz-done'))
                 .on('click', function () {

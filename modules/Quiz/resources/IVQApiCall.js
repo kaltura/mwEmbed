@@ -58,6 +58,7 @@
                     });
                 };
 
+
                 this.createQuizUserEntryId = function(callback){
 
                     var createQuizuserEntryId = {
@@ -129,6 +130,21 @@
                         callback(data);
                     });
                 };
+            },
+            retake: function (callback){
+
+                // TODO - implement when BE supports this API 
+                var submitQuizParams = {
+                    'service': 'userEntry',
+                    'action': 'retakeQuiz' //,
+                    //'id': kQuizUserEntryId 
+                };
+                // this.getKClient().doRequest(submitQuizParams, function (data) {
+                //     // handle errors     
+                //     callback();
+                // });
+                // TODO - for now we can simulate success 
+                callback();
             },
             destroy: function () {
 

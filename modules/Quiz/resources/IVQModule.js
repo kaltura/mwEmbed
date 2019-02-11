@@ -586,6 +586,9 @@
                 $(".sub-text").html(gM('mwe-quiz-err-msg'));
                 _this.isErr = true;
             },
+            retake: function (callback){
+                this.KIVQApi.retake(callback);
+            },
             destroy: function () {
 
                 var _this = this;

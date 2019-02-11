@@ -45,7 +45,9 @@
     "mwe-quiz-next-question": "Next Question button",
     "mwe-quiz-next-question-disabled": "Next Question button - disabled",
     "mwe-quiz-previous-question": "Previous Question button - disabled",
-    "mwe-quiz-previous-question-disabled": "Previous Question button - disabled"
+    "mwe-quiz-previous-question-disabled": "Previous Question button - disabled",
+    "mwe-quiz-available-tries": "|X| tries available for this quiz",
+    "mwe-quiz-retake-btn": "Retake (|X|/|Y|)"
   },
   "de": {
     "mwe-quiz-Submitted": "Abgesendet",

@@ -26,6 +26,7 @@
                     '<div class="InvideoTipMessage" tabindex="5"></div>' +
                     '<div class="bottomContainer padding10">' +
                         '<div class="confirm-box" role="button" title="to take the quiz"></div>' +
+                        '<div class="retake-box"></div>' +
                     '</div>' +
                     '</div>').fadeIn( "fast" );
             },
@@ -65,7 +66,7 @@
                 var _this = this;
                 $(".icon-close").css("display", "none");
                 $(_this.emptyScreen()).hide().append(
-                    '<div class="ivqContainer">' +
+                    '<div class="ivqContainer submitted">' +
                     '   <div class="title-text"></div>' +
                     '   <div class="sub-text"></div>' +
                     '   <div class="display-all-container">' +
@@ -77,6 +78,7 @@
                     '   </div>' +
                     '   <div class="bottomContainer ">' +
                     '       <div class="confirm-box"></div>' +
+                    '       <div class="retake-btn"></div>' +
                     '   </div>' +
                     '</div>').fadeIn( "fast" );
 
