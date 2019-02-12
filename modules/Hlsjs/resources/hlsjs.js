@@ -302,7 +302,7 @@
              */
             onManifestLoaded: function () {
                 this.log("manifest loaded");
-                if (!this.embedPlayer.isLive()){
+                if (!this.embedPlayer.isLive() || (this.embedPlayer.isLive() && mw.isIE11())){
                     this.hls.startLoad(this.getPlayer().currentTime);
                 }
                 //HLS.JS by default sets showing to text track for default HLS manifest text track
