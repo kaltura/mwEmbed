@@ -7,6 +7,7 @@
     "use strict";
     $.cpObject = {};
     $.quizParams = {};
+    $.changedMedia = 0;
     mw.PluginManager.add('quiz', mw.KBaseScreen.extend({
         defaultConfig: {
             parent: "controlsContainer",
@@ -49,7 +50,11 @@
                 _this.relatedStreamChanging = false;
             });
 
+
+
             embedPlayer.addJsListener( 'kdpReady', function(){
+                $.changedMedia ++;
+                _this.destroy();
                 // [FEC-6441: Quiz plugin damaged when switching between dual video options]
                 // Don't reload quiz cuepoints when a stream change occurs
                 // Needed for the dual-video cases in which only the parent media contains quiz metadata
@@ -87,7 +92,6 @@
                     };
 
                     _this.KIVQModule.checkCuepointsReady(function(){
-
                         _this.addBindings();
 
                         if(_this.KIVQModule.isKPlaylist){
@@ -98,6 +102,9 @@
                         };
                         embedPlayer.hideSpinner();
                         embedPlayer.enablePlayControls();
+                        if($.changedMedia > 1){
+                            _this.displayBubbles();
+                        }
                     });
 
                     mw.log("Quiz: Quiz Loading..");
@@ -526,7 +533,6 @@
             // TODO - replace with real values once BE sends them to me 
             var retakesTotal = 5;
             var retakes = 2;
-            debugger
             var localedText = gM('mwe-quiz-retake-btn');
             localedText = localedText.split("|X|").join(retakes);
             localedText = localedText.split("|Y|").join(retakesTotal);
@@ -873,10 +879,16 @@
 
         },
         displayBubbles:function(){
-            var  _this = this,displayClass,embedPlayer = this.getPlayer(),handleBubbleclick;
+            var  _this = this;
+            var displayClass;
+            var embedPlayer = this.getPlayer();
+            var handleBubbleclick;
             var scrubber = embedPlayer.getInterface().find(".scrubber");
             var buSize = _this.KIVQModule.bubbleSizeSelector(_this.inFullScreen);
-
+            
+            if($.changedMedia > 1){
+               debugger 
+            }
             _this.KIVQModule.hideQuizOnScrubber();
 
             var buCotainerPos = _this.KIVQModule.quizEndFlow ? "bubble-cont bu-margin3":"bubble-cont bu-margin1";
@@ -901,13 +913,14 @@
                 handleBubbleclick = '.bubble-ans';
             }
             $('.bubble','.bubble-ans','.bubble-un-ans').off();
-            $(handleBubbleclick).on('click', function () {
-                var qNumber = parseInt($(this).attr('id'));
-                _this.seekToQuestionTime = $.cpObject.cpArray[qNumber].startTime;
-                _this.KIVQModule.gotoScrubberPos(qNumber);
-                _this.isSeekingIVQ = true;
-                mw.log("Quiz: gotoScrubberPos : " + qNumber);
-            });
+            $(handleBubbleclick).on('click', $.proxy(this.onBubbleClick, _this) );
+        },
+        onBubbleClick: function (event) {
+            var qNumber = parseInt($(event.target).attr("id"));
+            this.seekToQuestionTime = $.cpObject.cpArray[qNumber].startTime;
+            this.KIVQModule.gotoScrubberPos(qNumber);
+            this.isSeekingIVQ = true;
+            mw.log("Quiz: gotoScrubberPos : " + qNumber);
         },
         displayQuizEndMarker:function(){
             var  _this = this;
@@ -942,6 +955,18 @@
             return wrapLinksWithTitle.replace(/((https?|ftps?):\/\/[^"<\s]+)(?![^<>]*>|[^"]*?<\/a)/gi, function(url) {
                 return '<a target="_blank" href="' + url + '">' + url + '</a>';
             });
+        },
+        destroy : function(){
+            $.cpObject = {};
+            $.quizParams = {};
+            this.killBubbles();
+
+        },
+        killBubbles : function(){
+            // destroy bubbles events and UI
+            $('.bubble','.bubble-ans','.bubble-un-ans').off();
+            $('.bubble-cont').empty();
+            $('.bubble-cont').remove();
         },
         isReflectionPoint: function(cPo){
             return cPo.questionType && cPo.questionType === this.KIVQModule.QUESTIONS_TYPE.REFLECTION_POINT;

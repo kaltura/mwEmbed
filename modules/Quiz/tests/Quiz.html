@@ -42,6 +42,12 @@
 		select.appendChild(el);
 	}
 
+	var player;
+
+	kWidget.addReadyCallback(function(playerId){
+		player = $('#' + playerId)[0];
+	});
+
 	var reload = function (){
 		var l = $("#selectLang").val();
         kWidget.destroy('kaltura_player_1434365991');
@@ -52,6 +58,7 @@
 			'wid': '_27017',
 			'uiconf_id': '39666321',
 			'flashvars': {
+				"ks" : "djJ8MjcwMTd8Uh_c_gv_I2tQEm8QvCwcz72SiuMjJgR7cVGERLL6aE78RMrKFrXgi6YrIZPjavlWTazlrubFkseZSFTBLKpgc0A-Ak1k2AwfTyuHVoOP1VcTdVNdVryzLEm1NGoztTTGdDIFRAWjdhO5ns-pKAic-8rj_8Npl_lcx54TNq8ITRBWHLc2NvH8nWq0cZQ9-npmuehf0SS5iiDgXEhe0Idwzntjoj993Dt4ujl_lAM0gjR-Lu5LgvoVFoTxPFCV1YagBWAARLqilCYfICo4yMZ5p581SGqWYlhwlPk0jQ0tAVWq64esW5kvUlspopOowpk7T4HPJ__V79XhU4_e0ye-0uF02qprLxXgHnLpmnLI7KoU_re_iqfPepUrJ28HuKPbepAkSc1V4P0A4H97IIdGQTmm2MQNcx-MDKxONUUsF4F-YdFktTRjDOGNsdtQKh3ppOUEVJkF8IDawHvWCLCvtwNHtEwm6-u7BYqW6ZNnWMoyuadrXJABcxBdwM6-cUfa",
 				"localizationCode": l,
 				'autoPlay': true,
 				'quiz': {
@@ -63,16 +70,22 @@
 				},
 				'streamerType': 'auto',
 			},
-			'entry_id': '1_a17bz0uy',
-			'readyCallback': function (playerId) {
-			}
+
+			'entry_id': '1_gb3f3kid' 
+
 		});
 	}
 	$("#selectLang").change($.proxy(reload , _this) );
-    reload();
+	
+	reload();
+	
+	var changeMedia = function(media){
+		player.sendNotification('changeMedia', {'entryId' : media });
+	}
+	 // 1_a17bz0uy // 1_gb3f3kid
 
 </script>
-
+<button onclick="changeMedia('1_a17bz0uy')">Change media to 1_gb3f3kid</button>
 
 </body>
 </html>
