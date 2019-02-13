@@ -885,10 +885,7 @@
             var handleBubbleclick;
             var scrubber = embedPlayer.getInterface().find(".scrubber");
             var buSize = _this.KIVQModule.bubbleSizeSelector(_this.inFullScreen);
-            
-            if($.changedMedia > 1){
-               debugger 
-            }
+
             _this.KIVQModule.hideQuizOnScrubber();
 
             var buCotainerPos = _this.KIVQModule.quizEndFlow ? "bubble-cont bu-margin3":"bubble-cont bu-margin1";
