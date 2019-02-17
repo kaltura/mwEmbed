@@ -11,16 +11,6 @@
 		'entry_id' : '1_u05a0sn3'
 	});
 </script>
-<h3>Amazon &#038; iTunes E-Commerce Integration</h3>
-<div id="ecommerce" style="width:840px;height:476px"></div>
-<script>
-	kWidget.embed({
-		'targetId': "ecommerce",
-		'wid' : '_777122',
-		'uiconf_id' : '6315341',
-		'entry_id' : '1_1urui3a2'
-	});
-</script>
 <h3>Pre-Roll with Companion Ad</h3>
 <div style="padding:10px; width:800px; height:590px; border:1px solid #666; text-align:left; background:white;">
 	<div class="hostpromo" style="padding-bottom:4px;"><img src="http://projects.kaltura.com/wjames/healthination/drugs_healthi.png" /></div>
