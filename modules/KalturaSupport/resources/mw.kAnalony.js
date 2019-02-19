@@ -582,7 +582,6 @@
                 var parser = document.createElement('a');
                 parser.href = pageReferrer;
                 pageReferrer =  parser.origin;
-
             }
 
             statsEvent[ 'referrer' ] = pageReferrer;
