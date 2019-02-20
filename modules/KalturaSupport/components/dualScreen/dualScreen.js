@@ -933,11 +933,14 @@
                 player.instanceOf === 'Kplayer' && this.getUtils().isAutoBitrate().then(function (res) {
                     if (!res) {
                         return;
-                    }
-
+					}
+					// switch to -1 only if main player was set to ABR before
+					var isMainPlayerABR = player instanceof mw.dualScreen.videoPlayer && player.playerElement.isABR();
                     if ( player.getVideoDisplay().attr('data-display-rule') === 'primary' ) {
-                        mw.log("DualScreen :: handleABR :: set kplayer to ABR AUTO and secondPlayer to lowest bitrate");
-                        player.switchSrc(-1);
+						mw.log("DualScreen :: handleABR :: set kplayer to ABR AUTO and secondPlayer to lowest bitrate");
+						if(isMainPlayerABR){
+							player.switchSrc(-1);
+						}
                         if( isSecondPlayerABR ) {
                             secondPlayer.playerElement.switchSrc(0);
                         }
