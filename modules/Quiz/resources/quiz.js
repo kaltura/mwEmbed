@@ -261,15 +261,24 @@
             $(".screen.quiz").attr('aria-live', 'polite');
         },
 
-        retakeSuccess : function(){
-            debugger;
+        retakeSuccess : function(data){
+            if(data.objectType === "KalturaAPIException"){
+                //TODO handle BE errors 
+            }else{
+                // reset quiz and KIVQModule
+                this.destroy();
+                // extract the id of new user entry from the new one 
+                this.KIVQModule.destroy();
+
+                this.KIVQModule.kQuizUserEntryId = data.id;
+            }
         },
 
         retake : function(){
             var _this = this;
-            this.KIVQModule.retake(function(){
+            this.KIVQModule.retake(function(data){
                 // retake successful 
-                _this.retakeSuccess();
+                _this.retakeSuccess(data);
             });
         },
 
@@ -565,7 +574,10 @@
                         mw.log("Quiz: Playlist Auto Continue After Submitted");
                         _this.embedPlayer.setKDPAttribute('playlistAPI','autoContinue',true);
                     }
-                }).attr('tabindex', '5').attr('role', 'button').attr('title', 'Quiz is done. Click to continue watching the video.').focus().on('keydown', _this.keyDownHandler);
+                })
+                .attr({'tabindex': '5','role': 'button','title':'Quiz is done. Click to continue watching the video.'})
+                .focus()
+                .on('keydown', _this.keyDownHandler);
 
         },
         ssReviewAnswer: function (selectedQuestion) {

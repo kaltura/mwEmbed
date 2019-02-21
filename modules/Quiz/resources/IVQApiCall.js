@@ -30,7 +30,6 @@
                     }];
 
                     _this.getKClient().doRequest(getQuizuserEntryIdAndQuizParams, function (data) {
-
                         callback(data);
                     });
                 };
@@ -132,19 +131,7 @@
                 };
             },
             retake: function (callback){
-
-                // TODO - implement when BE supports this API 
-                var submitQuizParams = {
-                    'service': 'userEntry',
-                    'action': 'retakeQuiz' //,
-                    //'id': kQuizUserEntryId 
-                };
-                // this.getKClient().doRequest(submitQuizParams, function (data) {
-                //     // handle errors     
-                //     callback();
-                // });
-                // TODO - for now we can simulate success 
-                callback();
+                this.createQuizUserEntryId(callback);
             },
             destroy: function () {
 

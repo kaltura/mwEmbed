@@ -593,7 +593,6 @@
                 this.KIVQApi.retake(callback);
             },
             destroy: function () {
-
                 var _this = this;
                 clearInterval(_this.intrVal);
                 _this.intrVal = null;
