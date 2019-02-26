@@ -2,6 +2,8 @@
 
 (function (mw, $, ko) {
 	"use strict";
+	var NUM_OF_MAX_CHAR = 500;
+
 
 	mw.PluginManager.add('qna', mw.KBasePlugin.extend({
 
@@ -361,8 +363,9 @@
 			var _this = this;
 			var textArea = _this.getQnaContainer().find('.qnaQuestionTextArea');
 			var question = textArea.val();
+            var questionCharCounter = _this.getQnaContainer().find('.qnaQuestionCharCounter');
 
-			// protection from empty string
+            // protection from empty string
 			if (!(/\S/.test(question))){
 				return false;
 			}
@@ -372,7 +375,7 @@
 			} else {
 				if (question !== gM('qna-default-question-box-text')) {
 					_this.KQnaService.submitQuestion(question);
-					_this.resetTextArea(textArea);
+					_this.resetTextArea(textArea, questionCharCounter);
 					return true;
 				}
 			}
@@ -383,6 +386,7 @@
 			var _this = this;
 			var sendButton = _this.getQnaContainer().find('.qnaSendButton');
 			var textArea = _this.getQnaContainer().find('.qnaQuestionTextArea');
+			var questionCharCounter = _this.getQnaContainer().find('.qnaQuestionCharCounter');
 			sendButton.text(gM('qna-send-button-text'));
 			sendButton
 				.off('click')
@@ -394,10 +398,10 @@
 			cancelButton
 				.off('click')
 				.on('click', function(){
-					_this.resetTextArea(textArea);
+					_this.resetTextArea(textArea, questionCharCounter);
 				});
 
-			_this.resetTextArea(textArea);
+			_this.resetTextArea(textArea, questionCharCounter);
 			textArea
 				.off('focus')
 				.on('focus', function(){
@@ -412,7 +416,7 @@
 				.off('blur')
 				.on('blur', function(){
 					if (textArea.val() === '') {
-						_this.resetTextArea(textArea);
+						_this.resetTextArea(textArea, questionCharCounter);
 					}
 				});
 
@@ -424,7 +428,20 @@
 					}
 					e.preventDefault();
 				}
+				else {
+                    countNumOfChars(this);
+				}
 			});
+
+            textArea.keyup(function() {
+                countNumOfChars(this);
+            });
+
+            function countNumOfChars(element) {
+                var qCharText = $(element).val();
+                var counterText = qCharText.length + '/' + NUM_OF_MAX_CHAR;
+                questionCharCounter.text(counterText);
+            }
 
 			textArea.bind("mousewheel",function(ev) {
 				ev.preventDefault();
@@ -440,10 +457,14 @@
 			});
 		},
 
-		resetTextArea : function(textArea){
+		resetTextArea : function(textArea, textCounter){
 			textArea.val(gM('qna-default-question-box-text'));
 			textArea.removeClass("qnaInterface qnaQuestionTextAreaTyping");
 			textArea.addClass("qnaInterface qnaQuestionTextAreaNotTyping");
+
+			if (textCounter) {
+                textCounter.text('0/' + NUM_OF_MAX_CHAR);
+			}
 		},
 
 		getHTML : function(){

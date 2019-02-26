@@ -91,9 +91,17 @@
     position: relative;
     width: 100%;
     float: right;
-    margin-right: 12px;
-    padding-top: 5px;
-    display:inline-block
+    box-sizing: border-box;
+    padding: 5px 12px 0 12px;
+}
+
+.qnaInterface .qnaButtonsContainer .qnaQuestionCharCounter{
+    float: left;
+    margin-top: -1px;
+    opacity: 0.5;
+    font-family: Lato;
+    font-size: 13pxqna-default-question-box-text;
+    color: #000000;
 }
 
 .qnaInterface .controlBarBtn{
