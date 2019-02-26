@@ -340,9 +340,7 @@
                     isAnswered = false;
                     $.cpObject.cpArray[questionNr].isAnswerd = true;
                 }
-                var answerValue = _this.i2q(selectedAnswer);
-                _this.KIVQApi.addAnswer(isAnswered,answerValue,_this.kQuizUserEntryId,questionNr,function(data){
-
+                _this.KIVQApi.addAnswer(isAnswered,_this.i2q(selectedAnswer),_this.kQuizUserEntryId,questionNr,function(data){
                     if (!_this.checkApiResponse('Add question err -->',data)){
                         return false;
                     }else {

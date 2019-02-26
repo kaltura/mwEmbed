@@ -97,7 +97,6 @@
                     }
                     if(openQuestionText){
                         quizSetAnswer["cuePoint:openAnswer"] = openQuestionText;
-                        // quizSetAnswer['cuePoint:answerKey'] = openQuestionText;
                     }
 
                     $.extend(quizSetAnswer, answerParams);

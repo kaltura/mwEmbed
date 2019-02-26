@@ -52,7 +52,7 @@
 			'wid': '_27017',
 			'uiconf_id': '43620632',
 			'flashvars': {
-					"ks":"",
+					"ks":"ZmUzMWQ4MDI4NDkyZmVlZjFkZWQwYTNhZWM1NmQyNzUyYTFmN2QwOHwyNzAxNzsyNzAxNzsxNTUxMjYzOTU3OzI7MTU1MTE3NzU1Ny4wMzQ4O2VpdGFuLmF2Z2lsQGthbHR1cmEuY29tO2Rpc2FibGVlbnRpdGxlbWVudCxhcHBpZDprbWM7Ow==",
 				"localizationCode": l,
 				'autoPlay': true,
 				'quiz': {
@@ -66,16 +66,25 @@
 				'streamerType': 'auto',
 			},
 
-			'entry_id': '0_h8zmjlvn',
+			'entry_id': '0_3u9bgoz3',
 
 			'readyCallback': function (playerId) {
 			}
 		});
 	}
 	$("#selectLang").change($.proxy(reload , _this) );
-    reload();
+	reload();
+	
+	var resize = function (w,h){
+		$(document.getElementById("kaltura_player_1434365991")).width(w).height(h);
+	}
 
 </script>
+
+<button onclick="resize(604,367)">604,367</button>
+<button onclick="resize(400,256)">400,256</button>
+<button onclick="resize(800,650)">800,650</button>
+<button onclick="resize(1671,499)">1671,499</button>
 
 
 </body>
