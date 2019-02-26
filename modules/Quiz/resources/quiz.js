@@ -2,7 +2,6 @@
  * Created by mark.feder Kaltura.
  *
  * */
-
 (function (mw, $) {
     "use strict";
     $.cpObject = {};
@@ -262,6 +261,7 @@
         },
 
         retakeSuccess : function(data){
+            var _this = this;
             if(data.objectType === "KalturaAPIException"){
                 //TODO handle BE errors 
             }else{
@@ -269,8 +269,13 @@
                 this.destroy();
                 // extract the id of new user entry from the new one 
                 this.KIVQModule.destroy();
-
-                this.KIVQModule.kQuizUserEntryId = data.id;
+                this.KIVQModule.setupQuiz().then(function(){
+                    _this.KIVQModule.getQuestionsAndAnswers(function(){
+                        _this.embedPlayer.stopPlayAfterSeek = false;
+                        _this.embedPlayer.seek(0,false);
+                        setTimeout(function(){ _this.ivqHideScreen()},500);
+                    })
+                })
             }
         },
 
@@ -322,11 +327,12 @@
             // verify focus in IE
             document.getElementById('welcome-continue-button').focus();
 
-            if (true || $.quizParams.retakes ){
+            if ($.quizParams.maxRetakesAllowed > 0){
                 var localedText = gM('mwe-quiz-available-tries');
                 // todo - retreive available retake # 
-                var retakes = 3;
-                localedText = localedText.split("|X|").join(retakes);
+                var availableRetakes = $.quizParams.maxRetakesAllowed
+                var retakes = _this.KIVQModule.retakes; // 0 is the 1st try, 1 is the first retake ... 
+                localedText = localedText.split("|X|").join(availableRetakes-retakes);
                 $(".retake-box").text(localedText);
             }
 
@@ -537,11 +543,9 @@
                 $(".sub-text").html(gM('mwe-quiz-completedQuiz'));
                 $(".bottomContainer").addClass("paddingB20");
             }
-            
 
-            // TODO - replace with real values once BE sends them to me 
-            var retakesTotal = 5;
-            var retakes = 2;
+            var retakesTotal = $.quizParams.maxRetakesAllowed;
+            var retakes = _this.KIVQModule.retakes;
             var localedText = gM('mwe-quiz-retake-btn');
             localedText = localedText.split("|X|").join(retakes);
             localedText = localedText.split("|Y|").join(retakesTotal);
@@ -903,17 +907,18 @@
             var buCotainerPos = _this.KIVQModule.quizEndFlow ? "bubble-cont bu-margin3":"bubble-cont bu-margin1";
 
             scrubber.parent().prepend('<div class="'+buCotainerPos+'"></div>');
-
-            $.each($.cpObject.cpArray, function (key, val) {
-                displayClass = val.isAnswerd ? "bubble bubble-ans " + buSize.bubbleAnsSize
+            if($.cpObject.cpArray){
+                $.each($.cpObject.cpArray, function (key, val) {
+                    displayClass = val.isAnswerd ? "bubble bubble-ans " + buSize.bubbleAnsSize
                     : "bubble bubble-un-ans " + buSize.bubbleUnAnsSize;
-
-                var pos = (Math.round(((val.startTime/embedPlayer.kalturaPlayerMetaData.msDuration)*100) * 10)/10)-1;
-                $('.bubble-cont').append($('<div id ="' + key + '" style="margin-left:' + pos + '%">' +
+                    
+                    var pos = (Math.round(((val.startTime/embedPlayer.kalturaPlayerMetaData.msDuration)*100) * 10)/10)-1;
+                    $('.bubble-cont').append($('<div id ="' + key + '" style="margin-left:' + pos + '%">' +
                     _this.KIVQModule.i2q(key) + ' </div>')
-                        .addClass(displayClass).attr('role', 'button').attr({'tabindex': 20 , "aria-label" : "Jump to Question "+ (key+1) }).on('keydown', _this.keyDownHandler)
-                );
-            });
+                    .addClass(displayClass).attr('role', 'button').attr({'tabindex': 20 , "aria-label" : "Jump to Question "+ (key+1) }).on('keydown', _this.keyDownHandler)
+                    );
+                });
+            }
 
             if (_this.KIVQModule.canSkip) {
                 handleBubbleclick = '.bubble';
@@ -968,6 +973,7 @@
         destroy : function(){
             $.cpObject = {};
             $.quizParams = {};
+            
             this.killBubbles();
 
         },

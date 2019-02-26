@@ -9,6 +9,7 @@
     if (!(mw.KIVQModule.prototype = {
             kQuizUserEntryId: null,
             score: null,
+            retakes: null,
             embedPlayer: null,
             quizPlugin: null,
             showGradeAfterSubmission: false,
@@ -87,6 +88,9 @@
                             _this.embedPlayer.sendNotification('activateBanSeek',dataForBanSeek);
                         }
                         if (data[0].totalCount > 0) {
+                            // grab retakes number
+                            _this.retakes = data[0].objects[0].version ? data[0].objects[0].version : 0; // support old quiz that do not have version
+                            
                             switch (String(data[0].objects[0].status)) {
                                 case 'quiz.3':
                                     if ($.quizParams.showGradeAfterSubmission) {
