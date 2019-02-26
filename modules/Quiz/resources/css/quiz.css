@@ -453,6 +453,10 @@ button.qContinue, button.qApplied {
     border-top: none;
 }
 
+#open-question-change-answer:disabled{
+    color: #CCD1D3;
+    cursor: default;
+}
 #open-question-change-answer{
     font-weight: bold;
     color: #333333;

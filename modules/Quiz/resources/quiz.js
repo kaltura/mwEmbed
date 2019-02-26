@@ -476,14 +476,19 @@
             interfaceElement.find("#open-question-clear").text(gM('mwe-quiz-open-question-clear'));
             interfaceElement.find("#open-question-save").text(gM('mwe-quiz-open-question-save'));
             interfaceElement.find("#open-question-change-answer").text(gM('mwe-quiz-open-question-change-answer'));
-
-            if ($.quizParams.allowAnswerUpdate && !this.KIVQModule.quizSubmitted ) {
-                // allow answers again 
-                interfaceElement.find("#open-question-change-answer").removeAttr("disabled");
+            // enter update-mode only if we have a previous answer value, AND allowed AND this quiz was not submitted yet
+            if ($.quizParams.allowAnswerUpdate && !this.KIVQModule.quizSubmitted && cPo.openAnswer ) {
+                // update open question mode 
                 interfaceElement.find("#open-question-change-answer").show();
                 interfaceElement.find(".open-question-textarea").removeAttr("disabled");
-            }else{
-                // Do not allow re-answering 
+            }else if(!this.KIVQModule.quizSubmitted && !cPo.openAnswer ){
+                // Normal mode 
+                // We have not submitted quiz yet but user had not filled this question yet - keep textarea enabled
+                interfaceElement.find("#open-question-change-answer").hide(); 
+                interfaceElement.find(".open-question-textarea").removeAttr("disabled");
+            }else {
+                // Not allowed to answer mode  
+                // Open question should be locked  
                 interfaceElement.find("#open-question-change-answer").hide();
                 interfaceElement.find(".open-question-textarea").attr("disabled", "disabled");
             }
