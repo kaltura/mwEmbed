@@ -53,18 +53,21 @@
                     deferred = $.Deferred();
 
                 _this.KIVQApi.getUserEntryIdAndQuizParams( function(data) {
+                    //validate data integrity 
                     if (!_this.checkApiResponse('User Entry err-->', data[0])) {
                         return false;
                     }
                     if (!_this.checkApiResponse('Quiz Params err-->', data[1])) {
                         return false;
                     }
-                    if ( !("uiAttributes" in data[1])) {
+                    var userEntryData = data[0];
+                    var quizParamsData = data[1];
+                    if ( !("uiAttributes" in quizParamsData)) {
                         deferred.reject(data, 'quiz is empty');
                         return deferred;
                     }
                     else {
-                        $.quizParams = data[1];
+                        $.quizParams = quizParamsData;
                         var dataForBanSeek = {
                             status: false,
                             alertText: ''
@@ -87,14 +90,15 @@
                         if(dataForBanSeek.status && !_this.canSkip){
                             _this.embedPlayer.sendNotification('activateBanSeek',dataForBanSeek);
                         }
-                        if (data[0].totalCount > 0) {
+                        // handle user entry 
+                        if (userEntryData.totalCount > 0) {
                             // grab retakes number
-                            _this.retakes = data[0].objects[0].version ? data[0].objects[0].version : 0; // support old quiz that do not have version
+                            _this.retakes = userEntryData.objects[0].version ? userEntryData.objects[0].version : 0; // support old quiz that do not have version
                             
-                            switch (String(data[0].objects[0].status)) {
+                            switch (String(userEntryData.objects[0].status)) {
                                 case 'quiz.3':
                                     if ($.quizParams.showGradeAfterSubmission) {
-                                        _this.score = Math.round(data[0].objects[0].score * 100);
+                                        _this.score = Math.round(userEntryData.objects[0].score * 100);
                                     }
                                     _this.quizSubmitted = true;
                                     break;
@@ -141,7 +145,6 @@
                 });
             },
             setUserEntryId:function(data){
-                
                 var _this = this;
                 if (data[0].totalCount > 0 &&  !$.isEmptyObject(data[0].objects[0])) {
                     mw.log('Quiz: Set user entry id');
@@ -290,7 +293,7 @@
                 var _this = this;
                 $.each($.cpObject.cpArray, function (key, val) {
                     if ($.cpObject.cpArray[key].startTime === cuePointObj.cuePoint.startTime) {
-                        _this.quizPlugin.ssSetCurrentQuestion(key,false);
+                        _this.quizPlugin.ssSetCurrentQuestion(key);
                     }
                 });
             },
@@ -597,9 +600,10 @@
                 this.KIVQApi.retake(callback);
             },
             destroy: function () {
-                var _this = this;
-                clearInterval(_this.intrVal);
-                _this.intrVal = null;
+                this.quizEndFlow = false;
+                this.quizSubmitted = false;
+                clearInterval(this.intrVal);
+                this.intrVal = null;
             },
             unloadQuizPlugin:function(embedPlayer){
               var _this = this;

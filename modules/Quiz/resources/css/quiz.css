@@ -796,6 +796,7 @@ ol.second-row{
 
 }
 .quizDone-cont{
+    z-index: 500;
     position: fixed;
     top: 71vh;
     left: 0;

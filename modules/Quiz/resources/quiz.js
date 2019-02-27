@@ -267,13 +267,13 @@
             }else{
                 // reset quiz and KIVQModule
                 this.destroy();
-                // extract the id of new user entry from the new one 
                 this.KIVQModule.destroy();
                 this.KIVQModule.setupQuiz().then(function(){
+                    // new quiz data is now loaded - proceed with CPs loading 
                     _this.KIVQModule.getQuestionsAndAnswers(function(){
                         _this.embedPlayer.stopPlayAfterSeek = false;
                         _this.embedPlayer.seek(0,false);
-                        setTimeout(function(){ _this.ivqHideScreen()},500);
+                        _this.ivqHideScreen()
                     })
                 })
             }
@@ -369,9 +369,9 @@
                 .on('click', function () {
                     _this.KIVQScreenTemplate.tmplHint();
                     $(".header-container").addClass('close-button')
-                        .on('click', function () {
-                            _this.ssSetCurrentQuestion(questionNr,true);
-                        })
+                        // .on('click', function () {
+                        //     _this.ssSetCurrentQuestion(questionNr);
+                        // })
                         .on('keydown', _this.keyDownHandler)
                         .attr({'role': 'button','tabindex': 5,'title':'Close hint','id': 'hint-close-button'})
                         .focus()
@@ -402,7 +402,7 @@
         },
         
         // This function is rendering a question screen
-        ssSetCurrentQuestion: function (questionNr,replaceContentNoReload) {
+        ssSetCurrentQuestion: function (questionNr) {
             var _this = this,cPo = $.cpObject.cpArray[questionNr];
 
             _this.ivqShowScreen();
@@ -437,7 +437,6 @@
                 // add answer to the list of all answers on this question
                 div.appendTo('.answers-container');
             });
-
             if (cPo.isAnswerd){
                 _this.showAnswered(cPo, questionNr);
             }
@@ -530,7 +529,7 @@
                             _this.KIVQScreenTemplate.tmplReviewAnswer();
                             _this.ssReviewAnswer(parseInt($(this).attr('id')));
                         }).attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer');
-                    $(document).off('click','.q-box-false:not(.reflection-point-question)')
+                        $(document).off('click','.q-box-false:not(.reflection-point-question)')
                         .on('click', '.q-box-false:not(.reflection-point-question)', function () {
                             _this.KIVQScreenTemplate.tmplReviewAnswer();
                             _this.ssReviewAnswer(parseInt($(this).attr('id')));
@@ -901,9 +900,7 @@
             var handleBubbleclick;
             var scrubber = embedPlayer.getInterface().find(".scrubber");
             var buSize = _this.KIVQModule.bubbleSizeSelector(_this.inFullScreen);
-
             _this.KIVQModule.hideQuizOnScrubber();
-
             var buCotainerPos = _this.KIVQModule.quizEndFlow ? "bubble-cont bu-margin3":"bubble-cont bu-margin1";
 
             scrubber.parent().prepend('<div class="'+buCotainerPos+'"></div>');
@@ -919,7 +916,6 @@
                     );
                 });
             }
-
             if (_this.KIVQModule.canSkip) {
                 handleBubbleclick = '.bubble';
             }
@@ -973,9 +969,7 @@
         destroy : function(){
             $.cpObject = {};
             $.quizParams = {};
-            
             this.killBubbles();
-
         },
         killBubbles : function(){
             // destroy bubbles events and UI
