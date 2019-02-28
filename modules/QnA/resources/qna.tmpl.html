@@ -7,7 +7,6 @@
 <div class="qnaModuleBackground" style="display: none">
     <div class="qnaQuestionArea">
         <div class="qnaQuestionBox">
-            <label class="qnaPipeLabel">|</label>
             <textarea class="qnaQuestionTextArea" rows="2" maxlength="500"></textarea>
             <div class="qnaButtonsContainer">
                 <button class="qnaPluginButton qnaSendButton controlBarBtn">s</button>
@@ -128,7 +127,6 @@
                                          'qnaReplyBoxSize': !isTypingAnswer(),
                                          'qnaReplyBoxPlaceHolderSize': isTypingAnswer()
                                  }">
-                                <label class="qnaReplyPipeLabel">|</label>
                                 <textarea class="qnaReplyTextArea"
                                           maxlength="500"
                                           rows="1"
@@ -145,7 +143,13 @@
                                                             touchstart:$parent.textAreaTouched,
                                                             keypress:$parent.replyOnEnter}">
                                 </textarea>
-                                <button class="qnaReplySendButton" data-bind="click: $parent.inThreadReply.bind($data, replyText), text: gM('qna-send-button-text')"></button>
+                                <div class="qnaButtonsContainer" data-bind="css:{
+                                         'qnaReplyBoxDisplayNone': !isTypingAnswer()
+                                    }">
+                                    <label class="qnaQuestionReplyCharCounter">count</label>
+                                    <button class="qnaPluginButton qnaReplySendButton controlBarBtn" data-bind="click: $parent.inThreadReply.bind($data, replyText), text: gM('qna-send-button-text')"></button>
+                                </div>
+
                             </div>
                         </div>
                     </div>

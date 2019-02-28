@@ -223,28 +223,6 @@
     transition: height 100ms;
 }
 
-.qnaInterface .qnaReplyPipeLabel{
-    background-color: transparent;
-    font-family: 'Lato', Helvetica, Arial;
-    font-size: 13px;
-    font-weight: 300;
-    line-height: 14px;
-    text-align: left;
-    color: #414442;
-    border: transparent;
-    border: none;
-    margin-top: 1px;
-    -webkit-box-shadow:	none;
-    -moz-box-shadow:	none;
-    box-shadow:			none;
-    width: 4px;
-    margin-left: 9px;
-    float: left;
-    cursor: default;
-    position: relative;
-    top: 3px;
-}
-
 .qnaInterface .qnaReplyTextArea{
     background-color: transparent;
     position: relative;
@@ -256,6 +234,7 @@
     text-align: left;
     border: none;
     margin-bottom: 4px;
+    margin-left: 13px;
     -webkit-box-shadow:	none;
     -moz-box-shadow:	none;
     box-shadow:			none;
@@ -296,25 +275,11 @@
 }
 
 .qnaInterface .qnaReplyBoxPlaceHolderSize{
-    height: 54px;
+    height: 72px;
 }
 
-.qnaInterface .qnaReplySendButton{
-    font-family: 'Lato', Helvetica, Arial;
-    width: 40px;
-    border: none;
-    background-color: transparent;
-    position: absolute;
-    font-size: 12px;
-    font-weight: 500;
-    bottom: 3px;
-    right: 11px;
-    color: #ffffff;
-    padding: 0px;
-}
-
-.qnaInterface .qnaReplySendButton:hover {
-    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);;
+.qnaInterface .qnaReplyBoxDisplayNone {
+    display: none;
 }
 
 /*background color for entries / threads*/
