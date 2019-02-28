@@ -363,11 +363,14 @@
         
         submitOpenQuestion: function(cuepoint){
             // we have the cuepoint and the value 
-            this.KIVQModule.submitAnswer(cuepoint.key,0,this.embedPlayer.getInterface().find(".open-question-textarea").val());
             cuepoint.openAnswer = this.embedPlayer.getInterface().find(".open-question-textarea").val();
+            this.KIVQModule.submitAnswer(cuepoint.key,0,cuepoint.openAnswer);
             this.selectedAnswer = null;
             var _this = this;
-            setTimeout(function(){_this.KIVQModule.checkIfDone(cuepoint.key)},_this.postAnswerTimer);
+            setTimeout(function(){
+                _this.KIVQModule.checkIfDone(cuepoint.key)
+            },
+            _this.postAnswerTimer);
         },
 
         // This function is rendering a question screen
