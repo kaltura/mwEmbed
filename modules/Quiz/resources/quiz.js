@@ -449,14 +449,18 @@
         buildOpenQuestion(cPo){
             var _this = this;
             var interfaceElement = this.embedPlayer.getInterface();
+            // clear button 
             interfaceElement.find("#open-question-clear")
+            .off()
             .click( $.proxy( function(){
                 interfaceElement.find(".open-question-textarea").val("").focus();
                 interfaceElement.find(".open-question-chars .chars").text("0");
                 interfaceElement.find("#open-question-clear,#open-question-save").attr("disabled", "disabled");
             }, _this ))
-
+            
+            // save and change-answer buttons 
             interfaceElement.find("#open-question-save,#open-question-change-answer ")
+            .off()
             .click( $.proxy( function(cuepoint){
                 if(interfaceElement.find(".open-question-textarea").val() == ""){
                     // dont send empty answer
@@ -465,8 +469,10 @@
                  this.submitOpenQuestion(cuepoint)
             }, _this , cPo ))
 
+            // textarea 
             interfaceElement.find(".open-question-textarea")
             .attr("placeholder",gM('mwe-quiz-open-question-add-answer-here'))
+            .off()
             .bind('change keyup paste', function() {
                 var charsLength = $(this).val().length;
                 interfaceElement.find(".open-question-chars .chars").text(charsLength);
@@ -476,10 +482,13 @@
                     interfaceElement.find("#open-question-clear,#open-question-save,#open-question-change-answer").removeAttr("disabled");
                 }
             });
+
+            // apply locale strings 
             interfaceElement.find("#open-question-clear").text(gM('mwe-quiz-open-question-clear'));
             interfaceElement.find("#open-question-save").text(gM('mwe-quiz-open-question-save'));
             interfaceElement.find("#open-question-change-answer").text(gM('mwe-quiz-open-question-change-answer'));
-            // enter update-mode only if we have a previous answer value, AND allowed AND this quiz was not submitted yet
+
+            // enter update-mode only if we have a previous answer value on the CP, AND allowed to change answer AND this quiz was not submitted yet
             if ($.quizParams.allowAnswerUpdate && !this.KIVQModule.quizSubmitted && cPo.openAnswer ) {
                 // update open question mode 
                 interfaceElement.find("#open-question-change-answer").show();
