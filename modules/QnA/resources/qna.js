@@ -393,13 +393,6 @@
 				.on('click', function(){
 					_this.submitQuestion();
 				});
-			var cancelButton = _this.getQnaContainer().find('.qnaCancelButton');
-			cancelButton.text(gM('qna-cancel-button-text'));
-			cancelButton
-				.off('click')
-				.on('click', function(){
-					_this.resetTextArea(textArea, questionCharCounter);
-				});
 
 			_this.resetTextArea(textArea, questionCharCounter);
 			textArea
