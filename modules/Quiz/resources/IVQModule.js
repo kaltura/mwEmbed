@@ -94,7 +94,6 @@
                         if (userEntryData.totalCount > 0) {
                             // grab retakes number
                             _this.retakes = userEntryData.objects[0].version ? userEntryData.objects[0].version : 0; // support old quiz that do not have version
-                            
                             switch (String(userEntryData.objects[0].status)) {
                                 case 'quiz.3':
                                     if ($.quizParams.showGradeAfterSubmission) {
@@ -384,10 +383,16 @@
                 var _this = this,anUnswered = _this.getUnansweredQuestNrs();
                 _this.embedPlayer.stopPlayAfterSeek = true;
                 if (anUnswered) {
+                    // there are still unanswered questions - show "almost done" screen 
                     _this.quizEndFlow = true;
                     _this.quizPlugin.ssAlmostDone(anUnswered);
                 }else if (!_this.quizSubmitted){
+                    // the quiz has unanswered questions and was not sumitted yet - show "submit" screen (ssAllCompleted)
                     _this.quizPlugin.ssAllCompleted();
+                }else if(!_this.quizEndFlow){
+                    // Quiz is already submitted - show the "submitted" screen
+                    _this.quizPlugin.ssSubmitted(_this.score); 
+
                 }
             },
             displayHex:function (hexPositionContDisplay,cpArray){
@@ -546,8 +551,8 @@
                 var _this = this;
                 mw.log("Quiz: Show Quiz on Scrubber");
                 _this.quizPlugin.displayBubbles();
-                //!_this.quizSubmitted for IOS9 Android5 &&
-                if (_this.quizEndFlow && !_this.quizSubmitted){
+                //!_this.quizSubmitted for IOS9 Android5.   _this.retakes is FEV-243
+                if ((_this.quizEndFlow && !_this.quizSubmitted) || _this.retakes ){
                     _this.showQuizEndOnScrubber();
                 }
             },
