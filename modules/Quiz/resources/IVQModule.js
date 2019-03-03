@@ -37,23 +37,19 @@
 
             init: function (embedPlayer,quizPlugin) {
                 var _this = this;
-                
                 _this.kQuizEntryId = embedPlayer.kentryid;
                 _this.KIVQApi = new mw.KIVQApi(embedPlayer);
                 _this.KIVQScreenTemplate = new mw.KIVQScreenTemplate(embedPlayer);
-                
                 this.destroy();
                 this.embedPlayer = embedPlayer;
                 this.quizPlugin = quizPlugin;
             },
-            
             setupQuiz:function(){
-                
                 var _this = this,
                     deferred = $.Deferred();
 
                 _this.KIVQApi.getUserEntryIdAndQuizParams( function(data) {
-                    //validate data integrity 
+                    // validate data integrity 
                     if (!_this.checkApiResponse('User Entry err-->', data[0])) {
                         return false;
                     }
@@ -133,7 +129,6 @@
             getQuestionsAndAnswers: function (callback) {
                 var _this = this;
                 _this.KIVQApi.getQuestionAnswerCuepoint(_this.kQuizEntryId, _this.kQuizUserEntryId, function(data){
-                    
                     if (!_this.checkApiResponse('Get question err -->',data[0])){
                         return false;
                     }
@@ -148,7 +143,6 @@
                 if (data[0].totalCount > 0 &&  !$.isEmptyObject(data[0].objects[0])) {
                     mw.log('Quiz: Set user entry id');
                     _this.kQuizUserEntryId = data[0].objects[0].id;
-
                 }
                 else{
                     _this.KIVQApi.createQuizUserEntryId(function(userData){

@@ -332,7 +332,7 @@
                 // todo - retreive available retake # 
                 var availableRetakes = $.quizParams.maxRetakesAllowed
                 var retakes = _this.KIVQModule.retakes; // 0 is the 1st try, 1 is the first retake ... 
-                localedText = localedText.split("|X|").join(availableRetakes-retakes);
+                localedText = localedText.split("|X|").join(availableRetakes-retakes); // locale : "|X| tries available for this quiz"
                 $(".retake-box").text(localedText);
             }
 
@@ -348,7 +348,6 @@
             $(".title-text").html(gM('mwe-quiz-almostDone'));
             $(".sub-text").html(gM('mwe-quiz-remainUnAnswered') + '</br>' + gM('mwe-quiz-pressRelevatToAnswer'))
             $(".confirm-box").html(gM('mwe-quiz-okGotIt')).attr("tabindex", 5).attr("title", gM('mwe-quiz-okGotIt')).on('keydown', _this.keyDownHandler);
-            
             $(document).off('click','.confirm-box')
                 .on('click', '.confirm-box', function () {
                     _this.embedPlayer.stopPlayAfterSeek = false;
@@ -369,9 +368,9 @@
                 .on('click', function () {
                     _this.KIVQScreenTemplate.tmplHint();
                     $(".header-container").addClass('close-button')
-                        // .on('click', function () {
-                        //     _this.ssSetCurrentQuestion(questionNr);
-                        // })
+                        .on('click', function () {
+                            _this.ssSetCurrentQuestion(questionNr);
+                        })
                         .on('keydown', _this.keyDownHandler)
                         .attr({'role': 'button','tabindex': 5,'title':'Close hint','id': 'hint-close-button'})
                         .focus()
@@ -545,9 +544,9 @@
 
             var retakesTotal = $.quizParams.maxRetakesAllowed;
             var retakes = _this.KIVQModule.retakes;
-            var localedText = gM('mwe-quiz-retake-btn');
-            localedText = localedText.split("|X|").join(retakes);
-            localedText = localedText.split("|Y|").join(retakesTotal);
+            var localedText = gM('mwe-quiz-retake-btn'); //  Locale : "Retake (|X|/|Y|)"
+            localedText = localedText.split("|X|").join(retakes); // assign retakes 
+            localedText = localedText.split("|Y|").join(retakesTotal); // assign total 
             $(".retake-btn").text(localedText).attr({"tabindex": 5,"title": localedText})
             .on('click',  $.proxy(this.retake,this))
             .on('keydown', _this.keyDownHandler)
