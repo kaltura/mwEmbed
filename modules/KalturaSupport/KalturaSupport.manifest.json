@@ -1645,6 +1645,16 @@
                 "doc": "Reason: Spam.",
                 "type": "string"
             },
+           "reasonCopyrightViolation": {
+                "label": "Reason: Copyright Violation",
+                "doc": "Reason: Copyright Violation.",
+                "type": "string"
+            },
+           "reasonTermsOfUseViolation": {
+                "label": "Reason: Terms Of Use Violation",
+                "doc": "Reason: Terms Of Use Violation.",
+                "type": "string"
+            },
             "minDescriptionLength": {
                 "label": "Minimum characters in description. 0 means no validation",
                 "doc": "Minimum characters in description. 0 means no validation",

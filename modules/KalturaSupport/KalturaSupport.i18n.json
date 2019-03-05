@@ -95,7 +95,9 @@
         "ks-MODERATION-REASON-SEX": "Sexual Content",
         "ks-MODERATION-REASON-VIOLENCE": "Violent Or Repulsive",
         "ks-MODERATION-REASON-HARMFUL": "Harmful Or Dangerous Act",
-        "ks-MODERATION-REASON-SPAM": "Spam / Commercials"
+        "ks-MODERATION-REASON-SPAM": "Spam / Commercials",
+        "ks-MODERATION-REASON-COPYRIGHT": "Copyright Violation",
+        "ks-MODERATION-REASON-TREMSOFUSE": "Terms Of Use Violation"
     },
     "fr": {
         "ks-UNAUTHORIZED_DOMAIN_TITLE": "Domaine non autoris�",

@@ -19,7 +19,9 @@
 			"reasonSex": gM("ks-MODERATION-REASON-SEX"),
 			"reasonViolence": gM("ks-MODERATION-REASON-VIOLENCE"),
 			"reasonHarmful": gM("ks-MODERATION-REASON-HARMFUL"),
-			"reasonSpam": gM("ks-MODERATION-REASON-SPAM")
+			"reasonSpam": gM("ks-MODERATION-REASON-SPAM"),
+			"reasonCopyrightViolation": gM("ks-MODERATION-REASON-COPYRIGHT"),
+			"reasonTermsOfUseViolation": gM("ks-MODERATION-REASON-TREMSOFUSE")
 		},
 
 		setup: function () {
@@ -80,7 +82,9 @@
 						$( '<option />' ).attr( {'value': 1, 'role':'option', 'aria-label':_this.getConfig( 'reasonSex' )} ).text( _this.getConfig( 'reasonSex' ) ),
 						$( '<option />' ).attr( {'value': 2, 'role':'option', 'aria-label':_this.getConfig( 'reasonViolence' )} ).text( _this.getConfig( 'reasonViolence' ) ),
 						$( '<option />' ).attr( {'value': 3, 'role':'option', 'aria-label':_this.getConfig( 'reasonHarmful' )} ).text( _this.getConfig( 'reasonHarmful' ) ),
-						$( '<option />' ).attr( {'value': 4, 'role':'option', 'aria-label':_this.getConfig( 'reasonSpam' )} ).text( _this.getConfig( 'reasonSpam' ) )
+						$( '<option />' ).attr( {'value': 4, 'role':'option', 'aria-label':_this.getConfig( 'reasonSpam' )} ).text( _this.getConfig( 'reasonSpam' ) ),
+						$( '<option />' ).attr( {'value': 5, 'role':'option', 'aria-label':_this.getConfig( 'reasonCopyrightViolation' )} ).text( _this.getConfig( 'reasonCopyrightViolation' ) ),
+						$( '<option />' ).attr( {'value': 6, 'role':'option', 'aria-label':_this.getConfig( 'reasonTermsOfUseViolation' )} ).text( _this.getConfig( 'reasonTermsOfUseViolation' ) )
 					)
 					.css({'width': '100%', 'height': '26px', 'margin': '10px 0 10px 0'})),
 				$( '<label for="flagComments">'+ gM("ks-MODERATION-PLACEHOLDER" ) +'</label>' ),
