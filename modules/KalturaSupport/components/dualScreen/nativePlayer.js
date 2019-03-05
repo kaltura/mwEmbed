@@ -85,7 +85,7 @@
         },
 
         supportsOptimisticSeeking: function supportsOptimisticSeeking() {
-            return !this.isABR();
+            return true;
         },
 
         supportsNativeHls: function supportsNativeHls() {
