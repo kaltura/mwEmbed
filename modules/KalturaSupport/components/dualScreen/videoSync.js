@@ -218,7 +218,7 @@
             this.eventListeners[controller.kMediaGroup] = eventsMap;
         },
         mediaGroupSync: function( controller, slaves ) {
-            if ( this.isSyncDelay || controller.stopped ) {
+            if ( this.isSyncDelay || (controller.stopped && !controller.seeking) ) {
                 return;
             }
             var synchDelayThresholdPositive = 0.05;
