@@ -564,10 +564,12 @@
                         $(this).delay(1000).fadeIn(function () {
                             _this.KIVQModule.quizEndFlow = false;
                             if (_this.embedPlayer.getPlayerElementTime() > 0) {
+                                console.log(">>>>1",);
                                 _this.ivqHideScreen();
                                 _this.embedPlayer.seek(0, false);
                             }
                             if (_this.getConfig("autoContinue")) {
+                                console.log(">>>>2",);
                                 _this.KIVQModule.continuePlay();
                             }
                         });
