@@ -424,10 +424,13 @@
 				else {
                     countNumOfChars(this);
 				}
+
+				return true;
 			});
 
             textArea.keyup(function() {
                 countNumOfChars(this);
+                return true;
             });
 
             function countNumOfChars(element) {

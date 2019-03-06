@@ -146,7 +146,8 @@
                                 <div class="qnaButtonsContainer" data-bind="css:{
                                          'qnaReplyBoxDisplayNone': !isTypingAnswer()
                                     }">
-                                    <label class="qnaQuestionReplyCharCounter">count</label>
+                                    <label class="qnaQuestionReplyCharCounter"
+                                           data-bind="text: $parent.updateNumOfChars(replyText)"></label>
                                     <button class="qnaPluginButton qnaReplySendButton controlBarBtn" data-bind="click: $parent.inThreadReply.bind($data, replyText), text: gM('qna-send-button-text')"></button>
                                 </div>
 
