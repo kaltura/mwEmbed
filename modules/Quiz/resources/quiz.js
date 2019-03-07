@@ -263,7 +263,7 @@
         retakeSuccess : function(data){
             var _this = this;
             if(data.objectType === "KalturaAPIException"){
-                //TODO handle BE errors 
+                _this.KIVQModule.errMsg('Error', data);
             }else{
                 // reset quiz and KIVQModule
                 this.destroy();
@@ -329,9 +329,8 @@
 
             if ($.quizParams.maxRetakesAllowed > 0){
                 var localedText = gM('mwe-quiz-available-tries');
-                // todo - retreive available retake # 
                 var availableRetakes = $.quizParams.maxRetakesAllowed
-                var retakes = _this.KIVQModule.retakes; // 0 is the 1st try, 1 is the first retake ... 
+                var retakes = _this.KIVQModule.retakeNumber; // 0 is the 1st try, 1 is the first retake ... 
                 localedText = localedText.split("|X|").join(availableRetakes-retakes); // locale : "|X| tries available for this quiz"
                 $(".retake-box").text(localedText);
             }
@@ -543,7 +542,7 @@
             }
 
             var retakesTotal = $.quizParams.maxRetakesAllowed;
-            var retakes = _this.KIVQModule.retakes;
+            var retakes = _this.KIVQModule.retakeNumber;
             var localedText = gM('mwe-quiz-retake-btn'); //  Locale : "Retake (|X|/|Y|)"
             localedText = localedText.split("|X|").join(retakes); // assign retakes 
             localedText = localedText.split("|Y|").join(retakesTotal); // assign total 

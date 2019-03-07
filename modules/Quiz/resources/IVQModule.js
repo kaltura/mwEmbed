@@ -9,7 +9,7 @@
     if (!(mw.KIVQModule.prototype = {
             kQuizUserEntryId: null,
             score: null,
-            retakes: null,
+            retakeNumber: null,
             embedPlayer: null,
             quizPlugin: null,
             showGradeAfterSubmission: false,
@@ -88,8 +88,7 @@
                         }
                         // handle user entry 
                         if (userEntryData.totalCount > 0) {
-                            // grab retakes number
-                            _this.retakes = userEntryData.objects[0].version ? userEntryData.objects[0].version : 0; // support old quiz that do not have version
+                            _this.retakeNumber = userEntryData.objects[0].version ? userEntryData.objects[0].version : 0; // support old quiz that do not have version
                             switch (String(userEntryData.objects[0].status)) {
                                 case 'quiz.3':
                                     if ($.quizParams.showGradeAfterSubmission) {
@@ -100,6 +99,7 @@
                                 case '1':
                                     break;
                                 case '2':
+                                    // TODO - check this 
                                     _this.errMsg('quiz deleted', data);
                                     return false;
                                     break;
@@ -546,7 +546,7 @@
                 mw.log("Quiz: Show Quiz on Scrubber");
                 _this.quizPlugin.displayBubbles();
                 //!_this.quizSubmitted for IOS9 Android5.   _this.retakes is FEV-243
-                if ((_this.quizEndFlow && !_this.quizSubmitted) || _this.retakes ){
+                if ((_this.quizEndFlow && !_this.quizSubmitted) || _this.retakeNumber ){
                     _this.showQuizEndOnScrubber();
                 }
             },
@@ -599,6 +599,8 @@
                 this.KIVQApi.retake(callback);
             },
             destroy: function () {
+                this.retakeNumber = undefined;
+                this.score = undefined;
                 this.quizEndFlow = false;
                 this.quizSubmitted = false;
                 clearInterval(this.intrVal);
@@ -612,7 +614,8 @@
                 embedPlayer.unbindHelper(_this.bindPostfix);
                 embedPlayer.removeJsListener(_this.bindPostfix);
                 _this.hideQuizOnScrubber();
-                mw.log("Quiz: Plugin Unloaded");            }
+                mw.log("Quiz: Plugin Unloaded");            
+            }
         })) {
     }
 })(window.mw, window.jQuery );
