@@ -364,7 +364,7 @@
         submitOpenQuestion: function(cuepoint){
             // we have the cuepoint and the value 
             cuepoint.openAnswer = this.embedPlayer.getInterface().find(".open-question-textarea").val();
-            this.KIVQModule.submitAnswer(cuepoint.key,0,cuepoint.openAnswer);
+            this.KIVQModule.submitAnswer(cuepoint.key,null,cuepoint.openAnswer);
             this.selectedAnswer = null;
             var _this = this;
             setTimeout(function(){

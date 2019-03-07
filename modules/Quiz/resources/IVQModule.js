@@ -329,7 +329,12 @@
                     return unanswerdArr;
                 }
             },
-
+            /**
+             * This serves reqular questions and also open-question. It is not expected to get both selectedAnswer and openQuestionText
+             * @param {*} questionNr 
+             * @param {*} selectedAnswer 
+             * @param {*} openQuestionText 
+             */
             submitAnswer:function(questionNr,selectedAnswer,openQuestionText){
                 var _this = this,isAnswered;
                 $.cpObject.cpArray[questionNr].selectedAnswer = selectedAnswer;

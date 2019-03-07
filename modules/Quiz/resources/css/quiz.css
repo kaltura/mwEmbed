@@ -396,7 +396,7 @@ button.qContinue, button.qApplied {
     top: 2.2vw;
 }
 .open-answer-footer{
-    border-top: solid 1px #CCD1D3;
+    border-top: solid 1px #5e5e5e;
     position: absolute;
     left: 0;
     bottom:0;
@@ -423,6 +423,7 @@ button.qContinue, button.qApplied {
     top: 0;
 }
 .open-question-textarea{
+    font-family: "Lato";
     border: none;
     resize: none;
     background: transparent;
@@ -431,10 +432,10 @@ button.qContinue, button.qApplied {
     top: 0;
     bottom: 20%;
     position: absolute;
-    color: #CCD1D3;
+    color: #FFFFFF;
     font-size: 14px;
     text-align: center;
-    font-weight: bold;
+    padding-top: 12px;
 }
 
 .answered .open-question-textarea{
