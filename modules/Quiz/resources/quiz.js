@@ -331,7 +331,14 @@
                 var localedText = gM('mwe-quiz-available-tries');
                 var availableRetakes = $.quizParams.maxRetakesAllowed
                 var retakes = _this.KIVQModule.retakeNumber; // 0 is the 1st try, 1 is the first retake ... 
-                localedText = localedText.split("|X|").join(availableRetakes-retakes); // locale : "|X| tries available for this quiz"
+                // TODO 
+                console.log(">>>> 11 ",(availableRetakes-retakes));
+                if((availableRetakes-retakes) <=1 || isNaN(availableRetakes-retakes) ){
+                    localedText = "";
+                }else{
+                    localedText = localedText.split("|X|").join(availableRetakes-retakes); // locale : "|X| tries available for this quiz"
+
+                }
                 $(".retake-box").text(localedText);
             }
 
@@ -546,10 +553,25 @@
             var localedText = gM('mwe-quiz-retake-btn'); //  Locale : "Retake (|X|/|Y|)"
             localedText = localedText.split("|X|").join(retakes); // assign retakes 
             localedText = localedText.split("|Y|").join(retakesTotal); // assign total 
-            $(".retake-btn").text(localedText).attr({"tabindex": 5,"title": localedText})
-            .on('click',  $.proxy(this.retake,this))
-            .on('keydown', _this.keyDownHandler)
 
+            console.log(">>>>",retakesTotal - retakes);
+            // Todo - change once BE changes this by -1 
+            if((retakesTotal - retakes) <=1 || !retakes || !_this.KIVQModule.currentScore || !_this.KIVQModule.scoreType ){
+                // there is no more trials 
+                $(".retake-btn,.retake-summary-text").hide();
+            }else{
+                // handle summary text 
+                var summaryText = gM('mwe-quiz-retake-summary'); //This is attempt |attempt| of |attempts|, your score is |score| based on |scoreType|,
+                summaryText = summaryText.split("|attempt|").join(retakes);
+                summaryText = summaryText.split("|attempts|").join(retakesTotal);
+                summaryText = summaryText.split("|score|").join(_this.KIVQModule.currentScore);
+                summaryText = summaryText.split("|scoreType|").join(gM('mwe-quiz-retake-scoretype-'+_this.KIVQModule.scoreType));
+                $(".retake-summary-text").text(summaryText)
+                // retake button 
+                $(".retake-btn").text(localedText).attr({"tabindex": 5,"title": localedText})
+                .on('click',  $.proxy(this.retake,this))
+                .on('keydown', _this.keyDownHandler)
+            }
 
 
             $(document).off('click','.confirm-box')
@@ -563,12 +585,10 @@
                         $(this).delay(1000).fadeIn(function () {
                             _this.KIVQModule.quizEndFlow = false;
                             if (_this.embedPlayer.getPlayerElementTime() > 0) {
-                                console.log(">>>>1",);
                                 _this.ivqHideScreen();
                                 _this.embedPlayer.seek(0, false);
                             }
                             if (_this.getConfig("autoContinue")) {
-                                console.log(">>>>2",);
                                 _this.KIVQModule.continuePlay();
                             }
                         });

@@ -121,6 +121,7 @@
     width: 77vw;
     cursor: default !important;
 }
+
 .retake-box{
     padding-top: 12px;
     color: #FFFFFF;	
@@ -181,6 +182,7 @@
 
 }
 
+.retake-summary-text,
 .sub-text{
     font-family: "LatoLight";
     font-size: 2.5vw;

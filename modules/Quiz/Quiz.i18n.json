@@ -46,8 +46,14 @@
     "mwe-quiz-next-question-disabled": "Next Question button - disabled",
     "mwe-quiz-previous-question": "Previous Question button - disabled",
     "mwe-quiz-previous-question-disabled": "Previous Question button - disabled",
-    "mwe-quiz-available-tries": "|X| tries available for this quiz",
-    "mwe-quiz-retake-btn": "Retake (|X| Available)"
+    "mwe-quiz-available-tries": "Total attempts available for this quiz: |X|",
+    "mwe-quiz-retake-summary": "This is attempt |attempt| of |attempts|, your score is |score| based on |scoreType|",
+    "mwe-quiz-retake-scoretype-1" : "Highest",
+    "mwe-quiz-retake-scoretype-2" : "Lowest",
+    "mwe-quiz-retake-scoretype-3" : "Latest",
+    "mwe-quiz-retake-scoretype-4" : "First",
+    "mwe-quiz-retake-scoretype-5" : "Average",
+    "mwe-quiz-retake-btn": "Take the Quiz again"
   },
   "de": {
     "mwe-quiz-Submitted": "Abgesendet",

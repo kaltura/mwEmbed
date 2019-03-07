@@ -9,6 +9,8 @@
     if (!(mw.KIVQModule.prototype = {
             kQuizUserEntryId: null,
             score: null,
+            currentScore: null ,
+            scoreType: null ,
             retakeNumber: null,
             embedPlayer: null,
             quizPlugin: null,
@@ -88,7 +90,10 @@
                         }
                         // handle user entry 
                         if (userEntryData.totalCount > 0) {
+                            // calculate how many times we are allowed to take this quiz 
                             _this.retakeNumber = userEntryData.objects[0].version ? userEntryData.objects[0].version : 0; // support old quiz that do not have version
+                            _this.currentScore = Math.round(userEntryData.objects[0].calculatedScore * 100);
+                            _this.scoreType = quizParamsData.scoreType ? quizParamsData.scoreType : 0; 
                             switch (String(userEntryData.objects[0].status)) {
                                 case 'quiz.3':
                                     if ($.quizParams.showGradeAfterSubmission) {
@@ -601,6 +606,8 @@
             destroy: function () {
                 this.retakeNumber = undefined;
                 this.score = undefined;
+                this.currentScore = undefined ,
+                this.scoreType = undefined ,
                 this.quizEndFlow = false;
                 this.quizSubmitted = false;
                 clearInterval(this.intrVal);

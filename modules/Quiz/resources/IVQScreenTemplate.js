@@ -69,6 +69,7 @@
                     '<div class="ivqContainer submitted">' +
                     '   <div class="title-text"></div>' +
                     '   <div class="sub-text"></div>' +
+                    '   <div class="retake-summary-text"></div>' +
                     '   <div class="display-all-container">' +
                     '       <div class ="hex-row">' +
                     '           <div class="hex-column  left-arrow" style="display: none;"></div>' +
