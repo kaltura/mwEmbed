@@ -359,6 +359,7 @@ button.qContinue, button.qApplied {
     position: absolute;
     font-size: 14px;
     height: 70%;
+    max-height:24px; 
     width: 87px;
     border-radius: 3px;
     box-shadow: 0 0 2px 0 rgba(0,0,0,0.24);
