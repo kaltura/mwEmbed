@@ -614,7 +614,7 @@
                 embedPlayer.unbindHelper(_this.bindPostfix);
                 embedPlayer.removeJsListener(_this.bindPostfix);
                 _this.hideQuizOnScrubber();
-                mw.log("Quiz: Plugin Unloaded");            
+                mw.log("Quiz: Plugin Unloaded");     
             }
         })) {
     }
