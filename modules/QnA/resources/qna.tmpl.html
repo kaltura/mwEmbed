@@ -7,15 +7,12 @@
 <div class="qnaModuleBackground" style="display: none">
     <div class="qnaQuestionArea">
         <div class="qnaQuestionBox">
-            <label class="qnaPipeLabel">|</label>
-            <textarea class="qnaQuestionTextArea" rows="2" maxlength="200"></textarea>
-        </div>
-        <div class="qnaQuestionButtonsArea">
+            <textarea class="qnaQuestionTextArea" rows="2" maxlength="500"></textarea>
             <div class="qnaButtonsContainer">
                 <button class="qnaPluginButton qnaSendButton controlBarBtn">s</button>
-                <label class="qnaButtonsPipeLabel">|</label>
-                <button class="qnaPluginButton qnaCancelButton controlBarBtn">c</button>
+                <label class="qnaQuestionCharCounter">count</label>
             </div>
+            <div class="line-separator"></div>
         </div>
     </div>
 
@@ -131,9 +128,8 @@
                                          'qnaReplyBoxSize': !isTypingAnswer(),
                                          'qnaReplyBoxPlaceHolderSize': isTypingAnswer()
                                  }">
-                                <label class="qnaReplyPipeLabel">|</label>
                                 <textarea class="qnaReplyTextArea"
-                                          maxlength="200"
+                                          maxlength="500"
                                           rows="1"
                                           data-bind="   css:{   'qnaReplyTextAreaText': isTypingAnswer(),
                                                                 'qnaReplyTextAreaPlaceHolderText': !isTypingAnswer(),
@@ -148,7 +144,14 @@
                                                             touchstart:$parent.textAreaTouched,
                                                             keypress:$parent.replyOnEnter}">
                                 </textarea>
-                                <button class="qnaReplySendButton" data-bind="click: $parent.inThreadReply.bind($data, replyText), text: gM('qna-send-button-text')"></button>
+                                <div class="qnaButtonsContainer" data-bind="css:{
+                                         'qnaReplyBoxDisplayNone': !isTypingAnswer()
+                                    }">
+                                    <label class="qnaQuestionReplyCharCounter"
+                                           data-bind="text: $parent.updateNumOfChars(replyText)"></label>
+                                    <button class="qnaPluginButton qnaReplySendButton controlBarBtn" data-bind="click: $parent.inThreadReply.bind($data, replyText), text: gM('qna-send-button-text')"></button>
+                                </div>
+
                             </div>
                         </div>
                     </div>
