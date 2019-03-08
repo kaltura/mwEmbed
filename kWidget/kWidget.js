@@ -1060,6 +1060,7 @@
 		},
 
 		getProtocol: function() {
+			return "https";
             var protocolString = window.location.protocol.slice(0, -1);
             if (protocolString.match('^http')) {
             	return protocolString;
