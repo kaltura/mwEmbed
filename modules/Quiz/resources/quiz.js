@@ -331,13 +331,20 @@
                 var localedText = gM('mwe-quiz-available-tries');
                 var availableRetakes = $.quizParams.attemptsAllowed
                 var retakes = _this.KIVQModule.retakeNumber; // 0 is the 1st try, 1 is the first retake ... 
-                // TODO 
-                console.log(">>>> 11 ",(availableRetakes-retakes));
-                if((availableRetakes-retakes) <=1 || isNaN(availableRetakes-retakes) ){
+                if(availableRetakes <= retakes ){
                     localedText = "";
                 }else{
-                    localedText = localedText.split("|X|").join(availableRetakes-retakes); // locale : "|X| tries available for this quiz"
-
+                    var attempts = availableRetakes-retakes;
+                    if(isNaN(attempts)){
+                        // this is in case this is the 1st load of the quiz 
+                        attempts = availableRetakes
+                    }
+                    // edge case - when we have 1 attempts - show nothing (1 attempt is the last attempt) 
+                    if(attempts != 1){
+                        localedText = localedText.split("|X|").join(attempts); // locale : "Total attempts available for this quiz: |X|"
+                    }else{
+                        localedText = "";
+                    }
                 }
                 $(".retake-box").text(localedText);
             }
@@ -606,6 +613,8 @@
         },
         ssSubmitted: function (score) {
             var _this = this,cpArray = $.cpObject.cpArray;
+            // TODO - pass this to IVQ module 
+            _this.latestScore = score;
             _this.ivqShowScreen();
             _this.KIVQScreenTemplate.tmplSubmitted();
 
@@ -650,24 +659,29 @@
             }
 
             var retakesTotal = $.quizParams.attemptsAllowed;
-            var retakes = _this.KIVQModule.retakeNumber;
+            var currentRetake = _this.KIVQModule.retakeNumber;
             var localedText = gM('mwe-quiz-retake-btn'); //  Locale : "Retake (|X|/|Y|)"
-            localedText = localedText.split("|X|").join(retakes); // assign retakes 
+            localedText = localedText.split("|X|").join(currentRetake); // assign retakes 
             localedText = localedText.split("|Y|").join(retakesTotal); // assign total 
-
-            console.log(">>>>",retakesTotal - retakes);
+            console.log(">>>>",retakesTotal - currentRetake);
             // Todo - change once BE changes this by -1 
-            if((retakesTotal - retakes) <=1 || !retakes || !_this.KIVQModule.currentScore || !_this.KIVQModule.scoreType ){
+            // if((retakesTotal - currentRetake) <=1 || !currentRetake || !_this.KIVQModule.currentScore || !_this.KIVQModule.scoreType ){
+            if(retakesTotal <= (currentRetake + 1)  ){
                 // there is no more trials 
                 $(".retake-btn,.retake-summary-text").hide();
             }else{
                 // handle summary text 
                 var summaryText = gM('mwe-quiz-retake-summary'); //This is attempt |attempt| of |attempts|, your score is |score| based on |scoreType|,
-                summaryText = summaryText.split("|attempt|").join(retakes);
+                summaryText = summaryText.split("|attempt|").join(currentRetake+1);
                 summaryText = summaryText.split("|attempts|").join(retakesTotal);
-                summaryText = summaryText.split("|score|").join(_this.KIVQModule.currentScore);
+                var score = _this.KIVQModule.currentScore;
+                // handle 1st submit 
+                if(isNaN(score) && _this.latestScore){
+                    score = _this.latestScore;
+                }
+                summaryText = summaryText.split("|score|").join(score);
                 summaryText = summaryText.split("|scoreType|").join(gM('mwe-quiz-retake-scoretype-'+_this.KIVQModule.scoreType));
-                $(".retake-summary-text").text(summaryText)
+                $(".retake-summary-text").text("") // TODO 
                 // retake button 
                 $(".retake-btn").text(localedText).attr({"tabindex": 5,"title": localedText})
                 .on('click',  $.proxy(this.retake,this))
