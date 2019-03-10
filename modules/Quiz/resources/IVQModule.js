@@ -67,6 +67,7 @@
                     }
                     else {
                         $.quizParams = quizParamsData;
+                        _this.scoreType = quizParamsData.scoreType ? quizParamsData.scoreType : 0; 
                         var dataForBanSeek = {
                             status: false,
                             alertText: ''
@@ -94,7 +95,6 @@
                             // calculate how many times we are allowed to take this quiz 
                             _this.retakeNumber = userEntryData.objects[0].version ? userEntryData.objects[0].version : 0; // support old quiz that do not have version
                             _this.currentScore = Math.round(userEntryData.objects[0].calculatedScore * 100);
-                            _this.scoreType = quizParamsData.scoreType ? quizParamsData.scoreType : 0; 
                             switch (String(userEntryData.objects[0].status)) {
                                 case 'quiz.3':
                                     if ($.quizParams.showGradeAfterSubmission) {
@@ -615,7 +615,6 @@
                 this.KIVQApi.retake(callback);
             },
             destroy: function () {
-                this.retakeNumber = undefined;
                 this.score = undefined;
                 this.currentScore = undefined ,
                 this.scoreType = undefined ,
