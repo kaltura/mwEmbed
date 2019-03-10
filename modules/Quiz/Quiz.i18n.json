@@ -28,6 +28,7 @@
     "mwe-quiz-pressRelevatToAnswer": "You must answer all questions before you can submit",
     "mwe-quiz-q": "Q:",
     "mwe-quiz-question": "QUESTION",
+    "mwe-quiz-question-number": "Question",
     "mwe-quiz-remainUnAnswered": "It appears that some questions remained unanswered",
     "mwe-quiz-review": "Review",
     "mwe-quiz-reviewNextQ": "REVIEW NEXT QUESTION",
@@ -45,6 +46,10 @@
     "mwe-quiz-next-question": "Next Question button",
     "mwe-quiz-next-question-disabled": "Next Question button - disabled",
     "mwe-quiz-previous-question": "Previous Question button - disabled",
+    "mwe-quiz-open-question-add-answer-here": "Add your answer here",
+    "mwe-quiz-open-question-change-answer": "Change Answer",
+    "mwe-quiz-open-question-clear": "Clear",
+    "mwe-quiz-open-question-save": "Save"
     "mwe-quiz-previous-question-disabled": "Previous Question button - disabled",
     "mwe-quiz-available-tries": "Total attempts available for this quiz: |X|",
     "mwe-quiz-retake-summary": "This is attempt |attempt| of |attempts|, your score is |score| based on |scoreType|",

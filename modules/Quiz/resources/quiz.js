@@ -21,14 +21,14 @@
             autoContinue: true,
             previewPlayerEnabled: false
         },
-
+        postAnswerTimer : 1800,
         isSeekingIVQ:false,
         inFullScreen:false,
         selectedAnswer:null,
         seekToQuestionTime:null,
         multiStreamWelcomeSkip:false,
         relatedStreamChanging:false,
-        IVQVer:'IVQ-2.41.rc2',
+        IVQVer:'IVQ-2.74.rc1',
         ivqShowScreenMode: false,
 
         setup: function () {
@@ -406,10 +406,21 @@
                 })
         },
         
+        submitOpenQuestion: function(cuepoint){
+            // we have the cuepoint and the value 
+            cuepoint.openAnswer = this.embedPlayer.getInterface().find(".open-question-textarea").val();
+            this.KIVQModule.submitAnswer(cuepoint.key,null,cuepoint.openAnswer);
+            this.selectedAnswer = null;
+            var _this = this;
+            setTimeout(function(){
+                _this.KIVQModule.checkIfDone(cuepoint.key)
+            },
+            _this.postAnswerTimer);
+        },
+
         // This function is rendering a question screen
         ssSetCurrentQuestion: function (questionNr) {
             var _this = this,cPo = $.cpObject.cpArray[questionNr];
-
             _this.ivqShowScreen();
             _this.KIVQScreenTemplate.tmplQuestion();
 
@@ -442,8 +453,37 @@
                 // add answer to the list of all answers on this question
                 div.appendTo('.answers-container');
             });
+
+            // OPEN QUESTION
+            var interfaceElement = this.embedPlayer.getInterface();
+
+            if(cPo.questionType == this.KIVQModule.QUESTIONS_TYPE.OPEN_QUESTION){
+                this.buildOpenQuestion(cPo);
+            }
+
             if (cPo.isAnswerd){
-                _this.showAnswered(cPo, questionNr);
+                if(cPo.questionType == this.KIVQModule.QUESTIONS_TYPE.OPEN_QUESTION){
+                    // this is an open question - we need to fill the value from the coresponding answer CP
+                    // and ,anipulate the UI to support changes. 
+                    if(cPo.openAnswer){
+                        interfaceElement.find(".ivqContainer").addClass("answered");
+                        interfaceElement.find(".open-question-textarea").val(cPo.openAnswer);
+                        interfaceElement.find("#open-question-clear,#open-question-save")
+                        .attr("disabled", "disabled");
+                        interfaceElement.find("#open-question-save")
+                        .text(gM('mwe-quiz-open-question-change-answer'));
+                        interfaceElement.find(".open-answer-container").addClass("allow-change");
+                    } else {
+                        // reset UI elements to save in case a previous open question was already answered 
+                        interfaceElement.find("#open-question-save")
+                        .text(gM('mwe-quiz-open-question-save'));
+                        interfaceElement.find("#open-question-clear,#open-question-save")
+                        .removeAttr("disabled");
+
+                    }                  
+                }else{
+                    _this.showAnswered(cPo, questionNr);
+                }
             }
             else {
                 if (_this.isReflectionPoint(cPo)) {
@@ -453,11 +493,72 @@
             }
             this.addFooter(questionNr);
         },
+        buildOpenQuestion(cPo){
+            var _this = this;
+            var interfaceElement = this.embedPlayer.getInterface();
+            // clear button 
+            interfaceElement.find("#open-question-clear")
+            .off()
+            .click( $.proxy( function(){
+                interfaceElement.find(".open-question-textarea").val("").focus();
+                interfaceElement.find(".open-question-chars .chars").text("0");
+                interfaceElement.find("#open-question-clear,#open-question-save").attr("disabled", "disabled");
+            }, _this ))
+            
+            // save and change-answer buttons 
+            interfaceElement.find("#open-question-save,#open-question-change-answer ")
+            .off()
+            .click( $.proxy( function(cuepoint){
+                if(interfaceElement.find(".open-question-textarea").val() == ""){
+                    // dont send empty answer
+                    return;
+                }
+                 this.submitOpenQuestion(cuepoint)
+            }, _this , cPo ))
+
+            // textarea 
+            interfaceElement.find(".open-question-textarea")
+            .attr("placeholder",gM('mwe-quiz-open-question-add-answer-here'))
+            .off()
+            .bind('change keyup paste', function() {
+                var charsLength = $(this).val().length;
+                interfaceElement.find(".open-question-chars .chars").text(charsLength);
+                if(charsLength==0){
+                    interfaceElement.find("#open-question-clear,#open-question-save,#open-question-change-answer").attr("disabled", "disabled");
+                }else{
+                    interfaceElement.find("#open-question-clear,#open-question-save,#open-question-change-answer").removeAttr("disabled");
+                }
+            });
+
+            // apply locale strings 
+            interfaceElement.find("#open-question-clear").text(gM('mwe-quiz-open-question-clear'));
+            interfaceElement.find("#open-question-save").text(gM('mwe-quiz-open-question-save'));
+            interfaceElement.find("#open-question-change-answer").text(gM('mwe-quiz-open-question-change-answer'));
+
+            // enter update-mode only if we have a previous answer value on the CP, AND allowed to change answer AND this quiz was not submitted yet
+            if ($.quizParams.allowAnswerUpdate && !this.KIVQModule.quizSubmitted && cPo.openAnswer ) {
+                // update open question mode 
+                interfaceElement.find("#open-question-change-answer").show();
+                interfaceElement.find(".open-question-textarea").removeAttr("disabled");
+            }else if(!this.KIVQModule.quizSubmitted && !cPo.openAnswer ){
+                // Normal mode 
+                // We have not submitted quiz yet but user had not filled this question yet - keep textarea enabled
+                interfaceElement.find("#open-question-change-answer").hide(); 
+                interfaceElement.find(".open-question-textarea").removeAttr("disabled");
+            }else {
+                // Not allowed to answer mode  
+                // Open question should be locked  
+                interfaceElement.find("#open-question-change-answer").hide();
+                interfaceElement.find(".open-question-textarea").attr("disabled", "disabled");
+            }
+        },
 
         getClassByCPType: function(cpTypeId){
             switch (cpTypeId) {
                 case this.KIVQModule.QUESTIONS_TYPE.TRUE_FALSE:
                     return 'true-false-question';
+                case this.KIVQModule.QUESTIONS_TYPE.OPEN_QUESTION:
+                    return 'open-question';
                 case this.KIVQModule.QUESTIONS_TYPE.REFLECTION_POINT:
                     return 'reflection-point-question';
                 case this.KIVQModule.QUESTIONS_TYPE.MULTIPLE_ANSWER_QUESTION:
@@ -609,6 +710,7 @@
             if ($.cpObject.cpArray[selectedQuestion].explanation ){
                 _this.ssDisplayWhy(selectedQuestion)
             }
+            $(".reviewAnswerPrefix").append(gM('mwe-quiz-question-number'));
             $(".reviewAnswerNr").append(_this.KIVQModule.i2q(selectedQuestion));
             //$(".theQuestion").html(gM('mwe-quiz-q') + "  " + $.cpObject.cpArray[selectedQuestion].question);
             $(".theQuestion").html(this.wrapLinksWithTags($.cpObject.cpArray[selectedQuestion].question));
@@ -618,20 +720,27 @@
                 $(".yourAnswer").addClass("wrongAnswer")
             }
             $(".correctAnswerText").html(gM('mwe-quiz-correctAnswer'));
-
+            
             $(".correctAnswer").html(function () {
                 if (!$.isEmptyObject($.cpObject.cpArray[selectedQuestion].correctAnswerKeys)) {
-
+                    
                     return $.cpObject.cpArray[selectedQuestion]
-                        .answeres[
+                    .answeres[
                         _this.KIVQModule.q2i($.cpObject.cpArray[selectedQuestion].correctAnswerKeys[0].value)
-                        ];
+                    ];
                 }
                 else {return " "}
             });
             $('.gotItBox').html(gM('mwe-quiz-gotIt')).bind('click', function () {
                 _this.ssSubmitted(_this.KIVQModule.score);
             }).attr('role', 'button').attr('tabindex', '5').focus().on('keydown', _this.keyDownHandler);
+            
+            // handle open quesition 
+            if($.cpObject.cpArray[selectedQuestion].questionType === this.KIVQModule.QUESTIONS_TYPE.OPEN_QUESTION 
+                && $.cpObject.cpArray[selectedQuestion].openAnswer){
+                $(".yourAnswer").html($.cpObject.cpArray[selectedQuestion].openAnswer);
+                $(".correctAnswerText").html("");
+            }
         },
         showSelectedQuestion:function(questionNr){
             var _this = this;
@@ -739,7 +848,7 @@
             });
             _this.KIVQModule.submitAnswer(questionNr,_this.selectedAnswer);
             _this.selectedAnswer = null;
-            setTimeout(function(){_this.KIVQModule.checkIfDone(questionNr)},1800);
+            setTimeout(function(){_this.KIVQModule.checkIfDone(questionNr)},_this.postAnswerTimer);
         },
 
         showPortraitWarning:function(){

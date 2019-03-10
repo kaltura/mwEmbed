@@ -35,6 +35,7 @@
                 FILL_IN_BLANK: 5,
                 HOT_SPOT: 6,
                 GO_TO: 7,
+                OPEN_QUESTION: 8,
             },
 
             init: function (embedPlayer,quizPlugin) {
@@ -197,6 +198,7 @@
                 var cpArray = [];
                 for (var i = 0; i < (data[0].objects.length); i++) {
                     var arr = [];
+                    // data[0] refers to the questions 
                     $.each(data[0].objects[i].optionalAnswers, function (key, value) {
                         if(value.text){
                             arr.push(value.text.toString());
@@ -210,6 +212,7 @@
                         correctAnswerKeys: null,
                         explanation: null
                     };
+                    // data[1] refers to the answers by this user 
                     if (!$.isEmptyObject(data[1].objects)) {
                         $.grep(data[1].objects, function (el) {
                             if (el.parentId === data[0].objects[i].id) {
@@ -219,6 +222,9 @@
                                 ansP.isCorrect = el.isCorrect;
                                 ansP.correctAnswerKeys = el.correctAnswerKeys;
                                 ansP.explanation = el.explanation;
+                                if(el.openAnswer){
+                                    ansP.openAnswer = el.openAnswer;
+                                }
                                 return el
                             }
                         });
@@ -237,6 +243,7 @@
                         cpId: data[0].objects[i].id,
                         cpEntryId: data[0].objects[i].entryId,
                         answerCpId: ansP.answerCpId,
+                        openAnswer: ansP.openAnswer,
                         questionType: data[0].objects[i].questionType,
                     });
                 }
@@ -331,12 +338,15 @@
                     return unanswerdArr;
                 }
             },
-
-            submitAnswer:function(questionNr,selectedAnswer){
+            /**
+             * This serves reqular questions and also open-question. It is not expected to get both selectedAnswer and openQuestionText
+             * @param {*} questionNr 
+             * @param {*} selectedAnswer 
+             * @param {*} openQuestionText 
+             */
+            submitAnswer:function(questionNr,selectedAnswer,openQuestionText){
                 var _this = this,isAnswered;
-
                 $.cpObject.cpArray[questionNr].selectedAnswer = selectedAnswer;
-
                 if ($.cpObject.cpArray[questionNr].isAnswerd) {
                     isAnswered = true;
                 }
@@ -344,15 +354,13 @@
                     isAnswered = false;
                     $.cpObject.cpArray[questionNr].isAnswerd = true;
                 }
-
                 _this.KIVQApi.addAnswer(isAnswered,_this.i2q(selectedAnswer),_this.kQuizUserEntryId,questionNr,function(data){
-
                     if (!_this.checkApiResponse('Add question err -->',data)){
                         return false;
                     }else {
                         $.cpObject.cpArray[questionNr].answerCpId = data.id;
                     }
-                })
+                },openQuestionText);
             },
             bubbleSizeSelector: function (isFullScreen) {
                 var _this = this, buObj = {bubbleAnsSize: "", bubbleUnAnsSize: ""};
@@ -492,6 +500,9 @@
                     })();
                     if(data.questionType === _this.QUESTIONS_TYPE.REFLECTION_POINT){
                         questionHexType += ' reflection-point-question';
+                    }
+                    if(data.questionType === _this.QUESTIONS_TYPE.OPEN_QUESTION){
+                        questionHexType += ' open-question';
                     }
                     $(el).addClass(questionHexType).attr("id", data.key).append(_this.i2q(data.key));
                     $(el).append('<div class="mask" />')

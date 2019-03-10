@@ -52,7 +52,6 @@
                     }];
 
                     _this.getKClient().doRequest(getCp, function (data) {
-
                         callback(data);
                     });
                 };
@@ -72,7 +71,7 @@
                     });
 
                 };
-                this.addAnswer = function(isAnswered,selectedAnswer,kQuizUserEntryId,questionNr,callback){
+                this.addAnswer = function(isAnswered,selectedAnswer,kQuizUserEntryId,questionNr,callback,openQuestionText){
 
                     var _this = this,answerParams = {};
                     var quizSetAnswer = {
@@ -95,6 +94,9 @@
                             'cuePoint:parentId': $.cpObject.cpArray[questionNr].cpId,
                             'cuePoint:startTime': '0'
                         };
+                    }
+                    if(openQuestionText){
+                        quizSetAnswer["cuePoint:openAnswer"] = openQuestionText;
                     }
 
                     $.extend(quizSetAnswer, answerParams);

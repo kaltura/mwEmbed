@@ -39,6 +39,17 @@
                     '       <div class="display-question"></div>' +
                     '   </div>' +
                     '   <div class="answers-container"></div>' +
+                    '   <div class="open-answer-container">'+
+                    '       <div class="open-answer-inner">'+
+                    '            <textarea class="open-question-textarea" maxlength="500" tabindex="5"></textarea>'+ 
+                    '            <div class="open-answer-footer">' +
+                    '                <div class="open-question-chars"><span class="chars">0</span>/270</div>' +
+                    '                <button id="open-question-clear" tabindex="5" disabled="disabled"></button>' +
+                    '                <button id="open-question-save" tabindex="5" disabled="disabled"></button>' +
+                    '                <button id="open-question-change-answer" tabindex="5" disabled="disabled"></button>' +
+                    '            </div>' +                   
+                    '       </div>' +
+                    '   </div>' +
                     '   <div class = "ftr-container">' +
                     '       <div class="ftr-left"></div>' +
                     '       <div class="ftr-right"></div>' +
@@ -51,15 +62,19 @@
                 $(_this.emptyScreen()).hide().append(
                     '<div class="ivqContainer">'+
                     '   <div class="header-container"></div>'+
-                    '   <div class = "reviewAnswerNr"> </div>'+
                     '   <div class ="reviewAnswerPlace" >'+
                     '       <div class="theQuestion"></div>'+
-                    '       <div class="yourAnswerText"></div>'+
-                    '       <div class="yourAnswer"></div>'+
                     '       <div class="correctAnswerText"></div>'+
                     '       <div class="correctAnswer"></div>'+
+                    '       <div class="yourAnswerText"></div>'+
+                    '       <div class="yourAnswer"></div>'+
                     '   </div>'+
-                    '<div class="gotItBox"></div></div>').fadeIn( "fast" );
+                    '   <div class ="reviewAnswerFooter" >'+
+                    '       <span class = "reviewAnswerPrefix"></span>'+
+                    '       <div class = "reviewAnswerNr"> </div>'+
+                    '       <div class="gotItBox"></div>'+
+                    '   </div>'+
+                    '</div>').fadeIn( "fast" );
 
             },
             tmplSubmitted:function(){
