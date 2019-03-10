@@ -22,7 +22,7 @@
                         'filter:objectType': 'KalturaQuizUserEntryFilter',
                         'filter:entryIdEqual': _this.embedPlayer.kentryid,
                         'filter:userIdEqualCurrent':'1',
-                        'filter:orderBy': '-createdAt'
+                        'filter:orderBy': '-version'
                     }, {
                         'service': 'quiz_quiz',
                         'action': 'get',
@@ -30,7 +30,6 @@
                     }];
 
                     _this.getKClient().doRequest(getQuizuserEntryIdAndQuizParams, function (data) {
-
                         callback(data);
                     });
                 };
@@ -56,6 +55,7 @@
                         callback(data);
                     });
                 };
+
 
                 this.createQuizUserEntryId = function(callback){
 
@@ -131,6 +131,9 @@
                         callback(data);
                     });
                 };
+            },
+            retake: function (callback){
+                this.createQuizUserEntryId(callback);
             },
             destroy: function () {
 

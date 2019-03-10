@@ -2066,6 +2066,14 @@ mw.KWidgetSupport.prototype = {
 			srcUrl += '&ks=' + ks;
 		}
 
+		var uiVarsAsUrlParams = ['minBitrate', 'maxBitrate'];
+		$.each(uiVarsAsUrlParams, function (index, name) {
+			var value = embedPlayer.getFlashvars(name);
+			if (value) {
+				srcUrl += '&' + name + '=' + encodeURIComponent(value);
+			}
+		});
+
 		//add source
 		mw.log( 'KWidgetSupport::addLiveEntrySource: Add Live Entry Source - ' + srcUrl );
 		var liveSource = embedPlayer.mediaElement.tryAddSource(

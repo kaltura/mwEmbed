@@ -1,5 +1,7 @@
 (function (mw, $, ko) {
     "use strict";
+    var NUM_OF_MAX_CHAR = 500;
+
     mw.KQnaModule = function (embedPlayer,qnaPlugin,qnaService) {
         return this.init(embedPlayer,qnaPlugin,qnaService);
     };
@@ -122,10 +124,15 @@
                     return true;
                 };
 
+                this.updateNumOfChars = function (replayText) {
+                    return replayText().length + '/' + NUM_OF_MAX_CHAR;
+                };
+
                 this.collapseExpandThread = function (entry, event) {
                     // Get thread by ID and set it to be collapsed / Expanded
                     entry.getThread().isCollapsed(!entry.getThread().isCollapsed());
                 };
+
                 $( embedPlayer ).bind('timeupdate', function () {
                     // in DVR mode embedPlayer.current time is in seconds - so we need to add dvrAbsoluteStartTime
                     if(embedPlayer.isDVR()){

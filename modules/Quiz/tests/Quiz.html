@@ -15,7 +15,7 @@
     <option>Choose a language</option>
 </select>
 <br>
-<div id="kaltura_player_1434365991" style="width: 685px; height: 330px;float: left;"></div>
+<div id="kaltura_player_1434365991" style="width: 618px; height: 378px;float: left;"></div>
 
 
 <script>
@@ -42,17 +42,25 @@
 		select.appendChild(el);
 	}
 
+	var player;
+
+	kWidget.addReadyCallback(function(playerId){
+		player = $('#' + playerId)[0];
+	});
+
 	var reload = function (){
 		var l = $("#selectLang").val();
         kWidget.destroy('kaltura_player_1434365991');
 		kWidget.embed({
-			'width': '690',
-			'height': '419',
+			'width': '618',
+			'height': '378',
 			'targetId': 'kaltura_player_1434365991',
+
 			'wid': '_27017',
 			'uiconf_id': '43620632',
 			'flashvars': {
 					// "ks":"djJ8MjcwMTd8m6ckvyGaeHN7E_ul2BHtYiu_PdCaJNw0CJ18yMcE5cWa-Sccq2Nd_bDxlgMaKGS1wgopB_l9oPxUTjVUzmLnYknsXOeJxxj2oc6YZWtdYMKafckb_3g9N1lH5C7E5mZn3UDXdp52OiNIJNqXEQMHA38EHBBHuS3B94cmmJNswZZYKhHYeH309YuBS5xzafPGAoYJ9mVgDMRnnYhMFvCW1EZOaR5zb0rbNfdAEIFo8RJpio8fh94CG6qSN8HK_PHRr_tyd8ZcC8RIRcANaEXJMD2I8Jk7wJVe1_V_lu9K_SriINXRkMwm7QQ-IKbHC8ZrSrEg7J_mfHOogHTJGLvAz-zlj9QRoVnJxvVEaR7zW1TtKYY_R192EdKBEcmufzDn8WbLrMe-iMvP4s3oTduy2AYabUHd7CR913c4kzHKherjVbeEPgsgub5FIS20n6XN",
+
 				"localizationCode": l,
 				'autoPlay': true,
 				'quiz': {
@@ -66,13 +74,12 @@
 				'streamerType': 'auto',
 			},
 
-			'entry_id': '0_3u9bgoz3',
+			'entry_id': '0_vqmf2cem' 
 
-			'readyCallback': function (playerId) {
-			}
 		});
 	}
 	$("#selectLang").change($.proxy(reload , _this) );
+
 	reload();
 	
 	var resize = function (w,h){
@@ -84,6 +91,18 @@
 <button onclick="resize(604,367)">604,367(minimum supported)</button>
 <button onclick="resize(690,419)">690,419</button>
 <button onclick="resize(900,558)">900,558</button>
+=======
+	
+	reload();
+	
+	var changeMedia = function(media){
+		player.sendNotification('changeMedia', {'entryId' : media });
+	}
+	 // 1_a17bz0uy // 1_gb3f3kid // 1_lw4gan7v
+
+</script>
+<button onclick="changeMedia('1_a17bz0uy')">Change media to 1_gb3f3kid</button>
+
 
 </body>
 </html>
