@@ -327,9 +327,9 @@
             // verify focus in IE
             document.getElementById('welcome-continue-button').focus();
 
-            if ($.quizParams.maxRetakesAllowed > 0){
+            if ($.quizParams.attemptsAllowed > 0){
                 var localedText = gM('mwe-quiz-available-tries');
-                var availableRetakes = $.quizParams.maxRetakesAllowed
+                var availableRetakes = $.quizParams.attemptsAllowed
                 var retakes = _this.KIVQModule.retakeNumber; // 0 is the 1st try, 1 is the first retake ... 
                 // TODO 
                 console.log(">>>> 11 ",(availableRetakes-retakes));
@@ -649,7 +649,7 @@
                 $(".bottomContainer").addClass("paddingB20");
             }
 
-            var retakesTotal = $.quizParams.maxRetakesAllowed;
+            var retakesTotal = $.quizParams.attemptsAllowed;
             var retakes = _this.KIVQModule.retakeNumber;
             var localedText = gM('mwe-quiz-retake-btn'); //  Locale : "Retake (|X|/|Y|)"
             localedText = localedText.split("|X|").join(retakes); // assign retakes 
