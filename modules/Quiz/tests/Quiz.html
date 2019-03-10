@@ -15,7 +15,7 @@
     <option>Choose a language</option>
 </select>
 <br>
-<div id="kaltura_player_1434365991" style="width: 685px; height: 330px;float: left;"></div>
+<div id="kaltura_player_1434365991" style="width: 618px; height: 378px;float: left;"></div>
 
 
 <script>
@@ -42,16 +42,24 @@
 		select.appendChild(el);
 	}
 
+	var player;
+
+	kWidget.addReadyCallback(function(playerId){
+		player = $('#' + playerId)[0];
+	});
+
 	var reload = function (){
 		var l = $("#selectLang").val();
         kWidget.destroy('kaltura_player_1434365991');
 		kWidget.embed({
-			'width': '690',
-			'height': '419',
+			'width': '618',
+			'height': '378',
 			'targetId': 'kaltura_player_1434365991',
-			'wid': '_27017',
-			'uiconf_id': '39666321',
+			// 'wid': '_27017',
+			'wid': '_142',
+			'uiconf_id': '23448302',
 			'flashvars': {
+				"ks" : "MGJhMDI2ODgwNjkxYTA2MWU4MDMzYzZiMjQyNWMzOGQxZTU1MjFlMXwxNDI7MTQyOzE1NTIwMzE2OTI7MjsxNTUxOTQ1MjkyLjUzNTg7cmF2aXQuc2hhbGVtQGthbHR1cmEuY29tOyosZGlzYWJsZWVudGl0bGVtZW50Ozs=",
 				"localizationCode": l,
 				'autoPlay': true,
 				'quiz': {
@@ -64,17 +72,21 @@
 				'streamerType': 'auto',
 			},
 
-			'entry_id': '0_mmia97ng',
+			'entry_id': '0_vqmf2cem' 
 
-			'readyCallback': function (playerId) {
-			}
 		});
 	}
 	$("#selectLang").change($.proxy(reload , _this) );
-    reload();
+	
+	reload();
+	
+	var changeMedia = function(media){
+		player.sendNotification('changeMedia', {'entryId' : media });
+	}
+	 // 1_a17bz0uy // 1_gb3f3kid // 1_lw4gan7v
 
 </script>
-
+<button onclick="changeMedia('1_a17bz0uy')">Change media to 1_gb3f3kid</button>
 
 </body>
 </html>

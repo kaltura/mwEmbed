@@ -9,6 +9,9 @@
     if (!(mw.KIVQModule.prototype = {
             kQuizUserEntryId: null,
             score: null,
+            currentScore: null ,
+            scoreType: null ,
+            retakeNumber: null,
             embedPlayer: null,
             quizPlugin: null,
             showGradeAfterSubmission: false,
@@ -36,33 +39,33 @@
 
             init: function (embedPlayer,quizPlugin) {
                 var _this = this;
-
                 _this.kQuizEntryId = embedPlayer.kentryid;
                 _this.KIVQApi = new mw.KIVQApi(embedPlayer);
                 _this.KIVQScreenTemplate = new mw.KIVQScreenTemplate(embedPlayer);
-
                 this.destroy();
                 this.embedPlayer = embedPlayer;
                 this.quizPlugin = quizPlugin;
             },
-
             setupQuiz:function(){
                 var _this = this,
                     deferred = $.Deferred();
 
                 _this.KIVQApi.getUserEntryIdAndQuizParams( function(data) {
+                    // validate data integrity 
                     if (!_this.checkApiResponse('User Entry err-->', data[0])) {
                         return false;
                     }
                     if (!_this.checkApiResponse('Quiz Params err-->', data[1])) {
                         return false;
                     }
-                    if ( !("uiAttributes" in data[1])) {
+                    var userEntryData = data[0];
+                    var quizParamsData = data[1];
+                    if ( !("uiAttributes" in quizParamsData)) {
                         deferred.reject(data, 'quiz is empty');
                         return deferred;
                     }
                     else {
-                        $.quizParams = data[1];
+                        $.quizParams = quizParamsData;
                         var dataForBanSeek = {
                             status: false,
                             alertText: ''
@@ -85,17 +88,23 @@
                         if(dataForBanSeek.status && !_this.canSkip){
                             _this.embedPlayer.sendNotification('activateBanSeek',dataForBanSeek);
                         }
-                        if (data[0].totalCount > 0) {
-                            switch (String(data[0].objects[0].status)) {
+                        // handle user entry 
+                        if (userEntryData.totalCount > 0) {
+                            // calculate how many times we are allowed to take this quiz 
+                            _this.retakeNumber = userEntryData.objects[0].version ? userEntryData.objects[0].version : 0; // support old quiz that do not have version
+                            _this.currentScore = Math.round(userEntryData.objects[0].calculatedScore * 100);
+                            _this.scoreType = quizParamsData.scoreType ? quizParamsData.scoreType : 0; 
+                            switch (String(userEntryData.objects[0].status)) {
                                 case 'quiz.3':
                                     if ($.quizParams.showGradeAfterSubmission) {
-                                        _this.score = Math.round(data[0].objects[0].score * 100);
+                                        _this.score = Math.round(userEntryData.objects[0].score * 100);
                                     }
                                     _this.quizSubmitted = true;
                                     break;
                                 case '1':
                                     break;
                                 case '2':
+                                    // TODO - check this 
                                     _this.errMsg('quiz deleted', data);
                                     return false;
                                     break;
@@ -125,7 +134,6 @@
             getQuestionsAndAnswers: function (callback) {
                 var _this = this;
                 _this.KIVQApi.getQuestionAnswerCuepoint(_this.kQuizEntryId, _this.kQuizUserEntryId, function(data){
-
                     if (!_this.checkApiResponse('Get question err -->',data[0])){
                         return false;
                     }
@@ -283,7 +291,7 @@
                 var _this = this;
                 $.each($.cpObject.cpArray, function (key, val) {
                     if ($.cpObject.cpArray[key].startTime === cuePointObj.cuePoint.startTime) {
-                        _this.quizPlugin.ssSetCurrentQuestion(key,false);
+                        _this.quizPlugin.ssSetCurrentQuestion(key);
                     }
                 });
             },
@@ -374,10 +382,16 @@
                 var _this = this,anUnswered = _this.getUnansweredQuestNrs();
                 _this.embedPlayer.stopPlayAfterSeek = true;
                 if (anUnswered) {
+                    // there are still unanswered questions - show "almost done" screen 
                     _this.quizEndFlow = true;
                     _this.quizPlugin.ssAlmostDone(anUnswered);
                 }else if (!_this.quizSubmitted){
+                    // the quiz has unanswered questions and was not sumitted yet - show "submit" screen (ssAllCompleted)
                     _this.quizPlugin.ssAllCompleted();
+                }else if(!_this.quizEndFlow){
+                    // Quiz is already submitted - show the "submitted" screen
+                    _this.quizPlugin.ssSubmitted(_this.score); 
+
                 }
             },
             displayHex:function (hexPositionContDisplay,cpArray){
@@ -536,8 +550,8 @@
                 var _this = this;
                 mw.log("Quiz: Show Quiz on Scrubber");
                 _this.quizPlugin.displayBubbles();
-                //!_this.quizSubmitted for IOS9 Android5 &&
-                if (_this.quizEndFlow && !_this.quizSubmitted){
+                //!_this.quizSubmitted for IOS9 Android5.   _this.retakes is FEV-243
+                if ((_this.quizEndFlow && !_this.quizSubmitted) || _this.retakeNumber ){
                     _this.showQuizEndOnScrubber();
                 }
             },
@@ -586,11 +600,18 @@
                 $(".sub-text").html(gM('mwe-quiz-err-msg'));
                 _this.isErr = true;
             },
+            retake: function (callback){
+                this.KIVQApi.retake(callback);
+            },
             destroy: function () {
-
-                var _this = this;
-                clearInterval(_this.intrVal);
-                _this.intrVal = null;
+                this.retakeNumber = undefined;
+                this.score = undefined;
+                this.currentScore = undefined ,
+                this.scoreType = undefined ,
+                this.quizEndFlow = false;
+                this.quizSubmitted = false;
+                clearInterval(this.intrVal);
+                this.intrVal = null;
             },
             unloadQuizPlugin:function(embedPlayer){
               var _this = this;
@@ -600,7 +621,8 @@
                 embedPlayer.unbindHelper(_this.bindPostfix);
                 embedPlayer.removeJsListener(_this.bindPostfix);
                 _this.hideQuizOnScrubber();
-                mw.log("Quiz: Plugin Unloaded");            }
+                mw.log("Quiz: Plugin Unloaded");     
+            }
         })) {
     }
 })(window.mw, window.jQuery );

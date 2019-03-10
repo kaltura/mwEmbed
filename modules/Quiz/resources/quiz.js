@@ -2,11 +2,11 @@
  * Created by mark.feder Kaltura.
  *
  * */
-
 (function (mw, $) {
     "use strict";
     $.cpObject = {};
     $.quizParams = {};
+    $.changedMedia = 0;
     mw.PluginManager.add('quiz', mw.KBaseScreen.extend({
         defaultConfig: {
             parent: "controlsContainer",
@@ -49,7 +49,11 @@
                 _this.relatedStreamChanging = false;
             });
 
+
+
             embedPlayer.addJsListener( 'kdpReady', function(){
+                $.changedMedia ++;
+                _this.destroy();
                 // [FEC-6441: Quiz plugin damaged when switching between dual video options]
                 // Don't reload quiz cuepoints when a stream change occurs
                 // Needed for the dual-video cases in which only the parent media contains quiz metadata
@@ -87,7 +91,6 @@
                     };
 
                     _this.KIVQModule.checkCuepointsReady(function(){
-
                         _this.addBindings();
 
                         if(_this.KIVQModule.isKPlaylist){
@@ -98,6 +101,9 @@
                         };
                         embedPlayer.hideSpinner();
                         embedPlayer.enablePlayControls();
+                        if($.changedMedia > 1){
+                            _this.displayBubbles();
+                        }
                     });
 
                     mw.log("Quiz: Quiz Loading..");
@@ -254,12 +260,38 @@
             $(".screen.quiz").attr('aria-live', 'polite');
         },
 
+        retakeSuccess : function(data){
+            var _this = this;
+            if(data.objectType === "KalturaAPIException"){
+                _this.KIVQModule.errMsg('Error', data);
+            }else{
+                // reset quiz and KIVQModule
+                this.destroy();
+                this.KIVQModule.destroy();
+                this.KIVQModule.setupQuiz().then(function(){
+                    // new quiz data is now loaded - proceed with CPs loading 
+                    _this.KIVQModule.getQuestionsAndAnswers(function(){
+                        _this.embedPlayer.stopPlayAfterSeek = false;
+                        _this.embedPlayer.seek(0,false);
+                        _this.ivqHideScreen()
+                    })
+                })
+            }
+        },
+
+        retake : function(){
+            var _this = this;
+            this.KIVQModule.retake(function(data){
+                // retake successful 
+                _this.retakeSuccess(data);
+            });
+        },
+
         // render the welcome screen content, look for 'tmplWelcome' in 
         ssWelcome: function () {
             var _this = this;
             _this.ivqShowScreen();
             _this.KIVQScreenTemplate.tmplWelcome();
-
             $(".welcome").html(gM('mwe-quiz-welcome'));
                 if ($.quizParams.allowDownload ) {
                     $(".pdf-download").prepend('<div class="pdf-download-img">' +
@@ -287,7 +319,6 @@
              
             // add title to ivq welcome container for accessibility
             $(".ivqContainer").attr("title", "Kaltura Video Quiz "+_this.embedPlayer.evaluate( '{mediaProxy.entry.name}' ));
-            
             // make welcome "continue" button accessible
             $(".confirm-box").html(gM('mwe-quiz-continue')).show().attr("tabindex", 5).attr("title", "Click to start the quiz").on('keydown', _this.keyDownHandler)
                 .on('click', function () {
@@ -295,6 +326,21 @@
                 }).focus().attr('id', 'welcome-continue-button');
             // verify focus in IE
             document.getElementById('welcome-continue-button').focus();
+
+            if ($.quizParams.maxRetakesAllowed > 0){
+                var localedText = gM('mwe-quiz-available-tries');
+                var availableRetakes = $.quizParams.maxRetakesAllowed
+                var retakes = _this.KIVQModule.retakeNumber; // 0 is the 1st try, 1 is the first retake ... 
+                // TODO 
+                console.log(">>>> 11 ",(availableRetakes-retakes));
+                if((availableRetakes-retakes) <=1 || isNaN(availableRetakes-retakes) ){
+                    localedText = "";
+                }else{
+                    localedText = localedText.split("|X|").join(availableRetakes-retakes); // locale : "|X| tries available for this quiz"
+
+                }
+                $(".retake-box").text(localedText);
+            }
 
         },
 
@@ -308,7 +354,6 @@
             $(".title-text").html(gM('mwe-quiz-almostDone'));
             $(".sub-text").html(gM('mwe-quiz-remainUnAnswered') + '</br>' + gM('mwe-quiz-pressRelevatToAnswer'))
             $(".confirm-box").html(gM('mwe-quiz-okGotIt')).attr("tabindex", 5).attr("title", gM('mwe-quiz-okGotIt')).on('keydown', _this.keyDownHandler);
-
             $(document).off('click','.confirm-box')
                 .on('click', '.confirm-box', function () {
                     _this.embedPlayer.stopPlayAfterSeek = false;
@@ -330,7 +375,7 @@
                     _this.KIVQScreenTemplate.tmplHint();
                     $(".header-container").addClass('close-button')
                         .on('click', function () {
-                            _this.ssSetCurrentQuestion(questionNr,true);
+                            _this.ssSetCurrentQuestion(questionNr);
                         })
                         .on('keydown', _this.keyDownHandler)
                         .attr({'role': 'button','tabindex': 5,'title':'Close hint','id': 'hint-close-button'})
@@ -362,7 +407,7 @@
         },
         
         // This function is rendering a question screen
-        ssSetCurrentQuestion: function (questionNr,replaceContentNoReload) {
+        ssSetCurrentQuestion: function (questionNr) {
             var _this = this,cPo = $.cpObject.cpArray[questionNr];
 
             _this.ivqShowScreen();
@@ -397,7 +442,6 @@
                 // add answer to the list of all answers on this question
                 div.appendTo('.answers-container');
             });
-
             if (cPo.isAnswerd){
                 _this.showAnswered(cPo, questionNr);
             }
@@ -490,7 +534,7 @@
                             _this.KIVQScreenTemplate.tmplReviewAnswer();
                             _this.ssReviewAnswer(parseInt($(this).attr('id')));
                         }).attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer');
-                    $(document).off('click','.q-box-false:not(.reflection-point-question)')
+                        $(document).off('click','.q-box-false:not(.reflection-point-question)')
                         .on('click', '.q-box-false:not(.reflection-point-question)', function () {
                             _this.KIVQScreenTemplate.tmplReviewAnswer();
                             _this.ssReviewAnswer(parseInt($(this).attr('id')));
@@ -503,6 +547,33 @@
                 $(".sub-text").html(gM('mwe-quiz-completedQuiz'));
                 $(".bottomContainer").addClass("paddingB20");
             }
+
+            var retakesTotal = $.quizParams.maxRetakesAllowed;
+            var retakes = _this.KIVQModule.retakeNumber;
+            var localedText = gM('mwe-quiz-retake-btn'); //  Locale : "Retake (|X|/|Y|)"
+            localedText = localedText.split("|X|").join(retakes); // assign retakes 
+            localedText = localedText.split("|Y|").join(retakesTotal); // assign total 
+
+            console.log(">>>>",retakesTotal - retakes);
+            // Todo - change once BE changes this by -1 
+            if((retakesTotal - retakes) <=1 || !retakes || !_this.KIVQModule.currentScore || !_this.KIVQModule.scoreType ){
+                // there is no more trials 
+                $(".retake-btn,.retake-summary-text").hide();
+            }else{
+                // handle summary text 
+                var summaryText = gM('mwe-quiz-retake-summary'); //This is attempt |attempt| of |attempts|, your score is |score| based on |scoreType|,
+                summaryText = summaryText.split("|attempt|").join(retakes);
+                summaryText = summaryText.split("|attempts|").join(retakesTotal);
+                summaryText = summaryText.split("|score|").join(_this.KIVQModule.currentScore);
+                summaryText = summaryText.split("|scoreType|").join(gM('mwe-quiz-retake-scoretype-'+_this.KIVQModule.scoreType));
+                $(".retake-summary-text").text(summaryText)
+                // retake button 
+                $(".retake-btn").text(localedText).attr({"tabindex": 5,"title": localedText})
+                .on('click',  $.proxy(this.retake,this))
+                .on('keydown', _this.keyDownHandler)
+            }
+
+
             $(document).off('click','.confirm-box')
             $(".confirm-box").html(gM('mwe-quiz-done'))
                 .on('click', function () {
@@ -526,7 +597,10 @@
                         mw.log("Quiz: Playlist Auto Continue After Submitted");
                         _this.embedPlayer.setKDPAttribute('playlistAPI','autoContinue',true);
                     }
-                }).attr('tabindex', '5').attr('role', 'button').attr('title', 'Quiz is done. Click to continue watching the video.').focus().on('keydown', _this.keyDownHandler);
+                })
+                .attr({'tabindex': '5','role': 'button','title':'Quiz is done. Click to continue watching the video.'})
+                .focus()
+                .on('keydown', _this.keyDownHandler);
 
         },
         ssReviewAnswer: function (selectedQuestion) {
@@ -840,27 +914,28 @@
 
         },
         displayBubbles:function(){
-            var  _this = this,displayClass,embedPlayer = this.getPlayer(),handleBubbleclick;
+            var  _this = this;
+            var displayClass;
+            var embedPlayer = this.getPlayer();
+            var handleBubbleclick;
             var scrubber = embedPlayer.getInterface().find(".scrubber");
             var buSize = _this.KIVQModule.bubbleSizeSelector(_this.inFullScreen);
-
             _this.KIVQModule.hideQuizOnScrubber();
-
             var buCotainerPos = _this.KIVQModule.quizEndFlow ? "bubble-cont bu-margin3":"bubble-cont bu-margin1";
 
             scrubber.parent().prepend('<div class="'+buCotainerPos+'"></div>');
-
-            $.each($.cpObject.cpArray, function (key, val) {
-                displayClass = val.isAnswerd ? "bubble bubble-ans " + buSize.bubbleAnsSize
+            if($.cpObject.cpArray){
+                $.each($.cpObject.cpArray, function (key, val) {
+                    displayClass = val.isAnswerd ? "bubble bubble-ans " + buSize.bubbleAnsSize
                     : "bubble bubble-un-ans " + buSize.bubbleUnAnsSize;
-
-                var pos = (Math.round(((val.startTime/embedPlayer.kalturaPlayerMetaData.msDuration)*100) * 10)/10)-1;
-                $('.bubble-cont').append($('<div id ="' + key + '" style="margin-left:' + pos + '%">' +
+                    
+                    var pos = (Math.round(((val.startTime/embedPlayer.kalturaPlayerMetaData.msDuration)*100) * 10)/10)-1;
+                    $('.bubble-cont').append($('<div id ="' + key + '" style="margin-left:' + pos + '%">' +
                     _this.KIVQModule.i2q(key) + ' </div>')
-                        .addClass(displayClass).attr('role', 'button').attr({'tabindex': 20 , "aria-label" : "Jump to Question "+ (key+1) }).on('keydown', _this.keyDownHandler)
-                );
-            });
-
+                    .addClass(displayClass).attr('role', 'button').attr({'tabindex': 20 , "aria-label" : "Jump to Question "+ (key+1) }).on('keydown', _this.keyDownHandler)
+                    );
+                });
+            }
             if (_this.KIVQModule.canSkip) {
                 handleBubbleclick = '.bubble';
             }
@@ -868,13 +943,14 @@
                 handleBubbleclick = '.bubble-ans';
             }
             $('.bubble','.bubble-ans','.bubble-un-ans').off();
-            $(handleBubbleclick).on('click', function () {
-                var qNumber = parseInt($(this).attr('id'));
-                _this.seekToQuestionTime = $.cpObject.cpArray[qNumber].startTime;
-                _this.KIVQModule.gotoScrubberPos(qNumber);
-                _this.isSeekingIVQ = true;
-                mw.log("Quiz: gotoScrubberPos : " + qNumber);
-            });
+            $(handleBubbleclick).on('click', $.proxy(this.onBubbleClick, _this) );
+        },
+        onBubbleClick: function (event) {
+            var qNumber = parseInt($(event.target).attr("id"));
+            this.seekToQuestionTime = $.cpObject.cpArray[qNumber].startTime;
+            this.KIVQModule.gotoScrubberPos(qNumber);
+            this.isSeekingIVQ = true;
+            mw.log("Quiz: gotoScrubberPos : " + qNumber);
         },
         displayQuizEndMarker:function(){
             var  _this = this;
@@ -909,6 +985,17 @@
             return wrapLinksWithTitle.replace(/((https?|ftps?):\/\/[^"<\s]+)(?![^<>]*>|[^"]*?<\/a)/gi, function(url) {
                 return '<a target="_blank" href="' + url + '">' + url + '</a>';
             });
+        },
+        destroy : function(){
+            $.cpObject = {};
+            $.quizParams = {};
+            this.killBubbles();
+        },
+        killBubbles : function(){
+            // destroy bubbles events and UI
+            $('.bubble','.bubble-ans','.bubble-un-ans').off();
+            $('.bubble-cont').empty();
+            $('.bubble-cont').remove();
         },
         isReflectionPoint: function(cPo){
             return cPo.questionType && cPo.questionType === this.KIVQModule.QUESTIONS_TYPE.REFLECTION_POINT;
