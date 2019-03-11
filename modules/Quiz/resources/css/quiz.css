@@ -371,20 +371,19 @@ button.qContinue, button.qApplied {
     border-radius: 5px;
 }
 #open-question-change-answer, #open-question-clear , #open-question-save{
+    font-size: 2vw;
     position: absolute;
-    font-size: 14px;
-    height: 70%;
-    max-height:24px; 
-    width: 87px;
     border-radius: 3px;
     box-shadow: 0 0 2px 0 rgba(0,0,0,0.24);
-    top: 15%;
+    top: 20%;
+    padding-left: 2vw;
+    padding-right: 2vw;
     border-color: transparent;
     cursor: default;
 }
 #open-question-clear{
     display: inline-block;
-    right: 120px;
+    right: 12vw;
     background-color: transparent;
     border: none;
     color: white;
@@ -411,7 +410,8 @@ button.qContinue, button.qApplied {
     color:#47525C;
     position: absolute;
     left: 28px;
-    top: 1.5vw;
+    font-size: 2vw;
+    top: 30%;
 }
 .open-answer-footer{
     border-top: solid 1px #5e5e5e;
@@ -451,7 +451,7 @@ button.qContinue, button.qApplied {
     bottom: 20%;
     position: absolute;
     color: #FFFFFF;
-    font-size: 14px;
+    font-size: 2.1vw;
     text-align: center;
     padding-top: 12px;
 }
@@ -993,8 +993,8 @@ ol.second-row{
 .fullscreen .quizDone-cont.small {
     width: 2vw;
     height: 2vw;
-    top: 84vh;
-    margin-left: 97%;
+    top: 92vh;
+    margin-left: 98%;
 }
 
 .track {
@@ -1125,6 +1125,8 @@ ol.second-row{
 }
 
 @media (min-width: 940px) and (max-height: 500px) {
+
+
     .playlistInterface .welcome {
         font-size: 7vw;
     }

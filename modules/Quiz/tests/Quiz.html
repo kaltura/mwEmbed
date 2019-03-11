@@ -49,10 +49,10 @@
 			'width': '690',
 			'height': '419',
 			'targetId': 'kaltura_player_1434365991',
-			'wid': '_142',
-			'uiconf_id': '23448412',
+			'wid': '_5447',
+			'uiconf_id': '15220866',
 			'flashvars': {
-				'ks': "YTk0NGVhNTM4NTQ2NTZlNjNkYTUyZDdlZDcxM2JlNjFiY2UzYjc5M3wxNDI7MTQyOzE1NTIyODk5MDg7MjsxNTUyMjAzNTA4Ljk4ODE7cmF2aXQuc2hhbGVtQGthbHR1cmEuY29tOyosZGlzYWJsZWVudGl0bGVtZW50Ozs=",
+				'ks': "djJ8NTQ0N3zPK9JSSIxPeEKnYHWiO6ywiSn50mQLcUW-SdzR_OCJ4D9vEUTe2KCUnYYT87_7jRR4ZbV679tbaZ6O3x2CAi5fhXhEeJ_AJ_Y2TtqSoL1_kZK_ZfMiqaS7U71JBsQXjnXhwAZN2ci5LpY0wheeprbEy2Hpfx6wUhuuBfIPJM-XI7diwVcYYqWwK5jU2HQedWEUq2nj1fCvkpoAVzR2D1mG-W6QhVRnjAXOIFs5XXT6aU-jDE9kRilypVs7r8LFGaJmzJ_8V-zjVqmWP2gfXJiHlRMKZDzszLIKH8vcNwU9bDztnWgjBGaNZ8Et1diNnriGfsQZMjVY5_z5TkAH__1sgWs6UUOrHY-cczfUDGGmlVND3uxNaD3BqyyKFh7d8PY=",
 				"localizationCode": l,
 				'autoPlay': true,
 				'quiz': {
@@ -65,17 +65,30 @@
 				'streamerType': 'auto',
 			},
 
-			'entry_id': '0_860ihuiv',
+			// no attempts (Check compatability) - all questions types 	0_jogd8gms
+			// 3 attempts, Highest,  2 questions types (open and T/F) 	0_p6lqksyq
+			// 2 attempts, Avarage, 1 question (multichoice)  			0_pzi9lh8k   
+			// 100 attempts, Latest, 1 question type (Reflection point) 0_jljycbll
+
+			'entry_id': '0_xjunslln',
 
 			'readyCallback': function (playerId) {
 			}
 		});
 	}
 	$("#selectLang").change($.proxy(reload , _this) );
-    reload();
+	reload();
+	
+	var resize = function(n){
+		var player = $(document.getElementById("kaltura_player_1434365991"));
+		player.width(player.width()*n)
+		player.height(player.height()*n)
+
+	}
 
 </script>
-
+<button onclick="resize(1.3)">+</button>
+<button onclick="resize(0.75)">-</button>
 
 </body>
 </html>
