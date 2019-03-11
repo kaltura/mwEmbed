@@ -663,7 +663,7 @@
             var localedText = gM('mwe-quiz-retake-btn'); //  Locale : "Retake (|X|/|Y|)"
             localedText = localedText.split("|X|").join(currentRetake); // assign retakes 
             localedText = localedText.split("|Y|").join(retakesTotal); // assign total 
-            if(retakesTotal <= (currentRetake + 1)  ){
+            if(!retakesTotal || retakesTotal <= (currentRetake + 1)  ){
                 // there is no more trials 
                 $(".retake-btn,.retake-summary-text").hide();
             }else{
