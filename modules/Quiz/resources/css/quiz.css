@@ -491,7 +491,6 @@ button.qContinue, button.qApplied {
     font-weight: bold;
     color: #333333;
     text-align: right;
-    width: 160px;
     box-shadow: none;
     text-decoration: underline;
     display: none;
@@ -1251,7 +1250,9 @@ ol.second-row{
 }
 
 @media(max-width: 604px){
-
+    .quizDone-cont.small{
+        top: 82vh;
+    }
     .open-question .open-answer-inner{
         font-size: 11px;
     }
@@ -1264,8 +1265,6 @@ ol.second-row{
     {
         height:4vw ;
     }
-
-
     .size-small .screen.quiz ,
     .size-medium .screen.quiz {
         padding-top: 10px;
