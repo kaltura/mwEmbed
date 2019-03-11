@@ -643,15 +643,22 @@
                         .on('click', '.q-box:not(.reflection-point-question)', function () {
                             _this.KIVQScreenTemplate.tmplReviewAnswer();
                             _this.ssReviewAnswer(parseInt($(this).attr('id')));
-                        }).attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer');
+                        })
+                        .attr({'tabindex': '5' , 'role': 'button','title': 'click to view the question and your answer'});
+
                         $(document).off('click','.q-box-false:not(.reflection-point-question)')
                         .on('click', '.q-box-false:not(.reflection-point-question)', function () {
                             _this.KIVQScreenTemplate.tmplReviewAnswer();
                             _this.ssReviewAnswer(parseInt($(this).attr('id')));
-                        }).attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer');
+                        })
+                        .attr({'tabindex': '5' , 'role': 'button','title': 'click to view the question and your answer'})
                 }
-                $('.q-box:not(.reflection-point-question)').attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer').on('keydown', _this.keyDownHandler);
-                $('.q-box-false:not(.reflection-point-question)').attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer').on('keydown', _this.keyDownHandler);
+                $('.q-box:not(.reflection-point-question) ,.q-box-false:not(.reflection-point-question)')
+                    .attr({'tabindex': '5' , 'role': 'button','title': 'click to view the question and your answer'})
+                    .on('keydown', _this.keyDownHandler);
+
+
+
             }else{
                 $(".title-text").addClass("padding23");
                 $(".sub-text").html(gM('mwe-quiz-completedQuiz'));
@@ -727,7 +734,7 @@
             $(".theQuestion").html(this.wrapLinksWithTags($.cpObject.cpArray[selectedQuestion].question));
             $(".yourAnswerText").html(gM('mwe-quiz-yourAnswer'));
             $(".yourAnswer").html($.cpObject.cpArray[selectedQuestion].answeres[$.cpObject.cpArray[selectedQuestion].selectedAnswer]);
-            if (!$.cpObject.cpArray[selectedQuestion].isCorrect) {
+            if (!$.cpObject.cpArray[selectedQuestion].isCorrect ) {
                 $(".yourAnswer").addClass("wrongAnswer")
             }
             $(".correctAnswerText").html(gM('mwe-quiz-correctAnswer'));
