@@ -663,9 +663,6 @@
             var localedText = gM('mwe-quiz-retake-btn'); //  Locale : "Retake (|X|/|Y|)"
             localedText = localedText.split("|X|").join(currentRetake); // assign retakes 
             localedText = localedText.split("|Y|").join(retakesTotal); // assign total 
-            console.log(">>>>",retakesTotal - currentRetake);
-            // Todo - change once BE changes this by -1 
-            // if((retakesTotal - currentRetake) <=1 || !currentRetake || !_this.KIVQModule.currentScore || !_this.KIVQModule.scoreType ){
             if(retakesTotal <= (currentRetake + 1)  ){
                 // there is no more trials 
                 $(".retake-btn,.retake-summary-text").hide();
@@ -675,7 +672,7 @@
                 summaryText = summaryText.split("|attempt|").join(currentRetake+1);
                 summaryText = summaryText.split("|attempts|").join(retakesTotal);
                 var score = _this.KIVQModule.currentScore;
-                // handle 1st submit 
+                // handle 1st submit where we did not store the score yet 
                 if(isNaN(score) && _this.latestScore){
                     score = _this.latestScore;
                 }
