@@ -411,7 +411,7 @@ button.qContinue, button.qApplied {
     color:#47525C;
     position: absolute;
     left: 28px;
-    top: 2.2vw;
+    top: 1.5vw;
 }
 .open-answer-footer{
     border-top: solid 1px #5e5e5e;
