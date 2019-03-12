@@ -245,6 +245,7 @@
     height: auto;
     padding-left: 8vw;
     padding-right: 8vw;
+    font-family: LatoLight
 }
  
 .display-question{
@@ -257,7 +258,6 @@
     margin-right: auto;
     color: #ffffff;
     font-size: 2.1vw;
-    text-align: center;
     word-wrap: break-word;
     cursor: default !important;
 }
@@ -463,15 +463,15 @@ button.qContinue, button.qApplied {
 
 }
 .open-question-textarea{
-    width: 90%;
-    height: 90%;
-    font-family: "Lato";
+    padding: 1.3vw 1vw;
+    width: 95%;
+    height: 77%;
+    font-family: "LatoLight";
     border: none;
     resize: none;
     background: transparent;
     color: #FFFFFF;
-    font-size: 2.1vw;
-    text-align: center;
+    font-size: 2vw;
 }
 .screen.quiz .answered .open-question-textarea:focus {
     outline: #333333 solid 1px;
