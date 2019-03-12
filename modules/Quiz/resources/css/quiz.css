@@ -239,6 +239,13 @@
 .display-question.padding7{
     padding-top: 4px !important;
 }
+
+.open-question .display-question{
+    width: auto;
+    height: auto;
+    padding-left: 8vw;
+    padding-right: 8vw;
+}
  
 .display-question{
     position: absolute;
@@ -250,7 +257,6 @@
     margin-right: auto;
     color: #ffffff;
     font-size: 2.1vw;
-    font-weight: 700;
     text-align: center;
     word-wrap: break-word;
     cursor: default !important;
@@ -376,32 +382,30 @@ button.qContinue, button.qApplied {
     border-radius: 5px;
 }
 #open-question-change-answer, #open-question-clear , #open-question-save{
-    font-size: 2vw;
+    font-size: 1.8vw;
     position: absolute;
     border-radius: 3px;
     box-shadow: 0 0 2px 0 rgba(0,0,0,0.24);
-    top: 20%;
-    padding-left: 2vw;
-    padding-right: 2vw;
+    top: 22%;
     border-color: transparent;
     cursor: default;
+    padding: 1.1vw 3.3vw;
+    border: none;
 }
 
 #open-question-clear{
     display: inline-block;
-    right: 12vw;
+    right: 14.5vw;
     background-color: transparent;
     border: none;
     color: white;
     cursor: pointer;
 }
 
-
 #open-question-save{
-    right: 20px;
+    right: 2.3vw;
     background-color:white;
     cursor: pointer;
-    
 }
 #open-question-clear:disabled{
     color: #848B92;
@@ -409,23 +413,24 @@ button.qContinue, button.qApplied {
 }
 
 #open-question-save:disabled{
-    background-color: #848B92;
+    color: #333333;
+    background-color: #828B91;
     cursor: default;
 }
 
 .open-question-chars{
-    color:#47525C;
+    color:#5e5e5e;
     position: absolute;
-    left: 28px;
-    font-size: 2vw;
-    top: 30%;
+    left: 3vw;
+    font-size: 1.7vw;
+    top: 36%;
 }
 .open-answer-footer{
-    border-top: solid 1px #5e5e5e;
+    border-top: solid 1px rgba(94, 94, 94, 0.52);
     position: absolute;
     left: 0;
     bottom:0;
-    height: 20%;
+    height: 30%;
     right: 0px;
 }
 
@@ -447,23 +452,29 @@ button.qContinue, button.qApplied {
     right: 0px;
     top: 0;
 }
+.open-question_textarea-container{
+    width: 100%;
+    left: 0;
+    top: 0;
+    bottom: 30%;
+    position: absolute;
+    padding-top: 12px;
+    text-align: center;
+
+}
 .open-question-textarea{
+    width: 90%;
+    height: 90%;
     font-family: "Lato";
     border: none;
     resize: none;
     background: transparent;
-    width: 99.6%;
-    left: 0;
-    top: 0;
-    bottom: 20%;
-    position: absolute;
     color: #FFFFFF;
     font-size: 2.1vw;
     text-align: center;
-    padding-top: 12px;
 }
 .screen.quiz .answered .open-question-textarea:focus {
-    outline: #333333 solid 2px;
+    outline: #333333 solid 1px;
 }
 .answered .open-question-textarea{
     color: #333333;
@@ -505,7 +516,7 @@ button.qContinue, button.qApplied {
     padding-right: 0px;
     display: block;
     font-weight: normal;
-    top: -8%;
+    top: 0%;
 }
 .answered #open-question-save, 
 .answered #open-question-clear{
