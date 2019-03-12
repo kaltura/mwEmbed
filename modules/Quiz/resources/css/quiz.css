@@ -386,6 +386,7 @@ button.qContinue, button.qApplied {
     border-color: transparent;
     cursor: default;
 }
+
 #open-question-clear{
     display: inline-block;
     right: 12vw;
@@ -501,7 +502,10 @@ button.qContinue, button.qApplied {
 }
 
 .answered #open-question-change-answer{
+    padding-right: 0px;
     display: block;
+    font-weight: normal;
+    top: -8%;
 }
 .answered #open-question-save, 
 .answered #open-question-clear{
