@@ -241,10 +241,11 @@
 }
 
 .open-question .display-question{
-    width: auto;
+    margin-left: 7%;
+    width: 80%;
     height: auto;
-    padding-left: 8vw;
-    padding-right: 8vw;
+    padding-left: 1vw;
+    padding-right: 1vw;
     font-family: LatoLight
 }
  
