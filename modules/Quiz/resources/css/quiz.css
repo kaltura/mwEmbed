@@ -419,7 +419,7 @@ button.qContinue, button.qApplied {
 }
 
 .open-question-chars{
-    color:#5e5e5e;
+    color:#808080;
     position: absolute;
     left: 3vw;
     font-size: 1.7vw;
@@ -458,13 +458,13 @@ button.qContinue, button.qApplied {
     top: 0;
     bottom: 30%;
     position: absolute;
-    padding-top: 12px;
+    padding-top: 1vw;
     text-align: center;
 
 }
 .open-question-textarea{
-    padding: 1.3vw 1vw;
-    width: 95%;
+    padding: 1.3vw 1vw 0.5vw 1vw;
+    width: 92%;
     height: 77%;
     font-family: "LatoLight";
     border: none;
