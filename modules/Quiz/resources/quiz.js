@@ -480,6 +480,9 @@
                         interfaceElement.find("#open-question-save")
                         .text(gM('mwe-quiz-open-question-change-answer'));
                         interfaceElement.find(".open-answer-container").addClass("allow-change");
+                        var charsLength = interfaceElement.find(".open-question-textarea").val().length;
+                        interfaceElement.find(".open-question-chars .chars").text(charsLength);
+
                     } else {
                         // reset UI elements to save in case a previous open question was already answered 
                         interfaceElement.find("#open-question-save")

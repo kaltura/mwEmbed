@@ -502,10 +502,12 @@ button.qContinue, button.qApplied {
     display: block;
 }
 .answered #open-question-save, 
-.answered .open-question-chars,
 .answered #open-question-clear{
     display: none;
 } 
+.answered .open-question-chars{
+    color: #727272;
+}
 
 
 
