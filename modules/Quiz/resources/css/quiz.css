@@ -451,7 +451,7 @@ button.qContinue, button.qApplied {
     border: none;
     resize: none;
     background: transparent;
-    width: 100%;
+    width: 99.6%;
     left: 0;
     top: 0;
     bottom: 20%;
@@ -461,7 +461,9 @@ button.qContinue, button.qApplied {
     text-align: center;
     padding-top: 12px;
 }
-
+.screen.quiz .answered .open-question-textarea:focus {
+    outline: #333333 solid 2px;
+}
 .answered .open-question-textarea{
     color: #333333;
 }
