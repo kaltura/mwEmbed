@@ -180,7 +180,10 @@
     padding-top: 32vh;
 
 }
-
+.ivqContainer .retake-summary-text{
+    margin-top: 2vw;
+    font-size: 1.9vw;
+}
 .retake-summary-text,
 .sub-text{
     font-family: "LatoLight";
