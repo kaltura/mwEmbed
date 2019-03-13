@@ -473,6 +473,7 @@ button.qContinue, button.qApplied {
     background: transparent;
     color: #FFFFFF;
     font-size: 2vw;
+    overflow: auto;
 }
 .screen.quiz .answered .open-question-textarea:focus {
     outline: #333333 solid 1px;
