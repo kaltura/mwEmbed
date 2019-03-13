@@ -503,7 +503,7 @@
             }
             this.addFooter(questionNr);
         },
-        buildOpenQuestion(cPo){
+        buildOpenQuestion: function(cPo){
             var _this = this;
             var interfaceElement = this.embedPlayer.getInterface();
             // clear button 
