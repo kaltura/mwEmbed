@@ -10,8 +10,8 @@
             kQuizUserEntryId: null,
             score: null,
             currentScore: null ,
-            scoreType: null ,
-            retakeNumber: null,
+            scoreType: undefined ,
+            retakeNumber: undefined,
             embedPlayer: null,
             quizPlugin: null,
             showGradeAfterSubmission: false,
@@ -557,15 +557,19 @@
             q2i: function (i) {
                 return parseInt(i) - 1;
             },
+
             showQuizOnScrubber:function(){
                 var _this = this;
                 mw.log("Quiz: Show Quiz on Scrubber");
                 _this.quizPlugin.displayBubbles();
                 //!_this.quizSubmitted for IOS9 Android5.   _this.retakes is FEV-243
-                if ((_this.quizEndFlow && !_this.quizSubmitted) || _this.retakeNumber ){
+                if (    ($.quizParams.attemptsAllowed 
+                        && $.quizParams.attemptsAllowed  > this.retakeNumber)
+                        || ($.quizParams.attemptsAllowed && this.retakeNumber === undefined)  ){
                     _this.showQuizEndOnScrubber();
                 }
             },
+
             hideQuizOnScrubber:function(){
                 var _this = this;
                 this.embedPlayer.getInterface().find(".bubble-cont").empty().remove();
