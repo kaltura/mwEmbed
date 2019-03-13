@@ -339,8 +339,12 @@
                         // this is in case this is the 1st load of the quiz 
                         attempts = availableRetakes
                     }
+                    // handle post 1st submit (we need to decrease by 1)
+                    if(this.KIVQModule.quizSubmitted ){
+                        attempts--;
+                    }
                     // edge case - when we have 1 attempts - show nothing (1 attempt is the last attempt) 
-                    if(attempts != 1){
+                    if(attempts != 0){
                         localedText = localedText.split("|X|").join(attempts); // locale : "Total attempts available for this quiz: |X|"
                     }else{
                         localedText = "";
