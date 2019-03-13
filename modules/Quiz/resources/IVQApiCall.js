@@ -22,7 +22,7 @@
                         'filter:objectType': 'KalturaQuizUserEntryFilter',
                         'filter:entryIdEqual': _this.embedPlayer.kentryid,
                         'filter:userIdEqualCurrent':'1',
-                        'filter:orderBy': '-version'
+                        'filter:orderBy': '-createdAt'
                     }, {
                         'service': 'quiz_quiz',
                         'action': 'get',
