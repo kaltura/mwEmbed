@@ -621,7 +621,6 @@
         ssSubmitted: function (score) {
             var _this = this,cpArray = $.cpObject.cpArray;
             // TODO - pass this to IVQ module 
-            _this.latestScore = score;
             _this.ivqShowScreen();
             _this.KIVQScreenTemplate.tmplSubmitted();
 
@@ -675,24 +674,26 @@
             var retakesTotal = $.quizParams.attemptsAllowed;
             var currentRetake = _this.KIVQModule.retakeNumber;
             var localedText = gM('mwe-quiz-retake-btn'); //  Locale : "Retake (|X|/|Y|)"
-            localedText = localedText.split("|X|").join(currentRetake); // assign retakes 
-            localedText = localedText.split("|Y|").join(retakesTotal); // assign total 
             if(!retakesTotal || retakesTotal <= (currentRetake + 1)  ){
                 // there is no more trials 
                 $(".retake-btn,.retake-summary-text").hide();
             }else{
                 // handle summary text 
                 var summaryText = gM('mwe-quiz-retake-summary'); //This is attempt |attempt| of |attempts|, your score is |score| based on |scoreType|,
-                summaryText = summaryText.split("|attempt|").join(currentRetake+1);
-                summaryText = summaryText.split("|attempts|").join(retakesTotal);
-                var score = _this.KIVQModule.currentScore;
-                // handle 1st submit where we did not store the score yet 
-                if(isNaN(score) && _this.latestScore){
-                    score = _this.latestScore;
+                if(!currentRetake){
+                    currentRetake = 1;
+                }else{
+                    currentRetake++;
                 }
+                localedText = localedText.split("|X|").join(currentRetake); // assign retakes 
+                localedText = localedText.split("|Y|").join(retakesTotal); // assign total 
+
+                summaryText = summaryText.split("|attempt|").join(currentRetake);
+                summaryText = summaryText.split("|attempts|").join(retakesTotal);
+                var score = Math.round(_this.KIVQModule.calculatedScore * 100);
                 summaryText = summaryText.split("|score|").join(score);
                 summaryText = summaryText.split("|scoreType|").join(gM('mwe-quiz-retake-scoretype-'+_this.KIVQModule.scoreType));
-                $(".retake-summary-text").text("") // TODO 
+                $(".retake-summary-text").text(summaryText);
                 // retake button 
                 $(".retake-btn").text(localedText).attr({"tabindex": 5,"title": localedText})
                 .on('click',  $.proxy(this.retake,this))

@@ -10,6 +10,7 @@
             kQuizUserEntryId: null,
             score: null,
             currentScore: null ,
+            calculatedScore: null ,
             scoreType: undefined ,
             retakeNumber: undefined,
             embedPlayer: null,
@@ -95,6 +96,14 @@
                             // calculate how many times we are allowed to take this quiz 
                             _this.retakeNumber = userEntryData.objects[0].version ? userEntryData.objects[0].version : 0; // support old quiz that do not have version
                             _this.currentScore = Math.round(userEntryData.objects[0].calculatedScore * 100);
+                            if(isNaN(_this.currentScore) && userEntryData.objects.length > 1  ){
+                                // we need to grab the score from previous userEntry ()
+                                var latestVersion = userEntryData.objects[0].version;
+                                if(userEntryData.objects[latestVersion] && userEntryData.objects[latestVersion].hasOwnProperty("calculatedScore") ){
+                                    _this.currentScore = userEntryData.objects[latestVersion].calculatedScore;
+                                }
+                            }
+                            _this.calculatedScore = _this.currentScore/100;
                             switch (String(userEntryData.objects[0].status)) {
                                 case 'quiz.3':
                                     if ($.quizParams.showGradeAfterSubmission) {
@@ -164,16 +173,18 @@
             },
             setSubmitQuiz:function(){
                 var _this = this;
-
                 _this.KIVQApi.submitQuiz(_this.kQuizUserEntryId, function(data){
-
+                    
                     if (!_this.checkApiResponse('Submit Quiz err -->',data)){
                         return false;
                     }
                     else{
                         $.cpObject = {};
                         _this.getQuestionsAndAnswers(_this.populateCpObject);
-
+                        // store current score for next retake screen 
+                        if(data.hasOwnProperty("calculatedScore")){
+                            _this.calculatedScore = data.calculatedScore;
+                        }
                         _this.checkCuepointsReady(function(){
                             _this.score = Math.round(data.score *100);
                             _this.quizPlugin.ssSubmitted(_this.score);
