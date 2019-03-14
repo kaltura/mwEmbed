@@ -476,6 +476,7 @@ button.qContinue, button.qApplied {
     border: none;
     resize: none;
     background: transparent;
+    background-color: transparent;
     color: #FFFFFF;
     font-size: 2vw;
     overflow: auto;
