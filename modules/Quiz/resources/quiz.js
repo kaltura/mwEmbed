@@ -764,7 +764,9 @@
             // handle open quesition 
             if($.cpObject.cpArray[selectedQuestion].questionType === this.KIVQModule.QUESTIONS_TYPE.OPEN_QUESTION 
                 && $.cpObject.cpArray[selectedQuestion].openAnswer){
-                $(".yourAnswer").html($.cpObject.cpArray[selectedQuestion].openAnswer);
+                var text = $.cpObject.cpArray[selectedQuestion].openAnswer;
+                text = text.replace(/\n/g,"<br/>");
+                $(".yourAnswer").html(text).addClass("open-question-answer");
                 $(".correctAnswerText").html("");
             }
         },

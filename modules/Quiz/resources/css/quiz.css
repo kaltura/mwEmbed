@@ -376,7 +376,11 @@ button.qContinue, button.qApplied {
 .allow-change #open-question-clear {
     right: 154px;
 }
-
+.open-question-answer.yourAnswer{
+    overflow: auto;
+    max-height: 20vw;
+    width: 86vw;
+}
 .ivqContainer .open-answer-container{
     bottom: auto;
     background: #074356;
