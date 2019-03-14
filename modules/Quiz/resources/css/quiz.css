@@ -148,6 +148,7 @@
     width: 92vw;
     cursor: default !important;
 }
+
 .screen-content {
     height: 100%;
 }
@@ -155,6 +156,7 @@
     outline: white solid 2px;
 }
 .screen.quiz {
+    padding-top: 3vw;
     background: #039bc1;
     background: -moz-linear-gradient(top, #039bc1 0%, #04a8d1 17%, #36a8eb 46%, #47a1eb 56%, #2074ea 100%);
     background: -webkit-linear-gradient(top, #039bc1 0%,#04a8d1 17%,#36a8eb 46%,#47a1eb 56%,#2074ea 100%);
@@ -244,19 +246,19 @@
 }
 
 .open-question .display-question{
-    margin-left: 7%;
+    text-align: left;
+    width: 82%;
+    font-size: 2vw;
+}
+
+.display-question{
+    font-family: LatoLight;
     width: 80%;
-    height: auto;
     padding-left: 1vw;
     padding-right: 1vw;
-    font-family: LatoLight
-}
- 
-.display-question{
-    position: absolute;
-    width: 100%;
-    top: -4px;
-    height: 52px;
+    text-align: center;
+    top: 1vw;
+    height:10vw;
     font-family: "Lato", "Helvetica" , "Arial";
     margin-left: auto;
     margin-right: auto;
@@ -382,7 +384,7 @@ button.qContinue, button.qApplied {
     height: 30vw;
     margin-left: 6%;
     margin-right: 6%;
-    width: 86%;
+    width: 88%;
     border-radius: 5px;
 }
 #open-question-change-answer, #open-question-clear , #open-question-save{
@@ -531,9 +533,8 @@ button.qContinue, button.qApplied {
     color: #727272;
 }
 
-
-
 .open-question .open-answer-container{
+    margin-top: 1vw;
     display: block;
 }
 
@@ -1080,9 +1081,7 @@ ol.second-row{
     height: 36vh;
 }
 .true-false-question .display-question{
-    position: absolute;
-    bottom: 0;
-    height: 100px;
+    height: 13vw;
 }
 .true-false-question .answers-container{
     top: 41vh;
