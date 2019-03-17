@@ -66,10 +66,10 @@
                     '   <div class="header-container"></div>'+
                     '   <div class ="reviewAnswerPlace" >'+
                     '       <div class="theQuestion"></div>'+
-                    '       <div class="correctAnswerText"></div>'+
-                    '       <div class="correctAnswer"></div>'+
                     '       <div class="yourAnswerText"></div>'+
                     '       <div class="yourAnswer"></div>'+
+                    '       <div class="correctAnswerText"></div>'+
+                    '       <div class="correctAnswer"></div>'+
                     '   </div>'+
                     '   <div class ="reviewAnswerFooter" >'+
                     '       <span class = "reviewAnswerPrefix"></span>'+
@@ -86,7 +86,10 @@
                     '<div class="ivqContainer submitted">' +
                     '   <div class="title-text"></div>' +
                     '   <div class="sub-text"></div>' +
-                    '   <div class="retake-summary-text"></div>' +
+                    '   <div class="summary">' +
+                    '       <span class="retake-summary-text"></span>' +
+                    '       <span class="retake-summary-score-text"></span>' +
+                    '   </div>' +
                     '   <div class="display-all-container">' +
                     '       <div class ="hex-row">' +
                     '           <div class="hex-column  left-arrow" style="display: none;"></div>' +

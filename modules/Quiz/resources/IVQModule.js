@@ -573,10 +573,8 @@
                 var _this = this;
                 mw.log("Quiz: Show Quiz on Scrubber");
                 _this.quizPlugin.displayBubbles();
-                //!_this.quizSubmitted for IOS9 Android5.   _this.retakes is FEV-243
-                if (    ($.quizParams.attemptsAllowed 
-                        && $.quizParams.attemptsAllowed  > this.retakeNumber)
-                        || ($.quizParams.attemptsAllowed && this.retakeNumber === undefined)  ){
+                if ( (_this.quizEndFlow && !_this.quizSubmitted )
+                        || $.quizParams.attemptsAllowed ){
                     _this.showQuizEndOnScrubber();
                 }
             },

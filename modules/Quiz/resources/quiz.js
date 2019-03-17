@@ -634,7 +634,7 @@
                     $(".bottomContainer").addClass("paddingB20");
                 } else {
                     if(cpArray.length <= 6){
-                        $(".title-text").addClass("padding10");
+                        $(".title-text").addClass("padding5");
                     }else{
                         $(".title-text").addClass("padding3");
                     }
@@ -679,7 +679,8 @@
                 $(".retake-btn,.retake-summary-text").hide();
             }else{
                 // handle summary text 
-                var summaryText = gM('mwe-quiz-retake-summary'); //This is attempt |attempt| of |attempts|, your score is |score| based on |scoreType|,
+                var summaryText = gM('mwe-quiz-retake-summary'); //This is attempt |attempt| of |attempts|
+                var summaryScoreText = gM('mwe-quiz-retake-score-summary'); //, your score is |score| based on |scoreType|,
                 if(!currentRetake){
                     currentRetake = 1;
                 }else{
@@ -691,9 +692,12 @@
                 summaryText = summaryText.split("|attempt|").join(currentRetake);
                 summaryText = summaryText.split("|attempts|").join(retakesTotal);
                 var score = Math.round(_this.KIVQModule.calculatedScore * 100);
-                summaryText = summaryText.split("|score|").join(score);
-                summaryText = summaryText.split("|scoreType|").join(gM('mwe-quiz-retake-scoretype-'+_this.KIVQModule.scoreType));
+                summaryScoreText = summaryScoreText.split("|score|").join(score);
+                summaryScoreText = summaryScoreText.split("|scoreType|").join(gM('mwe-quiz-retake-scoretype-'+_this.KIVQModule.scoreType));
                 $(".retake-summary-text").text(summaryText);
+                if ($.quizParams.showGradeAfterSubmission){
+                    $(".retake-summary-score-text").text(summaryScoreText);
+                }
                 // retake button 
                 $(".retake-btn").text(localedText).attr({"tabindex": 5,"title": localedText})
                 .on('click',  $.proxy(this.retake,this))

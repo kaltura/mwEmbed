@@ -152,6 +152,14 @@
 .screen-content {
     height: 100%;
 }
+
+.screen.quiz button:focus {
+    border-color: white;
+    border-width: 2px;
+    border-style: solid;
+    outline: none;
+}
+
 .screen.quiz *:focus{
     outline: white solid 2px;
 }
@@ -167,8 +175,8 @@
     cursor: default !important;
 }
 .title-text{
-    font-family: "LatoBlack";
-    font-size: 5.9vw;
+    font-family: "Lato";
+    font-size: 7.4vw;
     color: white;
     font-weight: bold;
     text-align: center;
@@ -182,14 +190,20 @@
     padding-top: 32vh;
 
 }
+.ivqContainer .summary{
+    padding-top: 1.3vw;
+    text-align: center
+}
+.ivqContainer .retake-summary-score-text,
 .ivqContainer .retake-summary-text{
     margin-top: 2vw;
     font-size: 1.9vw;
 }
+.retake-summary-score-text,
 .retake-summary-text,
 .sub-text{
     font-family: "LatoLight";
-    font-size: 2.5vw;
+    font-size: 3vw;
     color: white;
     text-align: center;
     font-weight: 100;
@@ -247,7 +261,7 @@
 
 .open-question .display-question{
     text-align: left;
-    width: 82%;
+    width: 85%;
     font-size: 2vw;
 }
 
@@ -258,7 +272,7 @@
     padding-right: 1vw;
     text-align: center;
     top: 1vw;
-    height:10vw;
+    height:9.5vw;
     font-family: "Lato", "Helvetica" , "Arial";
     margin-left: auto;
     margin-right: auto;
@@ -686,13 +700,14 @@ button.qContinue, button.qApplied {
 }
 
 .q-box{
-    /*font-family: "LatoLight";*/
+    font-family: "Lato";
+    padding-right: 1px;
     margin-left: 0.7vw;
     margin-right: 0.7vw;
-    font-size: 3.5vw;
+    font-size: 3vw;
     width: 8.48vw;
     height: 10vw;
-    line-height: 10vw;
+    line-height: 9.5vw;
     background:url('data:image/png;base64,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');
     display: inline-block;
     text-align: center;
@@ -775,7 +790,7 @@ button.qContinue, button.qApplied {
 }
 .theQuestion{
     font-family: Lato;
-    font-size: 16px;
+    font-size: 2.4vw;
     font-weight: bold;
     font-style: normal;
     font-stretch: normal;
@@ -787,8 +802,7 @@ button.qContinue, button.qApplied {
 }
 .yourAnswerText{
     font-family: Lato;
-    font-size: 16px;
-    font-weight: bold;
+    font-size: 2.4vw;
     font-style: normal;
     font-stretch: normal;
     line-height: normal;
@@ -808,7 +822,8 @@ button.qContinue, button.qApplied {
     cursor:default !important;
 }
 .correctAnswerText{
-    font-size: 16px;
+    font-family: "LatoLight";
+    font-size: 2.4vw;
     color: white;
     margin-top: 2vw;
     cursor:default !important;
@@ -818,13 +833,11 @@ button.qContinue, button.qApplied {
     font-weight: 300;
     transform: scaleY(1.0009);
     text-decoration: line-through;
-    /*color: #362b36;*/
-    /*padding-right: 16vw;*/
     font-size: 2.4vw;
     cursor:default !important;
 }
 .reviewAnswerFooter {
-    height: 70px;
+    height: 5vw;
     position: absolute;
     bottom: 0;
     width: 100%;
@@ -837,12 +850,11 @@ button.qContinue, button.qApplied {
 .reviewAnswerPrefix, 
 .reviewAnswerNr{
     display: inline-block;
-    padding-top: 20px;
     font-family: Lato;
-    font-size: 16px;
+    font-size: 2.4vw;
     font-style: normal;
     font-stretch: normal;
-    line-height: 1.31;
+    line-height: 2.4vw;
     letter-spacing: -0.1px;
     color: #ffffff;
 }
