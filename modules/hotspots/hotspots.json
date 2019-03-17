@@ -1,0 +1,12 @@
+{
+	"hotspots": {
+		"scripts": [
+			"./resources/hotspots.js"
+		],
+		"styles": "./resources/hotspots.css",
+		"dependencies": [
+			"mw.KBaseComponent"
+		],
+		"kalturaPluginName": "hotspots"
+	}
+}
