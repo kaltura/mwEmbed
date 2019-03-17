@@ -48,7 +48,7 @@
                     '                <div class="open-question-chars"><span class="chars">0</span>/270</div>' +
                     '                <button id="open-question-clear" tabindex="5" disabled="disabled"></button>' +
                     '                <button id="open-question-save" tabindex="5" disabled="disabled"></button>' +
-                    '                <button id="open-question-change-answer" tabindex="5" disabled="disabled"></button>' +
+                    '                <button id="open-question-change-answer" tabindex="5"></button>' +
                     '            </div>' +                   
                     '       </div>' +
                     '   </div>' +

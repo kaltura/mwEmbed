@@ -153,13 +153,6 @@
     height: 100%;
 }
 
-.screen.quiz button:focus {
-    border-color: white;
-    border-width: 2px;
-    border-style: solid;
-    outline: none;
-}
-
 .screen.quiz *:focus{
     outline: white solid 2px;
 }
@@ -383,12 +376,8 @@ button.qContinue, button.qApplied {
 .single-answer-box-apply:hover {
     cursor: pointer;
 }
-
-.allow-change #open-question-save {
-    width: 126px;
-}
-.allow-change #open-question-clear {
-    right: 154px;
+#open-question-change-answer:focus{
+    outline: #333333 solid 1px;
 }
 .open-question-answer.yourAnswer{
     overflow: auto;
@@ -505,7 +494,9 @@ button.qContinue, button.qApplied {
 .answered .open-question-textarea{
     color: #333333;
 }
-
+.answered .open-question-chars{
+    display: none;
+}
 .ivqContainer.answered .open-answer-container {
     background: #A1DCF0;
 }
@@ -539,7 +530,6 @@ button.qContinue, button.qApplied {
 }
 
 .answered #open-question-change-answer{
-    padding-right: 0px;
     display: block;
     font-weight: normal;
     top: 0%;

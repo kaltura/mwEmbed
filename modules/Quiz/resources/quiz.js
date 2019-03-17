@@ -479,10 +479,8 @@
                     if(cPo.openAnswer){
                         interfaceElement.find(".ivqContainer").addClass("answered");
                         interfaceElement.find(".open-question-textarea").val(cPo.openAnswer);
-                        interfaceElement.find("#open-question-clear,#open-question-save")
+                        interfaceElement.find("#open-question-clear,#open-question-save,.open-question-textarea")
                         .attr("disabled", "disabled");
-                        interfaceElement.find("#open-question-save")
-                        .text(gM('mwe-quiz-open-question-change-answer'));
                         interfaceElement.find(".open-answer-container").addClass("allow-change");
                         var charsLength = interfaceElement.find(".open-question-textarea").val().length;
                         interfaceElement.find(".open-question-chars .chars").text(charsLength);
@@ -520,14 +518,23 @@
             }, _this ))
             
             // save and change-answer buttons 
-            interfaceElement.find("#open-question-save,#open-question-change-answer ")
+            interfaceElement.find("#open-question-save")
             .off()
             .click( $.proxy( function(cuepoint){
                 if(interfaceElement.find(".open-question-textarea").val() == ""){
                     // dont send empty answer
                     return;
                 }
-                 this.submitOpenQuestion(cuepoint)
+                this.submitOpenQuestion(cuepoint)
+            }, _this , cPo ))
+            interfaceElement.find("#open-question-change-answer")
+            .off()
+            .click( $.proxy( function(cuepoint){
+                // change answer - set UI state and focus on the textarea 
+                interfaceElement.find(".ivqContainer.answered").removeClass("answered");
+                interfaceElement.find("#open-question-change-answer").hide();
+                interfaceElement.find(".open-question-textarea").removeAttr("disabled").focus();
+                interfaceElement.find("#open-question-clear,#open-question-save").attr("disabled", "disabled");
             }, _this , cPo ))
 
             // textarea 
@@ -538,9 +545,9 @@
                 var charsLength = $(this).val().length;
                 interfaceElement.find(".open-question-chars .chars").text(charsLength);
                 if(charsLength==0){
-                    interfaceElement.find("#open-question-clear,#open-question-save,#open-question-change-answer").attr("disabled", "disabled");
+                    interfaceElement.find("#open-question-clear,#open-question-save").attr("disabled", "disabled");
                 }else{
-                    interfaceElement.find("#open-question-clear,#open-question-save,#open-question-change-answer").removeAttr("disabled");
+                    interfaceElement.find("#open-question-clear,#open-question-save").removeAttr("disabled");
                 }
             });
 
