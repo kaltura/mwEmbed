@@ -519,6 +519,7 @@ button.qContinue, button.qApplied {
     cursor: default;
 }
 #open-question-change-answer{
+    background: transparent;
     font-weight: bold;
     color: #333333;
     text-align: right;
@@ -532,7 +533,7 @@ button.qContinue, button.qApplied {
 .answered #open-question-change-answer{
     display: block;
     font-weight: normal;
-    top: 0%;
+    top: 20%;
 }
 .answered #open-question-save, 
 .answered #open-question-clear{
