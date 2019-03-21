@@ -123,9 +123,9 @@
 
 .retake-box{
     padding-top: 3vw;
-    color: #FFFFFF;	
-    font-family: Lato;	
-    font-size: 1.8vw;	
+    color: #FFFFFF;
+    font-family: Lato;
+    font-size: 1.8vw;
     text-align: center;
 }
 .submitted .bottomContainer {
@@ -295,7 +295,7 @@
 button.qContinue, button.qApplied {
     background-color: transparent;
     border: 0px;
-    color: #ffffff;    
+    color: #ffffff;
 }
 .single-answer-box-bk:hover:not(.wide){
     background-image: url('data:image/png;base64,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');
@@ -451,7 +451,7 @@ button.qContinue, button.qApplied {
 
 .open-answer-header{
     width: 100%;
-    text-align: center; 
+    text-align: center;
     margin-top: 20px;
     margin-bottom: 20px;
     color: #CCD1D3;
@@ -459,7 +459,7 @@ button.qContinue, button.qApplied {
 .open-answer-inner {
     border-radius: 2px;
     background:#041A23;
-    border: solid 1px #3C535B; 
+    border: solid 1px #3C535B;
     position: absolute;
     margin: 10px;
     left: 0px;
@@ -537,10 +537,10 @@ button.qContinue, button.qApplied {
     font-weight: normal;
     top: 20%;
 }
-.answered #open-question-save, 
+.answered #open-question-save,
 .answered #open-question-clear{
     display: none;
-} 
+}
 .answered .open-question-chars{
     color: #727272;
 }
@@ -763,37 +763,35 @@ button.qContinue, button.qApplied {
     position: absolute;
     bottom: 2vw;
     right: 0;
-    margin-right: 2vw;  
+    margin-right: 2vw;
 }
 
 .yourAnswer{
-    font-family: Lato;
     font-size: 16px;
     font-weight: normal;
     font-style: normal;
     font-stretch: normal;
     line-height: normal;
     letter-spacing: -0.1px;
-    color: #333333; 
+    color: #333333;
     margin-top: 1vw;
     cursor:default !important;
 }
 .reviewAnswerPlace{
+    font-family: LatoLight;
     text-align: left;
     margin-left: 32px;
     width: 78vw;
 }
 .theQuestion{
-    font-family: Lato;
     font-size: 2.4vw;
-    font-weight: bold;
     font-style: normal;
     font-stretch: normal;
     line-height: 1.31;
     letter-spacing: -0.1px;
     color: #ffffff;
     cursor:default !important;
-    
+
 }
 .yourAnswerText{
     font-family: Lato;
@@ -807,7 +805,6 @@ button.qContinue, button.qApplied {
     cursor:default !important;
 }
 .correctAnswer{
-    font-family: "LatoLight";
     font-weight: 300;
     transform: scaleY(1.0009);
     color: white;
@@ -817,14 +814,13 @@ button.qContinue, button.qApplied {
     cursor:default !important;
 }
 .correctAnswerText{
-    font-family: "LatoLight";
+    font-family: Lato;
     font-size: 2.4vw;
     color: white;
     margin-top: 2vw;
     cursor:default !important;
 }
 .wrongAnswer{
-    font-family: "LatoLight";
     font-weight: 300;
     transform: scaleY(1.0009);
     text-decoration: line-through;
@@ -842,7 +838,7 @@ button.qContinue, button.qApplied {
     margin-left: 32px;
 }
 
-.reviewAnswerPrefix, 
+.reviewAnswerPrefix,
 .reviewAnswerNr{
     display: inline-block;
     font-family: Lato;
@@ -1273,7 +1269,7 @@ ol.second-row{
         width: 86%;
     }
     .playlistInterface ol.first-row {
-         margin: 10px 0;
+        margin: 10px 0;
     }
     .playlistInterface .confirm-box {
         height: 5vw;
