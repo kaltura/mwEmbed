@@ -681,8 +681,9 @@
             var retakesTotal = $.quizParams.attemptsAllowed;
             var currentRetake = _this.KIVQModule.retakeNumber;
             var localedText = gM('mwe-quiz-retake-btn'); //  Locale : "Retake (|X|/|Y|)"
-            if(!retakesTotal || retakesTotal <= (currentRetake + 1)  ){
-                // there is no more trials 
+            
+            if( !retakesTotal ){
+                // no retakes 
                 $(".retake-btn,.retake-summary-text").hide();
             }else{
                 // handle summary text 
@@ -695,7 +696,6 @@
                 }
                 localedText = localedText.split("|X|").join(currentRetake); // assign retakes 
                 localedText = localedText.split("|Y|").join(retakesTotal); // assign total 
-
                 summaryText = summaryText.split("|attempt|").join(currentRetake);
                 summaryText = summaryText.split("|attempts|").join(retakesTotal);
                 var score = Math.round(_this.KIVQModule.calculatedScore * 100);
@@ -704,6 +704,10 @@
                 $(".retake-summary-text").text(summaryText);
                 if ($.quizParams.showGradeAfterSubmission){
                     $(".retake-summary-score-text").text(summaryScoreText);
+                }
+                if(retakesTotal === currentRetake ){
+                    // no more retakes - do not show the retake button 
+                    $(".retake-btn").hide();
                 }
                 // retake button 
                 $(".retake-btn").text(localedText).attr({"tabindex": 5,"title": localedText})
