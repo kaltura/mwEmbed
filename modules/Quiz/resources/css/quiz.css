@@ -395,7 +395,8 @@ button.qContinue, button.qApplied {
     border-radius: 5px;
 }
 #open-question-change-answer, #open-question-clear , #open-question-save{
-    font-size: 1.8vw;
+    font-family: Lato;
+    font-size: 2.1vw;
     position: absolute;
     border-radius: 3px;
     box-shadow: 0 0 2px 0 rgba(0,0,0,0.24);
@@ -432,10 +433,11 @@ button.qContinue, button.qApplied {
 }
 
 .open-question-chars{
+    font-family: Lato;
     color:#808080;
     position: absolute;
     left: 3vw;
-    font-size: 1.7vw;
+    font-size: 2.1vw;
     top: 36%;
 }
 .open-answer-footer{
@@ -482,10 +484,10 @@ button.qContinue, button.qApplied {
     font-family: "LatoLight";
     border: none;
     resize: none;
-    background: transparent;
-    background-color: transparent;
+    background: none;
+    background-color: none;
     color: #FFFFFF;
-    font-size: 2vw;
+    font-size: 2.1vw;
     overflow: auto;
 }
 .screen.quiz .answered .open-question-textarea:focus {
@@ -628,6 +630,7 @@ button.qContinue, button.qApplied {
 }
 
 .submit-button{
+    font-size: 2.4vw;
     margin-left: 3vw;
     overflow: hidden;
     display: inline-block;
@@ -646,6 +649,7 @@ button.qContinue, button.qApplied {
 }
 
 .review-button{
+    font-size: 2.4vw;
     overflow: hidden;
     display: inline-block;
     margin: 0 auto;
