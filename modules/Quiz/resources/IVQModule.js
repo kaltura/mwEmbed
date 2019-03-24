@@ -275,7 +275,7 @@
                 }
                 else{
                     var anUnswered = _this.getUnansweredQuestNrs();
-                    if (!anUnswered){
+                    if (!anUnswered.length){
                         _this.reviewMode = true;
                     }
                     if (($.cpObject.cpArray.length - 1) === questionNr){
@@ -343,7 +343,7 @@
                     }
                 });
                 if ($.isEmptyObject(unanswerdArr)){
-                    return false;
+                    return [];
                 }
                 else {
                     return unanswerdArr;
@@ -400,7 +400,7 @@
             quizEndScenario:function(){
                 var _this = this,anUnswered = _this.getUnansweredQuestNrs();
                 _this.embedPlayer.stopPlayAfterSeek = true;
-                if (anUnswered) {
+                if ( anUnswered.length ) {
                     // there are still unanswered questions - show "almost done" screen 
                     _this.quizEndFlow = true;
                     _this.quizPlugin.ssAlmostDone(anUnswered);
