@@ -26,6 +26,7 @@
                     '<div class="InvideoTipMessage" tabindex="5"></div>' +
                     '<div class="bottomContainer padding10">' +
                         '<div class="confirm-box" role="button" title="to take the quiz"></div>' +
+                        '<div class="retake-box"></div>' +
                     '</div>' +
                     '</div>').fadeIn( "fast" );
             },
@@ -38,6 +39,19 @@
                     '       <div class="display-question"></div>' +
                     '   </div>' +
                     '   <div class="answers-container"></div>' +
+                    '   <div class="open-answer-container">'+
+                    '       <div class="open-answer-inner">'+
+                    '             <div class="open-question_textarea-container">'+
+                    '                   <textarea class="open-question-textarea" maxlength="270" tabindex="5"></textarea>'+ 
+                    '             </div>' +
+                    '            <div class="open-answer-footer">' +
+                    '                <div class="open-question-chars"><span class="chars">0</span>/270</div>' +
+                    '                <button id="open-question-clear" tabindex="5" disabled="disabled"></button>' +
+                    '                <button id="open-question-save" tabindex="5" disabled="disabled"></button>' +
+                    '                <button id="open-question-change-answer" tabindex="5"></button>' +
+                    '            </div>' +                   
+                    '       </div>' +
+                    '   </div>' +
                     '   <div class = "ftr-container">' +
                     '       <div class="ftr-left"></div>' +
                     '       <div class="ftr-right"></div>' +
@@ -50,7 +64,6 @@
                 $(_this.emptyScreen()).hide().append(
                     '<div class="ivqContainer">'+
                     '   <div class="header-container"></div>'+
-                    '   <div class = "reviewAnswerNr"> </div>'+
                     '   <div class ="reviewAnswerPlace" >'+
                     '       <div class="theQuestion"></div>'+
                     '       <div class="yourAnswerText"></div>'+
@@ -58,16 +71,25 @@
                     '       <div class="correctAnswerText"></div>'+
                     '       <div class="correctAnswer"></div>'+
                     '   </div>'+
-                    '<div class="gotItBox"></div></div>').fadeIn( "fast" );
+                    '   <div class ="reviewAnswerFooter" >'+
+                    '       <span class = "reviewAnswerPrefix"></span>'+
+                    '       <div class = "reviewAnswerNr"> </div>'+
+                    '       <div class="gotItBox"></div>'+
+                    '   </div>'+
+                    '</div>').fadeIn( "fast" );
 
             },
             tmplSubmitted:function(){
                 var _this = this;
                 $(".icon-close").css("display", "none");
                 $(_this.emptyScreen()).hide().append(
-                    '<div class="ivqContainer">' +
+                    '<div class="ivqContainer submitted">' +
                     '   <div class="title-text"></div>' +
                     '   <div class="sub-text"></div>' +
+                    '   <div class="summary">' +
+                    '       <span class="retake-summary-text"></span>' +
+                    '       <span class="retake-summary-score-text"></span>' +
+                    '   </div>' +
                     '   <div class="display-all-container">' +
                     '       <div class ="hex-row">' +
                     '           <div class="hex-column  left-arrow" style="display: none;"></div>' +
@@ -77,6 +99,7 @@
                     '   </div>' +
                     '   <div class="bottomContainer ">' +
                     '       <div class="confirm-box"></div>' +
+                    '       <div class="retake-btn"></div>' +
                     '   </div>' +
                     '</div>').fadeIn( "fast" );
 

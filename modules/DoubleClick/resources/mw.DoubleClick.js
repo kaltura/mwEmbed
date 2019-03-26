@@ -656,7 +656,7 @@
             if ( this.isChromeless ) {
                 $( ".videoDisplay" ).prepend( adCover );
             } else {
-                if ( !mw.isIphone() && !_this.isVPAID) {
+                if ( !mw.isNativeIOSPlayback() && !_this.isVPAID ) {
                     $( this.getAdContainer() ).append( adCover );
                 }
             }

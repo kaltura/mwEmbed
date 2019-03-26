@@ -9,6 +9,10 @@
     if (!(mw.KIVQModule.prototype = {
             kQuizUserEntryId: null,
             score: null,
+            currentScore: null ,
+            calculatedScore: null ,
+            scoreType: undefined ,
+            retakeNumber: undefined,
             embedPlayer: null,
             quizPlugin: null,
             showGradeAfterSubmission: false,
@@ -32,37 +36,39 @@
                 FILL_IN_BLANK: 5,
                 HOT_SPOT: 6,
                 GO_TO: 7,
+                OPEN_QUESTION: 8,
             },
 
             init: function (embedPlayer,quizPlugin) {
                 var _this = this;
-
                 _this.kQuizEntryId = embedPlayer.kentryid;
                 _this.KIVQApi = new mw.KIVQApi(embedPlayer);
                 _this.KIVQScreenTemplate = new mw.KIVQScreenTemplate(embedPlayer);
-
                 this.destroy();
                 this.embedPlayer = embedPlayer;
                 this.quizPlugin = quizPlugin;
             },
-
             setupQuiz:function(){
                 var _this = this,
                     deferred = $.Deferred();
 
                 _this.KIVQApi.getUserEntryIdAndQuizParams( function(data) {
+                    // validate data integrity 
                     if (!_this.checkApiResponse('User Entry err-->', data[0])) {
                         return false;
                     }
                     if (!_this.checkApiResponse('Quiz Params err-->', data[1])) {
                         return false;
                     }
-                    if ( !("uiAttributes" in data[1])) {
+                    var userEntryData = data[0];
+                    var quizParamsData = data[1];
+                    if ( !("uiAttributes" in quizParamsData)) {
                         deferred.reject(data, 'quiz is empty');
                         return deferred;
                     }
                     else {
-                        $.quizParams = data[1];
+                        $.quizParams = quizParamsData;
+                        _this.scoreType = quizParamsData.scoreType ? quizParamsData.scoreType : 0; 
                         var dataForBanSeek = {
                             status: false,
                             alertText: ''
@@ -85,17 +91,30 @@
                         if(dataForBanSeek.status && !_this.canSkip){
                             _this.embedPlayer.sendNotification('activateBanSeek',dataForBanSeek);
                         }
-                        if (data[0].totalCount > 0) {
-                            switch (String(data[0].objects[0].status)) {
+                        // handle user entry 
+                        if (userEntryData.totalCount > 0) {
+                            // calculate how many times we are allowed to take this quiz 
+                            _this.retakeNumber = userEntryData.objects[0].version ? userEntryData.objects[0].version : 0; // support old quiz that do not have version
+                            _this.currentScore = Math.round(userEntryData.objects[0].calculatedScore * 100);
+                            if(isNaN(_this.currentScore) && userEntryData.objects.length > 1  ){
+                                // we need to grab the score from previous userEntry ()
+                                var latestVersion = userEntryData.objects[0].version;
+                                if(userEntryData.objects[latestVersion] && userEntryData.objects[latestVersion].hasOwnProperty("calculatedScore") ){
+                                    _this.currentScore = userEntryData.objects[latestVersion].calculatedScore;
+                                }
+                            }
+                            _this.calculatedScore = _this.currentScore/100;
+                            switch (String(userEntryData.objects[0].status)) {
                                 case 'quiz.3':
                                     if ($.quizParams.showGradeAfterSubmission) {
-                                        _this.score = Math.round(data[0].objects[0].score * 100);
+                                        _this.score = Math.round(userEntryData.objects[0].score * 100);
                                     }
                                     _this.quizSubmitted = true;
                                     break;
                                 case '1':
                                     break;
                                 case '2':
+                                    // TODO - check this 
                                     _this.errMsg('quiz deleted', data);
                                     return false;
                                     break;
@@ -125,7 +144,6 @@
             getQuestionsAndAnswers: function (callback) {
                 var _this = this;
                 _this.KIVQApi.getQuestionAnswerCuepoint(_this.kQuizEntryId, _this.kQuizUserEntryId, function(data){
-
                     if (!_this.checkApiResponse('Get question err -->',data[0])){
                         return false;
                     }
@@ -155,16 +173,18 @@
             },
             setSubmitQuiz:function(){
                 var _this = this;
-
                 _this.KIVQApi.submitQuiz(_this.kQuizUserEntryId, function(data){
-
+                    
                     if (!_this.checkApiResponse('Submit Quiz err -->',data)){
                         return false;
                     }
                     else{
                         $.cpObject = {};
                         _this.getQuestionsAndAnswers(_this.populateCpObject);
-
+                        // store current score for next retake screen 
+                        if(data.hasOwnProperty("calculatedScore")){
+                            _this.calculatedScore = data.calculatedScore;
+                        }
                         _this.checkCuepointsReady(function(){
                             _this.score = Math.round(data.score *100);
                             _this.quizPlugin.ssSubmitted(_this.score);
@@ -189,6 +209,7 @@
                 var cpArray = [];
                 for (var i = 0; i < (data[0].objects.length); i++) {
                     var arr = [];
+                    // data[0] refers to the questions 
                     $.each(data[0].objects[i].optionalAnswers, function (key, value) {
                         if(value.text){
                             arr.push(value.text.toString());
@@ -202,6 +223,7 @@
                         correctAnswerKeys: null,
                         explanation: null
                     };
+                    // data[1] refers to the answers by this user 
                     if (!$.isEmptyObject(data[1].objects)) {
                         $.grep(data[1].objects, function (el) {
                             if (el.parentId === data[0].objects[i].id) {
@@ -211,6 +233,9 @@
                                 ansP.isCorrect = el.isCorrect;
                                 ansP.correctAnswerKeys = el.correctAnswerKeys;
                                 ansP.explanation = el.explanation;
+                                if(el.openAnswer){
+                                    ansP.openAnswer = el.openAnswer;
+                                }
                                 return el
                             }
                         });
@@ -229,6 +254,7 @@
                         cpId: data[0].objects[i].id,
                         cpEntryId: data[0].objects[i].entryId,
                         answerCpId: ansP.answerCpId,
+                        openAnswer: ansP.openAnswer,
                         questionType: data[0].objects[i].questionType,
                     });
                 }
@@ -249,7 +275,7 @@
                 }
                 else{
                     var anUnswered = _this.getUnansweredQuestNrs();
-                    if (!anUnswered){
+                    if (!anUnswered.length){
                         _this.reviewMode = true;
                     }
                     if (($.cpObject.cpArray.length - 1) === questionNr){
@@ -283,7 +309,7 @@
                 var _this = this;
                 $.each($.cpObject.cpArray, function (key, val) {
                     if ($.cpObject.cpArray[key].startTime === cuePointObj.cuePoint.startTime) {
-                        _this.quizPlugin.ssSetCurrentQuestion(key,false);
+                        _this.quizPlugin.ssSetCurrentQuestion(key);
                     }
                 });
             },
@@ -317,18 +343,21 @@
                     }
                 });
                 if ($.isEmptyObject(unanswerdArr)){
-                    return false;
+                    return [];
                 }
                 else {
                     return unanswerdArr;
                 }
             },
-
-            submitAnswer:function(questionNr,selectedAnswer){
+            /**
+             * This serves reqular questions and also open-question. It is not expected to get both selectedAnswer and openQuestionText
+             * @param {*} questionNr 
+             * @param {*} selectedAnswer 
+             * @param {*} openQuestionText 
+             */
+            submitAnswer:function(questionNr,selectedAnswer,openQuestionText){
                 var _this = this,isAnswered;
-
                 $.cpObject.cpArray[questionNr].selectedAnswer = selectedAnswer;
-
                 if ($.cpObject.cpArray[questionNr].isAnswerd) {
                     isAnswered = true;
                 }
@@ -336,15 +365,13 @@
                     isAnswered = false;
                     $.cpObject.cpArray[questionNr].isAnswerd = true;
                 }
-
                 _this.KIVQApi.addAnswer(isAnswered,_this.i2q(selectedAnswer),_this.kQuizUserEntryId,questionNr,function(data){
-
                     if (!_this.checkApiResponse('Add question err -->',data)){
                         return false;
                     }else {
                         $.cpObject.cpArray[questionNr].answerCpId = data.id;
                     }
-                })
+                },openQuestionText);
             },
             bubbleSizeSelector: function (isFullScreen) {
                 var _this = this, buObj = {bubbleAnsSize: "", bubbleUnAnsSize: ""};
@@ -373,11 +400,17 @@
             quizEndScenario:function(){
                 var _this = this,anUnswered = _this.getUnansweredQuestNrs();
                 _this.embedPlayer.stopPlayAfterSeek = true;
-                if (anUnswered) {
+                if ( anUnswered.length ) {
+                    // there are still unanswered questions - show "almost done" screen 
                     _this.quizEndFlow = true;
                     _this.quizPlugin.ssAlmostDone(anUnswered);
                 }else if (!_this.quizSubmitted){
+                    // the quiz has unanswered questions and was not sumitted yet - show "submit" screen (ssAllCompleted)
                     _this.quizPlugin.ssAllCompleted();
+                }else if(!_this.quizEndFlow){
+                    // Quiz is already submitted - show the "submitted" screen
+                    _this.quizPlugin.ssSubmitted(_this.score); 
+
                 }
             },
             displayHex:function (hexPositionContDisplay,cpArray){
@@ -479,6 +512,9 @@
                     if(data.questionType === _this.QUESTIONS_TYPE.REFLECTION_POINT){
                         questionHexType += ' reflection-point-question';
                     }
+                    if(data.questionType === _this.QUESTIONS_TYPE.OPEN_QUESTION){
+                        questionHexType += ' open-question';
+                    }
                     $(el).addClass(questionHexType).attr("id", data.key).append(_this.i2q(data.key));
                     $(el).append('<div class="mask" />')
                     switch(rowNumber){
@@ -532,15 +568,17 @@
             q2i: function (i) {
                 return parseInt(i) - 1;
             },
+
             showQuizOnScrubber:function(){
                 var _this = this;
                 mw.log("Quiz: Show Quiz on Scrubber");
                 _this.quizPlugin.displayBubbles();
-                //!_this.quizSubmitted for IOS9 Android5 &&
-                if (_this.quizEndFlow && !_this.quizSubmitted){
+                if ( (_this.quizEndFlow && !_this.quizSubmitted )
+                        || $.quizParams.attemptsAllowed ){
                     _this.showQuizEndOnScrubber();
                 }
             },
+
             hideQuizOnScrubber:function(){
                 var _this = this;
                 this.embedPlayer.getInterface().find(".bubble-cont").empty().remove();
@@ -586,11 +624,17 @@
                 $(".sub-text").html(gM('mwe-quiz-err-msg'));
                 _this.isErr = true;
             },
+            retake: function (callback){
+                this.KIVQApi.retake(callback);
+            },
             destroy: function () {
-
-                var _this = this;
-                clearInterval(_this.intrVal);
-                _this.intrVal = null;
+                this.score = undefined;
+                this.currentScore = undefined ,
+                this.scoreType = undefined ,
+                this.quizEndFlow = false;
+                this.quizSubmitted = false;
+                clearInterval(this.intrVal);
+                this.intrVal = null;
             },
             unloadQuizPlugin:function(embedPlayer){
               var _this = this;
@@ -600,7 +644,8 @@
                 embedPlayer.unbindHelper(_this.bindPostfix);
                 embedPlayer.removeJsListener(_this.bindPostfix);
                 _this.hideQuizOnScrubber();
-                mw.log("Quiz: Plugin Unloaded");            }
+                mw.log("Quiz: Plugin Unloaded");     
+            }
         })) {
     }
 })(window.mw, window.jQuery );
