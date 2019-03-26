@@ -433,6 +433,13 @@
                 return true;
             });
 
+            textArea.on('paste cut',function(e) {
+            	var _this = this;
+            	setTimeout(function() {
+                    countNumOfChars(_this);
+                });
+            });
+
             function countNumOfChars(element) {
                 var qCharText = $(element).val();
                 var counterText = qCharText.length + '/' + NUM_OF_MAX_CHAR;
