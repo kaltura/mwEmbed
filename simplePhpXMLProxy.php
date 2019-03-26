@@ -148,6 +148,14 @@ require_once( realpath( dirname( __FILE__ ) ) . '/includes/DefaultSettings.php' 
 require_once( dirname( __FILE__ ) . '/modules/KalturaSupport/KalturaCommon.php' );
 $requestHelper = $container['request_helper'];
 
+function isValidPort($url) {
+    $port = parse_url($url, PHP_URL_PORT);
+    if(!is_null($port) && $port != 80 && $port != 443) {
+        return false;
+    }
+    return true;
+}
+
 function isValidHost( $url = null ){
 	global $kConf;
 	
@@ -206,7 +214,7 @@ if ( !$url ) {
 	$contents = 'ERROR: invalid url';
 	$status = array( 'http_code' => 'ERROR' );
 	
-} else if( !isValidHost($url) ) {
+} else if( !isValidHost($url) || !isValidPort($url) ) {
 	// URL host is not whitelisted
 	$contents = 'ERROR: URL not in Kaltura domain whitelist [DENIED]';
 	$status = array( 'http_code' => 'ERROR' );
