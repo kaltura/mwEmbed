@@ -16,9 +16,6 @@
       "mw.KCuePoints",
       "polyfill_Array_filter"
     ],
-    "styles": [
-      "../../resources/fonts/familyLato.css"
-    ],
     "kalturaLoad": "always",
     "messageFile": "KalturaSupport.i18n.json"
   },
