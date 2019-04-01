@@ -540,6 +540,10 @@
 							var fv = embedPlayer.getFlashvars();
 							return getReffererURL(fv,objectPath);
 							break;
+						case 'encoded_referrer_url':
+							var fv = embedPlayer.getFlashvars();
+							return encodeURIComponent(getReffererURL(fv,objectPath));
+							break;
 						case 'referrer_host':
 							var fv = embedPlayer.getFlashvars();
 							var referrer =  getReffererURL(fv,objectPath);
