@@ -43,23 +43,16 @@
 
                 this.bind('volumeChanged', function () {
                     if ((this.getPlayer().getPlayerElementVolume() > 0) && !this.getPlayer().isMuted()) {
-                        this.destroy();
+	                    var _this = this;
+                        this.getComponent().fadeOut('slow', function () {
+                            _this.destroy();
+                        });
                     }
                 }.bind(this));
             },
 
             show: function () {
                 this.getComponent().fadeIn('slow');
-            },
-
-            hide: function () {
-                this.getComponent().fadeOut('slow');
-            },
-
-            destroy: function () {
-                this.hide();
-                this.unbind('playerReady');
-                this.unbind('volumeChanged');
             },
 
             getComponent: function () {

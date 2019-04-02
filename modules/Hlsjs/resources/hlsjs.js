@@ -68,6 +68,7 @@
 				this.bind("playerReady", this.initHls.bind(this));
 				this.bind("onChangeMedia", this.clean.bind(this));
 				this.bind("liveOnline", this.onLiveOnline.bind(this));
+				this.bind("liveOffline", this.stopLoad.bind(this));
 				if (mw.getConfig("hlsLogs")) {
 					this.bind("monitorEvent", this.monitorDebugInfo.bind(this));
 				}
@@ -717,6 +718,12 @@
 				}
 			},
 			/**
+			* Override player method for stop the video element
+			*/
+			stopLoad: function () {
+				this.hls.stopLoad();
+			},
+			/**
 			 * Override player callback after changing media
 			 */
 			playerSwitchSource: function (src, switchCallback, doneCallback) {
@@ -793,7 +800,9 @@
 					this.registerHlsEvents();
 					this.mediaAttached = false;
 					this.hls.attachMedia(this.embedPlayer.getPlayerElement());
-				}
+					} else {
+							this.hls.startLoad(this.hls.config.startPosition);
+					}
 			},
 
 			getStartTimeOfDvrWindow: function () {
