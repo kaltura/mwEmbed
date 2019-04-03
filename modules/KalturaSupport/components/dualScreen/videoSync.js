@@ -111,7 +111,7 @@
             var eventsMap = {
                 onplay: function (suppressLog) {
                     if (_this.shouldSyncState /*&& controller.isPlaying()*/) {
-                        !suppressLog && _this.log("onplay :: slave.play");
+                        _this.log((suppressLog ? '(synthetic) ' : '') + 'onplay :: slave.play');
                         slaves.forEach(function (slave) {
                             slave.play();
                         });
@@ -119,7 +119,7 @@
                 },
                 onpause: function (suppressLog) {
                     if (_this.shouldSyncState) {
-                        !suppressLog && _this.log("onpause :: slave.pause");
+                        _this.log((suppressLog ? '(synthetic) ' : '') + 'onpause :: slave.pause');
                         slaves.forEach(function(slave){
                             slave.pause();
                         });
@@ -138,15 +138,19 @@
                     }
                 }.bind(this),
                 seeking: function () {
-                    this.log('seeking :: master to ' + controller.currentSeekTargetTime);
+                    var seekTime = controller.currentSeekTargetTime || controller.currentTime;
+                    this.log('seeking :: master to ' + seekTime);
                     eventsMap.onpause(true);
                     slaves.some(function(slave){
                         if (!slave.supportsOptimisticSeeking()) {
+                            // toggle syncDelay, so we won't sync the slave till the master fires 'seeked'
                             _this.log("seeking :: slave.pause (FLASH ONLY -> isSyncDelay = true)");
-                            _this.isSyncDelay = true; // manually trigger syncDelay, so we won't sync the slave till the master will fire seeked
+                            _this.isSyncDelay = true;
+
+                            return true;
                         }
 
-                        return !slave.supportsOptimisticSeeking();
+                        return false;
                     });
                 }.bind(this),
                 seeked: function () {
@@ -154,19 +158,27 @@
                     // reproduces only with Flash progressive player
                     controller.flashCurrentTime = this.getMasterCurrentTime(controller);
                     controller.updatePlayheadStatus();
+
                     this.log('seeked :: master to ' + this.getMasterCurrentTime(controller));
                     // this.mediaGroupSync(controller, slaves);
 
                     slaves.some(function (slave) {
                         if (!slave.supportsOptimisticSeeking()) {
+                            // reset syncDelay (see eventsMap.seeking)
                             _this.log("seeked :: slave.play (FLASH ONLY -> isSyncDelay = false)");
                             _this.isSyncDelay = false; // manually reset syncDelay
+
+                            return true;
                         }
 
-                        return !slave.supportsOptimisticSeeking();
+                        return false;
                     });
 
-                    eventsMap.onplay(true);
+                    if (controller.isPlaying()) {
+                        eventsMap.onplay(true);
+                    } else {
+                        eventsMap.onpause(true);
+                    }
                 }.bind(this),
                 ended: function () {
                     slaves.forEach(function(slave){
@@ -279,7 +291,6 @@
                         this.log("mediaGroupSync :: Seeking slave to " + (this.getMasterCurrentTime(controller) + seekAhead));
                         this.seekSlave(slave, controller, this.getMasterCurrentTime(controller), (slave.isFlash && slave.isABR()) ? 0 : seekAhead);
                     }
-
                 }.bind(this));
             }
         },
