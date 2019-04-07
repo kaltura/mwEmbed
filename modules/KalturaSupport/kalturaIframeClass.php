@@ -1306,7 +1306,6 @@ HTML;
 	<?php if($wgRemoteWebInspector && $wgEnableScriptDebug){
 		echo '<script src="' . $wgRemoteWebInspector . '"></script>';
 	 } ?>
-	<link href='//fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
 	<?php if (isset($flashvars) && isset($flashvars['nativeCallout'])){
 	    $nativeCallout = json_decode($flashvars['nativeCallout'],true);
         if (isset($nativeCallout) && ($nativeCallout['plugin'] ===  true)){

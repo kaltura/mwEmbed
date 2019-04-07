@@ -119,7 +119,7 @@ return array(
 		"label" => "Look and Feel",
 		"icon" => "TabLookandFeel",
 		"description" => "Adjust the visual appearance of the player.",
-		"type" => "menu",  
+		"type" => "menu",
 		"model" => "lookAndFeel",
 		"children"=> array(
 			array(
@@ -210,6 +210,7 @@ return array(
 			"strings" => "",
 			"chromecast" => "",
 			"video360" => "",
+			"hotspots" => "",
 			"uiVars" => ""
 		)
 	)

@@ -283,19 +283,21 @@
 						            _this.pollData.pollResults.totalVoters = cuepointContent.totalVoters;
 						            _this.view.syncDOMPollResults();
 					            }
-
-				            }
+                                // make sure we process poll-results cuepoint 
+                                var newContext = _this.cuePointsManager._createReachedCuePointsArgs([cuepoint] , {} );
+                                _this.handlePollResultsCuePoints({cuepointsArgs : newContext});
+                            }
 				            if (cuepointContent && pollId) {
 					            var pollContent = cuepointContent.text;
 					            if (pollId && pollContent) {
 						            _this.log("updated content of poll with id '" + pollId + "'");
 						            if(_this.globals.pollsContentMapping[pollId]) {
-							            $.extend(_this.globals.pollsContentMapping[pollId], pollContent);
+                                        $.extend(_this.globals.pollsContentMapping[pollId], pollContent);
 						            }else{
-							            _this.globals.pollsContentMapping[pollId] = pollContent;
+                                        _this.globals.pollsContentMapping[pollId] = pollContent;
 						            }
 					            }
-				            }
+                            }
 
 			            }catch(e){
 				            _this.log("ERROR while tring to extract poll information with error " + e);

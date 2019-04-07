@@ -102,6 +102,7 @@
             //autoplay
             if(mw.getConfig('autoPlay') && this.canAutoPlay()){
                 this.unbindHelper("preSeek");
+                this.setVolume(0);
                 this.play();
             }
 
