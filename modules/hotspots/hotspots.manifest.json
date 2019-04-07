@@ -5,7 +5,7 @@
 		"attributes": {
 			"plugin": {
 				"doc": "If the hotspots plugin should be activated.",
-				"label": "Enable hotspots videos",
+				"label": "Enable hotspots on videos",
 				"type": "hiddenValue"
 			}
 		}
