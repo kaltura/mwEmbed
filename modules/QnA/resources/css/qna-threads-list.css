@@ -196,6 +196,21 @@
     white-space: pre-wrap;
 }
 
+.qnaInterface .announcementItem {
+    max-height: 1000px;
+    opacity: 1;
+}
+
+.qnaInterface .disappearingAnnouncement {
+    max-height: 0;
+    overflow-y: hidden;
+    opacity: 0;
+    background-color: transparent;
+
+    /*Transition time is increased to accomodate the height */
+    transition: max-height 1s ease-out, opacity 0.5s ease-out;
+}
+
 .qnaInterface .qnaThreadTime{
     float: right;
     position: relative;
