@@ -555,7 +555,6 @@
 
                     }
                     else {
-                        debugger; // FOR DEBUG PLEASE REMOVE
                         _this.addOrUpdateEntry(item);
                     }
                 }
@@ -614,7 +613,7 @@
                     });
                 });
 
-
+            // Register to Announcements (Public)
             var publicNotifications =  this.kPushServerNotification.createNotificationRequest(
                 _this.QandA_publicNotificationName,
                 {
@@ -625,7 +624,7 @@
                     _this.processQnA(cuePoints);
                 });
 
-
+            // Register to Questions (User Private)
             var userNotifications =  this.kPushServerNotification.createNotificationRequest(
                 _this.QandA_UserNotificationName,
                 {
