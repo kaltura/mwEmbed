@@ -789,6 +789,7 @@
 							vid.play();
 						} else {
 							_this.removeBlackScreen();
+							vid.play();
 						}
 					});
 
