@@ -607,7 +607,6 @@
                     "entryId": _this.embedPlayer.kentryid
                 },
                 function(cuePoints) {
-                    debugger; // FOR DEBUG PLEASE REMOVE
                     $.each(cuePoints, function(index, cuePoint) {
                         _this.processQnAState(cuePoint);
                     });
@@ -620,7 +619,6 @@
                     "entryId": _this.embedPlayer.kentryid
                 },
                 function(cuePoints) {
-                    debugger; // FOR DEBUG PLEASE REMOVE
                     _this.processQnA(cuePoints);
                 });
 
@@ -632,7 +630,6 @@
                     "userId":_this.userId
                 },
                 function(cuePoints) {
-                    debugger; // FOR DEBUG PLEASE REMOVE
                     _this.processQnA(cuePoints);
                 });
 

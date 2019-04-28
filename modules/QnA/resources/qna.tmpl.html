@@ -62,11 +62,6 @@
                             <div data-bind='css: {  "qnaThreadTime" : !isRead(), "qnaThreadTimeRead" : isRead()},
                                             text: entries()[0]().timestamp.qnaTimestamp($parent.currentTime)'>
                             </div>
-
-                            <!-- FOR DEBUG PLEAS REMOVE-->
-                            <button data-bind="click: $parent.addEditedCuePoint" style="position: absolute; top: 0; right: 0; font-size: 9px;">Add edited cuePoint</button>
-                            <div data-bind='text: JSON.stringify(entries()[0]().cuePoint().metadata.State)'></div>
-
                         </div>
                     </div>
                 </div>

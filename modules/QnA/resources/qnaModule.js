@@ -142,42 +142,6 @@
                         _this.playerTime(this.LiveCurrentTime);
                     }
                 });
-
-                // FOR DEBUG PLEASE REMOVE
-                this.addEditedCuePoint = function () {
-                    debugger;
-                    var cuePoints = [
-                        {
-                            "parentId":"0",
-                            "text":"Anno 3",
-                            "id":"0_fjhb6bqu",
-                            "cuePointType":"annotation.Annotation",
-                            "createdAt":1555939712,
-                            "updatedAt":1555939713,
-                            "tags":"qna",
-                            "startTime":0,
-                            "userId":"unmod",
-                            "relatedObjects":{
-                                "QandA_ResponseProfile":{
-                                    "objects":[
-                                        {
-                                            "id":14061678,
-                                            "objectId":"0_fjhb6bqu",
-                                            "createdAt":1555939712,
-                                            "xml":"<metadata><State>Deleted</State><Type>Announcement</Type></metadata>",
-                                            "objectType":"KalturaMetadata"
-                                        }
-                                    ],
-                                    "totalCount":1,
-                                    "objectType":"KalturaMetadataListResponse"
-                                }
-                            },
-                            "objectType":"KalturaAnnotation"
-                        }
-                    ];
-
-                    _this.qnaService.processQnA(cuePoints)
-                }
             },
             destroy: function () {
                 $(this.embedPlayer).unbind(this.bindPostfix);
