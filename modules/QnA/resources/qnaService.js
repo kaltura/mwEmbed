@@ -269,9 +269,11 @@
          * flickering announcement or changing the whole app to get a list of cuePoints.
          */
         AddNotificationsDelayForQnaThreads: function () {
-            this.QnaThreads.extend({ rateLimit: { timeout: 500 } });
+            var _this = this;
+
+            _this.QnaThreads.extend({ rateLimit: 500 });
             setTimeout(function () {
-                _this.QnaThreads.extend({ rateLimit: { timeout: 0 } });
+                _this.QnaThreads.extend({ rateLimit: 0 });
             }, 500);
         },
         getMetaDataProfile:function() {
