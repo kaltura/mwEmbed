@@ -40,7 +40,7 @@
                 <div class="qna-no-messages-text" data-bind="text: getNoMessagesText()"></div>
             </div>
             <div data-bind='template: { foreach: myObservableArray(), as: "thread"}' class="qnaEntryList">
-                <div data-bind="if: entries()[0]().getType() === 'Announcement'">
+                <div data-bind="if: (entries()[0]().getType() === 'Announcement' && entries()[0]().cuePoint().metadata.State !== 'Deleted')">
                     <div class="qnaThread qnaAnnouncementThread"
                          data-bind='css: {  "qnaAnnouncement" : !isRead(), "qnaAnnouncementRead": isRead(), "qnaThreadLast":$index()===$parent.myObservableArray().length-1 },
                                     click: $parent.itemRead'>
