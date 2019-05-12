@@ -1151,8 +1151,10 @@
             // Add text sources
             for (var j = 0; j < sources.length; j++) {
                 var src = sources[j];
-                this.addSourceButton(src);
-                items.push({'label': src.label, 'value': src.label});
+                if (src.label !== "") {
+                  this.addSourceButton(src);
+                  items.push({'label': src.label, 'value': src.label});
+                }
             }
 
 			this.getActiveCaption();

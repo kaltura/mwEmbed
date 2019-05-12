@@ -312,7 +312,7 @@
 			var _this = this;
 
             var sourceLabel = this.getSourceTitle( source );
-            if( $.inArray(sourceLabel, this.sourcesList) == -1 ) {
+            if( $.inArray(sourceLabel, this.sourcesList) == -1 && source.src !== undefined ) {
 
                 this.sourcesList.push(sourceLabel);
 
