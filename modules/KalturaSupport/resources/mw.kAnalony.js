@@ -435,19 +435,23 @@
 			_this.monitorIntervalObj.cancel = false;
 			if ( _this.firstPlay ){
 				_this.sendAnalytics(playerEvent.VIEW, {
+					soundMode : _this.embedPlayer.isMuted() ? 1 : 2,
 					playTimeSum: _this.playTimeSum,
                     averageBitrate: _this.rateHandler.getAverage(),
 					bufferTimeSum: _this.bufferTimeSum
                 });
 				_this.firstPlay = false;
 			}
+
 			_this.smartSetInterval(function(){
                 if ( !_this._p100Once || (_this.embedPlayer.donePlayingCount > 0)){ // since we report 100% at 99%, we don't want any "VIEW" reports after that (FEC-5269)
 					_this.sendAnalytics(playerEvent.VIEW, {
+						soundMode : _this.embedPlayer.isMuted() ? 1 : 2,
                         playTimeSum: _this.playTimeSum,
                         averageBitrate: _this.rateHandler.getAverage(),
                         bufferTimeSum: _this.bufferTimeSum
                     });
+
 					_this.bufferTime = 0;
 				}
 				if ( !_this.monitorViewEvents ){
