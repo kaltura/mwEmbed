@@ -9,6 +9,10 @@
 		defaultConfig: {
 			id3TagMaxDelay: 20000
 		},
+		soundMode : {
+			MUTED: 1,
+			HAS_SOUND: 2
+		},
 
 		PlayerEvent:{
 			"IMPRESSION": 1,
@@ -430,12 +434,13 @@
 			}
 			var _this = this;
 			var playerEvent = this.PlayerEvent;
+			var soundMode = this.soundMode;
 			_this.startTime = null;
 			_this.kClient = mw.kApiGetPartnerClient( _this.embedPlayer.kwidgetid );
 			_this.monitorIntervalObj.cancel = false;
 			if ( _this.firstPlay ){
 				_this.sendAnalytics(playerEvent.VIEW, {
-					soundMode : _this.embedPlayer.isMuted() ? 1 : 2,
+					soundMode : _this.embedPlayer.isMuted() ? soundMode.MUTED : soundMode.HAS_SOUND,
 					playTimeSum: _this.playTimeSum,
                     averageBitrate: _this.rateHandler.getAverage(),
 					bufferTimeSum: _this.bufferTimeSum
@@ -446,7 +451,7 @@
 			_this.smartSetInterval(function(){
                 if ( !_this._p100Once || (_this.embedPlayer.donePlayingCount > 0)){ // since we report 100% at 99%, we don't want any "VIEW" reports after that (FEC-5269)
 					_this.sendAnalytics(playerEvent.VIEW, {
-						soundMode : _this.embedPlayer.isMuted() ? 1 : 2,
+						soundMode : _this.embedPlayer.isMuted() ?  soundMode.MUTED : soundMode.HAS_SOUND,
                         playTimeSum: _this.playTimeSum,
                         averageBitrate: _this.rateHandler.getAverage(),
                         bufferTimeSum: _this.bufferTimeSum
