@@ -1309,7 +1309,7 @@
 			}
 
 			// Update the interface ( if paused )
-			if (!this.ignoreNextNativeEvent && this._propagateEvents && this.paused && ( mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') === true )) {
+			if (!this.ignoreNextNativeEvent && this._propagateEvents && this.paused || (mw.isIpad() && ( mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') === true ))) {
 				this.parent_play();
 			} else {
 				// make sure the interface reflects the current play state if not calling parent_play()
