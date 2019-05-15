@@ -125,10 +125,6 @@
 		        }
 				_this.sendAnalytics(playerEvent.IMPRESSION);
 			});
-			this.bind( 'hlsDroppedFrames' ,function( e, data){
-				// this is for HLS - we also need to turn flashvar
-				console.log(">>>> hlsDroppedFrames" , data);
-			});
 			this.embedPlayer.bindHelper( 'onChangeMedia' , function () {
 				_this.timer.destroy();
                 _this.resetSession();
@@ -364,17 +360,12 @@
 			this.absolutePosition = null;
 			this.id3TagEventTime = null;
 		},
-		checkFPS: function ( droppedFrames, decodedFrames) {
+		getDroppedFramesRatio: function ( droppedFrames, decodedFrames) {
 			var olddroppedFrames = this.droppedFrames;
 			var olddecodedFrames = this.decodedFrames;
-
 			this.droppedFrames = droppedFrames;
 			this.decodedFrames = decodedFrames;
-
-			return {
-				droppedFrames:this.droppedFrames-olddroppedFrames,
-				decodedFrames:this.droppedFrames-olddecodedFrames
-			}
+			return (Math.round((this.droppedFrames-olddroppedFrames) / (this.decodedFrames-olddecodedFrames) * 1000) / 1000);
 		},
 		updateTimeStats: function() {
 			var _this = this;
@@ -458,23 +449,28 @@
 				_this.firstPlay = false;
 			}
 			_this.smartSetInterval(function(){
+				var droppedFramesRatio = undefined;
 				try{
 					var vidObj = _this.embedPlayer.getVideoHolder()[0].getElementsByTagName("video")[0];
 					if (typeof vidObj.getVideoPlaybackQuality === 'function') {
 						var videoPlaybackQuality = vidObj.getVideoPlaybackQuality();
-						_this.checkFPS( videoPlaybackQuality.droppedVideoFrames , videoPlaybackQuality.totalVideoFrames );
+						droppedFramesRatio = _this.getDroppedFramesRatio( videoPlaybackQuality.droppedVideoFrames , videoPlaybackQuality.totalVideoFrames );
 					} else {
-						_this.checkFPS( vidObj.webkitDroppedFrameCount , vidObj.webkitDecodedFrameCount );
+						droppedFramesRatio = _this.getDroppedFramesRatio( vidObj.webkitDroppedFrameCount , vidObj.webkitDecodedFrameCount );
 					}
 				} catch (e) {
 					mw.log("Failed getting droppedVideoFrames data");
 				}
                 if ( !_this._p100Once || (_this.embedPlayer.donePlayingCount > 0)){ // since we report 100% at 99%, we don't want any "VIEW" reports after that (FEC-5269)
-					_this.sendAnalytics(playerEvent.VIEW, {
-                        playTimeSum: _this.playTimeSum,
-                        averageBitrate: _this.rateHandler.getAverage(),
-                        bufferTimeSum: _this.bufferTimeSum
-                    });
+                	var analyticsEvent = {
+						playTimeSum: _this.playTimeSum,
+						averageBitrate: _this.rateHandler.getAverage(),
+						bufferTimeSum: _this.bufferTimeSum
+					};
+                	if(droppedFramesRatio != undefined){
+						analyticsEvent.droppedFramesRatio = droppedFramesRatio;
+					}
+					_this.sendAnalytics(playerEvent.VIEW, analyticsEvent );
 					_this.bufferTime = 0;
 				}
 				if ( !_this.monitorViewEvents ){
