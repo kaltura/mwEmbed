@@ -458,7 +458,7 @@
 				_this.firstPlay = false;
 			}
 			_this.smartSetInterval(function(){
-				var droppedFramesRatio = undefined;
+				var droppedFramesRatio;
 				try{
 					var vidObj = _this.embedPlayer.getVideoHolder()[0].getElementsByTagName("video")[0];
 					if (typeof vidObj.getVideoPlaybackQuality === 'function') {
@@ -476,7 +476,7 @@
 						averageBitrate: _this.rateHandler.getAverage(),
 						bufferTimeSum: _this.bufferTimeSum
 					};
-					if(droppedFramesRatio != undefined){
+					if(droppedFramesRatio !== undefined){
 						analyticsEvent.droppedFramesRatio = droppedFramesRatio;
 					}
 					_this.sendAnalytics(playerEvent.VIEW, analyticsEvent );
