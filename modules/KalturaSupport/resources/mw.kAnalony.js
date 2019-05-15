@@ -375,7 +375,7 @@
              this.droppedFrames = droppedFrames;
              this.decodedFrames = decodedFrames;
              return (Math.round((this.droppedFrames-olddroppedFrames) / (this.decodedFrames-olddecodedFrames) * 1000) / 1000);
-		},
+         },
 		updateTimeStats: function() {
 			var _this = this;
 			var percent = this.embedPlayer.currentTime / this.embedPlayer.duration;
@@ -470,16 +470,16 @@
 				} catch (e) {
 					mw.log("Failed getting droppedVideoFrames data");
 				}
-                if ( !_this._p100Once || (_this.embedPlayer.donePlayingCount > 0)){ // since we report 100% at 99%, we don't want any "VIEW" reports after that (FEC-5269)
-                	var analyticsEvent = {
-                        playTimeSum: _this.playTimeSum,
-                        averageBitrate: _this.rateHandler.getAverage(),
-                        bufferTimeSum: _this.bufferTimeSum
-                    };
-                    if(droppedFramesRatio != undefined){
-                        analyticsEvent.droppedFramesRatio = droppedFramesRatio;
-                    }
-				    _this.sendAnalytics(playerEvent.VIEW, analyticsEvent );
+				if ( !_this._p100Once || (_this.embedPlayer.donePlayingCount > 0)){ // since we report 100% at 99%, we don't want any "VIEW" reports after that (FEC-5269)
+					var analyticsEvent = {
+						playTimeSum: _this.playTimeSum,
+						averageBitrate: _this.rateHandler.getAverage(),
+						bufferTimeSum: _this.bufferTimeSum
+					};
+					if(droppedFramesRatio != undefined){
+						analyticsEvent.droppedFramesRatio = droppedFramesRatio;
+					}
+					_this.sendAnalytics(playerEvent.VIEW, analyticsEvent );
 					_this.bufferTime = 0;
 				}
 				if ( !_this.monitorViewEvents ){
