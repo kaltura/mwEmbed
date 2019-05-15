@@ -53,7 +53,7 @@
 		monitorIntervalObj:{},
 		droppedFrames: 0,
 		decodedFrames: 0,
-        playTimeSum: 0,
+		playTimeSum: 0,
 		previousCurrentTime: 0,
 		_p25Once: false,
 		_p50Once: false,
@@ -130,6 +130,8 @@
                 _this.resetSession();
 				_this.rateHandler.destroy();
 				_this.bufferTime = 0;
+				_this.droppedFrames = 0;
+				_this.decodedFrames = 0;
 				_this.firstPlay = true;
 				_this.playSentOnStart = false;
 				_this.currentBitRate = -1;
@@ -360,6 +362,13 @@
 			this.absolutePosition = null;
 			this.id3TagEventTime = null;
 		},
+        /**
+         * Both parameters are accumulated so we need to deduct the new values from the previous values. This function
+         * does that exactly by saving locally the values. THe function returns the ratio as fraction (E.G. 0.015 )
+         * @param droppedFrames
+         * @param decodedFrames
+         * @returns {number}
+         */
 		getDroppedFramesRatio: function ( droppedFrames, decodedFrames) {
 			var olddroppedFrames = this.droppedFrames;
 			var olddecodedFrames = this.decodedFrames;
