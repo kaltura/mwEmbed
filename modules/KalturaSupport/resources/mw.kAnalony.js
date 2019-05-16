@@ -498,13 +498,13 @@
             } catch (e) {
                 mw.log("Failed getting droppedVideoFrames data");
             }
-            if(droppedFramesRatio !== undefined){
+            if(droppedFramesRatio !== undefined && !isNaN(droppedFramesRatio)){
                 analyticsEvent.droppedFramesRatio = droppedFramesRatio;
             }
         },
 
         getEntrySessionId: function(){
-            return this.embedPlayer.evaluate('{configProxy.sessionId}')
+            return this.embedPlayer.evaluate('{configProxy.sessionId}');
         },
 
         getPosition: function () {
