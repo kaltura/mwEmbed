@@ -40,6 +40,7 @@
 			"BUFFER_START": 45,
 			"BUFFER_END": 46
 		},
+        uniqueUserId:null,
 		startTime: null,
 		reportingInterval : 10000,
 		bufferTime : 0,
@@ -110,9 +111,29 @@
             this.bufferTime = 0;
             this.bufferTimeSum = 0;
 			this.currentBitRate = -1;
+			this.setupUuid();
             this.addBindings();
 	    },
-
+        // distinguish anonymous users with a cookie (per browser)
+        setupUuid : function() {
+		    // check if there is a flashva user
+		    var userId = this.embedPlayer.getKalturaConfig('', "userId" );
+		    if(userId){
+		        // check if we have already set a cookie
+                this.uniqueUserId = userId;
+                return;
+            }
+		    // no flashvar - check cookie
+		    var savedUserId = $.cookie( "kavaUuid" );
+		    if(savedUserId){
+		        // check if we have already set a cookie
+                this.uniqueUserId = savedUserId;
+                return;
+            }
+		    // no cookie, no flashvar - generate one and save to cookie
+            this.uniqueUserId = window.kWidgetSupport.getGUID().split("").reverse().join("");;
+            this.getPlayer().setCookie( "kavaUuid", this.uniqueUserId );
+        },
 		addBindings : function() {
 			var _this = this;
 			var playerEvent = this.PlayerEvent;
@@ -524,13 +545,13 @@
                 'applicationName' : 'application',
                 'userId' : 'userId'
             };
+            statsEvent.uuid = this.uniqueUserId;
             // support legacy ( deprecated ) top level config
             for( var fvKey in flashVarEvents){
                 if( this.embedPlayer.getKalturaConfig( '', fvKey ) ){
                     statsEvent[ flashVarEvents[ fvKey ] ] = this.embedPlayer.getKalturaConfig('', fvKey );
                 }
             }
-
 			// add ks if available
 			var ks = this.kClient.getKs();
 			if (ks){
