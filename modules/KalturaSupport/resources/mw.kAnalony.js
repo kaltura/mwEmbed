@@ -453,31 +453,16 @@
 			}
 			var _this = this;
 			var playerEvent = this.PlayerEvent;
-			var tabMode = this.tabMode;
-			var soundMode = this.soundMode;
 			_this.startTime = null;
 			_this.kClient = mw.kApiGetPartnerClient( _this.embedPlayer.kwidgetid );
 			_this.monitorIntervalObj.cancel = false;
 			if ( _this.firstPlay ){
-				_this.sendAnalytics(playerEvent.VIEW, {
-					tabMode : document.hidden ? tabMode.HIDDEN : tabMode.ACTIVE,
-					soundMode : _this.embedPlayer.isMuted() ? soundMode.MUTED : soundMode.HAS_SOUND,
-					playTimeSum: _this.playTimeSum,
-                    averageBitrate: _this.rateHandler.getAverage(),
-					bufferTimeSum: _this.bufferTimeSum
-                });
+				_this.sendAnalytics(playerEvent.VIEW, _this.generateViewEventObject() );
 				_this.firstPlay = false;
 			}
 			_this.smartSetInterval(function(){
-
 				if ( !_this._p100Once || (_this.embedPlayer.donePlayingCount > 0)){ // since we report 100% at 99%, we don't want any "VIEW" reports after that (FEC-5269)
-					var analyticsEvent = {
-						tabMode : document.hidden ? tabMode.HIDDEN : tabMode.ACTIVE,
-						soundMode : _this.embedPlayer.isMuted() ? soundMode.MUTED : soundMode.HAS_SOUND,
-						playTimeSum: _this.playTimeSum,
-						averageBitrate: _this.rateHandler.getAverage(),
-						bufferTimeSum: _this.bufferTimeSum
-					};
+					var analyticsEvent = _this.generateViewEventObject();
 					_this.addDroppedFramesRatioData(analyticsEvent);
 					_this.sendAnalytics(playerEvent.VIEW, analyticsEvent );
 					_this.bufferTime = 0;
@@ -486,8 +471,19 @@
 					_this.stopViewTracking();
 				}
 			},_this.reportingInterval,_this.monitorIntervalObj);
-
 		},
+
+        generateViewEventObject: function(){
+		    var tabMode = this.tabMode;
+            var soundMode = this.soundMode;
+            return {
+                tabMode : document.hidden ? tabMode.HIDDEN : tabMode.ACTIVE,
+                soundMode : this.embedPlayer.isMuted() ? soundMode.MUTED : soundMode.HAS_SOUND,
+                playTimeSum: this.playTimeSum,
+                averageBitrate: this.rateHandler.getAverage(),
+                bufferTimeSum: this.bufferTimeSum
+            };
+        },
 
         addDroppedFramesRatioData: function(analyticsEvent){
             var droppedFramesRatio;
