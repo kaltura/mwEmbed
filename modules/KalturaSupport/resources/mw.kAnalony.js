@@ -114,16 +114,9 @@
 			this.setupUuid();
             this.addBindings();
 	    },
-        // distinguish anonymous users with a cookie (per browser)
+        // distinguish anonymous users with a cookie (per browser - per domain)
         setupUuid : function() {
-		    // check if there is a flashva user
-		    var userId = this.embedPlayer.getKalturaConfig('', "userId" );
-		    if(userId){
-		        // check if we have already set a cookie
-                this.uniqueUserId = userId;
-                return;
-            }
-		    // no flashvar - check cookie
+		    // check cookie
 		    var savedUserId = $.cookie( "kavaUuid" );
 		    if(savedUserId){
 		        // check if we have already set a cookie
@@ -131,7 +124,7 @@
                 return;
             }
 		    // no cookie, no flashvar - generate one and save to cookie
-            this.uniqueUserId = window.kWidgetSupport.getGUID().split("").reverse().join("");;
+            this.uniqueUserId = window.kWidgetSupport.getGUID();
             this.getPlayer().setCookie( "kavaUuid", this.uniqueUserId );
         },
 		addBindings : function() {
