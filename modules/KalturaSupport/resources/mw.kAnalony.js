@@ -9,7 +9,14 @@
 		defaultConfig: {
 			id3TagMaxDelay: 20000
 		},
-
+        tabMode : {
+            HIDDEN: 1,
+            ACTIVE: 2
+        },
+        soundMode : {
+            MUTED: 1,
+            HAS_SOUND: 2
+        },
 		PlayerEvent:{
 			"IMPRESSION": 1,
 			"PLAY_REQUEST": 2,
@@ -446,11 +453,15 @@
 			}
 			var _this = this;
 			var playerEvent = this.PlayerEvent;
+            var tabMode = this.tabMode;
+            var soundMode = this.soundMode;
 			_this.startTime = null;
 			_this.kClient = mw.kApiGetPartnerClient( _this.embedPlayer.kwidgetid );
 			_this.monitorIntervalObj.cancel = false;
 			if ( _this.firstPlay ){
 				_this.sendAnalytics(playerEvent.VIEW, {
+                    tabMode : document.hidden ? tabMode.HIDDEN : tabMode.ACTIVE,
+                    soundMode : _this.embedPlayer.isMuted() ? soundMode.MUTED : soundMode.HAS_SOUND,
 					playTimeSum: _this.playTimeSum,
                     averageBitrate: _this.rateHandler.getAverage(),
 					bufferTimeSum: _this.bufferTimeSum
@@ -461,6 +472,8 @@
 
 				if ( !_this._p100Once || (_this.embedPlayer.donePlayingCount > 0)){ // since we report 100% at 99%, we don't want any "VIEW" reports after that (FEC-5269)
 					var analyticsEvent = {
+                        tabMode : document.hidden ? tabMode.HIDDEN : tabMode.ACTIVE,
+                        soundMode : _this.embedPlayer.isMuted() ? soundMode.MUTED : soundMode.HAS_SOUND,
 						playTimeSum: _this.playTimeSum,
 						averageBitrate: _this.rateHandler.getAverage(),
 						bufferTimeSum: _this.bufferTimeSum
