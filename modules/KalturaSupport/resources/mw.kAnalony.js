@@ -474,7 +474,7 @@
 		},
 
         generateViewEventObject: function(){
-		    var tabMode = this.tabMode;
+            var tabMode = this.tabMode;
             var soundMode = this.soundMode;
             return {
                 tabMode : document.hidden ? tabMode.HIDDEN : tabMode.ACTIVE,
@@ -502,9 +502,10 @@
                 analyticsEvent.droppedFramesRatio = droppedFramesRatio;
             }
         },
-		getEntrySessionId: function(){
-			return this.embedPlayer.evaluate('{configProxy.sessionId}')
-		},
+
+        getEntrySessionId: function(){
+            return this.embedPlayer.evaluate('{configProxy.sessionId}')
+        },
 
         getPosition: function () {
             if (this.embedPlayer.isLive()) {
