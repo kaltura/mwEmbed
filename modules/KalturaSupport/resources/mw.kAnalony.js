@@ -458,27 +458,14 @@
 				_this.firstPlay = false;
 			}
 			_this.smartSetInterval(function(){
-				var droppedFramesRatio;
-				try{
-					var vidObj = _this.embedPlayer.getVideoHolder()[0].getElementsByTagName("video")[0];
-					if (typeof vidObj.getVideoPlaybackQuality === 'function') {
-						var videoPlaybackQuality = vidObj.getVideoPlaybackQuality();
-						droppedFramesRatio = _this.getDroppedFramesRatio( videoPlaybackQuality.droppedVideoFrames , videoPlaybackQuality.totalVideoFrames );
-					} else {
-						droppedFramesRatio = _this.getDroppedFramesRatio( vidObj.webkitDroppedFrameCount , vidObj.webkitDecodedFrameCount );
-					}
-				} catch (e) {
-					mw.log("Failed getting droppedVideoFrames data");
-				}
+
 				if ( !_this._p100Once || (_this.embedPlayer.donePlayingCount > 0)){ // since we report 100% at 99%, we don't want any "VIEW" reports after that (FEC-5269)
 					var analyticsEvent = {
 						playTimeSum: _this.playTimeSum,
 						averageBitrate: _this.rateHandler.getAverage(),
 						bufferTimeSum: _this.bufferTimeSum
 					};
-					if(droppedFramesRatio !== undefined){
-						analyticsEvent.droppedFramesRatio = droppedFramesRatio;
-					}
+					_this.addDroppedFramesRatioData(analyticsEvent);
 					_this.sendAnalytics(playerEvent.VIEW, analyticsEvent );
 					_this.bufferTime = 0;
 				}
@@ -489,6 +476,23 @@
 
 		},
 
+        addDroppedFramesRatioData: function(analyticsEvent){
+            var droppedFramesRatio;
+            try{
+                var vidObj = this.embedPlayer.getPlayerElement();
+                if (typeof vidObj.getVideoPlaybackQuality === 'function') {
+                    var videoPlaybackQuality = vidObj.getVideoPlaybackQuality();
+                    droppedFramesRatio = this.getDroppedFramesRatio( videoPlaybackQuality.droppedVideoFrames , videoPlaybackQuality.totalVideoFrames );
+                } else {
+                    droppedFramesRatio = this.getDroppedFramesRatio( vidObj.webkitDroppedFrameCount , vidObj.webkitDecodedFrameCount );
+                }
+            } catch (e) {
+                mw.log("Failed getting droppedVideoFrames data");
+            }
+            if(droppedFramesRatio !== undefined){
+                analyticsEvent.droppedFramesRatio = droppedFramesRatio;
+            }
+        },
 		getEntrySessionId: function(){
 			return this.embedPlayer.evaluate('{configProxy.sessionId}')
 		},
