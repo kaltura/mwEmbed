@@ -123,7 +123,7 @@
                 this.uniqueUserId = savedUserId;
                 return;
             }
-		    // no cookie, no flashvar - generate one and save to cookie
+		    // no cookie - generate one and save to cookie
             this.uniqueUserId = window.kWidgetSupport.getGUID();
             this.getPlayer().setCookie( "kavaUuid", this.uniqueUserId );
         },
