@@ -134,7 +134,7 @@
 			});
 			this.embedPlayer.bindHelper( 'onChangeMedia' , function () {
 				_this.timer.destroy();
-                _this.resetSession();
+				_this.resetSession();
 				_this.rateHandler.destroy();
 				_this.bufferTime = 0;
 				_this.droppedFrames = 0;
