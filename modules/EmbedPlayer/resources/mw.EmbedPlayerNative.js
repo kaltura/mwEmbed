@@ -1309,12 +1309,10 @@
 			}
 
 			// Update the interface ( if paused )
-			if (mw.isIpad() && ( mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') === true )) {
-				if (!this.ignoreNextNativeEvent && this._propagateEvents && this.paused ) {
-					this.parent_play();
-				}
-			}
-			if (!this.ignoreNextNativeEvent && this._propagateEvents && this.paused) {
+			var enableIpadHTMLControls = mw.isIpad() ?
+				( mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') === true ) : true;
+
+			if (!this.ignoreNextNativeEvent && this._propagateEvents && this.paused && enableIpadHTMLControls) {
 					this.parent_play();
 			}
 			else {
