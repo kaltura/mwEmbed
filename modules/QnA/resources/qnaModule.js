@@ -187,7 +187,8 @@
                 var count = 0;
                 ko.utils.arrayForEach(_this.myObservableArray(), function (thread) {
                     for (var i = 0; i < thread().entries().length; i++) {
-                        if (thread().entries()[i]().getType() !== 'Question' && !thread().entries()[i]().isRead()) {
+                        var entry = thread().entries()[i]();
+                        if (entry.getType() !== 'Question' && !entry.isRead() && !(entry.getType() === 'Announcement' && entry.cuePoint().metadata.State === 'Deleted')) {
                             count++;
                         }
                     }
