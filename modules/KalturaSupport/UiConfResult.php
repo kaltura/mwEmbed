@@ -227,7 +227,8 @@ class UiConfResult {
 		);
 
 		$playerConfig['plugins'] = array_merge_recursive($playerConfig['plugins'], $basePlugins);
-
+		// TODO [EITAN] - hook to server - PLAT-9844
+		$playerConfig['plugins']['kAnalony']["sendUuid"] = false;
 		//scan the plugins attributes and replace tokens
 		foreach ($playerConfig['plugins']  as $key=>$value){
 			if ( is_array($value)) {

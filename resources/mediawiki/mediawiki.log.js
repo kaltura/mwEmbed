@@ -46,9 +46,9 @@
 			if (Function.prototype.bind)
 			{
 				var log = Function.prototype.bind.call(console.log, console);
-				log.apply(console, $.makeArray( arguments ));
+				//log.apply(console, $.makeArray( arguments ));
 			} else {
-				console.log($.makeArray( arguments ));
+				// console.log($.makeArray( arguments ));
 			}
 		}
 		// the injected log caused issues in IE iframes

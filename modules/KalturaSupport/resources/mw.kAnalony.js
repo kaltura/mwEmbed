@@ -7,6 +7,7 @@
 	mw.PluginManager.add( 'kAnalony' , mw.KBasePlugin.extend( {
 
 		defaultConfig: {
+			sendUuid : false,
 			id3TagMaxDelay: 20000
 		},
 
@@ -116,6 +117,9 @@
 	    },
         // distinguish anonymous users with a cookie (per browser - per domain)
         setupUuid : function() {
+			if(!this.getConfig("sendUuid")){
+				return;
+			}
 		    // check cookie
 		    var savedUserId = $.cookie( "kavaUuid" );
 		    if(savedUserId){
@@ -538,7 +542,10 @@
                 'applicationName' : 'application',
                 'userId' : 'userId'
             };
-            statsEvent.uuid = this.uniqueUserId;
+            // TODO - connect with partner data attribute
+            if(this.getConfig("sendUuid")){
+            	statsEvent.uuid = this.uniqueUserId;
+			}
             // support legacy ( deprecated ) top level config
             for( var fvKey in flashVarEvents){
                 if( this.embedPlayer.getKalturaConfig( '', fvKey ) ){
