@@ -7,7 +7,6 @@
 	mw.PluginManager.add( 'kAnalony' , mw.KBasePlugin.extend( {
 
 		defaultConfig: {
-			sendUuid : false,
 			id3TagMaxDelay: 20000
 		},
 

@@ -1,14 +1,14 @@
 var user1="Eitan";
 var user2="Guest";
-var user1Ks="djJ8MjcwMTd8EyIl3_L6Ark51uIS3N6PdMSDTODjlNm5OA5ZRJGhFwNghvrqKbdOKF-s-a9_-sWzrf_M9vLHyLJC_iTlbV2aUi1nFhy1Z0sd3t3XFlLudxu6awf2XuxzJlBwtu59MhUdviL4swjiPCqiK3s2TChLn4GPwPZZLeYo242VgvokxGqBk6aSUOjCuuKdZ3qZLxbInwwsSWCoXtRthxhQF8ZlXcTvotuFawU6PKnruMxBjq6dBkHJrt9TUeYFOU1LhnSeAgKimX3KFnYwwth-bM_we0UufUFYua6hh3QbVH5gQMCjKBCb_JBnYSPfafZcwLaLYQ_ASsipxheHJvMlck3FFvlKYODXX7uR3aoM7kkC0CY=";
+var user1Ks="djJ8NTg3MnxhBsWQk3ID9ueXYqBTYoQAm2JTiP56tRY65OZ0-JtA4y8MOASCfyYHBF7b5jNr1ZLloliRNBzYF0NbksSyFyAs2i70R_QjK5C75OwArz0OH70l1GWsLUWgsy1iXmvg51_o7APfejhB__C3i4xtOXKE9j7HODVdsmqO6OP6M5pJe51FS3_g_EK1P5Zhf3UFUXVhvu1tLlyT00mfHn3zPp1W5ZfzrbjGWDAF8MCZxnChJAPths1N89mEoj2VbfnlM5x2Yk1pj6H-siKrd14sHJCTzJByfQS814-_PpkMntDomsVWVByRXcyXaCKuXQ6qHbTQpTczF5kuyW1mCs30yzLUPV5xZDfd0cJedP16v4XPKK0wZEaWqY52qIEnyncYUL2fu9DF4FcNw_rx38n59Ul7_GxLYOODhwGSVgDyRw7lfA==";
 var user2Ks=user1Ks;
-var entry="1_8eoa4vir";
+var entry="0_bmbbf0d1";
 
 
 
-var playerId = 39677781; //prod OOB
+var playerId = 15214494; //prod OOB
 //    var playerId = 15203553; //QA
-var wid = '_27017'; // prod
+var wid = '_5872'; // prod
 //    var wid = '_5174'; // QA
 
 
