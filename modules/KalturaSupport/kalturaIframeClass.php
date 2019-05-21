@@ -49,7 +49,10 @@ class kalturaIframeClass {
 			if( $setError ) {
 				$this->error = self::NO_ENTRY_ID_FOUND;
 			}
-		}		
+		}
+
+
+
 	}
 
 	function getIframeId(){
@@ -72,6 +75,24 @@ class kalturaIframeClass {
 	 * Get Widget Object
 	 */
 	function getWidget( $widgetId = null ) {
+		if( $widgetId ) {
+			$client = $this->client->getClient();
+			$kparams = array();
+			try {
+				$result = $client->widget->get($widgetId);
+			} catch( Exception $e ){
+				throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . htmlspecialchars($e->getMessage()) );
+			}
+			if( $result ) {
+				return $result;
+			}
+			return false;
+		}
+	}
+	/**
+	 * Get parnter  Object
+	 */
+	function getPartnerShit( $widgetId = null ) {
 		if( $widgetId ) {
 			$client = $this->client->getClient();
 			$kparams = array();

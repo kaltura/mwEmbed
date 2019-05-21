@@ -256,7 +256,7 @@
 				//data: { frag : fragment object, payload : fragment payload, stats : { trequest, tfirst, tload, length}}
 				this.getPlayer().triggerHelper('hlsFragLoaded', data.frag.url);
 				//mw.log("hlsjs :: onFragLoaded | url = "+data.frag.url);
-
+				this.getPlayer().triggerHelper('hlsFragLoadedWithStats',data);
 			},
 			onFragParsingData: function (e, data) {
 				//fired when moof/mdat have been extracted from fragment
@@ -279,6 +279,7 @@
 				//data: { frag : fragment object, stats : { trequest, tfirst, tload, tparsed, tbuffered, length} }
 				this.getPlayer().triggerHelper('hlsFragBuffered', data.frag.url);
 				//mw.log("hlsjs :: onFragBuffered | url = "+data.frag.url);
+				this.getPlayer().triggerHelper('hlsFragBufferedData', data);
 			},
 			onDropFrames: function (e, data) {
 				//triggered when FPS drop in last monitoring period is higher than given threshold

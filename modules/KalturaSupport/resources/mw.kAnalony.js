@@ -144,6 +144,10 @@
                 }
 				_this.sendAnalytics(playerEvent.PLAY_REQUEST);
 			});
+			this.embedPlayer.bindHelper( 'hlsFragBufferedData' , function (event,data) {
+				var bw = data.stats && data.stats.bwEstimate;
+				console.log(">>>> hlsFragBufferedData bwEstimate",bw);
+			});
 
 			this.embedPlayer.bindHelper( 'onplay' , function () {
                 if (_this.embedPlayer.currentState === "start" && _this.playSentOnStart) {
