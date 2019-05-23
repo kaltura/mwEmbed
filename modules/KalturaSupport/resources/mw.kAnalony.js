@@ -503,6 +503,7 @@
 			if(this.getConfig("analyticsPersistentSessionId")){
 				eventObj.persistentSessionId = this.uniqueUserId;
 			}
+			return eventObj;
         },
 
         addDroppedFramesRatioData: function(analyticsEvent){
