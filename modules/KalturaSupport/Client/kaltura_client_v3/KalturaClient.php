@@ -35,7 +35,6 @@ require_once(dirname(__FILE__) . "/KalturaClientBase.php");
 require_once(dirname(__FILE__) . "/KalturaEnums.php");
 require_once(dirname(__FILE__) . "/KalturaTypes.php");
 
-
 /**
  * @package Kaltura
  * @subpackage Client
