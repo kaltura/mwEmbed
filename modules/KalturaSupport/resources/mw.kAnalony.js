@@ -129,7 +129,7 @@
 				return;
 			}
 		    // check cookie
-		    var savedUserId = $.cookie( " " );
+		    var savedUserId = $.cookie( "analyticsPersistentSessionId" );
 		    if(savedUserId){
 		        // check if we have already set a cookie
                 this.uniqueUserId = savedUserId;
@@ -493,13 +493,16 @@
         generateViewEventObject: function(){
             var tabMode = this.tabMode;
             var soundMode = this.soundMode;
-            return {
+            var eventObj = {
                 tabMode : document.hidden ? tabMode.HIDDEN : tabMode.ACTIVE,
                 soundMode : this.embedPlayer.isMuted() ? soundMode.MUTED : soundMode.HAS_SOUND,
                 playTimeSum: this.playTimeSum,
                 averageBitrate: this.rateHandler.getAverage(),
                 bufferTimeSum: this.bufferTimeSum
             };
+			if(this.getConfig("analyticsPersistentSessionId")){
+				eventObj.persistentSessionId = this.uniqueUserId;
+			}
         },
 
         addDroppedFramesRatioData: function(analyticsEvent){
