@@ -8216,6 +8216,33 @@ class KalturaThumbnailServeOptions extends KalturaObjectBase
  * @package Kaltura
  * @subpackage Client
  */
+class KalturaPartnerPublicInfo extends KalturaObjectBase
+{
+    /**
+     *
+     *
+     * @var string
+     */
+    public $analyticsUrl = null;
+    /**
+     *
+     *
+     * @var string
+     */
+    public $ottEnvironmentUrl = null;
+    /**
+     *
+     *
+     * @var bool
+     */
+    public $analyticsPersistentSessionId = null;
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaUiConf extends KalturaObjectBase
 {
 	/**
