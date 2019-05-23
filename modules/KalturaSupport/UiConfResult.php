@@ -101,11 +101,33 @@ class UiConfResult {
 
 		if( $this->isJson() ) {
 			$this->parseJSON( $this->uiConfFile );
+			$this->addPartnerPublicInfoData();
 		} else {
 			$this->parseUiConfXML( $this->uiConfFile );
 			$this->setupPlayerConfig();
 		}
 	}
+
+	/**
+	 * Get partner public data - retrieve analyticsPersistentSessionId flag for kAnalony
+	 */
+	public function addPartnerPublicInfoData(){
+		$client = $this->client->getClient();
+		$kparams = array();
+		try {
+			$client->addParam( $kparams, "id", $this->client->partnerId );
+			$client->queueServiceActionCall( "partner", "getPublicInfo" , $kparams);
+			$rawResultObject = $client->doQueue();
+			if($rawResultObject && isset($rawResultObject->analyticsPersistentSessionId) ){
+				// push the value to kAnalony plugin; It exist for sure as it was created by prev parseJSON function
+				$this->playerConfig['plugins']["kAnalony"]["analyticsPersistentSessionId"] = $rawResultObject->analyticsPersistentSessionId;
+			}
+		} catch( Exception $e ){
+			// Update the Exception and pass it upward
+			throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
+		}
+	}
+
 
 	public function isJson() {
 		// Check for curey brackets in first & last characters
@@ -139,7 +161,6 @@ class UiConfResult {
 			}
 			$client->addParam( $kparams, "id",  $this->request->get('uiconf_id') );
 			$client->queueServiceActionCall( "uiconf", "get", $kparams );
-
 			$rawResultObject = $client->doQueue();
 		} catch( Exception $e ){
 			// Update the Exception and pass it upward
@@ -227,8 +248,7 @@ class UiConfResult {
 		);
 
 		$playerConfig['plugins'] = array_merge_recursive($playerConfig['plugins'], $basePlugins);
-		// TODO [EITAN] - hook to server - PLAT-9844
-		$playerConfig['plugins']['kAnalony']["sendUuid"] = false;
+
 		//scan the plugins attributes and replace tokens
 		foreach ($playerConfig['plugins']  as $key=>$value){
 			if ( is_array($value)) {

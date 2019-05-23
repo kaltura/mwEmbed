@@ -116,11 +116,11 @@
 	    },
         // distinguish anonymous users with a cookie (per browser - per domain)
         setupUuid : function() {
-			if(!this.getConfig("sendUuid")){
+			if(!this.getConfig("analyticsPersistentSessionId")){
 				return;
 			}
 		    // check cookie
-		    var savedUserId = $.cookie( "kavaUuid" );
+		    var savedUserId = $.cookie( " " );
 		    if(savedUserId){
 		        // check if we have already set a cookie
                 this.uniqueUserId = savedUserId;
@@ -128,7 +128,7 @@
             }
 		    // no cookie - generate one and save to cookie
             this.uniqueUserId = window.kWidgetSupport.getGUID();
-            this.getPlayer().setCookie( "kavaUuid", this.uniqueUserId );
+            this.getPlayer().setCookie( "analyticsPersistentSessionId", this.uniqueUserId );
         },
 		addBindings : function() {
 			var _this = this;
@@ -541,10 +541,6 @@
                 'applicationName' : 'application',
                 'userId' : 'userId'
             };
-            // TODO - connect with partner data attribute
-            if(this.getConfig("sendUuid")){
-            	statsEvent.uuid = this.uniqueUserId;
-			}
             // support legacy ( deprecated ) top level config
             for( var fvKey in flashVarEvents){
                 if( this.embedPlayer.getKalturaConfig( '', fvKey ) ){
