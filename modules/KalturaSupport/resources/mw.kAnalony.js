@@ -474,7 +474,7 @@
 				if ( !_this._p100Once || (_this.embedPlayer.donePlayingCount > 0)){ // since we report 100% at 99%, we don't want any "VIEW" reports after that (FEC-5269)
 					var analyticsEvent = _this.generateViewEventObject();
 					_this.addDroppedFramesRatioData(analyticsEvent);
-					_this.addBandwidth(analyticsEvent);
+					_this.addBandwidthData(analyticsEvent);
 					_this.sendAnalytics(playerEvent.VIEW, analyticsEvent );
 					_this.bufferTime = 0;
 				}
@@ -484,7 +484,7 @@
 			},_this.reportingInterval,_this.monitorIntervalObj);
 		},
 		// calculate avarage bandwidth, clean bandwidthSamples and add output to the analytics objects
-		addBandwidth: function(analyticsEvent){
+		addBandwidthData: function(analyticsEvent){
 			var sum = 0;
 			$.each(this.bandwidthSamples,function(){sum+=parseFloat(this) || 0; });
 			var avarage = sum / this.bandwidthSamples.length;
