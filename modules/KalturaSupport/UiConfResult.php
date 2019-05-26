@@ -100,8 +100,8 @@ class UiConfResult {
 		}
 
 		if( $this->isJson() ) {
-			$this->addPartnerPublicInfoData();
 			$this->parseJSON( $this->uiConfFile );
+			$this->addPartnerPublicInfoData();
 		} else {
 			$this->parseUiConfXML( $this->uiConfFile );
 			$this->setupPlayerConfig();
