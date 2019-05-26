@@ -89,24 +89,6 @@ class kalturaIframeClass {
 			return false;
 		}
 	}
-	/**
-	 * Get parnter  Object
-	 */
-	function getPartnerShit( $widgetId = null ) {
-		if( $widgetId ) {
-			$client = $this->client->getClient();
-			$kparams = array();
-			try {
-				$result = $client->widget->get($widgetId);
-			} catch( Exception $e ){
-				throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . htmlspecialchars($e->getMessage()) );
-			}
-			if( $result ) {
-				return $result;
-			}
-			return false;
-		}
-	}
 
 	/**
 	 * Grabs a uiConf result object:
