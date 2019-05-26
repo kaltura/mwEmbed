@@ -152,7 +152,7 @@
             // calculate bandwidth of current loaded frag
             // convert load-end - load-start to seconds, convert total bytes to kb, divide
             // and store for average
-			this.embedPlayer.bindHelper( 'hlsFragLoadedWithData' , function (e,data) {
+            this.embedPlayer.bindHelper( 'hlsFragLoadedWithData' , function (e,data) {
                 var loaded = data.stats.loaded/1024; // convert bytes to kb
                 var total = (data.stats.tload- data.stats.tfirst)/1000; // convert miliseconds to sec
                 var bandwidth = loaded/total;
@@ -490,13 +490,14 @@
 		},
 		// calculate avarage bandwidth, clean bandwidthSamples and add output to the analytics objects
 		addBandwidthData: function(analyticsEvent){
+		    if(this.bandwidthSamples.length === 0){
+		        return;
+            }
 			var sum = 0;
 			$.each(this.bandwidthSamples,function(){sum+=parseFloat(this) || 0; });
 			var avarage = sum / this.bandwidthSamples.length;
 			this.bandwidthSamples = [];
-			if(!isNaN(avarage)){
-				analyticsEvent.bandwidth = avarage.toFixed(3);
-			}
+			analyticsEvent.bandwidth = avarage.toFixed(3);
 		},
 
         generateViewEventObject: function(){
