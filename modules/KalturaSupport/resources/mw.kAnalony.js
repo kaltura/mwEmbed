@@ -147,6 +147,7 @@
 				_this.dvr = false;
 				_this.monitorViewEvents = true;
 				_this.onPlayStatus = false;
+				_this.bandwidthSamples = [];
 			});
 
 			this.embedPlayer.bindHelper( 'userInitiatedPlay' , function () {
