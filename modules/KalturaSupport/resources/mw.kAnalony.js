@@ -9,7 +9,14 @@
 		defaultConfig: {
 			id3TagMaxDelay: 20000
 		},
-
+		tabMode : {
+			HIDDEN: 1,
+			ACTIVE: 2
+		},
+		soundMode : {
+			MUTED: 1,
+			HAS_SOUND: 2
+		},
 		PlayerEvent:{
 			"IMPRESSION": 1,
 			"PLAY_REQUEST": 2,
@@ -51,7 +58,9 @@
 		viewEventInterval: null,
 		savedPosition: null,
 		monitorIntervalObj:{},
-        playTimeSum: 0,
+		droppedFrames: 0,
+		decodedFrames: 0,
+		playTimeSum: 0,
 		previousCurrentTime: 0,
 		_p25Once: false,
 		_p50Once: false,
@@ -124,12 +133,13 @@
 		        }
 				_this.sendAnalytics(playerEvent.IMPRESSION);
 			});
-
 			this.embedPlayer.bindHelper( 'onChangeMedia' , function () {
 				_this.timer.destroy();
-                _this.resetSession();
+				_this.resetSession();
 				_this.rateHandler.destroy();
 				_this.bufferTime = 0;
+				_this.droppedFrames = 0;
+				_this.decodedFrames = 0;
 				_this.firstPlay = true;
 				_this.playSentOnStart = false;
 				_this.currentBitRate = -1;
@@ -368,7 +378,20 @@
 			this.absolutePosition = null;
 			this.id3TagEventTime = null;
 		},
-
+		/**
+		* Both parameters are accumulated so we need to deduct the new values from the previous values. This function
+		* does that exactly by saving locally the values. THe function returns the ratio as fraction (E.G. 0.015 )
+		* @param droppedFrames
+		* @param decodedFrames
+		* @returns {number}
+		*/
+		getDroppedFramesRatio: function ( droppedFrames, decodedFrames) {
+			var olddroppedFrames = this.droppedFrames;
+			var olddecodedFrames = this.decodedFrames;
+			this.droppedFrames = droppedFrames;
+			this.decodedFrames = decodedFrames;
+			return (Math.round((this.droppedFrames-olddroppedFrames) / (this.decodedFrames-olddecodedFrames) * 1000) / 1000);
+		},
 		updateTimeStats: function() {
 			var _this = this;
 			var percent = this.embedPlayer.currentTime / this.embedPlayer.duration;
@@ -443,32 +466,55 @@
 			_this.kClient = mw.kApiGetPartnerClient( _this.embedPlayer.kwidgetid );
 			_this.monitorIntervalObj.cancel = false;
 			if ( _this.firstPlay ){
-				_this.sendAnalytics(playerEvent.VIEW, {
-					playTimeSum: _this.playTimeSum,
-                    averageBitrate: _this.rateHandler.getAverage(),
-					bufferTimeSum: _this.bufferTimeSum
-                });
+				_this.sendAnalytics(playerEvent.VIEW, _this.generateViewEventObject() );
 				_this.firstPlay = false;
 			}
 			_this.smartSetInterval(function(){
-                if ( !_this._p100Once || (_this.embedPlayer.donePlayingCount > 0)){ // since we report 100% at 99%, we don't want any "VIEW" reports after that (FEC-5269)
-					_this.sendAnalytics(playerEvent.VIEW, {
-                        playTimeSum: _this.playTimeSum,
-                        averageBitrate: _this.rateHandler.getAverage(),
-                        bufferTimeSum: _this.bufferTimeSum
-                    });
+				if ( !_this._p100Once || (_this.embedPlayer.donePlayingCount > 0)){ // since we report 100% at 99%, we don't want any "VIEW" reports after that (FEC-5269)
+					var analyticsEvent = _this.generateViewEventObject();
+					_this.addDroppedFramesRatioData(analyticsEvent);
+					_this.sendAnalytics(playerEvent.VIEW, analyticsEvent );
 					_this.bufferTime = 0;
 				}
 				if ( !_this.monitorViewEvents ){
 					_this.stopViewTracking();
 				}
 			},_this.reportingInterval,_this.monitorIntervalObj);
-
 		},
 
-		getEntrySessionId: function(){
-			return this.embedPlayer.evaluate('{configProxy.sessionId}')
-		},
+        generateViewEventObject: function(){
+            var tabMode = this.tabMode;
+            var soundMode = this.soundMode;
+            return {
+                tabMode : document.hidden ? tabMode.HIDDEN : tabMode.ACTIVE,
+                soundMode : this.embedPlayer.isMuted() ? soundMode.MUTED : soundMode.HAS_SOUND,
+                playTimeSum: this.playTimeSum,
+                averageBitrate: this.rateHandler.getAverage(),
+                bufferTimeSum: this.bufferTimeSum
+            };
+        },
+
+        addDroppedFramesRatioData: function(analyticsEvent){
+            var droppedFramesRatio;
+            try{
+                var vidObj = this.embedPlayer.getPlayerElement();
+                if (typeof vidObj.getVideoPlaybackQuality === 'function') {
+                    var videoPlaybackQuality = vidObj.getVideoPlaybackQuality();
+                    droppedFramesRatio = this.getDroppedFramesRatio( videoPlaybackQuality.droppedVideoFrames , videoPlaybackQuality.totalVideoFrames );
+                } else {
+                    droppedFramesRatio = this.getDroppedFramesRatio( vidObj.webkitDroppedFrameCount , vidObj.webkitDecodedFrameCount );
+                }
+            } catch (e) {
+                mw.log("Failed getting droppedVideoFrames data");
+            }
+            if(droppedFramesRatio !== undefined && !isNaN(droppedFramesRatio)){
+                analyticsEvent.droppedFramesRatio = droppedFramesRatio;
+            }
+        },
+
+        getEntrySessionId: function(){
+            return this.embedPlayer.evaluate('{configProxy.sessionId}');
+        },
 
         getPosition: function () {
             if (this.embedPlayer.isLive()) {
