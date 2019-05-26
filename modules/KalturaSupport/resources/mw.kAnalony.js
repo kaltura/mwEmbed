@@ -149,20 +149,25 @@
 				_this.onPlayStatus = false;
 				_this.bandwidthSamples = [];
 			});
+            // calculate bandwidth of current loaded frag
+            // convert load-end - load-start to seconds, convert total bytes to kb, divide
+            // and store for average
+			this.embedPlayer.bindHelper( 'hlsFragLoadedWithData' , function (e,data) {
+                var loaded = data.stats.loaded/1024; // convert bytes to kb
+                var total = (data.stats.tload- data.stats.tfirst)/1000; // convert miliseconds to sec
+                var bandwidth = loaded/total;
+            	if(bandwidth){
+            		// store so we can calculate avarage later
+            		_this.bandwidthSamples.push(bandwidth);
+            	}
+
+            });
 
 			this.embedPlayer.bindHelper( 'userInitiatedPlay' , function () {
                 if (_this.firstPlay) {
                     _this.firstPlayRequestTime = Date.now();
                 }
 				_this.sendAnalytics(playerEvent.PLAY_REQUEST);
-			});
-			this.embedPlayer.bindHelper( 'hlsFragBufferedData' , function (event,data) {
-				var bandwidth = data.stats && data.stats.bwEstimate;
-				if(bandwidth){
-					bandwidth =(bandwidth / 1024).toFixed(3);
-					// store so we can calculate avarage later
-					_this.bandwidthSamples.push(bandwidth);
-				}
 			});
 
 			this.embedPlayer.bindHelper( 'onplay' , function () {
