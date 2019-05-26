@@ -492,7 +492,7 @@
 		addBandwidthData: function(analyticsEvent){
 		    if(this.bandwidthSamples.length === 0){
 		        return;
-            }
+		    }
 			var sum = 0;
 			$.each(this.bandwidthSamples,function(){sum+=parseFloat(this) || 0; });
 			var avarage = sum / this.bandwidthSamples.length;
