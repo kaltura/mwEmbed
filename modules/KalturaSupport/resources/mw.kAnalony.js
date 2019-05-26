@@ -65,6 +65,7 @@
 		id3TagEventTime: null,
 		onPlayStatus: false,
         firstPlayRequestTime: null,
+        bandwidthSamples: [],
 
 		smartSetInterval:function(callback,time,monitorObj) {
 			var _this = this;
@@ -145,8 +146,12 @@
 				_this.sendAnalytics(playerEvent.PLAY_REQUEST);
 			});
 			this.embedPlayer.bindHelper( 'hlsFragBufferedData' , function (event,data) {
-				var bw = data.stats && data.stats.bwEstimate;
-				console.log(">>>> hlsFragBufferedData bwEstimate",bw);
+				var bandwidth = data.stats && data.stats.bwEstimate;
+				if(bandwidth){
+					bandwidth =(bandwidth / 1024).toFixed(3);
+					// store so we can calculate avarage later
+					_this.bandwidthSamples.push(bandwidth);
+				}
 			});
 
 			this.embedPlayer.bindHelper( 'onplay' , function () {
