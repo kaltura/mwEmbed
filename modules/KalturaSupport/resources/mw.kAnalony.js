@@ -74,6 +74,7 @@
 		id3TagEventTime: null,
 		onPlayStatus: false,
         firstPlayRequestTime: null,
+        bandwidthSamples: [],
 
 		smartSetInterval:function(callback,time,monitorObj) {
 			var _this = this;
@@ -119,6 +120,7 @@
             this.bufferTime = 0;
             this.bufferTimeSum = 0;
 			this.currentBitRate = -1;
+			this.setupUuid();
             this.addBindings();
 	    },
 
@@ -146,7 +148,21 @@
 				_this.dvr = false;
 				_this.monitorViewEvents = true;
 				_this.onPlayStatus = false;
+				_this.bandwidthSamples = [];
 			});
+            // calculate bandwidth of current loaded frag
+            // convert load-end - load-start to seconds, convert total bytes to kb, divide
+            // and store for average
+            this.embedPlayer.bindHelper( 'hlsFragLoadedWithData' , function (e,data) {
+                var loaded = data.stats.loaded/1024; // convert bytes to kb
+                var total = (data.stats.tload- data.stats.tfirst)/1000; // convert miliseconds to sec
+                var bandwidth = loaded/total;
+            	if(bandwidth){
+            		// store so we can calculate avarage later
+            		_this.bandwidthSamples.push(bandwidth);
+            	}
+
+            });
 
 			this.embedPlayer.bindHelper( 'userInitiatedPlay' , function () {
                 if (_this.firstPlay) {
@@ -464,6 +480,7 @@
 				if ( !_this._p100Once || (_this.embedPlayer.donePlayingCount > 0)){ // since we report 100% at 99%, we don't want any "VIEW" reports after that (FEC-5269)
 					var analyticsEvent = _this.generateViewEventObject();
 					_this.addDroppedFramesRatioData(analyticsEvent);
+					_this.addBandwidthData(analyticsEvent);
 					_this.sendAnalytics(playerEvent.VIEW, analyticsEvent );
 					_this.bufferTime = 0;
 				}
@@ -472,18 +489,49 @@
 				}
 			},_this.reportingInterval,_this.monitorIntervalObj);
 		},
+		// calculate avarage bandwidth, clean bandwidthSamples and add output to the analytics objects
+		addBandwidthData: function(analyticsEvent){
+		    if(this.bandwidthSamples.length === 0){
+		        return;
+		    }
+			var sum = 0;
+			$.each(this.bandwidthSamples,function(){sum+=parseFloat(this) || 0; });
+			var avarage = sum / this.bandwidthSamples.length;
+			this.bandwidthSamples = [];
+			analyticsEvent.bandwidth = avarage.toFixed(3);
+		},
 
-        generateViewEventObject: function(){
-            var tabMode = this.tabMode;
-            var soundMode = this.soundMode;
-            return {
-                tabMode : document.hidden ? tabMode.HIDDEN : tabMode.ACTIVE,
-                soundMode : this.embedPlayer.isMuted() ? soundMode.MUTED : soundMode.HAS_SOUND,
-                playTimeSum: this.playTimeSum,
-                averageBitrate: this.rateHandler.getAverage(),
-                bufferTimeSum: this.bufferTimeSum
-            };
-        },
+		setupUuid : function() {
+			if(!this.getConfig("analyticsPersistentSessionId")){
+				return;
+			}
+			// check cookie
+			var savedUserId = $.cookie( "analyticsPersistentSessionId" );
+			if(savedUserId){
+				// check if we have already set a cookie
+				this.uniqueUserId = savedUserId;
+				return;
+			}
+			// no cookie - generate one and save to cookie
+			this.uniqueUserId = window.kWidgetSupport.getGUID();
+			this.getPlayer().setCookie( "analyticsPersistentSessionId", this.uniqueUserId );
+		},
+
+		generateViewEventObject: function(){
+			var tabMode = this.tabMode;
+			var soundMode = this.soundMode;
+			var event = {
+				tabMode : document.hidden ? tabMode.HIDDEN : tabMode.ACTIVE,
+				soundMode : this.embedPlayer.isMuted() ? soundMode.MUTED : soundMode.HAS_SOUND,
+				playTimeSum: this.playTimeSum,
+				averageBitrate: this.rateHandler.getAverage(),
+				bufferTimeSum: this.bufferTimeSum
+			};
+			if(this.getConfig("analyticsPersistentSessionId")){
+				event.persistentSessionId = this.uniqueUserId;
+			}
+			return event;
+		},
 
         addDroppedFramesRatioData: function(analyticsEvent){
             var droppedFramesRatio;
