@@ -120,6 +120,7 @@
             this.bufferTime = 0;
             this.bufferTimeSum = 0;
 			this.currentBitRate = -1;
+			this.setupUuid();
             this.addBindings();
 	    },
 
@@ -500,17 +501,37 @@
 			analyticsEvent.bandwidth = avarage.toFixed(3);
 		},
 
-        generateViewEventObject: function(){
-            var tabMode = this.tabMode;
-            var soundMode = this.soundMode;
-            return {
-                tabMode : document.hidden ? tabMode.HIDDEN : tabMode.ACTIVE,
-                soundMode : this.embedPlayer.isMuted() ? soundMode.MUTED : soundMode.HAS_SOUND,
-                playTimeSum: this.playTimeSum,
-                averageBitrate: this.rateHandler.getAverage(),
-                bufferTimeSum: this.bufferTimeSum
-            };
-        },
+		setupUuid : function() {
+			if(!this.getConfig("analyticsPersistentSessionId")){
+				return;
+			}
+			// check cookie
+			var savedUserId = $.cookie( "analyticsPersistentSessionId" );
+			if(savedUserId){
+				// check if we have already set a cookie
+				this.uniqueUserId = savedUserId;
+				return;
+			}
+			// no cookie - generate one and save to cookie
+			this.uniqueUserId = window.kWidgetSupport.getGUID();
+			this.getPlayer().setCookie( "analyticsPersistentSessionId", this.uniqueUserId );
+		},
+
+		generateViewEventObject: function(){
+			var tabMode = this.tabMode;
+			var soundMode = this.soundMode;
+			var event = {
+				tabMode : document.hidden ? tabMode.HIDDEN : tabMode.ACTIVE,
+				soundMode : this.embedPlayer.isMuted() ? soundMode.MUTED : soundMode.HAS_SOUND,
+				playTimeSum: this.playTimeSum,
+				averageBitrate: this.rateHandler.getAverage(),
+				bufferTimeSum: this.bufferTimeSum
+			};
+			if(this.getConfig("analyticsPersistentSessionId")){
+				event.persistentSessionId = this.uniqueUserId;
+			}
+			return event;
+		},
 
         addDroppedFramesRatioData: function(analyticsEvent){
             var droppedFramesRatio;
