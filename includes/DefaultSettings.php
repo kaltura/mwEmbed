@@ -1,7 +1,7 @@
-<?php 
+<?php
 /**
  * This file stores default settings for Kaltura html5 client library "mwEmbed"
- * 
+ *
  * DO NOT MODIFY THIS FILE. Instead modify LocalSettings.php in the parent mwEmbd directory.
  *
  */
@@ -20,7 +20,7 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '2.75';
+$wgMwEmbedVersion = '2.76';
 
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {
@@ -113,35 +113,35 @@ $wgResourceLoaderMaxage = array(
 	),
 );
 /***
- * External module config: 
+ * External module config:
  */
 $wgExternalPlayersSupportedTypes = array('YouTube');
 
 /*********************************************************
- * Default Kaltura Configuration: 
- * TODO move kaltura configuration to KalturaSupport module ( part of New ResourceLoader update ) 
+ * Default Kaltura Configuration:
+ * TODO move kaltura configuration to KalturaSupport module ( part of New ResourceLoader update )
  ********************************************************/
 
 //Embedded services
 //To enable service re routing for entryResult calls
 $wgEnableKalturaEmbedServicesRouting = true;
 
-// To include signed headers with user IPs for IP restriction lookups, input a salt string for 
-// $wgKalturaRemoteAddressSalt configuration option. 
+// To include signed headers with user IPs for IP restriction lookups, input a salt string for
+// $wgKalturaRemoteAddressSalt configuration option.
 $wgKalturaRemoteAddressSalt = false;
 
 // If we should check for onPage resources per the external resources plugin
 $wgKalturaEnableEmbedUiConfJs = false;
 
-// Enables the result cache while in debug mode 
-// This enables fast player rendering while scripts remain unminifed. 
+// Enables the result cache while in debug mode
+// This enables fast player rendering while scripts remain unminifed.
 // ( normally $wgEnableScriptDebug disables result cache )
 $wgKalturaForceResultCache = false;
 
 // For force ip testing geo restrictions
 $wgKalturaForceIP = false;
 
-// To test sites with referre restrictions: 
+// To test sites with referre restrictions:
 $wgKalturaForceReferer = false;
 
 // The default Kaltura service url:
@@ -151,7 +151,7 @@ if( $wgHTTPProtocol == 'https' ){
 	$wgKalturaServiceUrl =  'https://cdnapisec.kaltura.com';
 }
 
-// Default Kaltura CDN url: 
+// Default Kaltura CDN url:
 $wgKalturaCDNUrl = 'http://cdnbakmi.kaltura.com';
 // if https use cdnsecakmi
 if( $wgHTTPProtocol == 'https' ){
@@ -173,14 +173,14 @@ $wgLogApiRequests = false;
 // Default CDN Asset Path
 $wgCDNAssetPath = $wgHTTPProtocol . '://' . $_SERVER['HTTP_HOST'];
 
-// Default api request timeout in seconds 
+// Default api request timeout in seconds
 $wgKalturaServiceTimeout = 20;
 
-// If the iframe will accept 3rd party domain remote service requests 
-// should be left "off" in production. 
+// If the iframe will accept 3rd party domain remote service requests
+// should be left "off" in production.
 $wgKalturaAllowIframeRemoteService = false;
 
-// Default expire time for ui conf api queries in seconds 
+// Default expire time for ui conf api queries in seconds
 $wgKalturaUiConfCacheTime = 60*10; // 10 min
 
 // Cache errors for 30 seconds to avoid overloading apaches in CDN setups
@@ -193,14 +193,14 @@ $wgEnableIpadHTMLControls = true;
 
 $wgKalturaUseManifestUrls = true;
 
-// The admin secret should be set to an integration admin secret key for testing 
+// The admin secret should be set to an integration admin secret key for testing
 // api actions that require admin rights, like granting a ks for preview / play:
 $wgKalturaAdminSecret = null;
 
-// By default do allow custom resource includes. 
+// By default do allow custom resource includes.
 $wgAllowCustomResourceIncludes = true;
 
-// An array of partner ids for which apple adaptive should be disabled. 
+// An array of partner ids for which apple adaptive should be disabled.
 $wgKalturaPartnerDisableAppleAdaptive = array();
 
 // By default use apple adaptive if we have the ability
@@ -217,7 +217,7 @@ $wgKalturaAuthDomains = array( 'www.kaltura.com', 'kmc.kaltura.com' );
 // If google anlytics should be enabled, set to the ua string
 $wgKalturaGoogleAnalyticsUA = false;
 
-// for additional script includes. 
+// for additional script includes.
 $wgAdditionalDocsScriptInclude = false;
 
 //Remote web inspector URL such as: weinre, fireBug

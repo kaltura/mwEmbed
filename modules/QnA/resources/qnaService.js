@@ -249,6 +249,8 @@
             this.qnaPlugin = qnaPlugin;
             this.overrideModeratorName =  qnaPlugin.getConfig('overrideModeratorName') ? qnaPlugin.getConfig('overrideModeratorName') : false;
 
+            this.AddNotificationsDelayForQnaThreads();
+
             this.kPushServerNotification= mw.KPushServerNotification.getInstance(embedPlayer);
             if (embedPlayer.isLive()) {
                 //we first register to all notification before continue to get the existing cuepoints, so we don't get races and lost cue points
@@ -260,6 +262,19 @@
                     });
                 });
             }
+        },
+        /**
+         * As we are getting *All* the qna cuePoints ever occurred, we will get old cuePoints and their delete update.
+         * The compromise was to set a delay on the observableArray *just on the start and then removing this delay instead of
+         * flickering announcement or changing the whole app to get a list of cuePoints.
+         */
+        AddNotificationsDelayForQnaThreads: function () {
+            var _this = this;
+
+            _this.QnaThreads.extend({ rateLimit: 500 });
+            setTimeout(function () {
+                _this.QnaThreads.extend({ rateLimit: 0 });
+            }, 500);
         },
         getMetaDataProfile:function() {
             var _this=this;
@@ -612,7 +627,7 @@
                     });
                 });
 
-
+            // Register to Announcements (Public)
             var publicNotifications =  this.kPushServerNotification.createNotificationRequest(
                 _this.QandA_publicNotificationName,
                 {
@@ -622,7 +637,7 @@
                     _this.processQnA(cuePoints);
                 });
 
-
+            // Register to Questions (User Private)
             var userNotifications =  this.kPushServerNotification.createNotificationRequest(
                 _this.QandA_UserNotificationName,
                 {
