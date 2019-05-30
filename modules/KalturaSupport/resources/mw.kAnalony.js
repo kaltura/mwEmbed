@@ -72,6 +72,7 @@
         playSentOnStart: false,
 		absolutePosition: null,
 		id3TagEventTime: null,
+		id3SequenceId: null,
 		onPlayStatus: false,
         firstPlayRequestTime: null,
         bandwidthSamples: [],
@@ -148,6 +149,7 @@
 				_this.dvr = false;
 				_this.monitorViewEvents = true;
 				_this.onPlayStatus = false;
+				_this.id3SequenceId = null;
 				_this.bandwidthSamples = [];
 			});
             // calculate bandwidth of current loaded frag
@@ -370,6 +372,9 @@
             });
 
 			this.embedPlayer.bindHelper( 'onId3Tag' , function (e, id3Tag) {
+				if(id3Tag.sequenceId){
+					_this.id3SequenceId = id3Tag.sequenceId;
+				}
 				_this.id3TagEventTime = Date.now();
 				_this.absolutePosition = id3Tag.timestamp;
 			});
@@ -527,6 +532,9 @@
 				averageBitrate: this.rateHandler.getAverage(),
 				bufferTimeSum: this.bufferTimeSum
 			};
+			if(this.id3SequenceId){
+				event.flavorParamsId = this.id3SequenceId;
+			}
 			if(this.getConfig("analyticsPersistentSessionId")){
 				event.persistentSessionId = this.uniqueUserId;
 			}
