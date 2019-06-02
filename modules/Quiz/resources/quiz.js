@@ -721,6 +721,7 @@
                 .on('click', function () {
                     if (mw.isMobileDevice() || _this.embedPlayer.getPlayerElementTime() === 0 ){
                         _this.KIVQModule.continuePlay();
+                        _this.KIVQModule.quizEndFlow = false;
                     }else {
                         _this.KIVQScreenTemplate.tmplThankYou();
                         $(".title-text").html(gM('mwe-quiz-thankYou'));
