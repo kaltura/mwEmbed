@@ -18,7 +18,7 @@
             displayImportance: 'medium',
             templatePath: '../Quiz/resources/templates/quiz.tmpl.html',
             usePreviewPlayer: false,
-            autoContinue: true,
+            autoContinue: false,
             previewPlayerEnabled: false
         },
         postAnswerTimer : 1800,
