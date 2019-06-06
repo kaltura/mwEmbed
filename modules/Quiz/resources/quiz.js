@@ -549,6 +549,16 @@
                 }else{
                     interfaceElement.find("#open-question-clear,#open-question-save").removeAttr("disabled");
                 }
+            })
+            .change(function(){
+                var holdAnswer = $(this).val();
+                interfaceElement.find(".hint-why-box")
+                .click(function () {
+                    $(".close-button")
+                    .click(function () {
+                        interfaceElement.find(".open-question-textarea").val(holdAnswer);
+                    })
+                });
             });
 
             // apply locale strings 
