@@ -65,13 +65,37 @@ Poll (shared)
 
 .webcastPolls .poll-container .error-container .text {
     position:absolute;
-    top: 50%;
+    top: 20%;
     left: 50%;
+    width: 80%;
     transform: translate(-50%, -50%);
-    text-align:center;
+    text-align:left;
     font-size:21px;
     line-height:28px;
     letter-spacing: 1px;
+}
+
+.webcastPolls .poll-container .error-container #closePoll {
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    width: 260px;
+    height: 60px;
+    transform: translate(-50%, -50%);
+    text-align:center;
+    font-size:19px;
+    letter-spacing: 1px;
+    color: #d8d8d8;
+    background-color: #5d7937;
+    border: none;
+    border-radius: 5px;
+    outline: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.webcastPolls .poll-container .error-container #closePoll:hover {
+    background-color: #516930;
 }
 
 /**** question-only elements ****/
