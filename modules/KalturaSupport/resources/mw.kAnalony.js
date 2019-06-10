@@ -121,7 +121,6 @@
             this.bufferTime = 0;
             this.bufferTimeSum = 0;
 			this.currentBitRate = -1;
-			this.setupUuid();
             this.addBindings();
 	    },
 
@@ -506,21 +505,7 @@
 			analyticsEvent.bandwidth = avarage.toFixed(3);
 		},
 
-		setupUuid : function() {
-			if(!this.getConfig("analyticsPersistentSessionId")){
-				return;
-			}
-			// check cookie
-			var savedUserId = $.cookie( "analyticsPersistentSessionId" );
-			if(savedUserId){
-				// check if we have already set a cookie
-				this.uniqueUserId = savedUserId;
-				return;
-			}
-			// no cookie - generate one and save to cookie
-			this.uniqueUserId = window.kWidgetSupport.getGUID();
-			this.getPlayer().setCookie( "analyticsPersistentSessionId", this.uniqueUserId );
-		},
+
 
 		generateViewEventObject: function(){
 			var tabMode = this.tabMode;
@@ -534,9 +519,6 @@
 			};
 			if(this.id3SequenceId){
 				event.flavorParamsId = this.id3SequenceId;
-			}
-			if(this.getConfig("analyticsPersistentSessionId")){
-				event.persistentSessionId = this.uniqueUserId;
 			}
 			return event;
 		},
