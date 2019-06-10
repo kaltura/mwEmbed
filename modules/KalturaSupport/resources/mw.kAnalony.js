@@ -9,7 +9,14 @@
 		defaultConfig: {
 			id3TagMaxDelay: 20000
 		},
-
+		tabMode : {
+			HIDDEN: 1,
+			ACTIVE: 2
+		},
+		soundMode : {
+			MUTED: 1,
+			HAS_SOUND: 2
+		},
 		PlayerEvent:{
 			"IMPRESSION": 1,
 			"PLAY_REQUEST": 2,
@@ -51,7 +58,9 @@
 		viewEventInterval: null,
 		savedPosition: null,
 		monitorIntervalObj:{},
-        playTimeSum: 0,
+		droppedFrames: 0,
+		decodedFrames: 0,
+		playTimeSum: 0,
 		previousCurrentTime: 0,
 		_p25Once: false,
 		_p50Once: false,
@@ -63,8 +72,10 @@
         playSentOnStart: false,
 		absolutePosition: null,
 		id3TagEventTime: null,
+		id3SequenceId: null,
 		onPlayStatus: false,
         firstPlayRequestTime: null,
+        bandwidthSamples: [],
 
 		smartSetInterval:function(callback,time,monitorObj) {
 			var _this = this;
@@ -123,12 +134,13 @@
 		        }
 				_this.sendAnalytics(playerEvent.IMPRESSION);
 			});
-
 			this.embedPlayer.bindHelper( 'onChangeMedia' , function () {
 				_this.timer.destroy();
-                _this.resetSession();
+				_this.resetSession();
 				_this.rateHandler.destroy();
 				_this.bufferTime = 0;
+				_this.droppedFrames = 0;
+				_this.decodedFrames = 0;
 				_this.firstPlay = true;
 				_this.playSentOnStart = false;
 				_this.currentBitRate = -1;
@@ -136,7 +148,22 @@
 				_this.dvr = false;
 				_this.monitorViewEvents = true;
 				_this.onPlayStatus = false;
+				_this.id3SequenceId = null;
+				_this.bandwidthSamples = [];
 			});
+            // calculate bandwidth of current loaded frag
+            // convert load-end - load-start to seconds, convert total bytes to kb, divide
+            // and store for average
+            this.embedPlayer.bindHelper( 'hlsFragLoadedWithData' , function (e,data) {
+                var loaded = data.stats.loaded/1024; // convert bytes to kb
+                var total = (data.stats.tload- data.stats.tfirst)/1000; // convert miliseconds to sec
+                var bandwidth = loaded/total;
+            	if(bandwidth){
+            		// store so we can calculate avarage later
+            		_this.bandwidthSamples.push(bandwidth);
+            	}
+
+            });
 
 			this.embedPlayer.bindHelper( 'userInitiatedPlay' , function () {
                 if (_this.firstPlay) {
@@ -344,6 +371,9 @@
             });
 
 			this.embedPlayer.bindHelper( 'onId3Tag' , function (e, id3Tag) {
+				if(id3Tag.sequenceId){
+					_this.id3SequenceId = id3Tag.sequenceId;
+				}
 				_this.id3TagEventTime = Date.now();
 				_this.absolutePosition = id3Tag.timestamp;
 			});
@@ -359,7 +389,20 @@
 			this.absolutePosition = null;
 			this.id3TagEventTime = null;
 		},
-
+		/**
+		* Both parameters are accumulated so we need to deduct the new values from the previous values. This function
+		* does that exactly by saving locally the values. THe function returns the ratio as fraction (E.G. 0.015 )
+		* @param droppedFrames
+		* @param decodedFrames
+		* @returns {number}
+		*/
+		getDroppedFramesRatio: function ( droppedFrames, decodedFrames) {
+			var olddroppedFrames = this.droppedFrames;
+			var olddecodedFrames = this.decodedFrames;
+			this.droppedFrames = droppedFrames;
+			this.decodedFrames = decodedFrames;
+			return (Math.round((this.droppedFrames-olddroppedFrames) / (this.decodedFrames-olddecodedFrames) * 1000) / 1000);
+		},
 		updateTimeStats: function() {
 			var _this = this;
 			var percent = this.embedPlayer.currentTime / this.embedPlayer.duration;
@@ -434,32 +477,73 @@
 			_this.kClient = mw.kApiGetPartnerClient( _this.embedPlayer.kwidgetid );
 			_this.monitorIntervalObj.cancel = false;
 			if ( _this.firstPlay ){
-				_this.sendAnalytics(playerEvent.VIEW, {
-					playTimeSum: _this.playTimeSum,
-                    averageBitrate: _this.rateHandler.getAverage(),
-					bufferTimeSum: _this.bufferTimeSum
-                });
+				_this.sendAnalytics(playerEvent.VIEW, _this.generateViewEventObject() );
 				_this.firstPlay = false;
 			}
 			_this.smartSetInterval(function(){
-                if ( !_this._p100Once || (_this.embedPlayer.donePlayingCount > 0)){ // since we report 100% at 99%, we don't want any "VIEW" reports after that (FEC-5269)
-					_this.sendAnalytics(playerEvent.VIEW, {
-                        playTimeSum: _this.playTimeSum,
-                        averageBitrate: _this.rateHandler.getAverage(),
-                        bufferTimeSum: _this.bufferTimeSum
-                    });
+				if ( !_this._p100Once || (_this.embedPlayer.donePlayingCount > 0)){ // since we report 100% at 99%, we don't want any "VIEW" reports after that (FEC-5269)
+					var analyticsEvent = _this.generateViewEventObject();
+					_this.addDroppedFramesRatioData(analyticsEvent);
+					_this.addBandwidthData(analyticsEvent);
+					_this.sendAnalytics(playerEvent.VIEW, analyticsEvent );
 					_this.bufferTime = 0;
 				}
 				if ( !_this.monitorViewEvents ){
 					_this.stopViewTracking();
 				}
 			},_this.reportingInterval,_this.monitorIntervalObj);
-
+		},
+		// calculate avarage bandwidth, clean bandwidthSamples and add output to the analytics objects
+		addBandwidthData: function(analyticsEvent){
+		    if(this.bandwidthSamples.length === 0){
+		        return;
+		    }
+			var sum = 0;
+			$.each(this.bandwidthSamples,function(){sum+=parseFloat(this) || 0; });
+			var avarage = sum / this.bandwidthSamples.length;
+			this.bandwidthSamples = [];
+			analyticsEvent.bandwidth = avarage.toFixed(3);
 		},
 
-		getEntrySessionId: function(){
-			return this.embedPlayer.evaluate('{configProxy.sessionId}')
+
+
+		generateViewEventObject: function(){
+			var tabMode = this.tabMode;
+			var soundMode = this.soundMode;
+			var event = {
+				tabMode : document.hidden ? tabMode.HIDDEN : tabMode.ACTIVE,
+				soundMode : this.embedPlayer.isMuted() ? soundMode.MUTED : soundMode.HAS_SOUND,
+				playTimeSum: this.playTimeSum,
+				averageBitrate: this.rateHandler.getAverage(),
+				bufferTimeSum: this.bufferTimeSum
+			};
+			if(this.id3SequenceId){
+				event.flavorParamsId = this.id3SequenceId;
+			}
+			return event;
 		},
+
+        addDroppedFramesRatioData: function(analyticsEvent){
+            var droppedFramesRatio;
+            try{
+                var vidObj = this.embedPlayer.getPlayerElement();
+                if (typeof vidObj.getVideoPlaybackQuality === 'function') {
+                    var videoPlaybackQuality = vidObj.getVideoPlaybackQuality();
+                    droppedFramesRatio = this.getDroppedFramesRatio( videoPlaybackQuality.droppedVideoFrames , videoPlaybackQuality.totalVideoFrames );
+                } else {
+                    droppedFramesRatio = this.getDroppedFramesRatio( vidObj.webkitDroppedFrameCount , vidObj.webkitDecodedFrameCount );
+                }
+            } catch (e) {
+                mw.log("Failed getting droppedVideoFrames data");
+            }
+            if(droppedFramesRatio !== undefined && !isNaN(droppedFramesRatio)){
+                analyticsEvent.droppedFramesRatio = droppedFramesRatio;
+            }
+        },
+
+        getEntrySessionId: function(){
+            return this.embedPlayer.evaluate('{configProxy.sessionId}');
+        },
 
         getPosition: function () {
             if (this.embedPlayer.isLive()) {
