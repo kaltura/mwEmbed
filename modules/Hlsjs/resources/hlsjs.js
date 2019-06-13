@@ -274,6 +274,7 @@
 					var sampleString = sampleData.substring(sampleData.indexOf("{"), sampleData.lastIndexOf("}") + 1);
 					//Parse JSON
 					var id3Tag = JSON.parse(sampleString);
+					console.log(">>2>>", id3Tag , data);
 					//store ID3 data, use rounded pts value
 					this.ptsID3Data[Math.round(sample.pts)] = id3Tag;
 				}.bind(this));
@@ -796,6 +797,7 @@
 				this.getPlayer().triggerHelper(e.type, e);
 				var time = Math.round(e.currentTarget.currentTime);
 				if (this.ptsID3Data[time]){
+					console.log(">>>> ",time,event);
 					this.getPlayer().triggerHelper('onId3Tag', this.ptsID3Data[time]);
 				}
 			},

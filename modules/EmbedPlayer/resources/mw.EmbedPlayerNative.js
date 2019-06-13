@@ -1029,6 +1029,7 @@
 					doPlay();
 				});
 			} else {
+				console.log(">>>>");
 				doPlay();
 			}
 		},

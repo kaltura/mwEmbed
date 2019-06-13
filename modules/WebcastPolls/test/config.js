@@ -1,19 +1,13 @@
 var user1="Eitan";
 var user2="Guest";
-var user1Ks="djJ8MjcwMTd8EyIl3_L6Ark51uIS3N6PdMSDTODjlNm5OA5ZRJGhFwNghvrqKbdOKF-s-a9_-sWzrf_M9vLHyLJC_iTlbV2aUi1nFhy1Z0sd3t3XFlLudxu6awf2XuxzJlBwtu59MhUdviL4swjiPCqiK3s2TChLn4GPwPZZLeYo242VgvokxGqBk6aSUOjCuuKdZ3qZLxbInwwsSWCoXtRthxhQF8ZlXcTvotuFawU6PKnruMxBjq6dBkHJrt9TUeYFOU1LhnSeAgKimX3KFnYwwth-bM_we0UufUFYua6hh3QbVH5gQMCjKBCb_JBnYSPfafZcwLaLYQ_ASsipxheHJvMlck3FFvlKYODXX7uR3aoM7kkC0CY=";
+var user1Ks="ZDdhNGFjMmE1NTNjMTRjMDhlY2RmZTAzODg4ZmQ4MGU5ZTMyMDE0NHwyNzAxNzsyNzAxNzsxNTYwMzIyMDI3OzI7MTU2MDIzNTYyNy45OTk1O2VpdGFuLmF2Z2lsQGthbHR1cmEuY29tO2Rpc2FibGVlbnRpdGxlbWVudCxhcHBpZDprbWM7Ow==";
 var user2Ks=user1Ks;
-var entry="1_8eoa4vir";
-
-
+var entry="1_nrpqur1k";
 
 var playerId = 39677781; //prod OOB
 //    var playerId = 15203553; //QA
 var wid = '_27017'; // prod
 //    var wid = '_5174'; // QA
-
-
-
-
 
 // DON'T CHANGE ANYTHING BELOW THIS POINT
 var kdp;
