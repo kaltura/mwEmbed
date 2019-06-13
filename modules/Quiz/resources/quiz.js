@@ -739,7 +739,6 @@
                             _this.KIVQModule.quizEndFlow = false;
                             if (_this.embedPlayer.getPlayerElementTime() > 0) {
                                 _this.ivqHideScreen();
-                                _this.embedPlayer.seek(0, false);
                             }
                             if (_this.getConfig("autoContinue")) {
                                 _this.KIVQModule.continuePlay();
