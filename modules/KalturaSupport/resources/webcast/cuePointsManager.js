@@ -95,7 +95,6 @@
                     }
                     // multicast does not support DVR so we can assume that this shouldn't be executed in multicast
                     if ($.isNumeric(_this._lastHandledServerTime) && (_this._lastHandledServerTime - 2000) > currentTime && !this.isMulticast) {
-                        debugger;
                         // this part handles situation when user 'seek' from the player or if the server time changes
                         // for unknown reason. We don't use the 'seek' event since it sometimes provide an offset time and
                         // fix the value later but our code already modify its' internal state according to the offset time.

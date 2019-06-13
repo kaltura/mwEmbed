@@ -66,7 +66,6 @@
                 this.updatedTime = this.updatedTime + this.timeIntervalSec;
                 this.getPlayer().LiveCurrentTime = this.updatedTime;
                 this.getPlayer().flashLiveCurrentTime = this.updatedTime; // for flash player
-                // console.log(">>>> 1 ",this.updatedTime);
                 this.sendTrackEventMonitor(mw.seconds2npt(this.updatedTime), false);
             }
         },
@@ -90,7 +89,6 @@
                 this.updatedTime = time;
                 this.counter = 0; //reset time update interval counter
                 this.getPlayer().LiveCurrentTime = time;
-                // console.log(">>>> 2 ",time);
                 if(this.getPlayer().isMulticast){
 	                //set the current time for MC from the ID3 tag and not from the SL element that has always 0
 	                this.getPlayer().currentTime = time
