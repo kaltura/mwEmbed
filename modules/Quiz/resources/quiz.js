@@ -790,9 +790,25 @@
             if($.cpObject.cpArray[selectedQuestion].questionType === this.KIVQModule.QUESTIONS_TYPE.OPEN_QUESTION 
                 && $.cpObject.cpArray[selectedQuestion].openAnswer){
                 var text = $.cpObject.cpArray[selectedQuestion].openAnswer;
+                var feedback = $.cpObject.cpArray[selectedQuestion].feedback;
                 text = text.replace(/\n/g,"<br/>");
                 $(".yourAnswer").html(text).addClass("open-question-answer");
                 $(".correctAnswerText").html("");
+                if (feedback) {
+                    console.log($.cpObject)
+                    $(".feedback").html("Feedback").bind('click', function () {
+                        $(".feedback-modal").css('display', 'table');
+                        $(".reviewAnswerPlace").hide();
+                        $(".reviewAnswerFooter").hide();
+
+                    });
+                    $(".feedback-modal .icon-close").bind('click', function () {
+                        $(".feedback-modal").hide();
+                        $(".reviewAnswerPlace").show();
+                        $(".reviewAnswerFooter").show();
+                    });
+                    $(".feedback-content").html(feedback);
+                }
             }
         },
         showSelectedQuestion:function(questionNr){

@@ -80,7 +80,6 @@
     position: relative;
     height: 100%;
     cursor: default !important;
-
 }
 .bottomContainer{
     position: absolute;
@@ -381,7 +380,7 @@ button.qContinue, button.qApplied {
 }
 .open-question-answer.yourAnswer{
     overflow: auto;
-    max-height: 20vw;
+    max-height: 18vw;
     width: 86vw;
 }
 .ivqContainer .open-answer-container{
@@ -393,6 +392,29 @@ button.qContinue, button.qApplied {
     margin-right: 6%;
     width: 88%;
     border-radius: 5px;
+}
+.ivqContainer .feedback-modal {
+    display: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+.ivqContainer .feedback-modal .icon-close {
+    right: calc(3vw - 10px);
+}
+.ivqContainer .feedback-modal .feedback-content {
+    width: 100%;
+    height: 100%;
+    padding-right: 44px;
+    padding-left: 44px;
+    display: table-cell;
+    vertical-align: middle;
+    font-size: 16px;
+    font-family: LatoLight;
+    text-align: left;
+    cursor: default;
 }
 #open-question-change-answer, #open-question-clear , #open-question-save{
     font-family: Lato;
@@ -784,6 +806,8 @@ button.qContinue, button.qApplied {
     width: 78vw;
 }
 .theQuestion{
+    max-height: 18vw;
+    overflow: auto;
     font-size: 2.4vw;
     font-style: normal;
     font-stretch: normal;
@@ -791,7 +815,6 @@ button.qContinue, button.qApplied {
     letter-spacing: -0.1px;
     color: #ffffff;
     cursor:default !important;
-
 }
 .yourAnswerText{
     font-family: Lato;
@@ -803,6 +826,11 @@ button.qContinue, button.qApplied {
     color: #333333;
     margin-top: 2vw;
     cursor:default !important;
+}
+.feedback {
+    margin-top: 1vw;
+    text-decoration: underline;
+    cursor: pointer;
 }
 .correctAnswer{
     font-weight: 300;

@@ -236,6 +236,9 @@
                                 if(el.openAnswer){
                                     ansP.openAnswer = el.openAnswer;
                                 }
+                                if(el.feedback){
+                                    ansP.feedback = el.feedback.split('||');
+                                }
                                 return el
                             }
                         });
@@ -256,6 +259,7 @@
                         answerCpId: ansP.answerCpId,
                         openAnswer: ansP.openAnswer,
                         questionType: data[0].objects[i].questionType,
+                        feedback: $(ansP.feedback).get(-1),
                     });
                 }
                 $.cpObject.cpArray = cpArray;
