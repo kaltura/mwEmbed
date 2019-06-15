@@ -400,17 +400,20 @@ button.qContinue, button.qApplied {
     height: 100%;
     top: 0;
     left: 0;
+    overflow: auto;
 }
 .ivqContainer .feedback-modal .icon-close {
     right: calc(3vw - 10px);
 }
-.ivqContainer .feedback-modal .feedback-content {
-    width: 100%;
+.ivqContainer .feedback-modal .feedback-content-wrapper {
+    display: table;
     height: 100%;
-    padding-right: 44px;
-    padding-left: 44px;
+    padding: 20px 44px;
+}
+.ivqContainer .feedback-modal .feedback-content {
     display: table-cell;
     vertical-align: middle;
+    width: 100%;
     font-size: 16px;
     font-family: LatoLight;
     text-align: left;

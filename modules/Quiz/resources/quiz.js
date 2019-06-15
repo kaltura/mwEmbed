@@ -797,7 +797,7 @@
                 if (feedback) {
                     console.log($.cpObject)
                     $(".feedback").html("Feedback").bind('click', function () {
-                        $(".feedback-modal").css('display', 'table');
+                        $(".feedback-modal").show();
                         $(".reviewAnswerPlace").hide();
                         $(".reviewAnswerFooter").hide();
 

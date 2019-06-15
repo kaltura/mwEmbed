@@ -65,7 +65,7 @@
                     '<div class="ivqContainer">'+
                     '   <div class="feedback-modal">' +
                     '       <span class="icon-close" aria-label="Close feedback" tabindex="0" role="button"></span>' +
-                    '       <div class="feedback-content"></div>' +
+                    '       <div class="feedback-content-wrapper"><div class="feedback-content"></div></div>' +
                     '   </div>' +
                     '   <div class="header-container"></div>'+
                     '   <div class ="reviewAnswerPlace" >'+
