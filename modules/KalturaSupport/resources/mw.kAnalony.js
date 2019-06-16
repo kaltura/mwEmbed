@@ -152,18 +152,14 @@
 				_this.bandwidthSamples = [];
 			});
             // calculate bandwidth of current loaded frag
-            // convert load-end - load-start to seconds, convert total bytes to kb, divide
-            // and store for average
-            this.embedPlayer.bindHelper( 'hlsFragLoadedWithData' , function (e,data) {
-                var loaded = data.stats.loaded/1024; // convert bytes to kb
-                var total = (data.stats.tload- data.stats.tfirst)/1000; // convert miliseconds to sec
-                var bandwidth = loaded/total;
-            	if(bandwidth){
-            		// store so we can calculate avarage later
-            		_this.bandwidthSamples.push(bandwidth);
-            	}
-
-            });
+			this.embedPlayer.bindHelper( 'hlsFragBufferedWithData' , function (e,data) {
+				if (data.stats.bwEstimate) {
+					// store so we can calculate average later
+					var time = Math.round(data.stats.tload - data.stats.tfirst) / 1000; // convert ms to sec
+					var totalBytes = data.stats.loaded / 1000; // convert bytes to kilobytes
+					_this.bandwidthSamples.push(totalBytes / time);
+				}
+			});
 
 			this.embedPlayer.bindHelper( 'userInitiatedPlay' , function () {
                 if (_this.firstPlay) {
