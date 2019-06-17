@@ -409,7 +409,7 @@ button.qContinue, button.qApplied {
 }
 .ivqContainer .feedback-modal .feedback-content-wrapper {
     display: table;
-    height: 100%;
+    height: calc(100% - 40px);
     padding: 20px 44px;
     cursor: default;
 }
