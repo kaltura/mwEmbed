@@ -795,9 +795,11 @@
                 $(".yourAnswer").html(text).addClass("open-question-answer");
                 $(".correctAnswerText").html("");
                 if (feedback) {
-                    $(".feedback-content").html(feedback);
+                    $(".feedback-content").html(feedback)
                     $(".feedback")
                         .html(gM('mwe-quiz-feedback'))
+                        .attr('tabindex', 5)
+                        .attr('role', 'button')
                         .off()
                         .on('keydown', _this.keyDownHandler)
                         .on('click',function(e){

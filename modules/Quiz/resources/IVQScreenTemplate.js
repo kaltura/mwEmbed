@@ -76,7 +76,7 @@
                     '       <div class="theQuestion"></div>'+
                     '       <div class="yourAnswerText"></div>'+
                     '       <div class="yourAnswer"></div>'+
-                    '       <div class="feedback" tabindex="5" role="button"></div>'+
+                    '       <div class="feedback"></div>'+
                     '       <div class="correctAnswerText"></div>'+
                     '       <div class="correctAnswer"></div>'+
                     '   </div>'+
