@@ -66,7 +66,9 @@
                     '   <div class="feedback-modal" role="dialog">' +
                     '       <span class="icon-close" aria-label="Close feedback" tabindex="0" role="button"></span>' +
                     '       <div class="feedback-content-wrapper">' +
-                    '           <div class="feedback-content-container"><p class="feedback-content" tabindex="0" aria-live="polite"></p></div>' +
+                    '           <div class="feedback-content-container">' +
+                    '               <p class="feedback-content" tabindex="0" role="article" aria-live="polite"></p>' +
+                    '           </div>' +
                     '       </div>' +
                     '   </div>' +
                     '   <div class="header-container"></div>'+
