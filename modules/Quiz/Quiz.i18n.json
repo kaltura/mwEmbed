@@ -59,7 +59,9 @@
     "mwe-quiz-retake-scoretype-3" : "Latest",
     "mwe-quiz-retake-scoretype-4" : "First",
     "mwe-quiz-retake-scoretype-5" : "Average",
-    "mwe-quiz-retake-btn": "Take the Quiz again"
+    "mwe-quiz-retake-btn": "Take the Quiz again",
+    "mwe-quiz-feedback": "Feedback",
+    "mwe-quiz-close-feedback": "Close feedback"
   },
   "de": {
     "mwe-quiz-Submitted": "Abgesendet",

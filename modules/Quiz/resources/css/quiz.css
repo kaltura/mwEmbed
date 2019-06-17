@@ -401,22 +401,29 @@ button.qContinue, button.qApplied {
     top: 0;
     left: 0;
     overflow: auto;
+    cursor: default;
 }
 .ivqContainer .feedback-modal .icon-close {
+    top: 1px;
     right: calc(3vw - 10px);
 }
 .ivqContainer .feedback-modal .feedback-content-wrapper {
     display: table;
     height: 100%;
     padding: 20px 44px;
+    cursor: default;
 }
-.ivqContainer .feedback-modal .feedback-content {
+.ivqContainer .feedback-modal .feedback-content-container {
     display: table-cell;
     vertical-align: middle;
     width: 100%;
     font-size: 16px;
     font-family: LatoLight;
     text-align: left;
+    cursor: default;
+}
+.ivqContainer .feedback-modal .feedback-content-container .feedback-content {
+    margin: 0;
     cursor: default;
 }
 #open-question-change-answer, #open-question-clear , #open-question-save{
@@ -831,9 +838,13 @@ button.qContinue, button.qApplied {
     cursor:default !important;
 }
 .feedback {
+    display: inline-block;
     margin-top: 1vw;
     text-decoration: underline;
     cursor: pointer;
+}
+.feedback:focus{
+    outline: white solid 2px;
 }
 .correctAnswer{
     font-weight: 300;

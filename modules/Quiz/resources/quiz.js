@@ -795,19 +795,26 @@
                 $(".yourAnswer").html(text).addClass("open-question-answer");
                 $(".correctAnswerText").html("");
                 if (feedback) {
-                    console.log($.cpObject)
-                    $(".feedback").html("Feedback").bind('click', function () {
-                        $(".feedback-modal").show();
-                        $(".reviewAnswerPlace").hide();
-                        $(".reviewAnswerFooter").hide();
-
-                    });
-                    $(".feedback-modal .icon-close").bind('click', function () {
-                        $(".feedback-modal").hide();
-                        $(".reviewAnswerPlace").show();
-                        $(".reviewAnswerFooter").show();
-                    });
                     $(".feedback-content").html(feedback);
+                    $(".feedback")
+                        .html(gM('mwe-quiz-feedback'))
+                        .off()
+                        .on('keydown', _this.keyDownHandler)
+                        .on('click',function(e){
+                            $(".feedback-modal").show()
+                            $(".reviewAnswerPlace").hide();
+                            $(".reviewAnswerFooter").hide();
+                            $(".feedback-modal .icon-close").focus();
+                        });
+                    $(".feedback-modal .icon-close")
+                        .attr("aria-label", gM("mwe-quiz-close-feedback"))
+                        .off()
+                        .on('keydown', _this.keyDownHandler)
+                        .on('click',function(e){
+                            $(".feedback-modal").hide();
+                            $(".reviewAnswerPlace").show();
+                            $(".reviewAnswerFooter").show();
+                        })
                 }
             }
         },
