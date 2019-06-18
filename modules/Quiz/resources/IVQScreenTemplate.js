@@ -64,7 +64,7 @@
                 $(_this.emptyScreen()).hide().append(
                     '<div class="ivqContainer">'+
                     '   <div class="feedback-modal" role="dialog">' +
-                    '       <span class="icon-close" aria-label="Close feedback" tabindex="0" role="button"></span>' +
+                    '       <span class="icon-close feedback-close" aria-label="Close feedback" tabindex="0" role="button"></span>' +
                     '       <div class="feedback-content-wrapper">' +
                     '           <div class="feedback-content-container">' +
                     '               <p class="feedback-content" tabindex="0" role="article" aria-live="polite"></p>' +
