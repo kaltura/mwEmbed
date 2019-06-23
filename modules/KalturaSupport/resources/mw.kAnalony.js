@@ -155,9 +155,7 @@
 			this.embedPlayer.bindHelper( 'hlsFragBufferedWithData' , function (e,data) {
 				if (data.stats.bwEstimate) {
 					// store so we can calculate average later
-					var time = Math.round(data.stats.tload - data.stats.tfirst) / 1000; // convert ms to sec
-					var totalBytes = data.stats.loaded / 1000; // convert bytes to kilobytes
-					_this.bandwidthSamples.push(totalBytes / time);
+					_this.bandwidthSamples.push(data.stats.bwEstimate / 8000);
 				}
 			});
 
