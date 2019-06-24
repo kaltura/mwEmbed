@@ -28,7 +28,7 @@
 			/** @type {Number} */
 			mediaErrorRecoveryCounter: 0,
 			playerErrorRecoveryCounter: 0,
-
+			localBitrate : 0,
 			debugInfoInterval: 4,
 			debugInfoCounter: 0,
 
@@ -90,6 +90,7 @@
 			clean: function () {
 				this.log("Clean");
 				if (this.LoadHLS && this.loaded) {
+					this.localBitrate = 0;
 					this.LoadHLS = false;
 					this.loaded = false;
 					this.unRegisterHlsEvents();
@@ -231,8 +232,11 @@
 				this.mediaAttached = true;
 				var selectedSource = this.getPlayer().getSrc();
 				if (selectedSource) {
-					this.getPlayer().resolveSrcURL(selectedSource).then(
-						function (source) {
+						this.getPlayer().resolveSrcURL(selectedSource).then(
+						function (source,bitrate) {
+							if(bitrate){
+								this.localBitrate = bitrate;
+							}
 							this.hls.loadSource(source);
 						}.bind(this),
 						function () { //error
@@ -379,6 +383,9 @@
 			onLevelSwitch: function (event, data) {
 				//Set and report bitrate change
 				var source = this.hls.levels[data.level];
+				if(!source.bitrate && this.localBitrate){
+					source.bitrate = this.localBitrate;
+				}
 				var currentBitrate = Math.round(source.bitrate / 1024);
 				var previousBitrate = this.getPlayer().currentBitrate;
 				this.getPlayer().currentBitrate = currentBitrate;
@@ -585,6 +592,12 @@
 							'data-assetid': index
 						};
 					});
+
+					// [Oren] should we check this.embedPlayer.isLive() too? any risk for VOD?
+					if(flavors.length === 1 && !flavors[0]["data-bandwidth"] && this.localBitrate  ){
+						flavors[0]["data-bandwidth"] = this.localBitrate;
+					}
+
 					this.getPlayer().setKDPAttribute('sourceSelector', 'visible', true);
 					this.getPlayer().onFlavorsListChanged(flavors);
 				}

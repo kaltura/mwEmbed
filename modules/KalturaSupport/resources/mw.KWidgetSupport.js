@@ -844,12 +844,12 @@ mw.KWidgetSupport.prototype = {
 				return deferred.resolve( srcURL );
 			}
 
+
 			if (srcURL && srcURL.toLowerCase().indexOf("playmanifest") === -1){
 				return deferred.resolve( srcURL );
 			}
 			var srcToPlay = null;
 			var qp = ( srcURL.indexOf('?') === -1) ? '?' : '&';
-
 			$.ajax({
 				url: srcURL + qp + "responseFormat=jsonp",
 				timeout: 7000,
@@ -858,7 +858,11 @@ mw.KWidgetSupport.prototype = {
 					var flavors = playmanifest.flavors;
 					if ( flavors && flavors.length === 1 ) {
 						srcToPlay = flavors[0].url;
-						deferred.resolve( srcToPlay );
+						if(flavors.length === 1 && flavors[0].bitrate ){
+							deferred.resolve( srcToPlay , Math.round(flavors[0].bitrate * 1048) );
+						}else{
+							deferred.resolve( srcToPlay );
+						}
 						//if we get more then 1 flavors we dont need the redirect so we'll use the same url
 						// the playmanifest service will return the manifest directly.
 					} else if (flavors && flavors.length > 1){
