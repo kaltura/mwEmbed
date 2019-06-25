@@ -384,7 +384,7 @@
 				//Set and report bitrate change
 				var source = this.hls.levels[data.level];
 				if(!source.bitrate && this.localSingleFlavor){
-					source.bitrate = this.localSingleFlavor.bitrate * 1024; // jsonP returns kbps
+					source.bitrate = this.localSingleFlavor.bitrate;
 					source.ext = this.localSingleFlavor.ext;
 					source.width = this.localSingleFlavor.width;
 					source.height = this.localSingleFlavor.height;
@@ -598,6 +598,8 @@
 
 					if(flavors.length === 1 && !flavors[0]["data-bandwidth"] && this.localBitrate  ){
 						flavors[0]["data-bandwidth"] = this.localBitrate * 1024;
+						flavors[0]["data-height"] = this.localBitrate.height;
+						flavors[0]["data-width"] = this.localBitrate.width;
 					}
 
 					this.getPlayer().setKDPAttribute('sourceSelector', 'visible', true);
