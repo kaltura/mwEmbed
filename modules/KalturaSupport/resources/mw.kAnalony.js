@@ -157,7 +157,11 @@
 					// store so we can calculate average later
 					var time = Math.round(data.stats.tload - data.stats.tfirst) / 1000; // convert ms to sec
 					var totalBytes = data.stats.loaded / 1000; // convert bytes to kilobytes
-					_this.bandwidthSamples.push(totalBytes / time);
+					var bandwidth = totalBytes / time;
+					// normalize - ignore > 50000
+					if(bandwidth < 50000){
+						_this.bandwidthSamples.push(bandwidth);
+					}
 				}
 			});
 
