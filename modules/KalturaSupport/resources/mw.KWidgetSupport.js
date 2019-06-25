@@ -858,7 +858,7 @@ mw.KWidgetSupport.prototype = {
 					var flavors = playmanifest.flavors;
 					if ( flavors && flavors.length === 1 ) {
 						srcToPlay = flavors[0].url;
-						if(flavors.length === 1 && flavors[0].bitrate ){
+						if( flavors[0].bitrate ){
 							deferred.resolve( srcToPlay , Math.round(flavors[0].bitrate * 1048) );
 						}else{
 							deferred.resolve( srcToPlay );
