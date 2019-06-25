@@ -28,7 +28,7 @@
 			/** @type {Number} */
 			mediaErrorRecoveryCounter: 0,
 			playerErrorRecoveryCounter: 0,
-			localSingleFlavor : undefined,
+			localSingleFlavor : null,
 			debugInfoInterval: 4,
 			debugInfoCounter: 0,
 
@@ -90,7 +90,7 @@
 			clean: function () {
 				this.log("Clean");
 				if (this.LoadHLS && this.loaded) {
-					this.localSingleFlavor = undefined;
+					this.localSingleFlavor = null;
 					this.LoadHLS = false;
 					this.loaded = false;
 					this.unRegisterHlsEvents();
