@@ -155,9 +155,9 @@
 			this.embedPlayer.bindHelper( 'hlsFragBufferedWithData' , function (e,data) {
 				if (data.stats.bwEstimate) {
 					// store so we can calculate average later
-					var time = Math.round(data.stats.tload - data.stats.tfirst) / 1000; // convert ms to sec
-					var totalBytes = data.stats.loaded / 1000; // convert bytes to kilobytes
-					var bandwidth = totalBytes / time;
+					var time = Math.round(data.stats.tload - data.stats.trequest) / 1000; // convert ms to sec
+					var kiloBits = data.stats.loaded / 1000 * 8; // convert to kiloBits
+					var bandwidth = kiloBits / time;
 					// normalize - ignore > 50000
 					if(bandwidth < 50000){
 						_this.bandwidthSamples.push(bandwidth);
