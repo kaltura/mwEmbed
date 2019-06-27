@@ -153,7 +153,7 @@
             initUpdateInterval: function () {
                 var _this = this; 
                 // set interval for updating Q&A timestamp
-                this.intervalId = setInterval(function() {
+                _this.intervalId = setInterval(function() {
                     _this.currentTime(new Date().getTime());
                 }, UPDATE_INTERVAL);
             },
