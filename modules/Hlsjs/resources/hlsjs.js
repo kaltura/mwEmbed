@@ -28,7 +28,7 @@
 			/** @type {Number} */
 			mediaErrorRecoveryCounter: 0,
 			playerErrorRecoveryCounter: 0,
-
+			localSingleFlavor : null,
 			debugInfoInterval: 4,
 			debugInfoCounter: 0,
 
@@ -90,6 +90,7 @@
 			clean: function () {
 				this.log("Clean");
 				if (this.LoadHLS && this.loaded) {
+					this.localSingleFlavor = null;
 					this.LoadHLS = false;
 					this.loaded = false;
 					this.unRegisterHlsEvents();
@@ -231,8 +232,11 @@
 				this.mediaAttached = true;
 				var selectedSource = this.getPlayer().getSrc();
 				if (selectedSource) {
-					this.getPlayer().resolveSrcURL(selectedSource).then(
-						function (source) {
+						this.getPlayer().resolveSrcURL(selectedSource).then(
+						function (source,flavor) {
+							if(flavor){
+								this.localSingleFlavor = flavor;
+							}
 							this.hls.loadSource(source);
 						}.bind(this),
 						function () { //error
@@ -379,6 +383,12 @@
 			onLevelSwitch: function (event, data) {
 				//Set and report bitrate change
 				var source = this.hls.levels[data.level];
+				if(!source.bitrate && this.localSingleFlavor){
+					source.bitrate = this.localSingleFlavor.bitrate;
+					source.ext = this.localSingleFlavor.ext;
+					source.width = this.localSingleFlavor.width;
+					source.height = this.localSingleFlavor.height;
+				}
 				var currentBitrate = Math.round(source.bitrate / 1024);
 				var previousBitrate = this.getPlayer().currentBitrate;
 				this.getPlayer().currentBitrate = currentBitrate;
@@ -585,6 +595,13 @@
 							'data-assetid': index
 						};
 					});
+
+					if(flavors.length === 1 && !flavors[0]["data-bandwidth"] && this.localBitrate  ){
+						flavors[0]["data-bandwidth"] = this.localBitrate * 1024;
+						flavors[0]["data-height"] = this.localBitrate.height;
+						flavors[0]["data-width"] = this.localBitrate.width;
+					}
+
 					this.getPlayer().setKDPAttribute('sourceSelector', 'visible', true);
 					this.getPlayer().onFlavorsListChanged(flavors);
 				}
