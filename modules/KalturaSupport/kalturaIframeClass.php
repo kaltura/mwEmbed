@@ -49,7 +49,7 @@ class kalturaIframeClass {
 			if( $setError ) {
 				$this->error = self::NO_ENTRY_ID_FOUND;
 			}
-		}
+		}		
 	}
 
 	function getIframeId(){
