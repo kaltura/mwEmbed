@@ -151,9 +151,10 @@
                 clearInterval(this.intervalId);
             },
             initUpdateInterval: function () {
+                var _this = this; 
                 // set interval for updating Q&A timestamp
-                this.intervalId = setInterval(() => {
-                    this.currentTime(new Date().getTime());
+                this.intervalId = setInterval(function() {
+                    _this.currentTime(new Date().getTime());
                 }, UPDATE_INTERVAL);
             },
             applyLayout: function () {
