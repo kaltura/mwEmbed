@@ -557,6 +557,7 @@
                     $(".close-button")
                     .click(function () {
                         interfaceElement.find(".open-question-textarea").val(holdAnswer);
+                        interfaceElement.find("#open-question-clear,#open-question-save").removeAttr("disabled");
                     })
                 });
             });
