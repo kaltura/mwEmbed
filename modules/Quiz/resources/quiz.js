@@ -508,7 +508,7 @@
         buildOpenQuestion: function(cPo){
             var _this = this;
             var interfaceElement = this.embedPlayer.getInterface();
-            // clear button 
+            // clear button
             interfaceElement.find("#open-question-clear")
             .off()
             .click( $.proxy( function(){
@@ -557,7 +557,10 @@
                     $(".close-button")
                     .click(function () {
                         interfaceElement.find(".open-question-textarea").val(holdAnswer);
-                        interfaceElement.find("#open-question-clear,#open-question-save").removeAttr("disabled");
+                        interfaceElement.find(".open-question-chars .chars").text(holdAnswer.length);
+                        if (holdAnswer.length !== 0) {
+                            interfaceElement.find("#open-question-clear,#open-question-save").removeAttr("disabled");
+                        }
                     })
                 });
             });
