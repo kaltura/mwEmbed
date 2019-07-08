@@ -1015,7 +1015,6 @@
 		getDefaultCaptionCss: function(){
 			var style = {};
 			style["display"] = "inline-block";
-			style["line-height"] = "2";
 			if (this.getConfig('bg')) {
 				style["background-color"] = mw.getHexColor(this.getConfig('bg'));
 			}
