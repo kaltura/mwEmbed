@@ -417,7 +417,7 @@ button.qContinue, button.qApplied {
     display: table-cell;
     vertical-align: middle;
     width: 100%;
-    font-size: 16px;
+    font-size: 2.4vw;
     font-family: LatoLight;
     text-align: left;
     cursor: default;
@@ -838,6 +838,7 @@ button.qContinue, button.qApplied {
     cursor:default !important;
 }
 .feedback {
+    font-size: 2.4vw;
     display: inline-block;
     margin-top: 1vw;
     text-decoration: underline;
