@@ -72,7 +72,7 @@
 				if (this.getPlayer().mediaElement.selectedSource.mimeType === "application/dash+xml") {
 					this.LoadShaka = true;
 					this.embedPlayer.streamerType = 'mpegdash';
-					
+
 				} else {
 					this.LoadShaka = false;
 				}
@@ -119,24 +119,27 @@
 			},
 
 			getDefaultDashConfig: function () {
-				var drmConfig = this.getDrmConfig();
 				var defaultConfig = {
-					shakaConfig: {
+					shakaConfig: {}
+				};
+				if (this.getPlayer().mediaElement.hasLicenseData()) {
+					var drmConfig = this.getDrmConfig();
+					defaultConfig.shakaConfig = {
 						drm: {
 							servers: {
 								'com.widevine.alpha': drmConfig.licenseBaseUrl + "/cenc/widevine/license?" + drmConfig.licenseData,
 								'com.microsoft.playready': drmConfig.licenseBaseUrl + "/cenc/playready/license?" + drmConfig.licenseData
 							}
 						}
-					}
-				};
-				if (mw.isChrome()){
-					defaultConfig.shakaConfig.advanced = {
-						'com.widevine.alpha': {
-							'videoRobustness': 'SW_SECURE_CRYPTO',
-							'audioRobustness': 'SW_SECURE_CRYPTO'
-						}
 					};
+					if (mw.isChrome()){
+						defaultConfig.shakaConfig.advanced = {
+							'com.widevine.alpha': {
+								'videoRobustness': 'SW_SECURE_CRYPTO',
+								'audioRobustness': 'SW_SECURE_CRYPTO'
+							}
+						};
+					}
 				}
 				return defaultConfig;
 			},

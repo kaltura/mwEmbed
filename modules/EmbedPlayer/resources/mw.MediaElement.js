@@ -25,7 +25,7 @@ mw.MediaElement.prototype = {
 
 	// Selected mediaSource element.
 	selectedSource: null,
-	
+
 	// the prefered target flavor bitrate:
 	preferedFlavorBR: null,
 
@@ -184,7 +184,7 @@ mw.MediaElement.prototype = {
 				updatedDuration = options.endTime;
 				this.selectedSource.src = this.selectedSource.src.replace(/clipTo\/\d+\//, '');
 				this.selectedSource.src = this.selectedSource.src.replace(
-					"playManifest/", 
+					"playManifest/",
 					"playManifest/clipTo/" + parseInt(options.endTime) * 1000 + "/"
 				);
 			}
@@ -192,7 +192,7 @@ mw.MediaElement.prototype = {
 				updatedDuration -= options.startTime;
 				this.selectedSource.src = this.selectedSource.src.replace(/seekFrom\/\d+\//, '');
 				this.selectedSource.src = this.selectedSource.src.replace(
-					"playManifest/", 
+					"playManifest/",
 					"playManifest/seekFrom/" + parseInt(options.startTime) * 1000 + "/"
 				);
 			}
@@ -215,7 +215,7 @@ mw.MediaElement.prototype = {
 	 * id order
 	 * @param {Object} options
 	 * 		sources -- overrides the playable sources to be selected from
-	 * 		forceNative -- if native player sources should be forced. 
+	 * 		forceNative -- if native player sources should be forced.
 	 */
 	autoSelectSourceExecute: function( options ) {
 		mw.log( 'EmbedPlayer::mediaElement::autoSelectSource' );
@@ -224,11 +224,11 @@ mw.MediaElement.prototype = {
 		if( ! options ){
 			options = {};
 		}
-		// Populate the source set from options or from playable sources: 
+		// Populate the source set from options or from playable sources:
 		var playableSources = options.sources || this.getPlayableSources();
 		this.removeSourceFlavor(playableSources);
 		var flash_flag = false, ogg_flag = false;
-		// null out the existing selected source to autoSelect ( in case params have changed ). 
+		// null out the existing selected source to autoSelect ( in case params have changed ).
 		this.selectedSource  = null;
 		// Check if there are any playableSources
 		if( playableSources.length == 0 ){
@@ -297,7 +297,7 @@ mw.MediaElement.prototype = {
 			return this.selectedSource;
 		}
 
-		// Set via user bandwidth pref will always set source to closest bandwidth allocation while not going over  
+		// Set via user bandwidth pref will always set source to closest bandwidth allocation while not going over
 		// uses the EmbedPlayer.UserBandwidth cookie first, or the preferedFlavorBR data
 		if( $.cookie('EmbedPlayer.UserBandwidth') || this.preferedFlavorBR ){
 			var bandwidthDelta = 999999999;
@@ -350,13 +350,13 @@ mw.MediaElement.prototype = {
 			}
 			namedSourceSet[ shortName ].push( source );
 		});
-		
+
 		// Check if is mobile ( and we don't have a flavor id based selection )
 		// get the most compatible h.264 file
 		if ( mw.isMobileDevice() && namedSourceSet[ 'h264' ] && namedSourceSet[ 'h264' ].length ){
 			var minSize = 99999999;
 			$.each( namedSourceSet[ 'h264' ], function( inx, source ){
-				// Don't select sources of type audio, 
+				// Don't select sources of type audio,
 				// ( if an actual audio file don't use "width" as a source selection metric )
 				if( parseInt( source.width ) < parseInt( minSize ) && parseInt( source.width ) != 0 ){
 					minSize = source.width;
@@ -461,18 +461,18 @@ mw.MediaElement.prototype = {
 	},
 	autoSelectNativeSource: function() {
 		mw.log( "MediaElement::autoSelectNativeSource");
-		// check if already auto selected source can just "switch" to native: 
+		// check if already auto selected source can just "switch" to native:
 		if (! this.selectedSource && ! this.autoSelectSource() ) {
 			return false;
 		}
-		// attempt to select player: 
+		// attempt to select player:
 		var player = mw.EmbedTypes.getMediaPlayers().getNativePlayer( this.selectedSource.mimeType );
 		if( player ){
 			return this.selectedSource;
 		}
 		mw.log( "MediaElement::autoSelectNativeSource: no native player found");
 		// else the selected source can't be played natively get alternate source
-		// TODO: refactor autoSelect source into methods that would be agreeable to native player prioritization. 
+		// TODO: refactor autoSelect source into methods that would be agreeable to native player prioritization.
 		return null;
 	},
 	/**
@@ -629,6 +629,9 @@ mw.MediaElement.prototype = {
 				}
 			}
 		}
+	},
+	hasLicenseData: function() {
+		return !!this.selectedSource["custom_data"] && !!this.selectedSource["signature"];
 	},
 	getLicenseData: function(){
 		var licenseData = {
