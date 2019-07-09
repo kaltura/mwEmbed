@@ -1149,6 +1149,9 @@
         onBubbleClick: function (event) {
             var qNumber = parseInt($(event.target).attr("id"));
             this.seekToQuestionTime = $.cpObject.cpArray[qNumber].startTime;
+            if (!this.embedPlayer.isPlaying()) { // make sure that when we seek on a question-cue-point it always keeps playing and not paused
+                this.embedPlayer.sendNotification("doPlay");
+            }
             this.KIVQModule.gotoScrubberPos(qNumber);
             this.isSeekingIVQ = true;
             mw.log("Quiz: gotoScrubberPos : " + qNumber);
