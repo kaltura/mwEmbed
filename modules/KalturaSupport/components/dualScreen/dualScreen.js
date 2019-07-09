@@ -55,6 +55,7 @@
 			},
 			display: {},
 			syncEnabled: true,
+			userLayoutChangeTime: null,
 			viewInitialized: false,
 			render: true,
 			auxScreenMinimized: false,
@@ -194,6 +195,23 @@
 							_this.fsm.consumeEvent( state );
 							return;
 						}
+
+					if(state.invoker === "dualScreenControlBar"){
+						// layout change came from user - store the time
+						_this.userLayoutChangeTime = _this.embedPlayer.LiveCurrentTime;
+						mw.log("dualScreenControlBar dualScreenStateChange by user",state.action);
+					}else if (_this.userLayoutChangeTime && _this.userLayoutChangeTime && state.cuepoint){
+						// layout change came from a cuepoint - validate its time
+						if(state.cuepoint.createdAt < _this.userLayoutChangeTime){
+							mw.log("dualScreen prevent layout changes");
+							return;
+						}
+					}else {
+						// layout change by cuepoint that was created after the user had changed his layout. Remove
+						// user selection time
+						_this.userLayoutChangeTime = null;
+					}
+
 					if(!_this.disabled && _this.controlBar && !_this.getPlayer().isAudio()) {
 						//update view mode lock state if needed
 						var currentLockState = _this.isViewModeLocked;
@@ -911,6 +929,7 @@
                 this.destroySecondScreen();
                 this.destroyUtils();
                 this.destroyControlBar();
+                this.userLayoutChangeTime = null;
                 this.getComponent().remove();
             	this._super();
             },

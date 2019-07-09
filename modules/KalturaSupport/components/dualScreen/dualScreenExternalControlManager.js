@@ -60,7 +60,7 @@
                     },1000);
                 }
             },
-            setViewById : function(viewId, lockstate)
+            setViewById : function(viewId, lockstate , cuepoint)
             {
                 var action, mainDisplayType;
 
@@ -103,6 +103,9 @@
                             this.log("dualscreenExternalControlManager.setViewById(): Changing player view mode state to '" + lockstate);
                             dualScreenState.lockState = lockstate;
                         }
+                        if(cuepoint){
+                            dualScreenState.cuepoint = cuepoint;
+                        }
                         this.log("dualscreenExternalControlManager.setViewById(): Changing player view to '" + action + "' with main display '" + mainDisplayType + "' (provided id '" + viewId + "')");
                         this.getPlayer().triggerHelper('dualScreenStateChange', dualScreenState);
                     }
@@ -132,7 +135,7 @@
                         //the default view mode lock state is 'unlocked'
                         var viewModeLockState = cuePointCode.viewModeLockState ?
                             cuePointCode.viewModeLockState : mw.dualScreen.display.STATE.UNLOCKED;
-                        _this.setViewById(cuePointCode.playerViewModeId, viewModeLockState)
+                        _this.setViewById(cuePointCode.playerViewModeId, viewModeLockState , cuePoint);
                     }
                 }
             },
