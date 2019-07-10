@@ -1014,7 +1014,7 @@
 		},
 		getDefaultCaptionCss: function(){
 			var style = {};
-			style["display"] = "inline";
+			style["display"] = "inline-block";
 			if (this.getConfig('bg')) {
 				style["background-color"] = mw.getHexColor(this.getConfig('bg'));
 			}
