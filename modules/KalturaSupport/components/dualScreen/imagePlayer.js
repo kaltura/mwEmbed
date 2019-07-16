@@ -13,7 +13,7 @@
 				'minimumSequenceDuration': 2
 			}
 		},
-        latestPreviewCuepoint : null,
+		latestPreviewCuepoint : null,
 		cuePointsManager : null,
 		cuePoints: [],
 		showFirstSlideOnLoad : true,
@@ -106,15 +106,15 @@
 		addBinding: function(){
 			var _this = this;
 			this.bind('onId3Tag' , function(event,id3tag){
-			    // if we got to this code - we are on a live session
-			    if(_this.latestPreviewCuepoint){
-                    // if we stored a preview thumb-cuepoint - restore and clear it
-                     _this.sync(_this.latestPreviewCuepoint);
-                     _this.latestPreviewCuepoint = null;
-                }
-            });
+				// if we got to this code - we are on a live session
+				if(_this.latestPreviewCuepoint){
+				// if we stored a preview thumb-cuepoint - restore and clear it
+				_this.sync(_this.latestPreviewCuepoint);
+					_this.latestPreviewCuepoint = null;
+				}
+			});
 
-            // listen to push cuepoint API
+			// listen to push cuepoint API
 			this.bind('KalturaSupport_PushCuePointsReceived' , function(event,cuepoint){
 				if( !cuepoint.length && cuepoint && cuepoint.tags
 					&& _this.embedPlayer.isLive()
@@ -122,7 +122,7 @@
 					&& cuepoint.tags.indexOf("select-a-thumb") > -1
 				){
 					// this is a slide that is received on preview mode - store latestPreviewCuepoint
-                    _this.latestPreviewCuepoint =  cuepoint;
+					_this.latestPreviewCuepoint =  cuepoint;
 				}
 			});
 
@@ -138,7 +138,6 @@
 					var firstSlide = chaptersRawData[0];
 					_this.sync(firstSlide);
 					_this.forcedFirstCuePoint = true;
-					console.log(">>>> firstSlide",firstSlide);
 				}
 			})
 
@@ -393,6 +392,7 @@
         },
 
         destroy: function ( ) {
+			this.latestPreviewCuepoint = null;
             this.getComponent().remove();
             this.destroyCuePointsManager();
             this._super();
