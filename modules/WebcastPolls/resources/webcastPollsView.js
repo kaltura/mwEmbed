@@ -115,9 +115,9 @@
                         );
                         _this.$webcastPoll.append($pollLayout);
 
-                        $pollLayout.find('#closePoll').click((e) => {
+                        $pollLayout.find('#closePoll').click(function(e) {
                             e.stopPropagation();
-                            this.removeWebcastPollElement();
+                            _this.removeWebcastPollElement();
                         });
 
                         _this._currentViewType = targetLayoutName;
