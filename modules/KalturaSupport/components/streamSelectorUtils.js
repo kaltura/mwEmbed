@@ -83,15 +83,11 @@
                 'filter:parentEntryIdEqual': this.getPlayer().kentryid
             });
 
-            var i = 0;
-            var maxNumOfStream = this.getConfig("maxNumOfStream");
-            for (i; i < maxNumOfStream; i++) {
-                requestObject.push({
-                    'service': 'flavorAsset',
-                    'action': 'list',
-                    'filter:entryIdEqual': '{1:result:objects:' + i + ':id}'
-                });
-            }
+            requestObject.push({
+                'service': 'flavorAsset',
+                'action': 'list',
+                'filter:entryIdEqual': this.getPlayer().kentryid
+            });
 
             // do the api request
             this.getKalturaClient().doRequest(requestObject, function (data) {
