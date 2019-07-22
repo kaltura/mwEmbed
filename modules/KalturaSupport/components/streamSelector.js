@@ -129,8 +129,6 @@
 				'filter:parentEntryIdEqual': this.getPlayer().kentryid
 			});
 
-			// TODO: Eitan, should we change this line too?
-			// TODO: START
 			var i = 0;
 			var maxNumOfStream = this.getConfig("maxNumOfStream");
 			for (i; i < maxNumOfStream; i++) {
@@ -140,7 +138,6 @@
 					'filter:entryIdEqual': '{1:result:objects:' + i + ':id}'
 				});
 			}
-			// TODO: END
 
 			// do the api request
 			this.getKalturaClient().doRequest(requestObject, function (data) {
