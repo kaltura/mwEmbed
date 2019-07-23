@@ -285,18 +285,25 @@
 				if (audioTracks && audioTracks.length > 0) {
 					var audioTrackData = {languages: []};
 					var audioTrackLangs = {};
+					var createAudioTrack = function(audioTrack) {
+						return {
+							'kind': 'audioTrack',
+							'language': audioTrack.language,
+							'srclang': audioTrack.language,
+							'label': audioTrack.label || audioTrack.language,
+							'title': audioTrack.language,
+							'id': audioTrack.id,
+							'index': audioTrackData.languages.length
+						};
+					};
 					$.each(audioTracks, function (index, audioTrack) {
-						if (audioTrackLangs[audioTrack.language] === undefined) {
-							audioTrackLangs[audioTrack.language] = 1;
-							audioTrackData.languages.push({
-								'kind': 'audioTrack',
-								'language': audioTrack.language,
-								'srclang': audioTrack.language,
-								'label': audioTrack.label || audioTrack.language,
-								'title': audioTrack.language,
-								'id': audioTrack.id,
-								'index': audioTrackData.languages.length
-							});
+						if (mw.getConfig("filterDuplicateAudioTracks")) {
+							if (audioTrackLangs[audioTrack.language] === undefined) {
+								audioTrackLangs[audioTrack.language] = 1;
+								audioTrackData.languages.push(createAudioTrack(audioTrack));
+							}
+						} else {
+							audioTrackData.languages.push(createAudioTrack(audioTrack));
 						}
 					});
 					mw.log("Dash::" + audioTracks.length + " audio tracks were found: ", audioTracks);
