@@ -248,12 +248,15 @@
 			},
 
 			getAudioTracks: function () {
-				var variantTracks = player.getVariantTracks();
-				var activeVariantTrack = variantTracks.filter(function (variantTrack) {
-					return variantTrack.active;
-				})[0];
-				var audioTracks = variantTracks.filter(function (variantTrack) {
-					return variantTrack.videoId === activeVariantTrack.videoId;
+				var variantTracks = this._shaka.getVariantTracks();
+				var audioTracks = this._shaka.getAudioLanguagesAndRoles();
+				audioTracks.forEach(function(track){
+					var sameLangAudioVariants = variantTracks.filter(function(vt){ return vt.language === track.language});
+					var id = sameLangAudioVariants.map(function(variant){return variant.id}).join('_');
+					var active = sameLangAudioVariants.some(function(variant){return variant.active});
+					track.id = id;
+					track.label = sameLangAudioVariants[0].label;
+					track.active = active;
 				});
 				return audioTracks;
 			},
@@ -284,7 +287,6 @@
 				var audioTracks = this.getAudioTracks();
 				if (audioTracks && audioTracks.length > 0) {
 					var audioTrackData = {languages: []};
-					var audioTrackLangs = {};
 					var createAudioTrack = function(audioTrack) {
 						return {
 							'kind': 'audioTrack',
@@ -297,14 +299,7 @@
 						};
 					};
 					$.each(audioTracks, function (index, audioTrack) {
-						if (mw.getConfig("filterDuplicateAudioTracks")) {
-							if (audioTrackLangs[audioTrack.language] === undefined) {
-								audioTrackLangs[audioTrack.language] = 1;
-								audioTrackData.languages.push(createAudioTrack(audioTrack));
-							}
-						} else {
-							audioTrackData.languages.push(createAudioTrack(audioTrack));
-						}
+						audioTrackData.languages.push(createAudioTrack(audioTrack));
 					});
 					mw.log("Dash::" + audioTracks.length + " audio tracks were found: ", audioTracks);
 					//Set default audio track
