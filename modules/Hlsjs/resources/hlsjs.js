@@ -331,7 +331,6 @@
 				var audioTracks = this.hls.audioTracks;
 				if (audioTracks && audioTracks.length > 0) {
 					var audioTrackData = {languages: []};
-					var audioTrackLangs = {};
 					var createAudioTrack = function(audioTrack) {
 						return {
 							'kind': 'audioTrack',
@@ -344,14 +343,7 @@
 						};
 					};
 					$.each(audioTracks, function (index, audioTrack) {
-						if (mw.getConfig("filterDuplicateAudioTracks")) {
-							if (audioTrackLangs[audioTrack.lang] === undefined) {
-								audioTrackLangs[audioTrack.lang] = 1;
-								audioTrackData.languages.push(createAudioTrack(audioTrack));
-							}
-						} else {
-							audioTrackData.languages.push(createAudioTrack(audioTrack));
-						}
+						audioTrackData.languages.push(createAudioTrack(audioTrack));
 					});
 					this.log(audioTracks.length + " audio tracks were found: " + JSON.stringify(audioTracks));
 					//Set default audio track
