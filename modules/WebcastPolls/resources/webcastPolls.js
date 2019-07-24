@@ -81,6 +81,9 @@
 
             }else
             {
+                _this.unbind('onpause onplay onChangeMedia movingBackToLive', function (e) {
+                    _this.handlePlayerEvent(e.type);
+                });
                 _this.log("entry is in vod mode - disable voting feature for polls");
 
             }
