@@ -15,7 +15,7 @@
             mobileVibrationValue: (mw.isAndroidNativeBrowser() ? 1 : 0.02),
 			cameraOptions: {
 				fov: 75,
-				aspect: window.innerWidth / window.innerHeight > 1 ? window.innerWidth / window.innerHeight : 1,
+				aspect: window.innerWidth / window.innerHeight > 1.4 ? window.innerWidth / window.innerHeight : 1.4,
 				near: 0.1,
 				far: 1000
 			}
