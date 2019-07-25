@@ -475,7 +475,7 @@
 				if ( embedPlayer.isLive() && embedPlayer.isDVR() ) {
 					// embedPlayer.duration is irrelevant for dash live, we have to calculate the playHeadPercent via player.seekRange().end instead.
 					if ( embedPlayer.currentTime >= 0 && embedPlayer.duration && !embedPlayer.userSlide && !embedPlayer.seeking ) {
-						var delta = player.seekRange().end - embedPlayer.currentTime;
+						var delta = this._shaka.seekRange().end - embedPlayer.currentTime;
 						var playHeadPercent = ( embedPlayer.duration - delta ) / embedPlayer.duration;
 						embedPlayer.updatePlayHead(playHeadPercent);
 						//update liveEdgeOffset
