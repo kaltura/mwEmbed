@@ -287,7 +287,7 @@
 				var audioTracks = this.getAudioTracks();
 				if (audioTracks && audioTracks.length > 0) {
 					var audioTrackData = {languages: []};
-					var createAudioTrack = function(audioTrack) {
+					var createAudioTrack = function(index, audioTrack) {
 						return {
 							'kind': 'audioTrack',
 							'language': audioTrack.language,
@@ -295,11 +295,11 @@
 							'label': audioTrack.label || audioTrack.language,
 							'title': audioTrack.language,
 							'id': audioTrack.id,
-							'index': audioTrackData.languages.length
+							'index': index
 						};
 					};
 					$.each(audioTracks, function (index, audioTrack) {
-						audioTrackData.languages.push(createAudioTrack(audioTrack));
+						audioTrackData.languages.push(createAudioTrack(index, audioTrack));
 					});
 					mw.log("Dash::" + audioTracks.length + " audio tracks were found: ", audioTracks);
 					//Set default audio track

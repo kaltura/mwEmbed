@@ -331,7 +331,7 @@
 				var audioTracks = this.hls.audioTracks;
 				if (audioTracks && audioTracks.length > 0) {
 					var audioTrackData = {languages: []};
-					var createAudioTrack = function(audioTrack) {
+					var createAudioTrack = function(index, audioTrack) {
 						return {
 							'kind': 'audioTrack',
 							'language': audioTrack.lang,
@@ -339,11 +339,11 @@
 							'label': audioTrack.name,
 							'title': audioTrack.name,
 							'id': audioTrack.id,
-							'index': audioTrackData.languages.length
+							'index': index
 						};
 					};
 					$.each(audioTracks, function (index, audioTrack) {
-						audioTrackData.languages.push(createAudioTrack(audioTrack));
+						audioTrackData.languages.push(createAudioTrack(index, audioTrack));
 					});
 					this.log(audioTracks.length + " audio tracks were found: " + JSON.stringify(audioTracks));
 					//Set default audio track
