@@ -74,35 +74,60 @@
         },
         getStreams: function () {
             var _this = this;
-            var requestObject = [];
-            requestObject.push({
-                'service': 'baseEntry',
-                'action': 'list',
-                'filter:objectType': 'KalturaBaseEntryFilter',
-                'filter:typeEqual': 1,
-                'filter:parentEntryIdEqual': this.getPlayer().kentryid
-            });
-
-            var i = 0;
-            var maxNumOfStream = this.getConfig("maxNumOfStream");
-            for (i; i < maxNumOfStream; i++) {
-                requestObject.push({
+            var requestObject = [
+                {
+                    'service': 'baseEntry',
+                    'action': 'list',
+                    'filter:objectType': 'KalturaBaseEntryFilter',
+                    'filter:typeEqual': 1,
+                    'filter:parentEntryIdEqual': this.getPlayer().kentryid
+                },
+                {
                     'service': 'flavorAsset',
                     'action': 'list',
-                    'filter:entryIdEqual': '{1:result:objects:' + i + ':id}'
-                });
-            }
+                    'filter:objectType': 'KalturaFlavorAssetFilter',
+                    'filter:entryIdIn': '{1:result:objects:_all:id}'
+                }
+            ];            
 
             // do the api request
             this.getKalturaClient().doRequest(requestObject, function (data) {
                 // Validate result
                 if (data && _this.isValidResult(data[0] && data[0].totalCount > 0)) {
-                    _this.createStreamList(data);
+                    var groupedData = _this.groupStreamList(data)
+                    _this.createStreamList([data[0]].concat(groupedData));
                 } else {
                     mw.log('streamSelectorUtil::Error retrieving streams, disabling component');
                     _this.readyAndHasStreams.reject();
                 }
             });
+        },
+        groupStreamList: function (data) {
+            var grouped = {};
+            var result = [];
+            if (data[1] && Array.isArray(data[1].objects)) {
+                grouped = data[1].objects.reduce(function(prev, next) {
+                    if (prev[next.entryId]) {
+                        prev[next.entryId] = prev[next.entryId].concat([next])
+                    } else {
+                        prev[next.entryId] = [next]
+                    }
+                    return prev
+                }, {})
+            }
+            for (var key in grouped) {
+                if (grouped.hasOwnProperty(key)) {
+                    result.push({
+                        objectType: "KalturaFlavorAssetListResponse",
+                        objects: grouped[key],
+                        totalCount: grouped[key].length
+                    });
+                }
+            }
+            if (result.length > 4) {
+                result.length = 4;
+            }
+            return result;
         },
         createStreamList: function (data) {
             var _this = this;
