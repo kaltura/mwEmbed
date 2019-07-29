@@ -358,7 +358,13 @@ button.qContinue, button.qApplied {
 }
 .single-answer-box-apply {
     font-family: "Lato";
-    display: inline-block;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 16vw;
     height: 14vh;
     text-align: center;
@@ -1358,6 +1364,12 @@ ol.second-row{
     .size-small .bottomContainer,
     .size-medium .bottomContainer {
         padding-top: 10px!important;
+    }
+}
+
+@media (min-width: 1024px) {
+    .screen.quiz {
+        padding-top: 7vw;
     }
 }
 
