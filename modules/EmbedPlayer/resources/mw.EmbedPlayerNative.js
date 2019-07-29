@@ -789,7 +789,9 @@
 							vid.play();
 						} else {
 							_this.removeBlackScreen();
-							vid.play();
+							if (!mw.isIOS()) {
+								vid.play();
+							}
 						}
 					});
 
