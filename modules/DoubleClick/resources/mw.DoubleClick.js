@@ -224,6 +224,12 @@
 	            google.ima.settings.setVpaidMode(vpaidMode);
             };
 
+            var getDisableCustomPlaybackForIOS10Plus = function() {
+                var _disableCustomPlaybackForIOS10Plus =  !mw.getConfig("EmbedPlayer.WebKitPlaysInline") ? false
+                    : google.ima.ImaSdkSettings.disableCustomPlaybackForIOS10Plus = true;
+                google.ima.settings.setDisableCustomPlaybackForIOS10Plus(_disableCustomPlaybackForIOS10Plus);
+            };
+
             var onImaLoadSuccess = function () {
                 _this.imaLoaded = true;
                 _this.embedPlayer.unbindHelper( 'prePlayAction' + _this.bindPostfix );
@@ -236,6 +242,7 @@
                 google.ima.settings.setPlayerVersion( mw.getConfig( "version" ) );
                 google.ima.settings.setVpaidAllowed( _this.getConfig('VpaidAllowed') || true);
                 setVpaidMode();
+                getDisableCustomPlaybackForIOS10Plus();
 
                 // Set num of redirects for VAST wrapper ads, higher means bigger latency!
                 var numRedirects = _this.getConfig( "numRedirects" );
