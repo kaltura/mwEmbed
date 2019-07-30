@@ -358,13 +358,7 @@ button.qContinue, button.qApplied {
 }
 .single-answer-box-apply {
     font-family: "Lato";
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: inline-block;
     width: 16vw;
     height: 14vh;
     text-align: center;
@@ -376,7 +370,6 @@ button.qContinue, button.qApplied {
     top: -4vh;
     float: right;
     color: #333333;
-
 }
 .single-answer-box-apply:hover {
     cursor: pointer;
