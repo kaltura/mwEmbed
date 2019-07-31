@@ -331,20 +331,19 @@
 				var audioTracks = this.hls.audioTracks;
 				if (audioTracks && audioTracks.length > 0) {
 					var audioTrackData = {languages: []};
-					var audioTrackLangs = {};
+					var createAudioTrack = function(index, audioTrack) {
+						return {
+							'kind': 'audioTrack',
+							'language': audioTrack.lang,
+							'srclang': audioTrack.lang,
+							'label': audioTrack.name,
+							'title': audioTrack.name,
+							'id': audioTrack.id,
+							'index': index
+						};
+					};
 					$.each(audioTracks, function (index, audioTrack) {
-						if (audioTrackLangs[audioTrack.lang] === undefined) {
-							audioTrackLangs[audioTrack.lang] = 1;
-							audioTrackData.languages.push({
-								'kind': 'audioTrack',
-								'language': audioTrack.lang,
-								'srclang': audioTrack.lang,
-								'label': audioTrack.name,
-								'title': audioTrack.name,
-								'id': audioTrack.id,
-								'index': audioTrackData.languages.length
-							});
-						}
+						audioTrackData.languages.push(createAudioTrack(index, audioTrack));
 					});
 					this.log(audioTracks.length + " audio tracks were found: " + JSON.stringify(audioTracks));
 					//Set default audio track
