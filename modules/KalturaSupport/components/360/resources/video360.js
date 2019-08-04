@@ -1,8 +1,9 @@
 (function (mw, $, THREE) {
 	"use strict";
 
-	mw.PluginManager.add('video360', mw.KBaseComponent.extend({
+	var DEFAULT_ASPECT = Math.max(640/360);
 
+	mw.PluginManager.add('video360', mw.KBaseComponent.extend({
 		defaultConfig: {
 			// vr button default config
 			align: "right",
@@ -13,10 +14,9 @@
 			// 360 default config
 			moveMultiplier: 0.5,
             mobileVibrationValue: (mw.isAndroidNativeBrowser() ? 1 : 0.02),
-			defaultAspect: (640/360),
 			cameraOptions: {
 				fov: 75,
-				aspect: window.innerWidth / window.innerHeight,
+				aspect: Math.max(window.innerWidth / window.innerHeight, DEFAULT_ASPECT),
 				near: 0.1,
 				far: 1000
 			}
@@ -89,9 +89,6 @@
 			//Get user camera configuration
 			var userCameraOptions = this.getConfig("cameraOptions");
 			//Deep extend custom config
-			if (this.defaultConfig.cameraOptions.aspect < this.defaultConfig.defaultAspect) {
-				this.defaultConfig.cameraOptions.aspect = this.defaultConfig.defaultAspect;
-			}
 			this.cameraOptions = $.extend({}, this.defaultConfig.cameraOptions, userCameraOptions);
 
 			//Get user vr mode configuration
