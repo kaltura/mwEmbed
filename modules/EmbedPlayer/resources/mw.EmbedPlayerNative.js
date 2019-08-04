@@ -789,9 +789,6 @@
 							vid.play();
 						} else {
 							_this.removeBlackScreen();
-							if (!mw.isIOS()) {
-								vid.play();
-							}
 						}
 					});
 
@@ -877,6 +874,9 @@
 						vid.play();
 					}else{
 						if ( !( _this.playlist && mw.isAndroid() ) ){
+							if (_this.seeking) {
+								_this.seeking = false;
+							}
 							_this.play();
 						}
 
