@@ -13,9 +13,10 @@
 			// 360 default config
 			moveMultiplier: 0.5,
             mobileVibrationValue: (mw.isAndroidNativeBrowser() ? 1 : 0.02),
+			defaultAspect: (640/360),
 			cameraOptions: {
 				fov: 75,
-				aspect: window.innerWidth / window.innerHeight > 1.4 ? window.innerWidth / window.innerHeight : 1.4,
+				aspect: window.innerWidth / window.innerHeight,
 				near: 0.1,
 				far: 1000
 			}
@@ -88,6 +89,9 @@
 			//Get user camera configuration
 			var userCameraOptions = this.getConfig("cameraOptions");
 			//Deep extend custom config
+			if (this.defaultConfig.cameraOptions.aspect < this.defaultConfig.defaultAspect) {
+				this.defaultConfig.cameraOptions.aspect = this.defaultConfig.defaultAspect;
+			}
 			this.cameraOptions = $.extend({}, this.defaultConfig.cameraOptions, userCameraOptions);
 
 			//Get user vr mode configuration
