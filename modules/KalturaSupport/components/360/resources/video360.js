@@ -1,7 +1,7 @@
 (function (mw, $, THREE) {
 	"use strict";
 
-	var DEFAULT_ASPECT = Math.max(640/360);
+	var DEFAULT_ASPECT = 640/360;
 
 	mw.PluginManager.add('video360', mw.KBaseComponent.extend({
 		defaultConfig: {
