@@ -63,11 +63,20 @@
                 $(".icon-close").css("display", "none");
                 $(_this.emptyScreen()).hide().append(
                     '<div class="ivqContainer">'+
+                    '   <div class="feedback-modal" role="dialog">' +
+                    '       <span class="icon-close feedback-close" aria-label="Close feedback" tabindex="0" role="button"></span>' +
+                    '       <div class="feedback-content-wrapper">' +
+                    '           <div class="feedback-content-container">' +
+                    '               <p class="feedback-content" tabindex="0" role="article" aria-live="polite"></p>' +
+                    '           </div>' +
+                    '       </div>' +
+                    '   </div>' +
                     '   <div class="header-container"></div>'+
                     '   <div class ="reviewAnswerPlace" >'+
                     '       <div class="theQuestion"></div>'+
                     '       <div class="yourAnswerText"></div>'+
                     '       <div class="yourAnswer"></div>'+
+                    '       <div class="feedback"></div>'+
                     '       <div class="correctAnswerText"></div>'+
                     '       <div class="correctAnswer"></div>'+
                     '   </div>'+

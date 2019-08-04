@@ -115,6 +115,10 @@
                         );
                         _this.$webcastPoll.append($pollLayout);
 
+                        $pollLayout.find('#closePoll').click(function(e) {
+                            e.stopPropagation();
+                            _this.removeWebcastPollElement();
+                        });
 
                         _this._currentViewType = targetLayoutName;
                         _this.syncPollDOM();

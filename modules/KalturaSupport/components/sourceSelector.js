@@ -142,9 +142,8 @@
                 this.getPlayer().mediaElement.removeSourceFlavor(sources);
             }
 
-			if( sources.length == 1 ){
-				// no need to do building menu logic. 
-				this.addSourceToMenu( sources[0], _this.getSourceTitle(sources[0]) );
+			if( sources.length == 1 && this.getPlayer().streamerType != "http" ){
+				// no need to do building menu logic.
 				return ;
 			}
 			// sort by height then bitrate:

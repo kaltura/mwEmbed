@@ -1,6 +1,7 @@
 (function (mw, $, ko) {
     "use strict";
     var NUM_OF_MAX_CHAR = 500;
+    var UPDATE_INTERVAL = 60000;
 
     mw.KQnaModule = function (embedPlayer,qnaPlugin,qnaService) {
         return this.init(embedPlayer,qnaPlugin,qnaService);
@@ -29,6 +30,8 @@
                     _this.qnaPlugin.updateUnreadBadge();
                 });
                 this.playerTime = ko.observable(embedPlayer.getPlayerElementTime());
+                this.intervalId = null;
+                this.initUpdateInterval();
 
                 // An entry in a Q&A thread (not an announcement) was clicked
                 // if it's the first one in the thread - collapse / Expand the thread
@@ -145,6 +148,14 @@
             },
             destroy: function () {
                 $(this.embedPlayer).unbind(this.bindPostfix);
+                clearInterval(this.intervalId);
+            },
+            initUpdateInterval: function () {
+                var _this = this; 
+                // set interval for updating Q&A timestamp
+                _this.intervalId = setInterval(function() {
+                    _this.currentTime(new Date().getTime());
+                }, UPDATE_INTERVAL);
             },
             applyLayout: function () {
                 var _this = this;
@@ -187,7 +198,8 @@
                 var count = 0;
                 ko.utils.arrayForEach(_this.myObservableArray(), function (thread) {
                     for (var i = 0; i < thread().entries().length; i++) {
-                        if (thread().entries()[i]().getType() !== 'Question' && !thread().entries()[i]().isRead()) {
+                        var entry = thread().entries()[i]();
+                        if (entry.getType() !== 'Question' && !entry.isRead() && !(entry.getType() === 'Announcement' && entry.cuePoint().metadata.State === 'Deleted')) {
                             count++;
                         }
                     }

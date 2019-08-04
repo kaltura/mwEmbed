@@ -789,6 +789,7 @@
 							vid.play();
 						} else {
 							_this.removeBlackScreen();
+							vid.play();
 						}
 					});
 
@@ -1308,9 +1309,13 @@
 			}
 
 			// Update the interface ( if paused )
-			if (!this.ignoreNextNativeEvent && this._propagateEvents && this.paused && ( mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') === true )) {
-				this.parent_play();
-			} else {
+			var enableIpadHTMLControls = mw.isIpad() ?
+				( mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') === true ) : true;
+
+			if (!this.ignoreNextNativeEvent && this._propagateEvents && this.paused && enableIpadHTMLControls) {
+					this.parent_play();
+			}
+			else {
 				// make sure the interface reflects the current play state if not calling parent_play()
 				this.playInterfaceUpdate();
 				this.absoluteStartPlayTime = new Date().getTime();

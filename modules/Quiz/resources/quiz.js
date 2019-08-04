@@ -18,7 +18,7 @@
             displayImportance: 'medium',
             templatePath: '../Quiz/resources/templates/quiz.tmpl.html',
             usePreviewPlayer: false,
-            autoContinue: true,
+            autoContinue: false,
             previewPlayerEnabled: false
         },
         postAnswerTimer : 1800,
@@ -508,7 +508,7 @@
         buildOpenQuestion: function(cPo){
             var _this = this;
             var interfaceElement = this.embedPlayer.getInterface();
-            // clear button 
+            // clear button
             interfaceElement.find("#open-question-clear")
             .off()
             .click( $.proxy( function(){
@@ -549,6 +549,20 @@
                 }else{
                     interfaceElement.find("#open-question-clear,#open-question-save").removeAttr("disabled");
                 }
+            })
+            .change(function(){
+                var holdAnswer = $(this).val();
+                interfaceElement.find(".hint-why-box")
+                .click(function () {
+                    $(".close-button")
+                    .click(function () {
+                        interfaceElement.find(".open-question-textarea").val(holdAnswer);
+                        interfaceElement.find(".open-question-chars .chars").text(holdAnswer.length);
+                        if (holdAnswer.length !== 0) {
+                            interfaceElement.find("#open-question-clear,#open-question-save").removeAttr("disabled");
+                        }
+                    })
+                });
             });
 
             // apply locale strings 
@@ -721,6 +735,7 @@
                 .on('click', function () {
                     if (mw.isMobileDevice() || _this.embedPlayer.getPlayerElementTime() === 0 ){
                         _this.KIVQModule.continuePlay();
+                        _this.KIVQModule.quizEndFlow = false;
                     }else {
                         _this.KIVQScreenTemplate.tmplThankYou();
                         $(".title-text").html(gM('mwe-quiz-thankYou'));
@@ -728,7 +743,6 @@
                             _this.KIVQModule.quizEndFlow = false;
                             if (_this.embedPlayer.getPlayerElementTime() > 0) {
                                 _this.ivqHideScreen();
-                                _this.embedPlayer.seek(0, false);
                             }
                             if (_this.getConfig("autoContinue")) {
                                 _this.KIVQModule.continuePlay();
@@ -780,9 +794,37 @@
             if($.cpObject.cpArray[selectedQuestion].questionType === this.KIVQModule.QUESTIONS_TYPE.OPEN_QUESTION 
                 && $.cpObject.cpArray[selectedQuestion].openAnswer){
                 var text = $.cpObject.cpArray[selectedQuestion].openAnswer;
+                var feedback = $.cpObject.cpArray[selectedQuestion].feedback;
                 text = text.replace(/\n/g,"<br/>");
                 $(".yourAnswer").html(text).addClass("open-question-answer");
                 $(".correctAnswerText").html("");
+                if (feedback) {
+                    $(".feedback-content").html(feedback)
+                        .on('keydown', _this.keyDownHandler);
+                    $(".feedback")
+                        .html(gM('mwe-quiz-feedback'))
+                        .attr('tabindex', 5)
+                        .attr('role', 'button')
+                        .off()
+                        .on('keydown', _this.keyDownHandler)
+                        .on('click',function(e){
+                            $(".header-container").hide();
+                            $(".feedback-modal").show();
+                            $(".reviewAnswerPlace").hide();
+                            $(".reviewAnswerFooter").hide();
+                            $(".feedback-modal .icon-close").focus();
+                        });
+                    $(".feedback-modal .icon-close")
+                        .attr("aria-label", gM("mwe-quiz-close-feedback"))
+                        .off()
+                        .on('keydown', _this.keyDownHandler)
+                        .on('click',function(e){
+                            $(".feedback-modal").hide();
+                            $(".header-container").show();
+                            $(".reviewAnswerPlace").show();
+                            $(".reviewAnswerFooter").show();
+                        })
+                }
             }
         },
         showSelectedQuestion:function(questionNr){
@@ -1037,11 +1079,16 @@
             }
         },
         keyDownHandler: function(ev){
+            var _this = this;
+            var target = ev.target;
             if(ev.which === 13 || ev.which === 32)
             {
                 $(ev.target).click();
+                // when closing feedback screen- focus back to the feedback link
+                if($(ev.target).hasClass("feedback-close")){
+                    $(_this).parents(".quiz").find(".feedback").focus();
+                }
             }else if(ev.which === 9){
-                var _this = this;
                 setTimeout(function () {
                     var currentFocusedElement = $(':focus');//when timeout will done - new element will be in focus
                     if(!currentFocusedElement.parents('.quiz').length){
@@ -1052,11 +1099,13 @@
                             $(_this).parents(".quiz").find(".confirm-box").focus();
                         }
                         else if($(_this).parents(".quiz").find(".hint-why-box").length){
-                            //find hint
                             $(_this).parents(".quiz").find(".hint-why-box").focus();
+                        }else if($(target).hasClass("feedback-content")){
+                            // open feedback popup - focus on close button
+                            $(_this).parents(".quiz").find(".icon-close").focus();
                         }else{
+                            // if hint isn't there - focus on the name
                             $(_this).parents(".quiz").find(".display-question").focus();
-                            // if hint isnt there - focus on the name
                         }
                         return;
                     }
@@ -1100,6 +1149,9 @@
         onBubbleClick: function (event) {
             var qNumber = parseInt($(event.target).attr("id"));
             this.seekToQuestionTime = $.cpObject.cpArray[qNumber].startTime;
+            if (!this.embedPlayer.isPlaying()) { // make sure that when we seek on a question-cue-point it always keeps playing and not paused
+                this.embedPlayer.sendNotification("doPlay");
+            }
             this.KIVQModule.gotoScrubberPos(qNumber);
             this.isSeekingIVQ = true;
             mw.log("Quiz: gotoScrubberPos : " + qNumber);
