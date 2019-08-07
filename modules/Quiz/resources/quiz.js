@@ -66,7 +66,9 @@
 
                 if (embedPlayer.kalturaPlayerMetaData.capabilities === "quiz.quiz"){
                     if (embedPlayer.autoplay) {
+                        mw.setConfig('autoPlay', false);
                         embedPlayer.autoplay = false;
+                        this.triggerHelper("volumeChanged", 1);
                     }
 
                     _this.KIVQModule.setupQuiz().fail(function(data, msg) {
