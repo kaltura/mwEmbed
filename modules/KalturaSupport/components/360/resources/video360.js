@@ -1,8 +1,9 @@
 (function (mw, $, THREE) {
 	"use strict";
 
-	mw.PluginManager.add('video360', mw.KBaseComponent.extend({
+	var DEFAULT_ASPECT = 640/360;
 
+	mw.PluginManager.add('video360', mw.KBaseComponent.extend({
 		defaultConfig: {
 			// vr button default config
 			align: "right",
@@ -15,7 +16,7 @@
             mobileVibrationValue: (mw.isAndroidNativeBrowser() ? 1 : 0.02),
 			cameraOptions: {
 				fov: 75,
-				aspect: window.innerWidth / window.innerHeight,
+				aspect: Math.max(window.innerWidth / window.innerHeight, DEFAULT_ASPECT),
 				near: 0.1,
 				far: 1000
 			}
