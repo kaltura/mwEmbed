@@ -51,6 +51,7 @@
 				this.speedSet[i] = Math.abs( this.speedSet[i] );
 			}
 			this.addBindings();
+            this.getPlayer().triggerHelper( 'updatedPlaybackRate', this.currentSpeed); // trigger report to Analytics
 		},
 
 		addBindings: function(){
