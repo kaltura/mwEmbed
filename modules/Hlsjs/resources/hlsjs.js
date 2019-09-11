@@ -742,7 +742,9 @@
 			* Override player method for stop the video element
 			*/
 			stopLoad: function () {
-				this.hls.stopLoad();
+				if (!this.embedPlayer.isDVR()) {
+					this.hls.stopLoad();
+				}
 			},
 			/**
 			 * Override player callback after changing media
