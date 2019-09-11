@@ -224,6 +224,7 @@
 		handlePushCuepoints: function(cuepoints){
         	this.fixLiveCuePointArray(cuepoints);
         	this.updateCuePoints(cuepoints);
+        	this.embedPlayer.triggerHelper("KalturaSupport_PushCuePointsReceived",cuepoints);
         	this.embedPlayer.triggerHelper("KalturaSupport_CuePointsUpdated", [
             cuepoints.length
        	 ]);
