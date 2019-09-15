@@ -510,6 +510,7 @@
         buildOpenQuestion: function(cPo){
             var _this = this;
             var interfaceElement = this.embedPlayer.getInterface();
+            interfaceElement.find(".open-question-textarea")[0].focus();
             // clear button
             interfaceElement.find("#open-question-clear")
             .off()
@@ -552,7 +553,7 @@
                     interfaceElement.find("#open-question-clear,#open-question-save").removeAttr("disabled");
                 }
             })
-            .change(function(){
+            .bind('change focusout', function(){
                 var holdAnswer = $(this).val();
                 interfaceElement.find(".hint-why-box")
                 .click(function () {
