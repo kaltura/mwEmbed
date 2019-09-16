@@ -936,6 +936,8 @@
             });
             _this.KIVQModule.submitAnswer(questionNr,_this.selectedAnswer);
             _this.selectedAnswer = null;
+            $(".cp-navigation").css("display", "none");
+            $(".ftr-container").css("height", "40px");
             setTimeout(function(){_this.KIVQModule.checkIfDone(questionNr)},_this.postAnswerTimer);
         },
 
