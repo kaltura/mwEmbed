@@ -936,8 +936,9 @@
             });
             _this.KIVQModule.submitAnswer(questionNr,_this.selectedAnswer);
             _this.selectedAnswer = null;
-            $(".cp-navigation").css("display", "none");
-            $(".ftr-container").css("height", "40px");
+            $(".cp-navigation").css("pointer-events", "none");
+            $(".ftr-right").css("pointer-events", "none");
+            $(".cp-navigation-btn").addClass("disabled");
             setTimeout(function(){_this.KIVQModule.checkIfDone(questionNr)},_this.postAnswerTimer);
         },
 
