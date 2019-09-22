@@ -37,8 +37,10 @@
 			this.bind( 'onChangeMedia', function() {
                 _this.removeBindings();
 				//Reset UI state on change media and liveStatus button
-				_this.setLiveStatusButtonDefaultState();
-				_this.getBtn().show();
+				if( _this.getPlayer().isLive() ) {
+					_this.setLiveStatusButtonDefaultState();
+					_this.getBtn().show();
+				}
             });
 		},
         initStrings: function(){
