@@ -428,9 +428,13 @@
             this.currentFontPxSize = currentPreset.fontPxSize;
             $(".cvaa-size .cvaa-btn[value='" + this.getValueOrProp("size", this.currentFontPxSize, "value") + "']").parent().addClass('icvaa-check').siblings().removeClass('icvaa-check');
             this.updatePreview(currentPreset.currentPreset, "font-size", this.currentFontSize);
-
+            $(".cvaa-adv .cvaa-btn").removeAttr("aria-pressed");
             //set current preset btn
-            $(".cvaa-adv .cvaa-btn[value='" + this.getValueOrProp("presets", this.cvaaSettings.currentPreset, "value") + "']").parent().addClass('icvaa-check').siblings().removeClass('icvaa-check');
+            $(".cvaa-adv .cvaa-btn[value='" + this.getValueOrProp("presets", this.cvaaSettings.currentPreset, "value") + "']")
+                .attr("aria-pressed",true)
+                .parent()
+                .addClass('icvaa-check')
+                .siblings().removeClass('icvaa-check');
 
             //send styles to captions plugin
             this.getPlayer().triggerHelper("newCaptionsStyles", currentPreset);
