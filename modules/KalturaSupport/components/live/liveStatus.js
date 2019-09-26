@@ -36,10 +36,14 @@
             });
 			this.bind( 'onChangeMedia', function() {
                 _this.removeBindings();
-				//Reset UI state on change media and liveStatus button
 				_this.setLiveStatusButtonDefaultState();
-				_this.getBtn().show();
-            });
+			});
+			this.bind( 'onChangeMediaDone', function() {
+				if( _this.getPlayer().isLive() ) {
+					//Reset UI state on change media and liveStatus button
+					_this.getBtn().show();
+				}
+			});
 		},
         initStrings: function(){
             this.liveText = gM( 'mwe-embedplayer-player-on-air' );
