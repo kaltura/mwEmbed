@@ -946,7 +946,7 @@
             this.embedPlayer.getInterface().append(
                 $('<div/>').addClass('ivq-orientation-message').append(
                     $('<div/>').addClass('ivq-orientation-message__text')
-                        .html('This video contains features that works best on landscape mode.<br/>Please flip your screen to continue')
+                        .html(gM('mwe-quiz-landscape-warning'))
                 )
             );
         },
