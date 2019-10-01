@@ -1287,7 +1287,7 @@
 		getComponent: function(){
 			var _this = this;
 			if( !this.$el ){
-				var $menu = $( '<ul />' ).addClass( 'dropdown-menu' );
+				var $menu = $( '<ul />' ).addClass( 'dropdown-menu' ).attr('aria-expanded', false);
 				var $button = $( '<button />' )
 								.addClass( 'btn icon-cc' )
 								.attr({
@@ -1296,8 +1296,18 @@
 									'aria-haspopup':'true'
 								})
 								.click( function(e){
-									if ( _this.getMenu().numOfChildren() > 0 ) {
-										_this.getMenu().toggle();
+									var menuEl = _this.getMenu();
+									if (menuEl.numOfChildren() > 0) {
+										menuEl.toggle();
+										if (menuEl.$el.hasClass('open')) {
+											menuEl.$el.attr('aria-expanded', true);
+											// move focus to the selected item if menu opened by keyboard
+											if (e.screenX === 0 && e.screenY === 0) {
+												menuEl.$el.find('.active a').focus();
+											}
+										} else {
+											menuEl.$el.attr('aria-expanded', false);
+										}
 									} else {
 										_this.getPlayer().triggerHelper( "showHideClosedCaptions" );
 									}
