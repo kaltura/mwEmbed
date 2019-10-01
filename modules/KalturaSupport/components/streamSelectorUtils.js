@@ -74,30 +74,41 @@
         },
         getStreams: function () {
             var _this = this;
-            var requestObject = [];
-            requestObject.push({
-                'service': 'baseEntry',
-                'action': 'list',
-                'filter:objectType': 'KalturaBaseEntryFilter',
-                'filter:typeEqual': 1,
-                'filter:parentEntryIdEqual': this.getPlayer().kentryid
-            });
-
-            var i = 0;
-            var maxNumOfStream = this.getConfig("maxNumOfStream");
-            for (i; i < maxNumOfStream; i++) {
-                requestObject.push({
-                    'service': 'flavorAsset',
+            var requestObject = [
+                {
+                    'service': 'baseEntry',
                     'action': 'list',
-                    'filter:entryIdEqual': '{1:result:objects:' + i + ':id}'
-                });
-            }
-
-            // do the api request
-            this.getKalturaClient().doRequest(requestObject, function (data) {
+                    'filter:objectType': 'KalturaBaseEntryFilter',
+                    'filter:typeEqual': 1,
+                    'filter:parentEntryIdEqual': this.getPlayer().kentryid
+                }
+            ];
+            var responceArray = [];
+            // get flavorAssets id
+            _this.getKalturaClient().doRequest(requestObject, function (data) {
                 // Validate result
-                if (data && _this.isValidResult(data[0] && data[0].totalCount > 0)) {
-                    _this.createStreamList(data);
+                if (data && _this.isValidResult(data && data.totalCount > 0)) {
+                    responceArray.push(data)
+                    var i = 0;
+                    var maxNumOfStream = _this.getConfig("maxNumOfStream");
+                    var flavorAssetRequestObject = [];
+                    for (i; i < data.totalCount && i < maxNumOfStream; i++) {
+                        flavorAssetRequestObject.push({
+                            'service': 'flavorAsset',
+                            'action': 'list',
+                            'filter:entryIdEqual': data.objects[i].id
+                        });
+                    }
+                    // get flavorAssets data
+                    _this.getKalturaClient().doRequest(flavorAssetRequestObject, function (flavorAssetsData) {
+                        // Validate result
+                        if (flavorAssetsData && Array.isArray(flavorAssetsData)) {
+                            _this.createStreamList(responceArray.concat(flavorAssetsData));
+                        } else {
+                            mw.log('streamSelectorUtil::Error retrieving streams, disabling component');
+                            _this.readyAndHasStreams.reject();
+                        }
+                    });
                 } else {
                     mw.log('streamSelectorUtil::Error retrieving streams, disabling component');
                     _this.readyAndHasStreams.reject();
