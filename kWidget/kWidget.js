@@ -1290,7 +1290,6 @@
 				'<body>' +
 				'<div class="mwPlayerContainer"  style="width: 100%; height: 100%">' +
 				'<div class="videoHolder">' +
-				'<div class="videoDisplay">' +
 				'<video class="persistentNativePlayer" ' +
 				'id="' + targetId + '" ' +
 				'kwidgetid="' + settings.wid + '" ' +
@@ -1303,7 +1302,6 @@
 				'style="width:100%;height:100%" ' +
 				'>' +
 				'</video>' +
-				'</div>' +
 				'</div>' +
 				'</div>' +
 				// issue play on the silent black video ( to capture iOS gesture )
