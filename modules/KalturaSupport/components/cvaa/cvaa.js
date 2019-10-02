@@ -164,6 +164,7 @@
                         embedPlayer.getPlayerPoster().addClass("blur");
                     });
                 }
+                $(".cvaa .icon-close").focus(); // when open CVAA - auto-focus on close-button
             });
 
             this.bind('preHideScreen', function (event, screenName) {
@@ -227,6 +228,11 @@
                         _this.cvaaSettings.currentPreset = preset;
                         _this.initPreviewUpdate(_this.getCurrentPreset(_this.cvaaSettings.currentPreset));
                         _this.saveCvaaSettings();
+                    }
+
+                    if(event.which === 32 || event.which === 13){
+                        //only on keyboard selection - apply and close
+                        _this.toggleScreen();
                     }
                 });
             });
