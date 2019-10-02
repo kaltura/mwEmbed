@@ -1160,7 +1160,7 @@
 			}
 
 			// Check if we need to capture a play event ( iOS sync embed call )
-			if (settings.captureClickEventForiOS && (this.isSafari() && !this.isChrome() || this.isAndroid())) {
+			if (settings.captureClickEventForiOS && ((this.isSafari() && !this.isChrome()) || this.isAndroid())) {
 				this.captureClickWrapedIframeUpdate(targetId, requestSettings, iframe);
 			} else {
 				// get the callback name:
