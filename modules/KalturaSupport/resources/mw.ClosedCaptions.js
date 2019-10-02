@@ -1204,6 +1204,7 @@
 			this.setTextSource(src);
 			this.embedPlayer.triggerHelper( "selectClosedCaptions", [ src.label, src.srclang ] );
 			this.getActiveCaption();
+			this.getBtn().focus();
 		},
 		addOffButton: function() {
 			var _this = this;
@@ -1224,8 +1225,9 @@
 			this.embedPlayer.triggerHelper('changedClosedCaptions', {language: ""});
 			this.setConfig('displayCaptions', false);
 			//Set the index of 'off' to lastActiveCaption
-            		this.lastActiveCaption = this.getMenu().$el.find('.active').index();
-            		// also update the cookie to "None"
+			this.lastActiveCaption = this.getMenu().$el.find('.active').index();
+			this.getBtn().focus();
+			// also update the cookie to "None"
 			this.getPlayer().setCookie( this.cookieName, 'None' );
 		},
 		addOptionsButton: function(btnOptions) {
