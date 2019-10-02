@@ -84,15 +84,15 @@
                 }
             ];
             var responceArray = [];
-            // get flavorAssets id
+            // get child IDs
             _this.getKalturaClient().doRequest(requestObject, function (data) {
                 // Validate result
                 if (data && _this.isValidResult(data && data.totalCount > 0)) {
                     responceArray.push(data)
                     var i = 0;
-                    var maxNumOfStream = _this.getConfig("maxNumOfStream");
+                    var maxNumOfStream = Math.min(_this.getConfig("maxNumOfStream"), data.totalCount);
                     var flavorAssetRequestObject = [];
-                    for (i; i < data.totalCount && i < maxNumOfStream; i++) {
+                    for (i; i < maxNumOfStream; i++) {
                         flavorAssetRequestObject.push({
                             'service': 'flavorAsset',
                             'action': 'list',
