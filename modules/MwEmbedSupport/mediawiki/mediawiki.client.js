@@ -8,7 +8,7 @@
 	var userAgent = navigator.userAgent;
 
 	mw.isMobileDevice = function () {
-		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() || mw.isIpadOnIos13() || mw.isAndroid() || mw.isWindowsPhone() || mw.getConfig("EmbedPlayer.ForceNativeComponent") === true || mw.getConfig("EmbedPlayer.SimulateMobile") === true )
+		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() || mw.isIpadOS() || mw.isAndroid() || mw.isWindowsPhone() || mw.getConfig("EmbedPlayer.ForceNativeComponent") === true || mw.getConfig("EmbedPlayer.SimulateMobile") === true )
 	};
 	mw.isNativeApp = function () {
 		return mw.getConfig("EmbedPlayer.ForceNativeComponent");
@@ -82,8 +82,8 @@
 	mw.isIpad3 = function () {
 		return  /OS 3_/.test(userAgent) && mw.isIpad();
 	};
-	mw.isIpadOnIos13 = function() {
-		return mw.isSafari() && mw.isTouchDevice();
+	mw.isIpadOS = function() {
+		return mw.isSafari() && !mw.isIphone() && mw.isTouchDevice();
 	};
 
 	// Note on those Android checks: Windows Phone browser has "Android" in its userAgent.
