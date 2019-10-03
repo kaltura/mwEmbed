@@ -480,15 +480,18 @@
 			var hoverInterval = null;
 			var mediaBoxes = this.getMediaListDomElements();
 			mediaBoxes
-				.off('click touchmove touchend' )
-				.on('click', function(){
-					if ( !_this.isDisabled && !_this.isTouchDisabled){
-						// set active media item
-						var index = $(this).attr( 'data-mediaBox-index' );
-						// Check if the current chapter is already active, set skipPause flag accordingly.
-						_this.skipPauseFlag = !$( this ).hasClass( 'active');
-						// call mediaClicked with the media index (implemented in component level)
-						_this.mediaClicked(index);
+				.off('keypress click touchmove touchend' )
+				.on('keypress click', function(e){
+					if (e.which === 13 || e.type === 'click') {
+						if ( !_this.isDisabled && !_this.isTouchDisabled){
+							// set active media item
+							var index = $(this).attr( 'data-mediaBox-index' );
+							// Check if the current chapter is already active, set skipPause flag accordingly.
+							_this.skipPauseFlag = !$( this ).hasClass( 'active');
+							// call mediaClicked with the media index (implemented in component level)
+							_this.mediaClicked(index);
+							_this.embedPlayer.getInterface().find(".playPauseBtn").focus();
+						}
 					}
 				} )
 				.on("touchmove", function(){
@@ -562,10 +565,19 @@
 			// should be implemented by component;
 		},
 		setSelectedMedia: function(mediaIndex){
-			var mediaBoxes = this.getMediaListDomElements();
-			mediaBoxes.removeClass( 'active');
+			var $mediaBoxes = this.getMediaListDomElements();
+			$mediaBoxes.each(function(index, el) {
+				var $mediaBoxEl = $(el);
+				var mediaBoxElTitle = $mediaBoxEl.find(".k-title").attr("title");
+				if (index == mediaIndex) {
+					$mediaBoxEl.addClass("active");
+					$mediaBoxEl.attr("aria-label", gM("mwe-embedplayer-playing-media") + " " + mediaBoxElTitle);
+				} else  {
+					$mediaBoxEl.removeClass("active");
+					$mediaBoxEl.attr("aria-label", gM("mwe-embedplayer-select-to-play-media") + " " + mediaBoxElTitle);
+				}
+			});
 			this.selectedMediaItemIndex = mediaIndex;
-			$( mediaBoxes[mediaIndex] ).addClass( 'active'); //li[data-chapter-index='" + activeIndex + "']
 		},
 		getActiveItem: function(){
 			return this.getComponent().find( "li[data-mediaBox-index='" + this.selectedMediaItemIndex + "']" );

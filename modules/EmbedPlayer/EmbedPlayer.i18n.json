@@ -76,8 +76,9 @@
 		"mwe-embedplayer-related-errMsg": "No related<br>videos were<br>found.",
 		"mwe-embedplayer-seek": "seek",
 		"mwe-embedplayer-open_dialog": " - opens dialog",
-	    "mwe-embedplayer-no-source": "No sources"
-
+	    "mwe-embedplayer-no-source": "No sources",
+        "mwe-embedplayer-select-to-play-media": "Select to play media",
+        "mwe-embedplayer-playing-media": "Playing media"
     },
     "qqq": {
         "mwe-embedplayer-credit-title": "Used as a part of the credit. Parameters:\r\n* $1 - title\r\nThis message is followed by the following messages:\r\n* {{msg-mw|mwe-embedplayer-credit-author}}\r\n* {{msg-mw|mwe-embedplayer-credit-date}}",

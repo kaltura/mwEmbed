@@ -1,7 +1,7 @@
 <ul>
     <% for ( var i = 0; i < mediaList.length; i++ ) { %>
     <%var mediaItem =  mediaList[i];%>
-    <li class="chapterBox mediaBox" data-mediaBox-index="<%=i%>">
+    <li class="chapterBox mediaBox" tabindex="6" data-mediaBox-index="<%=i%>">
         <% if (meta.layout == "hotizontal") { %> style="width: <%= mediaItem.width %>px " <% } %>
         <% if (i > 0) { %>
         <!--div class="chapterDivider"

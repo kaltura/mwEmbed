@@ -51,6 +51,10 @@
 	left: 0px;
 }
 
+.playlistAPI .chapterBox:focus {
+	outline: 1px solid #66CCFF;
+}
+
 .playlistAPI .k-chapters-container .chapterBox {
 	background: #2d2d2d;
 	cursor: pointer;
@@ -449,6 +453,10 @@
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
 }
 
+.playlistAPI .dropDownIcon:focus {
+	outline: 1px solid #66CCFF;
+}
+
 .playlistAPI .playlistSelector {
 	position: absolute;
 	width: 100%;
@@ -510,6 +518,10 @@
 	opacity: 0.6;
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
 	cursor: pointer;
+}
+
+.playlistAPI .playlistBtn:focus {
+	outline: 1px solid #66CCFF;
 }
 
 .playlistAPI .playlistBtn:hover {

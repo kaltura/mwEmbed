@@ -353,16 +353,16 @@
 		},
 		// called from KBaseMediaList when a media item is clicked - trigger clip play
 		mediaClicked: function (index) {
-			if (this.getConfig('onPage')) {
+			if (this.getConfig("onPage")) {
 				try {
-					this.getComponent().find(".chapterBox").removeClass('active');
+					this.getComponent().find(".chapterBox").removeClass("active");
 				} catch (e) {
 				}
 				;
 			} else {
-				$(".chapterBox").removeClass('active');
+				$(".chapterBox").removeClass("active");
 			}
-			this.getComponent().find(".chapterBox").find("[data-mediaBox-index='" + index + "']").addClass('active');
+			this.getComponent().find(".chapterBox").find("[data-mediaBox-index='" + index + "']").addClass("active");
 			if ( mw.isMobileDevice() ){
 				this.embedPlayer.mobilePlayed = true; // since the user clicked the screen, we can set mobilePlayed to true to enable canAutoPlay
 			}
@@ -572,19 +572,21 @@
 				var _this = this;
 				if ( this.getComponent().find( ".playlistSelector" ).length == 0 ) { // UI wasn't not created yet
 					this.getComponent().find( ".k-vertical" ).find( ".playlistTitle, .playlistDescription" ).addClass( "multiplePlaylists" );
-					this.getComponent().find( ".dropDownIcon" ).on( "click", function () {
-						if ( _this.getComponent().find( ".playlistSelector" ).height() > 0 ) {
-							_this.closePlaylistDropdown();
-						} else {
-							_this.openPlaylistDropdown();
+					this.getComponent().find(".dropDownIcon").on("keypress click", function(e) {
+						if (e.which === 13 || e.type === "click") {
+							if ( _this.getComponent().find( ".playlistSelector" ).height() > 0 ) {
+								_this.closePlaylistDropdown();
+							} else {
+								_this.openPlaylistDropdown();
+							}
 						}
 					} );
-					this.getMedialistComponent().prepend( '<div class="playlistSelector"></div>' );
+					this.getMedialistComponent().prepend( '<div class="playlistSelector" role="menu" aria-expanded="false"></div>' );
 					$.each( this.playlistSet, function ( i, el ) {
 						if ( _this.getLayout() === "vertical" ) {
-							_this.getComponent().find( ".playlistSelector" ).append( '<br><div data-index="' + i + '" class="playlistItem"><span class="k-playlistTitle">' + _this.getPlaylistTitle( el.name )  + '</span></div>' );
+							_this.getComponent().find( ".playlistSelector" ).append( '<br><div data-index="' + i + '" class="playlistItem" role="menuitem" tabindex="5"><span class="k-playlistTitle">' + _this.getPlaylistTitle( el.name )  + '</span></div>' );
 						} else {
-							_this.getComponent().find( ".playlistSelector" ).append( '<div data-index="' + i + '" class="playlistItem k-horizontal"><span class="k-playlistTitle">' + _this.getPlaylistTitle( el.name ) + '</span></div>' );
+							_this.getComponent().find( ".playlistSelector" ).append( '<div data-index="' + i + '" class="playlistItem k-horizontal" role="menuitem" tabindex="5"><span class="k-playlistTitle">' + _this.getPlaylistTitle( el.name ) + '</span></div>' );
 						}
 					} );
 					this.getComponent().find( ".playlistItem" ).on( "click", function () {
@@ -599,23 +601,25 @@
 		},
 
 		openPlaylistDropdown: function () {
-			var _this = this;
 			this.onDisable();
-			this.getComponent().find(".playlistSelector").show();
+			var $playlistSelectorEl = this.getComponent().find(".playlistSelector");
+			$playlistSelectorEl.show();
+			$playlistSelectorEl.attr("aria-expanded", true);
 			var dropdownHeight = this.getLayout() === "vertical" ? 200 : this.getConfig("mediaItemHeight") - 20;
-			this.getComponent().find(".playlistSelector").height(dropdownHeight);
+			$playlistSelectorEl.height(dropdownHeight);
 			setTimeout(function () {
-				_this.getComponent().find(".playlistSelector").css("overflow", "auto");
+				$playlistSelectorEl.css("overflow", "auto");
 			}, 300);
 		},
 
 		closePlaylistDropdown: function () {
-			var _this = this;
 			this.onEnable();
-			this.getComponent().find(".playlistSelector").height(0);
-			this.getComponent().find(".playlistSelector").css("overflow", "hidden");
+			var $playlistSelectorEl = this.getComponent().find(".playlistSelector");
+			$playlistSelectorEl.height(0);
+			$playlistSelectorEl.css("overflow", "hidden");
 			setTimeout(function () {
-				_this.getComponent().find(".playlistSelector").hide();
+				$playlistSelectorEl.hide();
+				$playlistSelectorEl.attr("aria-expanded", false);
 			}, 300);
 		},
 
@@ -684,7 +688,7 @@
 			var numOfClips = this.playlistSet[playlistIndex].items.length;
 			if ( this.getLayout() === "vertical" ) {
 				this.getMedialistHeaderComponent().prepend( '<span class="playlistTitle">' + this.getPlaylistTitle( this.playlistSet[playlistIndex].name )+ '</span><span class="playlistDescription">' + numOfClips + ' ' + gM( 'mwe-embedplayer-videos' ) + '</span>' );
-				this.getMedialistHeaderComponent().prepend( '<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist' ) + '"></div>' );
+				this.getMedialistHeaderComponent().prepend( '<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist' ) + '" aria-haspopup="true" role="button" tabindex="5"></div>' );
 				this.getMedialistHeaderComponent().height(this.getConfig('verticalHeaderHeight'));
 			} else {
 				this.getMedialistHeaderComponent().prepend( '<div class="horizontalHeaderLables"><span class="playlistTitle horizontalHeader">' +  this.getPlaylistTitle(this.playlistSet[playlistIndex].name) + '</span><span class="playlistDescription horizontalHeader">(' + numOfClips + ' ' + gM( 'mwe-embedplayer-videos' ) + ')</span></div>' );
@@ -692,12 +696,16 @@
 				this.getMedialistHeaderComponent().height(this.getConfig('horizontalHeaderHeight'));
 			}
 			if ( this.getConfig( 'showControls' ) === true && !this.embedPlayer.isMobileSkin() ) {
-				this.getMedialistHeaderComponent().prepend( '<div class="playlistControls k-' + this.getLayout() + '"><div class="prevBtn playlistBtn"></div><div class="nextBtn playlistBtn"></div></div>' );
-				this.getMedialistHeaderComponent().find( ".playlistControls .nextBtn" ).on( "click", function () {
-					_this.playNext(true)
+				this.getMedialistHeaderComponent().prepend( '<div class="playlistControls k-' + this.getLayout() + '"><div class="prevBtn playlistBtn" role="button" aria-label="Previous" tabindex="6"></div><div class="nextBtn playlistBtn" role="button" aria-label="Next" tabindex="6"></div></div>' );
+				this.getMedialistHeaderComponent().find( ".playlistControls .nextBtn" ).on("keypress click", function (e) {
+					if (e.which === 13 || e.type === 'click') {
+						_this.playNext(true);
+					}
 				} );
-				this.getMedialistHeaderComponent().find( ".playlistControls .prevBtn" ).on( "click", function () {
-					_this.playPrevious(true)
+				this.getMedialistHeaderComponent().find( ".playlistControls .prevBtn" ).on("keypress click", function (e) {
+					if (e.which === 13 || e.type === 'click') {
+						_this.playPrevious(true);
+					}
 				} );
 			}
 
@@ -775,7 +783,7 @@
 		getPlaylistTitle(string){
 			var url = this.getConfig("playlistUrl");
 			if(url){
-				return "<a href='"+url+"' target='"+this.getConfig("playlistUrlTarget")+"'>" + string + "</a>";
+				return "<a tabindex='5' role='link' href='"+url+"' target='"+this.getConfig("playlistUrlTarget")+"'>" + string + "</a>";
 			}
 			return string;
 		}
