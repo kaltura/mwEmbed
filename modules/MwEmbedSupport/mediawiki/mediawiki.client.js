@@ -83,7 +83,7 @@
 		return  /OS 3_/.test(userAgent) && mw.isIpad();
 	};
 	mw.isIpadOS = function() {
-		return mw.isSafari() && !mw.isIphone() && mw.isTouchDevice();
+		return mw.isSafari() && !mw.isIphone() && !mw.isIpad() && mw.isTouchDevice();
 	};
 
 	// Note on those Android checks: Windows Phone browser has "Android" in its userAgent.
