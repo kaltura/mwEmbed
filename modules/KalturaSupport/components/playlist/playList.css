@@ -383,6 +383,13 @@
 .playlistAPI .playlistTitle a {
 	color: #ffffff;
 }
+.playlistAPI .playlistTitle:focus {
+	outline: none;
+}
+.playlistAPI .playlistTitle:focus a,
+.playlistAPI .playlistTitle:focus .playlistTitle-content {
+	outline: 1px solid #66CCFF;
+}
 .playlistAPI .playlistTitle {
 	font-size: 1.1em;
 	display: block;
@@ -463,10 +470,6 @@
 .playlistAPI .dropDownIcon:hover {
 	opacity: 1;
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
-}
-
-.playlistAPI .dropDownIcon:focus {
-	outline: 1px solid #66CCFF;
 }
 
 .playlistAPI .playlistSelector {

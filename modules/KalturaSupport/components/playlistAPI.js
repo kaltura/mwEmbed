@@ -572,21 +572,19 @@
 				var _this = this;
 				if ( this.getComponent().find( ".playlistSelector" ).length == 0 ) { // UI wasn't not created yet
 					this.getComponent().find( ".k-vertical" ).find( ".playlistTitle, .playlistDescription" ).addClass( "multiplePlaylists" );
-					this.getComponent().find(".dropDownIcon").on("keypress click", function(e) {
-						if (e.which === 13 || e.type === "click") {
-							if ( _this.getComponent().find( ".playlistSelector" ).height() > 0 ) {
-								_this.closePlaylistDropdown();
-							} else {
-								_this.openPlaylistDropdown();
-							}
+					this.getComponent().find(".dropDownIcon").on("click", function() {
+						if ( _this.getComponent().find( ".playlistSelector" ).height() > 0 ) {
+							_this.closePlaylistDropdown();
+						} else {
+							_this.openPlaylistDropdown();
 						}
 					} );
 					this.getMedialistComponent().prepend( '<div class="playlistSelector" role="menu" aria-expanded="false"></div>' );
 					$.each( this.playlistSet, function ( i, el ) {
 						if ( _this.getLayout() === "vertical" ) {
-							_this.getComponent().find( ".playlistSelector" ).append( '<br><div data-index="' + i + '" class="playlistItem" role="menuitem" tabindex="5"><span class="k-playlistTitle">' + _this.getPlaylistTitle( el.name )  + '</span></div>' );
+							_this.getComponent().find( ".playlistSelector" ).append( '<br><div data-index="' + i + '" class="playlistItem" role="menuitem"><span class="k-playlistTitle">' + _this.getPlaylistTitle( el.name )  + '</span></div>' );
 						} else {
-							_this.getComponent().find( ".playlistSelector" ).append( '<div data-index="' + i + '" class="playlistItem k-horizontal" role="menuitem" tabindex="5"><span class="k-playlistTitle">' + _this.getPlaylistTitle( el.name ) + '</span></div>' );
+							_this.getComponent().find( ".playlistSelector" ).append( '<div data-index="' + i + '" class="playlistItem k-horizontal" role="menuitem"><span class="k-playlistTitle">' + _this.getPlaylistTitle( el.name ) + '</span></div>' );
 						}
 					} );
 					this.getComponent().find( ".playlistItem" ).on( "click", function () {
@@ -687,8 +685,8 @@
 			// First playlist will always have items in it, other playlists will populate the items array after selection.
 			var numOfClips = this.playlistSet[playlistIndex].items.length;
 			if ( this.getLayout() === "vertical" ) {
-				this.getMedialistHeaderComponent().prepend( '<span class="playlistTitle">' + this.getPlaylistTitle( this.playlistSet[playlistIndex].name )+ '</span><span class="playlistDescription">' + numOfClips + ' ' + gM( 'mwe-embedplayer-videos' ) + '</span>' );
-				this.getMedialistHeaderComponent().prepend( '<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist' ) + '" aria-haspopup="true" role="button" tabindex="5"></div>' );
+				this.getMedialistHeaderComponent().prepend( '<span class="playlistTitle" tabindex="5" aria-label="' + this.playlistSet[playlistIndex].name + '">' + this.getPlaylistTitle( this.playlistSet[playlistIndex].name )+ '</span><span class="playlistDescription">' + numOfClips + ' ' + gM( 'mwe-embedplayer-videos' ) + '</span>' );
+				this.getMedialistHeaderComponent().prepend( '<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist' ) + '" aria-haspopup="true" role="button"></div>' );
 				this.getMedialistHeaderComponent().height(this.getConfig('verticalHeaderHeight'));
 			} else {
 				this.getMedialistHeaderComponent().prepend( '<div class="horizontalHeaderLables"><span class="playlistTitle horizontalHeader">' +  this.getPlaylistTitle(this.playlistSet[playlistIndex].name) + '</span><span class="playlistDescription horizontalHeader">(' + numOfClips + ' ' + gM( 'mwe-embedplayer-videos' ) + ')</span></div>' );
@@ -696,7 +694,7 @@
 				this.getMedialistHeaderComponent().height(this.getConfig('horizontalHeaderHeight'));
 			}
 			if ( this.getConfig( 'showControls' ) === true && !this.embedPlayer.isMobileSkin() ) {
-				this.getMedialistHeaderComponent().prepend( '<div class="playlistControls k-' + this.getLayout() + '"><div class="prevBtn playlistBtn" role="button" aria-label="Previous" tabindex="6"></div><div class="nextBtn playlistBtn" role="button" aria-label="Next" tabindex="6"></div></div>' );
+				this.getMedialistHeaderComponent().prepend( '<div class="playlistControls k-' + this.getLayout() + '"><div class="prevBtn playlistBtn" role="button" aria-label="' + gM( 'mwe-embedplayer-prev_clip' ) + '" tabindex="6"></div><div class="nextBtn playlistBtn" role="button" aria-label="' + gM( 'mwe-embedplayer-next_clip' ) + '" tabindex="6"></div></div>' );
 				this.getMedialistHeaderComponent().find( ".playlistControls .nextBtn" ).on("keypress click", function (e) {
 					if (e.which === 13 || e.type === 'click') {
 						_this.playNext(true);
@@ -783,9 +781,9 @@
 		getPlaylistTitle(string){
 			var url = this.getConfig("playlistUrl");
 			if(url){
-				return "<a tabindex='5' role='link' href='"+url+"' target='"+this.getConfig("playlistUrlTarget")+"'>" + string + "</a>";
+				return "<a role='link' href='"+url+"' target='"+this.getConfig("playlistUrlTarget")+"'>" + string + "</a>";
 			}
-			return string;
+			return "<span class='playlistTitle-content'>" + string + "</span>";
 		}
 
 	})
