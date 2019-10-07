@@ -51,8 +51,20 @@
 	left: 0px;
 }
 
-.playlistAPI .chapterBox:focus {
-	outline: 1px solid #66CCFF;
+.playlistAPI .chapterBox {
+	outline: none;
+}
+
+.playlistAPI .chapterBox .focus-frame {
+	position: absolute;
+	top: 1px;
+	right: 1px;
+	bottom: 1px;
+	left: 1px;
+}
+
+.playlistAPI .chapterBox:focus .focus-frame {
+	border: 1px solid #66CCFF;
 }
 
 .playlistAPI .k-chapters-container .chapterBox {
