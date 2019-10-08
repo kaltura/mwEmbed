@@ -1065,10 +1065,7 @@
             	return protocolString;
 			} else {
             	try {
-            		protocolString = window.parent.location.protocol.slice(0, -1);
-					if (protocolString.match('^http')) {
-						return protocolString;
-					}
+            		return "https";
 				} catch (e){
                     this.log( "unable to get protocol for player request, assuming https" );
             		return "https";
