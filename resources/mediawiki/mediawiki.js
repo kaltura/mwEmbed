@@ -932,14 +932,9 @@ var mw = ( function ( $, undefined ) {
                 if (protocolString.match('^http')) {
                     return protocolString;
                 } else {
-                    try {
-                        return window.parent.location.protocol.slice(0, -1);
-                    } catch (e){
-                        mw.log( "unable to get protocol for load request, assuming https" );
                         return "https";
                     }
                 }
-            }
 
             function getPid() {
                 if (kalturaIframePackageData && kalturaIframePackageData.playerConfig && kalturaIframePackageData.playerConfig.widgetId) {
