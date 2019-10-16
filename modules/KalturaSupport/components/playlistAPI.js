@@ -37,8 +37,8 @@
 			'pageSize': 25,
 			'showEmptyPlaylistError': true,
 			'playlistUrl': "",
-			'playlistUrlTarget': "_blank"
-
+			'playlistUrlTarget': "_blank",
+			'displayAll' : false
 		},
 
 
@@ -665,7 +665,7 @@
 			this.embedPlayer.setKalturaConfig('playlistAPI', 'dataProvider', {'content': this.playlistSet, 'selectedIndex': this.getConfig('selectedIndex')}); // for API backward compatibility
 			this.mediaList = [];
 			var items = this.playlistSet[playlistIndex].items;
-			items = items.length > parseInt( this.getConfig( 'MaxClips' ) ) ? items.slice( 0, parseInt( this.getConfig( 'MaxClips' ) ) ) : items; // support MaxClips Flashvar
+			items = this.getConfig('displayAll') ? items : items.length > parseInt( this.getConfig( 'MaxClips' ) ) ? items.slice( 0, parseInt( this.getConfig( 'MaxClips' ) ) ) : items; // support MaxClips Flashvar
 			this.setConfig('MinClips', this.minClips);
 			if (items.length < this.minClips){              // support the MinClips Flashvar
 				this.setConfig('MinClips', items.length);	// set MinClips Flashvar to the number of items in the playlist
@@ -681,7 +681,10 @@
 			this.addMediaItems( items );   // prepare the data to be compatible with KBaseMediaList
 			this.getMedialistHeaderComponent().empty();
 			// First playlist will always have items in it, other playlists will populate the items array after selection.
-			var numOfClips = this.playlistSet[playlistIndex].items.length;
+			var numOfClips = (this.getConfig('displayAll') && this.playlistSet[playlistIndex].items.length > parseInt(this.getConfig('MaxClips'))) ||
+				(this.playlistSet[playlistIndex].items.length < parseInt(this.getConfig('MaxClips'))) ?
+				this.playlistSet[playlistIndex].items.length : parseInt(this.getConfig('MaxClips'));
+
 			if ( this.getLayout() === "vertical" ) {
 				this.getMedialistHeaderComponent().prepend( '<span class="playlistTitle">' + this.getPlaylistTitle( this.playlistSet[playlistIndex].name )+ '</span><span class="playlistDescription">' + numOfClips + ' ' + gM( 'mwe-embedplayer-videos' ) + '</span>' );
 				this.getMedialistHeaderComponent().prepend( '<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist' ) + '"></div>' );
