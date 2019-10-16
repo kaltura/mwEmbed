@@ -359,7 +359,6 @@
                                 evaluatedQueryStringParams += "&";
                             } else {
                                 this.cust_params = encodeURIComponent(evaluatedValue);
-                                evaluatedQueryStringParams += escape(this.cust_params);
                             }
                         }
                         //Build entire adTagUrl back
