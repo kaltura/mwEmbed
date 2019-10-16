@@ -686,7 +686,7 @@
 			// First playlist will always have items in it, other playlists will populate the items array after selection.
 			var numOfClips = this.playlistSet[playlistIndex].items.length;
 			if ( this.getLayout() === "vertical" ) {
-				this.getMedialistHeaderComponent().prepend( '<span class="playlistTitle" tabindex="5" aria-label="' + this.playlistSet[playlistIndex].name + '">' + this.getPlaylistTitle( this.playlistSet[playlistIndex].name )+ '</span><span class="playlistDescription">' + numOfClips + ' ' + gM( 'mwe-embedplayer-videos' ) + '</span>' );
+				this.getMedialistHeaderComponent().prepend( '<span class="playlistTitle">' + this.getPlaylistTitle( this.playlistSet[playlistIndex].name )+ '</span><span class="playlistDescription">' + numOfClips + ' ' + gM( 'mwe-embedplayer-videos' ) + '</span>' );
 				this.getMedialistHeaderComponent().prepend( '<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist' ) + '" aria-haspopup="true" role="button"></div>' );
 				this.getMedialistHeaderComponent().height(this.getConfig('verticalHeaderHeight'));
 			} else {
@@ -782,9 +782,9 @@
 		getPlaylistTitle(string){
 			var url = this.getConfig("playlistUrl");
 			if(url){
-				return "<a role='link' href='"+url+"' target='"+this.getConfig("playlistUrlTarget")+"'>" + string + "</a>";
+				return "<a role='link' tabindex='5' href='"+url+"' target='"+this.getConfig("playlistUrlTarget")+"'>" + string + "</a>";
 			}
-			return "<span class='playlistTitle-content'>" + string + "</span>";
+			return "<span class='playlistTitle-content' tabindex='5'>" + string + "</span>";
 		}
 
 	})
