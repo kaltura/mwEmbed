@@ -255,6 +255,7 @@
 			}
 
 			$(this.embedPlayer).bind('mediaListLayoutReady', function (event) {
+				$(".playlistAPI .nano-content").attr("tabindex","-1");
 				_this.embedPlayer.triggerHelper('playlistReady');
 				_this.setMultiplePlayLists();
 				_this.getComponent().find(".k-description-container").dotdotdot();
