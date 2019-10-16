@@ -101,6 +101,7 @@
 			});
 
 			this.bind('playerReady', function (event) {
+				$(".scrubber .handle-wrapper .ui-slider-handle").attr("tabindex",5);
 				//Load the strip only if the configuration allows preview. It gets a 404 if you do not have a local flavor
 				if (_this.getConfig("sliderPreview")) {
 					_this.thumbnailsLoaded = _this.loadedThumb = false;
@@ -271,8 +272,8 @@
 			}
 			if (!this.loadedThumb) {
 				this.loadedThumb = true;
-				
-				
+
+
 				// preload the image slices:
 				var img = new Image();
 				img.onload = function () {
@@ -285,7 +286,7 @@
 
 		},
 		getThumbSlicesUrl: function(){
-			// check for config override: 
+			// check for config override:
 			if( this.getConfig('thumbSlicesUrl')  ){
 				return this.getConfig('thumbSlicesUrl');
 			}
@@ -458,7 +459,7 @@
 				this.$el.find('.ui-slider-handle')
 					.addClass('playHead PIE btn')
 					.wrap('<div class="handle-wrapper" />');
-				// Update attributes: 
+				// Update attributes:
 				this.updateAttr({ 'value': 0 });
 
 				this.$el.find('.ui-slider-range-min').addClass('watched');
