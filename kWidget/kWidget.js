@@ -1858,10 +1858,16 @@
 		 * Checks for mobile devices
 		 **/
 		isMobileDevice: function () {
-			return (this.isIOS() || this.isAndroid() || this.isWindowsDevice() || mw.getConfig("EmbedPlayer.ForceNativeComponent")  || mw.getConfig("EmbedPlayer.SimulateMobile") === true );
+			return (this.isIOS() || this.isIpadOS() || this.isAndroid() || this.isWindowsDevice() || mw.getConfig("EmbedPlayer.ForceNativeComponent")  || mw.getConfig("EmbedPlayer.SimulateMobile") === true );
 		},
 		isChromeCast: function(){
 			return (/CrKey/.test(navigator.userAgent));
+		},
+		isIpadOS: function () {
+			return (this.isSafari() && this.isTouchDevice && !this.isIOS());
+		},
+		isTouchDevice: function () {
+			return !!('ontouchstart' in window) || ( mw.getConfig("EmbedPlayer.EnableMobileSkin") === true && mw.getConfig("EmbedPlayer.SimulateMobile") === true);
 		},
 		/**
 		 * Checks if a given uiconf_id is html5 or not
