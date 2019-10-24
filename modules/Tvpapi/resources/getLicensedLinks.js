@@ -49,7 +49,9 @@
 					function (res) {
 						var mediaLink = getResponseLink(res);
 						if (mediaLink) {
+							_this.getPlayer().triggerHelper('startTVPAPIAnalytics', [res]); // chanaka
 							_this.getPlayer().triggerHelper('tvpapiSubscription', [res]);
+
 							if (sessionData && sessionData.length){
 								var qp = ( mediaLink.indexOf('?') === -1) ? '?' : '&';
 								var sessionString = sessionData[0].substring(1);
