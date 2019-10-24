@@ -15,7 +15,7 @@
 		didFirstPlay: false,
 		mediaHitInterval: null,
 
-		// chanaka 
+		 
 		licensedLinksRecieved: false, 
 		loadRecieved: false,
 		firstplayRecieved: false,
@@ -33,7 +33,7 @@
 		bindEvents: function() {
 			var _this = this;
 
-			this.bind('startTVPAPIAnalytics', function(){ // chanaka 
+			this.bind('startTVPAPIAnalytics', function(){  
 				_this.licensedLinksRecieved = true;
 				_this.handleLoad();
 				_this.handleFirstPlay();
@@ -45,12 +45,12 @@
 				_this.fileId = _this.getPlayer().getSource() ? _this.getPlayer().getSource().assetid : null;
 			});
 
-			this.bind('firstPlay', function(){ // chanaka 
+			this.bind('firstPlay', function(){  
 				_this.firstplayRecieved = true;
 				_this.handleFirstPlay(_this);
 			});
 
-			this.bind('onplay', function(){ // chanaka 
+			this.bind('onplay', function(){  
 				_this.playRecieved = true;
 				_this.handlePlay(_this);
 			});
@@ -84,14 +84,14 @@
 			});
 		},
 
-		handleLoad:function(_this) { // chanaka 
+		handleLoad:function(_this) {  
 			if (_this.licensedLinksRecieved && _this.loadRecieved){
 				_this.sendMediaMark('load');
 				_this.loadRecieved = false;
 			}
 		},
 
-		handleFirstPlay:function(_this) { // chanaka 
+		handleFirstPlay:function(_this) {  
 			if (_this.licensedLinksRecieved && _this.firstplayRecieved){
 				_this.didFirstPlay = true;
 				_this.sendMediaMark('first_play');
@@ -99,7 +99,7 @@
 			}
 		},
 
-		handlePlay:function(_this) { // chanaka 
+		handlePlay:function(_this) {  
 			if (_this.licensedLinksRecieved && _this.playRecieved){
 				_this.isPlaying = true;
 				_this.startMediaHitInterval();

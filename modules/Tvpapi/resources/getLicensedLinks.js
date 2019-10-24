@@ -49,7 +49,7 @@
 					function (res) {
 						var mediaLink = getResponseLink(res);
 						if (mediaLink) {
-							_this.getPlayer().triggerHelper('startTVPAPIAnalytics', [res]); // chanaka
+							_this.getPlayer().triggerHelper('startTVPAPIAnalytics', [res]); 
 							_this.getPlayer().triggerHelper('tvpapiSubscription', [res]);
 
 							if (sessionData && sessionData.length){
