@@ -559,9 +559,18 @@
                 .click(function () {
                     $(".close-button")
                     .click(function () {
-                        interfaceElement.find(".open-question-textarea").val(holdAnswer);
-                        interfaceElement.find(".open-question-chars .chars").text(holdAnswer.length);
-                        if (holdAnswer.length !== 0) {
+                        if (!cPo.isAnswerd) {
+                            interfaceElement.find(".open-question-textarea").val(holdAnswer);
+                            interfaceElement.find(".open-question-chars .chars").text(holdAnswer.length);
+                            if (holdAnswer.length !== 0) {
+                                interfaceElement.find("#open-question-clear,#open-question-save").removeAttr("disabled");
+                            }
+                        } else {
+                            interfaceElement.find(".open-question-textarea").val(holdAnswer);
+                            interfaceElement.find(".open-question-chars .chars").text(holdAnswer.length);
+                            interfaceElement.find(".ivqContainer.answered").removeClass("answered");
+                            interfaceElement.find("#open-question-change-answer").hide();
+                            interfaceElement.find(".open-question-textarea").removeAttr("disabled");
                             interfaceElement.find("#open-question-clear,#open-question-save").removeAttr("disabled");
                         }
                     })
