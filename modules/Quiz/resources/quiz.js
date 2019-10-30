@@ -425,6 +425,9 @@
             this.KIVQModule.submitAnswer(cuepoint.key,null,cuepoint.openAnswer);
             this.selectedAnswer = null;
             var _this = this;
+            $(".cp-navigation").css("pointer-events", "none");
+            $(".ftr-right").css("pointer-events", "none");
+            $(".cp-navigation-btn").addClass("disabled");
             setTimeout(function(){
                 _this.KIVQModule.checkIfDone(cuepoint.key)
             },
