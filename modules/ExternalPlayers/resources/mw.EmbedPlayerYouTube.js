@@ -372,6 +372,7 @@
 		},
 		changeMediaCallback: function (callback) {
 			var _this = this;
+			_this.hasEnded = false;
 			if (mw.isMobileDevice()){
 				$(".mwEmbedPlayer").width(0);
 			}

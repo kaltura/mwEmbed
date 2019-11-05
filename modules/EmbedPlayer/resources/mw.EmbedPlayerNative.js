@@ -148,7 +148,7 @@
 				return false;
 			}
             if (!mw.getConfig('autoMute')) {
-                if (mw.isMobileDevice() || mw.isIpad()) {
+                if (mw.isMobileDevice() || mw.isIpad() || mw.isIpadOS()) {
                     return mw.getConfig('mobileAutoPlay');
                 } else if ((mw.isDesktopSafariVersionGreaterThan(11) || mw.isChromeVersionGreaterThan(66) || mw.isFirefoxVersionGreaterThan(66)) && mw.getConfig('autoPlay')) {
                     if (typeof mw.getConfig('autoPlayFallbackToMute') !== 'boolean') {
@@ -167,7 +167,7 @@
                 unMuteEventTriggers.forEach(function (eventName) {
                     _this.bindHelper(eventName + _this.bindPostfix, function () {
                         if (_this.mobileAutoPlay) {
-                            _this.setVolume(1, null, mw.isIOS());
+                            _this.setVolume(1, null, (mw.isIOS() || mw.isIpadOS()));
                             _this.mobileAutoPlay = false;
                         }
                         unMuteEventTriggers.forEach(function (eventName) {
@@ -789,7 +789,6 @@
 							vid.play();
 						} else {
 							_this.removeBlackScreen();
-							vid.play();
 						}
 					});
 
@@ -875,6 +874,9 @@
 						vid.play();
 					}else{
 						if ( !( _this.playlist && mw.isAndroid() ) ){
+							if (_this.seeking) {
+								_this.seeking = false;
+							}
 							_this.play();
 						}
 

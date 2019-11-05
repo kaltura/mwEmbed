@@ -128,6 +128,11 @@
 					$(this.getPlayer().getPlayerElement()).one("canplay", function(){
 						// The initial seeking to the live edge has finished.
 						this.afterInitialSeeking = true;
+						if (this.embedPlayer.isLive() && mw.isIE11()) {
+							var player = this.embedPlayer.getPlayerElement();
+							//nudge time on IE11 live streams due to audio bug https://github.com/video-dev/hls.js/issues/2323
+							player.currentTime = player.currentTime + 0.1;
+						}
 					}.bind(this));
                     this.bind("onLiveOffSynchChanged", this.onLiveOffSyncChanged.bind(this));
                     this.bind("seeking", this.onSeekBeforePlay.bind(this));
@@ -140,7 +145,7 @@
 			},
 			getHlsConfig: function(){
 				var defaultConfig = {
-					//debug:true
+					// debug:true,
                     maxMaxBufferLength: 60,
 					liveSyncDurationCount: 3,
 					liveMaxLatencyDurationCount: 6
@@ -307,7 +312,7 @@
              */
             onManifestLoaded: function () {
                 this.log("manifest loaded");
-                if (!this.embedPlayer.isLive() || (this.embedPlayer.isLive() && mw.isIE11())){
+                if (!this.embedPlayer.isLive()){
                     this.hls.startLoad(this.getPlayer().currentTime);
                 }
                 //HLS.JS by default sets showing to text track for default HLS manifest text track
@@ -684,7 +689,7 @@
 					if (status) { // going to offSync - liveMaxLatencyDurationCount should be infinity
 						this.hls.config.liveMaxLatencyDurationCount = Hls.DefaultConfig["liveMaxLatencyDurationCount"];
 					} else { // back to live - restore the default as it configured in the defaultConfig
-						this.hls.config.liveMaxLatencyDurationCount = this.defaultLiveMaxLatencyDurationCount;
+						this.hls.config.liveMaxLatencyDurationCount = this.defaultLiveMaxLatencyDurationCount || this.hls.config.liveMaxLatencyDurationCount;
 					}
 				}
 			},
@@ -737,7 +742,9 @@
 			* Override player method for stop the video element
 			*/
 			stopLoad: function () {
-				this.hls.stopLoad();
+				if (!this.embedPlayer.isDVR()) {
+					this.hls.stopLoad();
+				}
 			},
 			/**
 			 * Override player callback after changing media
@@ -787,14 +794,14 @@
 
 			_onseeking: function(){
 				// if this is the initial seeking which hls performs to the live edge - do nothing
-				if(this.afterInitialSeeking){
+				if(this.afterInitialSeeking || !this.embedPlayer.isLive()){
 					this.orig_onseeking();
 				}
 			},
 
 			_onseeked: function () {
 				// if this is the initial seeking which hls performs to the live edge - do nothing
-				if(this.afterInitialSeeking){
+				if(this.afterInitialSeeking || !this.embedPlayer.isLive()){
 					this.orig_onseeked();
 				}
 			},

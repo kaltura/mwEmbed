@@ -276,7 +276,7 @@
 				}
 			});
 
-			this.embedPlayer.bindHelper( 'selectClosedCaptions' , function (e, language) {
+			this.embedPlayer.bindHelper( 'selectClosedCaptions' , function (e, label, language) {
 				_this.sendAnalytics(playerEvent.CAPTIONS, { "caption": language});
 			});
 

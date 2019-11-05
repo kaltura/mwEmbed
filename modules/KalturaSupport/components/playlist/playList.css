@@ -364,7 +364,9 @@
 .playlistAPI .playlistItem:first-letter {
 	text-transform: capitalize
 }
-
+.playlistAPI .playlistTitle a {
+	color: #ffffff;
+}
 .playlistAPI .playlistTitle {
 	font-size: 1.1em;
 	display: block;

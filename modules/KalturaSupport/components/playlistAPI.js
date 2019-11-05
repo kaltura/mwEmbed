@@ -35,7 +35,10 @@
 			'renderWhenEmpty': false,
 			'paging': false,
 			'pageSize': 25,
-			'showEmptyPlaylistError': true
+			'showEmptyPlaylistError': true,
+			'playlistUrl': "",
+			'playlistUrlTarget': "_blank"
+
 		},
 
 
@@ -579,9 +582,9 @@
 					this.getMedialistComponent().prepend( '<div class="playlistSelector"></div>' );
 					$.each( this.playlistSet, function ( i, el ) {
 						if ( _this.getLayout() === "vertical" ) {
-							_this.getComponent().find( ".playlistSelector" ).append( '<br><div data-index="' + i + '" class="playlistItem"><span class="k-playlistTitle"> ' + el.name + '</span></div>' );
+							_this.getComponent().find( ".playlistSelector" ).append( '<br><div data-index="' + i + '" class="playlistItem"><span class="k-playlistTitle">' + _this.getPlaylistTitle( el.name )  + '</span></div>' );
 						} else {
-							_this.getComponent().find( ".playlistSelector" ).append( '<div data-index="' + i + '" class="playlistItem k-horizontal"><span class="k-playlistTitle"> ' + el.name + '</span></div>' );
+							_this.getComponent().find( ".playlistSelector" ).append( '<div data-index="' + i + '" class="playlistItem k-horizontal"><span class="k-playlistTitle">' + _this.getPlaylistTitle( el.name ) + '</span></div>' );
 						}
 					} );
 					this.getComponent().find( ".playlistItem" ).on( "click", function () {
@@ -680,11 +683,11 @@
 			// First playlist will always have items in it, other playlists will populate the items array after selection.
 			var numOfClips = this.playlistSet[playlistIndex].items.length;
 			if ( this.getLayout() === "vertical" ) {
-				this.getMedialistHeaderComponent().prepend( '<span class="playlistTitle">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription">' + numOfClips + ' ' + gM( 'mwe-embedplayer-videos' ) + '</span>' );
+				this.getMedialistHeaderComponent().prepend( '<span class="playlistTitle">' + this.getPlaylistTitle( this.playlistSet[playlistIndex].name )+ '</span><span class="playlistDescription">' + numOfClips + ' ' + gM( 'mwe-embedplayer-videos' ) + '</span>' );
 				this.getMedialistHeaderComponent().prepend( '<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist' ) + '"></div>' );
 				this.getMedialistHeaderComponent().height(this.getConfig('verticalHeaderHeight'));
 			} else {
-				this.getMedialistHeaderComponent().prepend( '<div class="horizontalHeaderLables"><span class="playlistTitle horizontalHeader">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription horizontalHeader">(' + numOfClips + ' ' + gM( 'mwe-embedplayer-videos' ) + ')</span></div>' );
+				this.getMedialistHeaderComponent().prepend( '<div class="horizontalHeaderLables"><span class="playlistTitle horizontalHeader">' +  this.getPlaylistTitle(this.playlistSet[playlistIndex].name) + '</span><span class="playlistDescription horizontalHeader">(' + numOfClips + ' ' + gM( 'mwe-embedplayer-videos' ) + ')</span></div>' );
 				this.getMedialistHeaderComponent().prepend( '<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist' ) + '"></div>' );
 				this.getMedialistHeaderComponent().height(this.getConfig('horizontalHeaderHeight'));
 			}
@@ -768,7 +771,15 @@
 		onEnable: function(){
 			this.getMedialistHeaderComponent().find(".playlistBtn").removeClass("disabled");
 			this._super();
+		},
+		getPlaylistTitle: function(string){
+			var url = this.getConfig("playlistUrl");
+			if(url){
+				return "<a href='"+url+"' target='"+this.getConfig("playlistUrlTarget")+"'>" + string + "</a>";
+			}
+			return string;
 		}
+
 	})
 	);
 })(window.mw, window.jQuery);

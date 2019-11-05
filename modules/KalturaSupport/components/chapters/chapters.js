@@ -1302,7 +1302,7 @@
                     	this.embedPlayer.sendNotification("doSeek",seekto);
 					}
                 }
-                if(e.keyCode === 27 || e.keyCode === 13){
+                if(e.keyCode === 27){
                     // close menu and focus the sidebar
                     _this.getPlayer().triggerHelper("closeSideBarContainer");
                     _this.getPlayer().triggerHelper( "onEnableKeyboardBinding" );

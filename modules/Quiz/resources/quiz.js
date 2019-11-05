@@ -66,7 +66,9 @@
 
                 if (embedPlayer.kalturaPlayerMetaData.capabilities === "quiz.quiz"){
                     if (embedPlayer.autoplay) {
+                        mw.setConfig('autoPlay', false);
                         embedPlayer.autoplay = false;
+                        this.triggerHelper("volumeChanged", 1);
                     }
 
                     _this.KIVQModule.setupQuiz().fail(function(data, msg) {
@@ -508,6 +510,7 @@
         buildOpenQuestion: function(cPo){
             var _this = this;
             var interfaceElement = this.embedPlayer.getInterface();
+            interfaceElement.find(".open-question-textarea")[0].focus();
             // clear button
             interfaceElement.find("#open-question-clear")
             .off()
@@ -550,7 +553,7 @@
                     interfaceElement.find("#open-question-clear,#open-question-save").removeAttr("disabled");
                 }
             })
-            .change(function(){
+            .bind('change focusout', function(){
                 var holdAnswer = $(this).val();
                 interfaceElement.find(".hint-why-box")
                 .click(function () {
@@ -933,6 +936,9 @@
             });
             _this.KIVQModule.submitAnswer(questionNr,_this.selectedAnswer);
             _this.selectedAnswer = null;
+            $(".cp-navigation").css("pointer-events", "none");
+            $(".ftr-right").css("pointer-events", "none");
+            $(".cp-navigation-btn").addClass("disabled");
             setTimeout(function(){_this.KIVQModule.checkIfDone(questionNr)},_this.postAnswerTimer);
         },
 
