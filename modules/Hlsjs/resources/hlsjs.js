@@ -794,14 +794,14 @@
 
 			_onseeking: function(){
 				// if this is the initial seeking which hls performs to the live edge - do nothing
-				if(this.afterInitialSeeking || !this.embedPlayer.isLive()){
+				if(this.afterInitialSeeking){
 					this.orig_onseeking();
 				}
 			},
 
 			_onseeked: function () {
 				// if this is the initial seeking which hls performs to the live edge - do nothing
-				if(this.afterInitialSeeking || !this.embedPlayer.isLive()){
+				if(this.afterInitialSeeking){
 					this.orig_onseeked();
 				}
 			},
