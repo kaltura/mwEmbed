@@ -122,7 +122,7 @@
 					}
 				} );
 			} else {
-				this.bind( 'playing', function () {
+				this.bind( 'playing seeking', function () {
 					// hide native text tracks since 'showEmbeddedCaptions' is false
 					setTimeout(function () {
 						_this.embedPlayer.hideTextTrack();
