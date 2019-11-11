@@ -61,7 +61,8 @@
     "mwe-quiz-retake-scoretype-5" : "Average",
     "mwe-quiz-retake-btn": "Take the Quiz again",
     "mwe-quiz-feedback": "Feedback",
-    "mwe-quiz-close-feedback": "Close feedback"
+    "mwe-quiz-close-feedback": "Close feedback",
+    "mwe-quiz-landscape-warning": "This video contains features that works best on landscape mode.<br/>Please flip your screen to continue"
   },
   "de": {
     "mwe-quiz-Submitted": "Abgesendet",
