@@ -35,23 +35,26 @@
          * Setup the Chromecast plugin - loads Google Cast Chrome sender SDK and bind his handler.
          */
         setup: function () {
-            if ( mw.getConfig( 'EmbedPlayer.IsFriendlyIframe' ) ) {
-                try {
-                    top[ '__onGCastApiAvailable' ] = this.toggleCastButton.bind( this );
-                    kWidget.appendScriptUrl( this.CAST_SENDER_V3_URL, null, top.document );
-                    this.isInIframeApi = false;
-                } catch ( e ) {
-                    window[ '__onGCastApiAvailable' ] = this.toggleCastButton.bind( this );
-                    // PSVAMB-4560
-                    // For some reason, Chrome appends script to a player's iframe parent document unless specified explicitly
-                    kWidget.appendScriptUrl( this.CAST_SENDER_V3_URL, null, window.document );
-                    this.isInIframeApi = true;
+            var _this = this;
+            this.bind('playerReady', function() {
+                if (mw.getConfig('EmbedPlayer.IsFriendlyIframe')) {
+                    try {
+                        top['__onGCastApiAvailable'] = _this.toggleCastButton.bind(_this);
+                        kWidget.appendScriptUrl(_this.CAST_SENDER_V3_URL, null, top.document);
+                        _this.isInIframeApi = false;
+                    } catch (e) {
+                        window['__onGCastApiAvailable'] = _this.toggleCastButton.bind(_this);
+                        // PSVAMB-4560
+                        // For some reason, Chrome appends script to a player's iframe parent document unless specified explicitly
+                        kWidget.appendScriptUrl(_this.CAST_SENDER_V3_URL, null, window.document);
+                        _this.isInIframeApi = true;
+                    }
+                } else {
+                    window['__onGCastApiAvailable'] = _this.toggleCastButton.bind(_this);
+                    kWidget.appendScriptUrl(_this.CAST_SENDER_V3_URL);
+                    _this.isInIframeApi = true;
                 }
-            } else {
-                window[ '__onGCastApiAvailable' ] = this.toggleCastButton.bind( this );
-                kWidget.appendScriptUrl( this.CAST_SENDER_V3_URL );
-                this.isInIframeApi = true;
-            }
+            })
         },
 
 
