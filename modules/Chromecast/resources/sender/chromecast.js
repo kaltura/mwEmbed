@@ -30,6 +30,7 @@
         sessionStateChangedCallback: null,
         CAST_SENDER_V3_URL: '//www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1',
         isInIframeApi: false,
+        
         /**
          * Setup the Chromecast plugin - loads Google Cast Chrome sender SDK and bind his handler.
          */
@@ -52,6 +53,8 @@
                 this.isInIframeApi = true;
             }
         },
+        
+        
         /**
          * Setup the Chromecast plugin bindings.
          */
