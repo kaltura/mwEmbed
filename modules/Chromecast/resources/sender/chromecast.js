@@ -70,14 +70,9 @@
             this.log( "toggleCastButton: isAvailable=" + isAvailable + ", reason=" + reason );
             if ( isAvailable ) {
                 this.initializeCastApi();
-                this.show();
-                if (this.embedPlayer.getControlBarContainer().length < 1) {
-                    this.bind('onShowInterfaceComponents', function () {
-                        _this.show();
-                    });
-                }
+                this.embedPlayer.playerReadyFlag ? this.show() : this.bind('playerReady', function (){_this.show()});
             } else {
-                this.hide();
+                this.embedPlayer.playerReadyFlag ? this.hide() : this.bind('playerReady', function (){_this.hide()});
             }
         },
 
