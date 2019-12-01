@@ -30,34 +30,28 @@
         sessionStateChangedCallback: null,
         CAST_SENDER_V3_URL: '//www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1',
         isInIframeApi: false,
-
         /**
          * Setup the Chromecast plugin - loads Google Cast Chrome sender SDK and bind his handler.
          */
         setup: function () {
-            var _this = this;
-            this.bind('playerReady', function() {
-                if (mw.getConfig('EmbedPlayer.IsFriendlyIframe')) {
-                    try {
-                        top['__onGCastApiAvailable'] = _this.toggleCastButton.bind(_this);
-                        kWidget.appendScriptUrl(_this.CAST_SENDER_V3_URL, null, top.document);
-                        _this.isInIframeApi = false;
-                    } catch (e) {
-                        window['__onGCastApiAvailable'] = _this.toggleCastButton.bind(_this);
-                        // PSVAMB-4560
-                        // For some reason, Chrome appends script to a player's iframe parent document unless specified explicitly
-                        kWidget.appendScriptUrl(_this.CAST_SENDER_V3_URL, null, window.document);
-                        _this.isInIframeApi = true;
-                    }
-                } else {
-                    window['__onGCastApiAvailable'] = _this.toggleCastButton.bind(_this);
-                    kWidget.appendScriptUrl(_this.CAST_SENDER_V3_URL);
-                    _this.isInIframeApi = true;
+            if ( mw.getConfig( 'EmbedPlayer.IsFriendlyIframe' ) ) {
+                try {
+                    top[ '__onGCastApiAvailable' ] = this.toggleCastButton.bind( this );
+                    kWidget.appendScriptUrl( this.CAST_SENDER_V3_URL, null, top.document );
+                    this.isInIframeApi = false;
+                } catch ( e ) {
+                    window[ '__onGCastApiAvailable' ] = this.toggleCastButton.bind( this );
+                    // PSVAMB-4560
+                    // For some reason, Chrome appends script to a player's iframe parent document unless specified explicitly
+                    kWidget.appendScriptUrl( this.CAST_SENDER_V3_URL, null, window.document );
+                    this.isInIframeApi = true;
                 }
-            })
+            } else {
+                window[ '__onGCastApiAvailable' ] = this.toggleCastButton.bind( this );
+                kWidget.appendScriptUrl( this.CAST_SENDER_V3_URL );
+                this.isInIframeApi = true;
+            }
         },
-
-
         /**
          * Setup the Chromecast plugin bindings.
          */
@@ -72,10 +66,16 @@
          * @param reason
          */
         toggleCastButton: function ( isAvailable, reason ) {
+            var _this = this;
             this.log( "toggleCastButton: isAvailable=" + isAvailable + ", reason=" + reason );
             if ( isAvailable ) {
                 this.initializeCastApi();
                 this.show();
+                if (this.embedPlayer.getControlBarContainer().length < 1) {
+                    this.bind('onShowInterfaceComponents', function () {
+                        _this.show();
+                    });
+                }
             } else {
                 this.hide();
             }
