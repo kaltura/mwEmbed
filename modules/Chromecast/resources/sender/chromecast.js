@@ -1,6 +1,5 @@
 (function ( mw, $ ) {
     "use strict";
-
     // Add chromecast player:
     $( mw ).bind( 'EmbedPlayerUpdateMediaPlayers', function ( event, mediaPlayers ) {
         var chromecastSupportedProtocols = [ 'video/mp4' ];
@@ -66,14 +65,8 @@
          * @param reason
          */
         toggleCastButton: function ( isAvailable, reason ) {
-            var _this = this;
             this.log( "toggleCastButton: isAvailable=" + isAvailable + ", reason=" + reason );
-            if ( isAvailable ) {
-                this.initializeCastApi();
-                this.embedPlayer.playerReadyFlag ? this.show() : this.bind('playerReady', function (){_this.show()});
-            } else {
-                this.embedPlayer.playerReadyFlag ? this.hide() : this.bind('playerReady', function (){_this.hide()});
-            }
+            this.loadWhenReady(isAvailable);
         },
 
         /**
@@ -312,6 +305,19 @@
                     }
                 }
             );
+        },
+        loadWhenReady: function (callback) {
+            var _this = this;
+            if (callback) {
+                this.initializeCastApi();
+                this.embedPlayer.playerReadyFlag ? this.show() : this.bind('playerReady', function () {
+                    _this.show();
+                });
+            } else {
+                this.embedPlayer.playerReadyFlag ? this.hide() : this.bind('playerReady', function () {
+                    _this.hide();
+                });
+            }
         }
     } ) );
 })( window.mw, window.jQuery );
