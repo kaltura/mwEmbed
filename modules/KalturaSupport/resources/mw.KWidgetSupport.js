@@ -20,6 +20,7 @@ mw.KWidgetSupport.prototype = {
 	kClient : null,
 	kSessionId: null, // Used for Analytics events
 	originalStreamerType: null,
+	originalServiceUrl: null,
 
 	// Constructor check settings etc
 	init: function( options ){
@@ -124,7 +125,7 @@ mw.KWidgetSupport.prototype = {
 
 			downloadUrlCallback( downloadUrl );
 		});
-		
+
 		// Add hook for check player sources to use local kEntry ID source check:
 		embedPlayer.bindHelper( 'checkPlayerSourcesEvent', function( event, callback ) {
 			_this.originalStreamerType = embedPlayer.getKalturaConfig( null, 'streamerType' ) ? embedPlayer.getKalturaConfig( null, 'streamerType' ) : 'http';
@@ -135,7 +136,7 @@ mw.KWidgetSupport.prototype = {
 		embedPlayer.bindHelper( 'KalturaSupport_EntryDataReady', function() {
 			// Set duration
 			embedPlayer.setDuration( embedPlayer.kalturaPlayerMetaData.duration );
-			
+
 			// Update thumbnail
 			var thumbUrl = _this.getKalturaThumbnailUrl({
 				url: embedPlayer.evaluate('{mediaProxy.entry.thumbnailUrl}'),
@@ -166,7 +167,7 @@ mw.KWidgetSupport.prototype = {
 		embedPlayer.bindHelper( 'getShareIframeSrc', function( event, callback ){
 			var uiconf_id = (embedPlayer.kuiconfid) ? '/uiconf_id/' + embedPlayer.kuiconfid : '';
 			var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php';
-			iframeUrl +='/wid/' + embedPlayer.kwidgetid + uiconf_id + 
+			iframeUrl +='/wid/' + embedPlayer.kwidgetid + uiconf_id +
 				'/entry_id/' + embedPlayer.kentryid + '/' +
 				'?' + kWidget.flashVarsToUrl( embedPlayer.getFlashvars() );
 			// return the iframeUrl via the callback:
@@ -301,6 +302,9 @@ mw.KWidgetSupport.prototype = {
 					if (action.pattern && action.replacement) {
 						var regExp=new RegExp(action.pattern, "i");
 						var flashvars = embedPlayer.getFlashvars();
+						if (!this.originalServiceUrl){
+							this.originalServiceUrl = mw.config.get('Kaltura.playManifestServiceUrl');
+						}
 						var serviceUrl = mw.config.get('Kaltura.playManifestServiceUrl');
 						var match = serviceUrl.match( regExp );
 						if (match) {
@@ -709,11 +713,11 @@ mw.KWidgetSupport.prototype = {
 					'vars' : {}
 				};
 			}
-			// check for var update ( no top level plugin ) 
+			// check for var update ( no top level plugin )
 			if( ! pluginName ){
 				embedPlayer.playerConfig['vars'][key] = value;
-			} else if( 
-				! embedPlayer.playerConfig[ 'plugins' ][ pluginName ] 
+			} else if(
+				! embedPlayer.playerConfig[ 'plugins' ][ pluginName ]
 			){
 				// Plugin doesn't exists -> create it
 				embedPlayer.playerConfig[ 'plugins' ][ pluginName ] = objectSet;
@@ -804,7 +808,7 @@ mw.KWidgetSupport.prototype = {
 			if( _this.getPluginConfig( embedPlayer, 'strings', localeMsgKey ) ) {
 				return _this.getPluginConfig( embedPlayer, 'strings', localeMsgKey );
 			}
-			// NOTE msgKey is used instead of localeMsgKey ( since default mw messages uses resource loader localization ) 
+			// NOTE msgKey is used instead of localeMsgKey ( since default mw messages uses resource loader localization )
 			if ( mw.messages.exists( msgKey ) ) {
 				return gM( msgKey );
 			}
@@ -947,7 +951,7 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.inline = true;
 		}
 
-		
+
 		// Check for autoMute:
 		var autoMute = getAttr( 'autoMute' );
 		if( autoMute && !mw.isMobileDevice()){
@@ -1096,13 +1100,13 @@ mw.KWidgetSupport.prototype = {
 		} else {
 			return undefined;
 		}
-		
+
 		return returnConfig;
 	},
 	postProcessConfig: function( embedPlayer, config ){
 		var _this = this;
 		var returnSet = $.extend( {}, config );
-		
+
 		$.each( returnSet, function( attrName, value ) {
 			// Unescape values that would come in from flashvars
 			if( value && ( typeof value === 'string' ) ){
@@ -1366,7 +1370,7 @@ mw.KWidgetSupport.prototype = {
 	},
 	addSources: function( embedPlayer, sources ){
 		$.each(sources, function( inx, source){
-			embedPlayer.mediaElement.tryAddSource( 
+			embedPlayer.mediaElement.tryAddSource(
 				$('<source />')
 				.attr( source )
 				.get( 0 )
@@ -1608,7 +1612,7 @@ mw.KWidgetSupport.prototype = {
 				source['data-flavorid'] = 'ogg';
 				source['type'] = 'video/ogg';
 			}
-	
+
 			// Check for webm source
 			if( asset.fileExt && asset.containerFormat && ( asset.fileExt == 'webm'
 					||
@@ -1648,7 +1652,7 @@ mw.KWidgetSupport.prototype = {
 				source['data-flavorid'] = 'wvm';
 				source['type'] = 'video/wvm';
 				source['disableQueryString'] = true;
-			} 
+			}
 
 			if ( asset.tags && asset.tags == 'kontiki'){
 				source['src'] = src + '/a.mp4';
@@ -1900,7 +1904,7 @@ mw.KWidgetSupport.prototype = {
 					'&clientTag=' + clientTag;
 			}
 		});
-		
+
 		return deviceSources;
 	},
 	generateAbrSource: function(options){
