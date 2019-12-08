@@ -20,6 +20,7 @@ mw.KWidgetSupport.prototype = {
 	kClient : null,
 	kSessionId: null, // Used for Analytics events
 	originalStreamerType: null,
+	originalServiceUrl: null,
 
 	// Constructor check settings etc
 	init: function( options ){
@@ -301,7 +302,11 @@ mw.KWidgetSupport.prototype = {
 					if (action.pattern && action.replacement) {
 						var regExp=new RegExp(action.pattern, "i");
 						var flashvars = embedPlayer.getFlashvars();
-						var serviceUrl = mw.config.get('Kaltura.playManifestServiceUrl');
+						if (!this.originalServiceUrl)
+						{
+							this.originalServiceUrl = mw.config.get('Kaltura.playManifestServiceUrl');
+						}
+						var serviceUrl = this.originalServiceUrl;
 						var match = serviceUrl.match( regExp );
 						if (match) {
 							serviceUrl = serviceUrl.replace(regExp, action.replacement);
