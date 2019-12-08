@@ -305,7 +305,7 @@ mw.KWidgetSupport.prototype = {
 						if (!this.originalServiceUrl){
 							this.originalServiceUrl = mw.config.get('Kaltura.playManifestServiceUrl');
 						}
-						var serviceUrl = mw.config.get('Kaltura.playManifestServiceUrl');
+						var serviceUrl = this.originalServiceUrl;
 						var match = serviceUrl.match( regExp );
 						if (match) {
 							serviceUrl = serviceUrl.replace(regExp, action.replacement);
