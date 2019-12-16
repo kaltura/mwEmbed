@@ -555,6 +555,7 @@
             })
             .bind('change focusout', function(){
                 var holdAnswer = $(this).val();
+                var textAreaDisabled = $(this).prop('disabled');
                 interfaceElement.find(".hint-why-box")
                 .click(function () {
                     $(".close-button")
@@ -564,7 +565,7 @@
                             if (holdAnswer.length !== 0) {
                                 interfaceElement.find("#open-question-clear,#open-question-save").removeAttr("disabled");
                             }
-                        } else {
+                        } else if (!textAreaDisabled){
                             _this.setAnswer(holdAnswer);
                             interfaceElement.find(".ivqContainer.answered").removeClass("answered");
                             interfaceElement.find("#open-question-change-answer").hide();
