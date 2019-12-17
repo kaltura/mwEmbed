@@ -21,7 +21,6 @@
             autoContinue: false,
             previewPlayerEnabled: false
         },
-        postAnswerTimer : 1800,
         isSeekingIVQ:false,
         inFullScreen:false,
         selectedAnswer:null,
@@ -420,18 +419,21 @@
         },
         
         submitOpenQuestion: function(cuepoint){
+            var _this = this;
             // we have the cuepoint and the value 
             cuepoint.openAnswer = this.embedPlayer.getInterface().find(".open-question-textarea").val();
-            this.KIVQModule.submitAnswer(cuepoint.key,null,cuepoint.openAnswer);
-            this.selectedAnswer = null;
-            var _this = this;
-            $(".cp-navigation").css("pointer-events", "none");
-            $(".ftr-right").css("pointer-events", "none");
-            $(".cp-navigation-btn").addClass("disabled");
-            setTimeout(function(){
-                _this.KIVQModule.checkIfDone(cuepoint.key)
-            },
-            _this.postAnswerTimer);
+            this.KIVQModule.submitAnswer(cuepoint.key,null,cuepoint.openAnswer).then(
+                function(){
+                    _this.KIVQModule.checkIfDone(cuepoint.key);
+                    this.selectedAnswer = null;
+                    $(".cp-navigation").css("pointer-events", "none");
+                    $(".ftr-right").css("pointer-events", "none");
+                    $(".cp-navigation-btn").addClass("disabled");
+                },
+                function(){
+                    _this.showSubmitErrorOverlay(cuepoint.key);
+                }
+            );
         },
 
         // This function is rendering a question screen
@@ -499,6 +501,19 @@
 
                     }                  
                 }else{
+                    _this.showAnswered(cPo, questionNr);
+                }
+            }
+            else if (cPo.submitRequested) {
+                if (cPo.questionType == this.KIVQModule.QUESTIONS_TYPE.OPEN_QUESTION) {
+                    interfaceElement.find(".open-question-textarea").val(cPo.openAnswer);
+                    var charsLength = interfaceElement.find(".open-question-textarea").val().length;
+                    interfaceElement.find(".open-question-chars .chars").text(charsLength);
+                    interfaceElement.find("#open-question-change-answer").hide();
+                    interfaceElement.find("#open-question-clear,#open-question-save")
+                    .removeAttr("disabled");
+                    interfaceElement.find("#open-question-save").text(gM('mwe-quiz-open-question-save')).focus();
+                } else {
                     _this.showAnswered(cPo, questionNr);
                 }
             }
@@ -856,16 +871,24 @@
             var _this = this;
             $.each(cPo.answeres, function (key, value) {
                 if (key == $.cpObject.cpArray[questionNr].selectedAnswer) {
-                    $('#' + key).parent().addClass("wide single-answer-box-bk-apply disable");
-                    $('#' + key).removeClass('single-answer-box-txt')
-                        .addClass(function(){
-                            // transform answer element so it appears as an already-answered on with "applied" element
-                            $(this).addClass('single-answer-box-txt-wide ')
-                                .after($('<div></div>') // adding continue/applied div as button
-                                    .addClass("single-answer-box-apply qApplied disable").attr('aria-disabled', true).attr('role', 'button')
-                                    .text(gM('mwe-quiz-selected'))
-                            );
+                    if (cPo.submitRequested) {
+                        // restore selection
+                        setTimeout(function(){
+                            $('#' + key).parent().trigger("click");
                         });
+                    } else {
+                        $('#' + key).parent().addClass("wide single-answer-box-bk-apply disable");
+                        $('#' + key).removeClass('single-answer-box-txt')
+                            .addClass(function(){
+                                // transform answer element so it appears as an already-answered on with "applied" element
+                                $(this).addClass('single-answer-box-txt-wide ')
+                                    .after($('<div></div>') // adding continue/applied div as button
+                                        .addClass("single-answer-box-apply qApplied disable").attr('aria-disabled', true).attr('role', 'button')
+                                        .text(gM('mwe-quiz-selected')
+                                    )
+                                );
+                            });
+                    }
                 }
             });
             if ($.quizParams.allowAnswerUpdate ) {
@@ -926,8 +949,19 @@
                 }
             });
         },
-        continueClickHandler: function (e, questionNr)
-        {
+
+        showSubmitErrorOverlay: function(questionNr) {
+            var _this = this;
+            _this.KIVQScreenTemplate.tmplErrorScreen();
+                $(".sub-text").html('<p tabindex="5" class="failed-description">' + gM('mwe-quiz-submit-failed-description') + '</p>' +
+                '<div class="confirm-box" id="back-to-question" role="button" title='+ gM('mwe-quiz-back-to-question') +' tabindex="5">' + gM('mwe-quiz-back-to-question') + '</div>'
+            );
+            $("#back-to-question").on('keydown', _this.keyDownHandler).on('click',function(e){
+                _this.ssSetCurrentQuestion(questionNr);
+            });
+        },
+
+        continueClickHandler: function (e, questionNr){
             var _this = this;
             e.stopPropagation();
             $('.single-answer-box-bk').addClass('disable');
@@ -937,12 +971,18 @@
                     .text(gM('mwe-quiz-selected'))
                     .addClass('qApplied').fadeIn(100).attr('aria-disabled', true);
             });
-            _this.KIVQModule.submitAnswer(questionNr,_this.selectedAnswer);
-            _this.selectedAnswer = null;
-            $(".cp-navigation").css("pointer-events", "none");
-            $(".ftr-right").css("pointer-events", "none");
-            $(".cp-navigation-btn").addClass("disabled");
-            setTimeout(function(){_this.KIVQModule.checkIfDone(questionNr)},_this.postAnswerTimer);
+            _this.KIVQModule.submitAnswer(questionNr,_this.selectedAnswer).then(
+                function(){
+                    _this.selectedAnswer = null;
+                    $(".cp-navigation").css("pointer-events", "none");
+                    $(".ftr-right").css("pointer-events", "none");
+                    $(".cp-navigation-btn").addClass("disabled");
+                    _this.KIVQModule.checkIfDone(questionNr)
+                },
+                function(){
+                    _this.showSubmitErrorOverlay(questionNr);
+                }
+            );
         },
 
         showPortraitWarning:function(){

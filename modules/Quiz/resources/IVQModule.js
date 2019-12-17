@@ -221,7 +221,8 @@
                         answerCpId: null,
                         isCorrect: null,
                         correctAnswerKeys: null,
-                        explanation: null
+                        explanation: null,
+                        submitRequested: false
                     };
                     // data[1] refers to the answers by this user 
                     if (!$.isEmptyObject(data[1].objects)) {
@@ -260,6 +261,7 @@
                         openAnswer: ansP.openAnswer,
                         questionType: data[0].objects[i].questionType,
                         feedback: $(ansP.feedback).get(-1),
+                        submitRequested: ansP.submitRequested,
                     });
                 }
                 $.cpObject.cpArray = cpArray;
@@ -360,22 +362,27 @@
              * @param {*} openQuestionText 
              */
             submitAnswer:function(questionNr,selectedAnswer,openQuestionText){
-                var _this = this,isAnswered;
+                var defer = $.Deferred();
                 $.cpObject.cpArray[questionNr].selectedAnswer = selectedAnswer;
-                if ($.cpObject.cpArray[questionNr].isAnswerd) {
-                    isAnswered = true;
-                }
-                else{
-                    isAnswered = false;
-                    $.cpObject.cpArray[questionNr].isAnswerd = true;
-                }
+                $.cpObject.cpArray[questionNr].submitRequested = true;
+                // setTimeout(function(){
+                //     defer.reject();
+                // },500)
+                var submitCallTimeout = setTimeout(function(){
+                    defer.reject();
+                    // check if API call canceleble
+                }, 5000) // TODO: add configuration for this
                 _this.KIVQApi.addAnswer(isAnswered,_this.i2q(selectedAnswer),_this.kQuizUserEntryId,questionNr,function(data){
                     if (!_this.checkApiResponse('Add question err -->',data)){
-                        return false;
+                        defer.reject();
                     }else {
+                        clearTimeout(submitCallTimeout);
+                        $.cpObject.cpArray[questionNr].isAnswerd = true;
                         $.cpObject.cpArray[questionNr].answerCpId = data.id;
+                        defer.resolve();
                     }
                 },openQuestionText);
+                return defer; 
             },
             bubbleSizeSelector: function (isFullScreen) {
                 var _this = this, buObj = {bubbleAnsSize: "", bubbleUnAnsSize: ""};
