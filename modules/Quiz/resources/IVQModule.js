@@ -362,20 +362,17 @@
              * @param {*} openQuestionText 
              */
             submitAnswer:function(questionNr,selectedAnswer,openQuestionText){
+                var _this = this;
                 var defer = $.Deferred();
                 $.cpObject.cpArray[questionNr].selectedAnswer = selectedAnswer;
                 $.cpObject.cpArray[questionNr].submitRequested = true;
-                // setTimeout(function(){
-                //     defer.reject();
-                // },500)
                 var submitCallTimeout = setTimeout(function(){
                     defer.reject();
-                    // check if API call canceleble
-                }, 5000) // TODO: add configuration for this
-                _this.KIVQApi.addAnswer(isAnswered,_this.i2q(selectedAnswer),_this.kQuizUserEntryId,questionNr,function(data){
+                }, _this.quizPlugin.getConfig("apiRequestTimeout") || 5000)
+                _this.KIVQApi.addAnswer($.cpObject.cpArray[questionNr].isAnswerd,_this.i2q(selectedAnswer),_this.kQuizUserEntryId,questionNr,function(data){
                     if (!_this.checkApiResponse('Add question err -->',data)){
                         defer.reject();
-                    }else {
+                    } else {
                         clearTimeout(submitCallTimeout);
                         $.cpObject.cpArray[questionNr].isAnswerd = true;
                         $.cpObject.cpArray[questionNr].answerCpId = data.id;
