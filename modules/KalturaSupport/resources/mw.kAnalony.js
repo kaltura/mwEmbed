@@ -76,6 +76,7 @@
 		onPlayStatus: false,
         firstPlayRequestTime: null,
         bandwidthSamples: [],
+		firstPlaying: true,
 
 		smartSetInterval:function(callback,time,monitorObj) {
 			var _this = this;
@@ -150,6 +151,7 @@
 				_this.onPlayStatus = false;
 				_this.id3SequenceId = null;
 				_this.bandwidthSamples = [];
+				_this.firstPlaying = true;
 			});
             // calculate bandwidth of current loaded frag
 			this.embedPlayer.bindHelper( 'hlsFragBufferedWithData' , function (e,data) {
@@ -172,14 +174,15 @@
 				_this.sendAnalytics(playerEvent.PLAY_REQUEST);
 			});
 
-			this.embedPlayer.bindHelper( 'onplay' , function () {
+			this.embedPlayer.bindHelper( 'playing' , function () {
                 if (_this.embedPlayer.currentState === "start" && _this.playSentOnStart) {
                     return;
                 }
 
-				if ( !this.isInSequence() && (_this.firstPlay || _this.embedPlayer.currentState !== "play") ){
-					if ( _this.firstPlay && !_this.onPlayStatus ) {
+				if ( !this.isInSequence() && (_this.firstPlaying || _this.embedPlayer.currentState !== "play") ){
+					if ( _this.firstPlaying && !_this.onPlayStatus ) {
 						_this.onPlayStatus = true;
+						_this.firstPlaying = false;
                         _this.playSentOnStart = true;
 						_this.timer.start();
 						_this.sendAnalytics(playerEvent.PLAY, {
@@ -294,14 +297,18 @@
 			});
 
 			this.embedPlayer.bindHelper('bufferStartEvent', function(){
-				_this.bufferStartTime = new Date();
-				_this.sendAnalytics(playerEvent.BUFFER_START);
+				if (!_this.firstPlaying) {
+					_this.bufferStartTime = new Date();
+					_this.sendAnalytics(playerEvent.BUFFER_START);
+				}
 			});
 
 			this.embedPlayer.bindHelper('bufferEndEvent', function(){
-				_this.calculateBuffer();
-				_this.bufferStartTime = null;
-                _this.sendAnalytics(playerEvent.BUFFER_END);
+				if (!_this.firstPlaying) {
+					_this.calculateBuffer();
+					_this.bufferStartTime = null;
+					_this.sendAnalytics(playerEvent.BUFFER_END);
+				}
             });
 
 			this.embedPlayer.bindHelper( 'bitrateChange' ,function( event, newBitrate){
