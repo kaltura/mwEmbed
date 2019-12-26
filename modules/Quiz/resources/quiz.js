@@ -422,16 +422,13 @@
             var _this = this;
             // we have the cuepoint and the value 
             cuepoint.openAnswer = this.embedPlayer.getInterface().find(".open-question-textarea").val();
-            this.KIVQModule.submitAnswer(cuepoint.key,null,cuepoint.openAnswer).then(
+            _this.makeSubmitAnswer(
+                cuepoint.key,
+                null,
+                cuepoint.openAnswer,
                 function(){
+                    _this.selectedAnswer = null;
                     _this.KIVQModule.checkIfDone(cuepoint.key);
-                    this.selectedAnswer = null;
-                    $(".cp-navigation").css("pointer-events", "none");
-                    $(".ftr-right").css("pointer-events", "none");
-                    $(".cp-navigation-btn").addClass("disabled");
-                },
-                function(){
-                    _this.showSubmitErrorOverlay(cuepoint.key);
                 }
             );
         },
@@ -518,9 +515,6 @@
                 }
             }
             else {
-                if (_this.isReflectionPoint(cPo)) {
-                    _this.KIVQModule.submitAnswer(questionNr,0);
-                }
                 _this._selectAnswerConroller(cPo, questionNr);
             }
             this.addFooter(questionNr);
@@ -961,6 +955,25 @@
             });
         },
 
+        makeSubmitAnswer: function(questionNr, selectedAnswer, openQuestionText, callbackOnResolve) {
+            var _this = this;
+            var quizNode = $(".screen.quiz");
+            quizNode.addClass("submitting");
+            $(".cp-navigation").css("pointer-events", "none");
+            $(".ftr-right").css("pointer-events", "none");
+            $(".cp-navigation-btn").addClass("disabled");
+            _this.KIVQModule.submitAnswer(questionNr,selectedAnswer,openQuestionText).then(
+                function() {
+                    quizNode.removeClass("submitting");
+                    callbackOnResolve();
+                },
+                function(){
+                    quizNode.removeClass("submitting");
+                    _this.showSubmitErrorOverlay(questionNr);
+                }
+            );
+        },
+
         continueClickHandler: function (e, questionNr){
             var _this = this;
             e.stopPropagation();
@@ -971,16 +984,13 @@
                     .text(gM('mwe-quiz-selected'))
                     .addClass('qApplied').fadeIn(100).attr('aria-disabled', true);
             });
-            _this.KIVQModule.submitAnswer(questionNr,_this.selectedAnswer).then(
+            _this.makeSubmitAnswer(
+                questionNr,
+                _this.selectedAnswer,
+                null,
                 function(){
                     _this.selectedAnswer = null;
-                    $(".cp-navigation").css("pointer-events", "none");
-                    $(".ftr-right").css("pointer-events", "none");
-                    $(".cp-navigation-btn").addClass("disabled");
                     _this.KIVQModule.checkIfDone(questionNr)
-                },
-                function(){
-                    _this.showSubmitErrorOverlay(questionNr);
                 }
             );
         },
@@ -1081,7 +1091,7 @@
             }
         },
         addFooter: function (questionNr) {
-            var _this = this;
+            var _this = this, cPo = $.cpObject.cpArray[questionNr];
             _this.addQuePointsNavigationButtons(questionNr);
 
             if (_this.KIVQModule.quizSubmitted) {
@@ -1112,14 +1122,27 @@
                         .css("cursor","default"));
                 if (_this.KIVQModule.canSkip) {
                     var skipTxt = gM('mwe-quiz-skipForNow');
-                    if ($.cpObject.cpArray[questionNr].isAnswerd || _this.isReflectionPoint($.cpObject.cpArray[questionNr]) ){
+                    if (cPo.isAnswerd || _this.isReflectionPoint(cPo) ){
                         skipTxt = gM('mwe-quiz-next');
                     }
 
                     $(".ftr-right").html(skipTxt).on('click', function () {
-                        _this.KIVQModule.checkIfDone(questionNr)
+                        if (_this.isReflectionPoint(cPo)) {
+                            if (!cPo.isAnswerd) {
+                                _this.makeSubmitAnswer(
+                                    questionNr,
+                                    0,
+                                    undefined,
+                                    function() {
+                                        _this.KIVQModule.checkIfDone(questionNr);
+                                    }
+                                );
+                            } else {
+                                _this.KIVQModule.checkIfDone(questionNr);
+                            }
+                        }
                     }).on('keydown', _this.keyDownHandler).attr('tabindex', 5).attr('role', 'button');
-                }else if(!_this.KIVQModule.canSkip &&  ( $.cpObject.cpArray[questionNr].isAnswerd || _this.isReflectionPoint($.cpObject.cpArray[questionNr])) ){
+                }else if(!_this.KIVQModule.canSkip &&  ( cPo.isAnswerd || _this.isReflectionPoint(cPo)) ){
                     $(".ftr-right").html(gM('mwe-quiz-next')).on('click', function () {
                         _this.KIVQModule.checkIfDone(questionNr)
                     });
