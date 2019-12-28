@@ -502,6 +502,7 @@
                 }
             }
             else if (cPo.submitRequested) {
+                // user selected/typed and submitted answer but API call failed (network issue)
                 if (cPo.questionType == this.KIVQModule.QUESTIONS_TYPE.OPEN_QUESTION) {
                     interfaceElement.find(".open-question-textarea").val(cPo.openAnswer);
                     var charsLength = interfaceElement.find(".open-question-textarea").val().length;

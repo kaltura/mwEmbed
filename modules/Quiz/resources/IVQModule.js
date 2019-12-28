@@ -47,6 +47,7 @@
                 this.destroy();
                 this.embedPlayer = embedPlayer;
                 this.quizPlugin = quizPlugin;
+                this.apiRequestTimeout = quizPlugin.getConfig("apiRequestTimeout") || 5000;
             },
             setupQuiz:function(){
                 var _this = this,
@@ -368,12 +369,12 @@
                 $.cpObject.cpArray[questionNr].submitRequested = true;
                 var submitCallTimeout = setTimeout(function(){
                     defer.reject();
-                }, _this.quizPlugin.getConfig("apiRequestTimeout") || 5000)
+                }, _this.apiRequestTimeout);
                 _this.KIVQApi.addAnswer($.cpObject.cpArray[questionNr].isAnswerd,_this.i2q(selectedAnswer),_this.kQuizUserEntryId,questionNr,function(data){
+                    clearTimeout(submitCallTimeout);
                     if (!_this.checkApiResponse('Add question err -->',data)){
                         defer.reject();
                     } else {
-                        clearTimeout(submitCallTimeout);
                         $.cpObject.cpArray[questionNr].isAnswerd = true;
                         $.cpObject.cpArray[questionNr].answerCpId = data.id;
                         defer.resolve();
