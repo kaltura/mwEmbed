@@ -186,6 +186,8 @@
             tmplErrorScreen:function(showButton){
                 var _this = this;
                 var buttonUi = "";
+                // in case we are on a failed-submitting an answer we want to allow the end-user to 
+                // return to the question - hence the button. 
                 if(showButton){
                     buttonUi = '<div class="confirm-box" id="back-to-question" role="button" title='+ gM('mwe-quiz-back-to-question') +' tabindex="5">' + gM('mwe-quiz-back-to-question') + '</div>';
                 }

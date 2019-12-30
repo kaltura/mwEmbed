@@ -436,13 +436,12 @@
 
         // This function is rendering a question screen
         ssSetCurrentQuestion: function (questionNr) {
-        console.log(">>>>  ssSetCurrentQuestion",)
             var _this = this,cPo = $.cpObject.cpArray[questionNr];
             _this.ivqShowScreen();
             _this.KIVQScreenTemplate.tmplQuestion();
 
             if ($.cpObject.cpArray[questionNr].hintText){
-                _this.ssDisplayHint(questionNr)
+                _this.ssDisplayHint(questionNr);
             }
             var className = this.getClassByCPType(cPo.questionType);
             $(".ivqContainer").addClass(className);
@@ -491,6 +490,8 @@
                         var charsLength = interfaceElement.find(".open-question-textarea").val().length;
                         interfaceElement.find(".open-question-chars .chars").text(charsLength);
                         if(cPo.failed){
+                            // cuepoint failed can only be on open question. If failed to submit 
+                            // we want to leave the UI enable for re-submitting   
                             cPo.failed = false;
                             interfaceElement.find(".ivqContainer.answered").removeClass("answered");
                             interfaceElement.find("#open-question-change-answer").hide();
