@@ -603,6 +603,10 @@ button.qContinue, button.qApplied {
     padding-top: 11px;
 }
 
+.answering .reflection-point-question .ftr-right{
+    color: white;
+}
+
 .answering .ftr-right{
     color: #7CAFF2;
 }

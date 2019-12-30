@@ -436,6 +436,7 @@
 
         // This function is rendering a question screen
         ssSetCurrentQuestion: function (questionNr) {
+        console.log(">>>>  ssSetCurrentQuestion",)
             var _this = this,cPo = $.cpObject.cpArray[questionNr];
             _this.ivqShowScreen();
             _this.KIVQScreenTemplate.tmplQuestion();
@@ -510,15 +511,11 @@
                 }
             }
             else {
-                if (_this.isReflectionPoint(cPo)) {
-                    _this.KIVQModule.submitAnswer(questionNr,0);
-                }
                 _this._selectAnswerConroller(cPo, questionNr);
             }
             this.addFooter(questionNr);
         },
         buildOpenQuestion: function(cPo){
-            console.log(">>>> BOQ",cPo)
             var _this = this;
             var interfaceElement = this.embedPlayer.getInterface();
             interfaceElement.find(".open-question-textarea")[0].focus();
@@ -1085,7 +1082,15 @@
                     }
 
                     $(".ftr-right").html(skipTxt).on('click', function () {
-                        _this.KIVQModule.checkIfDone(questionNr)
+                        if(_this.isReflectionPoint($.cpObject.cpArray[questionNr])) {
+                            // only on reflection point - when clicking on continue - submit the question and wait as all other questions
+                            _this.KIVQModule.submitAnswer(questionNr,0);
+                            setTimeout(function(){
+                                _this.KIVQModule.checkIfDone(questionNr)
+                            },_this.postAnswerTimer);
+                        }else{
+                            _this.KIVQModule.checkIfDone(questionNr)
+                        }
                     }).on('keydown', _this.keyDownHandler).attr('tabindex', 5).attr('role', 'button');
                 }else if(!_this.KIVQModule.canSkip &&  ( $.cpObject.cpArray[questionNr].isAnswerd || _this.isReflectionPoint($.cpObject.cpArray[questionNr])) ){
                     $(".ftr-right").html(gM('mwe-quiz-next')).on('click', function () {

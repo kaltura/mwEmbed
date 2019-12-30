@@ -269,30 +269,28 @@
             },
             
             checkIfDone: function (questionNr) {
-                mw.log("Quiz>>: checkIfDone");
+                mw.log("Quizs: checkIfDone");
                 var _this = this;
                 if(_this.isErr){
                     return;
                 }
                 if(!_this.answeredCurrent){
-                    mw.log("Quiz>>: Reached timeout with no response from server");
+                    mw.log("Quiz: Reached timeout with no response from server");
                     _this.answerTryouts++;
                     // the current answer were not responded - try again 
                     setTimeout(function(){
                         if(_this.answerTryouts >=1 ){
-                            mw.log("Quiz>>: failed after 3 tries - assume BE problem. Stop and show error message");
+                            mw.log("Quiz: failed after 3 tries - assume BE problem. Stop and show error message");
                             _this.answerTryouts = 0;
                             _this.questionIndex = questionNr;
-                            console.log(">>>> questionNr",questionNr)
                             _this.errMsg('answer-not-received' );
                             return;
                         }
-                        mw.log("Quiz>>: check server response again");
+                        mw.log("Quiz: check server response again");
                         _this.checkIfDone(questionNr);
                     },500);
                     return;
                 }
-                mw.log("Quiz>>: server success ");
                 _this.embedPlayer.getInterface().find(".screen.quiz").removeClass("answering");
                 _this.answerTryouts = 0;
                 if ($.cpObject.cpArray.length === 0){
@@ -385,7 +383,6 @@
              * @param {*} openQuestionText 
              */
             submitAnswer:function(questionNr,selectedAnswer,openQuestionText){
-                debugger;
                 var _this = this,isAnswered;
                 this.answeredCurrent = false;
                 _this.embedPlayer.getInterface().find(".screen.quiz").addClass("answering");
