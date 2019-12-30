@@ -183,13 +183,19 @@
                     '   <div class="title-text thank-you"></div>' +
                     '</div>').fadeIn( "fast" );
             },
-            tmplErrorScreen:function(){
+            tmplErrorScreen:function(showButton){
                 var _this = this;
+                var buttonUi = "";
+                if(showButton){
+                    buttonUi = '<div class="confirm-box" id="back-to-question" role="button" title='+ gM('mwe-quiz-back-to-question') +' tabindex="5">' + gM('mwe-quiz-back-to-question') + '</div>';
+                }
                 $(_this.emptyScreen()).hide().append(
                     '<div class="ivqContainer">'+
                     '   <div class="title-text"></div>'+
                     '   <div class="sub-text padding14"></div>'+
-                    '</div>').fadeIn( "fast" );
+                        buttonUi +
+                    '</div>')
+                    .fadeIn( "fast" );
             },
             emptyScreen:function(){
                 this.embedPlayer.getInterface().find('.ivqContainer').remove();

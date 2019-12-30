@@ -489,6 +489,13 @@
                         interfaceElement.find(".open-answer-container").addClass("allow-change");
                         var charsLength = interfaceElement.find(".open-question-textarea").val().length;
                         interfaceElement.find(".open-question-chars .chars").text(charsLength);
+                        if(cPo.failed){
+                            cPo.failed = false;
+                            interfaceElement.find(".ivqContainer.answered").removeClass("answered");
+                            interfaceElement.find("#open-question-change-answer").hide();
+                            interfaceElement.find(".open-question-textarea").removeAttr("disabled").focus();
+                            interfaceElement.find("#open-question-clear,#open-question-save").removeAttr("disabled");
+                        }
 
                     } else {
                         // reset UI elements to save in case a previous open question was already answered 
@@ -511,6 +518,7 @@
             this.addFooter(questionNr);
         },
         buildOpenQuestion: function(cPo){
+            console.log(">>>> BOQ",cPo)
             var _this = this;
             var interfaceElement = this.embedPlayer.getInterface();
             interfaceElement.find(".open-question-textarea")[0].focus();

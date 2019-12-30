@@ -27,6 +27,9 @@
             bindPostfix: '.quizPlugin',
             reviewMode:false,
             isKPlaylist:false,
+            answeredCurrent:true,
+            answerTryouts:0,
+            questionIndex:-1,
             kQuizEntryId: "",
             QUESTIONS_TYPE: {
                 MULTIPLE_CHOICE_ANSWER: 1,
@@ -264,15 +267,37 @@
                 }
                 $.cpObject.cpArray = cpArray;
             },
-
+            
             checkIfDone: function (questionNr) {
+                mw.log("Quiz>>: checkIfDone");
                 var _this = this;
                 if(_this.isErr){
-                    return
+                    return;
                 }
+                if(!_this.answeredCurrent){
+                    mw.log("Quiz>>: Reached timeout with no response from server");
+                    _this.answerTryouts++;
+                    // the current answer were not responded - try again 
+                    setTimeout(function(){
+                        if(_this.answerTryouts >=1 ){
+                            mw.log("Quiz>>: failed after 3 tries - assume BE problem. Stop and show error message");
+                            _this.answerTryouts = 0;
+                            _this.questionIndex = questionNr;
+                            console.log(">>>> questionNr",questionNr)
+                            _this.errMsg('answer-not-received' );
+                            return;
+                        }
+                        mw.log("Quiz>>: check server response again");
+                        _this.checkIfDone(questionNr);
+                    },500);
+                    return;
+                }
+                mw.log("Quiz>>: server success ");
+                _this.embedPlayer.getInterface().find(".screen.quiz").removeClass("answering");
+                _this.answerTryouts = 0;
                 if ($.cpObject.cpArray.length === 0){
                     _this.continuePlay();
-                    return
+                    return;
                 }
                 if (_this.quizSubmitted) {
                     _this.quizPlugin.ssSubmitted(_this.score);
@@ -360,7 +385,10 @@
              * @param {*} openQuestionText 
              */
             submitAnswer:function(questionNr,selectedAnswer,openQuestionText){
+                debugger;
                 var _this = this,isAnswered;
+                this.answeredCurrent = false;
+                _this.embedPlayer.getInterface().find(".screen.quiz").addClass("answering");
                 $.cpObject.cpArray[questionNr].selectedAnswer = selectedAnswer;
                 if ($.cpObject.cpArray[questionNr].isAnswerd) {
                     isAnswered = true;
@@ -373,6 +401,7 @@
                     if (!_this.checkApiResponse('Add question err -->',data)){
                         return false;
                     }else {
+                        _this.answeredCurrent = true;
                         $.cpObject.cpArray[questionNr].answerCpId = data.id;
                     }
                 },openQuestionText);
@@ -617,24 +646,51 @@
                     mw.log('postMessage listener of parent is undefined: ', e);
                 }
             },
+            backToQuestion:function(e){
+                if(e && e.type === "keydown" && e.keyCode !== "13"){
+                    return;
+                }
+                this.isErr = false;
+                if( !$.cpObject.cpArray[this.questionIndex].openAnswer ){
+                    $.cpObject.cpArray[this.questionIndex].isAnswerd = false; // clear previous selection 
+                }else{
+                    $.cpObject.cpArray[this.questionIndex].failed = true;
+                }
+                this.gotoScrubberPos(this.questionIndex);
+                this.answeredCurrent=true;
+                this.answerTryouts=0;
+                this.questionIndex=-1;
+            },
             errMsg:function(errMsg,data){
                 var _this = this;
-                if (data.code ==="PROVIDED_ENTRY_IS_NOT_A_QUIZ"){
-                    return
+                _this.embedPlayer.getInterface().find(".screen.quiz").removeClass("answering");
+                if (data && data.code ==="PROVIDED_ENTRY_IS_NOT_A_QUIZ"){
+                    return;
                 }
                 mw.log(errMsg, data);
+                var isAnswerError = errMsg === "answer-not-received" ;
                 _this.quizPlugin.ivqShowScreen();
-                _this.KIVQScreenTemplate.tmplErrorScreen();
-                $(".sub-text").html(gM('mwe-quiz-err-msg'));
+                _this.KIVQScreenTemplate.tmplErrorScreen(isAnswerError);
+                if(isAnswerError){
+                    $(".sub-text").html(gM('mwe-quiz-submit-failed-description'));
+                }else{
+                    $(".sub-text").html(gM('mwe-quiz-err-msg'));
+                }
                 _this.isErr = true;
+                $("#back-to-question").click(function(){
+                    _this.backToQuestion();
+                }).on('keydown', _this.backToQuestion);
             },
             retake: function (callback){
                 this.KIVQApi.retake(callback);
             },
             destroy: function () {
+                this.answeredCurrent=true;
+                this.answerTryouts=0;
+                this.questionIndex=-1;
                 this.score = undefined;
-                this.currentScore = undefined ,
-                this.scoreType = undefined ,
+                this.currentScore = undefined;
+                this.scoreType = undefined;
                 this.quizEndFlow = false;
                 this.quizSubmitted = false;
                 clearInterval(this.intrVal);

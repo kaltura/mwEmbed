@@ -72,7 +72,6 @@
 
                 };
                 this.addAnswer = function(isAnswered,selectedAnswer,kQuizUserEntryId,questionNr,callback,openQuestionText){
-
                     var _this = this,answerParams = {};
                     var quizSetAnswer = {
                         'service': 'cuepoint_cuepoint',
