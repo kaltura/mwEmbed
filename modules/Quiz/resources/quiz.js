@@ -489,10 +489,10 @@
                         interfaceElement.find(".open-answer-container").addClass("allow-change");
                         var charsLength = interfaceElement.find(".open-question-textarea").val().length;
                         interfaceElement.find(".open-question-chars .chars").text(charsLength);
-                        if(cPo.failed){
+                        if(cPo.openQuestionFailed){
                             // cuepoint failed can only be on open question. If failed to submit 
                             // we want to leave the UI enable for re-submitting   
-                            cPo.failed = false;
+                            cPo.openQuestionFailed = false;
                             interfaceElement.find(".ivqContainer.answered").removeClass("answered");
                             interfaceElement.find("#open-question-change-answer").hide();
                             interfaceElement.find(".open-question-textarea").removeAttr("disabled").focus();
