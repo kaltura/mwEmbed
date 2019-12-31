@@ -77,6 +77,7 @@
         firstPlayRequestTime: null,
         bandwidthSamples: [],
 		firstPlaying: true,
+		_isPaused: true,
 		_playRequested: false,
 		_isBuffering: false,
 
@@ -154,6 +155,7 @@
 				_this.id3SequenceId = null;
 				_this.bandwidthSamples = [];
 				_this.firstPlaying = true;
+				_this._isPaused = true;
 				_this._playRequested = false;
 				_this._isBuffering = false;
 			});
@@ -196,7 +198,7 @@
                     return;
                 }
 
-				if ( !this.isInSequence() && (_this.firstPlaying || _this.embedPlayer.currentState !== "play") ){
+				if ( !this.isInSequence() ){
 					if ( _this.firstPlaying && !_this.onPlayStatus ) {
 						_this.onPlayStatus = true;
 						_this.firstPlaying = false;
@@ -206,8 +208,9 @@
                             bufferTimeSum: _this.bufferTimeSum,
                             joinTime: (Date.now() - _this.firstPlayRequestTime) / 1000.0
 						});
-					}else if ( _this.embedPlayer.currentState !== "play" ){
+					}else if (_this._isPaused){
                         _this.timer.resume();
+						_this._isPaused = false;
 						_this.sendAnalytics(playerEvent.RESUME, {
                             bufferTimeSum: _this.bufferTimeSum
 						});
@@ -216,6 +219,7 @@
 			});
 			this.embedPlayer.bindHelper( 'onpause' , function () {
 				_this.timer.stop();
+				_this._isPaused = true;
 				_this.sendAnalytics(playerEvent.PAUSE);
                 if ( _this.embedPlayer.isDVR() ) {
                     _this.dvr = true;
