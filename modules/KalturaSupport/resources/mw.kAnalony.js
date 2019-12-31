@@ -174,10 +174,8 @@
 			});
 
 			this.embedPlayer.bindHelper( 'firstPlay' , function () {
-				if (!_this._playRequested) {
-					if (_this.embedPlayer.autoplay) {
-						_this.firstPlayRequestTime = Date.now();
-					}
+				if (!_this._playRequested && _this.embedPlayer.autoplay) {
+					_this.firstPlayRequestTime = Date.now();
 					_this._playRequested = true;
 					_this.sendAnalytics(playerEvent.PLAY_REQUEST);
 				}
