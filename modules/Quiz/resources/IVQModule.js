@@ -651,7 +651,7 @@
                 if( !$.cpObject.cpArray[this.questionIndex].openAnswer ){
                     $.cpObject.cpArray[this.questionIndex].isAnswerd = false; // clear previous selection 
                 }else{
-                    $.cpObject.cpArray[this.questionIndex].failed = true;
+                    $.cpObject.cpArray[this.questionIndex].openQuestionFailed = true;
                 }
                 this.gotoScrubberPos(this.questionIndex);
                 this.answeredCurrent=true;
