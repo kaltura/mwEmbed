@@ -279,8 +279,8 @@
                     _this.answerTryouts++;
                     // the current answer were not responded - try again 
                     setTimeout(function(){
-                        if(_this.answerTryouts >=1 ){
-                            mw.log("Quiz: failed after 3 tries - assume BE problem. Stop and show error message");
+                        if(_this.answerTryouts >=6 ){
+                            mw.log("Quiz: failed after X tries (~5 sec)- assume BE problem. Stop and show error message");
                             _this.answerTryouts = 0;
                             _this.questionIndex = questionNr;
                             _this.errMsg('answer-not-received' );
