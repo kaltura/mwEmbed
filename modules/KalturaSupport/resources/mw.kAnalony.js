@@ -169,6 +169,16 @@
 				}
 			});
 
+			this.embedPlayer.bindHelper( 'firstPlay' , function () {
+				if (!_this._playRequested) {
+					if (_this.embedPlayer.autoplay) {
+						_this.firstPlayRequestTime = Date.now();
+					}
+					_this._playRequested = true;
+					_this.sendAnalytics(playerEvent.PLAY_REQUEST);
+				}
+			});
+
 			this.embedPlayer.bindHelper( 'userInitiatedPlay' , function () {
                 if (!_this._playRequested) {
 					if (_this.firstPlay) {
