@@ -78,6 +78,7 @@
         bandwidthSamples: [],
 		firstPlaying: true,
 		_playRequested: false,
+		_isBuffering: false,
 
 		smartSetInterval:function(callback,time,monitorObj) {
 			var _this = this;
@@ -154,6 +155,7 @@
 				_this.bandwidthSamples = [];
 				_this.firstPlaying = true;
 				_this._playRequested = false;
+				_this._isBuffering = false;
 			});
             // calculate bandwidth of current loaded frag
 			this.embedPlayer.bindHelper( 'hlsFragBufferedWithData' , function (e,data) {
@@ -313,13 +315,15 @@
 
 			this.embedPlayer.bindHelper('bufferStartEvent', function(){
 				if (!_this.firstPlaying) {
+					_this._isBuffering = true;
 					_this.bufferStartTime = new Date();
 					_this.sendAnalytics(playerEvent.BUFFER_START);
 				}
 			});
 
 			this.embedPlayer.bindHelper('bufferEndEvent', function(){
-				if (!_this.firstPlaying) {
+				if (!_this.firstPlaying && _this._isBuffering) {
+					_this._isBuffering = false;
 					_this.calculateBuffer();
 					_this.bufferStartTime = null;
 					_this.sendAnalytics(playerEvent.BUFFER_END);
