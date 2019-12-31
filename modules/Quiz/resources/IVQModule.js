@@ -269,18 +269,18 @@
             },
             
             checkIfDone: function (questionNr) {
-                mw.log("Quizs: checkIfDone");
+                mw.log("Quiz: checkIfDone");
                 var _this = this;
                 if(_this.isErr){
                     return;
                 }
-                if(!_this.answeredCurrent){
+                if(!_this.answeredCurrent && questionNr){
                     mw.log("Quiz: Reached timeout with no response from server");
                     _this.answerTryouts++;
-                    // the current answer were not responded - try again 
+                    // the current answer were not responded - check again in 500 ms 
                     setTimeout(function(){
                         if(_this.answerTryouts >=6 ){
-                            mw.log("Quiz: failed after X tries (~5 sec)- assume BE problem. Stop and show error message");
+                            mw.log("Quiz: failed after 7 checks (~5 sec)- assume BE problem. Stop and show error message");
                             _this.answerTryouts = 0;
                             _this.questionIndex = questionNr;
                             _this.errMsg('answer-not-received' );
