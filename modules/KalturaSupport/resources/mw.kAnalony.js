@@ -77,6 +77,7 @@
         firstPlayRequestTime: null,
         bandwidthSamples: [],
 		firstPlaying: true,
+		_playRequested: false,
 
 		smartSetInterval:function(callback,time,monitorObj) {
 			var _this = this;
@@ -152,6 +153,7 @@
 				_this.id3SequenceId = null;
 				_this.bandwidthSamples = [];
 				_this.firstPlaying = true;
+				_this._playRequested = false;
 			});
             // calculate bandwidth of current loaded frag
 			this.embedPlayer.bindHelper( 'hlsFragBufferedWithData' , function (e,data) {
@@ -168,10 +170,13 @@
 			});
 
 			this.embedPlayer.bindHelper( 'userInitiatedPlay' , function () {
-                if (_this.firstPlay) {
-                    _this.firstPlayRequestTime = Date.now();
-                }
-				_this.sendAnalytics(playerEvent.PLAY_REQUEST);
+                if (!_this._playRequested) {
+					if (_this.firstPlay) {
+						_this.firstPlayRequestTime = Date.now();
+					}
+					_this._playRequested = true;
+					_this.sendAnalytics(playerEvent.PLAY_REQUEST);
+				}
 			});
 
 			this.embedPlayer.bindHelper( 'playing' , function () {
