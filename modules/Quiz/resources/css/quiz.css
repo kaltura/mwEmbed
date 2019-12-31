@@ -611,6 +611,10 @@ button.qContinue, button.qApplied {
     color: #7CAFF2;
 }
 
+#back-to-question{
+    margin-top: 5vw;
+}
+
 .ftr-right{
     font-family: "LatoBlack";
     display: inline-block;
