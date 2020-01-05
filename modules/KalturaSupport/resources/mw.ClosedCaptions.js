@@ -248,8 +248,10 @@
 				_this.hideCaptions();
 			});
 			this.bind("AdSupport_EndAdPlayback", function(){
-				_this.setConfig('displayCaptions', true);
-				_this.showCaptions();
+				if (_this.textSources >= 1) {
+					_this.setConfig('displayCaptions', true);
+					_this.showCaptions();
+				}
 			});
 			this.bind("playSegmentEvent", function(){
 				_this.updateTimeOffset();
