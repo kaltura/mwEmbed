@@ -482,7 +482,7 @@
 			mediaBoxes
 				.off('keypress click touchmove touchend' )
 				.on('keypress click', function(e){
-					if (e.which === 13 || e.type === 'click') {
+					if ((e.which && e.which === 13) || e.type === 'click') {
 						if ( !_this.isDisabled && !_this.isTouchDisabled){
 							// set active media item
 							var index = $(this).attr( 'data-mediaBox-index' );
