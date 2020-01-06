@@ -76,6 +76,9 @@
 		onPlayStatus: false,
         firstPlayRequestTime: null,
         bandwidthSamples: [],
+		firstPlaying: true,
+		_isPaused: true,
+		_isBuffering: false,
 
 		smartSetInterval:function(callback,time,monitorObj) {
 			var _this = this;
@@ -150,6 +153,9 @@
 				_this.onPlayStatus = false;
 				_this.id3SequenceId = null;
 				_this.bandwidthSamples = [];
+				_this.firstPlaying = true;
+				_this._isPaused = true;
+				_this._isBuffering = false;
 			});
             // calculate bandwidth of current loaded frag
 			this.embedPlayer.bindHelper( 'hlsFragBufferedWithData' , function (e,data) {
@@ -165,29 +171,29 @@
 				}
 			});
 
-			this.embedPlayer.bindHelper( 'userInitiatedPlay' , function () {
-                if (_this.firstPlay) {
-                    _this.firstPlayRequestTime = Date.now();
-                }
-				_this.sendAnalytics(playerEvent.PLAY_REQUEST);
+			this.embedPlayer.bindHelper( 'firstPlay' , function () {
+					_this.firstPlayRequestTime = Date.now();
+					_this.sendAnalytics(playerEvent.PLAY_REQUEST);
 			});
 
-			this.embedPlayer.bindHelper( 'onplay' , function () {
+			this.embedPlayer.bindHelper( 'playing' , function () {
                 if (_this.embedPlayer.currentState === "start" && _this.playSentOnStart) {
                     return;
                 }
 
-				if ( !this.isInSequence() && (_this.firstPlay || _this.embedPlayer.currentState !== "play") ){
-					if ( _this.firstPlay && !_this.onPlayStatus ) {
+				if ( !this.isInSequence() ){
+					if ( _this.firstPlaying && !_this.onPlayStatus ) {
 						_this.onPlayStatus = true;
+						_this.firstPlaying = false;
                         _this.playSentOnStart = true;
 						_this.timer.start();
 						_this.sendAnalytics(playerEvent.PLAY, {
                             bufferTimeSum: _this.bufferTimeSum,
                             joinTime: (Date.now() - _this.firstPlayRequestTime) / 1000.0
 						});
-					}else if ( _this.embedPlayer.currentState !== "play" ){
+					}else if (_this._isPaused){
                         _this.timer.resume();
+						_this._isPaused = false;
 						_this.sendAnalytics(playerEvent.RESUME, {
                             bufferTimeSum: _this.bufferTimeSum
 						});
@@ -196,6 +202,7 @@
 			});
 			this.embedPlayer.bindHelper( 'onpause' , function () {
 				_this.timer.stop();
+				_this._isPaused = true;
 				_this.sendAnalytics(playerEvent.PAUSE);
                 if ( _this.embedPlayer.isDVR() ) {
                     _this.dvr = true;
@@ -294,14 +301,20 @@
 			});
 
 			this.embedPlayer.bindHelper('bufferStartEvent', function(){
-				_this.bufferStartTime = new Date();
-				_this.sendAnalytics(playerEvent.BUFFER_START);
+				if (!_this.firstPlaying) {
+					_this._isBuffering = true;
+					_this.bufferStartTime = new Date();
+					_this.sendAnalytics(playerEvent.BUFFER_START);
+				}
 			});
 
 			this.embedPlayer.bindHelper('bufferEndEvent', function(){
-				_this.calculateBuffer();
-				_this.bufferStartTime = null;
-                _this.sendAnalytics(playerEvent.BUFFER_END);
+				if (!_this.firstPlaying && _this._isBuffering) {
+					_this._isBuffering = false;
+					_this.calculateBuffer();
+					_this.bufferStartTime = null;
+					_this.sendAnalytics(playerEvent.BUFFER_END);
+				}
             });
 
 			this.embedPlayer.bindHelper( 'bitrateChange' ,function( event, newBitrate){

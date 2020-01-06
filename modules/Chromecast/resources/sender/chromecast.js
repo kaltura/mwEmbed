@@ -1,6 +1,5 @@
 (function ( mw, $ ) {
     "use strict";
-
     // Add chromecast player:
     $( mw ).bind( 'EmbedPlayerUpdateMediaPlayers', function ( event, mediaPlayers ) {
         var chromecastSupportedProtocols = [ 'video/mp4' ];
@@ -30,7 +29,6 @@
         sessionStateChangedCallback: null,
         CAST_SENDER_V3_URL: '//www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1',
         isInIframeApi: false,
-
         /**
          * Setup the Chromecast plugin - loads Google Cast Chrome sender SDK and bind his handler.
          */
@@ -53,8 +51,6 @@
                 this.isInIframeApi = true;
             }
         },
-
-
         /**
          * Setup the Chromecast plugin bindings.
          */
@@ -69,12 +65,19 @@
          * @param reason
          */
         toggleCastButton: function ( isAvailable, reason ) {
+            var _this = this;
             this.log( "toggleCastButton: isAvailable=" + isAvailable + ", reason=" + reason );
-            if ( isAvailable ) {
+            var loadWhenReady = function (callback) {
+                _this.callback = callback;
+                _this.embedPlayer.playerReadyFlag ? _this.callback() : _this.bind('playerReady', function () {
+                    _this.callback();
+                });
+            };
+            if (isAvailable) {
                 this.initializeCastApi();
-                this.show();
+                loadWhenReady(this.show);
             } else {
-                this.hide();
+                loadWhenReady(this.hide);
             }
         },
 

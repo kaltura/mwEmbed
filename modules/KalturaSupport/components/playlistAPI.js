@@ -779,7 +779,7 @@
 			this.getMedialistHeaderComponent().find(".playlistBtn").removeClass("disabled");
 			this._super();
 		},
-		getPlaylistTitle(string){
+		getPlaylistTitle: function(string){
 			var url = this.getConfig("playlistUrl");
 			if(url){
 				return "<a role='link' tabindex='5' href='"+url+"' target='"+this.getConfig("playlistUrlTarget")+"'>" + string + "</a>";

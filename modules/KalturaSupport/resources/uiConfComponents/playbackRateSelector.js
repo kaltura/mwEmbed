@@ -196,6 +196,7 @@
 				return ;
 			}
 			this.updatePlaybackRate( newSpeed );
+			this.getBtn().focus();
 		},
 		handlePlayerInstanceUpdate: function( newSpeed, previousSpeed ){
 			var _this = this;
@@ -326,7 +327,7 @@
 		getComponent: function() {
 			var _this = this;
 			if( !this.$el ) {
-				var $menu = $( '<ul />' );
+				var $menu = $( '<ul />' ).attr('aria-expanded', false);
 				var text = this.embedPlayer.isMobileSkin() ? '' : this.currentSpeed + 'x';
 				var classes = this.embedPlayer.isMobileSkin() ? 'btn icon-speedrate' : 'btn';
 				var $button = $( '<button />' )
@@ -339,6 +340,16 @@
 								.text( text )
 								.click( function(e){
 									_this.toggleMenu();
+									var menuEl = _this.getMenu();
+									if (menuEl.$el.hasClass('open')) {
+										menuEl.$el.attr('aria-expanded', true);
+										// move focus to the selected item if menu opened by keyboard
+										if (e.screenX === 0 && e.screenY === 0) {
+											menuEl.$el.find('.active a').focus();
+										}
+									} else {
+										menuEl.$el.attr('aria-expanded', false);
+									}
 								});
 
 				this.$el = $( '<div />' )

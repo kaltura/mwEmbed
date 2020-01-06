@@ -425,6 +425,9 @@
             this.KIVQModule.submitAnswer(cuepoint.key,null,cuepoint.openAnswer);
             this.selectedAnswer = null;
             var _this = this;
+            $(".cp-navigation").css("pointer-events", "none");
+            $(".ftr-right").css("pointer-events", "none");
+            $(".cp-navigation-btn").addClass("disabled");
             setTimeout(function(){
                 _this.KIVQModule.checkIfDone(cuepoint.key)
             },
@@ -447,7 +450,7 @@
             }
             var displayQuestion = $(".display-question");
             //Search for links and links patterns ( [text|http://exampl.com] ) and add a real link to a new tab
-            displayQuestion.text(cPo.question).attr({'tabindex': 5,"aria-lable":cPo.question}).focus();
+            displayQuestion.text(cPo.question).attr({'tabindex': 5,"aria-label": cPo.question}).focus();
             var questionText = this.wrapLinksWithTags(displayQuestion.html());
             displayQuestion.html(questionText);
             //$(".display-question").attr('title', "Question number "+questionNr);
@@ -946,7 +949,7 @@
             this.embedPlayer.getInterface().append(
                 $('<div/>').addClass('ivq-orientation-message').append(
                     $('<div/>').addClass('ivq-orientation-message__text')
-                        .html('This video contains features that works best on landscape mode.<br/>Please flip your screen to continue')
+                        .html(gM('mwe-quiz-landscape-warning'))
                 )
             );
         },
