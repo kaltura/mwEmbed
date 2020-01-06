@@ -101,7 +101,8 @@
 			});
 
 			this.bind('playerReady', function (event) {
-				$(".scrubber .handle-wrapper .ui-slider-handle").attr("tabindex",5);
+				// TODO - check this thoroughly. This is risk 
+				// $(".scrubber .handle-wrapper .ui-slider-handle").attr("tabindex",5);
 				//Load the strip only if the configuration allows preview. It gets a 404 if you do not have a local flavor
 				if (_this.getConfig("sliderPreview")) {
 					_this.thumbnailsLoaded = _this.loadedThumb = false;
