@@ -697,12 +697,12 @@
 			if ( this.getConfig( 'showControls' ) === true && !this.embedPlayer.isMobileSkin() ) {
 				this.getMedialistHeaderComponent().prepend( '<div class="playlistControls k-' + this.getLayout() + '"><div class="prevBtn playlistBtn" role="button" aria-label="' + gM( 'mwe-embedplayer-prev_clip' ) + '" tabindex="6"></div><div class="nextBtn playlistBtn" role="button" aria-label="' + gM( 'mwe-embedplayer-next_clip' ) + '" tabindex="6"></div></div>' );
 				this.getMedialistHeaderComponent().find( ".playlistControls .nextBtn" ).on("keypress click", function (e) {
-					if (e.which === 13 || e.type === 'click') {
+					if ((e.which && e.which === 13) || e.type === 'click') {
 						_this.playNext(true);
 					}
 				} );
 				this.getMedialistHeaderComponent().find( ".playlistControls .prevBtn" ).on("keypress click", function (e) {
-					if (e.which === 13 || e.type === 'click') {
+					if ((e.which && e.which === 13) || e.type === 'click') {
 						_this.playPrevious(true);
 					}
 				} );
