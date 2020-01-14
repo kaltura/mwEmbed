@@ -577,143 +577,144 @@
         },
 
 		sendAnalytics : function(eventType, additionalData){
-			if (!this._mediaChange) {
-				//Don't send analytics if entry or partner id are missing
-				if (!(this.embedPlayer.kentryid && this.embedPlayer.kpartnerid)) {
-					return;
-				}
-				var _this = this;
-				if (this.embedPlayer.isLive()) {
-					this.calaulatePlayTimeSumBasedOnTag();
-				} else {
-					this.calculatePlayTimeSum();
-				}
-				this.calculateBuffer(true);
-				this.kClient = mw.kApiGetPartnerClient(this.embedPlayer.kwidgetid);
-				if (this.embedPlayer.isMulticast && $.isFunction(this.embedPlayer.getMulticastBitrate)) {
-					this.currentBitRate = this.embedPlayer.getMulticastBitrate();
-				}
-
-				// set playbackType
-				var playbackType = "vod";
-				if (this.embedPlayer.isLive()) {
-					playbackType = this.dvr ? "dvr" : "live";
-				}
-
-				var position = this.getPosition();
-
-				var statsEvent = {
-					'entryId': this.embedPlayer.kentryid,
-					'partnerId': this.embedPlayer.kpartnerid,
-					'eventType': eventType,
-					'sessionId': this.getEntrySessionId(),
-					'eventIndex': this.eventIndex,
-					'bufferTime': this.bufferTime,
-					'actualBitrate': this.currentBitRate,
-					'flavorId': this.currentflavorId,
-					'referrer': mw.getConfig('EmbedPlayer.IsFriendlyIframe') ? mw.getConfig('EmbedPlayer.IframeParentUrl') : document.referrer,
-					'deliveryType': this.embedPlayer.streamerType,
-					'sessionStartTime': this.startTime,
-					'uiConfId': this.embedPlayer.kuiconfid,
-					'clientVer': mw.getConfig("version"),
-					'position': position,
-					'playbackType': playbackType
-				};
-
-				var flashVarEvents = {
-					'playbackContext': 'playbackContext',
-					'applicationName': 'application',
-					'userId': 'userId'
-				};
-				// support legacy ( deprecated ) top level config
-				for (var fvKey in flashVarEvents) {
-					if (this.embedPlayer.getKalturaConfig('', fvKey)) {
-						statsEvent[flashVarEvents[fvKey]] = this.embedPlayer.getKalturaConfig('', fvKey);
-					}
-				}
-
-				// add ks if available
-				var ks = this.kClient.getKs();
-				if (ks) {
-					statsEvent["ks"] = ks;
-				}
-
-				// add preferred bitrate if defined by the user
-				if (this.embedPlayer.getRawKalturaConfig('mediaProxy') && this.embedPlayer.getRawKalturaConfig('mediaProxy').preferedFlavorBR) {
-					statsEvent["expectedQuality"] = this.embedPlayer.getRawKalturaConfig('mediaProxy').preferedFlavorBR;
-				}
-
-				// add specific events data
-				if (additionalData) {
-					$.extend(statsEvent, additionalData);
-				}
-
-				// add custom vars
-				var config = this.getConfig();
-				for (var key in config) {
-					if (key.indexOf("customVar") !== -1) {
-						var customVarObj = {};
-						customVarObj[key] = config[key];
-						$.extend(statsEvent, customVarObj);
-					}
-				}
-
-				if (this.absolutePosition && Date.now() - this.id3TagEventTime < config.id3TagMaxDelay) {
-					statsEvent["absolutePosition"] = this.absolutePosition;
-				}
-
-
-				// add playbackContext
-				if (mw.getConfig("playbackContext")) {
-					statsEvent["playbackContext"] = mw.getConfig("playbackContext");
-				}
-
-				//Get optional playlistAPI
-				this.maybeAddPlaylistId(statsEvent);
-
-				//Shorten the referrer param
-				var pageReferrer = statsEvent['referrer'];
-				var queryPos = pageReferrer.indexOf("?");
-				if (queryPos > 0) {
-					pageReferrer = pageReferrer.substring(0, queryPos);
-				}
-
-				var encodedReferrer = encodeURIComponent(pageReferrer);
-				if (encodedReferrer.length > 500) {
-					var parser = document.createElement('a');
-					parser.href = pageReferrer;
-					pageReferrer = parser.origin;
-				}
-
-				statsEvent['referrer'] = pageReferrer;
-
-				var eventRequest = {'service': 'analytics', 'action': 'trackEvent'};
-				$.each(statsEvent, function (event, value) {
-					eventRequest[event] = value;
-				});
-				this.eventIndex += 1;
-				this.embedPlayer.triggerHelper('analyticsEvent', statsEvent);
-				this.log("Trigger analyticsEvent type = " + statsEvent.eventType);
-				this.kClient.doRequest(eventRequest, function (data) {
-					try {
-						if (typeof data == "object") {
-							var parsedData = data;
-							if (parsedData.time && !_this.startTime) {
-								_this.startTime = parsedData.time;
-							}
-							if (parsedData.viewEventsEnabled != undefined && !parsedData.viewEventsEnabled) {
-								_this.monitorViewEvents = false;
-							}
-						} else {
-							if (!_this.startTime) {
-								_this.startTime = data;
-							}
-						}
-					} catch (e) {
-						mw.log("Failed sync time from server");
-					}
-				}, true);
+			if (this._mediaChange) {
+				return;
 			}
+			//Don't send analytics if entry or partner id are missing
+			if (!(this.embedPlayer.kentryid && this.embedPlayer.kpartnerid)){
+				return;
+			}
+			var _this = this;
+			if (this.embedPlayer.isLive()){
+				this.calaulatePlayTimeSumBasedOnTag();
+			} else {
+				this.calculatePlayTimeSum();
+			}
+			this.calculateBuffer(true);
+			this.kClient = mw.kApiGetPartnerClient( this.embedPlayer.kwidgetid );
+			if ( this.embedPlayer.isMulticast && $.isFunction( this.embedPlayer.getMulticastBitrate ) ) {
+				this.currentBitRate = this.embedPlayer.getMulticastBitrate();
+			}
+
+			// set playbackType
+			var playbackType = "vod";
+			if (this.embedPlayer.isLive()){
+				playbackType = this.dvr ? "dvr" : "live";
+			}
+
+			var position = this.getPosition();
+
+			var statsEvent = {
+				'entryId'           : this.embedPlayer.kentryid,
+				'partnerId'         : this.embedPlayer.kpartnerid,
+				'eventType'         : eventType,
+				'sessionId'         : this.getEntrySessionId(),
+				'eventIndex'        : this.eventIndex,
+				'bufferTime'        : this.bufferTime,
+				'actualBitrate'     : this.currentBitRate,
+				'flavorId'          : this.currentflavorId,
+				'referrer'          : mw.getConfig('EmbedPlayer.IsFriendlyIframe') ? mw.getConfig('EmbedPlayer.IframeParentUrl') : document.referrer,
+				'deliveryType'      : this.embedPlayer.streamerType,
+				'sessionStartTime'  : this.startTime,
+				'uiConfId'          : this.embedPlayer.kuiconfid,
+				'clientVer'         : mw.getConfig("version"),
+				'position'          : position,
+				'playbackType'      : playbackType
+			};
+
+			var flashVarEvents = {
+				'playbackContext' : 'playbackContext',
+				'applicationName' : 'application',
+				'userId' : 'userId'
+			};
+			// support legacy ( deprecated ) top level config
+			for( var fvKey in flashVarEvents){
+				if( this.embedPlayer.getKalturaConfig( '', fvKey ) ){
+					statsEvent[ flashVarEvents[ fvKey ] ] = this.embedPlayer.getKalturaConfig('', fvKey );
+				}
+			}
+
+			// add ks if available
+			var ks = this.kClient.getKs();
+			if (ks){
+				statsEvent["ks"] = ks;
+			}
+
+			// add preferred bitrate if defined by the user
+			if ( this.embedPlayer.getRawKalturaConfig('mediaProxy') && this.embedPlayer.getRawKalturaConfig('mediaProxy').preferedFlavorBR ){
+				statsEvent["expectedQuality"] = this.embedPlayer.getRawKalturaConfig('mediaProxy').preferedFlavorBR;
+			}
+
+			// add specific events data
+			if (additionalData){
+				$.extend(statsEvent, additionalData);
+			}
+
+			// add custom vars
+			var config = this.getConfig();
+			for (var key in config){
+				if (key.indexOf("customVar") !== -1){
+					var customVarObj = {};
+					customVarObj[key] = config[key];
+					$.extend(statsEvent, customVarObj);
+				}
+			}
+
+			if (this.absolutePosition && Date.now() - this.id3TagEventTime < config.id3TagMaxDelay) {
+				statsEvent["absolutePosition"] = this.absolutePosition;
+			}
+
+
+			// add playbackContext
+			if (mw.getConfig("playbackContext")){
+				statsEvent["playbackContext"] = mw.getConfig("playbackContext");
+			}
+
+			//Get optional playlistAPI
+			this.maybeAddPlaylistId(statsEvent);
+
+			//Shorten the referrer param
+			var pageReferrer =  statsEvent[ 'referrer' ];
+			var queryPos = pageReferrer.indexOf("?");
+			if (queryPos > 0) {
+				pageReferrer = pageReferrer.substring(0, queryPos);
+			}
+
+			var encodedReferrer = encodeURIComponent(pageReferrer);
+			if (encodedReferrer.length > 500) {
+				var parser = document.createElement('a');
+				parser.href = pageReferrer;
+				pageReferrer =  parser.origin;
+			}
+
+			statsEvent[ 'referrer' ] = pageReferrer;
+
+			var eventRequest = {'service' : 'analytics', 'action' : 'trackEvent'};
+			$.each(statsEvent , function (event , value) {
+				eventRequest[event] = value;
+			});
+			this.eventIndex += 1;
+			this.embedPlayer.triggerHelper( 'analyticsEvent' , statsEvent);
+			this.log("Trigger analyticsEvent type = "+statsEvent.eventType);
+			this.kClient.doRequest( eventRequest, function(data){
+				try {
+					if (typeof data == "object") {
+						var parsedData = data;
+						if (parsedData.time && !_this.startTime) {
+							_this.startTime = parsedData.time;
+						}
+						if (parsedData.viewEventsEnabled != undefined && !parsedData.viewEventsEnabled) {
+							_this.monitorViewEvents = false;
+						}
+					} else {
+						if (!_this.startTime) {
+							_this.startTime = data;
+						}
+					}
+				}catch(e){
+					mw.log("Failed sync time from server");
+				}
+			}, true);
         },
 
         maybeAddPlaylistId: function (statsEvent) {
