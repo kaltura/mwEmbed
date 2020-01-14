@@ -87,6 +87,8 @@
                                 _this.showWelcomePage = (e.value.toLowerCase() === 'true');
                             }
                         });
+                        $.quizParams.seekConfiguration = dataForBanSeek;
+
                         //send notification to banSeekManager with params from Editor
                         if(dataForBanSeek.status && !_this.canSkip){
                             _this.embedPlayer.sendNotification('activateBanSeek',dataForBanSeek);
@@ -179,6 +181,7 @@
                         return false;
                     }
                     else{
+                        _this.sendIVQMesageToListener("quizSubmitted");
                         $.cpObject = {};
                         _this.getQuestionsAndAnswers(_this.populateCpObject);
                         // store current score for next retake screen 
@@ -190,7 +193,6 @@
                             _this.quizPlugin.ssSubmitted(_this.score);
                             _this.quizSubmitted = true;
                         });
-                        _this.sendIVQMesageToListener();
                     }
                 });
             },
@@ -373,6 +375,14 @@
                     if (!_this.checkApiResponse('Add question err -->',data)){
                         return false;
                     }else {
+                        var ivqNotificationData = {
+                            questionIndex: questionNr,
+                            questionType: $.cpObject.cpArray[questionNr].questionType,
+                            questionText: $.cpObject.cpArray[questionNr].question,
+                            answer: selectedAnswer || openQuestionText,
+                            attemptNumber: $.quizParams.version
+                        };
+                        _this.sendIVQMesageToListener("questionAnswered", ivqNotificationData);
                         $.cpObject.cpArray[questionNr].answerCpId = data.id;
                     }
                 },openQuestionText);
@@ -607,14 +617,12 @@
                     return true;
                 }
             },
-            sendIVQMesageToListener:function(){
+            sendIVQMesageToListener:function(event, payload){
                 try {
-                    var _this = this;
-                    window.kdp = document.getElementById( _this.embedPlayer.id );
-                    window.kdp.sendNotification("QuizSubmitted", _this.kQuizUserEntryId);
-                    mw.log('Quiz: QuizSubmitted sent to kdp');
+                    this.embedPlayer.sendNotification(event, payload);
+                    mw.log('Quiz: ' + event + ' sent to kdp');
                 } catch (e) {
-                    mw.log('postMessage listener of parent is undefined: ', e);
+                    mw.log('PostMessage: got an error during sending notification to kdp: ', e);
                 }
             },
             errMsg:function(errMsg,data){
