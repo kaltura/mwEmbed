@@ -79,6 +79,7 @@
 		firstPlaying: true,
 		_isPaused: true,
 		_isBuffering: false,
+		_mediaChange: false,
 
 		smartSetInterval:function(callback,time,monitorObj) {
 			var _this = this;
@@ -156,6 +157,7 @@
 				_this.firstPlaying = true;
 				_this._isPaused = true;
 				_this._isBuffering = false;
+				_this._mediaChange = true;
 			});
             // calculate bandwidth of current loaded frag
 			this.embedPlayer.bindHelper( 'hlsFragBufferedWithData' , function (e,data) {
@@ -401,6 +403,7 @@
 			this.savedPosition = null;
 			this.absolutePosition = null;
 			this.id3TagEventTime = null;
+			this._mediaChange = false;
 		},
 		/**
 		* Both parameters are accumulated so we need to deduct the new values from the previous values. This function
@@ -574,6 +577,9 @@
         },
 
 		sendAnalytics : function(eventType, additionalData){
+			if (this._mediaChange) {
+				return;
+			}
 			//Don't send analytics if entry or partner id are missing
 			if (!(this.embedPlayer.kentryid && this.embedPlayer.kpartnerid)){
 				return;
@@ -616,17 +622,17 @@
 				'playbackType'      : playbackType
 			};
 
-            var flashVarEvents = {
-                'playbackContext' : 'playbackContext',
-                'applicationName' : 'application',
-                'userId' : 'userId'
-            };
-            // support legacy ( deprecated ) top level config
-            for( var fvKey in flashVarEvents){
-                if( this.embedPlayer.getKalturaConfig( '', fvKey ) ){
-                    statsEvent[ flashVarEvents[ fvKey ] ] = this.embedPlayer.getKalturaConfig('', fvKey );
-                }
-            }
+			var flashVarEvents = {
+				'playbackContext' : 'playbackContext',
+				'applicationName' : 'application',
+				'userId' : 'userId'
+			};
+			// support legacy ( deprecated ) top level config
+			for( var fvKey in flashVarEvents){
+				if( this.embedPlayer.getKalturaConfig( '', fvKey ) ){
+					statsEvent[ flashVarEvents[ fvKey ] ] = this.embedPlayer.getKalturaConfig('', fvKey );
+				}
+			}
 
 			// add ks if available
 			var ks = this.kClient.getKs();
@@ -664,24 +670,24 @@
 				statsEvent["playbackContext"] = mw.getConfig("playbackContext");
 			}
 
-            //Get optional playlistAPI
+			//Get optional playlistAPI
 			this.maybeAddPlaylistId(statsEvent);
 
-            //Shorten the referrer param
-            var pageReferrer =  statsEvent[ 'referrer' ];
-            var queryPos = pageReferrer.indexOf("?");
-            if (queryPos > 0) {
-              pageReferrer = pageReferrer.substring(0, queryPos);
-            }
+			//Shorten the referrer param
+			var pageReferrer =  statsEvent[ 'referrer' ];
+			var queryPos = pageReferrer.indexOf("?");
+			if (queryPos > 0) {
+				pageReferrer = pageReferrer.substring(0, queryPos);
+			}
 
-            var encodedReferrer = encodeURIComponent(pageReferrer);
-            if (encodedReferrer.length > 500) {
-                var parser = document.createElement('a');
-                parser.href = pageReferrer;
-                pageReferrer =  parser.origin;
-            }
+			var encodedReferrer = encodeURIComponent(pageReferrer);
+			if (encodedReferrer.length > 500) {
+				var parser = document.createElement('a');
+				parser.href = pageReferrer;
+				pageReferrer =  parser.origin;
+			}
 
-            statsEvent[ 'referrer' ] = pageReferrer;
+			statsEvent[ 'referrer' ] = pageReferrer;
 
 			var eventRequest = {'service' : 'analytics', 'action' : 'trackEvent'};
 			$.each(statsEvent , function (event , value) {
@@ -693,22 +699,22 @@
 			this.kClient.doRequest( eventRequest, function(data){
 				try {
 					if (typeof data == "object") {
-                        var parsedData = data;
-                        if (parsedData.time && !_this.startTime) {
-                            _this.startTime = parsedData.time;
-                        }
-                        if (parsedData.viewEventsEnabled != undefined && !parsedData.viewEventsEnabled) {
-                            _this.monitorViewEvents = false;
-                        }
-                    } else {
-                        if (!_this.startTime) {
-                            _this.startTime = data;
-                        }
-                    }
-                }catch(e){
+						var parsedData = data;
+						if (parsedData.time && !_this.startTime) {
+							_this.startTime = parsedData.time;
+						}
+						if (parsedData.viewEventsEnabled != undefined && !parsedData.viewEventsEnabled) {
+							_this.monitorViewEvents = false;
+						}
+					} else {
+						if (!_this.startTime) {
+							_this.startTime = data;
+						}
+					}
+				}catch(e){
 					mw.log("Failed sync time from server");
 				}
-            }, true);
+			}, true);
         },
 
         maybeAddPlaylistId: function (statsEvent) {
