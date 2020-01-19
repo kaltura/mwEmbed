@@ -333,8 +333,8 @@
         },
         parseAdTagUrlParts: function ( embedPlayer, pluginName ) {
             //Handle adTagUrl separately - using postProcessConfig on the entire ad tag breaks doubleclick functionality
-            var adTagUrl = embedPlayer.getRawKalturaConfig( pluginName, "adTagUrl" );
-            if ( adTagUrl ) {
+            var adTagUrl = embedPlayer.getRawKalturaConfig( pluginName, "adTagUrl" ) || this.adTagUrl;
+            if ( adTagUrl) {
                 try {
                     //Break url to base and query string.
                     var adTagUrlParts = adTagUrl.split( '?' );
