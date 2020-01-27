@@ -577,8 +577,8 @@
 				captionsSrc = mw.getConfig('Kaltura.ServiceUrl') +
 							"/api_v3/index.php/service/caption_captionasset/action/serveWebVTT/captionAssetId/" +
 							dbTextSource.id +
-							"/segmentIndex/-1/version/2/captions.vtt";
-				captionsSrc += ks ? '/ks/' + ks : '';
+							"/segmentIndex/-1/version/2";
+				captionsSrc += ks ? "/ks/" + ks + "/captions.vtt" : "/captions.vtt";
 			} else {
 				captionsSrc = this.getCaptionURL( dbTextSource.id ) + '/.' + dbTextSource.fileExt;
 			}
