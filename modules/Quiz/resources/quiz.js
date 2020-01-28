@@ -276,7 +276,7 @@
             if(data.objectType === "KalturaAPIException"){
                 _this.KIVQModule.errMsg('Error', data);
             }else{
-                _this.KIVQModule.sendIVQMesageToListener("quizRetake");
+                _this.KIVQModule.sendIVQMesageToListener("QuizRetake");
                 // reset quiz and KIVQModule
                 this.destroy();
                 this.KIVQModule.destroy();
