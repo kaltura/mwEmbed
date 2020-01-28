@@ -81,11 +81,11 @@
                         .done(function(data) {
                             var ivqNotificationData = {
                                 allowedAttempts: $.quizParams.attemptsAllowed,
-                                allowSeekForward: $.quizParams.seekConfiguration.status,
+                                allowSeekForward: $.quizParams.allowSeekForward,
                                 scoreType: $.quizParams.scoreType,
                                 allowAnswerUpdate: $.quizParams.allowAnswerUpdate
                             };
-                            _this.KIVQModule.sendIVQMesageToListener('quizStarted', ivqNotificationData);
+                            _this.KIVQModule.sendIVQMesageToListener('QuizStarted', ivqNotificationData);
                             mw.log("Quiz: setup is completed, continuing...");
                         });
 

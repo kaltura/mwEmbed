@@ -87,7 +87,7 @@
                                 _this.showWelcomePage = (e.value.toLowerCase() === 'true');
                             }
                         });
-                        $.quizParams.seekConfiguration = dataForBanSeek;
+                        $.quizParams.allowSeekForward = dataForBanSeek.status;
 
                         //send notification to banSeekManager with params from Editor
                         if(dataForBanSeek.status && !_this.canSkip){
@@ -181,7 +181,7 @@
                         return false;
                     }
                     else{
-                        _this.sendIVQMesageToListener("quizSubmitted");
+                        _this.sendIVQMesageToListener("QuizSubmitted");
                         $.cpObject = {};
                         _this.getQuestionsAndAnswers(_this.populateCpObject);
                         // store current score for next retake screen 
@@ -382,7 +382,7 @@
                             answer: selectedAnswer || openQuestionText,
                             attemptNumber: $.quizParams.version
                         };
-                        _this.sendIVQMesageToListener("questionAnswered", ivqNotificationData);
+                        _this.sendIVQMesageToListener("QuestionAnswered", ivqNotificationData);
                         $.cpObject.cpArray[questionNr].answerCpId = data.id;
                     }
                 },openQuestionText);
@@ -618,12 +618,7 @@
                 }
             },
             sendIVQMesageToListener:function(event, payload){
-                try {
-                    this.embedPlayer.sendNotification(event, payload);
-                    mw.log('Quiz: ' + event + ' sent to kdp');
-                } catch (e) {
-                    mw.log('PostMessage: got an error during sending notification to kdp: ', e);
-                }
+              this.embedPlayer.sendNotification(event, payload);
             },
             errMsg:function(errMsg,data){
                 var _this = this;
