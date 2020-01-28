@@ -71,14 +71,23 @@
                         this.triggerHelper("volumeChanged", 1);
                     }
 
-                    _this.KIVQModule.setupQuiz().fail(function(data, msg) {
-                        mw.log("Quiz: error loading quiz, error: " + msg);
-                        embedPlayer.hideSpinner();
-                        _this.KIVQModule.unloadQuizPlugin(embedPlayer);
-                        embedPlayer.enablePlayControls();
-                    }).done(function(data) {
-                        mw.log("Quiz: setup is completed, continuing...");
-                    });
+                    _this.KIVQModule.setupQuiz()
+                        .fail(function(data, msg) {
+                            mw.log("Quiz: error loading quiz, error: " + msg);
+                            embedPlayer.hideSpinner();
+                            _this.KIVQModule.unloadQuizPlugin(embedPlayer);
+                            embedPlayer.enablePlayControls();
+                        })
+                        .done(function(data) {
+                            var ivqNotificationData = {
+                                allowedAttempts: $.quizParams.attemptsAllowed,
+                                allowSeekForward: $.quizParams.allowSeekForward,
+                                scoreType: $.quizParams.scoreType,
+                                allowAnswerUpdate: $.quizParams.allowAnswerUpdate
+                            };
+                            _this.KIVQModule.sendIVQMesageToListener('QuizStarted', ivqNotificationData);
+                            mw.log("Quiz: setup is completed, continuing...");
+                        });
 
                     _this.KIVQScreenTemplate = new mw.KIVQScreenTemplate(embedPlayer);
 
@@ -267,6 +276,7 @@
             if(data.objectType === "KalturaAPIException"){
                 _this.KIVQModule.errMsg('Error', data);
             }else{
+                _this.KIVQModule.sendIVQMesageToListener("QuizRetake");
                 // reset quiz and KIVQModule
                 this.destroy();
                 this.KIVQModule.destroy();
