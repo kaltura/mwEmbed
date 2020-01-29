@@ -128,7 +128,7 @@
 					$(this.getPlayer().getPlayerElement()).one("canplay", function(){
 						// The initial seeking to the live edge has finished.
 						this.afterInitialSeeking = true;
-						if (this.embedPlayer.isLive() && mw.isIE11()) {
+						if (this.embedPlayer.isLive() && (mw.isIE11() || mw.isEdge())) {
 							var player = this.embedPlayer.getPlayerElement();
 							//nudge time on IE11 live streams due to audio bug https://github.com/video-dev/hls.js/issues/2323
 							player.currentTime = player.currentTime + 0.1;
@@ -794,14 +794,14 @@
 
 			_onseeking: function(){
 				// if this is the initial seeking which hls performs to the live edge - do nothing
-				if(this.afterInitialSeeking){
+				if(this.afterInitialSeeking || !this.embedPlayer.isLive()){
 					this.orig_onseeking();
 				}
 			},
 
 			_onseeked: function () {
 				// if this is the initial seeking which hls performs to the live edge - do nothing
-				if(this.afterInitialSeeking){
+				if(this.afterInitialSeeking || !this.embedPlayer.isLive()){
 					this.orig_onseeked();
 				}
 			},

@@ -76,6 +76,10 @@
 		onPlayStatus: false,
         firstPlayRequestTime: null,
         bandwidthSamples: [],
+		firstPlaying: true,
+		_isPaused: true,
+		_isBuffering: false,
+		_mediaChange: false,
 
 		smartSetInterval:function(callback,time,monitorObj) {
 			var _this = this;
@@ -150,6 +154,10 @@
 				_this.onPlayStatus = false;
 				_this.id3SequenceId = null;
 				_this.bandwidthSamples = [];
+				_this.firstPlaying = true;
+				_this._isPaused = true;
+				_this._isBuffering = false;
+				_this._mediaChange = true;
 			});
             // calculate bandwidth of current loaded frag
 			this.embedPlayer.bindHelper( 'hlsFragBufferedWithData' , function (e,data) {
@@ -165,29 +173,29 @@
 				}
 			});
 
-			this.embedPlayer.bindHelper( 'userInitiatedPlay' , function () {
-                if (_this.firstPlay) {
-                    _this.firstPlayRequestTime = Date.now();
-                }
-				_this.sendAnalytics(playerEvent.PLAY_REQUEST);
+			this.embedPlayer.bindHelper( 'firstPlay' , function () {
+					_this.firstPlayRequestTime = Date.now();
+					_this.sendAnalytics(playerEvent.PLAY_REQUEST);
 			});
 
-			this.embedPlayer.bindHelper( 'onplay' , function () {
+			this.embedPlayer.bindHelper( 'playing' , function () {
                 if (_this.embedPlayer.currentState === "start" && _this.playSentOnStart) {
                     return;
                 }
 
-				if ( !this.isInSequence() && (_this.firstPlay || _this.embedPlayer.currentState !== "play") ){
-					if ( _this.firstPlay && !_this.onPlayStatus ) {
+				if ( !this.isInSequence() ){
+					if ( _this.firstPlaying && !_this.onPlayStatus ) {
 						_this.onPlayStatus = true;
+						_this.firstPlaying = false;
                         _this.playSentOnStart = true;
 						_this.timer.start();
 						_this.sendAnalytics(playerEvent.PLAY, {
                             bufferTimeSum: _this.bufferTimeSum,
                             joinTime: (Date.now() - _this.firstPlayRequestTime) / 1000.0
 						});
-					}else if ( _this.embedPlayer.currentState !== "play" ){
+					}else if (_this._isPaused){
                         _this.timer.resume();
+						_this._isPaused = false;
 						_this.sendAnalytics(playerEvent.RESUME, {
                             bufferTimeSum: _this.bufferTimeSum
 						});
@@ -196,6 +204,7 @@
 			});
 			this.embedPlayer.bindHelper( 'onpause' , function () {
 				_this.timer.stop();
+				_this._isPaused = true;
 				_this.sendAnalytics(playerEvent.PAUSE);
                 if ( _this.embedPlayer.isDVR() ) {
                     _this.dvr = true;
@@ -276,7 +285,7 @@
 				}
 			});
 
-			this.embedPlayer.bindHelper( 'selectClosedCaptions' , function (e, language) {
+			this.embedPlayer.bindHelper( 'selectClosedCaptions' , function (e, label, language) {
 				_this.sendAnalytics(playerEvent.CAPTIONS, { "caption": language});
 			});
 
@@ -294,14 +303,20 @@
 			});
 
 			this.embedPlayer.bindHelper('bufferStartEvent', function(){
-				_this.bufferStartTime = new Date();
-				_this.sendAnalytics(playerEvent.BUFFER_START);
+				if (!_this.firstPlaying) {
+					_this._isBuffering = true;
+					_this.bufferStartTime = new Date();
+					_this.sendAnalytics(playerEvent.BUFFER_START);
+				}
 			});
 
 			this.embedPlayer.bindHelper('bufferEndEvent', function(){
-				_this.calculateBuffer();
-				_this.bufferStartTime = null;
-                _this.sendAnalytics(playerEvent.BUFFER_END);
+				if (!_this.firstPlaying && _this._isBuffering) {
+					_this._isBuffering = false;
+					_this.calculateBuffer();
+					_this.bufferStartTime = null;
+					_this.sendAnalytics(playerEvent.BUFFER_END);
+				}
             });
 
 			this.embedPlayer.bindHelper( 'bitrateChange' ,function( event, newBitrate){
@@ -388,6 +403,7 @@
 			this.savedPosition = null;
 			this.absolutePosition = null;
 			this.id3TagEventTime = null;
+			this._mediaChange = false;
 		},
 		/**
 		* Both parameters are accumulated so we need to deduct the new values from the previous values. This function
@@ -561,6 +577,9 @@
         },
 
 		sendAnalytics : function(eventType, additionalData){
+			if (this._mediaChange) {
+				return;
+			}
 			//Don't send analytics if entry or partner id are missing
 			if (!(this.embedPlayer.kentryid && this.embedPlayer.kpartnerid)){
 				return;
@@ -603,17 +622,17 @@
 				'playbackType'      : playbackType
 			};
 
-            var flashVarEvents = {
-                'playbackContext' : 'playbackContext',
-                'applicationName' : 'application',
-                'userId' : 'userId'
-            };
-            // support legacy ( deprecated ) top level config
-            for( var fvKey in flashVarEvents){
-                if( this.embedPlayer.getKalturaConfig( '', fvKey ) ){
-                    statsEvent[ flashVarEvents[ fvKey ] ] = this.embedPlayer.getKalturaConfig('', fvKey );
-                }
-            }
+			var flashVarEvents = {
+				'playbackContext' : 'playbackContext',
+				'applicationName' : 'application',
+				'userId' : 'userId'
+			};
+			// support legacy ( deprecated ) top level config
+			for( var fvKey in flashVarEvents){
+				if( this.embedPlayer.getKalturaConfig( '', fvKey ) ){
+					statsEvent[ flashVarEvents[ fvKey ] ] = this.embedPlayer.getKalturaConfig('', fvKey );
+				}
+			}
 
 			// add ks if available
 			var ks = this.kClient.getKs();
@@ -651,24 +670,24 @@
 				statsEvent["playbackContext"] = mw.getConfig("playbackContext");
 			}
 
-            //Get optional playlistAPI
+			//Get optional playlistAPI
 			this.maybeAddPlaylistId(statsEvent);
 
-            //Shorten the referrer param
-            var pageReferrer =  statsEvent[ 'referrer' ];
-            var queryPos = pageReferrer.indexOf("?");
-            if (queryPos > 0) {
-              pageReferrer = pageReferrer.substring(0, queryPos);
-            }
+			//Shorten the referrer param
+			var pageReferrer =  statsEvent[ 'referrer' ];
+			var queryPos = pageReferrer.indexOf("?");
+			if (queryPos > 0) {
+				pageReferrer = pageReferrer.substring(0, queryPos);
+			}
 
-            var encodedReferrer = encodeURIComponent(pageReferrer);
-            if (encodedReferrer.length > 500) {
-                var parser = document.createElement('a');
-                parser.href = pageReferrer;
-                pageReferrer =  parser.origin;
-            }
+			var encodedReferrer = encodeURIComponent(pageReferrer);
+			if (encodedReferrer.length > 500) {
+				var parser = document.createElement('a');
+				parser.href = pageReferrer;
+				pageReferrer =  parser.origin;
+			}
 
-            statsEvent[ 'referrer' ] = pageReferrer;
+			statsEvent[ 'referrer' ] = pageReferrer;
 
 			var eventRequest = {'service' : 'analytics', 'action' : 'trackEvent'};
 			$.each(statsEvent , function (event , value) {
@@ -680,22 +699,22 @@
 			this.kClient.doRequest( eventRequest, function(data){
 				try {
 					if (typeof data == "object") {
-                        var parsedData = data;
-                        if (parsedData.time && !_this.startTime) {
-                            _this.startTime = parsedData.time;
-                        }
-                        if (parsedData.viewEventsEnabled != undefined && !parsedData.viewEventsEnabled) {
-                            _this.monitorViewEvents = false;
-                        }
-                    } else {
-                        if (!_this.startTime) {
-                            _this.startTime = data;
-                        }
-                    }
-                }catch(e){
+						var parsedData = data;
+						if (parsedData.time && !_this.startTime) {
+							_this.startTime = parsedData.time;
+						}
+						if (parsedData.viewEventsEnabled != undefined && !parsedData.viewEventsEnabled) {
+							_this.monitorViewEvents = false;
+						}
+					} else {
+						if (!_this.startTime) {
+							_this.startTime = data;
+						}
+					}
+				}catch(e){
 					mw.log("Failed sync time from server");
 				}
-            }, true);
+			}, true);
         },
 
         maybeAddPlaylistId: function (statsEvent) {

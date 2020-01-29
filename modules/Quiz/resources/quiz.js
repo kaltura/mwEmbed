@@ -71,14 +71,23 @@
                         this.triggerHelper("volumeChanged", 1);
                     }
 
-                    _this.KIVQModule.setupQuiz().fail(function(data, msg) {
-                        mw.log("Quiz: error loading quiz, error: " + msg);
-                        embedPlayer.hideSpinner();
-                        _this.KIVQModule.unloadQuizPlugin(embedPlayer);
-                        embedPlayer.enablePlayControls();
-                    }).done(function(data) {
-                        mw.log("Quiz: setup is completed, continuing...");
-                    });
+                    _this.KIVQModule.setupQuiz()
+                        .fail(function(data, msg) {
+                            mw.log("Quiz: error loading quiz, error: " + msg);
+                            embedPlayer.hideSpinner();
+                            _this.KIVQModule.unloadQuizPlugin(embedPlayer);
+                            embedPlayer.enablePlayControls();
+                        })
+                        .done(function(data) {
+                            var ivqNotificationData = {
+                                allowedAttempts: $.quizParams.attemptsAllowed,
+                                allowSeekForward: $.quizParams.allowSeekForward,
+                                scoreType: $.quizParams.scoreType,
+                                allowAnswerUpdate: $.quizParams.allowAnswerUpdate
+                            };
+                            _this.KIVQModule.sendIVQMesageToListener('QuizStarted', ivqNotificationData);
+                            mw.log("Quiz: setup is completed, continuing...");
+                        });
 
                     _this.KIVQScreenTemplate = new mw.KIVQScreenTemplate(embedPlayer);
 
@@ -267,6 +276,7 @@
             if(data.objectType === "KalturaAPIException"){
                 _this.KIVQModule.errMsg('Error', data);
             }else{
+                _this.KIVQModule.sendIVQMesageToListener("QuizRetake");
                 // reset quiz and KIVQModule
                 this.destroy();
                 this.KIVQModule.destroy();
@@ -425,6 +435,9 @@
             this.KIVQModule.submitAnswer(cuepoint.key,null,cuepoint.openAnswer);
             this.selectedAnswer = null;
             var _this = this;
+            $(".cp-navigation").css("pointer-events", "none");
+            $(".ftr-right").css("pointer-events", "none");
+            $(".cp-navigation-btn").addClass("disabled");
             setTimeout(function(){
                 _this.KIVQModule.checkIfDone(cuepoint.key)
             },
@@ -438,7 +451,7 @@
             _this.KIVQScreenTemplate.tmplQuestion();
 
             if ($.cpObject.cpArray[questionNr].hintText){
-                _this.ssDisplayHint(questionNr)
+                _this.ssDisplayHint(questionNr);
             }
             var className = this.getClassByCPType(cPo.questionType);
             $(".ivqContainer").addClass(className);
@@ -447,7 +460,7 @@
             }
             var displayQuestion = $(".display-question");
             //Search for links and links patterns ( [text|http://exampl.com] ) and add a real link to a new tab
-            displayQuestion.text(cPo.question).attr({'tabindex': 5,"aria-lable":cPo.question}).focus();
+            displayQuestion.text(cPo.question).attr({'tabindex': 5,"aria-label": cPo.question}).focus();
             var questionText = this.wrapLinksWithTags(displayQuestion.html());
             displayQuestion.html(questionText);
             //$(".display-question").attr('title', "Question number "+questionNr);
@@ -486,6 +499,15 @@
                         interfaceElement.find(".open-answer-container").addClass("allow-change");
                         var charsLength = interfaceElement.find(".open-question-textarea").val().length;
                         interfaceElement.find(".open-question-chars .chars").text(charsLength);
+                        if(cPo.openQuestionFailed){
+                            // cuepoint failed can only be on open question. If failed to submit 
+                            // we want to leave the UI enable for re-submitting   
+                            cPo.openQuestionFailed = false;
+                            interfaceElement.find(".ivqContainer.answered").removeClass("answered");
+                            interfaceElement.find("#open-question-change-answer").hide();
+                            interfaceElement.find(".open-question-textarea").removeAttr("disabled").focus();
+                            interfaceElement.find("#open-question-clear,#open-question-save").removeAttr("disabled");
+                        }
 
                     } else {
                         // reset UI elements to save in case a previous open question was already answered 
@@ -500,9 +522,6 @@
                 }
             }
             else {
-                if (_this.isReflectionPoint(cPo)) {
-                    _this.KIVQModule.submitAnswer(questionNr,0);
-                }
                 _this._selectAnswerConroller(cPo, questionNr);
             }
             this.addFooter(questionNr);
@@ -1074,7 +1093,15 @@
                     }
 
                     $(".ftr-right").html(skipTxt).on('click', function () {
-                        _this.KIVQModule.checkIfDone(questionNr)
+                        if(_this.isReflectionPoint($.cpObject.cpArray[questionNr])) {
+                            // only on reflection point - when clicking on continue - submit the question and wait as all other questions
+                            _this.KIVQModule.submitAnswer(questionNr,0);
+                            setTimeout(function(){
+                                _this.KIVQModule.checkIfDone(questionNr)
+                            },_this.postAnswerTimer);
+                        }else{
+                            _this.KIVQModule.checkIfDone(questionNr)
+                        }
                     }).on('keydown', _this.keyDownHandler).attr('tabindex', 5).attr('role', 'button');
                 }else if(!_this.KIVQModule.canSkip &&  ( $.cpObject.cpArray[questionNr].isAnswerd || _this.isReflectionPoint($.cpObject.cpArray[questionNr])) ){
                     $(".ftr-right").html(gM('mwe-quiz-next')).on('click', function () {

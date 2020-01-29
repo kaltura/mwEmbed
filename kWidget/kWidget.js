@@ -1064,12 +1064,7 @@
             if (protocolString.match('^http')) {
             	return protocolString;
 			} else {
-            	try {
-                    return window.parent.location.protocol.slice(0, -1);
-				} catch (e){
-                    this.log( "unable to get protocol for player request, assuming https" );
-            		return "https";
-				}
+				return "https";
 			}
 		},
 
@@ -1160,7 +1155,7 @@
 			}
 
 			// Check if we need to capture a play event ( iOS sync embed call )
-			if (settings.captureClickEventForiOS && (this.isSafari() || this.isAndroid())) {
+			if (settings.captureClickEventForiOS && ((this.isSafari() && !this.isChrome()) || this.isAndroid())) {
 				this.captureClickWrapedIframeUpdate(targetId, requestSettings, iframe);
 			} else {
 				// get the callback name:
@@ -1851,6 +1846,9 @@
 		isSafari: function () {
             return (/safari/).test(navigator.userAgent.toLowerCase());
         },
+		isChrome: function () {
+			return (/chrome/).test(navigator.userAgent.toLowerCase());
+		},
 		isWindowsDevice: function () {
 			var appVer = navigator.appVersion;
 			return  ((appVer.indexOf("Win") != -1 &&
@@ -1860,10 +1858,16 @@
 		 * Checks for mobile devices
 		 **/
 		isMobileDevice: function () {
-			return (this.isIOS() || this.isAndroid() || this.isWindowsDevice() || mw.getConfig("EmbedPlayer.ForceNativeComponent")  || mw.getConfig("EmbedPlayer.SimulateMobile") === true );
+			return (this.isIOS() || this.isIpadOS() || this.isAndroid() || this.isWindowsDevice() || mw.getConfig("EmbedPlayer.ForceNativeComponent")  || mw.getConfig("EmbedPlayer.SimulateMobile") === true );
 		},
 		isChromeCast: function(){
 			return (/CrKey/.test(navigator.userAgent));
+		},
+		isIpadOS: function () {
+			return (this.isSafari() && this.isTouchDevice && !this.isIOS());
+		},
+		isTouchDevice: function () {
+			return !!('ontouchstart' in window) || ( mw.getConfig("EmbedPlayer.EnableMobileSkin") === true && mw.getConfig("EmbedPlayer.SimulateMobile") === true);
 		},
 		/**
 		 * Checks if a given uiconf_id is html5 or not

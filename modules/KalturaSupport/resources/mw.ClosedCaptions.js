@@ -122,7 +122,7 @@
 					}
 				} );
 			} else {
-				this.bind( 'playing', function () {
+				this.bind( 'playing seeking', function () {
 					// hide native text tracks since 'showEmbeddedCaptions' is false
 					setTimeout(function () {
 						_this.embedPlayer.hideTextTrack();
@@ -577,8 +577,8 @@
 				captionsSrc = mw.getConfig('Kaltura.ServiceUrl') +
 							"/api_v3/index.php/service/caption_captionasset/action/serveWebVTT/captionAssetId/" +
 							dbTextSource.id +
-							"/segmentIndex/-1/version/2/captions.vtt";
-				captionsSrc += ks ? '/ks/' + ks : '';
+							"/segmentIndex/-1/version/2";
+				captionsSrc += ks ? "/ks/" + ks + "/captions.vtt" : "/captions.vtt";
 			} else {
 				captionsSrc = this.getCaptionURL( dbTextSource.id ) + '/.' + dbTextSource.fileExt;
 			}
@@ -1204,6 +1204,7 @@
 			this.setTextSource(src);
 			this.embedPlayer.triggerHelper( "selectClosedCaptions", [ src.label, src.srclang ] );
 			this.getActiveCaption();
+			this.getBtn().focus();
 		},
 		addOffButton: function() {
 			var _this = this;
@@ -1224,8 +1225,9 @@
 			this.embedPlayer.triggerHelper('changedClosedCaptions', {language: ""});
 			this.setConfig('displayCaptions', false);
 			//Set the index of 'off' to lastActiveCaption
-            		this.lastActiveCaption = this.getMenu().$el.find('.active').index();
-            		// also update the cookie to "None"
+			this.lastActiveCaption = this.getMenu().$el.find('.active').index();
+			this.getBtn().focus();
+			// also update the cookie to "None"
 			this.getPlayer().setCookie( this.cookieName, 'None' );
 		},
 		addOptionsButton: function(btnOptions) {
@@ -1287,7 +1289,7 @@
 		getComponent: function(){
 			var _this = this;
 			if( !this.$el ){
-				var $menu = $( '<ul />' ).addClass( 'dropdown-menu' );
+				var $menu = $( '<ul />' ).addClass( 'dropdown-menu' ).attr('aria-expanded', false);
 				var $button = $( '<button />' )
 								.addClass( 'btn icon-cc' )
 								.attr({
@@ -1296,8 +1298,18 @@
 									'aria-haspopup':'true'
 								})
 								.click( function(e){
-									if ( _this.getMenu().numOfChildren() > 0 ) {
-										_this.getMenu().toggle();
+									var menuEl = _this.getMenu();
+									if (menuEl.numOfChildren() > 0) {
+										menuEl.toggle();
+										if (menuEl.$el.hasClass('open')) {
+											menuEl.$el.attr('aria-expanded', true);
+											// move focus to the selected item if menu opened by keyboard
+											if (e.screenX === 0 && e.screenY === 0) {
+												menuEl.$el.find('.active a').focus();
+											}
+										} else {
+											menuEl.$el.attr('aria-expanded', false);
+										}
 									} else {
 										_this.getPlayer().triggerHelper( "showHideClosedCaptions" );
 									}
