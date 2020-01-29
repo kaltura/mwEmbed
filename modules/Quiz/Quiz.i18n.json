@@ -62,7 +62,7 @@
     "mwe-quiz-retake-btn": "Take the Quiz again",
     "mwe-quiz-feedback": "Feedback",
     "mwe-quiz-close-feedback": "Close feedback",
-    "mwe-quiz-landscape-warning": "This video contains features that works best on landscape mode.<br/>Please flip your screen to continue",
+    "mwe-quiz-landscape-warning": "This video has features that work best in landscape mode. </br>Please rotate your device to continue.",
     "mwe-quiz-submit-failed-description": "Your answer was not received. Please check your internet connection and re-submit, or try submitting your answer again later.",
     "mwe-quiz-back-to-question": "Back to Question"
   },
