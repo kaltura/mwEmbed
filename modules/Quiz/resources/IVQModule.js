@@ -90,6 +90,8 @@
                                 _this.showWelcomePage = (e.value.toLowerCase() === 'true');
                             }
                         });
+                        $.quizParams.allowSeekForward = dataForBanSeek.status;
+
                         //send notification to banSeekManager with params from Editor
                         if(dataForBanSeek.status && !_this.canSkip){
                             _this.embedPlayer.sendNotification('activateBanSeek',dataForBanSeek);
@@ -182,6 +184,7 @@
                         return false;
                     }
                     else{
+                        _this.sendIVQMesageToListener("QuizSubmitted");
                         $.cpObject = {};
                         _this.getQuestionsAndAnswers(_this.populateCpObject);
                         // store current score for next retake screen 
@@ -193,7 +196,6 @@
                             _this.quizPlugin.ssSubmitted(_this.score);
                             _this.quizSubmitted = true;
                         });
-                        _this.sendIVQMesageToListener();
                     }
                 });
             },
@@ -399,6 +401,14 @@
                         return false;
                     }else {
                         _this.answeredCurrent = true;
+                        var ivqNotificationData = {
+                            questionIndex: questionNr,
+                            questionType: $.cpObject.cpArray[questionNr].questionType,
+                            questionText: $.cpObject.cpArray[questionNr].question,
+                            answer: selectedAnswer || openQuestionText,
+                            attemptNumber: $.quizParams.version
+                        };
+                        _this.sendIVQMesageToListener("QuestionAnswered", ivqNotificationData);
                         $.cpObject.cpArray[questionNr].answerCpId = data.id;
                     }
                 },openQuestionText);
@@ -633,15 +643,8 @@
                     return true;
                 }
             },
-            sendIVQMesageToListener:function(){
-                try {
-                    var _this = this;
-                    window.kdp = document.getElementById( _this.embedPlayer.id );
-                    window.kdp.sendNotification("QuizSubmitted", _this.kQuizUserEntryId);
-                    mw.log('Quiz: QuizSubmitted sent to kdp');
-                } catch (e) {
-                    mw.log('postMessage listener of parent is undefined: ', e);
-                }
+            sendIVQMesageToListener:function(event, payload){
+              this.embedPlayer.sendNotification(event, payload);
             },
             backToQuestion:function(e){
                 if(e && e.type === "keydown" && e.keyCode !== "13"){

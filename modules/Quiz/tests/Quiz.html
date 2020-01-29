@@ -48,11 +48,11 @@
 		kWidget.embed({
 			'targetId': 'kaltura_player_1434365991',
 			'wid': '_27017',
-			'uiconf_id': '43898751',
+			'uiconf_id': '43650672',
 			'flashvars': {
 				"localizationCode": l,
-                "ks" : "djJ8MjcwMTd8pI-Gf9x94yjcV8udCdbuHVrBIJJRtTFl3-UjoC7YbWhB412ZCBz_l6Ja3OV2L4pFtaqUyTHneXITRIBMEWdhNYb9Jff7eU_fvyS-0PPoSxydoVReCMx37y0aG7sSCi8Vr_24A-MyR2N4IJFxZT8bbkr0Lii3iNJu910PYwBKVYLFsGTXC6PrV-gEe7csngmMYYZjRTVAfYgSSRxG2fzFwx_S9hmqaxpsgEZJ_CON2ABx0trAAwrCRF1t2NvneCoC2TTWo8QwptXRMKRrKhLkHAhPesVm6hA69_JP2H0WgtodHn0XAWoyg988D5hfG9gOHUSi9z0gcXdtTJIbctpJhoknJMbO9QXmXlVxAZOsOx53GnuQA5PS4Qpb6Tf0O8NxTpoWreb_vuVEhR0MaKNvUG34YhDoMYETsN-PlGC3lpLQsmPf-Enadjp_Gx5SI_B97o-OiBUpHKFda5HGLrUts2I3RGngRTZFjRCTW58NaIo2gD0CDOns3bbn03Sryd7g",
-				'autoPlay': true,
+                "ks" : "djJ8MjcwMTd8TscaNBYpfhcfLnH6J7htJEnUCbZcMmoWz_Tq6yt_8m6aHkAEPgl0Pm3nKMU9DLLmlNC2H-Y8g79rhtpFd8sGWeikmBh-AXWAas1ZRmTkSDlwF_1gdrO7TuqtH4_q0UgHZr0YbnILobVPzcG2aMlrgwaMe6Stos0fA2vXVdkLZ1aB3ku8PiMDT8WD1XiVb-SG9ucAtAWWvjf1n2mtLcWPUz_tdHMD9y4VVPQiSXJ8UIjsMLT75KcWulb3IRby4qwRsoGRBwJbAKDofqFk28zqAbYJQl2zYFiaDNd5DMRexC8FSZI7thKn28C_6BC4TYNHZwKRp8aY3al8L1QQQJW0YiYV2PKhcLu2Fi1DhLSR4k75MOsfe2Ahhvp8-LbmhCI4N08fGuY2JsVtLvqVmIJePzYUSGX6qzPuZ6JQBNgS1-Kw6Yh4Qu_wcFt4lrl6k4Ue",
+				'autoPlay': false,
 				'quiz': {
 				    'autoplay': true,
 					'plugin': true
@@ -65,6 +65,24 @@
 			},
 			'entry_id': '0_0inv2to0', /// 0_fx9mabrm
  			'readyCallback': function (playerId) {
+				 var eventsList = [
+					 "quizStarted",
+					 "questionAnswered",
+					 "quizSubmitted",
+					 "quizRetake"
+				 ];
+
+				 // add an array of events and add listener for each
+				var kdp = $(document.getElementById(playerId));
+				for ( var i=0; i < eventsList.length; i++ ){
+					(function(i) {
+						kdp[0].kBind(eventsList[i], function(event){
+							$(".quiz-message-event").text("Triggered: " + eventsList[i]);
+							var messageData = JSON.stringify(event, null, 4) || "";
+							$(".quiz-message-data").text(messageData)
+						});
+					})(i);
+				}
 			}
 		});
 	}
@@ -84,5 +102,10 @@
 
 zxfdcbg
 
+<div id="IVQ_messages" style="width: 250px;height: 200px;position: relative;bottom: -40px;">
+	<h5>Quiz Messages</h5>
+	<p class="quiz-message-event"></p>
+	<textarea style="width: 250px; height: 130px;"class="quiz-message-data" disabled></textarea>
+</div>
 </body>
 </html>
