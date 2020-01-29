@@ -451,7 +451,7 @@
             _this.KIVQScreenTemplate.tmplQuestion();
 
             if ($.cpObject.cpArray[questionNr].hintText){
-                _this.ssDisplayHint(questionNr)
+                _this.ssDisplayHint(questionNr);
             }
             var className = this.getClassByCPType(cPo.questionType);
             $(".ivqContainer").addClass(className);
@@ -499,6 +499,15 @@
                         interfaceElement.find(".open-answer-container").addClass("allow-change");
                         var charsLength = interfaceElement.find(".open-question-textarea").val().length;
                         interfaceElement.find(".open-question-chars .chars").text(charsLength);
+                        if(cPo.openQuestionFailed){
+                            // cuepoint failed can only be on open question. If failed to submit 
+                            // we want to leave the UI enable for re-submitting   
+                            cPo.openQuestionFailed = false;
+                            interfaceElement.find(".ivqContainer.answered").removeClass("answered");
+                            interfaceElement.find("#open-question-change-answer").hide();
+                            interfaceElement.find(".open-question-textarea").removeAttr("disabled").focus();
+                            interfaceElement.find("#open-question-clear,#open-question-save").removeAttr("disabled");
+                        }
 
                     } else {
                         // reset UI elements to save in case a previous open question was already answered 
@@ -513,9 +522,6 @@
                 }
             }
             else {
-                if (_this.isReflectionPoint(cPo)) {
-                    _this.KIVQModule.submitAnswer(questionNr,0);
-                }
                 _this._selectAnswerConroller(cPo, questionNr);
             }
             this.addFooter(questionNr);
@@ -1087,7 +1093,15 @@
                     }
 
                     $(".ftr-right").html(skipTxt).on('click', function () {
-                        _this.KIVQModule.checkIfDone(questionNr)
+                        if(_this.isReflectionPoint($.cpObject.cpArray[questionNr])) {
+                            // only on reflection point - when clicking on continue - submit the question and wait as all other questions
+                            _this.KIVQModule.submitAnswer(questionNr,0);
+                            setTimeout(function(){
+                                _this.KIVQModule.checkIfDone(questionNr)
+                            },_this.postAnswerTimer);
+                        }else{
+                            _this.KIVQModule.checkIfDone(questionNr)
+                        }
                     }).on('keydown', _this.keyDownHandler).attr('tabindex', 5).attr('role', 'button');
                 }else if(!_this.KIVQModule.canSkip &&  ( $.cpObject.cpArray[questionNr].isAnswerd || _this.isReflectionPoint($.cpObject.cpArray[questionNr])) ){
                     $(".ftr-right").html(gM('mwe-quiz-next')).on('click', function () {
