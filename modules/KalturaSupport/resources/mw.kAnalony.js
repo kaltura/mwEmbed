@@ -126,11 +126,10 @@
 			this.eventIndex = 1;
             this.bufferTime = 0;
             this.bufferTimeSum = 0;
-			this.currentBitRate = -1;
-			// check persistent cookie. If exist - store and use it
-			if(this.getConfig("usePersistentSessionId")){
-				this.setupUuid(true);
-			}
+            this.currentBitRate = -1;
+            if(this.getConfig("usePersistentSessionId")){
+                this.setupUuid(true);
+            }
             this.addBindings();
 	    },
 
