@@ -7,6 +7,7 @@
 	mw.PluginManager.add( 'kAnalony' , mw.KBasePlugin.extend( {
 
 		defaultConfig: {
+			usePersistentSessionId: false,
 			id3TagMaxDelay: 20000
 		},
 		tabMode : {
@@ -62,6 +63,7 @@
 		decodedFrames: 0,
 		playTimeSum: 0,
 		previousCurrentTime: 0,
+		analyticsPersistentSessionId: null,
 		_p25Once: false,
 		_p50Once: false,
 		_p75Once: false,
@@ -125,12 +127,20 @@
             this.bufferTime = 0;
             this.bufferTimeSum = 0;
 			this.currentBitRate = -1;
+			// check persistent cookie. If exist - store and use it
+			if(this.getConfig("usePersistentSessionId")){
+				this.setupUuid(true);
+			}
             this.addBindings();
 	    },
 
 		addBindings : function() {
 			var _this = this;
 			var playerEvent = this.PlayerEvent;
+			// API to turn off / on analytics persistent session
+			this.embedPlayer.bindHelper( 'setPersistentSessionId' , function (event,shouldUsePersistentSessionId) {
+				_this.setupUuid(shouldUsePersistentSessionId);	
+			});
 			this.embedPlayer.bindHelper( 'playerReady' , function () {
                 _this.resetPlayerflags();
 				if ( _this.kalturaContextData && _this.kalturaContextData.flavorAssets && _this.kalturaContextData.flavorAssets.length === 1 ){
@@ -521,8 +531,21 @@
 			analyticsEvent.bandwidth = avarage.toFixed(3);
 		},
 
-
-
+		setupUuid : function(useUuid) {
+			if(useUuid){
+				// turn on the feature. Check existence of cookie, use if exist or set if missing. 
+				this.analyticsPersistentSessionId = $.cookie( "analyticsPersistentSessionId" );
+				if(!this.analyticsPersistentSessionId){
+					// couldn't find cookie - create it 
+					this.analyticsPersistentSessionId = window.kWidgetSupport.getGUID();
+					this.getPlayer().setCookie( "analyticsPersistentSessionId", this.analyticsPersistentSessionId );
+				}
+			}else{
+				// remove the cookie and clear the current saved
+				this.analyticsPersistentSessionId = null;
+				this.getPlayer().setCookie('analyticsPersistentSessionId', null,{ path: '/' });
+			}
+		},
 		generateViewEventObject: function(){
 			var tabMode = this.tabMode;
 			var soundMode = this.soundMode;
@@ -535,6 +558,9 @@
 			};
 			if(this.id3SequenceId){
 				event.flavorParamsId = this.id3SequenceId;
+			}
+			if(this.analyticsPersistentSessionId){
+				event.persistentSessionId = this.analyticsPersistentSessionId;
 			}
 			return event;
 		},
