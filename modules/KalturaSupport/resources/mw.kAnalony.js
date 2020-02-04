@@ -252,7 +252,9 @@
 			});
 			
 			this.embedPlayer.bindHelper('hlsManifestLoadedWithStats', function(e,data){
-				_this.manifestDownloadTime= (data.stats.tload-data.stats.trequest).toFixed(2);
+				if(data && data.stats && data.stats.tload && data.stats.trequest){
+					_this.manifestDownloadTime= (data.stats.tload-data.stats.trequest).toFixed(2);
+				}
 			});
 
 			this.embedPlayer.bindHelper( 'onOpenFullScreen' , function () {
