@@ -520,8 +520,16 @@
 			this.bandwidthSamples = [];
 			analyticsEvent.bandwidth = avarage.toFixed(3);
 		},
-
-
+		
+		getConnectionType: function() {
+			try {
+				var navConnection = window.navigator.connection || window.navigator.mozConnection || window.navigator.webkitConnection;
+				return navConnection && navConnection.effectiveType ? navConnection.effectiveType : "" ;
+			}catch(err) {
+				mw.log("Failed to retrieve window.navigator.connection");
+			}
+			return "";
+		},
 
 		generateViewEventObject: function(){
 			var tabMode = this.tabMode;
@@ -535,6 +543,10 @@
 			};
 			if(this.id3SequenceId){
 				event.flavorParamsId = this.id3SequenceId;
+			}
+			var connectionType = this.getConnectionType();
+			if(connectionType){
+				event.networkConnectionType = connectionType;
 			}
 			return event;
 		},
