@@ -72,7 +72,7 @@
         playSentOnStart: false,
 		absolutePosition: null,
 		id3TagEventTime: null,
-		manifestDownloadTime: NaN,
+		manifestDownloadTime: null,
 		id3SequenceId: null,
 		onPlayStatus: false,
         firstPlayRequestTime: null,
@@ -159,7 +159,7 @@
 				_this._isPaused = true;
 				_this._isBuffering = false;
 				_this._mediaChange = true;
-				_this.manifestDownloadTime = NaN;
+				_this.manifestDownloadTime = null;
 			});
             // calculate bandwidth of current loaded frag
 			this.embedPlayer.bindHelper( 'hlsFragBufferedWithData' , function (e,data) {
@@ -544,7 +544,7 @@
 			}
 			if(this.manifestDownloadTime){
 				event.manifestDownloadTime = this.manifestDownloadTime;
-				this.manifestDownloadTime = NaN;
+				this.manifestDownloadTime = null;
 			}
 			return event;
 		},
