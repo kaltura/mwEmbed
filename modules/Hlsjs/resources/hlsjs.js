@@ -310,7 +310,7 @@
             /**
              * manifest loaded handler.
              */
-            onManifestLoaded: function () {
+            onManifestLoaded: function (event,data) {
                 this.log("manifest loaded");
                 if (!this.embedPlayer.isLive()){
                     this.hls.startLoad(this.getPlayer().currentTime);
@@ -326,6 +326,7 @@
 			            textTracks[i].mode = "disabled";
 		            }
 	            }
+	            this.getPlayer().triggerHelper('hlsManifestLoadedWithStats',data);
             },
 			/**
 			 * Extract available audio tracks metadata from parsed manifest data

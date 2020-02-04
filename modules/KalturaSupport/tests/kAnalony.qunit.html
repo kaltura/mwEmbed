@@ -61,13 +61,13 @@
 
     kWidget.embed( {
         'targetId' :'kaltura_player',
-        'uiconf_id' :'44282411',
-        'wid': '_27017',
-        'entry_id' :'0_2xuk35pg',
+		'wid' : '_243342',
+		'uiconf_id' : '20540612',
+		'entry_id': '1_y8fyiuek',
         'flashvars': {
             autoPlay : true,
             "kAnalony":{
-                "plugin":true
+                "plugin":true,
             },
             'closedCaptions': {
                 'hideWhenEmpty': true,
@@ -96,13 +96,19 @@
     Event log live analytics dispatch
     <textarea id="log" style="width:95%;height:300px;float:left"></textarea>
     <script>
+        var kdp;
         function jsCallbackReady(playerid) {
-            var kdp = document.getElementById( playerid );
+            kdp = document.getElementById( playerid );
             kdp.kBind( 'analyticsEvent' , function ( data ) {
                 $( '#log' ).prepend("kAnalony" + ': ' + JSON.stringify( data ) + "\n\n")
             });
         }
+        function setUid(shouldSend){
+            kdp.sendNotification("setPersistentSessionId",shouldSend);
+        }
     </script>
 </div>
+<button onclick="setUid(true)">set uid on</button>
+<button onclick="setUid(false)">set uid off</button>
 </body>
 </html>

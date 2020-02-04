@@ -72,6 +72,7 @@
         playSentOnStart: false,
 		absolutePosition: null,
 		id3TagEventTime: null,
+		manifestDownloadTime: NaN,
 		id3SequenceId: null,
 		onPlayStatus: false,
         firstPlayRequestTime: null,
@@ -158,6 +159,7 @@
 				_this._isPaused = true;
 				_this._isBuffering = false;
 				_this._mediaChange = true;
+				_this.manifestDownloadTime = NaN;
 			});
             // calculate bandwidth of current loaded frag
 			this.embedPlayer.bindHelper( 'hlsFragBufferedWithData' , function (e,data) {
@@ -247,6 +249,11 @@
 
 			this.embedPlayer.bindHelper( 'downloadMedia' , function () {
 				_this.sendAnalytics(playerEvent.DOWNLOAD);
+			});
+			
+			this.embedPlayer.bindHelper('hlsManifestLoadedWithStats', function(e,data){
+				console.log(">>>> LOG",data);
+				_this.manifestDownloadTime= (data.stats.tload-data.stats.trequest).toFixed(2);
 			});
 
 			this.embedPlayer.bindHelper( 'onOpenFullScreen' , function () {
@@ -535,6 +542,10 @@
 			};
 			if(this.id3SequenceId){
 				event.flavorParamsId = this.id3SequenceId;
+			}
+			if(this.manifestDownloadTime){
+				event.manifestDownloadTime = this.manifestDownloadTime;
+				this.manifestDownloadTime = NaN;
 			}
 			return event;
 		},
