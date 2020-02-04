@@ -252,7 +252,6 @@
 			});
 			
 			this.embedPlayer.bindHelper('hlsManifestLoadedWithStats', function(e,data){
-				console.log(">>>> LOG",data);
 				_this.manifestDownloadTime= (data.stats.tload-data.stats.trequest).toFixed(2);
 			});
 
