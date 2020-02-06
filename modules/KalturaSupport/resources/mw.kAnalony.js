@@ -8,7 +8,7 @@
 
 		defaultConfig: {
 			id3TagMaxDelay: 20000,
-			// persistentSessionId : null
+			persistentSessionId : null
 		},
 		tabMode : {
 			HIDDEN: 1,
