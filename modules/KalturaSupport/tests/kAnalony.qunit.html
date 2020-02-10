@@ -96,19 +96,13 @@
     Event log live analytics dispatch
     <textarea id="log" style="width:95%;height:300px;float:left"></textarea>
     <script>
-        var kdp;
         function jsCallbackReady(playerid) {
-            kdp = document.getElementById( playerid );
+            var kdp = document.getElementById( playerid );
             kdp.kBind( 'analyticsEvent' , function ( data ) {
                 $( '#log' ).prepend("kAnalony" + ': ' + JSON.stringify( data ) + "\n\n")
             });
         }
-        function setUid(shouldSend){
-            kdp.sendNotification("setPersistentSessionId",shouldSend);
-        }
     </script>
 </div>
-<button onclick="setUid(true)">set uid on</button>
-<button onclick="setUid(false)">set uid off</button>
 </body>
 </html>
