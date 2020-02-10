@@ -63,6 +63,7 @@
 		decodedFrames: 0,
 		playTimeSum: 0,
 		previousCurrentTime: 0,
+		maxChunkDownloadTime: 0,
 		_p25Once: false,
 		_p50Once: false,
 		_p75Once: false,
@@ -144,6 +145,7 @@
 				_this.resetSession();
 				_this.rateHandler.destroy();
 				_this.bufferTime = 0;
+				_this.maxChunkDownloadTime = 0;
 				_this.droppedFrames = 0;
 				_this.decodedFrames = 0;
 				_this.firstPlay = true;
@@ -259,6 +261,7 @@
 			});
 
 			this.embedPlayer.bindHelper( 'onEndedDone' , function () {
+				_this.maxChunkDownloadTime = 0;
 				_this.stopViewTracking();
 			});
 
@@ -375,6 +378,12 @@
 				}
 			});
 
+			this.embedPlayer.bindHelper('hlsFragLoadedWithStats', function(e,data) {
+				if(data && data.stats && data.stats.tload && data.stats.trequest ){
+					_this.maxChunkDownloadTime = Math.max((data.stats.tload - data.stats.trequest)/1000, _this.maxChunkDownloadTime);
+				}
+			});
+			
 			this.embedPlayer.bindHelper( 'sourceSwitchingEnd' , function (e, newSource) {
 				if (newSource.newBitrate){
 					_this.currentBitRate = newSource.newBitrate;
@@ -544,6 +553,11 @@
 			};
 			if(this.id3SequenceId){
 				event.flavorParamsId = this.id3SequenceId;
+			}
+			if(this.maxChunkDownloadTime){
+				event.segmentDownloadTime = this.maxChunkDownloadTime.toFixed(3);
+				// reset for next 10 seconds
+				this.maxChunkDownloadTime = 0;
 			}
 			var connectionType = this.getConnectionType();
 			if(connectionType){
