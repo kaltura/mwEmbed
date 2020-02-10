@@ -7,7 +7,8 @@
 	mw.PluginManager.add( 'kAnalony' , mw.KBasePlugin.extend( {
 
 		defaultConfig: {
-			id3TagMaxDelay: 20000
+			id3TagMaxDelay: 20000,
+			persistentSessionId : null
 		},
 		tabMode : {
 			HIDDEN: 1,
@@ -668,6 +669,10 @@
 			// add playbackContext
 			if (mw.getConfig("playbackContext")){
 				statsEvent["playbackContext"] = mw.getConfig("playbackContext");
+			}
+			
+			if (config.persistentSessionId){
+				statsEvent["persistentSessionId"] = config.persistentSessionId
 			}
 
 			//Get optional playlistAPI
