@@ -7,7 +7,8 @@
 	mw.PluginManager.add( 'kAnalony' , mw.KBasePlugin.extend( {
 
 		defaultConfig: {
-			id3TagMaxDelay: 20000
+			id3TagMaxDelay: 20000,
+			persistentSessionId : null
 		},
 		tabMode : {
 			HIDDEN: 1,
@@ -529,8 +530,16 @@
 			this.bandwidthSamples = [];
 			analyticsEvent.bandwidth = avarage.toFixed(3);
 		},
-
-
+		
+		getConnectionType: function() {
+			try {
+				var navConnection = window.navigator.connection || window.navigator.mozConnection || window.navigator.webkitConnection;
+				return navConnection && navConnection.effectiveType ? navConnection.effectiveType : "" ;
+			}catch(err) {
+				mw.log("Failed to retrieve window.navigator.connection");
+			}
+			return "";
+		},
 
 		generateViewEventObject: function(){
 			var tabMode = this.tabMode;
@@ -549,6 +558,10 @@
 				event.segmentDownloadTime = this.maxChunkDownloadTime.toFixed(3);
 				// reset for next 10 seconds
 				this.maxChunkDownloadTime = 0;
+			}
+			var connectionType = this.getConnectionType();
+			if(connectionType){
+				event.networkConnectionType = connectionType;
 			}
 			return event;
 		},
@@ -682,6 +695,10 @@
 			// add playbackContext
 			if (mw.getConfig("playbackContext")){
 				statsEvent["playbackContext"] = mw.getConfig("playbackContext");
+			}
+			
+			if (config.persistentSessionId){
+				statsEvent["persistentSessionId"] = config.persistentSessionId
 			}
 
 			//Get optional playlistAPI
