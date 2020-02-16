@@ -271,9 +271,10 @@
             },
             
             checkIfDone: function (questionNr) {
-                mw.log("Quiz: checkIfDone");
+                mw.log("Quiz: checkIfDone begin");
                 var _this = this;
                 if(_this.isErr){
+                    mw.log("Quiz: checkIfDone Error");
                     return;
                 }
                 if(!_this.answeredCurrent && questionNr){
@@ -281,6 +282,7 @@
                     _this.answerTryouts++;
                     // the current answer were not responded - check again in 500 ms 
                     setTimeout(function(){
+                        mw.log("Quiz: checkIfDone setTimeout" , _this.answerTryouts );
                         if(_this.answerTryouts >=6 ){
                             mw.log("Quiz: failed after 7 checks (~5 sec)- assume BE problem. Stop and show error message");
                             _this.answerTryouts = 0;
@@ -293,21 +295,25 @@
                     },500);
                     return;
                 }
+                mw.log("Quiz: checkIfDone - pass checkIfDone");
                 _this.embedPlayer.getInterface().find(".screen.quiz").removeClass("answering");
                 _this.answerTryouts = 0;
                 if ($.cpObject.cpArray.length === 0){
+                    mw.log("Quiz: no cp to process");
                     _this.continuePlay();
                     return;
                 }
                 if (_this.quizSubmitted) {
+                    mw.log("Quiz: quizSubmitted !");
                     _this.quizPlugin.ssSubmitted(_this.score);
-                }
-                else{
+                }else{
                     var anUnswered = _this.getUnansweredQuestNrs();
                     if (!anUnswered.length){
+                        mw.log("Quiz: anUnswered");
                         _this.reviewMode = true;
                     }
                     if (($.cpObject.cpArray.length - 1) === questionNr){
+                        mw.log("Quiz: quizEndFlow");
                         _this.quizEndFlow = true;
                     }
                     _this.continuePlay();
@@ -385,21 +391,26 @@
              * @param {*} openQuestionText 
              */
             submitAnswer:function(questionNr,selectedAnswer,openQuestionText){
+                mw.log("Quiz: submitAnswer " + questionNr + " " + selectedAnswer + " " + openQuestionText);
                 var _this = this,isAnswered;
                 this.answeredCurrent = false;
                 _this.embedPlayer.getInterface().find(".screen.quiz").addClass("answering");
                 $.cpObject.cpArray[questionNr].selectedAnswer = selectedAnswer;
                 if ($.cpObject.cpArray[questionNr].isAnswerd) {
+                    mw.log("Quiz: submitAnswer - answered" );
                     isAnswered = true;
-                }
-                else{
+                }else{
+                    mw.log("Quiz: submitAnswer - not answered" );
                     isAnswered = false;
                     $.cpObject.cpArray[questionNr].isAnswerd = true;
                 }
                 _this.KIVQApi.addAnswer(isAnswered,_this.i2q(selectedAnswer),_this.kQuizUserEntryId,questionNr,function(data){
+                    mw.log("Quiz: addAnswer callback" ,data );
                     if (!_this.checkApiResponse('Add question err -->',data)){
+                        mw.log("Quiz: submitAnswer Add question err" );
                         return false;
                     }else {
+                        mw.log("Quiz: addAnswer OK" );
                         _this.answeredCurrent = true;
                         var ivqNotificationData = {
                             questionIndex: questionNr,
@@ -408,6 +419,7 @@
                             answer: selectedAnswer || openQuestionText,
                             attemptNumber: $.quizParams.version
                         };
+                        mw.log("Quiz: addAnswer data" , ivqNotificationData );
                         _this.sendIVQMesageToListener("QuestionAnswered", ivqNotificationData);
                         $.cpObject.cpArray[questionNr].answerCpId = data.id;
                     }

@@ -28,7 +28,7 @@
         seekToQuestionTime:null,
         multiStreamWelcomeSkip:false,
         relatedStreamChanging:false,
-        IVQVer:'IVQ-2.74.rc1',
+        IVQVer:'IVQ-2.81',
         ivqShowScreenMode: false,
 
         setup: function () {
