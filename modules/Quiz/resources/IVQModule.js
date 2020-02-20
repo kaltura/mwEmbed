@@ -184,7 +184,7 @@
                         return false;
                     }
                     else{
-                        _this.sendIVQMesageToListener("QuizSubmitted", data.id);
+                        _this.sendIVQMesageToListener("QuizSubmitted", _this.kQuizUserEntryId);
                         $.cpObject = {};
                         _this.getQuestionsAndAnswers(_this.populateCpObject);
                         // store current score for next retake screen 
