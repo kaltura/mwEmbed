@@ -283,9 +283,11 @@
                 this.KIVQModule.setupQuiz().then(function(){
                     // new quiz data is now loaded - proceed with CPs loading 
                     _this.KIVQModule.getQuestionsAndAnswers(function(){
-                        _this.embedPlayer.stopPlayAfterSeek = false;
-                        _this.embedPlayer.seek(0,false);
-                        _this.ivqHideScreen()
+                        setTimeout(function () {
+                            _this.embedPlayer.stopPlayAfterSeek = false;
+                            _this.embedPlayer.seek(0,false);
+                            _this.ivqHideScreen()
+                        },50);
                     })
                 })
             }
