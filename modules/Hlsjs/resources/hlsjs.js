@@ -846,31 +846,45 @@
 				}
 			},
 
-
+			getLiveEdge : function(){
+				try {
+					var liveEdge;
+					if (this.hls.liveSyncPosition) {
+						liveEdge = this.hls.liveSyncPosition;
+					} else if (this.hls.config.liveSyncDuration) {
+						liveEdge = this.embedPlayer.duration - this.hls.config.liveSyncDuration;
+					} else {
+						liveEdge = this.embedPlayer.duration - this.hls.config.liveSyncDurationCount * this.getLevelDetails().targetduration;
+					}
+					return liveEdge > 0 ? liveEdge : this.embedPlayer.duration;
+				} catch (e) {
+					return this.embedPlayer.duration;
+				}
+			},
 			getLevelDetails: function() {
 				var level =	this.hls.levels &&
-							(this.hls.levels[this.hls.currentLevel] ||
-							this.hls.levels[this.hls.nextLevel] ||
-							this.hls.levels[this.hls.nextAutoLevel] ||
-							this.hls.levels[this.hls.nextLoadLevel]);
+						(this.hls.levels[this.hls.currentLevel] ||
+						this.hls.levels[this.hls.nextLevel] ||
+						this.hls.levels[this.hls.nextAutoLevel] ||
+						this.hls.levels[this.hls.nextLoadLevel]);
 				return level && level.details ? level.details : {};
 			  },
 
-			  getLiveTargetBuffer: function() {
+			getLiveTargetBuffer: function() {
 				// if defined in the configuration object, liveSyncDuration will take precedence over the default liveSyncDurationCount
 				if (this.hls.config.liveSyncDuration) {
-				  return this.hls.config.liveSyncDuration;
+					return this.hls.config.liveSyncDuration;
 				} else {
-				  return this.hls.config.liveSyncDurationCount * this.getLevelDetails().targetduration;
+					return this.hls.config.liveSyncDurationCount * this.getLevelDetails().targetduration;
 				}
-			  }, 
+			}, 
   
 			  targetBuffer : function() {
 				var targetBufferVal = NaN;
 				if (!this.hls) return NaN;
 				//distance from playback duration is the relevant buffer
 				if (this.embedPlayer.isLive()) {
-				  // targetBufferVal = this.getLiveTargetBuffer() - (this.embedPlayer.currentTime - this._getLiveEdge());
+				  targetBufferVal = this.getLiveTargetBuffer() - (this.embedPlayer.currentTime - this.getLiveEdge());
 				} else {
 				  // consideration of the end of the playback in the target buffer calc
 				  targetBufferVal = this.embedPlayer.duration - this.embedPlayer.currentTime;
