@@ -846,6 +846,41 @@
 				}
 			},
 
+
+			getLevelDetails: function() {
+				var level =	this.hls.levels &&
+							(this.hls.levels[this.hls.currentLevel] ||
+							this.hls.levels[this.hls.nextLevel] ||
+							this.hls.levels[this.hls.nextAutoLevel] ||
+							this.hls.levels[this.hls.nextLoadLevel]);
+				return level && level.details ? level.details : {};
+			  },
+
+			  getLiveTargetBuffer: function() {
+				// if defined in the configuration object, liveSyncDuration will take precedence over the default liveSyncDurationCount
+				if (this.hls.config.liveSyncDuration) {
+				  return this.hls.config.liveSyncDuration;
+				} else {
+				  return this.hls.config.liveSyncDurationCount * this.getLevelDetails().targetduration;
+				}
+			  }, 
+  
+			  targetBuffer : function() {
+				var targetBufferVal = NaN;
+				if (!this.hls) return NaN;
+				//distance from playback duration is the relevant buffer
+				if (this.embedPlayer.isLive()) {
+				  // targetBufferVal = this.getLiveTargetBuffer() - (this.embedPlayer.currentTime - this._getLiveEdge());
+				} else {
+				  // consideration of the end of the playback in the target buffer calc
+				  targetBufferVal = this.embedPlayer.duration - this.embedPlayer.currentTime;
+				}
+				targetBufferVal = Math.min(targetBufferVal, this.hls.config.maxMaxBufferLength + this.getLevelDetails().targetduration);
+				return targetBufferVal;
+			  },
+
+
+
 			handleMediaError: function () {
 				if (this.canRecover()) {
 					this.hls.recoverMediaError();

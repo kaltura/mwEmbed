@@ -540,8 +540,18 @@
 			}
 			return "";
 		},
-
+		
+		// samples the hls at realtime 
+		getTargetBuffer : function(){
+			var targetBuffer = null;
+			if(this.embedPlayer.plugins.hlsjs){
+				targetBuffer = this.embedPlayer.plugins.hlsjs.targetBuffer();
+			}
+			return targetBuffer;
+		},
+		
 		generateViewEventObject: function(){
+			var targetBuffer = this.getTargetBuffer();
 			var tabMode = this.tabMode;
 			var soundMode = this.soundMode;
 			var event = {
@@ -553,6 +563,9 @@
 			};
 			if(this.id3SequenceId){
 				event.flavorParamsId = this.id3SequenceId;
+			}
+			if(targetBuffer){
+				event.targetBuffer = targetBuffer.toFixed(3);
 			}
 			if(this.maxChunkDownloadTime){
 				event.segmentDownloadTime = this.maxChunkDownloadTime.toFixed(3);
