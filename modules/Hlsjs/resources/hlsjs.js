@@ -879,21 +879,19 @@
 				}
 			}, 
   
-			  targetBuffer : function() {
+			targetBuffer : function() {
 				var targetBufferVal = NaN;
 				if (!this.hls) return NaN;
-				//distance from playback duration is the relevant buffer
-				if (this.embedPlayer.isLive()) {
-				  targetBufferVal = this.getLiveTargetBuffer() - (this.embedPlayer.currentTime - this.getLiveEdge());
+					//distance from playback duration is the relevant buffer
+					if (this.embedPlayer.isLive()) {
+					targetBufferVal = this.getLiveTargetBuffer() - (this.embedPlayer.currentTime - this.getLiveEdge());
 				} else {
-				  // consideration of the end of the playback in the target buffer calc
-				  targetBufferVal = this.embedPlayer.duration - this.embedPlayer.currentTime;
+					// consideration of the end of the playback in the target buffer calc
+					targetBufferVal = this.embedPlayer.duration - this.embedPlayer.currentTime;
 				}
 				targetBufferVal = Math.min(targetBufferVal, this.hls.config.maxMaxBufferLength + this.getLevelDetails().targetduration);
 				return targetBufferVal;
-			  },
-
-
+			},
 
 			handleMediaError: function () {
 				if (this.canRecover()) {

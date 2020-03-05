@@ -541,6 +541,24 @@
 			return "";
 		},
 		
+		getForwardBufferHealth : function(){
+			var forwardBufferHealth = NaN;
+			try{
+				var availableBuffer = this.availableBuffer();
+				var targetBuffer = this.getTargetBuffer();
+				if (targetBuffer && availableBuffer) {
+					// considering playback left to the target calculation
+					forwardBufferHealth = Math.round((availableBuffer * 1000) / targetBuffer) / 1000;
+				}
+				mw.log("forwardBufferHealth  "+forwardBufferHealth);
+			}catch(e){
+				mw.log("Failed getting getForwardBufferHealth data");
+			}
+			return forwardBufferHealth;
+		},
+		
+
+		
 		// samples the hls at realtime 
 		getTargetBuffer : function(){
 			var targetBuffer = null;
@@ -550,8 +568,27 @@
 			return targetBuffer;
 		},
 		
+		availableBuffer: function(){
+			var retVal = 0;
+			try{
+				var videoEl = this.embedPlayer.getPlayerElement();
+				if (videoEl && videoEl.buffered) {
+				  for (var i = 0; i < videoEl.buffered.length; i++) {
+					if (videoEl.buffered.start(i) <= videoEl.currentTime && videoEl.currentTime <= videoEl.buffered.end(i)) {
+					  retVal = videoEl.buffered.end(i) - videoEl.currentTime;
+					}
+				  }
+				}
+			}catch(e){
+				mw.log("Failed retrieving availableBuffer");
+			}
+			return retVal;
+		  },
+		
+		
 		generateViewEventObject: function(){
 			var targetBuffer = this.getTargetBuffer();
+			var forwardBufferHealth = this.getForwardBufferHealth();
 			var tabMode = this.tabMode;
 			var soundMode = this.soundMode;
 			var event = {
@@ -566,6 +603,9 @@
 			}
 			if(targetBuffer){
 				event.targetBuffer = targetBuffer.toFixed(3);
+			}
+			if(forwardBufferHealth){
+				event.forwardBufferHealth = forwardBufferHealth;
 			}
 			if(this.maxChunkDownloadTime){
 				event.segmentDownloadTime = this.maxChunkDownloadTime.toFixed(3);
