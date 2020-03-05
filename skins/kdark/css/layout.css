@@ -175,7 +175,7 @@ body {
 	left: -30%;
 }
 .sideBarContainer.openBtn {
-	z-index: 1001;
+	z-index: 1000;
 }
 .sideBarContainer.left.openBtn{
 	left: 0;
@@ -734,6 +734,7 @@ body {
 .volumeControl.open .sliderContainer {
 	display: block;
 	display: block;
+	z-index: 1001;
 }
 .volumeControl .ui-slider-vertical{
 	height: 69px;

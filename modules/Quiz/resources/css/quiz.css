@@ -79,13 +79,13 @@
 .ivqContainer{
     position: relative;
     height: 100%;
-    cursor: default !important;
+    cursor: default;
 }
 .bottomContainer{
     position: absolute;
     /*bottom: 1vw;*/
     width: 100%;
-    cursor: default !important;
+    cursor: default;
 }
 .completed-BottonContainer{
     margin-top:9vh;
@@ -103,9 +103,12 @@
     font-weight: 900;
     text-align: left;
     width:50%;
-    cursor: default !important;
+    cursor: default;
 }
 
+.screen.quiz.answering *{
+    cursor: wait !important;
+}
 .welcomeMessage{
     font-family: "Helvetica" , "Arial";
     font-family: "LatoLight";
@@ -117,7 +120,7 @@
     text-align: left;
     transform: scaleY(1.0009);
     width: 77vw;
-    cursor: default !important;
+    cursor: default;
 }
 
 .retake-box{
@@ -145,7 +148,7 @@
     text-align: left;
     transform: scaleY(1.0009);
     width: 92vw;
-    cursor: default !important;
+    cursor: default;
 }
 
 .screen-content {
@@ -164,7 +167,7 @@
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#039bc1', endColorstr='#2074ea',GradientType=0 ); /* IE6-9 */
     position: absolute;
     z-index: 1500 !important;
-    cursor: default !important;
+    cursor: default;
 }
 .title-text{
     font-family: "Lato";
@@ -233,13 +236,13 @@
 }
 
 .header-container{
-    cursor: default !important;
+    cursor: default;
 }
 .answers-container{
     position: absolute;
     top: 17vh;
     margin-left: -0.3vw;
-    cursor: default !important;
+    cursor: default;
 }
 .display{
     position:relative;
@@ -271,7 +274,7 @@
     color: #ffffff;
     font-size: 2.1vw;
     word-wrap: break-word;
-    cursor: default !important;
+    cursor: default;
 }
 .single-answer-box-bk.wide{
     width: 96vw;
@@ -588,7 +591,7 @@ button.qContinue, button.qApplied {
     width: 100%;
     position: absolute;
     bottom: 1.5vh;
-    cursor: default !important;
+    cursor: default;
 }
 .ftr-left{
     font-family: "Lato";
@@ -599,6 +602,19 @@ button.qContinue, button.qApplied {
     cursor: default!important;
     padding-top: 11px;
 }
+
+.answering .reflection-point-question .ftr-right{
+    color: white;
+}
+
+.answering .ftr-right{
+    color: #7CAFF2;
+}
+
+#back-to-question{
+    margin-top: 5vw;
+}
+
 .ftr-right{
     font-family: "LatoBlack";
     display: inline-block;
@@ -721,7 +737,7 @@ button.qContinue, button.qApplied {
     top: 50%;
     transform: translateY(-50%);
     padding: 6vw;
-    cursor: default !important;
+    cursor: default;
 }
 
 .q-box{

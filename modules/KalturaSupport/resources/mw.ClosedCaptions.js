@@ -40,6 +40,7 @@
 		updateLayoutEventFired: false,
 		ended: false,
         selectTextTrackTimeoutId: null,
+		isCaptionsShown: null,
 
 		setup: function(){
 			var _this = this;
@@ -122,7 +123,7 @@
 					}
 				} );
 			} else {
-				this.bind( 'playing', function () {
+				this.bind( 'playing seeking', function () {
 					// hide native text tracks since 'showEmbeddedCaptions' is false
 					setTimeout(function () {
 						_this.embedPlayer.hideTextTrack();
@@ -228,6 +229,8 @@
 				}
 			});
 
+			this.isCaptionsShown = !!this.getConfig('displayCaptions');
+
 			if( this.getConfig('layout') === 'below'){
                 this.updateBelowVideoCaptionContainer();
 			}
@@ -244,12 +247,16 @@
 			}
 
 			this.bind("AdSupport_StartAdPlayback", function(){
-				_this.setConfig('displayCaptions', false);
-				_this.hideCaptions();
+				if (_this.isCaptionsShown) {
+					_this.setConfig('displayCaptions', false);
+					_this.hideCaptions();
+				}
 			});
 			this.bind("AdSupport_EndAdPlayback", function(){
-				_this.setConfig('displayCaptions', true);
-				_this.showCaptions();
+				if (_this.isCaptionsShown) {
+					_this.setConfig('displayCaptions', true);
+					_this.showCaptions();
+				}
 			});
 			this.bind("playSegmentEvent", function(){
 				_this.updateTimeOffset();
@@ -577,8 +584,8 @@
 				captionsSrc = mw.getConfig('Kaltura.ServiceUrl') +
 							"/api_v3/index.php/service/caption_captionasset/action/serveWebVTT/captionAssetId/" +
 							dbTextSource.id +
-							"/segmentIndex/-1/version/2/captions.vtt";
-				captionsSrc += ks ? '/ks/' + ks : '';
+							"/segmentIndex/-1/version/2";
+				captionsSrc += ks ? "/ks/" + ks + "/captions.vtt" : "/captions.vtt";
 			} else {
 				captionsSrc = this.getCaptionURL( dbTextSource.id ) + '/.' + dbTextSource.fileExt;
 			}
@@ -1106,7 +1113,7 @@
 			// Check if we even have textSources
 			if( sources == 0 ){
 				this.setConfig('displayCaptions', false);
-
+				this.isCaptionsShown = false;
 				if( this.getConfig('hideWhenEmpty') === true ) {
 					this.getBtn().hide();
 				}
@@ -1224,6 +1231,7 @@
 			this.embedPlayer.triggerHelper("selectClosedCaptions", "Off");
 			this.embedPlayer.triggerHelper('changedClosedCaptions', {language: ""});
 			this.setConfig('displayCaptions', false);
+			this.isCaptionsShown = false;
 			//Set the index of 'off' to lastActiveCaption
 			this.lastActiveCaption = this.getMenu().$el.find('.active').index();
 			this.getBtn().focus();
@@ -1266,6 +1274,7 @@
 			if( !this.getConfig('displayCaptions') ){
 				_this.getActiveCaption();
 				this.setConfig('displayCaptions', true );
+				this.isCaptionsShown = true;
 			}
 			// Save to cookie
 			if( setCookie && this.getConfig('useCookie') ){
