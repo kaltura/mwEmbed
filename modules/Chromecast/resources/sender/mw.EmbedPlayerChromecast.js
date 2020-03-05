@@ -152,7 +152,7 @@
             this.castContext = cast.framework.CastContext.getInstance();
             this.castSession = this.castContext.getCurrentSession();
             this.receiverName = this.getReceiverName();
-            if ( this.castSession.getSessionState() === cast.framework.SessionState.SESSION_RESUMED ) {
+            if ( this.castSession.getSessionState() === cast.framework.SessionState.SESSION_RESUMED && !mw.isAndroid()) {
                 if ( !this.remotePlayer.playerState ) {
                     // TODO : Handle refresh page after playback ended
                     // TODO : Handle refresh page in the middle of loading media
