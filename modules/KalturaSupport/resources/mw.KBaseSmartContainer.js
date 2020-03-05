@@ -141,7 +141,9 @@
 			if ( numPlugins === 4 || numPlugins === 2){
 				pluginWidth = 50;
 			}
-			var pluginHeight = this.embedPlayer.getVideoHolder().width() / (numPlugins + 1);
+			var pluginHeight = !mw.isIOS()
+				? this.embedPlayer.getVideoHolder().width() / (numPlugins + 1)
+				: (this.embedPlayer.getVideoHolder().width() / (numPlugins));
 			$sc.find(".comp").not(".closePluginsScreen, .icon-next, .icon-prev, .largePlayBtn").width( pluginWidth + "%").height(pluginHeight);
 			$sc.removeClass("comp1 comp2 comp3 comp4 comp5 comp6").addClass("comp" + this.registeredPlugins.length);
 
