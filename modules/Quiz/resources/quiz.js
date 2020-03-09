@@ -1075,15 +1075,15 @@
                     _this.KIVQModule.continuePlay();
                 }).attr({'tabindex': 6.3, "role" : "button"}).on('keydown', _this.keyDownHandler);
             } else {
-                $(".ftr-left").append($('<span> ' + gM('mwe-quiz-question') + ' ' + this.KIVQModule.i2q(questionNr)
-                + '/' + $.cpObject.cpArray.length + '</span>')
+                $(".ftr-left").append($('<p id="ftr-question">' + gM('mwe-quiz-question') + ' ' + this.KIVQModule.i2q(questionNr)
+                + '/' + $.cpObject.cpArray.length + '</p>')
                     .css("float", "right")
                     .css("cursor","default"))
                     .append($('<div></div>')
                         .addClass("pie")
                         .css("float", "right"))
-                    .append($('<span>' + (_this.KIVQModule.getUnansweredQuestNrs()).length + ' '
-                    + gM('mwe-quiz-unanswered') + '</span>')
+                    .append($('<p id="ftr-question">' + (_this.KIVQModule.getUnansweredQuestNrs()).length + ' '
+                    + gM('mwe-quiz-unanswered') + '</p>')
                         .css("float", "right")
                         .css("cursor","default"));
                 if (_this.KIVQModule.canSkip) {
