@@ -7,7 +7,8 @@
 	mw.PluginManager.add( 'kAnalony' , mw.KBasePlugin.extend( {
 
 		defaultConfig: {
-			id3TagMaxDelay: 20000
+			id3TagMaxDelay: 20000,
+			persistentSessionId : null
 		},
 		tabMode : {
 			HIDDEN: 1,
@@ -62,6 +63,7 @@
 		decodedFrames: 0,
 		playTimeSum: 0,
 		previousCurrentTime: 0,
+		maxChunkDownloadTime: 0,
 		_p25Once: false,
 		_p50Once: false,
 		_p75Once: false,
@@ -144,6 +146,7 @@
 				_this.resetSession();
 				_this.rateHandler.destroy();
 				_this.bufferTime = 0;
+				_this.maxChunkDownloadTime = 0;
 				_this.droppedFrames = 0;
 				_this.decodedFrames = 0;
 				_this.firstPlay = true;
@@ -266,6 +269,7 @@
 			});
 
 			this.embedPlayer.bindHelper( 'onEndedDone' , function () {
+				_this.maxChunkDownloadTime = 0;
 				_this.stopViewTracking();
 			});
 
@@ -382,6 +386,12 @@
 				}
 			});
 
+			this.embedPlayer.bindHelper('hlsFragLoadedWithStats', function(e,data) {
+				if(data && data.stats && data.stats.tload && data.stats.trequest ){
+					_this.maxChunkDownloadTime = Math.max((data.stats.tload - data.stats.trequest)/1000, _this.maxChunkDownloadTime);
+				}
+			});
+			
 			this.embedPlayer.bindHelper( 'sourceSwitchingEnd' , function (e, newSource) {
 				if (newSource.newBitrate){
 					_this.currentBitRate = newSource.newBitrate;
@@ -528,8 +538,16 @@
 			this.bandwidthSamples = [];
 			analyticsEvent.bandwidth = avarage.toFixed(3);
 		},
-
-
+		
+		getConnectionType: function() {
+			try {
+				var navConnection = window.navigator.connection || window.navigator.mozConnection || window.navigator.webkitConnection;
+				return navConnection && navConnection.effectiveType ? navConnection.effectiveType : "" ;
+			}catch(err) {
+				mw.log("Failed to retrieve window.navigator.connection");
+			}
+			return "";
+		},
 
 		generateViewEventObject: function(){
 			var tabMode = this.tabMode;
@@ -544,9 +562,19 @@
 			if(this.id3SequenceId){
 				event.flavorParamsId = this.id3SequenceId;
 			}
+
 			if(this.manifestDownloadTime){
 				event.manifestDownloadTime = this.manifestDownloadTime;
 				this.manifestDownloadTime = null;
+      }
+			if(this.maxChunkDownloadTime){
+				event.segmentDownloadTime = this.maxChunkDownloadTime.toFixed(3);
+				// reset for next 10 seconds
+				this.maxChunkDownloadTime = 0;
+			}
+			var connectionType = this.getConnectionType();
+			if(connectionType){
+				event.networkConnectionType = connectionType;
 			}
 			return event;
 		},
@@ -680,6 +708,10 @@
 			// add playbackContext
 			if (mw.getConfig("playbackContext")){
 				statsEvent["playbackContext"] = mw.getConfig("playbackContext");
+			}
+			
+			if (config.persistentSessionId){
+				statsEvent["persistentSessionId"] = config.persistentSessionId
 			}
 
 			//Get optional playlistAPI
