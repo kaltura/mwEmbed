@@ -1109,7 +1109,17 @@
                     }).on('keydown', _this.keyDownHandler).attr('tabindex', 5).attr('role', 'button');
                 }else if(!_this.KIVQModule.canSkip &&  ( $.cpObject.cpArray[questionNr].isAnswerd || _this.isReflectionPoint($.cpObject.cpArray[questionNr])) ){
                     $(".ftr-right").html(gM('mwe-quiz-next')).on('click', function () {
-                        _this.KIVQModule.checkIfDone(questionNr)
+                        if(_this.isReflectionPoint($.cpObject.cpArray[questionNr])) {
+                            mw.log("Quiz: reflection point - Skip/Continue clicked");
+                            $(this).off(); // disable 2nd click to prevent double submission
+                            // only on reflection point - when clicking on continue - submit the question and wait as all other questions
+                            _this.KIVQModule.submitAnswer(questionNr,0);
+                            setTimeout(function(){
+                                _this.KIVQModule.checkIfDone(questionNr)
+                            },_this.postAnswerTimer);
+                        } else {
+                            _this.KIVQModule.checkIfDone(questionNr)
+                        }
                     });
                 }
                 $(".ftr-right").attr('tabindex', 5).attr('role', 'button').attr('title', gM('mwe-quiz-skipForNow')).on('keydown', _this.keyDownHandler);
