@@ -614,6 +614,7 @@
 			 * Enable override player methods for HLS playback
 			 */
 			overridePlayerMethods: function () {
+				// storing original methods
 				this.orig_backToLive = this.getPlayer().backToLive;
 				this.orig_getStartTimeOfDvrWindow = this.getPlayer().getStartTimeOfDvrWindow;
 				this.orig_switchSrc = this.getPlayer().switchSrc;
@@ -628,6 +629,8 @@
 				if (this.getPlayer()._onseeked) {
 					this.orig_onseeked = this.getPlayer()._onseeked.bind(this.getPlayer());
 				}
+				this.orig_getTargetBuffer = this.getPlayer().getTargetBuffer;
+				//overriding with HLS.js methods
 				this.getPlayer().backToLive = this.backToLive.bind(this);
 				this.getPlayer().getStartTimeOfDvrWindow = this.getStartTimeOfDvrWindow.bind(this);
 				this.getPlayer().switchSrc = this.switchSrc.bind(this);
@@ -638,6 +641,7 @@
 				this.getPlayer()._onseeking = this._onseeking.bind(this);
 				this.getPlayer()._onseeked = this._onseeked.bind(this);
 				this.getPlayer().clean = this.clean.bind(this);
+				this.getPlayer().getTargetBuffer = this.getTargetBuffer.bind(this);
 			},
 			/**
 			 * Disable override player methods for HLS playback
@@ -653,6 +657,7 @@
 				this.getPlayer()._onseeking = this.orig_onseeking;
 				this.getPlayer()._onseeked = this.orig_onseeked;
 				this.getPlayer().clean = this.orig_clean;
+				this.getPlayer().getTargetBuffer = this.orig_getTargetBuffer;
 			},
 			//Overidable player methods, "this" is bound to HLS plugin instance!
 			/**
@@ -879,7 +884,7 @@
 				}
 			}, 
   
-			targetBuffer : function() {
+			getTargetBuffer : function() {
 				var targetBufferVal = NaN;
 				if (!this.hls) return NaN;
 					//distance from playback duration is the relevant buffer

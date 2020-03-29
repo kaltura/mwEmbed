@@ -3417,13 +3417,9 @@
 			//adaptive bitrate
 			return this.currentBitrate;
 		},
-		// get the target buffer from player, supporting only hls.js at this phase. 		
+		// needs to be override
 		getTargetBuffer: function(){
-			var targetBuffer = null;
-			if(this.plugins.hlsjs){
-				targetBuffer = this.plugins.hlsjs.targetBuffer();
-			}
-			return targetBuffer;
+			return null;
 		},
 
 		/*
