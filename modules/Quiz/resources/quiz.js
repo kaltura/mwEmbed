@@ -531,7 +531,9 @@
         buildOpenQuestion: function(cPo){
             var _this = this;
             var interfaceElement = this.embedPlayer.getInterface();
-            interfaceElement.find(".open-question-textarea")[0].focus();
+            setTimeout(function () {
+                interfaceElement.find(".open-question-textarea")[0].focus();
+            }, 0);
             // clear button
             interfaceElement.find("#open-question-clear")
             .off()
@@ -576,6 +578,7 @@
             })
             .bind('change focusout', function(){
                 var holdAnswer = $(this).val();
+                var isTextAreaDisabled = $(this).prop('disabled');
                 interfaceElement.find(".hint-why-box")
                 .click(function () {
                     $(".close-button")
@@ -584,8 +587,14 @@
                         interfaceElement.find(".open-question-chars .chars").text(holdAnswer.length);
                         if (holdAnswer.length !== 0) {
                             interfaceElement.find("#open-question-clear,#open-question-save").removeAttr("disabled");
+                        } if (!isTextAreaDisabled){
+                            _this.setAnswer(holdAnswer);
+                            interfaceElement.find(".ivqContainer.answered").removeClass("answered");
+                            interfaceElement.find("#open-question-change-answer").hide();
+                            interfaceElement.find(".open-question-textarea").removeAttr("disabled");
+                            interfaceElement.find("#open-question-clear,#open-question-save").removeAttr("disabled");
                         }
-                    })
+                    });
                 });
             });
 
@@ -1250,6 +1259,11 @@
         },
         isReflectionPoint: function(cPo){
             return cPo.questionType && cPo.questionType === this.KIVQModule.QUESTIONS_TYPE.REFLECTION_POINT;
+        },
+        setAnswer: function (answer) {
+            var interfaceElement = this.embedPlayer.getInterface();
+            interfaceElement.find(".open-question-textarea").val(answer);
+            interfaceElement.find(".open-question-chars .chars").text(answer.length);
         }
     }));
 })(window.mw, window.jQuery);
