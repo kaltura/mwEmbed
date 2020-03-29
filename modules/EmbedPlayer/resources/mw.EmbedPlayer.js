@@ -3417,6 +3417,10 @@
 			//adaptive bitrate
 			return this.currentBitrate;
 		},
+		// needs to be override
+		getTargetBuffer: function(){
+			return null;
+		},
 
 		/*
 		 * get current offset from the playable live edge inside DVR window (positive number for negative offset)

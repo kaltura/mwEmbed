@@ -548,8 +548,42 @@
 			}
 			return "";
 		},
-
+		
+		getForwardBufferHealth : function(){
+			var forwardBufferHealth = NaN;
+			try{
+				var availableBuffer = this.availableBuffer();
+				var targetBuffer = this.getTargetBuffer();
+				if (targetBuffer && availableBuffer) {
+					// considering playback left to the target calculation
+					forwardBufferHealth = Math.round((availableBuffer * 1000) / targetBuffer) / 1000;
+				}
+				mw.log("forwardBufferHealth  "+forwardBufferHealth);
+			}catch(e){
+				mw.log("Failed getting getForwardBufferHealth data");
+			}
+			return forwardBufferHealth;
+		},
+		
+		availableBuffer: function(){
+			var retVal = 0;
+			try{
+				var videoEl = this.embedPlayer.getPlayerElement();
+				if (videoEl && videoEl.buffered) {
+				  for (var i = 0; i < videoEl.buffered.length; i++) {
+					if (videoEl.buffered.start(i) <= videoEl.currentTime && videoEl.currentTime <= videoEl.buffered.end(i)) {
+					  retVal = videoEl.buffered.end(i) - videoEl.currentTime;
+					}
+				  }
+				}
+			}catch(e){
+				mw.log("Failed retrieving availableBuffer");
+			}
+			return retVal;
+		  },
+		
 		generateViewEventObject: function(){
+			var forwardBufferHealth = this.getForwardBufferHealth();
 			var tabMode = this.tabMode;
 			var soundMode = this.soundMode;
 			var event = {
@@ -563,10 +597,19 @@
 				event.flavorParamsId = this.id3SequenceId;
 			}
 
+			var targetBuffer = this.embedPlayer.getTargetBuffer();
+			if(targetBuffer){
+				event.targetBuffer = targetBuffer;
+			}
+			if(forwardBufferHealth){
+				event.forwardBufferHealth = forwardBufferHealth;
+			}
+
 			if(this.manifestDownloadTime){
 				event.manifestDownloadTime = this.manifestDownloadTime;
 				this.manifestDownloadTime = null;
       }
+
 			if(this.maxChunkDownloadTime){
 				event.segmentDownloadTime = this.maxChunkDownloadTime.toFixed(3);
 				// reset for next 10 seconds

@@ -615,6 +615,7 @@
 			 * Enable override player methods for HLS playback
 			 */
 			overridePlayerMethods: function () {
+				// storing original methods
 				this.orig_backToLive = this.getPlayer().backToLive;
 				this.orig_getStartTimeOfDvrWindow = this.getPlayer().getStartTimeOfDvrWindow;
 				this.orig_switchSrc = this.getPlayer().switchSrc;
@@ -629,6 +630,8 @@
 				if (this.getPlayer()._onseeked) {
 					this.orig_onseeked = this.getPlayer()._onseeked.bind(this.getPlayer());
 				}
+				this.orig_getTargetBuffer = this.getPlayer().getTargetBuffer;
+				//overriding with HLS.js methods
 				this.getPlayer().backToLive = this.backToLive.bind(this);
 				this.getPlayer().getStartTimeOfDvrWindow = this.getStartTimeOfDvrWindow.bind(this);
 				this.getPlayer().switchSrc = this.switchSrc.bind(this);
@@ -639,6 +642,7 @@
 				this.getPlayer()._onseeking = this._onseeking.bind(this);
 				this.getPlayer()._onseeked = this._onseeked.bind(this);
 				this.getPlayer().clean = this.clean.bind(this);
+				this.getPlayer().getTargetBuffer = this.getTargetBuffer.bind(this);
 			},
 			/**
 			 * Disable override player methods for HLS playback
@@ -654,6 +658,7 @@
 				this.getPlayer()._onseeking = this.orig_onseeking;
 				this.getPlayer()._onseeked = this.orig_onseeked;
 				this.getPlayer().clean = this.orig_clean;
+				this.getPlayer().getTargetBuffer = this.orig_getTargetBuffer;
 			},
 			//Overidable player methods, "this" is bound to HLS plugin instance!
 			/**
@@ -845,6 +850,53 @@
 				} else {
 					return 0;
 				}
+			},
+
+			getLiveEdge : function(){
+				try {
+					var liveEdge;
+					if (this.hls.liveSyncPosition) {
+						liveEdge = this.hls.liveSyncPosition;
+					} else if (this.hls.config.liveSyncDuration) {
+						liveEdge = this.embedPlayer.duration - this.hls.config.liveSyncDuration;
+					} else {
+						liveEdge = this.embedPlayer.duration - this.hls.config.liveSyncDurationCount * this.getLevelDetails().targetduration;
+					}
+					return liveEdge > 0 ? liveEdge : this.embedPlayer.duration;
+				} catch (e) {
+					return this.embedPlayer.duration;
+				}
+			},
+			getLevelDetails: function() {
+				var level =	this.hls.levels &&
+						(this.hls.levels[this.hls.currentLevel] ||
+						this.hls.levels[this.hls.nextLevel] ||
+						this.hls.levels[this.hls.nextAutoLevel] ||
+						this.hls.levels[this.hls.nextLoadLevel]);
+				return level && level.details ? level.details : {};
+			  },
+
+			getLiveTargetBuffer: function() {
+				// if defined in the configuration object, liveSyncDuration will take precedence over the default liveSyncDurationCount
+				if (this.hls.config.liveSyncDuration) {
+					return this.hls.config.liveSyncDuration;
+				} else {
+					return this.hls.config.liveSyncDurationCount * this.getLevelDetails().targetduration;
+				}
+			}, 
+  
+			getTargetBuffer : function() {
+				var targetBufferVal = NaN;
+				if (!this.hls) return NaN;
+					//distance from playback duration is the relevant buffer
+					if (this.embedPlayer.isLive()) {
+					targetBufferVal = this.getLiveTargetBuffer() - (this.embedPlayer.currentTime - this.getLiveEdge());
+				} else {
+					// consideration of the end of the playback in the target buffer calc
+					targetBufferVal = this.embedPlayer.duration - this.embedPlayer.currentTime;
+				}
+				targetBufferVal = Math.min(targetBufferVal, this.hls.config.maxMaxBufferLength + this.getLevelDetails().targetduration);
+				return targetBufferVal;
 			},
 
 			handleMediaError: function () {
