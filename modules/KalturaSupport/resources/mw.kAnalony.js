@@ -557,17 +557,6 @@
 			return forwardBufferHealth;
 		},
 		
-
-		
-		// samples the hls at realtime 
-		getTargetBuffer : function(){
-			var targetBuffer = null;
-			if(this.embedPlayer.plugins.hlsjs){
-				targetBuffer = this.embedPlayer.plugins.hlsjs.targetBuffer();
-			}
-			return targetBuffer;
-		},
-		
 		availableBuffer: function(){
 			var retVal = 0;
 			try{
@@ -585,9 +574,7 @@
 			return retVal;
 		  },
 		
-		
 		generateViewEventObject: function(){
-			var targetBuffer = this.getTargetBuffer();
 			var forwardBufferHealth = this.getForwardBufferHealth();
 			var tabMode = this.tabMode;
 			var soundMode = this.soundMode;
@@ -601,8 +588,9 @@
 			if(this.id3SequenceId){
 				event.flavorParamsId = this.id3SequenceId;
 			}
+			var targetBuffer = this.embedPlayer.getTargetBuffer();
 			if(targetBuffer){
-				event.targetBuffer = targetBuffer.toFixed(3);
+				event.targetBuffer = targetBuffer;
 			}
 			if(forwardBufferHealth){
 				event.forwardBufferHealth = forwardBufferHealth;
