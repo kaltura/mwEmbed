@@ -74,6 +74,7 @@
         playSentOnStart: false,
 		absolutePosition: null,
 		id3TagEventTime: null,
+		manifestDownloadTime: null,
 		id3SequenceId: null,
 		onPlayStatus: false,
         firstPlayRequestTime: null,
@@ -161,6 +162,7 @@
 				_this._isPaused = true;
 				_this._isBuffering = false;
 				_this._mediaChange = true;
+				_this.manifestDownloadTime = null;
 			});
             // calculate bandwidth of current loaded frag
 			this.embedPlayer.bindHelper( 'hlsFragBufferedWithData' , function (e,data) {
@@ -250,6 +252,12 @@
 
 			this.embedPlayer.bindHelper( 'downloadMedia' , function () {
 				_this.sendAnalytics(playerEvent.DOWNLOAD);
+			});
+			
+			this.embedPlayer.bindHelper('hlsManifestLoadedWithStats', function(e,data){
+				if(data && data.stats && data.stats.tload && data.stats.trequest){
+					_this.manifestDownloadTime= (data.stats.tload-data.stats.trequest).toFixed(2);
+				}
 			});
 
 			this.embedPlayer.bindHelper( 'onOpenFullScreen' , function () {
@@ -588,6 +596,7 @@
 			if(this.id3SequenceId){
 				event.flavorParamsId = this.id3SequenceId;
 			}
+
 			var targetBuffer = this.embedPlayer.getTargetBuffer();
 			if(targetBuffer){
 				event.targetBuffer = targetBuffer;
@@ -595,6 +604,12 @@
 			if(forwardBufferHealth){
 				event.forwardBufferHealth = forwardBufferHealth;
 			}
+
+			if(this.manifestDownloadTime){
+				event.manifestDownloadTime = this.manifestDownloadTime;
+				this.manifestDownloadTime = null;
+      }
+
 			if(this.maxChunkDownloadTime){
 				event.segmentDownloadTime = this.maxChunkDownloadTime.toFixed(3);
 				// reset for next 10 seconds

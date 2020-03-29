@@ -283,9 +283,11 @@
                 this.KIVQModule.setupQuiz().then(function(){
                     // new quiz data is now loaded - proceed with CPs loading 
                     _this.KIVQModule.getQuestionsAndAnswers(function(){
-                        _this.embedPlayer.stopPlayAfterSeek = false;
-                        _this.embedPlayer.seek(0,false);
-                        _this.ivqHideScreen()
+                        setTimeout(function () {
+                            _this.embedPlayer.stopPlayAfterSeek = false;
+                            _this.embedPlayer.seek(0,false);
+                            _this.ivqHideScreen()
+                        },50);
                     })
                 })
             }
@@ -1075,15 +1077,15 @@
                     _this.KIVQModule.continuePlay();
                 }).attr({'tabindex': 6.3, "role" : "button"}).on('keydown', _this.keyDownHandler);
             } else {
-                $(".ftr-left").append($('<span> ' + gM('mwe-quiz-question') + ' ' + this.KIVQModule.i2q(questionNr)
-                + '/' + $.cpObject.cpArray.length + '</span>')
+                $(".ftr-left").append($('<p id="ftr-question">' + gM('mwe-quiz-question') + ' ' + this.KIVQModule.i2q(questionNr)
+                + '/' + $.cpObject.cpArray.length + '</p>')
                     .css("float", "right")
                     .css("cursor","default"))
                     .append($('<div></div>')
                         .addClass("pie")
                         .css("float", "right"))
-                    .append($('<span>' + (_this.KIVQModule.getUnansweredQuestNrs()).length + ' '
-                    + gM('mwe-quiz-unanswered') + '</span>')
+                    .append($('<p id="ftr-question">' + (_this.KIVQModule.getUnansweredQuestNrs()).length + ' '
+                    + gM('mwe-quiz-unanswered') + '</p>')
                         .css("float", "right")
                         .css("cursor","default"));
                 if (_this.KIVQModule.canSkip) {
@@ -1107,7 +1109,17 @@
                     }).on('keydown', _this.keyDownHandler).attr('tabindex', 5).attr('role', 'button');
                 }else if(!_this.KIVQModule.canSkip &&  ( $.cpObject.cpArray[questionNr].isAnswerd || _this.isReflectionPoint($.cpObject.cpArray[questionNr])) ){
                     $(".ftr-right").html(gM('mwe-quiz-next')).on('click', function () {
-                        _this.KIVQModule.checkIfDone(questionNr)
+                        if(_this.isReflectionPoint($.cpObject.cpArray[questionNr])) {
+                            mw.log("Quiz: reflection point - Skip/Continue clicked");
+                            $(this).off(); // disable 2nd click to prevent double submission
+                            // only on reflection point - when clicking on continue - submit the question and wait as all other questions
+                            _this.KIVQModule.submitAnswer(questionNr,0);
+                            setTimeout(function(){
+                                _this.KIVQModule.checkIfDone(questionNr)
+                            },_this.postAnswerTimer);
+                        } else {
+                            _this.KIVQModule.checkIfDone(questionNr)
+                        }
                     });
                 }
                 $(".ftr-right").attr('tabindex', 5).attr('role', 'button').attr('title', gM('mwe-quiz-skipForNow')).on('keydown', _this.keyDownHandler);
