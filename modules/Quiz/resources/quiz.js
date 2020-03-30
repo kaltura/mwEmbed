@@ -587,7 +587,8 @@
                         interfaceElement.find(".open-question-chars .chars").text(holdAnswer.length);
                         if (holdAnswer.length !== 0) {
                             interfaceElement.find("#open-question-clear,#open-question-save").removeAttr("disabled");
-                        } if (!isTextAreaDisabled){
+                        }
+                        if (!isTextAreaDisabled){
                             _this.setAnswer(holdAnswer);
                             interfaceElement.find(".ivqContainer.answered").removeClass("answered");
                             interfaceElement.find("#open-question-change-answer").hide();
