@@ -462,7 +462,7 @@
             }
             var displayQuestion = $(".display-question");
             //Search for links and links patterns ( [text|http://exampl.com] ) and add a real link to a new tab
-            displayQuestion.text(cPo.question).attr({'tabindex': 5,"aria-label": cPo.question}).focus();
+            displayQuestion.text(cPo.question).attr('tabindex', 5).focus();
             var questionText = this.wrapLinksWithTags(displayQuestion.html());
             displayQuestion.html(questionText);
             //$(".display-question").attr('title', "Question number "+questionNr);
