@@ -294,7 +294,7 @@
 
         retake : function(){
             var _this = this;
-            $(".retake-btn").css("pointer-events", "none");
+            $(".retake-btn").off();
             this.KIVQModule.retake(function(data){
                 // retake successful 
                 _this.retakeSuccess(data);
