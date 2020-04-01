@@ -256,7 +256,7 @@
 			
 			this.embedPlayer.bindHelper('hlsManifestLoadedWithStats', function(e,data){
 				if(data && data.stats && data.stats.tload && data.stats.trequest){
-					_this.manifestDownloadTime= (data.stats.tload-data.stats.trequest).toFixed(2);
+					_this.manifestDownloadTime= (data.stats.tload-data.stats.trequest).toFixed(2)/1000;
 				}
 			});
 
