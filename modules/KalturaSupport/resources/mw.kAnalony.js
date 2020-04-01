@@ -553,7 +553,7 @@
 			var forwardBufferHealth = NaN;
 			try{
 				var availableBuffer = this.availableBuffer();
-				var targetBuffer = this.getTargetBuffer();
+				var targetBuffer = this.embedPlayer.getTargetBuffer();
 				if (targetBuffer && availableBuffer) {
 					// considering playback left to the target calculation
 					forwardBufferHealth = Math.round((availableBuffer * 1000) / targetBuffer) / 1000;
