@@ -44,6 +44,8 @@
 			afterInitialSeeking: false,
 			/** type {Number} */
 			levelIndex: -1,
+			/** type {booleab} */
+			liveOffline: false,
 
 			/**
 			 * Check is HLS is supported
@@ -68,7 +70,7 @@
 				this.bind("playerReady", this.initHls.bind(this));
 				this.bind("onChangeMedia", this.clean.bind(this));
 				this.bind("liveOnline", this.onLiveOnline.bind(this));
-				this.bind("liveOffline", this.stopLoad.bind(this));
+				this.bind("liveOffline", this.onLiveOffline.bind(this));
 				if (mw.getConfig("hlsLogs")) {
 					this.bind("monitorEvent", this.monitorDebugInfo.bind(this));
 				}
@@ -100,6 +102,7 @@
 					this.mediaAttached = false;
 					this.hls.destroy();
 					this.hls = null;
+					this.liveOffline = false;
 				}
             },
 			/**
@@ -821,17 +824,26 @@
 			},
 
 			onLiveOnline: function () {
-				if (this.embedPlayer.isDVR()) {
-					this.log(' onLiveOnline:: renew hls instance');
-					this.hls.destroy();
-					var hlsConfig = this.getHlsConfig();
-					this.hls = new Hls(hlsConfig);
-					this.registerHlsEvents();
-					this.mediaAttached = false;
-					this.hls.attachMedia(this.embedPlayer.getPlayerElement());
+				if (this.liveOffline) { // avoid restarting hls while playback
+					this.log(' onLiveOnline:: move from offline to online, restart the playback');
+					this.liveOffline = false;
+					if (this.embedPlayer.isDVR()) {
+						this.log(' onLiveOnline:: renew hls instance');
+						this.hls.destroy();
+						var hlsConfig = this.getHlsConfig();
+						this.hls = new Hls(hlsConfig);
+						this.registerHlsEvents();
+						this.mediaAttached = false;
+						this.hls.attachMedia(this.embedPlayer.getPlayerElement());
 					} else {
-							this.hls.startLoad(this.hls.config.startPosition);
+						this.hls.startLoad(this.hls.config.startPosition);
 					}
+				}
+			},
+
+			onLiveOffline: function () {
+				this.liveOffline = true;
+				this.stopLoad();
 			},
 
 			getStartTimeOfDvrWindow: function () {

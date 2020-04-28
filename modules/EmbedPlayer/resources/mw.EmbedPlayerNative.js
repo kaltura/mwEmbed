@@ -180,8 +180,11 @@
             this.bindHelper('switchAudioTrack' + this.bindPostfix, function (e, data) {
                 _this.switchAudioTrack(data.index);
             });
-            this.bindHelper('liveOnline' + this.bindPostfix, function () {
-                _this.load();
+            this.bindHelper('liveOffline' + this.bindPostfix, function () {
+	            this.bindOnceHelper('liveOnline' + this.bindPostfix, function () {
+		            this.log(' onLiveOnline:: move from offline to online, restart the playback');
+		            _this.load();
+	            });
             });
             this.bindHelper('changeEmbeddedTextTrack' + this.bindPostfix, function (e, data) {
                 _this.onSwitchTextTrack(e, data);
