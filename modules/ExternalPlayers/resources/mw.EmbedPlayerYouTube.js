@@ -186,8 +186,8 @@
                     $(this).width("100%");
                     $(this).hide();
                     stateName = "playing";
-					//Add a trigger in order to comply with the kAnalony changes FEC-9424
-					this.triggerHelper('playing');
+		    //Add a trigger in order to comply with the kAnalony changes FEC-9424
+		    this.triggerHelper('playing');
                     // update duraiton
                     this.setDuration();
                     // trigger the seeked event only if this is seek and not in play
