@@ -544,22 +544,33 @@
 					this.log("Try flash fallback");
 					this.fallbackToFlash();
 				} else {
+					var headers = {};
+					try {
+						headers = data.networkDetails.getAllResponseHeaders()
+					} catch (e) {
+						this.log("unable to get response headers");
+					}
 					try {
 						var dataObj = {
 							type: data.type,
 							details: data.details,
+							url: data.url || (data.context && data.context.url),
 							fatal: data.fatal,
 							response: data.response,
-							networkDetails: data.networkDetails
+							networkDetails: data.networkDetails,
+							headers: headers
 						};
 						var errorObj = {
 							message: JSON.stringify(dataObj),
 							// hls fatal error code could be either Network Error (1000) or Media Errors (3000)
-							code: data.type === "networkError" ? "1000" : "3000"
+							code: data.type === "networkError" ? "1000" : "3000",
+							key: data.type === "networkError" ? "1000" : "3000"
 						};
+						this.log("error: " + JSON.stringify(errorObj));
 						this.getPlayer().triggerHelper('embedPlayerError', errorObj);
 					}
 					catch (e) {
+						this.log("error: failed to create error data object" + JSON.stringify(e));
 						this.getPlayer().triggerHelper('embedPlayerError', {
 							message: "hlsjs error"
 						});
@@ -895,8 +906,8 @@
 				} else {
 					return this.hls.config.liveSyncDurationCount * this.getLevelDetails().targetduration;
 				}
-			}, 
-  
+			},
+
 			getTargetBuffer : function() {
 				var targetBufferVal = NaN;
 				if (!this.hls) return NaN;

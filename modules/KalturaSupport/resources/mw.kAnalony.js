@@ -253,7 +253,7 @@
 			this.embedPlayer.bindHelper( 'downloadMedia' , function () {
 				_this.sendAnalytics(playerEvent.DOWNLOAD);
 			});
-			
+
 			this.embedPlayer.bindHelper('hlsManifestLoadedWithStats', function(e,data){
 				if(data && data.stats && data.stats.tload && data.stats.trequest){
 					_this.manifestDownloadTime= (data.stats.tload-data.stats.trequest).toFixed(2)/1000;
@@ -391,7 +391,7 @@
 					_this.maxChunkDownloadTime = Math.max((data.stats.tload - data.stats.trequest)/1000, _this.maxChunkDownloadTime);
 				}
 			});
-			
+
 			this.embedPlayer.bindHelper( 'sourceSwitchingEnd' , function (e, newSource) {
 				if (newSource.newBitrate){
 					_this.currentBitRate = newSource.newBitrate;
@@ -400,7 +400,8 @@
 
 			this.embedPlayer.bindHelper('playerError', function (e, errorObj) {
                 var errorCode = errorObj && errorObj.key;
-                _this.sendAnalytics(playerEvent.ERROR, {errorCode: errorCode});
+                var errorDetails = errorObj && errorObj.message;
+                _this.sendAnalytics(playerEvent.ERROR, {errorCode: errorCode, errorDetails: errorDetails});
             });
 
 			this.embedPlayer.bindHelper( 'onId3Tag' , function (e, id3Tag) {
@@ -538,7 +539,7 @@
 			this.bandwidthSamples = [];
 			analyticsEvent.bandwidth = avarage.toFixed(3);
 		},
-		
+
 		getConnectionType: function() {
 			try {
 				var navConnection = window.navigator.connection || window.navigator.mozConnection || window.navigator.webkitConnection;
@@ -548,7 +549,7 @@
 			}
 			return "";
 		},
-		
+
 		getForwardBufferHealth : function(){
 			var forwardBufferHealth = NaN;
 			try{
@@ -564,7 +565,7 @@
 			}
 			return forwardBufferHealth;
 		},
-		
+
 		availableBuffer: function(){
 			var retVal = 0;
 			try{
@@ -581,7 +582,7 @@
 			}
 			return retVal;
 		  },
-		
+
 		generateViewEventObject: function(){
 			var forwardBufferHealth = this.getForwardBufferHealth();
 			var tabMode = this.tabMode;
@@ -752,7 +753,7 @@
 			if (mw.getConfig("playbackContext")){
 				statsEvent["playbackContext"] = mw.getConfig("playbackContext");
 			}
-			
+
 			if (config.persistentSessionId){
 				statsEvent["persistentSessionId"] = config.persistentSessionId
 			}
