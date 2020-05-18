@@ -544,9 +544,11 @@
 					this.log("Try flash fallback");
 					this.fallbackToFlash();
 				} else {
-					var headers = {};
+					var headers;
 					try {
-						headers = data.networkDetails.getAllResponseHeaders()
+						if (data && data.networkDetails) {
+							headers = data.networkDetails.getAllResponseHeaders();
+						}
 					} catch (e) {
 						this.log("unable to get response headers");
 					}
