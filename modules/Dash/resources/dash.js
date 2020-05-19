@@ -521,7 +521,7 @@ try {
 				};
 				if (error.category) {
 					errorObj.code = error.category + "000";
-					errorObj.key = error.category + "000";
+					errorObj.key = errorObj.code";
 				}
 				this.getPlayer().triggerHelper('embedPlayerError', errorObj);
 			mw.log("Dash::Error: ", error);
