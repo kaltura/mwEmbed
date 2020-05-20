@@ -43,8 +43,6 @@ if( $wgHTTPProtocol == 'https' ){
 
 }
 
-$wgRemoteAddrWhitelistedHosts = kConf::get('remote_addr_whitelisted_hosts');
-
 // Default Asset CDN Path (used in ResouceLoader.php):
 $wgCDNAssetPath = $wgKalturaCDNUrl;
 
