@@ -261,8 +261,8 @@ if( is_file( $wgLocalSettingsFile ) ){
 
 //If http host is not in whitelist reset config to original request host
 if (!in_array($_SERVER['HTTP_HOST'], $wgRemoteAddrWhitelistedHosts )) {
-    $_SERVER["HTTP_HOST"] = $origHttpHost;
-    $_SERVER["SERVER_NAME"] = $origServerName;
+    $_SERVER['HTTP_HOST'] = $origHttpHost;
+    $_SERVER['SERVER_NAME'] = $origServerName;
     $wgCDNAssetPath = $wgHTTPProtocol . '://' . $_SERVER['HTTP_HOST'];
     $wgServer = $wgHTTPProtocol . '://' . $_SERVER['SERVER_NAME'] .$wgServerPort. dirname( dirname( $_SERVER['SCRIPT_NAME'] ) ) .'/';
     $wgLoadScript = $wgServer . $wgScriptPath . 'load.php';
