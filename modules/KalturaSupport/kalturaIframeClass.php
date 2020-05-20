@@ -455,7 +455,7 @@ class kalturaIframeClass {
 		$versionParam ='';
 		$urid = $this->request->get('urid');
 		if( $urid ){
-			$versionParam .= '&urid=' . htmlspecialchars( $urid );
+			$versionParam .= '&urid=' . htmlspecialchars( $urid, ENT_QUOTES );
 		}
 		if( $this->request->get('debug') || $wgEnableScriptDebug ){
 			$versionParam .= '&debug=true';
@@ -469,7 +469,7 @@ class kalturaIframeClass {
 		foreach( $parmList as $param ){
 			$val = $this->request->get( $param );
 			if( $val ){
-				$paramString.= $and. $param . '=' . htmlspecialchars( $val );
+				$paramString.= $and. $param . '=' . htmlspecialchars( $val, ENT_QUOTES );
 				$and = '&';
 			}
 		}
