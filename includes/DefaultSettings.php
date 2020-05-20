@@ -6,12 +6,15 @@
  *
  */
 
+$origHttpHost = $_SERVER['HTTP_HOST'];
+$origServerName = $_SERVER['SERVER_NAME'];
+
 if (isset($_SERVER["HTTP_X_FORWARDED_HOST"]))
 {
     // support multiple hosts (comma separated) in HTTP_X_FORWARDED_HOST
     $xForwardedHosts = explode(',', $_SERVER['HTTP_X_FORWARDED_HOST']);
-    $_SERVER["HTTP_HOST"] = $xForwardedHosts[0];
-    $_SERVER["SERVER_NAME"] = $xForwardedHosts[0];
+    $_SERVER['HTTP_HOST'] = $xForwardedHosts[0];
+    $_SERVER['SERVER_NAME'] = $xForwardedHosts[0];
 }
 
 // The default cache directory
@@ -146,9 +149,13 @@ $wgKalturaForceReferer = false;
 
 // The default Kaltura service url:
 $wgKalturaServiceUrl = 'http://cdnapi.kaltura.com';
+// The default remote address whitelist hosts list
+$wgRemoteAddrWhitelistedHosts = array('cdnapi.kaltura.com');
+
 // if https use cdnsecakmi
 if( $wgHTTPProtocol == 'https' ){
 	$wgKalturaServiceUrl =  'https://cdnapisec.kaltura.com';
+    $wgRemoteAddrWhitelistedHosts = array('cdnapisec.kaltura.com');
 }
 
 // Default Kaltura CDN url:
@@ -250,6 +257,20 @@ $wgLocalSettingsFile = realpath( dirname( __FILE__ ) ) . '/../LocalSettings.php'
 
 if( is_file( $wgLocalSettingsFile ) ){
 	require_once( $wgLocalSettingsFile );
+}
+
+//If http host is not in whitelist reset config to original request host
+if (!in_array($_SERVER['HTTP_HOST'], $wgRemoteAddrWhitelistedHosts )) {
+    ChromePhp::info(11111111);
+    ChromePhp::info($wgRemoteAddrWhitelistedHosts);
+    ChromePhp::info($wgKalturaServiceUrl);
+    $_SERVER["HTTP_HOST"] = $origHttpHost;
+    $_SERVER["SERVER_NAME"] = $origServerName;
+    $wgCDNAssetPath = $wgHTTPProtocol . '://' . $_SERVER['HTTP_HOST'];
+    $wgServer = $wgHTTPProtocol . '://' . $_SERVER['SERVER_NAME'] .$wgServerPort. dirname( dirname( $_SERVER['SCRIPT_NAME'] ) ) .'/';
+    $wgLoadScript = $wgServer . $wgScriptPath . 'load.php';
+    $wgResourceLoaderUrl = $wgLoadScript;
+    $wgMwEmbedProxyUrl =  $wgServer . $wgScriptPath . 'simplePhpXMLProxy.php';
 }
 
 if( isset( $_GET['pskwidgetpath'] ) ){
