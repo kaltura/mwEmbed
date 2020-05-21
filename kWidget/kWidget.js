@@ -1093,11 +1093,11 @@
 					url: url,
 					data: requestData
 				})
-				.success(function (data) {
+				.done(function (data) {
 					var contentData = {content: data};
 					window[cbName](contentData);
 				})
-				.error(function (e) {
+				.fail(function (e) {
 					_this.log("Error in player iframe request")
 				})
 			} else {
@@ -1709,11 +1709,11 @@
 								dataType: 'text',
 								url: _this.getIframeUrl(),
 								data: _this.embedSettingsToUrl(settings)
-							}).success(function (data) {
+							}).done(function (data) {
 									var contentData = {content: data};
 									window[cbName](contentData);
 								})
-								.error(function (e) {
+								.fail(function (e) {
 									_this.log("Error in player iframe request");
 							});
 						}else{
