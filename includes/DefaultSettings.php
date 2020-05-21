@@ -7,7 +7,6 @@
  */
 
 $origHttpHost = $_SERVER['HTTP_HOST'];
-$origServerName = $_SERVER['SERVER_NAME'];
 
 if (isset($_SERVER["HTTP_X_FORWARDED_HOST"]))
 {
@@ -260,9 +259,12 @@ if( is_file( $wgLocalSettingsFile ) ){
 }
 
 //If http host is not in whitelist reset config to original request host
-if (!in_array($_SERVER['HTTP_HOST'], $wgRemoteAddrWhitelistedHosts )) {
-    $_SERVER['HTTP_HOST'] = $origHttpHost;
-    $_SERVER['SERVER_NAME'] = $origServerName;
+if ((isset($_SERVER["HTTP_X_FORWARDED_HOST"]) &&
+    !in_array($_SERVER['HTTP_HOST'], $wgRemoteAddrWhitelistedHosts )) ||
+    (!in_array($origHttpHost, $wgRemoteAddrWhitelistedHosts ))
+    ) {
+    $_SERVER['HTTP_HOST'] = $wgRemoteAddrWhitelistedHosts[0];
+    $_SERVER['SERVER_NAME'] = $wgRemoteAddrWhitelistedHosts[0];
     $wgCDNAssetPath = $wgHTTPProtocol . '://' . $_SERVER['HTTP_HOST'];
     $wgServer = $wgHTTPProtocol . '://' . $_SERVER['SERVER_NAME'] .$wgServerPort. dirname( dirname( $_SERVER['SCRIPT_NAME'] ) ) .'/';
     $wgLoadScript = $wgServer . $wgScriptPath . 'load.php';
