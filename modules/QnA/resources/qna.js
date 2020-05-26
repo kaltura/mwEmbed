@@ -250,15 +250,7 @@
             var embedPlayer = this.getPlayer();
 			if (!this.$qnaListContainer && this.getPlayer().isLive()) {
 
-				// for unfriendly iFrames, where we can't access window['parent'] we set on page to false
-				if ( this.getConfig( 'onPage' ) ) {
-					try{
-						var parent = window['parent'].document;
-					}catch(e){
-						this.setConfig('onPage', false);
-						mw.log("cant access window['parent'] - setting to false");
-					}
-				}
+				this.markIfCanAccessToIframesParent();
 
 				if ( this.getConfig( 'onPage' ) ) {
 					// Inject external CSS files
@@ -268,13 +260,7 @@
 					this.injectCssToPage(this.getConfig('qnaThreadsListCssFileName'));
 					this.injectCssToPage(this.getConfig('qnaMainCssFileName')); //should be last, since we we it to test css was loaded
 
-					try{
-						var iframeParent = $('#'+this.embedPlayer.id, window['parent'].document)[0];
-						$(iframeParent).parents().find("#" + this.getConfig('qnaTargetId')).html("<div class='qnaInterface'></div>");
-						this.$qnaListContainer = $(iframeParent).parents().find(".qnaInterface");
-					}catch(e){
-						mw.log("failed to access window['parent'] for creating $qnaListContainer");
-					}
+					this.getQnaInterfaceInsideIframe();
 				} else {
 					// wrap the .mwPlayerContainer element with our qnaInterface div
 					var floatDirection = this.getConfig( 'containerPosition' ) ? this.getConfig( 'containerPosition' ) : "right";
@@ -320,10 +306,43 @@
                 }
 			}
             else if ( !this.getPlayer().isLive() ) {
-                this.$qnaListContainer = $( ".qnaInterface");
+				this.markIfCanAccessToIframesParent();
+
+				if ( this.getConfig( 'onPage' ) ) {
+					this.getQnaInterfaceInsideIframe();
+				} else {
+					this.$qnaListContainer = $(".qnaInterface");
+				}
             }
 
             return this.$qnaListContainer;
+		},
+
+		markIfCanAccessToIframesParent: function() {
+			// for unfriendly iFrames, where we can't access window['parent'] we set on page to false
+			if ( this.getConfig( 'onPage' ) ) {
+				try {
+					var parent = window['parent'].document;
+				} catch(e) {
+					this.setConfig('onPage', false);
+					mw.log("cant access window['parent'] - setting to false");
+				}
+			}
+		},
+
+		getQnaInterfaceInsideIframe: function() {
+			try {
+				var iframeParent = $('#'+this.embedPlayer.id, window['parent'].document)[0];
+				this.$qnaListContainer = $(iframeParent).parents().find(".qnaInterface");
+
+				if (!this.$qnaListContainer.length){
+					$(iframeParent).parents().find("#" + this.getConfig('qnaTargetId')).html("<div class='qnaInterface'></div>");
+					this.$qnaListContainer = $(iframeParent).parents().find(".qnaInterface");
+				}
+
+			} catch(e){
+				mw.log("failed to access window['parent'] for creating $qnaListContainer");
+			}
 		},
 
 		positionQAButtonOnVideoContainer : function(){
@@ -400,8 +419,8 @@
 				.on('focus', function(){
 					if (textArea.val() === gM('qna-default-question-box-text')) {
 						textArea.val('');
-						textArea.removeClass("qnaInterface qnaQuestionTextAreaNotTyping");
-						textArea.addClass("qnaInterface qnaQuestionTextAreaTyping");
+						textArea.removeClass("qnaQuestionTextAreaNotTyping");
+						textArea.addClass("qnaQuestionTextAreaTyping");
 					}
 				});
 
@@ -462,8 +481,8 @@
 
 		resetTextArea : function(textArea, textCounter){
 			textArea.val(gM('qna-default-question-box-text'));
-			textArea.removeClass("qnaInterface qnaQuestionTextAreaTyping");
-			textArea.addClass("qnaInterface qnaQuestionTextAreaNotTyping");
+			textArea.removeClass("qnaQuestionTextAreaTyping");
+			textArea.addClass("qnaQuestionTextAreaNotTyping");
 
 			if (textCounter) {
                 textCounter.text('0/' + NUM_OF_MAX_CHAR);
