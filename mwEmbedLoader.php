@@ -105,7 +105,7 @@ class mwEmbedLoader {
 		
 		// check for non-fatal errors: 
 		if( $this->getError() ){
-			echo "if( console ){ console.log('" . json_encode($this->getError()) . "'); }";
+			echo "if( console ){ console.log('" . htmlspecialchars(json_encode($this->getError()), ENT_QUOTES) . "'); }";
 		}
 		// output the script output
 		echo $o;
