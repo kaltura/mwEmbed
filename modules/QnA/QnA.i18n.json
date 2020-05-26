@@ -13,6 +13,7 @@
 		"qna-reply-here": "Reply here",
 		"qna-no-messages-text": "No Announcements",
 		"qna-list-hider-text": "QnA is currently disabled for this session. Please check back later.",
+		"qna-something-went-wrong-text": "Something went wrong, please refresh or try later.",
 	  	"qna-answer-on-air": "Currently Answering"
 	}
 }

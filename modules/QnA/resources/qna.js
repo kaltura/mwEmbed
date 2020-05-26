@@ -380,9 +380,15 @@
 
 		submitQuestion : function(){
 			var _this = this;
-			var textArea = _this.getQnaContainer().find('.qnaQuestionTextArea');
+			var qnaContainer$ = _this.getQnaContainer();
+			var textArea = qnaContainer$.find('.qnaQuestionTextArea');
 			var question = textArea.val();
-            var questionCharCounter = _this.getQnaContainer().find('.qnaQuestionCharCounter');
+            var questionCharCounter = qnaContainer$.find('.qnaQuestionCharCounter');
+
+            if (!question) {
+				alert(gM('qna-something-went-wrong-text'));
+				return false;
+			}
 
             // protection from empty string
 			if (!(/\S/.test(question))){
