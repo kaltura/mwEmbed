@@ -386,8 +386,7 @@
             var questionCharCounter = qnaContainer$.find('.qnaQuestionCharCounter');
 
             if (!question) {
-				alert(gM('qna-something-went-wrong-text'));
-				return false;
+                mw.log("question is not defined");
 			}
 
             // protection from empty string
