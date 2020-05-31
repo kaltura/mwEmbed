@@ -20,7 +20,7 @@ class RequestHelper {
 		'flashvars' => null,
 		'playlist_id' => null,
 		'urid' => null,
-		// Custom service url properties ( only used when wgKalturaAllowIframeRemoteService is set to true ) 
+		// Custom service url properties ( only used when wgKalturaAllowIframeRemoteService is set to true )
 		'ServiceUrl'=> null,
 		'ServiceBase'=>null,
 		'CdnUrl'=> null,
@@ -58,20 +58,20 @@ class RequestHelper {
 			foreach( $urlParts as $inx => $urlPart ){
 				foreach( $this->urlParameters as $attributeKey => $na){
 					if( $urlPart == $attributeKey && isset( $urlParts[$inx+1] ) ){
-						$_REQUEST[ $attributeKey ] = $urlParts[$inx+1];
+						$_REQUEST[ $attributeKey ] = htmlspecialchars( $urlParts[$inx+1], ENT_QUOTES );
 					}
 				}
 			}
 		}
 
-		// TODO refactor this parameter sanitation  
+		// TODO refactor this parameter sanitation
 		foreach( $this->urlParameters as $attributeKey => $na){
 			if( isset( $_REQUEST[ $attributeKey ] ) ){
 				// set the url parameter and don't let any html in:
 				$this->urlParameters[ $attributeKey ] = $_REQUEST[ $attributeKey ];
 			}
 		}
-		
+
 		// support CORS for IE9 and lower
 		global $HTTP_RAW_POST_DATA;
 		if ( !isset( $HTTP_RAW_POST_DATA ) )
@@ -79,7 +79,7 @@ class RequestHelper {
 			$HTTP_RAW_POST_DATA = file_get_contents( 'php://input' );
 			$HTTP_RAW_POST_DATA = $HTTP_RAW_POST_DATA ? $HTTP_RAW_POST_DATA : array();
 		}
-		
+
 		if ( count($_POST) == 0 && count( $HTTP_RAW_POST_DATA) > 0 ){
 			parse_str($HTTP_RAW_POST_DATA, (
 					html_entity_decode(
@@ -94,7 +94,7 @@ class RequestHelper {
 			}
 		}
 
-		// string to boolean  
+		// string to boolean
 		foreach( $this->urlParameters as $k=>$v){
 			if( $v == 'false'){
 				$this->urlParameters[$k] = false;
@@ -103,15 +103,15 @@ class RequestHelper {
 				$this->urlParameters[$k] = true;
 			}
 		}
-		
+
 		if( isset( $this->urlParameters['p'] ) && !isset( $this->urlParameters['wid'] ) ){
-			$this->urlParameters['wid'] = '_' . $this->urlParameters['p'];  
+			$this->urlParameters['wid'] = '_' . $this->urlParameters['p'];
 		}
 
 		if( isset( $this->urlParameters['partner_id'] ) && !isset( $this->urlParameters['wid'] ) ){
-			$this->urlParameters['wid'] = '_' . $this->urlParameters['partner_id'];  
-		}		
-			
+			$this->urlParameters['wid'] = '_' . $this->urlParameters['partner_id'];
+		}
+
 		// Check for debug flag
 		if( isset( $_REQUEST['debug'] ) ){
 			$this->debug = true;
@@ -146,18 +146,18 @@ class RequestHelper {
 
 	function getServiceConfig( $name ){
 		global $wgKalturaAllowIframeRemoteService;
-		
-		// Check if we allow URL override: 
+
+		// Check if we allow URL override:
 		if(( $wgKalturaAllowIframeRemoteService == true ) || $this->isEmbedServicesEnabled()){
 			// Check for urlParameters
 			if( $this->get( $name ) ){
 				return $this->get( $name );
 			}
 		}
-		
-		// Else use the global config: 
+
+		// Else use the global config:
 		switch( $name ){
-			case 'ServiceUrl' : 
+			case 'ServiceUrl' :
 				global $wgKalturaServiceUrl;
 				return $wgKalturaServiceUrl;
 				break;
@@ -271,8 +271,8 @@ class RequestHelper {
 			return '';
 		}
 		$ip = null;
-		// Check for x-forward-for and x-real-ip headers 
-		$requestHeaders = getallheaders(); 
+		// Check for x-forward-for and x-real-ip headers
+		$requestHeaders = getallheaders();
 		if( isset( $requestHeaders['X-Forwarded-For'] ) ){
 			$ip = $this->getRealIP( $requestHeaders['X-Forwarded-For'] );
 		}
@@ -343,7 +343,7 @@ class RequestHelper {
 			$this->ks = $ks;
 		}
 	}
-	
+
 	public function hasKS() {
 		global $wgForceCache;
 		return $wgForceCache ? false : isset($this->ks);
