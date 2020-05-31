@@ -7,6 +7,8 @@ class RequestHelper {
 	var $debug = false;
 	var $utility = null;
 
+    var $EXCLUDE_ESCAPED_ATTRIBUTES = array('flashvars');
+
 	/**
 	 * Variables set by the Frame request:
 	 */
@@ -58,7 +60,11 @@ class RequestHelper {
 			foreach( $urlParts as $inx => $urlPart ){
 				foreach( $this->urlParameters as $attributeKey => $na){
 					if( $urlPart == $attributeKey && isset( $urlParts[$inx+1] ) ){
-						$_REQUEST[ $attributeKey ] = htmlspecialchars( $urlParts[$inx+1], ENT_QUOTES );
+					    $data = $urlParts[$inx+1];
+					    if (!in_array($attributeKey, $this->EXCLUDE_ESCAPED_ATTRIBUTES)) {
+					        $data = htmlspecialchars( $urlParts[$inx+1], ENT_QUOTES );
+					    }
+						$_REQUEST[ $attributeKey ] = $data;
 					}
 				}
 			}
