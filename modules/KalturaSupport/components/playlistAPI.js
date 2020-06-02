@@ -397,7 +397,7 @@
 				title = kWidget.sanitize( title );
 				description = kWidget.sanitize( description );
 
-				var thumbnailUrl = item.thumbnailUrl || customData.thumbUrl || this.getThumbUrl(item);
+				var thumbnailUrl = this.getThumbUrl(item) || item.thumbnailUrl || customData.thumbUrl;
 				var thumbnailRotatorUrl = this.getConfig('thumbnailRotator') ? this.getThumRotatorUrl() : '';
 
 				item.order = i;
