@@ -481,7 +481,9 @@
 				var customData = item.partnerData ? JSON.parse(item.partnerData) : {};
 				var title = item.title || customData.title;
 				var description = item.description || customData.desc;
-				var thumbnailUrl = item.thumbnailUrl || customData.thumbUrl || _this.getThumbUrl(item);
+				var thumbnailUrl = mw.getConfig('loadThumbnailWithKs')
+					? _this.getThumbUrl(item.thumbnailUrl || customData.thumbUrl || item)
+					: item.thumbnailUrl || customData.thumbUrl || _this.getThumbUrl(item);
 				var thumbnailRotatorUrl = _this.getConfig('thumbnailRotator') ? _this.getThumRotatorUrl() : '';
 				mediaItem = {
 					order: orderId++,
