@@ -397,9 +397,7 @@
 				title = kWidget.sanitize( title );
 				description = kWidget.sanitize( description );
 
-				var thumbnailUrl = item.thumbnailUrl || customData.thumbUrl || this.getThumbUrl(item);
-				thumbnailUrl = mw.getConfig('loadThumbnailWithKs') && thumbnailUrl.indexOf('ks') < 1
-					? thumbnailUrl += '/ks/' + mw.getConfig('ks') : thumbnailUrl;
+				var thumbnailUrl = item.thumbnailUrl|| customData.thumbUrl || this.getThumbUrl(item);
 				var thumbnailRotatorUrl = this.getConfig('thumbnailRotator') ? this.getThumRotatorUrl() : '';
 
 				item.order = i;
@@ -407,7 +405,7 @@
 				item.description = description;
 				item.width = this.getConfig('mediaItemWidth');
 				item.thumbnail = {
-					url: thumbnailUrl,
+					url: this.getThumbUrl(thumbnailUrl),
 					thumbAssetId: item.assetId,
 					rotatorUrl: thumbnailRotatorUrl,
 					width: this.getThumbWidth(),

@@ -406,7 +406,18 @@
 			});
 			return mediaItem;
 		},
-		getThumbUrl: function(item) {
+		getThumbUrl: function(item, customData) {
+			var addKs = function (items) {
+				 items = mw.getConfig('loadThumbnailWithKs')
+					? items += '/ks/' + mw.getConfig('ks') : items;
+				return items;
+			};
+			if (item.thumbnailUrl) {
+				return addKs(item.thumbnailUrl);
+			}
+			if (customData && customData.thumbUrl) {
+				return addKs(customData.thumbUrl);
+			}
 			var time = item.thumbOffset || item.startTime;
 			var thumbUrl = kWidgetSupport.getKalturaThumbnailUrl(
 				$.extend( {}, this.baseThumbSettings, {
