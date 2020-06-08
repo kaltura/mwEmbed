@@ -406,7 +406,7 @@
 			});
 			return mediaItem;
 		},
-		getThumbUrl: function(item, customData) {
+		getThumbUrl: function(item, customUrl) {
 			var addKs = function (url) {
 				 url = mw.getConfig('loadThumbnailWithKs')
 					? url += '/ks/' + mw.getConfig('ks') : url;
@@ -415,8 +415,8 @@
 			if (item.thumbnailUrl) {
 				return addKs(item.thumbnailUrl);
 			}
-			if (customData) {
-				return customData;
+			if (customUrl) {
+				return customUrl;
 			}
 			var time = item.thumbOffset || item.startTime;
 			var thumbUrl = kWidgetSupport.getKalturaThumbnailUrl(
