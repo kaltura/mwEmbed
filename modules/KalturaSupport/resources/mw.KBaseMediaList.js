@@ -415,8 +415,8 @@
 			if (item.thumbnailUrl) {
 				return addKs(item.thumbnailUrl);
 			}
-			if (customData && customData.thumbUrl) {
-				return customData.thumbUrl;
+			if (customData) {
+				return customData;
 			}
 			var time = item.thumbOffset || item.startTime;
 			var thumbUrl = kWidgetSupport.getKalturaThumbnailUrl(
