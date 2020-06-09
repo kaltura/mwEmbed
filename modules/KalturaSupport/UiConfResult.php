@@ -209,7 +209,7 @@ class UiConfResult {
 
 		// Add Core plugins
 		$basePlugins = array(
-//			'statistics' => array(),
+			//'statistics' => array(),
 			'controlBarContainer' => array(),
 			'qualitySettings' => array(),
 			'morePlugins' => array(),
