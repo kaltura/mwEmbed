@@ -1216,7 +1216,7 @@
 		addOffButton: function() {
 			var _this = this;
 			this.getMenu().addItem({
-				'label': gM('mwe-off-button'),
+				'label': gM('mwe-closedCaptions-off-button'),
 				'attributes': {
 					'class': "offBtn"
 				},
