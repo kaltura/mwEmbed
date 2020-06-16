@@ -556,7 +556,7 @@
 						var dataObj = {
 							type: data.type,
 							details: data.details,
-							url: data.url || (data.context && data.context.url),
+							url: data.url || (data.frag && data.frag.url) || (data.context && data.context.url),
 							fatal: data.fatal,
 							response: data.response,
 							networkDetails: data.networkDetails,
