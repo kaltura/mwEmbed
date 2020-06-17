@@ -44,7 +44,6 @@ mw.PluginManager.add( 'infoScreen', mw.KBaseScreen.extend({
 					$(embedPlayer.getPlayerElement()).addClass("blur");
 					embedPlayer.getPlayerPoster().addClass("blur");
 					embedPlayer.getInterface().find(".infoScreen .icon-close").focus();
-					embedPlayer.getInterface().find(".infoScreenPanel .description").attr('title', embedPlayer.evaluate('{mediaProxy.entry.description}'));
 					screen.keydown( $.proxy( _this.tabKeyBind, _this )  );
 					embedPlayer.getInterface().find(".infoScreen").keydown(function(e){
 						if(e.keyCode === 9){// keyCode = 9 - tab button
