@@ -169,7 +169,6 @@
     z-index: 2;
     opacity: 0.68;
     filter: alpha(opacity=68);
-    text-transform: capitalize;
     overflow: hidden;
 }
 .chapters > .k-chapters-container .k-title-container{

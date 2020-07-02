@@ -1410,3 +1410,7 @@ ol.second-row{
     color: #0e90d2;
     text-decoration: underline;
 }
+#ftr-question {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}

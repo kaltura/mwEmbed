@@ -45,6 +45,7 @@
         "mwe-embedplayer-player_expend": "Expand player screen",
         "mwe-embedplayer-player_retract": "Shrink player screen",
         "mwe-timedtext-no-subtitles": "No Subtitles",
+        "mwe-closedCaptions-off-button": "Off",
 	    "mwe-timedtext-no-audio": "No Tracks",
         "mwe-embedplayer-for_best_experience": "For a better video playback experience we recommend a [$1 HTML5 video browser].",
         "mwe-embedplayer-do_not_warn_again": "In the future, do not show this message",

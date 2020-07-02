@@ -74,6 +74,7 @@
         playSentOnStart: false,
 		absolutePosition: null,
 		id3TagEventTime: null,
+		manifestDownloadTime: null,
 		id3SequenceId: null,
 		onPlayStatus: false,
         firstPlayRequestTime: null,
@@ -161,6 +162,7 @@
 				_this._isPaused = true;
 				_this._isBuffering = false;
 				_this._mediaChange = true;
+				_this.manifestDownloadTime = null;
 			});
             // calculate bandwidth of current loaded frag
 			this.embedPlayer.bindHelper( 'hlsFragBufferedWithData' , function (e,data) {
@@ -250,6 +252,12 @@
 
 			this.embedPlayer.bindHelper( 'downloadMedia' , function () {
 				_this.sendAnalytics(playerEvent.DOWNLOAD);
+			});
+
+			this.embedPlayer.bindHelper('hlsManifestLoadedWithStats', function(e,data){
+				if(data && data.stats && data.stats.tload && data.stats.trequest){
+					_this.manifestDownloadTime= (data.stats.tload-data.stats.trequest).toFixed(2)/1000;
+				}
 			});
 
 			this.embedPlayer.bindHelper( 'onOpenFullScreen' , function () {
@@ -383,7 +391,7 @@
 					_this.maxChunkDownloadTime = Math.max((data.stats.tload - data.stats.trequest)/1000, _this.maxChunkDownloadTime);
 				}
 			});
-			
+
 			this.embedPlayer.bindHelper( 'sourceSwitchingEnd' , function (e, newSource) {
 				if (newSource.newBitrate){
 					_this.currentBitRate = newSource.newBitrate;
@@ -392,7 +400,8 @@
 
 			this.embedPlayer.bindHelper('playerError', function (e, errorObj) {
                 var errorCode = errorObj && errorObj.key;
-                _this.sendAnalytics(playerEvent.ERROR, {errorCode: errorCode});
+                var errorDetails = errorObj && errorObj.message;
+                _this.sendAnalytics(playerEvent.ERROR, {errorCode: errorCode, errorDetails: errorDetails});
             });
 
 			this.embedPlayer.bindHelper( 'onId3Tag' , function (e, id3Tag) {
@@ -530,7 +539,7 @@
 			this.bandwidthSamples = [];
 			analyticsEvent.bandwidth = avarage.toFixed(3);
 		},
-		
+
 		getConnectionType: function() {
 			try {
 				var navConnection = window.navigator.connection || window.navigator.mozConnection || window.navigator.webkitConnection;
@@ -541,7 +550,41 @@
 			return "";
 		},
 
+		getForwardBufferHealth : function(){
+			var forwardBufferHealth = NaN;
+			try{
+				var availableBuffer = this.availableBuffer();
+				var targetBuffer = this.embedPlayer.getTargetBuffer();
+				if (targetBuffer && availableBuffer) {
+					// considering playback left to the target calculation
+					forwardBufferHealth = Math.round((availableBuffer * 1000) / targetBuffer) / 1000;
+				}
+				mw.log("forwardBufferHealth  "+forwardBufferHealth);
+			}catch(e){
+				mw.log("Failed getting getForwardBufferHealth data");
+			}
+			return forwardBufferHealth;
+		},
+
+		availableBuffer: function(){
+			var retVal = 0;
+			try{
+				var videoEl = this.embedPlayer.getPlayerElement();
+				if (videoEl && videoEl.buffered) {
+				  for (var i = 0; i < videoEl.buffered.length; i++) {
+					if (videoEl.buffered.start(i) <= videoEl.currentTime && videoEl.currentTime <= videoEl.buffered.end(i)) {
+					  retVal = videoEl.buffered.end(i) - videoEl.currentTime;
+					}
+				  }
+				}
+			}catch(e){
+				mw.log("Failed retrieving availableBuffer");
+			}
+			return retVal;
+		  },
+
 		generateViewEventObject: function(){
+			var forwardBufferHealth = this.getForwardBufferHealth();
 			var tabMode = this.tabMode;
 			var soundMode = this.soundMode;
 			var event = {
@@ -554,6 +597,20 @@
 			if(this.id3SequenceId){
 				event.flavorParamsId = this.id3SequenceId;
 			}
+
+			var targetBuffer = this.embedPlayer.getTargetBuffer();
+			if(targetBuffer){
+				event.targetBuffer = targetBuffer;
+			}
+			if(forwardBufferHealth){
+				event.forwardBufferHealth = forwardBufferHealth;
+			}
+
+			if(this.manifestDownloadTime){
+				event.manifestDownloadTime = this.manifestDownloadTime;
+				this.manifestDownloadTime = null;
+      }
+
 			if(this.maxChunkDownloadTime){
 				event.segmentDownloadTime = this.maxChunkDownloadTime.toFixed(3);
 				// reset for next 10 seconds
@@ -696,7 +753,7 @@
 			if (mw.getConfig("playbackContext")){
 				statsEvent["playbackContext"] = mw.getConfig("playbackContext");
 			}
-			
+
 			if (config.persistentSessionId){
 				statsEvent["persistentSessionId"] = config.persistentSessionId
 			}

@@ -143,7 +143,7 @@
 				screenfull.request(fsTarget, doc);
 			};
 			// Check for native support for fullscreen and we are in an iframe server
-			if( !this.fullScreenApiExcludes() && screenfull && screenfull.enabled(doc) && !mw.isOldAndroidChromeNativeBrowser()) {
+			if( !this.fullScreenApiExcludes() && screenfull && screenfull.enabled(doc) && !mw.isOldAndroidChromeNativeBrowser() && !((mw.isIpad() || mw.isIpadOS()) && mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen'))) {
 				callFullScreenAPI();
 			} else {
 				if(!this.fullScreenApiExcludes() && mw.isAndroidChromeNativeBrowser()){

@@ -44,6 +44,8 @@
 			afterInitialSeeking: false,
 			/** type {Number} */
 			levelIndex: -1,
+			/** type {booleab} */
+			liveOffline: false,
 
 			/**
 			 * Check is HLS is supported
@@ -68,7 +70,7 @@
 				this.bind("playerReady", this.initHls.bind(this));
 				this.bind("onChangeMedia", this.clean.bind(this));
 				this.bind("liveOnline", this.onLiveOnline.bind(this));
-				this.bind("liveOffline", this.stopLoad.bind(this));
+				this.bind("liveOffline", this.onLiveOffline.bind(this));
 				if (mw.getConfig("hlsLogs")) {
 					this.bind("monitorEvent", this.monitorDebugInfo.bind(this));
 				}
@@ -100,6 +102,7 @@
 					this.mediaAttached = false;
 					this.hls.destroy();
 					this.hls = null;
+					this.liveOffline = false;
 				}
             },
 			/**
@@ -128,7 +131,7 @@
 					$(this.getPlayer().getPlayerElement()).one("canplay", function(){
 						// The initial seeking to the live edge has finished.
 						this.afterInitialSeeking = true;
-						if (this.embedPlayer.isLive() && (mw.isIE11() || mw.isEdge())) {
+						if (this.embedPlayer.isLive() && !this.embedPlayer.isDVR() && (mw.isIE11() || mw.isEdge())) {
 							var player = this.embedPlayer.getPlayerElement();
 							//nudge time on IE11 live streams due to audio bug https://github.com/video-dev/hls.js/issues/2323
 							player.currentTime = player.currentTime + 0.1;
@@ -310,7 +313,7 @@
             /**
              * manifest loaded handler.
              */
-            onManifestLoaded: function () {
+            onManifestLoaded: function (event,data) {
                 this.log("manifest loaded");
                 if (!this.embedPlayer.isLive()){
                     this.hls.startLoad(this.getPlayer().currentTime);
@@ -326,6 +329,7 @@
 			            textTracks[i].mode = "disabled";
 		            }
 	            }
+	            this.getPlayer().triggerHelper('hlsManifestLoadedWithStats',data);
             },
 			/**
 			 * Extract available audio tracks metadata from parsed manifest data
@@ -540,22 +544,35 @@
 					this.log("Try flash fallback");
 					this.fallbackToFlash();
 				} else {
+					var headers;
+					try {
+						if (data && data.networkDetails) {
+							headers = data.networkDetails.getAllResponseHeaders();
+						}
+					} catch (e) {
+						this.log("unable to get response headers");
+					}
 					try {
 						var dataObj = {
 							type: data.type,
 							details: data.details,
+							url: data.url || (data.frag && data.frag.url) || (data.context && data.context.url),
 							fatal: data.fatal,
 							response: data.response,
-							networkDetails: data.networkDetails
+							networkDetails: data.networkDetails,
+							headers: headers
 						};
 						var errorObj = {
 							message: JSON.stringify(dataObj),
 							// hls fatal error code could be either Network Error (1000) or Media Errors (3000)
 							code: data.type === "networkError" ? "1000" : "3000"
 						};
+						errorObj.key = errorObj.code;
+						this.log("error: " + JSON.stringify(errorObj));
 						this.getPlayer().triggerHelper('embedPlayerError', errorObj);
 					}
 					catch (e) {
+						this.log("error: failed to create error data object" + JSON.stringify(e));
 						this.getPlayer().triggerHelper('embedPlayerError', {
 							message: "hlsjs error"
 						});
@@ -614,6 +631,7 @@
 			 * Enable override player methods for HLS playback
 			 */
 			overridePlayerMethods: function () {
+				// storing original methods
 				this.orig_backToLive = this.getPlayer().backToLive;
 				this.orig_getStartTimeOfDvrWindow = this.getPlayer().getStartTimeOfDvrWindow;
 				this.orig_switchSrc = this.getPlayer().switchSrc;
@@ -628,6 +646,8 @@
 				if (this.getPlayer()._onseeked) {
 					this.orig_onseeked = this.getPlayer()._onseeked.bind(this.getPlayer());
 				}
+				this.orig_getTargetBuffer = this.getPlayer().getTargetBuffer;
+				//overriding with HLS.js methods
 				this.getPlayer().backToLive = this.backToLive.bind(this);
 				this.getPlayer().getStartTimeOfDvrWindow = this.getStartTimeOfDvrWindow.bind(this);
 				this.getPlayer().switchSrc = this.switchSrc.bind(this);
@@ -638,6 +658,7 @@
 				this.getPlayer()._onseeking = this._onseeking.bind(this);
 				this.getPlayer()._onseeked = this._onseeked.bind(this);
 				this.getPlayer().clean = this.clean.bind(this);
+				this.getPlayer().getTargetBuffer = this.getTargetBuffer.bind(this);
 			},
 			/**
 			 * Disable override player methods for HLS playback
@@ -653,6 +674,7 @@
 				this.getPlayer()._onseeking = this.orig_onseeking;
 				this.getPlayer()._onseeked = this.orig_onseeked;
 				this.getPlayer().clean = this.orig_clean;
+				this.getPlayer().getTargetBuffer = this.orig_getTargetBuffer;
 			},
 			//Overidable player methods, "this" is bound to HLS plugin instance!
 			/**
@@ -815,17 +837,26 @@
 			},
 
 			onLiveOnline: function () {
-				if (this.embedPlayer.isDVR()) {
-					this.log(' onLiveOnline:: renew hls instance');
-					this.hls.destroy();
-					var hlsConfig = this.getHlsConfig();
-					this.hls = new Hls(hlsConfig);
-					this.registerHlsEvents();
-					this.mediaAttached = false;
-					this.hls.attachMedia(this.embedPlayer.getPlayerElement());
+				if (this.liveOffline) { // avoid restarting hls while playback
+					this.log(' onLiveOnline:: move from offline to online, restart the playback');
+					this.liveOffline = false;
+					if (this.embedPlayer.isDVR()) {
+						this.log(' onLiveOnline:: renew hls instance');
+						this.hls.destroy();
+						var hlsConfig = this.getHlsConfig();
+						this.hls = new Hls(hlsConfig);
+						this.registerHlsEvents();
+						this.mediaAttached = false;
+						this.hls.attachMedia(this.embedPlayer.getPlayerElement());
 					} else {
-							this.hls.startLoad(this.hls.config.startPosition);
+						this.hls.startLoad(this.hls.config.startPosition);
 					}
+				}
+			},
+
+			onLiveOffline: function () {
+				this.liveOffline = true;
+				this.stopLoad();
 			},
 
 			getStartTimeOfDvrWindow: function () {
@@ -844,6 +875,53 @@
 				} else {
 					return 0;
 				}
+			},
+
+			getLiveEdge : function(){
+				try {
+					var liveEdge;
+					if (this.hls.liveSyncPosition) {
+						liveEdge = this.hls.liveSyncPosition;
+					} else if (this.hls.config.liveSyncDuration) {
+						liveEdge = this.embedPlayer.duration - this.hls.config.liveSyncDuration;
+					} else {
+						liveEdge = this.embedPlayer.duration - this.hls.config.liveSyncDurationCount * this.getLevelDetails().targetduration;
+					}
+					return liveEdge > 0 ? liveEdge : this.embedPlayer.duration;
+				} catch (e) {
+					return this.embedPlayer.duration;
+				}
+			},
+			getLevelDetails: function() {
+				var level =	this.hls.levels &&
+						(this.hls.levels[this.hls.currentLevel] ||
+						this.hls.levels[this.hls.nextLevel] ||
+						this.hls.levels[this.hls.nextAutoLevel] ||
+						this.hls.levels[this.hls.nextLoadLevel]);
+				return level && level.details ? level.details : {};
+			  },
+
+			getLiveTargetBuffer: function() {
+				// if defined in the configuration object, liveSyncDuration will take precedence over the default liveSyncDurationCount
+				if (this.hls.config.liveSyncDuration) {
+					return this.hls.config.liveSyncDuration;
+				} else {
+					return this.hls.config.liveSyncDurationCount * this.getLevelDetails().targetduration;
+				}
+			},
+
+			getTargetBuffer : function() {
+				var targetBufferVal = NaN;
+				if (!this.hls) return NaN;
+					//distance from playback duration is the relevant buffer
+					if (this.embedPlayer.isLive()) {
+					targetBufferVal = this.getLiveTargetBuffer() - (this.embedPlayer.currentTime - this.getLiveEdge());
+				} else {
+					// consideration of the end of the playback in the target buffer calc
+					targetBufferVal = this.embedPlayer.duration - this.embedPlayer.currentTime;
+				}
+				targetBufferVal = Math.min(targetBufferVal, this.hls.config.maxMaxBufferLength + this.getLevelDetails().targetduration);
+				return targetBufferVal;
 			},
 
 			handleMediaError: function () {

@@ -36,13 +36,13 @@
                 $(_this.emptyScreen()).hide().append(
                     '<div class="ivqContainer">'+
                     '   <div class="header-container">' +
-                    '       <div class="display-question"></div>' +
+                    '       <div class="display-question" id="questionContainer"></div>' +
                     '   </div>' +
                     '   <div class="answers-container"></div>' +
                     '   <div class="open-answer-container">'+
                     '       <div class="open-answer-inner">'+
                     '             <div class="open-question_textarea-container">'+
-                    '                   <textarea class="open-question-textarea" maxlength="270" tabindex="5"></textarea>'+ 
+                    '                   <textarea class="open-question-textarea" maxlength="270" tabindex="5" aria-labelledby="questionContainer"></textarea>'+ 
                     '             </div>' +
                     '            <div class="open-answer-footer">' +
                     '                <div class="open-question-chars"><span class="chars">0</span>/270</div>' +
