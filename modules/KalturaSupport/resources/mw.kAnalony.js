@@ -450,12 +450,15 @@
 			if ( !this.embedPlayer.isLive() && (_this.embedPlayer.donePlayingCount === 0)){
 				if( !_this._p25Once && percent >= .25 ) {
 					_this._p25Once = true;
+					_this.embedPlayer.triggerHelper( "firstQuartile" );
 					_this.sendAnalytics(playerEvent.PLAY_25PERCENT);
 				} else if ( !_this._p50Once && percent >= .50 ) {
 					_this._p50Once = true;
+					_this.embedPlayer.triggerHelper( "secondQuartile" );
 					_this.sendAnalytics(playerEvent.PLAY_50PERCENT);
 				} else if( !_this._p75Once && percent >= .75 ) {
 					_this._p75Once = true;
+					_this.embedPlayer.triggerHelper( "thirdQuartile" );
 					_this.sendAnalytics(playerEvent.PLAY_75PERCENT);
 				} else if(  !_this._p100Once && percent >= .99) {
 					_this._p100Once = true;
