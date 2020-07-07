@@ -108,8 +108,8 @@
 			this.bind('onId3Tag' , function(event,id3tag){
 				// if we got to this code - we are on a live session
 				if(_this.latestPreviewCuepoint){
-				// if we stored a preview thumb-cuepoint - restore and clear it
-				_this.sync(_this.latestPreviewCuepoint);
+					// if we stored a preview thumb-cuepoint - restore and clear it
+					_this.sync(_this.latestPreviewCuepoint);
 					_this.latestPreviewCuepoint = null;
 				}
 			});
@@ -255,6 +255,7 @@
 					}
 				}
 			}
+			this.latestPreviewCuepoint = cuePoint;
 		},
 		//Prefetch
 		loadAdditionalAssets: function () {
