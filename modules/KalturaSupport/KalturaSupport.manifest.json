@@ -53,6 +53,7 @@
             },
             "useCookie": {
                 "doc": "Should cookies be used to store user language.",
+                "initvalue": true,
                 "type": "boolean"
             },
             "fontFamily": {
