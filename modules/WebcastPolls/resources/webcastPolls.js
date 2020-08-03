@@ -395,12 +395,12 @@
                 var stateCuePointToHandle = _this.filterStateCuePoints(cuepointsArgs);
                 if (stateCuePointToHandle) {
                     try {
-                        var showingAPoll = stateCuePointToHandle.tags.indexOf('select-poll-state') > -1;
+                        var showingAPollState = stateCuePointToHandle.tags.indexOf('select-poll-state') > -1;
+                        var pollState = JSON.parse(stateCuePointToHandle.partnerData);
+                        var isLocalAssetChange = pollState && pollState.params && pollState.params.isLocalAssetChange === true;
 
-                        if (showingAPoll) {
+                        if (showingAPollState && !isLocalAssetChange) {
                             _this.log("got state update for current poll  - syncing current poll with state '" + stateCuePointToHandle.partnerData + "'");
-
-                            var pollState = JSON.parse(stateCuePointToHandle.partnerData);
                             if(pollState.status == "inProgress" && _this.embedPlayer.isDVR()){
                                 //in DVR mode check if this poll was ended by the moderator
                                 var pollId = pollState.pollId;
