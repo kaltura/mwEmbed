@@ -12,7 +12,8 @@
 		},
 		tabMode : {
 			HIDDEN: 1,
-			ACTIVE: 2
+			ACTIVE: 2,
+			FULLSCREEN: 3
 		},
 		soundMode : {
 			MUTED: 1,
@@ -590,8 +591,9 @@
 			var forwardBufferHealth = this.getForwardBufferHealth();
 			var tabMode = this.tabMode;
 			var soundMode = this.soundMode;
+			var isInFullscreen = this.embedPlayer.layoutBuilder.isInFullScreen();
 			var event = {
-				tabMode : document.hidden ? tabMode.HIDDEN : tabMode.ACTIVE,
+				tabMode : isInFullscreen ? tabMode.FULLSCREEN : (document.hidden ? tabMode.HIDDEN : tabMode.ACTIVE),
 				soundMode : this.embedPlayer.isMuted() ? soundMode.MUTED : soundMode.HAS_SOUND,
 				playTimeSum: this.playTimeSum,
 				averageBitrate: this.rateHandler.getAverage(),
