@@ -26,7 +26,7 @@ $wgKalturaVersion = basename(getcwd()); // Gets the version by the folder name
 $partnerCdnApiHosts = kConf::getMap('partner_cdn_api_hosts');
 
 // get partner ID if available
-if (isset($_REQUEST['wid']) && preg_match('#^_#', $_REQUEST['wid']) === 1) {
+if (isset($_REQUEST['wid']) && preg_match('#^_\d+$#', $_REQUEST['wid']) === 1) {
     $partnerId = ltrim($_REQUEST['wid'], '_');
 } elseif (isset($_REQUEST['partner_id'])) {
     $partnerId = $_REQUEST['partner_id'];
