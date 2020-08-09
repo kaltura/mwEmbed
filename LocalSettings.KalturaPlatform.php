@@ -33,7 +33,7 @@ if (isset($_REQUEST['wid'])) {
 } elseif( isset( $_SERVER['PATH_INFO'] ) ) {
     $urlParts = explode( '/', $_SERVER['PATH_INFO'] );
     $index = array_search('p', $urlParts);
-    if ($index) {
+    if ($index && isset($urlParts[$index + 1])) {
         $partnerId = $urlParts[$index + 1];
     }
 }
