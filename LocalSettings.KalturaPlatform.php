@@ -25,19 +25,23 @@ $wgKalturaVersion = basename(getcwd()); // Gets the version by the folder name
 // Get per partner cdn api host list
 $partnerCdnApiHosts = kConf::getMap('partner_cdn_api_hosts');
 
-// get partner ID if available in PATH_INFO
-if( isset( $_SERVER['PATH_INFO'] ) ){
-	$urlParts = explode( '/', $_SERVER['PATH_INFO'] );
-	$index = array_search('p', $urlParts);
-	if ($index) {
-		$partnerId = $urlParts[$index + 1];
-	}
+// get partner ID if available
+if (isset($_REQUEST['wid'])) {
+    $partnerId = ltrim($_REQUEST['wid'], '_');
+} elseif (isset($_REQUEST['partner_id'])) {
+    $partnerId = $_REQUEST['partner_id'];
+} elseif( isset( $_SERVER['PATH_INFO'] ) ) {
+    $urlParts = explode( '/', $_SERVER['PATH_INFO'] );
+    $index = array_search('p', $urlParts);
+    if ($index) {
+        $partnerId = $urlParts[$index + 1];
+    }
 }
 // Check if partner has custom HTTP CDN API host
 if (isset($partnerCdnApiHosts['http_hosts'][$partnerId])) {
 	$wgKalturaServiceUrl = $partnerCdnApiHosts['http_hosts'][$partnerId];
 } else {
-    // The default Kaltura service url:
+    // The default Kaltura HTTP service url:
     $wgKalturaServiceUrl = wgGetUrl('cdn_api_host');
 }
 // Default Kaltura CDN url:
@@ -55,6 +59,7 @@ if( $wgHTTPProtocol == 'https' ){
 	if (isset($partnerCdnApiHosts['https_hosts'][$partnerId])) {
 		$wgKalturaServiceUrl = $partnerCdnApiHosts['https_hosts'][$partnerId];
 	} else {
+		// The default Kaltura HTTPS service url:
 	    $wgKalturaServiceUrl = wgGetUrl('cdn_api_host_https');
 	}
 	$wgKalturaCDNUrl = wgGetUrl('cdn_host_https');
