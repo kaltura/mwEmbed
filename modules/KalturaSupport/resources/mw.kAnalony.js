@@ -12,8 +12,7 @@
 		},
 		tabMode : {
 			HIDDEN: 1,
-			ACTIVE: 2,
-			FULLSCREEN: 3
+			ACTIVE: 2
 		},
 		fullscreenMode : {
 			NORMAL: 1,
