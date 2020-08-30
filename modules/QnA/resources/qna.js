@@ -142,9 +142,8 @@
 				_this.getQnaContainer();
 				qnaObject = _this.getQnaContainer().find(".qnaModuleBackground");
 				onVideoTogglePluginButton = $('.qna-on-video-btn');
-
                 if ( _this.getConfig( 'onPage' ) ) {
-
+				
 				// register to on click to change the icon of the toggle button
                 onVideoTogglePluginButton.on("click", function(){
 
@@ -158,8 +157,10 @@
 					_this.getQnaContainer();
 					if (openQnaContainer){
 						qnaObject.show();
+						_this.getPlayer().sendNotification("qna", {visible:true} );
 					} else {
 						qnaObject.hide();
+						_this.getPlayer().sendNotification("qna", {visible:false} );
 					}
                     _this.changeVideoToggleIcon();
 				});
@@ -168,7 +169,7 @@
 
                 }
                 else {
-                    $('.qna-on-video-btn').remove()
+                    $('.qna-on-video-btn').remove();
 				}
 			});
 
@@ -178,6 +179,7 @@
 					this.hideOnFullscreen = true;
 				}
                 qnaObject.hide();
+                _this.getPlayer().sendNotification("qna", {visible:false} );
 				_this.changeVideoToggleIcon();
 				if (!_this.getConfig( 'onPage' )) {
 					$( ".videoHolder, .mwPlayerContainer" ).css( "width", "100%" );	}
@@ -185,6 +187,7 @@
 			this.bind('onCloseFullScreen', function() {
 				if(this.hideOnFullscreen){
 					qnaObject.show();
+					_this.getPlayer().sendNotification("qna", {visible:true} );
 				}
 				this.hideOnFullscreen = false;
 				_this.changeVideoToggleIcon();
@@ -522,12 +525,11 @@
 				if (!_this.getConfig( 'onPage' )) {
 					_this.getQnaContainer().find(".qnaModuleBackgroundHider").hide();
 				}
-
 				// open the module only if this is the first time
 				if (firstTime) {
 					_this.getQnaContainer().find(".qnaModuleBackground").show();
+					_this.getPlayer().sendNotification("qna", {visible:true,firstTime:true} );
 				}
-
 				if (announcementOnly){
 					_this.getQnaContainer().find(".qnaQuestionArea").hide();
 					$('.qnaReplyBox').hide();
