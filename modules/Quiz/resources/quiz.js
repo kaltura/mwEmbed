@@ -77,8 +77,6 @@
                             embedPlayer.hideSpinner();
                             _this.KIVQModule.unloadQuizPlugin(embedPlayer);
                             embedPlayer.enablePlayControls();
-                            $("link[href$='quiz.css']")[0].removeAttr('disabled');
-                            $("link[href$='quizFonts.css']")[0].removeAttr('disabled');
                         })
                         .done(function(data) {
                             var ivqNotificationData = {
@@ -133,8 +131,6 @@
                     }
                 }
                 else{
-                    $("link[href$='quiz.css']")[0].setAttribute('disabled','disabled');
-                    $("link[href$='quizFonts.css']")[0].setAttribute('disabled','disabled');
                     _this.KIVQModule.unloadQuizPlugin(embedPlayer);
                     embedPlayer.enablePlayControls();
                     if(_this.KIVQModule.isKPlaylist){
