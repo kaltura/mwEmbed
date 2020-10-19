@@ -188,6 +188,7 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 			var title = gM('mwe-embedplayer-volume-value', decPercent );
 			this.getSlider().attr({
 				'role': 'slider',
+				'aria-label': gM('mwe-embedplayer-adjust-volume'),
 				'aria-valuetext': title,
 				'aria-valuenow': decPercent
 				});

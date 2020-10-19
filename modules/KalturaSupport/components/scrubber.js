@@ -434,8 +434,8 @@
 			var duration = isNaN(this.embedPlayer.getDuration()) ? 0 : this.embedPlayer.getDuration();
 			var attributes = {
 				'data-title': title,
-				'aria-label': gM( 'mwe-embedplayer-seek' ),
-				'aria-valuetext': title + " of " + totalDuration,
+				'aria-label': gM( 'mwe-embedplayer-seek'),
+				'aria-valuetext': title + " of " + totalDuration +', '+ gM( 'mwe-embedplayer-adjust-video-progress'),
 				'aria-valuenow': parseInt(perc * 100) + '%',
 				'aria-valuemax' : duration,
 				'aria-valuemin' : 0

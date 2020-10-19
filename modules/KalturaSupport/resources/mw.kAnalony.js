@@ -14,6 +14,10 @@
 			HIDDEN: 1,
 			ACTIVE: 2
 		},
+		fullscreenMode : {
+			NORMAL: 1,
+			FULLSCREEN: 2
+		},
 		soundMode : {
 			MUTED: 1,
 			HAS_SOUND: 2
@@ -450,12 +454,15 @@
 			if ( !this.embedPlayer.isLive() && (_this.embedPlayer.donePlayingCount === 0)){
 				if( !_this._p25Once && percent >= .25 ) {
 					_this._p25Once = true;
+					_this.embedPlayer.triggerHelper( "firstQuartile" );
 					_this.sendAnalytics(playerEvent.PLAY_25PERCENT);
 				} else if ( !_this._p50Once && percent >= .50 ) {
 					_this._p50Once = true;
+					_this.embedPlayer.triggerHelper( "secondQuartile" );
 					_this.sendAnalytics(playerEvent.PLAY_50PERCENT);
 				} else if( !_this._p75Once && percent >= .75 ) {
 					_this._p75Once = true;
+					_this.embedPlayer.triggerHelper( "thirdQuartile" );
 					_this.sendAnalytics(playerEvent.PLAY_75PERCENT);
 				} else if(  !_this._p100Once && percent >= .99) {
 					_this._p100Once = true;
@@ -587,7 +594,10 @@
 			var forwardBufferHealth = this.getForwardBufferHealth();
 			var tabMode = this.tabMode;
 			var soundMode = this.soundMode;
+			var fullscreenMode = this.fullscreenMode;
+			var isInFullscreen = this.embedPlayer.layoutBuilder.isInFullScreen();
 			var event = {
+				screenMode : isInFullscreen ? fullscreenMode.FULLSCREEN : fullscreenMode.NORMAL,
 				tabMode : document.hidden ? tabMode.HIDDEN : tabMode.ACTIVE,
 				soundMode : this.embedPlayer.isMuted() ? soundMode.MUTED : soundMode.HAS_SOUND,
 				playTimeSum: this.playTimeSum,
