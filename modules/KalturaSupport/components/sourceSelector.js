@@ -340,8 +340,12 @@
 				return '480P';
 			} else if( source.getHeight() < 800 ){
 				return '720P';
+            } else if( source.getHeight() < 1200 ){
+                return '1080P';
+            } else if( source.getHeight() < 3000 ){
+                return '2160P';
 			} else {
-				return '1080P';
+				return '4320P';
 			}
 		},
 		getSourceTitle: function( source ){

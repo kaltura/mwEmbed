@@ -352,8 +352,12 @@
 					genTitle += '480P ';
 				} else if (this.height < 800) {
 					genTitle += '720P ';
+                } else if (this.height < 1200) {
+                    genTitle += '1080P';
+                } else if (this.height < 3000) {
+                    genTitle += '2160P';
 				} else {
-					genTitle += '1080P ';
+					genTitle += '4320P ';
 				}
 			}
 
