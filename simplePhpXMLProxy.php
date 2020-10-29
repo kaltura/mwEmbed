@@ -170,6 +170,11 @@ function isValidHost( $url = null ){
 		return false;
 	}
 
+	$validUrl = "$scheme://$host";
+	if (strpos($url, "@") !== false || substr($url, 0, strlen($validUrl)) != $validUrl){
+	    return false;
+    }
+
 	// Get our whitelist from kConf
 	if( isset( $kConf ) ){
 		if( $kConf->hasMap("proxy_whitelist") ){
