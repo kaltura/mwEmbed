@@ -820,6 +820,12 @@
 				$.each(['service', 'action', 'eventType', 'partnerId', 'entryId', 'sessionId'], function (index, param) {
 					delete postPayload[param];
 				});
+				if( this.kClient.disableCache === true ) {
+					postPayload['nocache'] = 'true';
+				}
+				$.extend( postPayload, this.kClient.baseParam );
+				postPayload['format'] = 1;
+				postPayload['kalsig'] = this.kClient.hashCode( kWidget.param( postPayload ) );
 				this.kClient.xhrPost( this.buildPostUrl(eventRequest) ,JSON.stringify(postPayload), callback, { 'Content-Type': 'application/json'});
 			} else {
 				this.kClient.doRequest( eventRequest, callback, true);
@@ -827,9 +833,10 @@
 		},
 
 		buildPostUrl: function(eventParams) {
-			return this.kClient.getApiUrl(eventParams['service'] + ['', 'action', 'eventType', 'partnerId', 'entryId', 'sessionId'].reduce(function(url, key) {
-				return url + '&' + key + '=' + eventParams[key];
-			}) )
+			var urlParamsArr = $.map(['action', 'eventType', 'partnerId', 'entryId', 'sessionId'], function (key) {
+				return key + '=' + eventParams[key];
+			});
+			return this.kClient.getApiUrl(eventParams['service'] + '&' + urlParamsArr.join('&') );
 		},
 
         maybeAddPlaylistId: function (statsEvent) {
