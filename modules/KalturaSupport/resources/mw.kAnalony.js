@@ -825,7 +825,6 @@
 				}
 				$.extend( postPayload, this.kClient.baseParam );
 				postPayload['format'] = 1;
-				postPayload['kalsig'] = this.kClient.hashCode( kWidget.param( postPayload ) );
 				this.kClient.xhrPost( this.buildPostUrl(eventRequest) ,JSON.stringify(postPayload), callback, { 'Content-Type': 'application/json'});
 			} else {
 				this.kClient.doRequest( eventRequest, callback, true);
