@@ -6,41 +6,41 @@
 // * added validate xml and content type
 // * added X-Forwarded-For header for geoLookup services
 //
-// @@todo add cache and 304 support ( not very high priority since ad servers are generally 
-//		dynamic content. 
-// @@todo add crossdomain.xml lookup ( to better emulate flash ) 
-//	( Adding crossdomain.xml lookup is important because we pass X-Forward-For header ) 
-// 
+// @@todo add cache and 304 support ( not very high priority since ad servers are generally
+//		dynamic content.
+// @@todo add crossdomain.xml lookup ( to better emulate flash )
+//	( Adding crossdomain.xml lookup is important because we pass X-Forward-For header )
+//
 // Project Home - http://benalman.com/projects/php-simple-proxy/
 // GitHub		 - http://github.com/cowboy/php-simple-proxy/
 // Source		 - http://github.com/cowboy/php-simple-proxy/raw/master/ba-simple-proxy.php
-// 
+//
 // About: License
-// 
+//
 // Copyright (c) 2010 "Cowboy" Ben Alman,
 // Dual licensed under the MIT and GPL licenses.
 // http://benalman.com/about/license/
-// 
+//
 // About: Examples
-// 
+//
 // This working example, complete with fully commented code, illustrates one way
 // in which this PHP script can be used.
-// 
+//
 // Simple - http://benalman.com/code/projects/php-simple-proxy/examples/simple/
-// 
+//
 // About: Release History
-// 
+//
 // 1.6 - (1/24/2009) Now defaults to JSON mode, which can now be changed to
 //			 native mode by specifying ?mode=native. Native and JSONP modes are
 //			 disabled by default because of possible XSS vulnerability issues, but
 //			 are configurable in the PHP script along with a url validation regex.
 // 1.5 - (12/27/2009) Initial release
-// 
+//
 // Topic: GET Parameters
-// 
+//
 // Certain GET (query string) parameters may be passed into ba-simple-proxy.php
-// to control its behavior, this is a list of these parameters. 
-// 
+// to control its behavior, this is a list of these parameters.
+//
 //	 url - The remote URL resource to fetch. Any GET parameters to be passed
 //		 through to the remote URL resource must be urlencoded in this parameter.
 //	 mode - If mode=native, the response will be sent using the same content
@@ -62,73 +62,73 @@
 //	 full_status - If a JSON request and full_status=1, the JSON response will
 //		 contain detailed cURL status information, otherwise it will just contain
 //		 the `http_code` property.
-// 
+//
 // Topic: POST Parameters
-// 
+//
 // All POST parameters are automatically passed through to the remote URL
 // request.
-// 
+//
 // Topic: JSON requests
-// 
+//
 // This request will return the contents of the specified url in JSON format.
-// 
+//
 // Request:
-// 
+//
 // > ba-simple-proxy.php?url=http://example.com/
-// 
+//
 // Response:
-// 
+//
 // > { "contents": "<html>...</html>", "headers": {...}, "status": {...} }
-// 
+//
 // JSON object properties:
-// 
+//
 //	 contents - (String) The contents of the remote URL resource.
 //	 headers - (Object) A hash of HTTP headers returned by the remote URL
 //		 resource.
 //	 status - (Object) A hash of status codes returned by cURL.
-// 
+//
 // Topic: JSONP requests
-// 
+//
 // This request will return the contents of the specified url in JSONP format
 // (but only if $enable_jsonp is enabled in the PHP script).
-// 
+//
 // Request:
-// 
+//
 // > ba-simple-proxy.php?url=http://example.com/&callback=foo
-// 
+//
 // Response:
-// 
+//
 // > foo({ "contents": "<html>...</html>", "headers": {...}, "status": {...} })
-// 
+//
 // JSON object properties:
-// 
+//
 //	 contents - (String) The contents of the remote URL resource.
 //	 headers - (Object) A hash of HTTP headers returned by the remote URL
 //		 resource.
 //	 status - (Object) A hash of status codes returned by cURL.
-// 
+//
 // Topic: Native requests
-// 
+//
 // This request will return the contents of the specified url in the format it
 // was received in, including the same content-type and other headers (but only
 // if $enable_native is enabled in the PHP script).
-// 
+//
 // Request:
-// 
+//
 // > ba-simple-proxy.php?url=http://example.com/&mode=native
-// 
+//
 // Response:
-// 
+//
 // > <html>...</html>
-// 
+//
 // Topic: Notes
-// 
+//
 // * Assumes magic_quotes_gpc = Off in php.ini
-// 
+//
 // Topic: Configuration Options
-// 
+//
 // These variables can be manually edited in the PHP file if necessary.
-// 
+//
 //	 $enable_jsonp - Only enable <JSONP requests> if you really need to. If you
 //		 install this script on the same server as the page you're calling it
 //		 from, plain JSON will work. Defaults to false.
@@ -139,7 +139,7 @@
 //		 ensure that it is valid. This setting only needs to be used if either
 //		 $enable_jsonp or $enable_native are enabled. Defaults to '/.*/' which
 //		 validates all URLs.
-// 
+//
 // ############################################################################
 
 // Include our configuration file
@@ -158,7 +158,7 @@ function isValidPort($url) {
 
 function isValidHost( $url = null ){
 	global $kConf;
-	
+
 	if(!$url)
 		return false;
     $scheme = parse_url($url, PHP_URL_SCHEME);
@@ -189,6 +189,15 @@ function isValidHost( $url = null ){
 	return in_array($host, $whitelist);
 }
 
+function headerCallback($ch, $header) {
+    if (strpos(strtolower($header), 'location:') !== false) {
+        $url = trim(substr(trim($header), 10));
+        if (!isValidHost($url))
+            return 0;
+    }
+    return strlen($header);
+}
+
 // Change these configuration options if needed, see above descriptions for info.
 $enable_jsonp = true;
 $enable_native = false;
@@ -208,35 +217,35 @@ $url = isset($_GET['url']) ? urldecode( $_GET['url'] ) : false;
 $url = str_replace(" ","%20",$url);
 $header ='';
 if ( !$url ) {
-	
+
 	// Passed url not specified.
 	$contents = 'ERROR: url not specified';
 	$status = array( 'http_code' => 'ERROR' );
-	
+
 } else if ( !preg_match( $valid_url_regex, $url ) ) {
-	
+
 	// Passed url doesn't match $valid_url_regex.
 	$contents = 'ERROR: invalid url';
 	$status = array( 'http_code' => 'ERROR' );
-	
+
 } else if( !isValidHost($url) || !isValidPort($url) ) {
 	// URL host is not whitelisted
 	$contents = 'ERROR: URL not in Kaltura domain whitelist [DENIED]';
 	$status = array( 'http_code' => 'ERROR' );
 } else {
 	$ch = curl_init( $url );
-	
-	// Always follow redirects: 
+
+	// Always follow redirects:
 	curl_setopt( $ch, CURLOPT_AUTOREFERER, true );
-		
-	// Add a total curl execute timeout of 10 seconds: 
+
+	// Add a total curl execute timeout of 10 seconds:
 	curl_setopt( $ch, CURLOPT_TIMEOUT, 10 );
-	
+
 	if ( strtolower($_SERVER['REQUEST_METHOD']) == 'post' ) {
 		curl_setopt( $ch, CURLOPT_POST, true );
 		curl_setopt( $ch, CURLOPT_POSTFIELDS, $_POST );
 	}
-	
+
 	if ( isset( $_GET['send_cookies'] ) || $proxyCookies ) {
 		$cookie = array();
 		foreach ( $_COOKIE as $key => $value ) {
@@ -247,22 +256,23 @@ if ( !$url ) {
 			$cookie[] = SID;
 		}
 		$cookie = implode( '; ', $cookie );
-		
+
 		curl_setopt( $ch, CURLOPT_COOKIE, $cookie );
 	}
-	
+
+    curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'headerCallback');
 	curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
 	curl_setopt( $ch, CURLOPT_HEADER, true );
 	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 
-	// Forward the client ip for GeoLookup: ( geo-lookup server hopefully is not dumb and uses X-Forwarded-For ) 
+	// Forward the client ip for GeoLookup: ( geo-lookup server hopefully is not dumb and uses X-Forwarded-For )
 	curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 		'X-Forwarded-For: ' . $_SERVER['REMOTE_ADDR'],
 		// Add kaltura x-remote-address headers:
 		$requestHelper->getRemoteAddrHeader(),
 		'Expect:' // used to ignore "100 Continue Header" when using POST
 	));
-	
+
 	// Forward the user agent:
 	curl_setopt( $ch, CURLOPT_USERAGENT, isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '' );
 	$parts = preg_split( '/([\r\n][\r\n])\\1/', curl_exec( $ch ), 2 );
@@ -276,11 +286,11 @@ if ( !$url ) {
 	list( $header, $contents ) = $parts;
 	}
 	$status = curl_getinfo( $ch );
-	
+
 	curl_close( $ch );
 }
 
-// check for empty contents: 
+// check for empty contents:
 if( trim( $contents ) == '' ){
 	$status = array( 'http_code' => 'ERROR' );
 	$contents = 'ERROR: empty response';
@@ -303,25 +313,25 @@ if ( isset( $_GET['mode'] ) == 'native' ) {
 		$contents = 'ERROR: invalid mode';
 		$status = array( 'http_code' => 'ERROR' );
 	}
-	
+
 	// Propagate headers to response.
 	foreach ( $header_text as $header ) {
 		if ( preg_match( '/^(?:Content-Type|Content-Language|Set-Cookie):/i', $header ) ) {
 			header( $header );
 		}
 	}
-	
+
 	print $contents;
-	
+
 } else {
-	
+
 	// $data will be serialized into JSON data.
 	$data = array();
-	
+
 	// Propagate all HTTP headers into the JSON data object.
 	if ( isset( $_GET['full_headers'] ) || $enable_fullHeaders ) {
 		$data['headers'] = array();
-		
+
 		foreach ( $header_text as $header ) {
 			preg_match( '/^(.+?):\s+(.*)$/', $header, $matches );
 			if ( $matches ) {
@@ -329,11 +339,11 @@ if ( isset( $_GET['mode'] ) == 'native' ) {
 			}
 		}
 	}
-	
+
 	// Check if the content type matches filters
 	if( $contentType_regex && $status['http_code'] != 'ERROR' ){
 			$contentType ='';
-			// Servers don't have consistent case for content-type: 
+			// Servers don't have consistent case for content-type:
 			foreach( $data['headers'] as $headKey=>$headValue){
 				if( strtolower( $headKey) == 'content-type' ){
 					$contentType =	$headValue;
@@ -341,10 +351,10 @@ if ( isset( $_GET['mode'] ) == 'native' ) {
 			}
 		if( 0 == preg_match( $contentType_regex, $contentType ) ){
 			$status = array( 'http_code' => 'ERROR');
-			$contents = "Error invalid content type did not match: " . str_replace( '/', '' , $contentType_regex);		
+			$contents = "Error invalid content type did not match: " . str_replace( '/', '' , $contentType_regex);
 		}
 	}
-	
+
 	// Check if we should validate the xml ( by parsing it with simple xml )
 	if( $validateXML && $status['http_code'] != 'ERROR' ){
 		// OpenX ad Server hack / work around :: Should be utf-8 not UTF_8 !
@@ -355,15 +365,15 @@ if ( isset( $_GET['mode'] ) == 'native' ) {
 			$contents = "XML failed to validate";
 		}
 	}
- 
-	// Check if there is extra header info leading up to the xml: 
+
+	// Check if there is extra header info leading up to the xml:
 	if( strpos( $contents, '<?xml' ) !== false &&	strpos( $contents, '<?xml' ) != 0 ){
-		// strip all leading conetnt 
+		// strip all leading conetnt
 		$contents = trim( substr( $contents, strpos( $contents, '<?xml' ) ) );
 	}
-	
+
 	//$encodeCDATASections = false;
-	// Check if we should encode CDATA sections: 
+	// Check if we should encode CDATA sections:
 	if( $encodeCDATASections ){
 		$contents = preg_replace_callback('/\<\!\[CDATA\[(.*?)\]\]>/',
 	 		create_function(
@@ -371,8 +381,8 @@ if ( isset( $_GET['mode'] ) == 'native' ) {
 				'return htmlentities( $matches[1] );'
 	 		), $contents );
 	}
-	
-	
+
+
 	// Propagate all cURL request / response info to the JSON data object.
 	if ( isset( $_GET['full_status'] ) ) {
 		$data['status'] = $status;
@@ -380,18 +390,18 @@ if ( isset( $_GET['mode'] ) == 'native' ) {
 		$data['status'] = array();
 		$data['status']['http_code'] = $status['http_code'];
 	}
-	
+
 	// Set the JSON data object contents, decoding it from JSON if possible.
 	$data['contents'] = $contents;
-	
-	// Generate appropriate content-type header.	
+
+	// Generate appropriate content-type header.
 	if( isset(	$_SERVER['HTTP_X_REQUESTED_WITH'] ) ){
 		$is_xhr = ( strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) == 'xmlhttprequest' );
 	} else {
 		$is_xhr = false;
 	}
 	header( 'Content-type: application/' . ( $is_xhr ? 'json' : 'x-javascript' ) );
-	
+
 	// Get JSONP callback.
 	$jsonp_callback = $enable_jsonp && isset($_GET['callback']) ? $_GET['callback'] : null;
 
