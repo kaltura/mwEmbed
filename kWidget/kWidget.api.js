@@ -225,9 +225,11 @@ kWidget.api.prototype = {
 		}
 		xmlhttp.open("POST", url, true);
 		if (headers) {
-			$.each(headers, function (name, value) {
-				xmlhttp.setRequestHeader(name, value);
-			});
+			for (var key in headers) {
+				if (headers.hasOwnProperty(key)) {
+					xmlhttp.setRequestHeader(key, headers[key]);
+				}
+			}
 			xmlhttp.send( param );
 		} else {
 			xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
