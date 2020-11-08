@@ -191,7 +191,7 @@ function isValidHost( $url = null ){
 
 function headerCallback($ch, $header) {
     if (strpos(strtolower($header), 'location:') !== false) {
-        $url = trim(substr(trim($header), 10));
+        $url = trim(substr(trim($header), 9));
         if (!isValidHost($url))
             return 0;
     }
