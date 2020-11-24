@@ -1,4 +1,4 @@
-(function(mw, $) {
+(function(mw) {
     "use strict";
 
     var Peer5Plugin = mw.KBasePlugin.extend({
@@ -7,31 +7,41 @@
         setup: function() {
             var thi$ = this;
             var completed = 0;
+            var finished = false;
 
-            var apiKey = this.getConfig('apiKey');
+            var apiKey = this.getConfig('apiKey') || this.getConfig('apikey');
             if (!apiKey) {
                 mw.log('Peer5: A required config attribute "apiKey" is missing. Plugging out.');
                 return this.initCompleteCallback()
             }
 
-            function setupCompleteCallback() {
+            var scripts = [
+                'https://api.peer5.com/peer5.js?id=' + apiKey,
+                'https://api.peer5.com/peer5.kaltura.plugin.js'
+            ];
+
+            function onScriptLoad() {
                 completed++;
-                if (completed < 2) return;
+                if (finished || completed < scripts.length) return;
+                finished = true;
+                mw.log('Peer5: Successfully loaded scripts, Peer5 is integrated.');
                 thi$.initCompleteCallback();
             }
 
-            $.ajax({dataType: 'script', url: 'https://api.peer5.com/peer5.js?id=' + apiKey, cache: true})
-                .done(setupCompleteCallback)
-                .fail(function() {
-                    mw.log('Peer5: Error loading peer5 client. Plugging out.');
-                    thi$.initCompleteCallback()
-                });
-            $.ajax({dataType: 'script', url: 'https://api.peer5.com/peer5.kaltura.plugin.js', cache: true})
-                .done(setupCompleteCallback)
-                .fail(function() {
-                    mw.log('Peer5: Error loading peer5.kaltura.plugin Plugging out.');
-                    thi$.initCompleteCallback()
-                });
+            function onScriptError() {
+                if (finished) return;
+                finished = true;
+                mw.log('Peer5: Failed loading scripts, continuing without Peer5.');
+                thi$.initCompleteCallback();
+            }
+
+            scripts.forEach(function(src) {
+                var s = document.createElement('script');
+                s.src = src;
+                s.onload = onScriptLoad;
+                s.onerror = onScriptError;
+                (document.body || document.head).appendChild(s);
+            });
         }
     });
 
