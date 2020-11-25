@@ -9,7 +9,7 @@ require_once(dirname(__FILE__) . '/kBaseCacheWrapper.php');
 class kMemcacheCacheWrapper extends kBaseCacheWrapper
 {
 	const MAX_CONNECT_ATTEMPTS = 4;
-	
+
 	const COMPRESSED = 1;
 
 	protected $hostName;
@@ -19,7 +19,7 @@ class kMemcacheCacheWrapper extends kBaseCacheWrapper
 	protected $memcache = null;
 	protected $gotError = false;
 	protected $connectAttempts = 0;
-	
+
 	/**
 	 * @param string $hostName
 	 * @param int $port
@@ -32,21 +32,21 @@ class kMemcacheCacheWrapper extends kBaseCacheWrapper
 		{
 			return false;
 		}
-		
+
 		$this->hostName = $hostName;
 		$this->port = $port;
 		$this->flags = ($flags == self::COMPRESSED ? MEMCACHE_COMPRESSED : 0);
-		
+
 		return $this->reconnect();
 	}
-	
+
 	/**
 	 * @return bool false on error
 	 */
 	protected function reconnect()
 	{
 		$this->memcache = null;
-		
+
 		if ($this->connectAttempts >= self::MAX_CONNECT_ATTEMPTS)
 		{
 			return false;
@@ -57,13 +57,13 @@ class kMemcacheCacheWrapper extends kBaseCacheWrapper
 		while ($this->connectAttempts < self::MAX_CONNECT_ATTEMPTS)
 		{
 			$this->connectAttempts++;
-			
-			$memcache = new Memcache;	
-			
+
+			$memcache = new Memcache;
+
 			//$memcache->setOption(Memcached::OPT_BINARY_PROTOCOL, true);			// TODO: enable when moving to memcached v1.3
 
 			$curConnStart = microtime(true);
-			$connectResult = @$memcache->connect($this->hostName, $this->port);
+			$connectResult = @$memcache->pconnect($this->hostName, $this->port);
 			if ($connectResult || microtime(true) - $curConnStart < .5)		// retry only if there's an error and it's a timeout error
 				break;
 
@@ -77,11 +77,11 @@ class kMemcacheCacheWrapper extends kBaseCacheWrapper
 			self::safeLog("failed to connect to memcache");
 			return false;
 		}
-		
+
 		$this->memcache = $memcache;
 		return true;
 	}
-	
+
 	/**
 	 * @param int $errno
 	 * @param string $errstr
@@ -93,7 +93,7 @@ class kMemcacheCacheWrapper extends kBaseCacheWrapper
 		$this->gotError = true;
 		return false;
 	}
-	
+
 	/**
 	 * @param string $methodName
 	 * @param array $params
@@ -104,22 +104,22 @@ class kMemcacheCacheWrapper extends kBaseCacheWrapper
 		while ($this->memcache)
 		{
 			$this->gotError = false;
-			
+
 			set_error_handler(array($this, 'errorHandler'));
 			$result = call_user_func_array(array($this->memcache, $methodName), $params);
 			restore_error_handler();
-			
+
 			if (!$this->gotError)
 			{
 				return $result;
 			}
-			
+
 			$this->reconnect();
 		}
-		
+
 		return false;
 	}
-	
+
 	/* (non-PHPdoc)
 	 * @see kBaseCacheWrapper::get()
 	 */
@@ -127,7 +127,7 @@ class kMemcacheCacheWrapper extends kBaseCacheWrapper
 	{
 		return $this->callAndDetectErrors('get', array($key));
 	}
-	
+
 	/* (non-PHPdoc)
 	 * @see kBaseCacheWrapper::set()
 	 */
@@ -151,7 +151,7 @@ class kMemcacheCacheWrapper extends kBaseCacheWrapper
 	{
 		return $this->callAndDetectErrors('delete', array($key));
 	}
-	
+
 	/* (non-PHPdoc)
 	 * @see kBaseCacheWrapper::increment()
 	 */
@@ -159,7 +159,7 @@ class kMemcacheCacheWrapper extends kBaseCacheWrapper
 	{
 		return $this->callAndDetectErrors('increment', array($key, $delta));
 	}
-	
+
 	/* (non-PHPdoc)
 	 * @see kBaseCacheWrapper::decrement()
 	 */

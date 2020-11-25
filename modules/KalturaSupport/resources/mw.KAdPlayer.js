@@ -1282,6 +1282,7 @@ mw.KAdPlayer.prototype = {
 			});
 			vid.src = source.getSrc();
 			vid.load();
+			vid.volume = _this.embedPlayer.volume;
 			var playPromise = vid.play();
 			if (playPromise) {
 				playPromise.catch(doneCallback);

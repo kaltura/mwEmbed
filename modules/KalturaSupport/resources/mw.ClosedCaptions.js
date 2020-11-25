@@ -592,6 +592,10 @@
 
 			this.bind( 'onChangeMediaDone', function () {
 				_this.embedPlayer.getInterface().find( 'track').remove();
+				//display captions when media is changing without user interaction and displayCaptions is set to true
+				if (_this.isCaptionsShown) {
+					_this.setConfig('displayCaptions', true);
+				}
 			});
 
 			// Try to insert the track source:

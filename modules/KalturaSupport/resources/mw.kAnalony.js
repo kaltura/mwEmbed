@@ -8,7 +8,8 @@
 
 		defaultConfig: {
 			id3TagMaxDelay: 20000,
-			persistentSessionId : null
+			persistentSessionId : null,
+			requestMethod: 'GET'
 		},
 		tabMode : {
 			HIDDEN: 1,
@@ -794,7 +795,7 @@
 			this.eventIndex += 1;
 			this.embedPlayer.triggerHelper( 'analyticsEvent' , statsEvent);
 			this.log("Trigger analyticsEvent type = "+statsEvent.eventType);
-			this.kClient.doRequest( eventRequest, function(data){
+			var callback = function(data){
 				try {
 					if (typeof data == "object") {
 						var parsedData = data;
@@ -812,8 +813,30 @@
 				}catch(e){
 					mw.log("Failed sync time from server");
 				}
-			}, true);
-        },
+			};
+			if (config.requestMethod.toUpperCase() === 'POST') {
+				var postPayload = {};
+				$.extend(postPayload, eventRequest);
+				$.each(['service', 'action', 'eventType', 'partnerId', 'entryId', 'sessionId'], function (index, param) {
+					delete postPayload[param];
+				});
+				if( this.kClient.disableCache === true ) {
+					postPayload['nocache'] = 'true';
+				}
+				$.extend( postPayload, this.kClient.baseParam );
+				postPayload['format'] = 1;
+				this.kClient.xhrPost( this.buildPostUrl(eventRequest) ,JSON.stringify(postPayload), callback, { 'Content-Type': 'application/json'});
+			} else {
+				this.kClient.doRequest( eventRequest, callback, true);
+			}
+		},
+
+		buildPostUrl: function(eventParams) {
+			var urlParamsArr = $.map(['action', 'eventType', 'partnerId', 'entryId', 'sessionId'], function (key) {
+				return key + '=' + eventParams[key];
+			});
+			return this.kClient.getApiUrl(eventParams['service'] + '&' + urlParamsArr.join('&') );
+		},
 
         maybeAddPlaylistId: function (statsEvent) {
             var plugins = this.embedPlayer.plugins;

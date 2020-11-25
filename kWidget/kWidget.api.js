@@ -215,7 +215,7 @@ kWidget.api.prototype = {
 	/**
 	 * Do an xhr request
 	 */
-	xhrPost: function( url, param, callback ){
+	xhrPost: function( url, param, callback, headers ){
 		var _this = this;
 		var xmlhttp = new XMLHttpRequest();
 		xmlhttp.onreadystatechange = function(){
@@ -224,8 +224,17 @@ kWidget.api.prototype = {
 			}
 		}
 		xmlhttp.open("POST", url, true);
-		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		xmlhttp.send( kWidget.param( param ) );
+		if (headers) {
+			for (var key in headers) {
+				if (headers.hasOwnProperty(key)) {
+					xmlhttp.setRequestHeader(key, headers[key]);
+				}
+			}
+			xmlhttp.send( param );
+		} else {
+			xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			xmlhttp.send( kWidget.param( param ) );
+		}
 	},
 	handleKsServiceRequest: function( requestObject ){
 		var param = {};
