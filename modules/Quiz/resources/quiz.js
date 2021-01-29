@@ -1116,7 +1116,7 @@
                     }
                     $(".ftr-right").html(skipTxt).on('click', function () {
                         mw.log("Quiz: Skip/Continue clicked");
-                        if(_this.isReflectionPoint($.cpObject.cpArray[questionNr])) {
+                        if(_this.isReflectionPoint($.cpObject.cpArray[questionNr]) && !$.cpObject.cpArray[questionNr].isAnswerd) {
                             mw.log("Quiz: reflection point - Skip/Continue clicked");
                             $(this).off(); // disable 2nd click to prevent double submission
                             // only on reflection point - when clicking on continue - submit the question and wait as all other questions
