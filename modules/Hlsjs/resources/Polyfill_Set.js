@@ -12,6 +12,7 @@
  * - Set, License: CC0 */
 
 (function(undefined) {
+  if (typeof window.Set === 'function') return;
 
 // Object.keys
   Object.keys = (function() {
