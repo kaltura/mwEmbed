@@ -133,7 +133,7 @@
 						}
 					};
 					if (mw.isChrome()){
-						defaultConfig.shakaConfig.drm.advanced = {
+						defaultConfig.shakaConfig.advanced = {
 							'com.widevine.alpha': {
 								'videoRobustness': 'SW_SECURE_CRYPTO',
 								'audioRobustness': 'SW_SECURE_CRYPTO'
