@@ -187,14 +187,15 @@
 
 				this.registerShakaEvents();
 
-				var unbindAndLoadManifest = function () {
-					this.unbind("firstPlay");
+				var unbindAndLoadManifest = function (callPlay) {
+					this.unbind("prePlayAction");
 					this.unbind("seeking");
-					this.loadManifest();
+					this.loadManifest(callPlay);
 				}.bind(this);
 
-				this.bind("firstPlay", function () {
-					unbindAndLoadManifest();
+				this.bind("prePlayAction", function (e, data) {
+					unbindAndLoadManifest(true);
+					data.allowPlayback = false;
 				});
 
 				this.bind("seeking", function () {
@@ -207,7 +208,7 @@
 				this._shaka.addEventListener('adaptation', this.onAdaptation.bind(this));
 			},
 
-			loadManifest: function () {
+			loadManifest: function (callPlay) {
 				var _this = this;
 				var selectedSource = this.getPlayer().getSrc();
 				if (!this.manifestLoaded) {
@@ -224,6 +225,10 @@
 									// This runs if the asynchronous load is successful.
 									_this.log('The manifest has been loaded');
 									_this.addTracks();
+									if (callPlay) {
+										_this.getPlayer().play();
+									}
+
 								}).catch(_this.onError.bind(_this));  // onError is executed if the asynchronous load fails.
 							}
 						);
