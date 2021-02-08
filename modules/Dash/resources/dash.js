@@ -373,7 +373,7 @@
 			 */
 			playerSwitchSource: function (src, switchCallback, doneCallback) {
 				var loadManifestAfterSwitchSource = function () {
-					this.unbind("firstPlay");
+					this.unbind("prePlayAction");
 					this.unbind("seeking");
 					this.loadManifest();
 					this.getPlayer().play();
