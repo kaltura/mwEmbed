@@ -608,7 +608,7 @@
 			if (mw.getConfig('EmbedPlayer.HidePosterOnStart') === true) {
 				return;
 			}
-			if (this.getPlayerElement()) {
+			if (this.getPlayerElement() && !this.isAudio()) {
 				$(this.getPlayerElement()).attr('poster', src);
 			}
 		},
