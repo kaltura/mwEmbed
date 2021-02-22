@@ -380,7 +380,7 @@
 			// update playlist names if set in Flashvars
 			for (var i = 0; i < this.playlistSet.length; i++) {
 				if (this.getConfig('kpl' + i + 'Name')) {
-					this.playlistSet[i].name = this.getConfig('kpl' + i + 'Name');
+					this.playlistSet[i].name = kWidget.sanitize(this.getConfig('kpl' + i + 'Name'));
 				}
 			}
 		},
