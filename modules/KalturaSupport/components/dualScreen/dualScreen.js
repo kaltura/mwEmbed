@@ -272,10 +272,12 @@
 							// Added this in order to remove the Embedded Captions that are showing on the second screen
 							// As the HLSjs is only disabling it for the main player
 							if (!_this.embedPlayer.getKalturaConfig('closedCaptions', 'showEmbeddedCaptions')) {
-								var vid = _this.secondPlayer.playerElement;
-								var textTracks = vid.textTracks;
-								for (var i=0; i < textTracks.length; i++){
-									textTracks[i].mode = "disabled";
+								var vid = _this.secondPlayer && _this.secondPlayer.playerElement;
+								if (vid) {
+									var textTracks = vid.textTracks;
+									for (var i=0; i < textTracks.length; i++){
+										textTracks[i].mode = "disabled";
+									}
 								}
 							}
 						}
