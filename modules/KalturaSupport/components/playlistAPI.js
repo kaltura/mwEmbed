@@ -255,29 +255,31 @@
 			}
 
 			$(this.embedPlayer).bind('mediaListLayoutReady', function (event) {
-				_this.embedPlayer.triggerHelper('playlistReady');
-				_this.setMultiplePlayLists();
-				_this.getComponent().find(".k-description-container").dotdotdot();
-				// keep aspect ratio of thumbnails - crop and center
-				if ( _this.getConfig("resizeThumbnails") ){
-					_this.getComponent().find('.k-thumb').not('.resized').each(function () {
-						var img = $(this)[0];
-						img.onload = function () {
-							if (img.naturalWidth / img.naturalHeight > 16 / 9) {
-								$(this).height(_this.getConfig('thumbnailHeight'));
-								$(this).width(img.naturalHeight * 16 / 9);
-								var deltaWidth = ($(this).width() - _this.getConfig('thumbnailWidth')) / 2 * -1;
-								$(this).css("margin-left", deltaWidth)
-							}
-							if (img.naturalWidth / img.naturalHeight < 16 / 9) {
-								$(this).width(_this.getConfig('thumbnailWidth'));
-								$(this).height(img.naturalWidth * 9 / 16);
-								var deltaHeight = ($(this).height() - _this.getConfig('thumbnailHeight')) / 2 * -1;
-								$(this).css("margin-top", deltaHeight)
-							}
-							$(this).addClass('resized');
-						};
-					});
+				if (_this.mediaList.length > 0) {
+					_this.embedPlayer.triggerHelper('playlistReady');
+					_this.setMultiplePlayLists();
+					_this.getComponent().find(".k-description-container").dotdotdot();
+					// keep aspect ratio of thumbnails - crop and center
+					if ( _this.getConfig("resizeThumbnails") ){
+						_this.getComponent().find('.k-thumb').not('.resized').each(function () {
+							var img = $(this)[0];
+							img.onload = function () {
+								if (img.naturalWidth / img.naturalHeight > 16 / 9) {
+									$(this).height(_this.getConfig('thumbnailHeight'));
+									$(this).width(img.naturalHeight * 16 / 9);
+									var deltaWidth = ($(this).width() - _this.getConfig('thumbnailWidth')) / 2 * -1;
+									$(this).css("margin-left", deltaWidth)
+								}
+								if (img.naturalWidth / img.naturalHeight < 16 / 9) {
+									$(this).width(_this.getConfig('thumbnailWidth'));
+									$(this).height(img.naturalWidth * 9 / 16);
+									var deltaHeight = ($(this).height() - _this.getConfig('thumbnailHeight')) / 2 * -1;
+									$(this).css("margin-top", deltaHeight)
+								}
+								$(this).addClass('resized');
+							};
+						});
+					}
 				}
 			});
 
