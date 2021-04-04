@@ -294,7 +294,9 @@
 			});
 
 			// Add the image before the video element or before the playerInterface
-			$( this ).html( $image );
+			if (!this.imageLoaded) {
+				$( this ).html( $image );
+			}
 
 		},
 		/**
