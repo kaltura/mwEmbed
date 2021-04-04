@@ -294,7 +294,7 @@
 			});
 
 			// Add the image before the video element or before the playerInterface
-			if (!_this.imageLoaded) {
+			if (!this.imageLoaded) {
 				$( this ).html( $image );
 			}
 
