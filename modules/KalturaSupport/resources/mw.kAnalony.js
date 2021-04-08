@@ -445,7 +445,7 @@
 		},
 		updateTimeStats: function() {
 			var _this = this;
-			var percent = parseFloat((this.embedPlayer.currentTime / this.embedPlayer.duration).toFixed(2));
+			var percent = this.embedPlayer.currentTime / this.embedPlayer.duration;
 			var playerEvent = this.PlayerEvent;
 			if (!this.embedPlayer.isLive()){
 				this.calculatePlayTimeSum();
@@ -465,7 +465,7 @@
 					_this._p75Once = true;
 					_this.embedPlayer.triggerHelper( "thirdQuartile" );
 					_this.sendAnalytics(playerEvent.PLAY_75PERCENT);
-				} else if(  !_this._p100Once && percent === 1) {
+				} else if(  !_this._p100Once && (Math.floor(this.embedPlayer.duration - this.embedPlayer.currentTime) === 0)) {
 					_this._p100Once = true;
 					_this.sendAnalytics(playerEvent.PLAY_100PERCENT);
 				}
