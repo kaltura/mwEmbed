@@ -465,7 +465,7 @@
 					_this._p75Once = true;
 					_this.embedPlayer.triggerHelper( "thirdQuartile" );
 					_this.sendAnalytics(playerEvent.PLAY_75PERCENT);
-				} else if(  !_this._p100Once && percent >= .99) {
+				} else if(  !_this._p100Once && (Math.floor(this.embedPlayer.duration - this.embedPlayer.currentTime) === 0)) {
 					_this._p100Once = true;
 					_this.sendAnalytics(playerEvent.PLAY_100PERCENT);
 				}
