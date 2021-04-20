@@ -777,9 +777,9 @@
 		getPlaylistTitle: function(string){
 			var url = this.getConfig("playlistUrl");
 			if(url){
-				return "<a href='"+url+"' target='"+this.getConfig("playlistUrlTarget")+"'>" + string + "</a>";
+				return "<a href='"+url+"' target='"+this.getConfig("playlistUrlTarget")+"'>" + kWidget.sanitize(string) + "</a>";
 			}
-			return string;
+			return kWidget.sanitize(string);
 		}
 
 	})
