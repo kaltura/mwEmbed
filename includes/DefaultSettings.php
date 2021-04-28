@@ -124,7 +124,7 @@ $wgExternalPlayersSupportedTypes = array('YouTube');
 
 //Embedded services
 //To enable service re routing for entryResult calls
-$wgEnableKalturaEmbedServicesRouting = true;
+$wgEnableKalturaEmbedServicesRouting = false;
 
 // To include signed headers with user IPs for IP restriction lookups, input a salt string for
 // $wgKalturaRemoteAddressSalt configuration option.
