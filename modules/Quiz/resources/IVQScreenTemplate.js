@@ -139,8 +139,8 @@
                     '   <div class="title-text padding20"></div>'+
                     '   <div class="sub-text margin-top4"></div>'+
                     '   <div class="completed-BottonContainer">'+
-                    '       <div class="review-button button-box-attr font-Lato2" tabindex="5" role="button" title="review your answers"></div>'+
-                    '       <div class="submit-button button-box-attr font-Lato2" tabindex="5" role="button" title="Submit your answers"></div>'+
+                    '       <div class="review-button button-box-attr font-Lato2" tabindex="5" role="button" title="'+gM('mwe-review-answers-tooltip')+'"></div>'+
+                    '       <div class="submit-button button-box-attr font-Lato2" tabindex="5" role="button" title="'+gM('mwe-submit-your-answers-tooltip')+'"></div>'+
                     '   </div>'+
                     '</div>').fadeIn( "fast" );
             },
