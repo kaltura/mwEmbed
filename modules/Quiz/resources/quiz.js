@@ -332,9 +332,9 @@
                 });
              
             // add title to ivq welcome container for accessibility
-            $(".ivqContainer").attr("title", "Kaltura Video Quiz "+_this.embedPlayer.evaluate( '{mediaProxy.entry.name}' ));
+            $(".ivqContainer").attr("title", gM('mwe-video-quiz-container-tooltip')+" "+_this.embedPlayer.evaluate( '{mediaProxy.entry.name}' ));
             // make welcome "continue" button accessible
-            $(".confirm-box").html(gM('mwe-quiz-continue')).show().attr("tabindex", 5).attr("title", "Click to start the quiz").on('keydown', _this.keyDownHandler)
+            $(".confirm-box").html(gM('mwe-quiz-continue')).show().attr("tabindex", 5).attr("title", gM('mwe-start-quiz-tooltip')).on('keydown', _this.keyDownHandler)
                 .on('click', function () {
                     _this.KIVQModule.checkIfDone(-1);
                 }).focus().attr('id', 'welcome-continue-button');
@@ -477,7 +477,7 @@
                 // set answer text in paragraph and set its uniuqe ID
                 div.find('p').text(value).attr('id',answerId);
                 // make answer an accessible element
-                div.attr('tabindex', 5).attr('role', 'button').attr('title', 'Answer number '+(key+1)).attr('aria-labelledby', answerId);
+                div.attr('tabindex', 5).attr('role', 'button').attr('title', gM('mwe-answer-tooltip')+" "+(key+1)).attr('aria-labelledby', answerId);
                 // add answer to the list of all answers on this question
                 div.appendTo('.answers-container');
             });
@@ -705,17 +705,17 @@
                             _this.KIVQScreenTemplate.tmplReviewAnswer();
                             _this.ssReviewAnswer(parseInt($(this).attr('id')));
                         })
-                        .attr({'tabindex': '5' , 'role': 'button','title': 'click to view the question and your answer'});
+                        .attr({'tabindex': '5' , 'role': 'button','title': gM('mwe-hover-on-question-tooltip')});
 
                         $(document).off('click','.q-box-false:not(.reflection-point-question)')
                         .on('click', '.q-box-false:not(.reflection-point-question)', function () {
                             _this.KIVQScreenTemplate.tmplReviewAnswer();
                             _this.ssReviewAnswer(parseInt($(this).attr('id')));
                         })
-                        .attr({'tabindex': '5' , 'role': 'button','title': 'click to view the question and your answer'})
+                        .attr({'tabindex': '5' , 'role': 'button','title': gM('mwe-hover-on-question-tooltip')})
                 }
                 $('.q-box:not(.reflection-point-question) ,.q-box-false:not(.reflection-point-question)')
-                    .attr({'tabindex': '5' , 'role': 'button','title': 'click to view the question and your answer'})
+                    .attr({'tabindex': '5' , 'role': 'button','title': gM('mwe-hover-on-question-tooltip')})
                     .on('keydown', _this.keyDownHandler);
 
 
@@ -788,7 +788,7 @@
                         _this.embedPlayer.setKDPAttribute('playlistAPI','autoContinue',true);
                     }
                 })
-                .attr({'tabindex': '5','role': 'button','title':'Quiz is done. Click to continue watching the video.'})
+                .attr({'tabindex': '5','role': 'button','title': gM('mwe-quiz-is-done-tooltip')})
                 .focus()
                 .on('keydown', _this.keyDownHandler);
 
@@ -1237,7 +1237,7 @@
             $('.quizDone-cont').attr({
                 'tabindex': 20,
                 'role':'button',
-                'title':'click to end quiz now',
+                'title':gM('mwe-end-quiz-tooltip'),
                 'aria-label':gM('mwe-quiz-submit-button'),
                 'id':'quiz-done-continue-button'
             }).on('keydown', _this.keyDownHandler).focus();
