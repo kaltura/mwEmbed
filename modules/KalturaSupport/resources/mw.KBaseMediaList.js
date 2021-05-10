@@ -144,6 +144,10 @@
 		},
 		// set the play list container according to the selected position
 		getMedialistContainer: function(){
+			if (this.playlistSet.length === 0) {
+				this.$mediaListContainer = $();
+				return this.$mediaListContainer;
+			}
 			if (!this.$mediaListContainer) {
 					if (this.getConfig('onPage')) {
 						var iframeID = this.embedPlayer.id + '_ifp';
