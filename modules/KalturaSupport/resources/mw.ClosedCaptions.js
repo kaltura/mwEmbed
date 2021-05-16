@@ -551,6 +551,8 @@
 					}
 					callback( captions );
 				} );
+			} else {
+				callback([]);
 			}
 		},
 		sortByKey: function ( array, key ) {
