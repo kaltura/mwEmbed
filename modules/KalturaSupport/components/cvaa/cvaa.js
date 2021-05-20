@@ -104,7 +104,15 @@
             "fontStyle": gM('mwe-cvaa-fontStyle'),
             "fontBackground": gM('mwe-cvaa-fontBackgroundColor'),
             "fontOpacity": gM('mwe-cvaa-fontOpacity'),
-            "fontBackgroundOpacity": gM('mwe-cvaa-fontBackgroundOpacity')
+            "fontBackgroundOpacity": gM('mwe-cvaa-fontBackgroundOpacity'),
+            "advancedOptions": gM('mwe-cvaa-advancedOptions'),
+            "customCaptions": gM('mwe-cvaa-customCaptions'),
+            "sizeTitle": gM('mwe-cvaa-sizeTitle'),
+            "colorTitle": gM('mwe-cvaa-colorTitle'),
+            "fontTitle": gM('mwe-cvaa-fontTitle'),
+            "backgroundTitle": gM('mwe-cvaa-backgroundTitle'),
+            "captionsPreview": gM('mwe-cvaa-captionsPreview'),
+            "editCustomCaptions": gM('mwe-cvaa-editCustomCaptions')
         },
         previousScreen: "cvaa-adv",
         currentScreen: "cvaa-adv",
@@ -457,7 +465,7 @@
         initUpdatePreviewBtn: function (cvaaSettings) {
             if (Object.keys(cvaaSettings).length > 1) {
                 this.getPlayer().getInterface().find(".cvaa-adv .custom").show();
-                $(".cvaa-adv .cvaa-adv__cstmoptions-btn").html("Edit custom captions");
+                $(".cvaa-adv .cvaa-adv__cstmoptions-btn").html(this.locale.editCustomCaptions);
             }
             this.getPlayer().getInterface().find(".cvaa-adv .custom").css({
                 'font-family': cvaaSettings.fontFamily,
