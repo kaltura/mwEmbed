@@ -213,14 +213,6 @@
 					'title' => 'Engagement',
 					'desc' => 'On page widgets load the same plugin for both flash and HTML5',
 					'testfiles' => array(
-						'chaptersView' => array(
-							'title' => 'Chapters',
-							'path' => '../kWidget/onPagePlugins/chapters/chaptersView.qunit.html'
-						),
-						'chaptersEdit' => array(
-							'title' => 'Chapters Editor',
-							'path' => '../kWidget/onPagePlugins/chapters/chaptersEdit.qunit.html'
-						),
 						/*'AttracTV' => array(
 							'title' => 'AttracTV',
 							'path' => 'AttracTV/tests/AttracTV.qunit.html'
