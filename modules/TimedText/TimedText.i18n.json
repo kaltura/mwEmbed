@@ -47,7 +47,15 @@
         "mwe-cvaa-fontColor": 			"Font color",
         "mwe-cvaa-fontSize": 			"Font size",
         "mwe-cvaa-fontBackgroundColor":	"Font background color",
-        "mwe-cvaa-fontBackgroundOpacity": "Font background opacity"
+        "mwe-cvaa-fontBackgroundOpacity": "Font background opacity",
+        "mwe-cvaa-advancedOptions": "Advanced options",
+        "mwe-cvaa-customCaptions": "Custom captions",
+        "mwe-cvaa-sizeTitle": "Size",
+        "mwe-cvaa-colorTitle": "Color",
+        "mwe-cvaa-fontTitle": "Font",
+        "mwe-cvaa-backgroundTitle": "Background",
+        "mwe-cvaa-captionsPreview": "Captions preview",
+        "mwe-cvaa-editCustomCaptions": "Edit custom captions"
     },
     "qqq": {
         "mwe-timedtext-stage-transcribe": "Unused at this time.",

@@ -28,7 +28,7 @@
 
 	<!--advanced-->
 	<div class="cvaa-adv cvaa--show">
-		<p class="cvaa-header">Advanced options</p>
+		<p class="cvaa-header"><%=cvaa.locale.advancedOptions%></p>
 		<div class="cvaa-row cvaa-row--center">
 			<% $.each(cvaaOptions.presets, function(idx, property){ %>
 			<div class="cvaa-btn-label">
@@ -46,30 +46,30 @@
 
 	<!--custom-->
 	<div class="cvaa-cstm">
-		<p class="cvaa-header">Custom captions</p>
+		<p class="cvaa-header"><%=cvaa.locale.customCaptions%></p>
 		<div class="cvaa-row cvaa-row--center">
 			<div class="cvaa-btn-label">
 				<button class="cvaa-btn small icvaa-font-size cvaa-cstm__size-btn" aria-label="<%=cvaa.locale.fontSize%>"></button>
-				<span>Size</span>
+				<span><%=cvaa.locale.sizeTitle%></span>
 			</div>
 			<div class="cvaa-btn-label">
 				<button class="cvaa-btn small icvaa-font-color cvaa-cstm__color-btn" aria-label="<%=cvaa.locale.fontColor%>"></button>
-				<span>Color</span>
+				<span><%=cvaa.locale.colorTitle%></span>
 			</div>
 			<div class="cvaa-btn-label">
 				<button class="cvaa-btn small icvaa-font-family cvaa-cstm__font-btn" aria-label="<%=cvaa.locale.fontFamily%>"></button>
-				<span>Font</span>
+				<span><%=cvaa.locale.fontTitle%></span>
 			</div>
 			<div class="cvaa-btn-label">
 				<button class="cvaa-btn small icvaa-font-color cvaa-cstm__bg-btn" aria-label="<%=cvaa.locale.fontBackground%>"></button>
-				<span class="cvaa-cstm__bg-label">Background</span>
+				<span class="cvaa-cstm__bg-label"><%=cvaa.locale.backgroundTitle%></span>
 			</div>
 		</div>
 	</div>
 
 	<!--Size-->
 	<div class="cvaa-size">
-		<p class="cvaa-header">Size</p>
+		<p class="cvaa-header"><%=cvaa.locale.sizeTitle%></p>
 		<div class="cvaa-row cvaa-row--center">
 			<% $.each(cvaaOptions.size, function(idx, property){ %>
 			<div class="cvaa-btn-label">
@@ -84,9 +84,9 @@
 
 	<!--Font-->
 	<div class="cvaa-font">
-		<p class="cvaa-header">Font</p>
+		<p class="cvaa-header"><%=cvaa.locale.fontTitle%></p>
 		<div class="cvaa-row">
-			<span>Font family</span>
+			<span><%=cvaa.locale.fontFamily%></span>
 			<label class="acc-hidden" for="fontFamily"><%=cvaa.locale.fontFamily%></label>
 			<select id="fontFamily" name="cvaa-font" class="cvaa-dropdown cvaa-family">
 				<% $.each(cvaaOptions.family, function(idx, property){ %>
@@ -95,7 +95,7 @@
 			</select>
 		</div>
 		<div class="cvaa-row">
-			<span>Font style</span>
+			<span><%=cvaa.locale.fontStyle%></span>
 			<label class="acc-hidden" for="fontStyle"><%=cvaa.locale.fontStyle%></label>
 			<select id="fontStyle" name="cvaa-style" class="cvaa-dropdown cvaa-style">
 				<% $.each(cvaaOptions.edgeStyle, function(idx, property){ %>
@@ -107,7 +107,7 @@
 
 	<!--Background-->
 	<div class="cvaa-bg">
-		<p class="cvaa-header">Background</p>
+		<p class="cvaa-header"><%=cvaa.locale.backgroundTitle%></p>
 
 		<div class="cvaa-row cvaa-row--center">
 			<div tabindex="0" role="button" class="icvaa-left-arrow cvaa-arrow"></div>
@@ -130,7 +130,7 @@
 
 	<!--Color-->
 	<div class="cvaa-color">
-		<p class="cvaa-header">Color</p>
+		<p class="cvaa-header"><%=cvaa.locale.colorTitle%></p>
 		<div class="cvaa-row cvaa-row--center">
 			<div tabindex="0" role="button" class="icvaa-left-arrow cvaa-arrow"></div>
 			<% $.each(cvaaOptions.color, function(idx, property){ %>
@@ -153,6 +153,6 @@
 
 
 	<div class="cvaa-footer">
-		<span class=" cvaa-footer__preview">Captions preview</span>
+		<span class=" cvaa-footer__preview"><%=cvaa.locale.captionsPreview%></span>
 	</div>
 </div>
