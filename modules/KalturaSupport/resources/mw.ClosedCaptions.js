@@ -775,7 +775,12 @@
 					.css('pointer-events', 'auto')
 					.css('z-index', '3')
 					.css('pointer-events', 'none')
+					.css('position', 'relative')
 				);
+
+			if (this.getConfig('layout') === 'below') {
+				$(caption.content).css('inset', '0px');
+			}
 
 			this.displayTextTarget($textTarget);
 
