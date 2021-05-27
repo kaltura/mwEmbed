@@ -64,7 +64,7 @@
                 _this.KIVQModule = new mw.KIVQModule(embedPlayer, _this);
                 _this.KIVQModule.isKPlaylist = (typeof (embedPlayer.playlist) === "undefined" ) ? false : true;
 
-                if (embedPlayer.kalturaPlayerMetaData.capabilities === "quiz.quiz"){
+                if (embedPlayer.kalturaPlayerMetaData && embedPlayer.kalturaPlayerMetaData.capabilities === "quiz.quiz"){
                     if (embedPlayer.autoplay) {
                         mw.setConfig('autoPlay', false);
                         embedPlayer.autoplay = false;
