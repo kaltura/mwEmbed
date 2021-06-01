@@ -799,7 +799,8 @@ button.qContinue, button.qApplied {
 }
 .gotItBox{
     border-radius: 4px;
-    width: 15vw;
+    padding: 0 4px;
+    min-width: 15vw;
     height: 8vh;
     line-height: 8vh;
     font-weight: 700;
