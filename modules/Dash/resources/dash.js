@@ -133,7 +133,7 @@
 						}
 					};
 					if (mw.isChrome()){
-						defaultConfig.shakaConfig.advanced = {
+						defaultConfig.shakaConfig.drm.advanced = {
 							'com.widevine.alpha': {
 								'videoRobustness': 'SW_SECURE_CRYPTO',
 								'audioRobustness': 'SW_SECURE_CRYPTO'
@@ -187,14 +187,15 @@
 
 				this.registerShakaEvents();
 
-				var unbindAndLoadManifest = function () {
-					this.unbind("firstPlay");
+				var unbindAndLoadManifest = function (callPlay) {
+					this.unbind("prePlayAction");
 					this.unbind("seeking");
-					this.loadManifest();
+					this.loadManifest(callPlay);
 				}.bind(this);
 
-				this.bind("firstPlay", function () {
-					unbindAndLoadManifest();
+				this.bind("prePlayAction", function (e, data) {
+					unbindAndLoadManifest(true);
+					data.allowPlayback = false;
 				});
 
 				this.bind("seeking", function () {
@@ -207,7 +208,7 @@
 				this._shaka.addEventListener('adaptation', this.onAdaptation.bind(this));
 			},
 
-			loadManifest: function () {
+			loadManifest: function (callPlay) {
 				var _this = this;
 				var selectedSource = this.getPlayer().getSrc();
 				if (!this.manifestLoaded) {
@@ -224,6 +225,10 @@
 									// This runs if the asynchronous load is successful.
 									_this.log('The manifest has been loaded');
 									_this.addTracks();
+									if (callPlay) {
+										_this.getPlayer().play();
+									}
+
 								}).catch(_this.onError.bind(_this));  // onError is executed if the asynchronous load fails.
 							}
 						);
@@ -368,7 +373,7 @@
 			 */
 			playerSwitchSource: function (src, switchCallback, doneCallback) {
 				var loadManifestAfterSwitchSource = function () {
-					this.unbind("firstPlay");
+					this.unbind("prePlayAction");
 					this.unbind("seeking");
 					this.loadManifest();
 					this.getPlayer().play();

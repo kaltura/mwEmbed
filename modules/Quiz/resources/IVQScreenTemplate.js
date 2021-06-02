@@ -46,9 +46,11 @@
                     '             </div>' +
                     '            <div class="open-answer-footer">' +
                     '                <div class="open-question-chars"><span class="chars">0</span>/270</div>' +
-                    '                <button id="open-question-clear" tabindex="5" disabled="disabled"></button>' +
-                    '                <button id="open-question-save" tabindex="5" disabled="disabled"></button>' +
-                    '                <button id="open-question-change-answer" tabindex="5"></button>' +
+                    '                <div class="open-question-button-wrapper">' +
+                    '                   <button id="open-question-clear" tabindex="5" disabled="disabled"></button>' +
+                    '                   <button id="open-question-save" tabindex="5" disabled="disabled"></button>' +
+                    '                   <button id="open-question-change-answer" tabindex="5"></button>' +
+                    '                </div>' +
                     '            </div>' +                   
                     '       </div>' +
                     '   </div>' +
@@ -139,8 +141,8 @@
                     '   <div class="title-text padding20"></div>'+
                     '   <div class="sub-text margin-top4"></div>'+
                     '   <div class="completed-BottonContainer">'+
-                    '       <div class="review-button button-box-attr font-Lato2" tabindex="5" role="button" title="review your answers"></div>'+
-                    '       <div class="submit-button button-box-attr font-Lato2" tabindex="5" role="button" title="Submit your answers"></div>'+
+                    '       <div class="review-button button-box-attr font-Lato2" tabindex="5" role="button" title="'+gM('mwe-review-answers-tooltip')+'"></div>'+
+                    '       <div class="submit-button button-box-attr font-Lato2" tabindex="5" role="button" title="'+gM('mwe-submit-your-answers-tooltip')+'"></div>'+
                     '   </div>'+
                     '</div>').fadeIn( "fast" );
             },

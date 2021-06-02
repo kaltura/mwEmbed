@@ -98,7 +98,7 @@ if( $kConf->hasParam('features') ) {
 }
 
 // Allow Iframe to connect remote service
-$wgKalturaAllowIframeRemoteService = true;
+$wgKalturaAllowIframeRemoteService = false;
 
 // Set debug for true (testing only)
 $wgEnableScriptDebug = false;
