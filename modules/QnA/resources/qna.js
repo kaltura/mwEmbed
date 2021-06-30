@@ -524,6 +524,7 @@
 
 				if (!_this.getConfig( 'onPage' )) {
 					_this.getQnaContainer().find(".qnaModuleBackgroundHider").hide();
+					_this.getQnaContainer().find(".qnaModuleBackground").show();
 				}
 				// open the module only if this is the first time
 				if (firstTime) {
