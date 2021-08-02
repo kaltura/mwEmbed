@@ -458,7 +458,9 @@
 				chapterToggle: gM("ks-chapters-toggle-chapter"),
 				slideNumber: gM("ks-chapters-slideNumber"),
 				slideStartTime: gM("ks-chapters-slide-start-time"),
-				slideDuration: gM("ks-chapters-slide-duration")
+				slideDuration: gM("ks-chapters-slide-duration"),
+				chapter: gM("ks-chapters-chapter"),
+				slide: gM("ks-chapters-slide")
 
 			};
 			return metaData;

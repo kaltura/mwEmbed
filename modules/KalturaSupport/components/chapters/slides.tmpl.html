@@ -1,4 +1,6 @@
 <li class="mediaBox slideBox <% if (mediaItem.chapterNumber !== -1){%>collapsed<%}%>"
+    role="button"
+    aria-label="<%=meta.titles.slide%> - <%=mediaItem.description%>"
     data-chapter-index="<%=mediaItem.chapterNumber%>"
     data-slide-index="<%=mediaItem.slideNumber%>"
     data-box-type="<%=mediaItem.type%>"
