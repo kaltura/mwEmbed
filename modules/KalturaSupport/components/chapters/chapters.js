@@ -1296,6 +1296,19 @@
 					}
 				}
 			});
+			this.handleHomeEndKeys = function (e) {
+				if(e.keyCode === 35) {
+					// end key pressed
+					e.stopPropagation();
+					this.getMediaListDomElements().filter( ".chapterBox" ).last().focus();
+				}
+				if(e.keyCode === 36) {
+					// home key pressed
+					e.stopPropagation();
+					this.getMediaListDomElements().filter( ".chapterBox" ).first().focus();
+				}
+			};
+
 			this.onItemKey = function (e) {
 				var _this = this;
                 if(e.keyCode === 13){
@@ -1313,10 +1326,12 @@
             };
 
 			var mediaBoxes = this.getMediaListDomElements();
-			mediaBoxes.on('mousedown mouseup mouseout', function(){
-				this.blur();
-			})
-			.on('keyup', $.proxy(this.onItemKey , this));
+			mediaBoxes
+				.on('mousedown mouseup mouseout', function(){
+					this.blur();
+				})
+				.on('keydown', $.proxy(this.handleHomeEndKeys, this))
+				.on('keyup', $.proxy(this.onItemKey , this));
 
 			this.getComponent().find(".slideBoxToggle")
 					.off("click").on("click", function(e){

@@ -20,6 +20,17 @@
 .searchFormWrapper :-moz-placeholder {
     color: #595959;
 }
+.sideBarContainer.openBtn .chapters {
+    visibility: visible;
+}
+.sideBarContainer:not(.openBtn) .chapters {
+	visibility: hidden;
+	-webkit-transition: visibility 0.3s;
+	-moz-transition: visibility 0.3s;
+	-o-transition: visibility 0.3s;
+	-ms-transition: visibility 0.3s;
+	transition: visibility 0.3s;
+}
 .chapters .unselectable {
     -moz-user-select: -moz-none;
     -khtml-user-select: none;
