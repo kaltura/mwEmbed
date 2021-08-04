@@ -845,7 +845,6 @@
                         }
 					} )
 					.on( "focus", function () {
-                        _this.getPlayer().triggerHelper("openSideBarContainer");
 						_this.getPlayer().triggerHelper( "onDisableKeyboardBinding" );
 						//On each focus render width of dropdown menu
 						searchBoxWrapper.find(".tt-dropdown-menu" ).width(searchFormWrapper.width());
@@ -1001,12 +1000,10 @@
 				this.transitionsToBeFired = slidesSearchResults.length;
 				slidesSearchResults.addClass("collapsed");
 				mediaBoxes.filter(".chapterBox" ).addClass( "resultNoMatch" );
-				this.doOnSlideAnimationEnded(function() {
-					mediaBoxes.removeClass( "resultNoMatch" );
-					var chapters = this.getMediaListDomElements().filter( ".chapterBox" );
-					var expandedChapters = chapters.filter( "[data-chapter-collapsed=false]" );
-					this.toggleChapter( expandedChapters );
-				});
+				mediaBoxes.removeClass( "resultNoMatch" );
+				var chapters = this.getMediaListDomElements().filter( ".chapterBox" );
+				var expandedChapters = chapters.filter( "[data-chapter-collapsed=false]" );
+				this.toggleChapter( expandedChapters );
 			}
 		},
 		renderScroller: function(options){
