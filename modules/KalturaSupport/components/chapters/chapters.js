@@ -139,6 +139,7 @@
 							_this.show();
 							_this.renderOnData = false;
 							_this.renderMediaList();
+							_this.$scroll.find(".nano-content" ).attr("tabIndex", "-1");
 							_this.updateActiveItem();
 						}
 					}
@@ -828,7 +829,7 @@
 						return false;
 					} )
 					.on( 'change keyup paste input', function (e) {
-						this.maximizeSearchBar();
+						_this.maximizeSearchBar();
 						updateSearchUI(this.value);
 						// On "enter" key press:
 						// 1. If multiple suggestions and none was chosen - display results for all suggestions

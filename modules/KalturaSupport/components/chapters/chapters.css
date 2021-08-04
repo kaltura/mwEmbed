@@ -75,6 +75,13 @@
     -moz-transform: scale(0);
     -ms-transform: scale(0);
     transform: scale(0);
+
+    visibility: hidden;
+    -webkit-transition: visibility 0.25s;
+    -moz-transition: visibility 0.25s;
+    -o-transition: visibility 0.25s;
+    -ms-transition: visibility 0.25s;
+    transition: visibility 0.25s ease-out, transform 0.25s ease-out;
 }
 .touch  .chapters > .footer{
     height: 48px;
