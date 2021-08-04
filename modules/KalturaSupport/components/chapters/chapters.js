@@ -156,7 +156,7 @@
 
 				_this.log("Total pending items: " + _this.pendingMediaItems.length);
 
-				//Last cuepoint duration is the entry duration minus cuepoint start time, 
+				//Last cuepoint duration is the entry duration minus cuepoint start time,
 				//but in live we don't have duration so last cuepoint doesn't have duration.
 				//So in live cuepoints whenever a new cupoint arrives we can calculate the previous last cuepoint
 				//duration using the new cuepoint, e.g. new cuepoint strat time minus previous cuepoint start time
@@ -472,7 +472,7 @@
 			var clearDuplicatedCP = items.filter(function( item,index,allInArray ) {
 				return _this.getPlayer().kCuePoints.removeDuplicatedCuePoints(allInArray,index);
 			});
-			
+
 			var previewCuePointTag = _this.getPlayer().kCuePoints.getPreviewCuePointTag();
 			var filterItems = clearDuplicatedCP.filter(function( item ) {
 				return _this.getPlayer().kCuePoints.validateCuePointTags(item, previewCuePointTag);
@@ -1271,27 +1271,7 @@
 							}
 						}
 					})
-					//Set handler for TAB between chapters and slides
-					.off('focus').on('focus', function(e){
-				//Calculate if TAB forward or TAB backward(SHIFT+TAB)
-				var prev = $(e.relatedTarget ).data("mediaboxIndex");
-				var cur = $(this).data("mediaboxIndex");
-				var direction = (cur-prev) === 1 ? 1 : 0;
-				//Get the associated chapter of the slide
-				var slideChapterIndex = $(this).data( "chapterIndex" );
-				var chapter = _this.getMediaListDomElements()
-						.filter( ".chapterBox[data-chapter-index=" + slideChapterIndex + "]" );
-				chapter = $(chapter);
-				//If slide is under a collapsed chapter then go to associated chapter
-				var chapterCollapsed = (chapter.attr("data-chapter-collapsed") === "true");
-				if (chapterCollapsed){
-					var targetChapter = _this.getMediaListDomElements()
-							.filter( ".chapterBox[data-chapter-index=" + (slideChapterIndex + direction ) + "]" );
-					if (targetChapter) {
-						targetChapter.focus();
-					}
-				}
-			});
+
 			this.handleHomeEndKeys = function (e) {
 				if(e.keyCode === 35) {
 					// end key pressed

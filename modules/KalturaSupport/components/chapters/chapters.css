@@ -298,6 +298,7 @@
     -ms-transform: translateX(-100%);
     transform: translateX(-100%);
     height: 0 !important;
+    visibility: hidden;
 }
 .slideBox > .boxImg{
     width: 66%;
