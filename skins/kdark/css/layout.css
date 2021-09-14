@@ -1320,7 +1320,7 @@ body {
 	background: -ms-linear-gradient(top, #000000, #000000);
 	background: linear-gradient(top, #000000, #000000);
 
-	z-index: 1000;
+	z-index: 9999;
 	font-weight: bold;
 	font-size: 0.85em;
 	letter-spacing: 0px;
