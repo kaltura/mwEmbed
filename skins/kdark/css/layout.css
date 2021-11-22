@@ -247,6 +247,7 @@ body {
 	position: absolute;
 	bottom: 0;
 	width: 100%;
+	z-index: 100;
 
 	-webkit-transition: bottom 0.3s ease-in, visibility 0.3s ease-in, opacity 0.3s ease-in;
 	-moz-transition: bottom 0.3s ease-in, visibility 0.3s ease-in, opacity 0.3s ease-in;
@@ -262,7 +263,6 @@ body {
 
 .controlBarContainer.hover {
 	opacity: 0;
-	z-index: 100;
 }
 .controlBarContainer.open {
 	opacity: 1;
