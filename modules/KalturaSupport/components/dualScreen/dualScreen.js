@@ -269,17 +269,6 @@
 				this.bind( 'onplay', function () {
 						if (!isOverlayScreenOpen && _this.canManipulateControlViews()) {
 							_this.controlBar.enable();
-							// Added this in order to remove the Embedded Captions that are showing on the second screen
-							// As the HLSjs is only disabling it for the main player
-							if (!_this.embedPlayer.getKalturaConfig('closedCaptions', 'showEmbeddedCaptions')) {
-								var vid = _this.secondPlayer && _this.secondPlayer.playerElement;
-								if (vid) {
-									var textTracks = vid.textTracks;
-									for (var i=0; i < textTracks.length; i++){
-										textTracks[i].mode = "disabled";
-									}
-								}
-							}
 						}
 				} );
 				this.bind( 'onpause ended playerReady', function () {
@@ -353,6 +342,25 @@
 				}
 			},
 
+		hideEmbeddedCaptionsFromSecondary : function() {
+				var _this = this;
+				this.secondPlayer.getComponent().bind('loadedmetadata', function() {
+					if (!_this.disabled && !_this.getPlayer().isAudio()) {
+						// Added this in order to remove the Embedded Captions that are showing on the second screen
+						// As the HLSjs is only disabling it for the main player
+						if (!_this.embedPlayer.getKalturaConfig('closedCaptions', 'showEmbeddedCaptions')) {
+							var vid = _this.secondPlayer && _this.secondPlayer.playerElement;
+							if (vid) {
+								var textTracks = vid.textTracks;
+								for (var i=0; i < textTracks.length; i++){
+									textTracks[i].mode = "disabled";
+								}
+							}
+						}
+					}
+				});
+		},
+
 			canManipulateControlViews : function()
 			{
 				var _this = this;
@@ -405,6 +413,7 @@
 
                         var _this = this;
                         this.initView();
+						this.hideEmbeddedCaptionsFromSecondary();
                         this.initControlBar();
                         this.initExternalControlManager();
 
