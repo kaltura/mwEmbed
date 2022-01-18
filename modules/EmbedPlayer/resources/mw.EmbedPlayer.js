@@ -305,6 +305,9 @@
 
 		liveSyncDurationOffset:0,
 
+		// if the player should keep its responsivness
+		shouldKeepResponsivness: true,
+
 		/**
 		 * embedPlayer
 		 *
@@ -1865,9 +1868,12 @@
 						height: this.getInterface().height() + 1
 					};
 					this.updateInterfaceSize(resize);
-					resize.height = "100%";
-					resize.width = "100%";
-					this.updateInterfaceSize(resize);
+
+					if (this.shouldKeepResponsivness) {
+						resize.height = "100%";
+						resize.width = "100%";
+						this.updateInterfaceSize(resize);
+					}
 				}
 				this.triggerHelper('widgetLoaded');
 			}

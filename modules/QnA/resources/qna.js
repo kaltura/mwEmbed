@@ -276,6 +276,7 @@
 					// resize the video to make place for the playlist according to its position (left, top, right, bottom)
 					if ( this.getConfig( 'containerPosition' ) === 'right' || this.getConfig( 'containerPosition' ) === 'left' ) {
 						$( ".videoHolder, .mwPlayerContainer" ).css( "width", $( ".videoHolder").width() - this.getConfig( 'moduleWidth' ) + "px" );
+						embedPlayer.shouldKeepResponsivness = false;
 					}
 
 					if ( this.getConfig( 'containerPosition' ) === 'left' ) {
