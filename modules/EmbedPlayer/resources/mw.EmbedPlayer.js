@@ -305,9 +305,6 @@
 
 		liveSyncDurationOffset:0,
 
-		// if the player should keep its responsivness
-		shouldKeepResponsivness: true,
-
 		/**
 		 * embedPlayer
 		 *
@@ -1869,7 +1866,8 @@
 					};
 					this.updateInterfaceSize(resize);
 
-					if (this.shouldKeepResponsivness) {
+					var qnaPlugin = this.getPluginInstance("qna");
+					if (!qnaPlugin || qnaPlugin.getConfig("onPage")) {
 						resize.height = "100%";
 						resize.width = "100%";
 						this.updateInterfaceSize(resize);
