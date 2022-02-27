@@ -16,6 +16,7 @@
 	}
 
 	if (shaka.Player.isBrowserSupported() &&
+		!mw.isIOS() &&
 		!mw.getConfig("EmbedPlayer.ForceNativeComponent") &&
 		!mw.isDesktopSafari() &&
 		!mw.isAndroid()) {
