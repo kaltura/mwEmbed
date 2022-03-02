@@ -283,7 +283,11 @@
 						            _this.pollData.pollResults.totalVoters = cuepointContent.totalVoters;
 						            _this.view.syncDOMPollResults();
 					            }
-                                // make sure we process poll-results cuepoint 
+                                // kCuePoint filter is sorting according to startTime - cuepoint has start time 0
+                                cuepoint.startTime = cuepoint.createdAt * 1000;
+                                // need to save poll-results cuepoints in case we reset internal data
+                                _this.getPlayer().kCuePoints.updateCuePoints([cuepoint]);
+                                // make sure we process poll-results cuepoint
                                 var newContext = _this.cuePointsManager._createReachedCuePointsArgs([cuepoint] , {} );
                                 _this.handlePollResultsCuePoints({cuepointsArgs : newContext});
                             }
