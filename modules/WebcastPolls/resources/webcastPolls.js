@@ -283,7 +283,7 @@
 						            _this.pollData.pollResults.totalVoters = cuepointContent.totalVoters;
 						            _this.view.syncDOMPollResults();
 					            }
-                                // make sure we process poll-results cuepoint 
+                                // make sure we process poll-results cuepoint
                                 var newContext = _this.cuePointsManager._createReachedCuePointsArgs([cuepoint] , {} );
                                 _this.handlePollResultsCuePoints({cuepointsArgs : newContext});
                             }
@@ -304,6 +304,9 @@
 			            }
 
 		            }
+                    // update and save poll-results cuepoints
+                    _this.getPlayer().kCuePoints.fixLiveCuePointArray(cuepoints);
+                    _this.getPlayer().kCuePoints.updateCuePoints(cuepoints);
 	            } , [pushSystemName]);
 
                 _this.cuePointsManager.onCuePointsReached = $.proxy(function(args)
