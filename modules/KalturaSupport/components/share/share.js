@@ -616,7 +616,8 @@
 					res = document.URL;
 				}
 			}
-			return res;
+			var sanitized = kWidget.sanitize(decodeURIComponent(res));
+			return encodeURIComponent(sanitized);
 		}
 		// -------------- finish setup player url according to the socialShareURL flashvar ------- //
 

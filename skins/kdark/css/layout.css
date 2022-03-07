@@ -247,6 +247,7 @@ body {
 	position: absolute;
 	bottom: 0;
 	width: 100%;
+	z-index: 100;
 
 	-webkit-transition: bottom 0.3s ease-in, visibility 0.3s ease-in, opacity 0.3s ease-in;
 	-moz-transition: bottom 0.3s ease-in, visibility 0.3s ease-in, opacity 0.3s ease-in;
@@ -262,7 +263,6 @@ body {
 
 .controlBarContainer.hover {
 	opacity: 0;
-	z-index: 100;
 }
 .controlBarContainer.open {
 	opacity: 1;
@@ -1320,7 +1320,7 @@ body {
 	background: -ms-linear-gradient(top, #000000, #000000);
 	background: linear-gradient(top, #000000, #000000);
 
-	z-index: 1000;
+	z-index: 9999;
 	font-weight: bold;
 	font-size: 0.85em;
 	letter-spacing: 0px;
@@ -2058,7 +2058,7 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
     -webkit-border-radius: 2px;
     -moz-border-radius: 2px;
     border-radius: 24px;
-    background-color: #00d6ff;
+    background-color: #008297;
     color: white;
     text-align: center;
     padding-top: 8px;

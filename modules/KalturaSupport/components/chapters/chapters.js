@@ -139,6 +139,7 @@
 							_this.show();
 							_this.renderOnData = false;
 							_this.renderMediaList();
+							_this.$scroll.find(".nano-content" ).attr("tabIndex", "-1");
 							_this.updateActiveItem();
 						}
 					}
@@ -156,7 +157,7 @@
 
 				_this.log("Total pending items: " + _this.pendingMediaItems.length);
 
-				//Last cuepoint duration is the entry duration minus cuepoint start time, 
+				//Last cuepoint duration is the entry duration minus cuepoint start time,
 				//but in live we don't have duration so last cuepoint doesn't have duration.
 				//So in live cuepoints whenever a new cupoint arrives we can calculate the previous last cuepoint
 				//duration using the new cuepoint, e.g. new cuepoint strat time minus previous cuepoint start time
@@ -458,7 +459,9 @@
 				chapterToggle: gM("ks-chapters-toggle-chapter"),
 				slideNumber: gM("ks-chapters-slideNumber"),
 				slideStartTime: gM("ks-chapters-slide-start-time"),
-				slideDuration: gM("ks-chapters-slide-duration")
+				slideDuration: gM("ks-chapters-slide-duration"),
+				chapter: gM("ks-chapters-chapter"),
+				slide: gM("ks-chapters-slide")
 
 			};
 			return metaData;
@@ -470,7 +473,7 @@
 			var clearDuplicatedCP = items.filter(function( item,index,allInArray ) {
 				return _this.getPlayer().kCuePoints.removeDuplicatedCuePoints(allInArray,index);
 			});
-			
+
 			var previewCuePointTag = _this.getPlayer().kCuePoints.getPreviewCuePointTag();
 			var filterItems = clearDuplicatedCP.filter(function( item ) {
 				return _this.getPlayer().kCuePoints.validateCuePointTags(item, previewCuePointTag);
@@ -826,6 +829,7 @@
 						return false;
 					} )
 					.on( 'change keyup paste input', function (e) {
+						_this.maximizeSearchBar();
 						updateSearchUI(this.value);
 						// On "enter" key press:
 						// 1. If multiple suggestions and none was chosen - display results for all suggestions
@@ -843,7 +847,6 @@
                         }
 					} )
 					.on( "focus", function () {
-                        _this.getPlayer().triggerHelper("openSideBarContainer");
 						_this.getPlayer().triggerHelper( "onDisableKeyboardBinding" );
 						//On each focus render width of dropdown menu
 						searchBoxWrapper.find(".tt-dropdown-menu" ).width(searchFormWrapper.width());
@@ -999,12 +1002,10 @@
 				this.transitionsToBeFired = slidesSearchResults.length;
 				slidesSearchResults.addClass("collapsed");
 				mediaBoxes.filter(".chapterBox" ).addClass( "resultNoMatch" );
-				this.doOnSlideAnimationEnded(function() {
-					mediaBoxes.removeClass( "resultNoMatch" );
-					var chapters = this.getMediaListDomElements().filter( ".chapterBox" );
-					var expandedChapters = chapters.filter( "[data-chapter-collapsed=false]" );
-					this.toggleChapter( expandedChapters );
-				});
+				mediaBoxes.removeClass( "resultNoMatch" );
+				var chapters = this.getMediaListDomElements().filter( ".chapterBox" );
+				var expandedChapters = chapters.filter( "[data-chapter-collapsed=false]" );
+				this.toggleChapter( expandedChapters );
 			}
 		},
 		renderScroller: function(options){
@@ -1106,9 +1107,7 @@
 					this.lastScrollPosition = -1;
 				}
 			}
-			//Remove focus from searchbox to enable maximize on focus
-			this.$searchFormWrapper.blur();
-			this.$searchFormWrapper.find("#searchBox").blur();
+
 		},
 		findActiveItem: function(data, startIndex){
 			var activeItemIndex = -1;
@@ -1273,27 +1272,20 @@
 							}
 						}
 					})
-					//Set handler for TAB between chapters and slides
-					.off('focus').on('focus', function(e){
-				//Calculate if TAB forward or TAB backward(SHIFT+TAB)
-				var prev = $(e.relatedTarget ).data("mediaboxIndex");
-				var cur = $(this).data("mediaboxIndex");
-				var direction = (cur-prev) === 1 ? 1 : 0;
-				//Get the associated chapter of the slide
-				var slideChapterIndex = $(this).data( "chapterIndex" );
-				var chapter = _this.getMediaListDomElements()
-						.filter( ".chapterBox[data-chapter-index=" + slideChapterIndex + "]" );
-				chapter = $(chapter);
-				//If slide is under a collapsed chapter then go to associated chapter
-				var chapterCollapsed = (chapter.attr("data-chapter-collapsed") === "true");
-				if (chapterCollapsed){
-					var targetChapter = _this.getMediaListDomElements()
-							.filter( ".chapterBox[data-chapter-index=" + (slideChapterIndex + direction ) + "]" );
-					if (targetChapter) {
-						targetChapter.focus();
-					}
+
+			this.handleHomeEndKeys = function (e) {
+				if(e.keyCode === 35) {
+					// end key pressed
+					e.stopPropagation();
+					this.getMediaListDomElements().filter( ".chapterBox" ).last().focus();
 				}
-			});
+				if(e.keyCode === 36) {
+					// home key pressed
+					e.stopPropagation();
+					this.getMediaListDomElements().filter( ".chapterBox" ).first().focus();
+				}
+			};
+
 			this.onItemKey = function (e) {
 				var _this = this;
                 if(e.keyCode === 13){
@@ -1311,10 +1303,12 @@
             };
 
 			var mediaBoxes = this.getMediaListDomElements();
-			mediaBoxes.on('mousedown mouseup mouseout', function(){
-				this.blur();
-			})
-			.on('keyup', $.proxy(this.onItemKey , this));
+			mediaBoxes
+				.on('mousedown mouseup mouseout', function(){
+					this.blur();
+				})
+				.on('keydown', $.proxy(this.handleHomeEndKeys, this))
+				.on('keyup', $.proxy(this.onItemKey , this));
 
 			this.getComponent().find(".slideBoxToggle")
 					.off("click").on("click", function(e){

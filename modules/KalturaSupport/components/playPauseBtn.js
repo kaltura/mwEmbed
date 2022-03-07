@@ -44,7 +44,10 @@
 			});
                 this.bind('onOpenFullScreen', function () {
                     try {
-                    _this.getComponent().focus();
+						setTimeout(function () {
+							_this.getComponent().focus();
+						}, 250);
+
                     } catch(e){}
                 });
 

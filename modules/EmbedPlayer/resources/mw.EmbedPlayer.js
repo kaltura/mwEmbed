@@ -1865,9 +1865,13 @@
 						height: this.getInterface().height() + 1
 					};
 					this.updateInterfaceSize(resize);
-					resize.height = "100%";
-					resize.width = "100%";
-					this.updateInterfaceSize(resize);
+
+					var qnaPlugin = this.getPluginInstance("qna");
+					if (!qnaPlugin || qnaPlugin.getConfig("onPage")) {
+						resize.height = "100%";
+						resize.width = "100%";
+						this.updateInterfaceSize(resize);
+					}
 				}
 				this.triggerHelper('widgetLoaded');
 			}
