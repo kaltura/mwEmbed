@@ -305,8 +305,10 @@
 
 		            }
                     // update and save poll-results cuepoints
-                    _this.getPlayer().kCuePoints.fixLiveCuePointArray(cuepoints);
-                    _this.getPlayer().kCuePoints.updateCuePoints(cuepoints);
+                    if (_this.embedPlayer.isLive()) {
+                        _this.getPlayer().kCuePoints.fixLiveCuePointArray(cuepoints);
+                        _this.getPlayer().kCuePoints.updateCuePoints(cuepoints);
+                    }
 	            } , [pushSystemName]);
 
                 _this.cuePointsManager.onCuePointsReached = $.proxy(function(args)
