@@ -793,6 +793,9 @@
 
 			// vtt.js calculates the caption layout assuming margin of 1.5%
 			this.getCaptionsOverlay().css('margin', '1.5%');
+
+			// position needs to be absolute so other elements won't affect the captions position
+			this.getCaptionsOverlay().css('position', 'absolute');
 		},
 
 		addCaptionAsText: function ( source, capId, caption ) {
