@@ -782,6 +782,13 @@
 				$(caption.content).css('inset', '0px');
 			}
 
+			if (this.getPlayer().isOverlayControls() && this.embedPlayer.getKalturaConfig( 'controlBarContainer', 'hover')
+				&& this.getConfig('layout') === 'ontop'){
+				$textTarget.css('bottom', this.defaultBottom);
+				$textTarget.css('position', 'absolute');
+				$(caption.content).css('inset', '0px');
+			}
+
 			this.displayTextTarget($textTarget);
 
 			var captionDiv = $('.caption div');
