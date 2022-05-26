@@ -5,8 +5,8 @@
  * DO NOT MODIFY THIS FILE. Instead modify LocalSettings.php in the parent mwEmbd directory.
  *
  */
-
-if (isset($_SERVER["HTTP_X_FORWARDED_HOST"]))
+$VALID_HOSTNAME_PATTERN = "/^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$/";
+if (isset($_SERVER["HTTP_X_FORWARDED_HOST"]) && preg_match($VALID_HOSTNAME_PATTERN, $_SERVER["HTTP_X_FORWARDED_HOST"]) === 1)
 {
     // support multiple hosts (comma separated) in HTTP_X_FORWARDED_HOST
     $xForwardedHosts = explode(',', $_SERVER['HTTP_X_FORWARDED_HOST']);
