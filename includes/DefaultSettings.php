@@ -5,6 +5,7 @@
  * DO NOT MODIFY THIS FILE. Instead modify LocalSettings.php in the parent mwEmbd directory.
  *
  */
+
 if (isset($_SERVER["HTTP_X_FORWARDED_HOST"]))
 {
     // support multiple hosts (comma separated) in HTTP_X_FORWARDED_HOST
