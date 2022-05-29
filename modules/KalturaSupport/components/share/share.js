@@ -498,7 +498,10 @@
 
 			var embedPlayer = this.getPlayer();
 			var url = network.url;
-			url = decodeURIComponent(url);        // url was encoded to keep curly brackets for template tokens
+			url = decodeURIComponent(url); 		// url was encoded to keep curly brackets for template tokens
+			if(network.id === 'email'){
+				url = url.replace(/{mediaProxy.entry.name}/g, encodeURIComponent(this.getPlayer().evaluate("{mediaProxy.entry.name}")));
+			}
 			url = this.getPlayer().evaluate(url); // replace tokens
 			url = url.replace('#','%23'); // encode hash sign to keep time offset
 			var networks = this.getConfig('shareConfig');
