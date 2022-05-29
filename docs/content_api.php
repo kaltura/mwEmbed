@@ -458,9 +458,8 @@ such as the video is playing or is paused.</p>
 kWidget.addReadyCallback(function( playerId ){
 	var kdp = document.getElementById( playerId );
 	// binds an event and namespces it to "myPluginName"
-	kdp.kBind("playerUpdatePlayhead.myPluginName", function( data, id ){
+	kdp.kBind("playerUpdatePlayhead.myPluginName", function( data ){
 		// data = the player's progress time in seconds
-		// id = the ID of the player that fired the notification
 	});
 });
 </pre>
