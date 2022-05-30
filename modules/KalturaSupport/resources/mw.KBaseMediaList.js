@@ -426,7 +426,7 @@
 			var thumbUrl = kWidgetSupport.getKalturaThumbnailUrl(
 				$.extend( {}, this.baseThumbSettings, {
                     'url': this.embedPlayer.evaluate('{mediaProxy.entry.thumbnailUrl}'),
-					'vid_sec': parseInt( time / 1000 )
+					'vid_sec': time / 1000
 				} )
 			);
 			return thumbUrl;

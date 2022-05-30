@@ -10,8 +10,12 @@ if (isset($_SERVER["HTTP_X_FORWARDED_HOST"]))
 {
     // support multiple hosts (comma separated) in HTTP_X_FORWARDED_HOST
     $xForwardedHosts = explode(',', $_SERVER['HTTP_X_FORWARDED_HOST']);
-    $_SERVER["HTTP_HOST"] = $xForwardedHosts[0];
-    $_SERVER["SERVER_NAME"] = $xForwardedHosts[0];
+    $VALID_HOSTNAME_PATTERN = "/^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$/";
+    if (preg_match($VALID_HOSTNAME_PATTERN, $xForwardedHosts[0]) === 1)
+    {
+        $_SERVER["HTTP_HOST"] = $xForwardedHosts[0];
+        $_SERVER["SERVER_NAME"] = $xForwardedHosts[0];
+    }
 }
 
 // The default cache directory
@@ -20,7 +24,7 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '2.93.1';
+$wgMwEmbedVersion = '2.96.rc3';
 
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {
