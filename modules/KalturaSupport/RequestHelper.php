@@ -223,6 +223,8 @@ class RequestHelper {
 			    echo($urlParts['host']);
 				return $urlParts['scheme'] . "://" . $urlParts['host'] . "/";
 			}
+		} else {
+		echo 'NO HTTP REFERER';
 		}
 		echo('##### RETURN KALTURA.COM ######');
 		return 'http://www.kaltura.com/';
