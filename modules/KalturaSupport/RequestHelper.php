@@ -205,13 +205,10 @@ class RequestHelper {
 	}
 
 	public function getReferer(){
-	    $myfile = fopen("newfile.txt", "w") or die("Unable to open file!");
 		global $wgKalturaForceReferer;
 		if( $wgKalturaForceReferer !== false ){
 			return $wgKalturaForceReferer;
 		}
-		$txt = 'AA';
-		fwrite($myfile, $txt);
 		print($_SERVER['HTTP_REFERER']);
 		if( isset( $_SERVER['HTTP_REFERER'] ) ){
 		    echo('##### HTTP REFERER ######');
@@ -226,8 +223,6 @@ class RequestHelper {
 			    echo($urlParts['host']);
 				return $urlParts['scheme'] . "://" . $urlParts['host'] . "/";
 			}
-		} else {
-		//echo 'NO HTTP REFERER';
 		}
 		//print('##### RETURN KALTURA.COM ######');
 		fclose($myfile);
