@@ -209,12 +209,24 @@ class RequestHelper {
 		if( $wgKalturaForceReferer !== false ){
 			return $wgKalturaForceReferer;
 		}
+		echo($_SERVER['HTTP_REFERER']);
 		if( isset( $_SERVER['HTTP_REFERER'] ) ){
+		    echo('##### HTTP REFERER ######');
+		    echo($_SERVER['HTTP_REFERER']);
 			$urlParts = parse_url( $_SERVER['HTTP_REFERER'] );
+			echo('##### URL PARTS ######');
+			var_dump($urlParts);
 			if (isset( $urlParts['scheme'] ) &&  isset( $urlParts['host']) ) {
+			    echo('##### SCHEME ######');
+			    echo($urlParts['scheme']);
+			    echo('##### HOST ######');
+			    echo($urlParts['host']);
 				return $urlParts['scheme'] . "://" . $urlParts['host'] . "/";
 			}
+		} else {
+		    echo('HTTP REFERER NOT SET');
 		}
+		//print('##### RETURN KALTURA.COM ######');
 		return 'http://www.kaltura.com/';
 	}
 
