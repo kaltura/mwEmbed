@@ -209,6 +209,7 @@ class RequestHelper {
 		if( $wgKalturaForceReferer !== false ){
 			return $wgKalturaForceReferer;
 		}
+		echo('HTTP REFERER:');
 		echo($_SERVER['HTTP_REFERER']);
 		if( isset( $_SERVER['HTTP_REFERER'] ) ){
 		    echo('##### HTTP REFERER ######');
