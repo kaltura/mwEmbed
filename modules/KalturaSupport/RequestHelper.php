@@ -226,7 +226,7 @@ class RequestHelper {
 		} else {
 		    echo('HTTP REFERER NOT SET');
 		}
-		//print('##### RETURN KALTURA.COM ######');
+		echo('##### RETURN KALTURA.COM ######');
 		return 'http://www.kaltura.com/';
 	}
 
