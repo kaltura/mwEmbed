@@ -223,9 +223,10 @@ class RequestHelper {
 			    echo($urlParts['host']);
 				return $urlParts['scheme'] . "://" . $urlParts['host'] . "/";
 			}
+		} else {
+		    print('HTTP REFERER NOT SET');
 		}
 		//print('##### RETURN KALTURA.COM ######');
-		fclose($myfile);
 		return 'http://www.kaltura.com/';
 	}
 
