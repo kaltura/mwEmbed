@@ -227,9 +227,9 @@ class RequestHelper {
 				return $urlParts['scheme'] . "://" . $urlParts['host'] . "/";
 			}
 		} else {
-		echo 'NO HTTP REFERER';
+		//echo 'NO HTTP REFERER';
 		}
-		print('##### RETURN KALTURA.COM ######');
+		//print('##### RETURN KALTURA.COM ######');
 		fclose($myfile);
 		return 'http://www.kaltura.com/';
 	}
