@@ -209,13 +209,26 @@ class RequestHelper {
 		if( $wgKalturaForceReferer !== false ){
 			return $wgKalturaForceReferer;
 		}
-		if( isset( $_SERVER['HTTP_REFERER'] ) ){
-			$urlParts = parse_url( $_SERVER['HTTP_REFERER'] );
-			if (isset( $urlParts['scheme'] ) &&  isset( $urlParts['host']) ) {
-				return $urlParts['scheme'] . "://" . $urlParts['host'] . "/";
-			}
+		$requestHeaders = getallheaders();
+		if( isset( $requestHeaders ) && isset( $requestHeaders['Referer'] ) ){
+		    $refererUrl = $this->buildReferer($requestHeaders['Referer']);
+        } else if (isset( $_SERVER['HTTP_REFERER'] )){
+            $refererUrl = $this->buildReferer($_SERVER['HTTP_REFERER']);
 		}
+		if (isset ($refererUrl) && $refererUrl !== null) {
+		    echo($refererUrl);
+		    return $refererUrl;
+		}
+		echo('http://www.kaltura.com/');
 		return 'http://www.kaltura.com/';
+	}
+
+	private function buildReferer($refererUrl) {
+	    $urlParts = parse_url( $refererUrl );
+        if (isset( $urlParts['scheme'] ) &&  isset( $urlParts['host']) ) {
+            return $urlParts['scheme'] . "://" . $urlParts['host'] . "/";
+        }
+        return null;
 	}
 
 	// Check if private IP
