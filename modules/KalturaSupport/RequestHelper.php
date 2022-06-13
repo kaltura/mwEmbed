@@ -209,7 +209,7 @@ class RequestHelper {
 		if( $wgKalturaForceReferer !== false ){
 			return $wgKalturaForceReferer;
 		}
-		if (isset( $_SERVER['HTTP_REFERER'] )){
+		if (isset( $_SERVER['HTTP_REFERER'] ) && !empty($_SERVER['HTTP_REFERER'])){
             $refererUrl = $this->buildReferer($_SERVER['HTTP_REFERER']);
         } else if (isset( $_SERVER ) && isset($_SERVER['HTTP_HOST'])) {
             if ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
@@ -224,7 +224,7 @@ class RequestHelper {
                 $refererUrl = $this->buildReferer($requestHeaders['Referer']);
             }
         }
-		if (isset ($refererUrl) && $refererUrl !== null) {
+		if (isset ($refererUrl)) {
 		    return $refererUrl;
 		}
 		return 'http://www.kaltura.com/';
