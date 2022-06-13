@@ -214,6 +214,16 @@ class RequestHelper {
 			if (isset( $urlParts['scheme'] ) &&  isset( $urlParts['host']) ) {
 				return $urlParts['scheme'] . "://" . $urlParts['host'] . "/";
 			}
+		} else {
+		    if (isset( $_SERVER ) && isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+		        $url = "https://";
+            } else {
+                $url = "http://";
+            }
+            if (isset($_SERVER['HTTP_HOST'])) {
+                $url.= $_SERVER['HTTP_HOST'];
+                return $url;
+            }
 		}
 		return 'http://www.kaltura.com/';
 	}
