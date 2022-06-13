@@ -210,32 +210,32 @@ class RequestHelper {
 			return $wgKalturaForceReferer;
 		}
 		if (isset( $_SERVER['HTTP_REFERER'] ) && !empty($_SERVER['HTTP_REFERER'])){
-            $refererUrl = $this->buildReferer($_SERVER['HTTP_REFERER']);
-        } else if (isset( $_SERVER ) && isset($_SERVER['HTTP_HOST'])) {
-            if ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
-                $refererUrl = "https://";
-            } else {
-                $refererUrl = "http://";
-            }
-            $refererUrl.= $_SERVER['HTTP_HOST'];
-        } else {
-            $requestHeaders = getallheaders();
-            if( isset( $requestHeaders ) && isset( $requestHeaders['Referer'] ) ){
-                $refererUrl = $this->buildReferer($requestHeaders['Referer']);
-            }
-        }
+			$refererUrl = $this->buildReferer($_SERVER['HTTP_REFERER']);
+		} else if (isset( $_SERVER ) && isset($_SERVER['HTTP_HOST'])) {
+			if ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+				$refererUrl = "https://";
+			} else {
+				$refererUrl = "http://";
+			}
+			$refererUrl.= $_SERVER['HTTP_HOST'];
+		} else {
+			$requestHeaders = getallheaders();
+			if( isset( $requestHeaders ) && isset( $requestHeaders['Referer'] ) ){
+				$refererUrl = $this->buildReferer($requestHeaders['Referer']);
+			}
+		}
 		if (isset ($refererUrl)) {
-		    return $refererUrl;
+			return $refererUrl;
 		}
 		return 'http://www.kaltura.com/';
 	}
 
 	private function buildReferer($refererUrl) {
-	    $urlParts = parse_url( $refererUrl );
-        if (isset( $urlParts['scheme'] ) &&  isset( $urlParts['host']) ) {
-            return $urlParts['scheme'] . "://" . $urlParts['host'] . "/";
-        }
-        return null;
+		$urlParts = parse_url( $refererUrl );
+		if (isset( $urlParts['scheme'] ) &&  isset( $urlParts['host']) ) {
+			return $urlParts['scheme'] . "://" . $urlParts['host'] . "/";
+		}
+		return null;
 	}
 
 	// Check if private IP
