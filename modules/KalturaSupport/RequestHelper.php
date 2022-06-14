@@ -209,11 +209,18 @@ class RequestHelper {
 		if( $wgKalturaForceReferer !== false ){
 			return $wgKalturaForceReferer;
 		}
-		if( isset( $_SERVER['HTTP_REFERER'] ) ){
-			$urlParts = parse_url( $_SERVER['HTTP_REFERER'] );
-			if (isset( $urlParts['scheme'] ) &&  isset( $urlParts['host']) ) {
-				return $urlParts['scheme'] . "://" . $urlParts['host'] . "/";
+		if (!empty($_SERVER['HTTP_REFERER'])){
+		    $urlParts = parse_url( $_SERVER['HTTP_REFERER'] );
+		    if (isset( $urlParts['scheme'] ) &&  isset( $urlParts['host']) ) {
+		        return $urlParts['scheme'] . "://" . $urlParts['host'] . "/";
+		    }
+		} else if (!empty($_SERVER['HTTP_HOST'])) {
+			if ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+				$scheme = "https://";
+			} else {
+				$scheme = "http://";
 			}
+			return $scheme . $_SERVER['HTTP_HOST'];
 		}
 		return 'http://www.kaltura.com/';
 	}
