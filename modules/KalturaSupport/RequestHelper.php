@@ -220,7 +220,7 @@ class RequestHelper {
 			} else {
 				$scheme = "http://";
 			}
-			return $scheme . $_SERVER['HTTP_HOST'];
+			return $scheme . $_SERVER['HTTP_HOST'] . "/";
 		}
 		return 'http://www.kaltura.com/';
 	}
