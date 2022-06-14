@@ -440,8 +440,8 @@ class EntryResult
             return "No KS where KS is required\nWe're sorry, access to this content is restricted.";
         }
 
-        if (isset($accessControl['isScheduledNow']) &&
-            ($accessControl['isScheduledNow'] === 0 || $accessControl['isScheduledNow'] === false)
+        if (!(isset( $accessControl['isAdmin']) && $accessControl['isAdmin']) &&
+            isset($accessControl['isScheduledNow']) && ($accessControl['isScheduledNow'] === 0 || $accessControl['isScheduledNow'] === false)
         ) {
             return "Out of scheduling\nWe're sorry, this content is currently unavailable.";
         }

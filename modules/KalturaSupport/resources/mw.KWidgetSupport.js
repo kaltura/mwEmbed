@@ -1300,7 +1300,7 @@ mw.KWidgetSupport.prototype = {
 		if( ac.isCountryRestricted ){
 			return embedPlayer.getKalturaMsgObject( 'UNAUTHORIZED_COUNTRY' );
 		}
-		if( ac.isScheduledNow === 0 ){
+		if( ac.isScheduledNow === 0 && !ac.isAdmin){
 			return embedPlayer.getKalturaMsgObject( 'OUT_OF_SCHEDULING' );
 		}
 		if( ac.isIpAddressRestricted ) {
