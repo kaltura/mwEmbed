@@ -2189,8 +2189,7 @@
 					encodeURIComponent(curVal);
 			}
 			// add fallbackParentUrl flashvar - SUP-32821
-			params += '&' + 'flashvars[' + encodeURIComponent('fallbackToParentReferer') + ']=' +
-				encodeURIComponent( document.URL);
+			params += '&flashvars[fallbackToParentReferer]=' + encodeURIComponent( document.URL);
 			return params;
 		},
 		/**
