@@ -365,7 +365,7 @@ class EntryResult
     public function getACFilter()
     {
         $filter = new KalturaEntryContextDataParams();
-        $refererFromPlayer = $this->uiconf->playerConfig['vars']['fallbackToParentReferer'];
+        $refererFromPlayer = $this->uiconf->playerConfig['vars']['parentDomain'];
         $filter->referrer = $this->request->getReferer($refererFromPlayer);
         $filter->userAgent = $this->request->getUserAgent();
         $filter->flavorTags = 'all';
