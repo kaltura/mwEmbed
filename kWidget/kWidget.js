@@ -2188,7 +2188,7 @@
 				params += '&' + 'flashvars[' + encodeURIComponent(i) + ']=' +
 					encodeURIComponent(curVal);
 			}
-			// add fallbackParentUrl flashvar - SUP-32821
+			// add parentDomain flashvar - SUP-32821
 			params += '&' + 'flashvars[' + encodeURIComponent('parentDomain') + ']=' +
 				encodeURIComponent( document.URL);
 			return params;
