@@ -10,7 +10,7 @@ if (isset($_SERVER["HTTP_X_FORWARDED_HOST"]))
 {
     // support multiple hosts (comma separated) in HTTP_X_FORWARDED_HOST
     $xForwardedHosts = explode(',', $_SERVER['HTTP_X_FORWARDED_HOST']);
-    $VALID_HOSTNAME_PATTERN = "/^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$/";
+    $VALID_HOSTNAME_PATTERN = "/^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$/";
     if (preg_match($VALID_HOSTNAME_PATTERN, $xForwardedHosts[0]) === 1)
     {
         $_SERVER["HTTP_HOST"] = $xForwardedHosts[0];
