@@ -502,6 +502,9 @@
 			if(network.id === 'email'){
 				url = url.replace(/{mediaProxy.entry.name}/g, encodeURIComponent(this.getPlayer().evaluate("{mediaProxy.entry.name}")));
 			}
+			if(network.id === 'linkedin'){
+				url = url.replace(/{share.shareURL}/g, encodeURIComponent(this.getPlayer().evaluate("{share.shareURL}")));
+			}
 			url = this.getPlayer().evaluate(url); // replace tokens
 			url = url.replace('#','%23'); // encode hash sign to keep time offset
 			var networks = this.getConfig('shareConfig');
