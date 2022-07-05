@@ -522,21 +522,15 @@
 				};
 				embedPlayer.doNativeAction(JSON.stringify(shareParams));
 			} else {
-				if ( mw.isIphone() && url.indexOf("mailto") === 0){
-					e.preventDefault();
-					window.location = url;
-				}else{
-					var opener = window.open(url,'_blank','width=626,height=436');
-					// close the window if this is an email
-					if (url.indexOf("mailto") === 0){
-						setTimeout(function(){
-							if (opener && typeof opener.close === 'function') {
-								opener.close();
-							}
-						},2000);
-					}
+				var opener = window.open(url,'_blank','width=626,height=436');
+				// close the window if this is an email
+				if (url.indexOf("mailto") === 0){
+					setTimeout(function(){
+						if (opener && typeof opener.close === 'function') {
+							opener.close();
+						}
+					},2000);
 				}
-				return false;
 			}
 		},
 		getThumbnailURL: function () {
