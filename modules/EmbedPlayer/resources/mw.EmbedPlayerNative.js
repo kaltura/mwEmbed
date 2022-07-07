@@ -1659,7 +1659,9 @@
 		switchAudioTrack: function(audioTrackIndex){
 			var vid  = this.getPlayerElement();
 			var audioTracks = vid.audioTracks;
-			if(audioTracks && audioTracks[audioTrackIndex] && !audioTracks[audioTrackIndex].enabled) {
+			if(audioTracks && audioTracks[audioTrackIndex]) {
+				// need to first disable all audioTracks
+				this.disableAudioTracks(audioTracks);
 				if(mw.isEdge()){
 
 					// Edge has a problem to switch audio track at playback time, so as a workaround - pause before the switching.
@@ -1685,6 +1687,13 @@
 					audioTracks[audioTrackIndex].enabled = true;
 				}
 				this.audioTrackIndex = audioTrackIndex;
+			}
+		},
+		disableAudioTracks: function(audioTracks) {
+			if (audioTracks) {
+				for (var i = 0; i < audioTracks.length; i++) {
+					audioTracks[i].enabled = false;
+				}
 			}
 		},
 		onSwitchTextTrack: function (event, data) {
