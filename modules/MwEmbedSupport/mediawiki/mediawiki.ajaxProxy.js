@@ -70,6 +70,11 @@
 				};
 			}
 
+			// include referer if exists
+			if (_this.options.headers) {
+				ajaxOptions.headers = _this.options.headers;
+			}
+
 			// make the request
 			try {
 				$.ajax( ajaxOptions );
