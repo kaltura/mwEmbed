@@ -91,8 +91,8 @@
 						callback();
 					}
 				};
-				if (mw.isIOS() && mw.isSafari() && document.URL) {
-					request.headers = {'X-Alt-Referer': document.URL };
+				if (mw.isIOS() && mw.isSafari() && document.location.origin) {
+					request.headers = {'X-Alt-Referer': document.location.origin };
 				}
 				new mw.ajaxProxy(request);
 			});
