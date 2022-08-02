@@ -77,7 +77,7 @@
 			// Check type for special loaders:
 			$( mw ).triggerQueueCallback( 'TimedText_LoadTextSource', _this, function(){
 				// if no module loaded the text source use the normal ajax proxy:
-				new mw.ajaxProxy({
+				var request = {
 					url: _this.getSrc(),
 					success: function( resultXML ) {
 						_this.captions = _this.getCaptions( resultXML );
@@ -90,7 +90,11 @@
 						_this.loaded = true;
 						callback();
 					}
-				});
+				};
+				if (mw.isIOS() && mw.isSafari() && document.location.origin) {
+					request.headers = {'X-Alt-Referer': document.location.origin };
+				}
+				new mw.ajaxProxy(request);
 			});
 		},
 
