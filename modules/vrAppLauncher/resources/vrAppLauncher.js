@@ -4,21 +4,16 @@
     mw.PluginManager.add(
         "vrAppLauncher",
         mw.KBaseComponent.extend({
-            audioSources: [],
             defaultConfig: {
               parent: mw.isMobileDevice()
                 ? "topBarContainer"
                 : "controlsContainer",
               order: 53,
               displayImportance: "low",
-              align: "right", ////
-              flavorParamsId: null,
-              hideIfNoAudioFlavors: false,
+              align: "right",
               smartContainer: "morePlugins",
-              smartContainerCloseEvent: "downloadAudioTrack",
-              downloadName: "{mediaProxy.entry.name} - Audio",
-              showTooltip: true,
-              title: gM("audioDownload-download-audio-track"),
+              smartContainerCloseEvent: "openVrApp",
+              showTooltip: true
             },
             isSafeEnviornment: function() {
               // when should the plugin load - only when the tag of 'PLAYVR' exits in the entry.
@@ -33,15 +28,11 @@
             setup: function () {
                 var _this = this;
 
-                this.bind("downloadAudioTrack", function () {
-                    _this.downloadAudioTrack();
-                });
-
-                // On player is ready
-                this.bind("playerReady", function () {
+                this.bind("openVrApp", function () {
+                    _this.openVrApp();
                 });
             },
-            downloadAudioTrack: function () {
+            openVrApp: function () {
               var entry = this.getPlayer().evaluate('{mediaProxy.entry}');
               var newWindowURL = this.getConfig("newWindowURLFormat", true);
               var cdnUrl = mw.getConfig('Kaltura.CdnUrl');
@@ -60,7 +51,7 @@
                   .addClass( "btn icon-vr" + this.getCssClass() )
                   .click( function() {
                     if (this.isDisabled) return;
-                      this.getPlayer().triggerHelper("downloadAudioTrack");
+                      this.getPlayer().triggerHelper("openVrApp");
                   }.bind(this));
               }
               return this.$el;
