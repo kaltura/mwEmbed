@@ -1,0 +1,19 @@
+.icon-mp3-download {
+    background-image: url("./download-icon.svg");
+    background-position: center;
+    background-size: contain;
+    width: 24px;
+    height: 20px;
+    margin-top: 4px;
+    background-repeat: no-repeat;
+    opacity: 0.8;
+}
+
+.icon-mp3-download:disabled {
+    opacity: 0.8 !important;
+    cursor: default;
+}
+
+.icon-mp3-download--hidden {
+    display: none !important;
+}

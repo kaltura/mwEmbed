@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Audio Download</title>
+        <script
+            type="text/javascript"
+            src="../../../../../mwEmbed/mwEmbedLoader.php"
+        ></script>
+    </head>
+    <body>
+        <div
+            id="kaltura_player_1"
+            style="width: 600px; height: 370px; float: left"
+        ></div>
+        <script>
+            mw.setConfig("forceMobileHTML5", true);
+            kWidget.embed({
+                targetId: "kaltura_player_1",
+                wid: "_1647401",
+                uiconf_id: "41410881",
+                entry_id: "1_kuomwihj",
+                flashvars: {
+                    audioDownload: {
+                        plugin: true,
+                        newWindowURLFormat: "VRviewer:-json$-mode$Video360$-videoName${KalturaCdnUrl}/p/103/sp/10300/playManifest/entryId/{entryID}/tags/source/format/download/protocol/http/{fileName}.mp4"
+                    }
+                }
+            });
+        </script>
+    </body>
+</html>

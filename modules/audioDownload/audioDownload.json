@@ -1,0 +1,9 @@
+{
+    "audioDownload": {
+        "scripts": "resources/audioDownload.js",
+        "dependencies": ["mw.KBasePlugin"],
+        "kalturaPluginName": "audioDownload",
+        "messageFile": "audioDownload.i18n.json",
+        "styles": "resources/audioDownload.css"
+    }
+}
