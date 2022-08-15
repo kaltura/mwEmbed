@@ -13,7 +13,8 @@
               align: "right",
               smartContainer: "morePlugins",
               smartContainerCloseEvent: "openVrApp",
-              showTooltip: true
+              showTooltip: true,
+              newWindowURLFormat: "VRviewer:-json$-mode$Video360$-videoName${KalturaCdnUrl}/p/103/sp/10300/playManifest/entryId/{entryID}/tags/source/format/download/protocol/http/{fileName}.mp4"
             },
             isSafeEnviornment: function() {
               // when should the plugin load - only when the tag of 'PLAYVR' exits in the entry.
