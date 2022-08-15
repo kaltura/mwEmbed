@@ -2,7 +2,7 @@
     "use strict";
 
     mw.PluginManager.add(
-        "audioDownload",
+        "vrAppLauncher",
         mw.KBaseComponent.extend({
             audioSources: [],
             defaultConfig: {
