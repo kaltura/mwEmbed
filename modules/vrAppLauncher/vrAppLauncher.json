@@ -1,0 +1,7 @@
+{
+    "vrAppLauncher": {
+        "scripts": "resources/vrAppLauncher.js",
+        "dependencies": ["mw.KBasePlugin"],
+        "kalturaPluginName": "vrAppLauncher"
+    }
+}
