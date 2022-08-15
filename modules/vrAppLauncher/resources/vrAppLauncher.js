@@ -14,6 +14,7 @@
               smartContainer: "morePlugins",
               smartContainerCloseEvent: "openVrApp",
               showTooltip: true,
+              title: "VR",
               newWindowURLFormat: "VRviewer:-json$-mode$Video360$-videoName${KalturaCdnUrl}/p/103/sp/10300/playManifest/entryId/{entryID}/tags/source/format/download/protocol/http/{fileName}.mp4"
             },
             isSafeEnviornment: function() {
@@ -48,9 +49,9 @@
             getComponent: function () {
               if(!this.$el) {
                 this.$el = $( '<button />' )
-                  .attr( 'title', 'VR' )
-                  .addClass( "btn icon-vr" + this.getCssClass() )
-                  .click( function() {
+                  .attr("title", this.getConfig("title"))
+                  .addClass("btn icon-vr" + this.getCssClass())
+                  .click(function() {
                     if (this.isDisabled) return;
                       this.getPlayer().triggerHelper("openVrApp");
                   }.bind(this));
