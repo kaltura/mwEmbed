@@ -49,6 +49,13 @@
                         });
                     }
                 }.bind(this));
+
+                // when clicking on current component and there is a click.adClick event, we don't want to let it bubble
+                // the goal for this component is just to do unmute when clicking on it
+                this.getComponent().bind('click.adClick', function (e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                });
             },
 
             show: function () {
