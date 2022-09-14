@@ -327,6 +327,8 @@ mw.KWidgetSupport.prototype = {
 								this.overrideUrlsWithRegex(serviceUrl, embedPlayer);
 								deferred.resolve();
 							}
+						} else {
+							deferred.resolve();
 						}
 					}
 				} else {
