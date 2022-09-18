@@ -255,35 +255,36 @@ mw.KWidgetSupport.prototype = {
 		this.updatePlayerMetaData(embedPlayer, playerData);
 		// Check for playerData error
 		this.handlePlayerError(embedPlayer, playerData);
-		this.updatePlayerContextData(embedPlayer, playerData);
-		// Check for live stream
-		if( this.isLive(playerData)){
-			this.updateLivePlayerData(embedPlayer, playerData);
-		} else { //Else handle VOD
-			if (this.isEmbedServicesEnabled(playerData)){
-				this.updateEmbedServicesData(embedPlayer, playerData);
-			} else {
-				this.updateVodPlayerData(embedPlayer, playerData);
-				//Flag DRM required if sources have DRM data attached with them
-				this.updateDrmPlayerData(embedPlayer);
+		this.updatePlayerContextData(embedPlayer, playerData).then(() => {
+			// Check for live stream
+			if( this.isLive(playerData)){
+				this.updateLivePlayerData(embedPlayer, playerData);
+			} else { //Else handle VOD
+				if (this.isEmbedServicesEnabled(playerData)){
+					this.updateEmbedServicesData(embedPlayer, playerData);
+				} else {
+					this.updateVodPlayerData(embedPlayer, playerData);
+					//Flag DRM required if sources have DRM data attached with them
+					this.updateDrmPlayerData(embedPlayer);
+				}
 			}
-		}
-		// Check for 360 tag
-		this.update360PlayerData(embedPlayer, playerData);
-		// Check for "image" mediaType ( 2 )
-		this.updateImagePlayerData(embedPlayer, playerData);
-		// Check for external media:
-		this.updateExternalPlayerData(embedPlayer, playerData);
-		// check for entry id not found:
-		if( this.isNoEntryId(playerData) ){
-			this.handleNoEntryId();
-		}
-		// Check access controls ( must come after addPlayerMethods for custom messages )
-		this.initCuePointsService(embedPlayer, playerData);
-		this.handleUiConf( embedPlayer, callback );
+			// Check for 360 tag
+			this.update360PlayerData(embedPlayer, playerData);
+			// Check for "image" mediaType ( 2 )
+			this.updateImagePlayerData(embedPlayer, playerData);
+			// Check for external media:
+			this.updateExternalPlayerData(embedPlayer, playerData);
+			// check for entry id not found:
+			if( this.isNoEntryId(playerData) ){
+				this.handleNoEntryId();
+			}
+			// Check access controls ( must come after addPlayerMethods for custom messages )
+			this.initCuePointsService(embedPlayer, playerData);
+			this.handleUiConf( embedPlayer, callback );
+		});
 	},
 	updatePlayerContextData: function(embedPlayer, playerData){
-
+		var deferred = $.Deferred();
 		if( playerData.contextData ){
 			if ( playerData.contextData.msDuration) {
 				embedPlayer.kalturaPlayerMetaData.duration = Math.floor(playerData.contextData.msDuration / 1000);
@@ -301,7 +302,6 @@ mw.KWidgetSupport.prototype = {
 
 					if (action.pattern && action.replacement) {
 						var regExp=new RegExp(action.pattern, "i");
-						var flashvars = embedPlayer.getFlashvars();
 						if (!this.originalServiceUrl){
 							this.originalServiceUrl = mw.config.get('Kaltura.playManifestServiceUrl');
 						}
@@ -309,29 +309,58 @@ mw.KWidgetSupport.prototype = {
 						var match = serviceUrl.match( regExp );
 						if (match) {
 							serviceUrl = serviceUrl.replace(regExp, action.replacement);
-							//override urls according to the regex
-                            ['Kaltura.playManifestServiceUrl','Kaltura.thumbAssetServiceUrl'].forEach(function (key,index) {
-
-                                if (index===1 && !flashvars.serveThumbAssetsViaECDN) {
-                                    return;
-                                }
-
-                                mw.config.set(key, serviceUrl)
-                                // Pass the override URLs configurations to the parent mw object so that it's client
-                                // URLs would be updated too.
-                                if (mw.config.get('EmbedPlayer.IsFriendlyIframe')) {
-                                    try {
-                                        window.parent.mw.setConfig(key, serviceUrl);
-                                    } catch (e) {
-                                        mw.log("Failed to access window.parent from updatePlayerContextData replace URLs ");
-                                    }
-                                }
-                            });
+							if (action.checkAliveTimeoutMs && action.checkAliveTimeoutMs > 0) {
+								var urlPing = serviceUrl + '/api_v3/service/system/action/ping/format/1';
+								// invoke url to check if it's accessible
+								$.ajax({
+									url: urlPing,
+									timeout: action.checkAliveTimeoutMs,
+									success: () => {
+										this.overrideUrlsWithRegex(serviceUrl, embedPlayer);
+										deferred.resolve();
+									},
+									error: function() {
+										deferred.resolve();
+									}
+								});
+							} else {
+								this.overrideUrlsWithRegex(serviceUrl, embedPlayer);
+								deferred.resolve();
+							}
+						} else {
+							deferred.resolve();
 						}
 					}
+				} else {
+					deferred.resolve();
 				}
 			}
+			else {
+				deferred.resolve();
+			}
 		}
+		return deferred.promise();
+	},
+	overrideUrlsWithRegex: function(regex, embedPlayer) {
+		var flashvars = embedPlayer.getFlashvars();
+		//override urls according to the regex
+		['Kaltura.playManifestServiceUrl','Kaltura.thumbAssetServiceUrl'].forEach(function (key,index) {
+
+			if (index===1 && !flashvars.serveThumbAssetsViaECDN) {
+				return;
+			}
+
+			mw.config.set(key, regex)
+			// Pass the override URLs configurations to the parent mw object so that it's client
+			// URLs would be updated too.
+			if (mw.config.get('EmbedPlayer.IsFriendlyIframe')) {
+				try {
+					window.parent.mw.setConfig(key, regex);
+				} catch (e) {
+					mw.log("Failed to access window.parent from updatePlayerContextData replace URLs ");
+				}
+			}
+		});
 	},
 	isLive: function(playerData){
 		return playerData.meta && ( playerData.meta.type == 7 || playerData.meta.type == 8 );
