@@ -22,7 +22,7 @@ echo $docsRss;
 
 function generate_docs_rss(){
 	global $wgGitRepoPath ;
-	$baseUrl = 'http://' . $_SERVER['HTTP_HOST'] . str_replace('rss.php', '', $_SERVER['REQUEST_URI']);
+	$baseUrl = 'http://' . $_SERVER['SERVER_NAME'] . str_replace('rss.php', '', $_SERVER['REQUEST_URI']);
 	ob_start();
 ?>
 <rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
