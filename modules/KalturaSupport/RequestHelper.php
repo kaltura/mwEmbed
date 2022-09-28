@@ -229,6 +229,8 @@ class RequestHelper {
 		$urlParts = parse_url( $refererUrl );
 		if (isset( $urlParts['scheme'] ) &&  isset( $urlParts['host']) ) {
 			return $urlParts['scheme'] . "://" . $urlParts['host'] . "/";
+		} else if (isset($urlParts['path']) ) {
+		    return $urlParts['path'] . "/";
 		}
 		return null;
 	}
