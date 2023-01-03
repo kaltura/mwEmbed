@@ -197,6 +197,7 @@
                         // update the playhead status
                         this.updatePlayheadStatus();
                     }
+					this.monitor();
                     break;
                 case YT.PlayerState.PAUSED:
                     stateName = "paused";
@@ -503,7 +504,6 @@
 						});
 					}
 				}
-				this.monitor();
 			}
 		},
 

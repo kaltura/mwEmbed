@@ -2188,6 +2188,9 @@
 				params += '&' + 'flashvars[' + encodeURIComponent(i) + ']=' +
 					encodeURIComponent(curVal);
 			}
+			// add parentDomain flashvar - SUP-32821
+			params += '&' + 'flashvars[' + encodeURIComponent('parentDomain') + ']=' +
+				encodeURIComponent( document.URL);
 			return params;
 		},
 		/**

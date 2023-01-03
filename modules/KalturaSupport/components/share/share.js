@@ -502,6 +502,11 @@
 			if(network.id === 'email'){
 				url = url.replace(/{mediaProxy.entry.name}/g, encodeURIComponent(this.getPlayer().evaluate("{mediaProxy.entry.name}")));
 			}
+
+			if(network.id === 'linkedin'){
+				url = url.replace(/{share.shareURL}/g, encodeURIComponent(this.getPlayer().evaluate("{share.shareURL}")));
+			}
+
 			url = this.getPlayer().evaluate(url); // replace tokens
 			url = url.replace('#','%23'); // encode hash sign to keep time offset
 			var networks = this.getConfig('shareConfig');
@@ -519,21 +524,15 @@
 				};
 				embedPlayer.doNativeAction(JSON.stringify(shareParams));
 			} else {
-				if ( mw.isIphone() && url.indexOf("mailto") === 0){
-					e.preventDefault();
-					window.location = url;
-				}else{
-					var opener = window.open(url,'_blank','width=626,height=436');
-					// close the window if this is an email
-					if (url.indexOf("mailto") === 0){
-						setTimeout(function(){
-							if (opener && typeof opener.close === 'function') {
-								opener.close();
-							}
-						},2000);
-					}
+				var opener = window.open(url,'_blank','width=626,height=436');
+				// close the window if this is an email
+				if (url.indexOf("mailto") === 0){
+					setTimeout(function(){
+						if (opener && typeof opener.close === 'function') {
+							opener.close();
+						}
+					},2000);
 				}
-				return false;
 			}
 		},
 		getThumbnailURL: function () {

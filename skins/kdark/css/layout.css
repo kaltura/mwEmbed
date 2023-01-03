@@ -1505,6 +1505,18 @@ body {
     display: none !important;
 }
 
+.scrubber:focus{
+	outline: 1px solid #66CCFF;
+}
+
+.mobile .scrubber:focus {
+	outline: none;
+}
+
+.mobileSkin .scrubber:focus {
+	outline: 0;
+}
+
 .scrubber.disabled {
 	height: 0.3em;
 }

@@ -365,7 +365,8 @@ class EntryResult
     public function getACFilter()
     {
         $filter = new KalturaEntryContextDataParams();
-        $filter->referrer = $this->request->getReferer();
+        $refererFromPlayer = $this->uiconf->playerConfig['vars']['parentDomain'];
+        $filter->referrer = $this->request->getReferer($refererFromPlayer);
         $filter->userAgent = $this->request->getUserAgent();
         $filter->flavorTags = 'all';
         if ($this->uiconf->getPlayerConfig(false, 'flavorTags')) {
@@ -440,8 +441,8 @@ class EntryResult
             return "No KS where KS is required\nWe're sorry, access to this content is restricted.";
         }
 
-        if (isset($accessControl['isScheduledNow']) &&
-            ($accessControl['isScheduledNow'] === 0 || $accessControl['isScheduledNow'] === false)
+        if (!(isset( $accessControl['isAdmin']) && $accessControl['isAdmin']) &&
+            isset($accessControl['isScheduledNow']) && ($accessControl['isScheduledNow'] === 0 || $accessControl['isScheduledNow'] === false)
         ) {
             return "Out of scheduling\nWe're sorry, this content is currently unavailable.";
         }

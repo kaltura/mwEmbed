@@ -149,7 +149,7 @@
 		return ( mw.isAndroid() && mw.isChrome() );
 	};
 	mw.isOldAndroidChromeNativeBrowser = function () {
-		var regExpResult = userAgent.match(/Chrome\/([0-9][0-9])/);
+		var regExpResult = userAgent.match(/Chrome\/([0-9][0-9]+)/);
 		if ( regExpResult instanceof Array && regExpResult.length > 1 ){
 			return mw.isAndroidChromeNativeBrowser() && parseInt( regExpResult[1] ) < 30;
 		}

@@ -7,7 +7,7 @@ class RequestHelper {
 	var $debug = false;
 	var $utility = null;
 
-    var $EXCLUDE_ESCAPED_ATTRIBUTES = array('flashvars');
+	var $EXCLUDE_ESCAPED_ATTRIBUTES = array('flashvars');
 
 	/**
 	 * Variables set by the Frame request:
@@ -60,10 +60,10 @@ class RequestHelper {
 			foreach( $urlParts as $inx => $urlPart ){
 				foreach( $this->urlParameters as $attributeKey => $na){
 					if( $urlPart == $attributeKey && isset( $urlParts[$inx+1] ) ){
-					    $data = $urlParts[$inx+1];
-					    if (!in_array($attributeKey, $this->EXCLUDE_ESCAPED_ATTRIBUTES)) {
-					        $data = htmlspecialchars( $urlParts[$inx+1], ENT_QUOTES );
-					    }
+						$data = $urlParts[$inx+1];
+						if (!in_array($attributeKey, $this->EXCLUDE_ESCAPED_ATTRIBUTES)) {
+							$data = htmlspecialchars( $urlParts[$inx+1], ENT_QUOTES );
+						}
 						$_REQUEST[ $attributeKey ] = $data;
 					}
 				}
@@ -183,39 +183,54 @@ class RequestHelper {
 	}
 
 	function isEmbedServicesEnabled(){
-	    global $wgEnableKalturaEmbedServicesRouting, $wgKalturaAuthEmbedServicesDomains;
-	    if ($wgEnableKalturaEmbedServicesRouting){
-	        return true;
-	    } else {
-	        return false;
-        }
+		global $wgEnableKalturaEmbedServicesRouting, $wgKalturaAuthEmbedServicesDomains;
+		if ($wgEnableKalturaEmbedServicesRouting){
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	function isEmbedServicesRequest(){
-	    $proxyData = $this->getFlashVars("proxyData");
-        return (isset($proxyData) && !empty($proxyData));
-    }
+		$proxyData = $this->getFlashVars("proxyData");
+		return (isset($proxyData) && !empty($proxyData));
+	}
 
 	function getEmbedServicesRequest(){
-	    return $this->getFlashVars("proxyData");
+		return $this->getFlashVars("proxyData");
 	}
 
 	public function getUserAgent() {
 		return isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
 	}
 
-	public function getReferer(){
+	public function getReferer($refererFromPlayer = null){
 		global $wgKalturaForceReferer;
 		if( $wgKalturaForceReferer !== false ){
 			return $wgKalturaForceReferer;
 		}
-		if( isset( $_SERVER['HTTP_REFERER'] ) ){
-			$urlParts = parse_url( $_SERVER['HTTP_REFERER'] );
-			if (isset( $urlParts['scheme'] ) &&  isset( $urlParts['host']) ) {
-				return $urlParts['scheme'] . "://" . $urlParts['host'] . "/";
-			}
+
+		$refererUrl = '';
+		if (!empty($_SERVER['HTTP_REFERER'])) {
+			$refererUrl = $this->buildReferer($_SERVER['HTTP_REFERER']);
 		}
-		return 'http://www.kaltura.com/';
+		// buildReferer might return null
+		if (empty($refererUrl) && !empty($refererFromPlayer)) {
+			$refererUrl = $this->buildReferer($refererFromPlayer);
+		}
+		// buildReferer might return null
+		if (empty($refererUrl)) {
+			$refererUrl = 'http://www.kaltura.com/';
+		}
+		return $refererUrl;
+	}
+
+	private function buildReferer($refererUrl) {
+		$urlParts = parse_url( $refererUrl );
+		if (isset( $urlParts['scheme'] ) &&  isset( $urlParts['host']) ) {
+			return $urlParts['scheme'] . "://" . $urlParts['host'] . "/";
+		}
+		return null;
 	}
 
 	// Check if private IP
@@ -271,7 +286,7 @@ class RequestHelper {
 		return $remote_addr;
 	}
 
- 	public function getRemoteAddrHeader(){
+	public function getRemoteAddrHeader(){
 		global $wgKalturaRemoteAddressSalt, $wgKalturaForceIP;
 		if( $wgKalturaRemoteAddressSalt === false ){
 			return '';
