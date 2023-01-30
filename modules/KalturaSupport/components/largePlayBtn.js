@@ -147,7 +147,7 @@
 				var eventName = 'click';
 				this.$el = $( '<a />' )
 					.attr( {
-						'tabindex': '-1',
+						'tabindex': '1',
 						'href' : '#',
 						'role': 'button',
 						'title' : this.playLabel,
