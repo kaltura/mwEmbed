@@ -170,6 +170,9 @@
                 }
                 else {
                     $('.qna-on-video-btn').remove();
+					qnaObject.show();
+					_this.getPlayer().sendNotification("qna", {visible:true} );
+
 				}
 			});
 
