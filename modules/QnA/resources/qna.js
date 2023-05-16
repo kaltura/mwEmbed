@@ -138,7 +138,7 @@
 
 			this.bind('layoutBuildDone', function (event, screenName) {
 				// add the Q&A toggle button to be on the video
-				embedPlayer.getVideoHolder().append('<div class="qna-on-video-btn qna-icon-close"><div class="qna-badge"></div></div>');
+				embedPlayer.getVideoHolder().append('<div class="qna-on-video-btn qna-icon-Ask"><div class="qna-badge"></div></div>');
 				_this.getQnaContainer();
 				qnaObject = _this.getQnaContainer().find(".qnaModuleBackground");
 				onVideoTogglePluginButton = $('.qna-on-video-btn');
