@@ -138,41 +138,33 @@
 
 			this.bind('layoutBuildDone', function (event, screenName) {
 				// add the Q&A toggle button to be on the video
-				embedPlayer.getVideoHolder().append('<div class="qna-on-video-btn qna-icon-close"><div class="qna-badge"></div></div>');
+				embedPlayer.getVideoHolder().append('<div class="qna-on-video-btn qna-icon-Ask"><div class="qna-badge"></div></div>');
 				_this.getQnaContainer();
 				qnaObject = _this.getQnaContainer().find(".qnaModuleBackground");
 				onVideoTogglePluginButton = $('.qna-on-video-btn');
                 if ( _this.getConfig( 'onPage' ) ) {
-				
-				// register to on click to change the icon of the toggle button
-                onVideoTogglePluginButton.on("click", function(){
-
-                    var openQnaContainer=!qnaObject.is(":visible");
-
-                    if (_this.getPlayer().layoutBuilder.fullScreenManager.isInFullScreen()) {
-                        _this.getPlayer().toggleFullscreen() ;
-                        openQnaContainer=true;
-                    }
-
-					_this.getQnaContainer();
-					if (openQnaContainer){
-						qnaObject.show();
-						_this.getPlayer().sendNotification("qna", {visible:true} );
-					} else {
-						qnaObject.hide();
-						_this.getPlayer().sendNotification("qna", {visible:false} );
-					}
-                    _this.changeVideoToggleIcon();
-				});
-
-				_this.updateUnreadBadge();
-
+					// register to on click to change the icon of the toggle button
+					onVideoTogglePluginButton.on("click", function(){
+						var openQnaContainer=!qnaObject.is(":visible");
+						if (_this.getPlayer().layoutBuilder.fullScreenManager.isInFullScreen()) {
+							_this.getPlayer().toggleFullscreen() ;
+							openQnaContainer=true;
+						}
+						if (openQnaContainer){
+							qnaObject.show();
+							_this.getPlayer().sendNotification("qna", {visible:true} );
+						} else {
+							qnaObject.hide();
+							_this.getPlayer().sendNotification("qna", {visible:false} );
+						}
+						_this.changeVideoToggleIcon();
+					});
+					_this.updateUnreadBadge();
                 }
                 else {
                     $('.qna-on-video-btn').remove();
 					qnaObject.show();
 					_this.getPlayer().sendNotification("qna", {visible:true} );
-
 				}
 			});
 
@@ -253,11 +245,9 @@
 		// load the Q&A template to the div with qnaTargetId
 		getQnaContainer: function(){
 			var _this = this;
-            var embedPlayer = this.getPlayer();
+			var embedPlayer = this.getPlayer();
 			if (!this.$qnaListContainer && this.getPlayer().isLive()) {
-
 				this.markIfCanAccessToIframesParent();
-
 				if ( this.getConfig( 'onPage' ) ) {
 					// Inject external CSS files
 					this.injectCssToPage(this.getConfig('qnaAnnouncementsCssFileName'));
@@ -265,37 +255,27 @@
 					this.injectCssToPage(this.getConfig('qnaNanoCssFileName'));
 					this.injectCssToPage(this.getConfig('qnaThreadsListCssFileName'));
 					this.injectCssToPage(this.getConfig('qnaMainCssFileName')); //should be last, since we we it to test css was loaded
-
-					this.getQnaInterfaceInsideIframe();
-				} else {
-					// wrap the .mwPlayerContainer element with our qnaInterface div
-					var floatDirection = this.getConfig( 'containerPosition' ) ? this.getConfig( 'containerPosition' ) : "right";
-					var qnaInterfaceElementText = "<div class='qnaInterface' style='position: relative; width: " + this.getConfig( 'moduleWidth' ) + "px; height: 100%; float:" + floatDirection + "'>";
-
-					$('.mwPlayerContainer').after(qnaInterfaceElementText);
-
-					this.$qnaListContainer = $( ".qnaInterface");
-
-					// resize the video to make place for the playlist according to its position (left, top, right, bottom)
-					if ( this.getConfig( 'containerPosition' ) === 'right' || this.getConfig( 'containerPosition' ) === 'left' ) {
-						$( ".videoHolder, .mwPlayerContainer" ).css( "width", $( ".videoHolder").width() - this.getConfig( 'moduleWidth' ) + "px" );
-					}
-
-					if ( this.getConfig( 'containerPosition' ) === 'left' ) {
-						$( ".mwPlayerContainer" ).css( "float", "right" );
-					}
-					else{
-						$( ".mwPlayerContainer" ).css( "float", "left" );
-					}
 				}
-
+				// wrap the .mwPlayerContainer element with our qnaInterface div
+				var floatDirection = this.getConfig( 'containerPosition' ) ? this.getConfig( 'containerPosition' ) : "right";
+				var qnaInterfaceElementText = "<div class='qnaInterface' style='position: relative; width: " + this.getConfig( 'moduleWidth' ) + "px; height: 100%; float:" + floatDirection + "'>";
+				$('.mwPlayerContainer').after(qnaInterfaceElementText);
+				this.$qnaListContainer = $( ".qnaInterface");
+				// resize the video to make place for the playlist according to its position (left, top, right, bottom)
+				if ( this.getConfig( 'containerPosition' ) === 'right' || this.getConfig( 'containerPosition' ) === 'left' ) {
+					$( ".videoHolder, .mwPlayerContainer" ).css( "width", $( ".videoHolder").width() - this.getConfig( 'moduleWidth' ) + "px" );
+				}
+				if ( this.getConfig( 'containerPosition' ) === 'left' ) {
+					$( ".mwPlayerContainer" ).css( "float", "right" );
+				}
+				else{
+					$( ".mwPlayerContainer" ).css( "float", "left" );
+				}
 				this.$qnaListContainer.append(this.getHTML());
 				this.originalPlayerWidth = $( ".videoHolder").width();
-
 				this.bindButtons();
 				this.positionQAButtonOnVideoContainer();
 				this.updateQnaListHolderSize();
-
 				// Create the KQnaService and KQnaModule after css were loaded
 				if ( this.getConfig( 'onPage' ) ) {
 					this.verifyCssLoaded(_this.$qnaListContainer).then(function(){
@@ -305,13 +285,13 @@
 						_this.KQnaModule.applyLayout();
 					});
 				}else{ // for in player plugin don't wait for css to load
-                    _this.KQnaService = new mw.KQnaService(embedPlayer, _this);
-                    _this.KQnaModule = new mw.KQnaModule(embedPlayer, _this, _this.KQnaService);
-                    ko.applyBindings(_this.KQnaModule, _this.$qnaListContainer[0]);
-                    _this.KQnaModule.applyLayout();
-                }
+					_this.KQnaService = new mw.KQnaService(embedPlayer, _this);
+					_this.KQnaModule = new mw.KQnaModule(embedPlayer, _this, _this.KQnaService);
+					ko.applyBindings(_this.KQnaModule, _this.$qnaListContainer[0]);
+					_this.KQnaModule.applyLayout();
+				}
 			}
-            else if ( !this.getPlayer().isLive() ) {
+			else if ( !this.getPlayer().isLive() ) {
 				this.markIfCanAccessToIframesParent();
 
 				if ( this.getConfig( 'onPage' ) ) {
@@ -319,9 +299,8 @@
 				} else {
 					this.$qnaListContainer = $(".qnaInterface");
 				}
-            }
-
-            return this.$qnaListContainer;
+			}
+			return this.$qnaListContainer;
 		},
 
 		markIfCanAccessToIframesParent: function() {
