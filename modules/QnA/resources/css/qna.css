@@ -72,7 +72,7 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-	display: none;
+	display: block;
 }
 
 .qna-on-video-btn:hover {
