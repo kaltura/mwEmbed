@@ -150,6 +150,7 @@
 							_this.getPlayer().toggleFullscreen() ;
 							openQnaContainer=true;
 						}
+						_this.getQnaContainer();
 						if (openQnaContainer){
 							qnaObject.show();
 							_this.getPlayer().sendNotification("qna", {visible:true} );
