@@ -334,10 +334,11 @@ mw.KWidgetSupport.prototype = {
 				} else {
 					deferred.resolve();
 				}
-			}
-			else {
+			} else {
 				deferred.resolve();
 			}
+		} else {
+			deferred.resolve();
 		}
 		return deferred.promise();
 	},
