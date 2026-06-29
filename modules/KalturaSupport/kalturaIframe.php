@@ -4,6 +4,8 @@
  */
 @ob_end_clean();
 
+require_once dirname( __FILE__ ) . '/../../includes/xss_guard.php';
+
 // Check for custom resource ps config file:
 if( isset( $wgKalturaPSHtml5SettingsPath ) && is_file( $wgKalturaPSHtml5SettingsPath ) ){
 	require_once( $wgKalturaPSHtml5SettingsPath );
@@ -14,14 +16,14 @@ require_once 'kalturaIframeClass.php';
 // Setup the kalturaIframe
 $kIframe = new kalturaIframeClass();
 
-// start gzip compression if available: 
+// start gzip compression if available:
 if(!ob_start("ob_gzhandler")) ob_start();
 
 // Support Etag and 304
 if( $wgEnableScriptDebug == false && @trim($_SERVER['HTTP_IF_NONE_MATCH']) == $kIframe->getIframeOutputHash() ){
-	header("HTTP/1.1 304 Not Modified"); 
+	header("HTTP/1.1 304 Not Modified");
 	exit();
-} 
+}
 
 // Check if we are wrapping the iframe output in a callback
 if( isset( $_REQUEST['callback']  )) {
@@ -40,7 +42,7 @@ if( isset( $_REQUEST['callback']  )) {
 	}
 	// Set the iframe header:
 	$kIframe->setIFrameHeaders();
-	echo htmlspecialchars( $_REQUEST['callback'] ) .
+	echo $_REQUEST['callback'] .
 		'(' . json_encode( $json ). ');';
 	header('Content-Type: text/javascript' );
 } else {
@@ -51,4 +53,3 @@ if( isset( $_REQUEST['callback']  )) {
 	echo $iframePage;
 }
 ob_end_flush();
-

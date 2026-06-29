@@ -1,6 +1,7 @@
 <?php
 // Include configuration
 require_once( realpath( dirname( __FILE__ ) ) . '/includes/DefaultSettings.php' );
+require_once( realpath( dirname( __FILE__ ) ) . '/includes/xss_guard.php' );
 require_once( realpath( dirname( __FILE__ ) ) . '/modules/KalturaSupport/KalturaCommon.php' );
 
 // only include the iframe if we need to: 
@@ -99,11 +100,11 @@ class mwEmbedLoader {
 		
 		// send cache headers
 		$this->sendHeaders( $o );
-		
+
 		// start gzip handler if possible:
 		if(!ob_start("ob_gzhandler")) ob_start();
-		
-		// check for non-fatal errors: 
+
+		// check for non-fatal errors:
 		if( $this->getError() ){
 			echo "if( console ){ console.log('" . json_encode(htmlspecialchars( is_string($this->getError()) ? $this->getError() : json_encode($this->getError()), ENT_QUOTES)) . "'); }";
 		}
@@ -120,8 +121,6 @@ class mwEmbedLoader {
 			$this->setError( "missing wid param");
 			return '';
 		}
-		$wid = htmlspecialchars( $wid );
-
 		$uiconf_id = $this->request()->get('uiconf_id');
 		if( !$uiconf_id ){
 			$this->setError( "missing uiconf_id param");
@@ -134,7 +133,7 @@ class mwEmbedLoader {
 			$this->setError( "missing playerId param");
 			return '';
 		}
-		
+
 		// Check optional params
 		$width = ( $this->request()->get('width') )? htmlspecialchars( $this->request()->get('width') ): 400;
 		$height = ( $this->request()->get('height') )? htmlspecialchars( $this->request()->get('height') ): 330;
@@ -251,11 +250,11 @@ class mwEmbedLoader {
 	private function getPerUiConfJS(){
 		if( ! $this->request()->get('uiconf_id')
 				||
-			!$this->getUiConfObject() 
-				|| 
-			( ! $this->request()->get('wid') 
+			!$this->getUiConfObject()
+				||
+			( ! $this->request()->get('wid')
 				&&
-			  ! $this->request()->get('p') 	
+			  ! $this->request()->get('p')
 			)
 		){
 			// directly issue the UiConfJs callback
@@ -267,14 +266,14 @@ class mwEmbedLoader {
 		$o='';
 		// always include UserAgentPlayerRules:
 		$o.= $mweUiConfJs->getUserAgentPlayerRules();
-		
+
 		// support including special player rewrite flags if set in uiConf:
 		if( $this->getUiConfObject()->getPlayerConfig( null, 'Kaltura.LeadWithHTML5' ) === true
 			||
 			$this->getUiConfObject()->getPlayerConfig( null, 'KalturaSupport.LeadWithHTML5' ) === true
 		){
 			$o.="\n"."kWidget.addUserAgentRule('{$this->request()->get('uiconf_id')}', '/.*/', 'leadWithHTML5');";
-		
+
 		}
 		if( $this->getUiConfObject()->getPlayerConfig( null, 'Kaltura.ForceFlashOnIE10' ) === true ){
 			$o.="\n".'mw.setConfig(\'Kaltura.ForceFlashOnIE10\', true );' . "\n";
@@ -312,7 +311,7 @@ class mwEmbedLoader {
 			$o.='kWidget.inLoaderUiConfJsCallback();';
 		}
 		// set the flag so that we don't have to request the services.php
-		$o.= "\n" . 'kWidget.uiConfScriptLoadList[\'' . 
+		$o.= "\n" . 'kWidget.uiConfScriptLoadList[\'' .
 			$this->request()->get('uiconf_id') .
 			'\'] = 1; ';
 		return $o;
