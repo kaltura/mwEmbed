@@ -4,6 +4,8 @@
  */
 @ob_end_clean();
 
+require_once dirname( __FILE__ ) . '/../../includes/xss_guard.php';
+
 // Check for custom resource ps config file:
 if( isset( $wgKalturaPSHtml5SettingsPath ) && is_file( $wgKalturaPSHtml5SettingsPath ) ){
 	require_once( $wgKalturaPSHtml5SettingsPath );

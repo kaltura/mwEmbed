@@ -1,6 +1,7 @@
 <?php
 // Include configuration
 require_once( realpath( dirname( __FILE__ ) ) . '/includes/DefaultSettings.php' );
+require_once( realpath( dirname( __FILE__ ) ) . '/includes/xss_guard.php' );
 require_once( realpath( dirname( __FILE__ ) ) . '/modules/KalturaSupport/KalturaCommon.php' );
 
 // only include the iframe if we need to: 
