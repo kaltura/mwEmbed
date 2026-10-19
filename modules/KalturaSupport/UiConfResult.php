@@ -120,25 +120,36 @@ class UiConfResult {
 	}
 	
 	function loadFromLocalFile( $filePath ) {
+		global $wgKalturaPSHtml5SettingsPath;
+
 		$libPath = realpath(dirname(__FILE__) . '/../../' );
-		
-		// Only local .json / .xml files inside the mwEmbed lib dir are allowed
+		$psPath   = $wgKalturaPSHtml5SettingsPath ? realpath( dirname( $wgKalturaPSHtml5SettingsPath ) . '/../ps' ) : false;
+
+		// Only local .json / .xml files inside the mwEmbed lib dir or the kwidget-ps "ps" dir are allowed
 		// Resolving with realpath rejects stream wrappers (file://, php://, data://) and "../" traversal
 		// All failures share one message so the response can't be used as a file existence oracle
 		if( !is_string( $filePath ) || strpos( $filePath, "\0" ) !== false ) {
 			throw new Exception( "Invalid confFilePath" );
 		}
 		$filePath = str_replace('{libPath}', $libPath, $filePath);
+		if( $psPath ) {
+			$filePath = str_replace('{html5ps}', $psPath, $filePath);
+		}
 		$realPath = realpath( $filePath );
 		$extension = strtolower( pathinfo( (string)$realPath, PATHINFO_EXTENSION ) );
-		if( !$libPath || !$realPath
-			|| strpos( $realPath, $libPath . DIRECTORY_SEPARATOR ) !== 0
+		$inAllowedDir = false;
+		foreach( array( $libPath, $psPath ) as $allowedDir ) {
+			if( $allowedDir && $realPath && strpos( $realPath, $allowedDir . DIRECTORY_SEPARATOR ) === 0 ) {
+				$inAllowedDir = true;
+			}
+		}
+		if( !$inAllowedDir
 			|| !in_array( $extension, array( 'json', 'xml' ) )
 			|| !is_file( $realPath ) || !is_readable( $realPath )
 		) {
 			throw new Exception( "Invalid confFilePath" );
 		}
-		
+
 		$this->uiConfFile = file_get_contents( $realPath );
 	}
 
