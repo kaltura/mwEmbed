@@ -120,10 +120,10 @@ class UiConfResult {
 	}
 	
 	function loadFromLocalFile( $filePath ) {
-		global $wgKalturaPSHtml5SettingsPath;
+		global $wgKalturaPSTrustedPath;
 
 		$libPath = realpath(dirname(__FILE__) . '/../../' );
-		$psPath   = $wgKalturaPSHtml5SettingsPath ? realpath( dirname( $wgKalturaPSHtml5SettingsPath ) . '/../ps' ) : false;
+		$psPath  = $wgKalturaPSTrustedPath;
 
 		// Only local .json / .xml files inside the mwEmbed lib dir or the kwidget-ps "ps" dir are allowed
 		// Resolving with realpath rejects stream wrappers (file://, php://, data://) and "../" traversal
