@@ -256,6 +256,8 @@ if( is_file( $wgLocalSettingsFile ) ){
 	require_once( $wgLocalSettingsFile );
 }
 
+// Trusted ps dir, fixed by server config. Must NOT be derived from request input.
+$wgKalturaPSTrustedPath = realpath( dirname( __FILE__ ) . '/../' . $psRelativePath . '/ps' );
 if( isset( $_GET['pskwidgetpath'] ) ){
 	$psRelativePath = htmlspecialchars( $_GET['pskwidgetpath'] );
 }

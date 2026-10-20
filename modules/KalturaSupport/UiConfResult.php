@@ -14,7 +14,7 @@ class UiConfResult {
 	var $utility = null;
 
 	var $uiConfFile = null;
-	var $uiConfXml = null; 
+	var $uiConfXml = null;
 	var $playerConfig = null;
 	var $noCache = null;
 	var $isPlaylist = null;
@@ -49,7 +49,7 @@ class UiConfResult {
 	}
 
 	function getCacheKey() {
-		$cacheKey = substr( md5( $this->request->getServiceConfig( 'ServiceUrl' )  ), 0, 5 ) . 
+		$cacheKey = substr( md5( $this->request->getServiceConfig( 'ServiceUrl' )  ), 0, 5 ) .
 						'-' . $this->request->getWidgetId() . '-' . $this->request->getUiConfId();
 		
 		return "uiconf-" . $cacheKey;
@@ -123,16 +123,39 @@ class UiConfResult {
 		}
 		return $this->isJsonConfig;
 	}
-
+	
 	function loadFromLocalFile( $filePath ) {
-		global $wgKalturaPSHtml5SettingsPath;
+		global $wgKalturaPSTrustedPath;
 
-		$libPath = realpath(dirname(__FILE__) . '/../../' ); 
-		$psPath   = dirname( $wgKalturaPSHtml5SettingsPath ) . "../../ps";
+		$libPath = realpath(dirname(__FILE__) . '/../../' );
+		$psPath  = $wgKalturaPSTrustedPath;
+
+		// Only local .json / .xml files inside the mwEmbed lib dir or the kwidget-ps "ps" dir are allowed
+		// Resolving with realpath rejects stream wrappers (file://, php://, data://) and "../" traversal
+		// All failures share one message so the response can't be used as a file existence oracle
+		if( !is_string( $filePath ) || strpos( $filePath, "\0" ) !== false ) {
+			throw new Exception( "Invalid confFilePath" );
+		}
 		$filePath = str_replace('{libPath}', $libPath, $filePath);
-		$filePath = str_replace('{html5ps}', $psPath, $filePath);
+		if( $psPath ) {
+			$filePath = str_replace('{html5ps}', $psPath, $filePath);
+		}
+		$realPath = realpath( $filePath );
+		$extension = strtolower( pathinfo( (string)$realPath, PATHINFO_EXTENSION ) );
+		$inAllowedDir = false;
+		foreach( array( $libPath, $psPath ) as $allowedDir ) {
+			if( $allowedDir && $realPath && strpos( $realPath, $allowedDir . DIRECTORY_SEPARATOR ) === 0 ) {
+				$inAllowedDir = true;
+			}
+		}
+		if( !$inAllowedDir
+			|| !in_array( $extension, array( 'json', 'xml' ) )
+			|| !is_file( $realPath ) || !is_readable( $realPath )
+		) {
+			throw new Exception( "Invalid confFilePath" );
+		}
 
-		$this->uiConfFile = file_get_contents($filePath);
+		$this->uiConfFile = file_get_contents( $realPath );
 	}
 
 	function loadUiConfFromApi() {
@@ -271,7 +294,7 @@ class UiConfResult {
 		return $url;
 	}
 	
-	/* 
+	/*
 	 * Cleans up uiConf XML from bad format
 	 * Hopefully we could remove this function in the future
 	 */
@@ -335,14 +358,14 @@ class UiConfResult {
 			$pluginId = $pluginKeys[0];
 			// Don't remove common configuration prefixes:
 			// http://html5video.org/wiki/Kaltura_HTML5_Configuration
-			if( $pluginId == 'Kaltura' || 
-				$pluginId == 'EmbedPlayer' || 
+			if( $pluginId == 'Kaltura' ||
+				$pluginId == 'EmbedPlayer' ||
 				$pluginId == 'KalturaSupport'
 			){
 				continue;
 			}
 			
-			// Enforce the lower case first letter of plugin convention: 
+			// Enforce the lower case first letter of plugin convention:
 			$pluginId = strtolower( $pluginId[0] ) . substr($pluginId, 1 );
 			
 			$pluginAttribute = $pluginKeys[1];
@@ -407,7 +430,7 @@ class UiConfResult {
 					){
 						continue;
 					}
-			// Enforce the lower case first letter of plugin convention: 
+			// Enforce the lower case first letter of plugin convention:
 			$pluginId = strtolower( $pluginId[0] ) . substr($pluginId, 1 );
 			
 
@@ -457,14 +480,14 @@ class UiConfResult {
 				$pluginsXml = $this->getUiConfXML()->xpath("*//*[@id]");
 				for( $i=0; $i < count($pluginsXml); $i++ ) {
 					$pluginId = (string) $pluginsXml[ $i ]->attributes()->id;
-					// Enforce the lower case first letter of plugin convention: 
+					// Enforce the lower case first letter of plugin convention:
 					if ( isset( $pluginId[0] ) ) {
 						$pluginId = strtolower( $pluginId[0] ) . substr( $pluginId, 1 );
 					}
 					// Make sure to keep plugins
 					if( strtolower($pluginsXml[$i]->getName()) == 'plugin' ){
 						$uiConfPluginNodes[] = $pluginId;
-					}					
+					}
 					$plugins[ $pluginId ] = array(
 						'plugin' => true
 					);
@@ -485,15 +508,15 @@ class UiConfResult {
 					$value = ( string ) $uiStrings[ $i ]->attributes()->value;
 					$locale = '';
 					if( $uiStrings[ $i ]->attributes()->locale ){
-						// append '_' to seperate locale from key 
-						$locale = ( string ) $uiStrings[ $i ]->attributes()->locale . '_'; 
+						// append '_' to seperate locale from key
+						$locale = ( string ) $uiStrings[ $i ]->attributes()->locale . '_';
 					}
 					
-					// setup string s plugin: 
+					// setup string s plugin:
 					if( !isset( $plugins[ 'strings' ] ) ){
 						$plugins[ 'strings' ] = array ();
 					}
-					// add the current key value pair: 
+					// add the current key value pair:
 					$plugins[ 'strings' ][ $locale . $key ] = $value;
 				}
 			}
@@ -654,16 +677,16 @@ class UiConfResult {
 				continue;
 			}
 			// Migrate enabled plugins
-			if( isset( $xmlPlugins[ $oldPluginName ]['plugin'] ) && $xmlPlugins[ $oldPluginName ]['plugin'] == true 
+			if( isset( $xmlPlugins[ $oldPluginName ]['plugin'] ) && $xmlPlugins[ $oldPluginName ]['plugin'] == true
 				&&
 				(
-					// special case playlist, not visable but we need config. 
+					// special case playlist, not visable but we need config.
 					$oldPluginName == 'playlist'
 						||
 					// Check if visible is a known propety, if known check its empty or false
 					! ( isset( $xmlPlugins[ $oldPluginName ]['visible'] )
 						&&
-						( 
+						(
 							empty( $xmlPlugins[ $oldPluginName ]['visible'] )
 							||
 							$xmlPlugins[ $oldPluginName ]['visible'] == "false"
@@ -687,7 +710,7 @@ class UiConfResult {
 						$config[ $configKey ] = $val;
 					}
 				}
-				if( isset($pluginConfig['copyAttributes']) 
+				if( isset($pluginConfig['copyAttributes'])
 					&& $pluginConfig['copyAttributes'] === true ){
 					$config = array_merge($config, $xmlPlugins[ $oldPluginName ]);
 				}
@@ -749,9 +772,9 @@ class UiConfResult {
 		foreach( $vars as $key => $val ){
 			if( strpos($key, '.') !== false ){
 				list( $pluginKey, $subKey) = explode( '.', $key );
-				// Check for generic external resource keys: 
-				if( strpos( $subKey, 'iframeHTML5Js' ) === 0 
-					&& 
+				// Check for generic external resource keys:
+				if( strpos( $subKey, 'iframeHTML5Js' ) === 0
+					&&
 					strpos( $val, '{html5ps}' ) !== 0
 					&&
 					$this->isExternalUrl( $val )
@@ -759,9 +782,9 @@ class UiConfResult {
 					$vars[$key] = $warningUrl;
 				}
 				// Check for any mainfest defined urlJS type
-				if( isset( $configRegister[ $pluginKey ] ) 
-						&& 
-					isset( $configRegister[ $pluginKey ]['attributes'] ) 
+				if( isset( $configRegister[ $pluginKey ] )
+						&&
+					isset( $configRegister[ $pluginKey ]['attributes'] )
 						&&
 					isset( $configRegister[ $pluginKey ]['attributes'][ $subKey ] )
 						&&
@@ -775,13 +798,13 @@ class UiConfResult {
 					$vars['IframeCustomPluginJs_warn'] = $warningUrl;
 				}
 			} else {
-				// Check against top level external js include list: 
-				if( strpos( $key, 'onPageJs' ) === 0 
-					|| 
+				// Check against top level external js include list:
+				if( strpos( $key, 'onPageJs' ) === 0
+					||
 					strpos( $key, 'IframeCustomPluginJs' ) === 0
 				){
 					// if the url does not start with {html5ps} or {onPagePluginPath}
-					if( strpos( $val, '{html5ps}' ) !== 0 
+					if( strpos( $val, '{html5ps}' ) !== 0
 						&&
 						strpos( $val, '{onPagePluginPath}' ) !== 0
 						&&
@@ -833,7 +856,7 @@ class UiConfResult {
 		if( $this->request->getEntryId() ) {
 			$addtionalData['entryId'] = $this->request->getEntryId();
 		}
-		// Add KS to uiVars only if part of request: 
+		// Add KS to uiVars only if part of request:
 		if( $this->request->hasKS() ){
 			$this->playerConfig['vars']['ks'] = $this->client->getKS();
 		}
@@ -846,7 +869,7 @@ class UiConfResult {
 			return $this->isPlaylist;
 		}
 		// Check for playlist based on playlistAPI plugin existence
-		$this->isPlaylist = ( !! $this->getPlayerConfig('playlistAPI', 'kpl0Url') 
+		$this->isPlaylist = ( !! $this->getPlayerConfig('playlistAPI', 'kpl0Url')
 			|| !! $this->getPlayerConfig('playlistAPI', 'kpl0Id') ) ;
 		return $this->isPlaylist;
 	}
