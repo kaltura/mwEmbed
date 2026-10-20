@@ -19,6 +19,8 @@ class UiConfResult {
 	var $noCache = null;
 	var $isPlaylist = null;
 	var $isJsonConfig = null;
+	// True only when uiConfFile was loaded from the API ( or its cache ) by uiconf_id
+	var $isUiConfFromApi = false;
 
 	// These properties are handled differently, we don't want to resolve them automatically
 	var $propsToIgnoreWhenResolvingResource = array('templatePath');
@@ -69,6 +71,8 @@ class UiConfResult {
 			throw new Exception( "Missing uiConf ID or confFilePath" );
 		}
 
+		$cacheKey = $this->getCacheKey();
+
 		// Try to load confFile from local path
 		if( $confFilePath ) {
 			$this->loadFromLocalFile( $confFilePath );
@@ -77,12 +81,13 @@ class UiConfResult {
 			$this->uiConfFile = json_encode( $jsonConfig );
 		} else {
 			// Check if we have a cached result object:
-			$cacheKey = $this->getCacheKey();
 			$this->uiConfFile = $this->cache->get( $cacheKey );
+			$this->isUiConfFromApi = true;
 		}
-		
+
 		if( $this->uiConfFile === false ){
 			$this->uiConfFile = $this->loadUiConfFromApi();
+			$this->isUiConfFromApi = true;
 			if( $this->uiConfFile !== null ) {
 				$this->logger->log('KalturaUiConfResult::loadUiConf: [' . $this->request->getUiConfId() . '] Cache uiConf xml to: ' . $cacheKey);
 				$this->cache->set( $cacheKey, $this->uiConfFile );
@@ -458,7 +463,11 @@ class UiConfResult {
 
 		$ignoreFlashVars = array();
 
-		$playerConfig = @unserialize( $this->cache->get( $cacheKey ) );
+		// The config cache is shared by every viewer of this uiconf_id, so only use it for API loaded uiConfs.
+		// Request supplied uiConfs ( confFilePath / jsonConfig ) must never be read from or written to it.
+		$useConfigCache = $this->isUiConfFromApi;
+
+		$playerConfig = $useConfigCache ? @unserialize( $this->cache->get( $cacheKey ) ) : false;
 
 		if( ! $playerConfig ) {
 			$plugins = array();
@@ -532,7 +541,9 @@ class UiConfResult {
 			$playerConfig = $this->updatePluginsFromVars( $plugins, $vars, $uiConfPluginNodes );
 
 			// Save to cache
-			$this->cache->set( $cacheKey, serialize($playerConfig) );
+			if( $useConfigCache ) {
+				$this->cache->set( $cacheKey, serialize($playerConfig) );
+			}
 		}
 		// Flashvars
 		$uiVars = $playerConfig['vars'];
