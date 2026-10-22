@@ -294,7 +294,7 @@ class mwEmbedLoader {
 			try{
 				$entryResult = $container['entry_result'];
 				$entry = $entryResult->getResult();
-				$metaData = @get_object_vars($entry['meta']);
+				$metaData = isset($entry['meta']) ? @get_object_vars($entry['meta']) : array();
 				if ( isset( $metaData[ "externalSourceType" ] ) ) {
 					if ( in_array( strtolower( $metaData[ "externalSourceType" ] ), array_map('strtolower', $wgExternalPlayersSupportedTypes) ) ) {
 						$o.="\n".'mw.setConfig(\'forceMobileHTML5\', true );'. "\n";

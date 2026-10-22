@@ -91,10 +91,9 @@ class mweApiGetLicenseData {
                 }
                 
             } elseif (count($flavorData) > 0) {
-                reset($flavorData);
-                $data = each($flavorData);
-                $files = $data[0];
-                $licenseData = $data[1];
+		reset($flavorData);
+		$files = key($flavorData);
+		$licenseData = current($flavorData);
             } else {
                 throw new Exception('flavorData not found');
             }

@@ -80,7 +80,7 @@
 							.attr({
 								'href': '#',
                                 'title': item.label,
-                                'role': 'menuitemcheckbox',
+                                'role': 'menuitem',
                                 'aria-checked': 'false',
 								'tabindex': this.getTabIndex(this.itemIdx + 1)
 							})
