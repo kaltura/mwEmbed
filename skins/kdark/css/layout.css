@@ -447,6 +447,10 @@ body {
 	border-radius: 0.1em;
 }
 
+.largePlayBtnBorder:focus {
+	outline: 1px solid #66CCFF;
+}
+
 .scrubber {
 	position: relative;
 	height: 0.6em;

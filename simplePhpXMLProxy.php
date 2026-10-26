@@ -375,11 +375,10 @@ if ( isset( $_GET['mode'] ) == 'native' ) {
 	//$encodeCDATASections = false;
 	// Check if we should encode CDATA sections:
 	if( $encodeCDATASections ){
-		$contents = preg_replace_callback('/\<\!\[CDATA\[(.*?)\]\]>/',
-	 		create_function(
-	 			'$matches',
-				'return htmlentities( $matches[1] );'
-	 		), $contents );
+		$func = function($matches) {
+			return htmlentities( $matches[1] );
+		};
+		$contents = preg_replace_callback('/\<\!\[CDATA\[(.*?)\]\]>/', $func, $contents );
 	}
 
 

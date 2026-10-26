@@ -24,7 +24,7 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '2.98';
+$wgMwEmbedVersion = '2.103';
 
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {
@@ -256,8 +256,6 @@ if( is_file( $wgLocalSettingsFile ) ){
 	require_once( $wgLocalSettingsFile );
 }
 
-// Trusted ps dir, fixed by server config. Must NOT be derived from request input.
-$wgKalturaPSTrustedPath = realpath( dirname( __FILE__ ) . '/../' . $psRelativePath . '/ps' );
 if( isset( $_GET['pskwidgetpath'] ) ){
 	$psRelativePath = htmlspecialchars( $_GET['pskwidgetpath'] );
 }

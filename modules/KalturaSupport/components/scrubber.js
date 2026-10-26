@@ -458,6 +458,7 @@
 				// Up the z-index of the default status indicator:
 				this.$el.find('.ui-slider-handle')
 					.addClass('playHead PIE btn')
+					.removeAttr('tabindex')
 					.wrap('<div class="handle-wrapper" />');
 				// Update attributes: 
 				this.updateAttr({ 'value': 0 });
